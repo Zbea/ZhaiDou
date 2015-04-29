@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.zhaidou" >
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/icon_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.HomeActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_home" >
+        </activity>
+        <activity
+            android:name=".activities.DiyActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_diy" >
+        </activity>
+        <activity
+            android:name=".activities.CategoriesActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_categories" >
+        </activity>
+        <activity
+            android:name=".activities.MeActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_me" >
+        </activity>
+        <activity
+            android:name=".activities.StrategyActivity"
+            android:label="@string/title_activity_strategy" >
+        </activity>
+        <activity
+            android:name=".activities.ItemDetailActivity"
+            android:label="@string/title_activity_item_detail"
+            android:screenOrientation="portrait" >
+        </activity>
+    </application>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+</manifest>

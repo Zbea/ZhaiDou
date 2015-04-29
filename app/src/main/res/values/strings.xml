@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">宅豆</string>
+    <string name="action_settings">宅豆</string>
+    <string name="title_activity_gl">攻略</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_categories">分类</string>
+    <string name="title_activity_home">首页</string>
+    <string name="title_activity_diy">DIY</string>
+    <string name="title_activity_me">我</string>
+    <string name="title_activity_strategy">StrategyActivity</string>
+    <string name="title_activity_item_detail"></string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>
