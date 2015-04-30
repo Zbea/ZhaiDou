@@ -50,7 +50,7 @@ public class MainActivity extends ActivityGroup {
         addTab("攻略", TAG_2, R.drawable.gl_icon, new Intent(this, StrategyActivity.class));
         addTab("分类", TAG_3, R.drawable.category_icon, new Intent(this, CategoriesActivity.class));
         addTab("DIY", TAG_4, R.drawable.diy_icon,  new Intent(this, DiyActivity.class));
-        addTab("我", TAG_5, R.drawable.me_icon, new Intent(this, MeActivity.class));
+        //addTab("我", TAG_5, R.drawable.me_icon, new Intent(this, MeActivity.class));
     }
 
     private Drawable createTabDrawable(int resId) {
