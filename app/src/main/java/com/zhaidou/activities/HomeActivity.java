@@ -205,8 +205,6 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
 
     @Override
     public void onScrollStateChanged(AbsListView absListView, int state) {
-        Log.d(DEBUG_CAT, "--------------> lastVisibleIndex: " + lastVisibleIndex);
-        Log.d(DEBUG_CAT, "--------------> homeItemsAdapter.getCount: " +  homeItemsAdapter.getCount());
         if (state == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && lastVisibleIndex == homeItemsAdapter.getCount()) {
             loading.show();
             loadMoreData();
@@ -216,7 +214,6 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
     @Override
     public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         lastVisibleIndex = firstVisibleItem + visibleItemCount;
-        Log.d(DEBUG_CAT, "滚动到这里了");
     }
 
     public final class ViewHolder {

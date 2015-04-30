@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,6 +45,16 @@ public class StrategyActivity extends Activity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+
+        Log.v("Debug Info", "Current url: " + webView.getUrl());
+
+        if ("http://www.zhaidou.com/m.html".equals(webView.getUrl())) {
+            super.onBackPressed();
+        }
+        webView.goBack();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
