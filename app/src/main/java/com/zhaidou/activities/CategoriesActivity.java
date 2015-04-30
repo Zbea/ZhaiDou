@@ -3,9 +3,11 @@ package com.zhaidou.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
 
@@ -16,14 +18,22 @@ public class CategoriesActivity extends Activity {
 
     private WebView webView;
 
+    private long lastClickTime = 0L;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_categories);
-
     }
 
+
+
     public void onClick_Event(View view) {
+        long thisClickTime = SystemClock.elapsedRealtime();
+        if ((thisClickTime - lastClickTime) < 1000) {
+            return;
+        }
+
+        lastClickTime = thisClickTime;
         String tag = (String) view.getTag();
 
         String targetUrl = String.format(ZhaiDou.TAG_BASE_URL, tag);
@@ -56,4 +66,5 @@ public class CategoriesActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 }

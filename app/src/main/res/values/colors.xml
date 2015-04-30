@@ -26,5 +26,6 @@
     <color name="tab_transparent_dark">#16FFFFFF</color>
     <color name="tab_transparent_light">#38FFFFFF</color>
     <color name="dark_color_for_text">#808080</color>
+    <color name="actionbar_background_color">#39495D</color>
 
 </resources>

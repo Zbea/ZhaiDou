@@ -1,10 +1,15 @@
 package com.zhaidou.activities;
 
+import android.app.ActionBar;
 import android.app.Activity;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
+import android.widget.ImageView;
 
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
@@ -12,6 +17,7 @@ import com.zhaidou.ZhaiDou;
 public class ItemDetailActivity extends Activity {
 
     WebView webView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,10 +30,24 @@ public class ItemDetailActivity extends Activity {
         webView.loadUrl(postUrl);
 
         this.setTitle("");
+        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        View customActionBar = LayoutInflater.from(this).inflate(R.layout.actionbar_with_backbutton, null);
+        ImageView backView = (ImageView) customActionBar.findViewById(R.id.actionbar_back_button);
+        backView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ItemDetailActivity.this.finish();
+            }
+        });
+        getActionBar().setCustomView(customActionBar);
+
+
+        /*
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setDisplayUseLogoEnabled(false);
+        getActionBar().setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
+        */
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

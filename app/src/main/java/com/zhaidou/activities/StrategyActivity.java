@@ -1,12 +1,18 @@
 package com.zhaidou.activities;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.zhaidou.R;
 
@@ -21,12 +27,19 @@ public class StrategyActivity extends Activity {
         setContentView(R.layout.activity_strategy);
 
         webView = (WebView)findViewById(R.id.strategyView);
+
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
         webView.loadUrl("http://www.zhaidou.com/m.html");
         webView.setWebViewClient(new WebViewClient() {
             public void onPageFinished(WebView view, String url) {
                 loading.hide();
             }
         });
+
+        setTitle("全新加居生活");
+
         loading = ProgressDialog.show(this, "", "正在努力加载中...", true);
 
     }

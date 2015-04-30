@@ -1,5 +1,6 @@
 package com.zhaidou.activities;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityGroup;
 import android.app.ProgressDialog;
@@ -130,6 +131,20 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
         listView.setOnScrollListener(this);
         loadMoreData();
         loading = ProgressDialog.show(this, "", "正在努力加载中...", true);
+        setTitle("");
+
+        if (getActionBar() != null) {
+            getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+            View customActionBar = LayoutInflater.from(this).inflate(R.layout.actionbar_with_backbutton, null);
+            ImageView backView = (ImageView) customActionBar.findViewById(R.id.actionbar_back_button);
+            backView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    finish();
+                }
+            });
+            getActionBar().setCustomView(customActionBar);
+        }
     }
 
     private void loadMoreData() {

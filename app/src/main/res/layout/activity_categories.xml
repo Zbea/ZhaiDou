@@ -362,6 +362,7 @@
                             android:layout_margin="20dp"
                             android:layout_weight="0.2"
                             android:tag="022"
+                            android:onClick="onClick_Event"
                             android:background="@drawable/zhongshi" />
 
                         <Button
