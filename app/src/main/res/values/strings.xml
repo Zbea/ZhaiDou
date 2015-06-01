@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
     <string name="app_name">宅豆</string>
     <string name="action_settings">宅豆</string>
@@ -12,5 +12,6 @@
     <string name="title_activity_strategy">全新家居生活</string>
     <string name="title_activity_item_detail"></string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_web_view">关闭</string>
 
 </resources>

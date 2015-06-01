@@ -1,14 +1,39 @@
 package com.zhaidou.fragments;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.zhaidou.R;
+import com.zhaidou.activities.ItemDetailActivity;
+import com.zhaidou.utils.HtmlFetcher;
+import com.zhaidou.utils.ImageDownloader;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.URL;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,32 +44,66 @@ import com.zhaidou.R;
  * create an instance of this fragment.
  *
  */
-public class ElementListFragment extends Fragment {
+public class ElementListFragment extends Fragment implements AbsListView.OnScrollListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String URL = "targetUrl";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private ProgressDialog loading;
+    private ListView listView;
+
+    /* pagination */
+    private String targetUrl;
+    private int currentPage;
+    private boolean loadedAll;
+    private final int LOADED = 1;
+    /* Data Definition*/
+    List<JSONObject> listItem;
+    private AdapterView.OnItemClickListener itemSelectListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            try {
+
+                JSONObject item = listItem.get(i);
+                Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
+                detailIntent.putExtra("id", item.get("id").toString());
+                detailIntent.putExtra("title", item.get("title").toString());
+                detailIntent.putExtra("cover_url", item.get("thumbnail").toString());
+                detailIntent.putExtra("url", item.get("url").toString());
+                startActivity(detailIntent);
+
+//                ElementListFragment detailFragment = new ElementListFragment();
+//                getFragmentManager().beginTransaction().replace(R.id.home_layout, detailFragment).commit();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+    /* Log cat */
+    public static final String ERROR_CAT = "ERROR";
+    public static final String DEBUG_CAT = "DEBUG";
+
+    private Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+            if (msg.what == LOADED) {
+                loading.dismiss();
+                homeItemsAdapter.notifyDataSetChanged();
+            }
+        }
+    };
+
+    /* Adapter */
+    private ImageAdapter homeItemsAdapter;
+
+    private int lastVisibleIndex;
 
     private OnFragmentInteractionListener mListener;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment BlankFragment.
-     */
     // TODO: Rename and change types and number of parameters
-    public static ElementListFragment newInstance(String param1, String param2) {
+    public static ElementListFragment newInstance(String url) {
         ElementListFragment fragment = new ElementListFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(URL, url);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,8 +115,7 @@ public class ElementListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            targetUrl = getArguments().getString(URL);
         }
     }
 
@@ -65,16 +123,78 @@ public class ElementListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.element_list_fragment, container, false);
+
+        View view = inflater.inflate(R.layout.element_list_fragment, container, false);
+        listView = (ListView) view.findViewById(R.id.homeItemList);
+
+        currentPage = 1;
+
+        loadedAll = false;
+
+        listItem = new ArrayList<JSONObject>();
+        homeItemsAdapter = new ImageAdapter(getActivity());
+        listView.setAdapter(homeItemsAdapter);
+        listView.setOnItemClickListener(itemSelectListener);
+        listView.setOnScrollListener(this);
+        loadMoreData();
+        loading = ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
+
+        return view;
+    }
+    @Override
+    public void onScrollStateChanged(AbsListView absListView, int state) {
+        if (state == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && lastVisibleIndex == homeItemsAdapter.getCount()) {
+            loading.show();
+            loadMoreData();
+        }
     }
 
+    @Override
+    public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        lastVisibleIndex = firstVisibleItem + visibleItemCount;
+    }
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
     }
-
+    private void loadMoreData() {
+        new Thread() {
+            public void run() {
+                if (loadedAll) {
+                    loading.dismiss();
+                    return;
+                }
+                try {
+                    String requestUrl = MessageFormat.format(targetUrl, currentPage);
+                    Log.d(DEBUG_CAT, "-------> 加载url: " + requestUrl);
+                    java.net.URL url = new URL(requestUrl);
+                    String jsonContent = HtmlFetcher.fetch(url);
+                    try {
+                        JSONObject root = new JSONObject(jsonContent);
+                        JSONArray items = root.getJSONArray("posts");
+                        for (int i = 0; i < items.length(); i++) {
+                            listItem.add(items.getJSONObject(i));
+                        }
+                        Message msg = new Message();
+                        msg.what = LOADED;
+                        handler.sendMessage(msg);
+                        currentPage++;
+                        int count = Integer.valueOf(root.get("count").toString());
+                        int pages = Integer.valueOf(root.get("pages").toString());
+                        if (listItem.size() >= count*pages) {
+                            loadedAll = true;
+                        }
+                    } catch (Exception ex) {
+                        Log.e("Debug Info", ex.getMessage());
+                    }
+                } catch (Exception ex) {
+                    Log.e(ERROR_CAT, "不能加载数据: " + ex);
+                }
+            }
+        }.start();
+    }
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -106,5 +226,54 @@ public class ElementListFragment extends Fragment {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
+    public class ImageAdapter extends BaseAdapter {
 
+        private LayoutInflater inflater;
+
+        private final ImageDownloader imageDownloader = new ImageDownloader();
+
+        public ImageAdapter(Context context) {
+            imageDownloader.setMode(ImageDownloader.Mode.CORRECT);
+            this.inflater = LayoutInflater.from(context);
+        }
+
+
+        public int getCount() {
+            return listItem.size();
+        }
+
+        public Object getItem(int position) {
+            return listItem.get(position);
+        }
+
+        public long getItemId(int position) {
+            return listItem.get(position).hashCode();
+        }
+
+        public View getView(int position, View view, ViewGroup parent) {
+            if (view == null) {
+                view = inflater.inflate(R.layout.home_item_list, null);//new ImageView(parent.getContext());
+            }
+
+            TextView title = (TextView) view.findViewById(R.id.title);
+            TextView articleViews = (TextView) view.findViewById(R.id.views);
+            ImageView cover = (ImageView) view.findViewById(R.id.cover);
+
+            final JSONObject item = listItem.get(position);
+            try {
+                title.setText(item.get("title").toString());
+                JSONObject customFields = item.getJSONObject("custom_fields");
+                articleViews.setText(customFields.getJSONArray("views").get(0).toString());
+                imageDownloader.download(item.get("thumbnail").toString(), cover);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return view;
+        }
+
+        public ImageDownloader getImageDownloader() {
+            return imageDownloader;
+        }
+    }
 }

@@ -18,4 +18,8 @@
     <style name="MyActionBarTitleText" parent="android:TextAppearance.Holo.Widget.ActionBar.Title">
         <item name="android:textColor">@android:color/white</item>
     </style>
+
+    <style name="TopButtonStyle">
+        <item name="android:background">@color/white</item>
+    </style>
 </resources>

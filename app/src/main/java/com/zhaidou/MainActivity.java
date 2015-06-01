@@ -3,7 +3,6 @@ package com.zhaidou;
 import com.zhaidou.activities.CategoriesActivity;
 import com.zhaidou.activities.DiyActivity;
 import com.zhaidou.activities.HomeActivity;
-import com.zhaidou.activities.MeActivity;
 import com.zhaidou.activities.StrategyActivity;
 import com.zhaidou.graphics.TabBitmap;
 
@@ -25,16 +24,18 @@ import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 
-
+/**
+ * FIXME: 改为Fragment实现
+ */
 public class MainActivity extends ActivityGroup {
 
     private static final String TAG_1 = "tab1";
     private static final String TAG_2 = "tab2";
     private static final String TAG_3 = "tab3";
     private static final String TAG_4 = "tab4";
-    private static final String TAG_5 = "tab5";
 
-    TabHost mTabHost;
+    private TextView titleView;
+    private TabHost mTabHost;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,11 +47,34 @@ public class MainActivity extends ActivityGroup {
         mTabHost = (TabHost) findViewById(R.id.tabHost);
         mTabHost.setup(this.getLocalActivityManager());
 
-        addTab("首页", TAG_1, R.drawable.home_icon, new Intent(this, HomeActivity.class));
-        addTab("攻略", TAG_2, R.drawable.gl_icon, new Intent(this, StrategyActivity.class));
+        addTab("最实用", TAG_1, R.drawable.home_icon, new Intent(this, HomeActivity.class));
+        addTab("美丽家", TAG_2, R.drawable.gl_icon, new Intent(this, StrategyActivity.class));
         addTab("分类", TAG_3, R.drawable.category_icon, new Intent(this, CategoriesActivity.class));
         addTab("DIY", TAG_4, R.drawable.diy_icon,  new Intent(this, DiyActivity.class));
-        //addTab("我", TAG_5, R.drawable.me_icon, new Intent(this, MeActivity.class));
+
+        View actionBarView = getLayoutInflater().inflate(R.layout.custom_actionbar, null);
+        titleView = (TextView) actionBarView.findViewById(R.id.custom_actionbar_title);
+        titleView.setText("每日精选功能美物");
+
+        getActionBar().setDisplayShowHomeEnabled(false);
+        getActionBar().setDisplayShowTitleEnabled(false);
+        getActionBar().setDisplayShowCustomEnabled(true);
+        getActionBar().setCustomView(actionBarView);
+
+        mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            @Override
+            public void onTabChanged(String s) {
+                if (TAG_1.equals(s)) {
+                    titleView.setText("每日精选功能美物");
+                } else if (TAG_2.equals(s)) {
+                    titleView.setText("专业家居美化方案");
+                } else if (TAG_3.equals(s)) {
+                    titleView.setText("分类");
+                } else if (TAG_4.equals(s)) {
+                    titleView.setText("DIY");
+                }
+            }
+        });
     }
 
     private Drawable createTabDrawable(int resId) {

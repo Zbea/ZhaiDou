@@ -2,12 +2,13 @@ package com.zhaidou.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.ActivityGroup;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -24,9 +25,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.fragments.ElementListFragment;
 import com.zhaidou.utils.AsyncImageLoader;
 import com.zhaidou.utils.HtmlFetcher;
 
@@ -38,6 +37,10 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.zhaidou.R;
+import com.zhaidou.utils.ImageDownloader;
+import com.zhaidou.utils.NetworkUtils;
 
 public class HomeActivity extends Activity implements AbsListView.OnScrollListener {
 
@@ -53,7 +56,7 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
     List<JSONObject> listItem;
 
     /* Adapter */
-    private HomeItemsAdapter homeItemsAdapter;
+    private ImageAdapter homeItemsAdapter;
 
     private int lastVisibleIndex;
 
@@ -68,7 +71,9 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             if (msg.what == LOADED) {
-                loading.dismiss();
+                if (loading.isShowing()) {
+                    loading.dismiss();
+                }
                 homeItemsAdapter.notifyDataSetChanged();
             }
         }
@@ -82,6 +87,9 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
                 JSONObject item = listItem.get(i);
                 Intent detailIntent = new Intent(HomeActivity.this, ItemDetailActivity.class);
                 detailIntent.putExtra("id", item.get("id").toString());
+                detailIntent.putExtra("title", item.get("title").toString());
+                detailIntent.putExtra("cover_url", item.get("thumbnail").toString());
+                detailIntent.putExtra("url", item.get("url").toString());
                 startActivity(detailIntent);
 
 //                ElementListFragment detailFragment = new ElementListFragment();
@@ -125,10 +133,21 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
         loadedAll = false;
 
         listItem = new ArrayList<JSONObject>();
-        homeItemsAdapter = new HomeItemsAdapter(this);
+        homeItemsAdapter = new ImageAdapter(this);
         listView.setAdapter(homeItemsAdapter);
         listView.setOnItemClickListener(itemSelectListener);
         listView.setOnScrollListener(this);
+
+        if (NetworkUtils.isNetworkAvailable(this) == false) {
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+            alertDialog.setTitle("警告");
+            alertDialog.setMessage("您还没有连接互联网");
+            alertDialog.setPositiveButton("半闭", null);
+            alertDialog.show();
+            return;
+        }
+
+
         loadMoreData();
         loading = ProgressDialog.show(this, "", "正在努力加载中...", true);
         setTitle("");
@@ -151,7 +170,7 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
         new Thread() {
             public void run() {
                 if (loadedAll) {
-                    loading.dismiss();
+//                    loading.dismiss();
                     return;
                 }
                 try {
@@ -206,7 +225,7 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
     @Override
     public void onScrollStateChanged(AbsListView absListView, int state) {
         if (state == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && lastVisibleIndex == homeItemsAdapter.getCount()) {
-            loading.show();
+//            loading.show();
             loadMoreData();
         }
     }
@@ -222,6 +241,61 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
         public ImageView cover;
     }
 
+
+    public class ImageAdapter extends BaseAdapter {
+
+        private LayoutInflater inflater;
+
+        private final ImageDownloader imageDownloader = new ImageDownloader();
+
+        public ImageAdapter(Context context) {
+            imageDownloader.setMode(ImageDownloader.Mode.CORRECT);
+            this.inflater = LayoutInflater.from(context);
+        }
+
+
+        public int getCount() {
+            return listItem.size();
+        }
+
+        public Object getItem(int position) {
+            return listItem.get(position);
+        }
+
+        public long getItemId(int position) {
+            return listItem.get(position).hashCode();
+        }
+
+        public View getView(int position, View view, ViewGroup parent) {
+            if (view == null) {
+                view = inflater.inflate(R.layout.home_item_list, null);//new ImageView(parent.getContext());
+            }
+
+            TextView title = (TextView) view.findViewById(R.id.title);
+            TextView articleViews = (TextView) view.findViewById(R.id.views);
+            ImageView cover = (ImageView) view.findViewById(R.id.cover);
+
+            final JSONObject item = listItem.get(position);
+            try {
+                title.setText(item.get("title").toString());
+                JSONObject customFields = item.getJSONObject("custom_fields");
+                articleViews.setText(customFields.getJSONArray("views").get(0).toString());
+                imageDownloader.download(item.get("thumbnail").toString(), cover);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return view;
+        }
+
+        public ImageDownloader getImageDownloader() {
+            return imageDownloader;
+        }
+    }
+
+
+
+    /* Home items adapter */
     public class HomeItemsAdapter extends BaseAdapter {
 
         private LayoutInflater inflater;
@@ -267,7 +341,7 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            JSONObject item = listItem.get(i);
+            final JSONObject item = listItem.get(i);
 
             try {
                 String coverUrl = item.get("thumbnail").toString();
@@ -283,13 +357,24 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
                         public void imageLoaded(Drawable drawable, String imageUrl) {
                             ImageView imageViewByTag = (ImageView)listView.findViewWithTag(imageUrl);
                             if (imageViewByTag != null) {
+//                                imageViewByTag.setImageDrawable(drawable);
+//                                try {
+//                                    item.put("coverImage", drawable);
+//                                } catch (JSONException e) {
+//                                    e.printStackTrace();
+//                                }
                                 imageViewByTag.setImageDrawable(drawable);
                                 notifyDataSetChanged();
                             }
                         }
                     });
                 } else {
-                    coverView.setImageDrawable((Drawable)listItem.get(i).get("coverImage"));
+                    Drawable drawable = (Drawable) listItem.get(i).get("coverImage");
+                    coverView.setImageDrawable((Drawable) listItem.get(i).get("coverImage"));
+
+//                    Draw bitmap = (Bitmap) listItem.get(i).get("coverImage");
+//                    bitmap.recycle();
+//                    coverView.setImageBitmap((Bitmap) listItem.get(i).get("coverImage"));
                 }
 
                 holder.title.setText(item.get("title").toString());

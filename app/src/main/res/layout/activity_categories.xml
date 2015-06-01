@@ -390,7 +390,7 @@
                             android:layout_weight="0.2"
                             android:onClick="onClick_Event"
                             android:tag="025"
-                            android:background="@drawable/meishi" />
+                            android:background="@drawable/meishi_1" />
 
                     </TableRow>
 
