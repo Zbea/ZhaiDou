@@ -15,7 +15,7 @@
             android:gravity="center"
             android:text="宅豆"
             android:textColor="@color/white"
-            android:textSize="22sp"
+            android:textSize="18sp"
             />
 
 </RelativeLayout>

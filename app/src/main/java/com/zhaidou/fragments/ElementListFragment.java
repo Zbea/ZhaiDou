@@ -6,9 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.utils.HtmlFetcher;
 import com.zhaidou.utils.ImageDownloader;
@@ -48,9 +49,11 @@ public class ElementListFragment extends Fragment implements AbsListView.OnScrol
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String URL = "targetUrl";
+    private static final String TYPE = "type";
 
     private ProgressDialog loading;
     private ListView listView;
+    private ZhaiDou.ListType listType;
 
     /* pagination */
     private String targetUrl;
@@ -86,7 +89,11 @@ public class ElementListFragment extends Fragment implements AbsListView.OnScrol
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             if (msg.what == LOADED) {
-                loading.dismiss();
+
+                if (loading.isShowing()) {
+                    loading.dismiss();
+                }
+
                 homeItemsAdapter.notifyDataSetChanged();
             }
         }
@@ -100,10 +107,11 @@ public class ElementListFragment extends Fragment implements AbsListView.OnScrol
     private OnFragmentInteractionListener mListener;
 
     // TODO: Rename and change types and number of parameters
-    public static ElementListFragment newInstance(String url) {
+    public static ElementListFragment newInstance(String url, String type) {
         ElementListFragment fragment = new ElementListFragment();
         Bundle args = new Bundle();
         args.putString(URL, url);
+        args.putString(TYPE, type);
         fragment.setArguments(args);
         return fragment;
     }
@@ -122,11 +130,32 @@ public class ElementListFragment extends Fragment implements AbsListView.OnScrol
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
 
         View view = inflater.inflate(R.layout.element_list_fragment, container, false);
         listView = (ListView) view.findViewById(R.id.homeItemList);
 
+        String url = getArguments().getString("targetUrl");
+        String type = getArguments().getString("type");
+
+        if (url == null) {
+            this.targetUrl = ZhaiDou.HOME_PAGE_URL;
+        } else {
+            this.targetUrl = url;
+        }
+
+        /* TODO 渣，要改 */
+        if (type != null) {
+            if (type.equals("1")) {
+                listType = ZhaiDou.ListType.HOME;
+                targetUrl = targetUrl + "?page={0}";
+            } else if (type.equals("2")) {
+                listType = ZhaiDou.ListType.TAG;
+                targetUrl = targetUrl + "&page={0}";
+            }
+        } else {
+            listType = ZhaiDou.ListType.HOME;
+            targetUrl = targetUrl + "&page={0}";
+        }
         currentPage = 1;
 
         loadedAll = false;
@@ -144,7 +173,7 @@ public class ElementListFragment extends Fragment implements AbsListView.OnScrol
     @Override
     public void onScrollStateChanged(AbsListView absListView, int state) {
         if (state == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && lastVisibleIndex == homeItemsAdapter.getCount()) {
-            loading.show();
+//            loading.show();
             loadMoreData();
         }
     }
@@ -163,7 +192,7 @@ public class ElementListFragment extends Fragment implements AbsListView.OnScrol
         new Thread() {
             public void run() {
                 if (loadedAll) {
-                    loading.dismiss();
+//                    loading.dismiss();
                     return;
                 }
                 try {

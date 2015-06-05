@@ -1,57 +1,54 @@
 package com.zhaidou;
 
-import com.zhaidou.activities.CategoriesActivity;
-import com.zhaidou.activities.DiyActivity;
-import com.zhaidou.activities.HomeActivity;
-import com.zhaidou.activities.StrategyActivity;
-import com.zhaidou.graphics.TabBitmap;
+import com.zhaidou.fragments.CategoryFragment;
+import com.zhaidou.fragments.DiyFragment;
+import com.zhaidou.fragments.ElementListFragment;
+import com.zhaidou.fragments.StrategyFragment;
+import com.zhaidou.fragments.WebViewFragment;
 
-import android.app.ActivityGroup;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
-import android.graphics.BitmapFactory;
-import android.graphics.BitmapFactory.Options;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.StateListDrawable;
+import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TabHost;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 /**
- * FIXME: 改为Fragment实现
  */
-public class MainActivity extends ActivityGroup {
+public class MainActivity extends FragmentActivity implements DiyFragment.OnFragmentInteractionListener, CategoryFragment.OnFragmentInteractionListener, StrategyFragment.OnFragmentInteractionListener, ElementListFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener {
 
-    private static final String TAG_1 = "tab1";
-    private static final String TAG_2 = "tab2";
-    private static final String TAG_3 = "tab3";
-    private static final String TAG_4 = "tab4";
+    private Fragment utilityFragment;
+    private Fragment beautyHomeFragment;
+    private Fragment categoryFragment;
+    private Fragment diyFragment;
+    private Fragment currentFragment;
+
+    private ImageButton homeButton;
+    private ImageButton beautyButton;
+    private ImageButton categoryButton;
+    private ImageButton diyButton;
+
+    private ImageButton lastButton;
 
     private TextView titleView;
-    private TabHost mTabHost;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        setTabs();
+        setContentView(R.layout.main_layout);
+
+        init();
+
+        initComponents();
     }
 
-    private void setTabs() {
-        mTabHost = (TabHost) findViewById(R.id.tabHost);
-        mTabHost.setup(this.getLocalActivityManager());
+    public void init() {
 
-        addTab("最实用", TAG_1, R.drawable.home_icon, new Intent(this, HomeActivity.class));
-        addTab("美丽家", TAG_2, R.drawable.gl_icon, new Intent(this, StrategyActivity.class));
-        addTab("分类", TAG_3, R.drawable.category_icon, new Intent(this, CategoriesActivity.class));
-        addTab("DIY", TAG_4, R.drawable.diy_icon,  new Intent(this, DiyActivity.class));
+    }
 
+    public void initComponents() {
         View actionBarView = getLayoutInflater().inflate(R.layout.custom_actionbar, null);
         titleView = (TextView) actionBarView.findViewById(R.id.custom_actionbar_title);
         titleView.setText("每日精选功能美物");
@@ -61,67 +58,109 @@ public class MainActivity extends ActivityGroup {
         getActionBar().setDisplayShowCustomEnabled(true);
         getActionBar().setCustomView(actionBarView);
 
-        mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+        homeButton = (ImageButton) findViewById(R.id.tab_home);
+
+        lastButton = homeButton;
+
+        if (utilityFragment == null) {
+            utilityFragment = ElementListFragment.newInstance(ZhaiDou.HOME_PAGE_URL, ZhaiDou.ListType.HOME.toString());
+        }
+
+        currentFragment = utilityFragment;
+        setButton(lastButton);
+        setDefaultFragment(utilityFragment);
+
+        homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onTabChanged(String s) {
-                if (TAG_1.equals(s)) {
-                    titleView.setText("每日精选功能美物");
-                } else if (TAG_2.equals(s)) {
-                    titleView.setText("专业家居美化方案");
-                } else if (TAG_3.equals(s)) {
-                    titleView.setText("分类");
-                } else if (TAG_4.equals(s)) {
-                    titleView.setText("DIY");
-                }
+            public void onClick(View view) {
+
+                titleView.setText("每日精选功能美物");
+
+                selectFragment(currentFragment, utilityFragment);
+                setButton(view);
             }
         });
+
+        beautyButton = (ImageButton) findViewById(R.id.tab_beauty);
+        beautyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                titleView.setText("专业家居美化方案");
+
+                if (beautyHomeFragment == null) {
+                    beautyHomeFragment = new StrategyFragment();
+                }
+
+                selectFragment(currentFragment, beautyHomeFragment);
+                setButton(view);
+            }
+        });
+
+        categoryButton = (ImageButton) findViewById(R.id.tab_category);
+        categoryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                titleView.setText("全类别");
+
+                if (categoryFragment == null) {
+                    categoryFragment = CategoryFragment.newInstance("haha", "haha");
+                }
+
+                selectFragment(currentFragment, categoryFragment);
+                setButton(view);
+            }
+        });
+
+        diyButton = (ImageButton) findViewById(R.id.tab_diy);
+        diyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                titleView.setText("DIY");
+                if (diyFragment == null) {
+                    diyFragment = DiyFragment.newInstance("haha", "haha");
+                }
+
+                selectFragment(currentFragment, diyFragment);
+
+                setButton(view);
+            }
+        });
+
     }
 
-    private Drawable createTabDrawable(int resId) {
-        Resources res = getResources();
-        StateListDrawable states = new StateListDrawable();
+    public void setButton(View view) {
+        ImageButton button = (ImageButton) view;
 
-        final Options options = new Options();
-        options.inPreferredConfig = Config.ARGB_8888;
+        lastButton.setSelected(false);
 
-        Bitmap icon = BitmapFactory.decodeResource(res, resId, options);
+        lastButton = button;
 
-        Bitmap unselected = TabBitmap.createUnselectedBitmap(res, icon);
-        Bitmap selected = TabBitmap.createSelectedBitmap(res, icon);
+        lastButton.setSelected(true);
 
-        icon.recycle();
-
-        states.addState(new int[] { android.R.attr.state_selected }, new BitmapDrawable(res, selected));
-        states.addState(new int[] { android.R.attr.state_enabled }, new BitmapDrawable(res, unselected));
-
-        return states;
     }
 
-    private View createTabIndicator(String label, int resId) {//Drawable drawable) {
-        View tabIndicator = LayoutInflater.from(this).inflate(R.layout.tab_indicator, mTabHost.getTabWidget(), false);
-
-        TextView txtTitle = (TextView) tabIndicator.findViewById(R.id.text_view_tab_title);
-        txtTitle.setText(label);
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) txtTitle.getLayoutParams();
-        txtTitle.setLayoutParams(params);
-
-        ImageView imgIcon = (ImageView) tabIndicator.findViewById(R.id.image_view_tab_icon);
-        imgIcon.setImageDrawable(getResources().getDrawable(resId));
-
-        return tabIndicator;
+    public void setDefaultFragment(Fragment defaultFragment) {
+        getSupportFragmentManager().beginTransaction().add(R.id.content, defaultFragment).commit();
     }
 
-    private void addTab(String label, String tag, int resId, Intent intent) {
-        TabHost.TabSpec spec = mTabHost.newTabSpec(tag);
-        spec.setIndicator(createTabIndicator(label, resId));
-        spec.setContent(intent);
-        mTabHost.addTab(spec);
-    }
+    public void selectFragment(Fragment from, Fragment to) {
 
-    private void addTab(String label, String tag, int resId, int id) {//Drawable drawable, int id) {
-        TabHost.TabSpec spec = mTabHost.newTabSpec(tag);
-        spec.setIndicator(createTabIndicator(label, resId));
-        spec.setContent(id);
-        mTabHost.addTab(spec);
+        if (currentFragment != to) {
+            currentFragment = to;
+
+            FragmentManager manager = getSupportFragmentManager();
+
+            FragmentTransaction transaction = manager.beginTransaction();
+
+            if (!to.isAdded()) {
+                transaction.hide(from).add(R.id.content, to).commit();
+            } else {
+                transaction.hide(from).show(to).commit();
+            }
+        }
+    }
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }
