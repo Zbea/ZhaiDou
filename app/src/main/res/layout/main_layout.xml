@@ -33,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:background="@drawable/home_icon"
+                android:background="@drawable/gl_icon"
                 android:contentDescription="@string/app_name"
                 />
         </RelativeLayout>
@@ -47,8 +47,8 @@
                 android:id="@+id/tab_beauty"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/home_icon"
                 android:layout_centerInParent="true"
-                android:background="@drawable/gl_icon"
                 android:contentDescription="@string/app_name"
                 />
         </RelativeLayout>

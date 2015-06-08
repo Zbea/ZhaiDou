@@ -1,14 +1,19 @@
 package com.zhaidou.fragments;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.HomeActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,6 +29,7 @@ public class CategoryFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private long lastClickTime = 0L;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -107,4 +113,24 @@ public class CategoryFragment extends Fragment {
         public void onFragmentInteraction(Uri uri);
     }
 
+    public void onClick(View view) {
+        long thisClickTime = SystemClock.elapsedRealtime();
+        if ((thisClickTime - lastClickTime) < 1000) {
+            return;
+        }
+
+        lastClickTime = thisClickTime;
+        String tag = (String) view.getTag();
+
+        String targetUrl = String.format(ZhaiDou.TAG_BASE_URL, tag);
+        Log.v("Verbose", "------------->Target Url: " + targetUrl);
+
+        Intent tagsIntent = new Intent(getActivity(), HomeActivity.class);
+        tagsIntent.putExtra("targetUrl", targetUrl);
+        tagsIntent.putExtra("type", ZhaiDou.ListType.TAG);
+
+        startActivity(tagsIntent);
+
+        Log.v("Verbose", "View clicked with tag: " + tag);
+    }
 }

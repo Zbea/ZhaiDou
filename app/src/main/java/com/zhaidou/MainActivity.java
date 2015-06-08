@@ -163,4 +163,11 @@ public class MainActivity extends FragmentActivity implements DiyFragment.OnFrag
     public void onFragmentInteraction(Uri uri) {
 
     }
+
+    public void onClick_Event(View v) {
+        if (categoryFragment != null) {
+            CategoryFragment fragment = (CategoryFragment) categoryFragment;
+            fragment.onClick(v);
+        }
+    }
 }
