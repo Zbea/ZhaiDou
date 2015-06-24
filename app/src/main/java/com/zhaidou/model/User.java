@@ -290,6 +290,7 @@ public class User {
         this.collocation_number = collocation_number;
     }
 
+
     @Override
     public String toString() {
         return "User{" +

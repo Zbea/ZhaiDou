@@ -142,6 +142,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
+                android:visibility="gone"
                 android:background="@color/white">
                 <TextView
                     android:layout_width="wrap_content"
@@ -169,6 +170,7 @@
             <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
+                android:visibility="gone"
             android:background="@color/white">
             <TextView
                 android:layout_width="wrap_content"
@@ -196,6 +198,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
+                android:visibility="gone"
                 android:background="@color/white">
                 <TextView
                     android:layout_width="wrap_content"
@@ -235,7 +238,7 @@
                     android:id="@+id/tv_job"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="码农"
+                    android:text="未认证设计师"
                     android:textColor="#a8a8a8"
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
@@ -250,6 +253,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
+                android:visibility="gone"
                 android:background="@color/white">
                 <TextView
                     android:layout_width="wrap_content"
@@ -277,6 +281,28 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
+                android:background="@color/white">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="手机号码"
+                    android:textColor="#666666"
+                    android:layout_centerVertical="true"
+                    android:paddingLeft="20dp"/>
+                <TextView
+                    android:id="@+id/tv_mobile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1101101010"
+                    android:textColor="#a8a8a8"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:paddingRight="10dp"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:visibility="gone"
                 android:background="@color/white">
                 <TextView
                     android:layout_width="wrap_content"

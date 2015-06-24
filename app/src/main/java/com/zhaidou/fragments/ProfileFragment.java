@@ -181,7 +181,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,Ph
             public void onResponse(JSONObject jsonObject) {
                 Log.i("jsonObject---->",jsonObject.toString());
                 JSONObject userObj = jsonObject.optJSONObject("profile");
-                String email=userObj.optString("email");
                 String nick_name=userObj.optString("nick_name");
                 String mobile=userObj.optString("mobile");
                 String description=userObj.optString("description");
