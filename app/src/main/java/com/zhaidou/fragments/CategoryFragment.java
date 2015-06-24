@@ -5,15 +5,18 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseExpandableListAdapter;
 
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomeActivity;
+import com.zhaidou.base.BaseFragment;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,7 +27,7 @@ import com.zhaidou.activities.HomeActivity;
  * create an instance of this fragment.
  *
  */
-public class CategoryFragment extends Fragment {
+public class CategoryFragment extends BaseFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -82,6 +85,12 @@ public class CategoryFragment extends Fragment {
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        initTopBarForOnlyTitle("全类别");
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
@@ -132,5 +141,57 @@ public class CategoryFragment extends Fragment {
         startActivity(tagsIntent);
 
         Log.v("Verbose", "View clicked with tag: " + tag);
+    }
+
+    private class CategoryAdapter extends BaseExpandableListAdapter{
+        @Override
+        public boolean hasStableIds() {
+            return false;
+        }
+
+        @Override
+        public int getChildrenCount(int i) {
+            return 0;
+        }
+
+        @Override
+        public int getGroupCount() {
+            return 0;
+        }
+
+        @Override
+        public boolean isChildSelectable(int i, int i2) {
+            return false;
+        }
+
+        @Override
+        public Object getGroup(int i) {
+            return null;
+        }
+
+        @Override
+        public long getGroupId(int i) {
+            return 0;
+        }
+
+        @Override
+        public Object getChild(int i, int i2) {
+            return null;
+        }
+
+        @Override
+        public long getChildId(int i, int i2) {
+            return 0;
+        }
+
+        @Override
+        public View getGroupView(int i, boolean b, View view, ViewGroup viewGroup) {
+            return null;
+        }
+
+        @Override
+        public View getChildView(int i, int i2, boolean b, View view, ViewGroup viewGroup) {
+            return null;
+        }
     }
 }

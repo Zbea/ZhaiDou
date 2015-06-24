@@ -1,14 +1,17 @@
 package com.zhaidou.fragments;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.zhaidou.R;
+import com.zhaidou.activities.DiyActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,6 +48,7 @@ public class DiyFragment extends Fragment {
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
+
         fragment.setArguments(args);
         return fragment;
     }

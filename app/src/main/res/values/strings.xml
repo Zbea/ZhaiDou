@@ -19,4 +19,89 @@
     <string name="tab_beauty_home_title">美丽家</string>
     <string name="tab_categories_title">全类别</string>
     <string name="tab_diy_title">DIY</string>
+
+    <!-- xListView -->
+    <string name="xlistview_footer_hint_normal">查看更多</string>
+    <string name="xlistview_header_hint_normal">下拉刷新</string>
+    <string name="xlistview_header_last_time">上次更新时间：</string>
+    <string name="xlistview_header_hint_ready">松开刷新数据</string>
+    <string name="xlistview_header_hint_loading">正在加载…</string>
+    <string name="xlistview_footer_hint_ready">松开载入更多</string>
+    <string name="title_activity_search">SearchActivity</string>
+
+    <!-- Search -->
+    <string name="search_hint">搜索单品、攻略</string>
+    <string name="search_history_clear">清除历史记录</string>
+    <string name="title_activity_search_tab">SearchTabActivity</string>
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+
+
+
+    <!--test-->
+    <string name="index_json">
+        {
+    "articles": [
+        {
+            "id": 27,
+            "title": "ksdfkldfnklfsd",
+            "img_url": "http://192.168.1.45/uploads/article/article/asset_img/27/thumb_f3ccdd27d2000e3f9255a7e3e2c48800.jpg",
+            "is_new": true,
+            "reviews": 15
+        },
+        {
+            "id": 25,
+            "title": "大标题",
+            "img_url": "http://192.168.1.45/uploads/article/article/asset_img/25/thumb_cfe26cf4ffd2f1c8da6e03ab84664b39.jpg",
+            "is_new": false,
+            "reviews": 125
+        },
+        {
+            "id": 28,
+            "title": "来了来了",
+            "img_url": "http://192.168.1.45/uploads/article/article/asset_img/28/thumb_20b5bc025ce3c0d694f5641a5c359752.jpg",
+            "is_new": false,
+            "reviews": 15
+        },
+        {
+            "id": 29,
+            "title": "多几个字看看有什么效果效果怎么样么样",
+            "img_url": "http://192.168.1.45/uploads/article/article/asset_img/29/thumb_1851084340d47692d0e49bebcd8197d6.png",
+            "is_new": false,
+            "reviews": 2233
+        },
+        {
+            "id": 24,
+            "title": "文章标题",
+            "img_url": "http://192.168.1.45/uploads/article/article/asset_img/24/thumb_cfe26cf4ffd2f1c8da6e03ab84664b39.jpg",
+            "is_new": false,
+            "reviews": 12
+        }
+    ]
+}
+    </string>
+
+    <array name="product_sort">
+        <item>默认排序</item>
+        <item>按热度排序</item>
+        <item>价格从低到高排序</item>
+        <item>价格从高到低排序</item>
+    </array>
+    <array name="strategy_sort">
+        <item>默认排序</item>
+        <item>按热度排序</item>
+    </array>
+
+
+    <string name="btn_scroll_view">ScrollView demo</string>
+    <string name="btn_list_view">ListView demo</string>
+
+    <string name="header_hint_refresh_normal">Pull to refresh</string>
+    <string name="header_hint_refresh_ready">Release to refresh</string>
+    <string name="header_hint_refresh_loading">Refreshing&#8230;</string>
+    <string name="header_hint_refresh_time">Time：</string>
+    <string name="footer_hint_load_normal">Load more</string>
+    <string name="footer_hint_load_ready">Release to load more</string>
+
 </resources>

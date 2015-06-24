@@ -8,8 +8,12 @@ public class ZhaiDou {
     public static String HOME_BASE_URL = "http://buy.zhaidou.com/";
     public static String TAG_BASE_URL = "http://buy.zhaidou.com/?tag=%s&json=1";
 
+    public static String HOT_SEARCH_URL="http://192.168.1.45/article/api/articles/hot_search";
+    public static String INDEX_CATEGORY_FILTER="http://192.168.1.45/article/api/article_categories";
+
     public enum ListType {
         HOME,
         TAG,
     }
 }
+//http://192.168.1.45/article/api/article_categories?catetory_id=13

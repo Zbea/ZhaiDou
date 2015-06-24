@@ -4,4 +4,13 @@
     <dimen name="activity_vertical_margin">8dp</dimen>
     <dimen name="default_image_view_height">140dp</dimen>
     <dimen name="default_margin">5dp</dimen>
+
+    <!--actionbar-->
+    <dimen name="base_action_bar_height">50.0dip</dimen>
+    <dimen name="base_action_bar_title_size">22.0sp</dimen>
+
+    <!---->
+    <dimen name="header_height">60dp</dimen>
+    <dimen name="footer_height">90dp</dimen>
+    <dimen name="footer_padding">10dp</dimen>
 </resources>

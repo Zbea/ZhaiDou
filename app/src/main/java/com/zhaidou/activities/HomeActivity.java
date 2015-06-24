@@ -7,8 +7,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,6 +25,7 @@ import android.widget.TextView;
 
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.utils.AsyncImageLoader;
+import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.HtmlFetcher;
 
 import org.json.JSONArray;
@@ -37,6 +36,7 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.WeakHashMap;
 
 import com.zhaidou.R;
 import com.zhaidou.utils.ImageDownloader;
@@ -65,6 +65,9 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
     /* Log cat */
     public static final String ERROR_CAT = "ERROR";
     public static final String DEBUG_CAT = "DEBUG";
+
+    private AsyncImageLoader1 mAsyncImageLoader;
+    private WeakHashMap<Integer,View> mHashMap = new WeakHashMap<Integer, View>();
 
     private final int LOADED = 1;
 
@@ -251,6 +254,7 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
         public ImageAdapter(Context context) {
             imageDownloader.setMode(ImageDownloader.Mode.CORRECT);
             this.inflater = LayoutInflater.from(context);
+            mAsyncImageLoader = new AsyncImageLoader1(context);
         }
 
 
@@ -267,6 +271,7 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
         }
 
         public View getView(int position, View view, ViewGroup parent) {
+            view =mHashMap.get(position);
             if (view == null) {
                 view = inflater.inflate(R.layout.home_item_list, null);//new ImageView(parent.getContext());
             }
@@ -280,11 +285,13 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
                 title.setText(item.get("title").toString());
                 JSONObject customFields = item.getJSONObject("custom_fields");
                 articleViews.setText(customFields.getJSONArray("views").get(0).toString());
-                imageDownloader.download(item.get("thumbnail").toString(), cover);
+//                imageDownloader.download(item.get("thumbnail").toString(), cover);
+                mAsyncImageLoader.LoadImage(item.get("thumbnail").toString(),cover);
             } catch (JSONException e) {
+
                 e.printStackTrace();
             }
-
+            mHashMap.put(position,view);
             return view;
         }
 

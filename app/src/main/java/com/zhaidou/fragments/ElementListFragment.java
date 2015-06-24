@@ -4,27 +4,44 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
+import com.zhaidou.activities.SearchActivity;
+import com.zhaidou.base.BaseFragment;
+import com.zhaidou.base.BaseListAdapter;
+import com.zhaidou.base.ViewHolder;
+import com.zhaidou.model.Article;
+import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.HtmlFetcher;
 import com.zhaidou.utils.ImageDownloader;
+import com.zhaidou.view.HeaderLayout;
+import com.zhaidou.view.XListView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +51,7 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.WeakHashMap;
 
 
 /**
@@ -45,14 +63,16 @@ import java.util.List;
  * create an instance of this fragment.
  *
  */
-public class ElementListFragment extends Fragment implements AbsListView.OnScrollListener {
+public class ElementListFragment extends BaseFragment implements XListView.IXListViewListener,
+                                         HeaderLayout.onLeftImageButtonClickListener,
+                                         HeaderLayout.onRightImageButtonClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String URL = "targetUrl";
     private static final String TYPE = "type";
 
     private ProgressDialog loading;
-    private ListView listView;
+    private XListView listView;
     private ZhaiDou.ListType listType;
 
     /* pagination */
@@ -60,11 +80,25 @@ public class ElementListFragment extends Fragment implements AbsListView.OnScrol
     private int currentPage;
     private boolean loadedAll;
     private final int LOADED = 1;
+    private AsyncImageLoader1 imageLoader;
+    private WeakHashMap<Integer,View> mHashMap = new WeakHashMap<Integer, View>();
     /* Data Definition*/
     List<JSONObject> listItem;
+    private static final int STATUS_REFRESH=0;
+    private static final int STATUS_LOAD_MORE=1;
+    private static final int UPDATE_CATEGORY=2;
+
+    private PopupWindow mPopupWindow=null;
+    private LinearLayout ll_poplayout;
+    private GridView gv_category;
+    private CategoryAdapter mCategoryAdapter;
+    private List<String> categoryList;
+    private RequestQueue mRequestQueue;
+    private List<Article> articleList = new ArrayList<Article>();
     private AdapterView.OnItemClickListener itemSelectListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            Log.i("onItemClick--->","onItemClick");
             try {
 
                 JSONObject item = listItem.get(i);
@@ -88,14 +122,25 @@ public class ElementListFragment extends Fragment implements AbsListView.OnScrol
 
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
+
             if (msg.what == LOADED) {
 
                 if (loading.isShowing()) {
                     loading.dismiss();
                 }
-
+                listView.setPullLoadEnable(true);
                 homeItemsAdapter.notifyDataSetChanged();
+            }else if (msg.what==UPDATE_CATEGORY){
+                mCategoryAdapter.setList(categoryList);
             }
+            if (loadedAll) listView.setPullLoadEnable(false);
+            int status=msg.arg1;
+            if (status==STATUS_REFRESH){
+                listView.stopRefresh();
+            }else {
+                listView.stopLoadMore();
+            }
+            homeItemsAdapter.notifyDataSetChanged();
         }
     };
 
@@ -132,7 +177,7 @@ public class ElementListFragment extends Fragment implements AbsListView.OnScrol
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.element_list_fragment, container, false);
-        listView = (ListView) view.findViewById(R.id.homeItemList);
+        listView = (XListView) view.findViewById(R.id.homeItemList);
 
         String url = getArguments().getString("targetUrl");
         String type = getArguments().getString("type");
@@ -145,10 +190,10 @@ public class ElementListFragment extends Fragment implements AbsListView.OnScrol
 
         /* TODO 渣，要改 */
         if (type != null) {
-            if (type.equals("1")) {
+            if (type.equals(ZhaiDou.ListType.HOME+"")) {
                 listType = ZhaiDou.ListType.HOME;
-                targetUrl = targetUrl + "?page={0}";
-            } else if (type.equals("2")) {
+                targetUrl = targetUrl + "&page={0}";
+            } else if (type.equals(ZhaiDou.ListType.TAG+"")) {
                 listType = ZhaiDou.ListType.TAG;
                 targetUrl = targetUrl + "&page={0}";
             }
@@ -160,35 +205,99 @@ public class ElementListFragment extends Fragment implements AbsListView.OnScrol
 
         loadedAll = false;
 
+        mRequestQueue = Volley.newRequestQueue(getActivity());
         listItem = new ArrayList<JSONObject>();
         homeItemsAdapter = new ImageAdapter(getActivity());
         listView.setAdapter(homeItemsAdapter);
         listView.setOnItemClickListener(itemSelectListener);
-        listView.setOnScrollListener(this);
-        loadMoreData();
+        listView.setPullLoadEnable(false);
+//        listView.setOnScrollListener(this);
+        listView.setXListViewListener(this);
+
+        loadMoreData(STATUS_REFRESH);
         loading = ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
 
+        setUpPopView();
+//        FetchData();
         return view;
-    }
-    @Override
-    public void onScrollStateChanged(AbsListView absListView, int state) {
-        if (state == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && lastVisibleIndex == homeItemsAdapter.getCount()) {
-//            loading.show();
-            loadMoreData();
-        }
     }
 
     @Override
-    public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        lastVisibleIndex = firstVisibleItem + visibleItemCount;
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        if (listType.equals(ZhaiDou.ListType.HOME)){
+            initTopBarForBoth("每日精选功能美物",R.drawable.icon_category,R.drawable.icon_search,this,this);
+        }else {
+            findViewById(R.id.common_actionbar).setVisibility(View.GONE);
+        }
+        super.onActivityCreated(savedInstanceState);
     }
+
+    private void setUpPopView(){
+        mPopupWindow = new PopupWindow(getActivity());
+        View view = getActivity().getLayoutInflater().inflate(R.layout.item_popupwindows, null);
+
+        ll_poplayout = (LinearLayout) view.findViewById(R.id.ll_popup);
+
+        gv_category = (GridView)view.findViewById(R.id.gv_category);
+        categoryList=new ArrayList<String>();
+        mCategoryAdapter=new CategoryAdapter(getActivity(),categoryList);
+        gv_category.setAdapter(mCategoryAdapter);
+        mPopupWindow.setWidth(LinearLayout.LayoutParams.MATCH_PARENT);
+        mPopupWindow.setHeight(LinearLayout.LayoutParams.WRAP_CONTENT);
+        mPopupWindow.setBackgroundDrawable(new BitmapDrawable());
+
+        mPopupWindow.setOutsideTouchable(true);
+        mPopupWindow.setContentView(view);
+        gv_category.setOnItemClickListener(new GridView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                System.out.print("--------------------->onItemClick");
+                ShowLog(categoryList.get(position));
+                mPopupWindow.dismiss();
+            }
+        });
+
+        mCategoryAdapter.setOnInViewClickListener(R.id.tv_category_item,new BaseListAdapter.onInternalClickListener() {
+            @Override
+            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                ShowLog("OnClickListener");
+                ShowLog(categoryList.get(position));
+            }
+        });
+    }
+    @Override
+    public void onRefresh() {
+        Log.i("onRefresh","onRefresh------------------->");
+        currentPage=1;
+//        homeItemsAdapter.clear();
+        loadMoreData(STATUS_REFRESH);
+    }
+
+    @Override
+    public void onLoadMore() {
+        Log.i("onLoadMore","onLoadMore------------------->");
+        loadMoreData(STATUS_LOAD_MORE);
+    }
+
+//    @Override
+//    public void onScrollStateChanged(AbsListView absListView, int state) {
+//        if (state == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && lastVisibleIndex == homeItemsAdapter.getCount()) {
+////            loading.show();
+//            loadMoreData();
+//        }
+//    }
+
+//    @Override
+//    public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+//        lastVisibleIndex = firstVisibleItem + visibleItemCount;
+//    }
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
     }
-    private void loadMoreData() {
+    private void loadMoreData(final int status) {
         new Thread() {
             public void run() {
                 if (loadedAll) {
@@ -197,17 +306,20 @@ public class ElementListFragment extends Fragment implements AbsListView.OnScrol
                 }
                 try {
                     String requestUrl = MessageFormat.format(targetUrl, currentPage);
-                    Log.d(DEBUG_CAT, "-------> 加载url: " + requestUrl);
                     java.net.URL url = new URL(requestUrl);
                     String jsonContent = HtmlFetcher.fetch(url);
+//                    Log.d(DEBUG_CAT, "-------> 加载jsonContent: " + jsonContent);
                     try {
                         JSONObject root = new JSONObject(jsonContent);
                         JSONArray items = root.getJSONArray("posts");
+                        Log.i("items",items.length()+"");
+                        if (currentPage==1) listItem.clear();
                         for (int i = 0; i < items.length(); i++) {
                             listItem.add(items.getJSONObject(i));
                         }
                         Message msg = new Message();
                         msg.what = LOADED;
+                        msg.arg1=status;
                         handler.sendMessage(msg);
                         currentPage++;
                         int count = Integer.valueOf(root.get("count").toString());
@@ -264,9 +376,12 @@ public class ElementListFragment extends Fragment implements AbsListView.OnScrol
         public ImageAdapter(Context context) {
             imageDownloader.setMode(ImageDownloader.Mode.CORRECT);
             this.inflater = LayoutInflater.from(context);
+            imageLoader =new AsyncImageLoader1(context);
         }
 
-
+public void clear(){
+    listItem.clear();
+}
         public int getCount() {
             return listItem.size();
         }
@@ -280,6 +395,7 @@ public class ElementListFragment extends Fragment implements AbsListView.OnScrol
         }
 
         public View getView(int position, View view, ViewGroup parent) {
+            view = mHashMap.get(position);
             if (view == null) {
                 view = inflater.inflate(R.layout.home_item_list, null);//new ImageView(parent.getContext());
             }
@@ -294,15 +410,99 @@ public class ElementListFragment extends Fragment implements AbsListView.OnScrol
                 JSONObject customFields = item.getJSONObject("custom_fields");
                 articleViews.setText(customFields.getJSONArray("views").get(0).toString());
                 imageDownloader.download(item.get("thumbnail").toString(), cover);
+                imageLoader.LoadImage(item.get("thumbnail").toString(),cover);
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
+mHashMap.put(position,view);
             return view;
         }
-
         public ImageDownloader getImageDownloader() {
             return imageDownloader;
         }
     }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.header_ib_rightbutton:
+                startAnimActivity(SearchActivity.class);
+                break;
+            case R.id.header_ib_leftbutton:
+                mPopupWindow.showAtLocation(getView(), Gravity.TOP, 0, 220);
+                mPopupWindow.setFocusable(true);
+                gv_category.setFocusable(true);
+                runOnWorkThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try {
+                            java.net.URL url = new URL(ZhaiDou.INDEX_CATEGORY_FILTER);
+                            String json = HtmlFetcher.fetch(url);
+                            Log.d(DEBUG_CAT, "-------> INDEX_CATEGORY_FILTER: " + json);
+                            JSONObject root = new JSONObject(json);
+                            JSONArray categories = root.optJSONArray("article_categories");
+                            categoryList.clear();
+                            for (int i = 0; i < categories.length(); i++) {
+                                JSONObject item = categories.optJSONObject(i);
+                                ShowLog(item.optString("name"));
+                                categoryList.add(item.optString("name"));
+                            }
+                            handler.sendEmptyMessage(UPDATE_CATEGORY);
+                        } catch (Exception ex) {
+                            Log.e("Debug Info", ex.getMessage());
+                        }
+                    }
+                });
+                break;
+        }
+    }
+
+    public class CategoryAdapter extends BaseListAdapter<String> {
+        public CategoryAdapter(Context context, List<String> list) {
+            super(context, list);
+        }
+
+        @Override
+        public View bindView(int position, View convertView, ViewGroup parent) {
+            if (convertView==null)
+                convertView=mInflater.inflate(R.layout.category_item_gv,null);
+            TextView tv_item = ViewHolder.get(convertView, R.id.tv_category_item);
+            String item = getList().get(position);
+            tv_item.setText(item);
+
+            return convertView;
+        }
+    }
+
+    private void FetchData(){
+
+        String url="http://192.168.1.45/article/api/articles";
+        JsonObjectRequest jr = new JsonObjectRequest(url,null,new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.i("FetchData",response.toString());
+                JSONArray articles = response.optJSONArray("articles");
+                for (int i=0;i<articles.length();i++){
+                    JSONObject article =articles.optJSONObject(i);
+                    int id =article.optInt("id");
+                    String title=article.optString("title");
+                    String img_url=article.optString("img_url");
+                    String is_new=article.optString("is_new");
+                    int reviews = article.optInt("reviews");
+                    Article item =new Article(id,title,img_url,is_new,reviews);
+                    articleList.add(item);
+                }
+            }
+        },new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.i("FetchData",error.getMessage());
+            }
+        });
+        mRequestQueue.add(jr);
+    }
+
+
 }

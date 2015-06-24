@@ -21,8 +21,8 @@ public class WebViewActivity extends Activity {
         setContentView(R.layout.activity_web_view);
 
         // Set Icon
-        getActionBar().setIcon(R.drawable.buy_close);
-        getActionBar().setHomeButtonEnabled(true);
+//        getActionBar().setIcon(R.drawable.buy_close);
+//        getActionBar().setHomeButtonEnabled(true);
 
         webView = (WebView) findViewById(R.id.webView);
 

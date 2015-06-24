@@ -6,6 +6,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -22,12 +23,13 @@ import android.widget.Button;
 
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class StrategyFragment extends Fragment {
+public class StrategyFragment extends BaseFragment {
 
     public class CustomWebView extends WebView {
 
@@ -150,6 +152,7 @@ public class StrategyFragment extends Fragment {
                         lastButton = livingRoomButton;
                         break;
                     }
+
                     case 1: {
                         lastButton = entirePartButton;
                         break;
@@ -216,6 +219,12 @@ public class StrategyFragment extends Fragment {
         loading = ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
         return view;
         */
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        initTopBarForOnlyTitle("专业家居美化方案");
+        super.onActivityCreated(savedInstanceState);
     }
 
     public void onButtonPressed(Uri uri) {

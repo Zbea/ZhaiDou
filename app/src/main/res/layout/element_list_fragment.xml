@@ -6,14 +6,17 @@
     android:id="@+id/home_layout"
     >
 
-    <ListView
+    <include
+        android:id="@+id/common_actionbar"
+        layout="@layout/include_action_bar"/>
+    <com.zhaidou.view.XListView
         android:id="@+id/homeItemList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:drawSelectorOnTop="false"
         android:divider="@null"
-        android:dividerHeight="0dp"
-        >
-    </ListView>
+        android:listSelector="@android:color/transparent"
+        android:dividerHeight="0dp">
+    </com.zhaidou.view.XListView>
 
 </LinearLayout>

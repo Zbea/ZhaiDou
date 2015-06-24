@@ -11,11 +11,12 @@ import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import com.zhaidou.R;
 import com.zhaidou.activities.WebViewActivity;
 
-public class WebViewFragment extends Fragment {
+public class WebViewFragment extends Fragment implements View.OnClickListener{
 
     private WebView webView;
     private String url;
@@ -46,15 +47,19 @@ public class WebViewFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.whole_projects, container, false);
 
+        view.findViewById(R.id.rl_back).setOnClickListener(this);
         webView = (WebView) view.findViewById(R.id.strategyView);
         webView.setWebViewClient(new WebViewClient() {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                Intent intent = new Intent();
-                intent.putExtra("url", url);
-                intent.setClass(getActivity(), WebViewActivity.class);
-                getActivity().startActivity(intent);
+//                Intent intent = new Intent();
+//                intent.putExtra("url", url);
+//                intent.setClass(getActivity(), WebViewActivity.class);
+//                getActivity().startActivity(intent);
+                Toast.makeText(getActivity(),url,1).show();
+                WebViewFragment webViewFragment=WebViewFragment.newInstance(url);
+                ((PersonalMainFragment)getParentFragment()).addToStack(webViewFragment);
                 return true;
             }
 //
@@ -112,4 +117,13 @@ public class WebViewFragment extends Fragment {
         public void onFragmentInteraction(Uri uri);
     }
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.rl_back:
+                ((PersonalMainFragment)getParentFragment()).popToStack();
+                ((PersonalMainFragment)getParentFragment()).popToStack();
+                break;
+        }
+    }
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_height="wrap_content">
+        <CheckedTextView
+            android:id="@+id/ct_text"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:text="@string/search_history_clear"
+            android:background="@color/white"
+            android:textColor="@drawable/sort_selector"
+            android:checkMark="@drawable/search_sort_selector"
+            />
+    </RelativeLayout>
+</LinearLayout>

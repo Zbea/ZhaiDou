@@ -1,36 +1,66 @@
 package com.zhaidou.activities;
 
-import android.app.Activity;
+import android.net.Uri;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
+import android.view.Gravity;
+
 import com.zhaidou.R;
+import com.zhaidou.fragments.ContainerFragment;
+import com.zhaidou.fragments.DiyCategoryFragment;
+import com.zhaidou.fragments.DiyDetailFragment;
+import com.zhaidou.fragments.DrawerFragment;
 
-public class DiyActivity extends Activity {
+public class DiyActivity extends FragmentActivity implements ContainerFragment.OnFragmentInteractionListener,
+        DrawerFragment.OnFragmentInteractionListener,DiyCategoryFragment.OnFragmentInteractionListener,
+        DiyDetailFragment.OnFragmentInteractionListener{
 
+    private DrawerLayout mDrawerLayout;
+    private ContainerFragment mContainerFragment;
+    private DrawerFragment mDrawerFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_diy);
-    }
+        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer);
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.diy, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        if (mContainerFragment==null){
+            mContainerFragment=ContainerFragment.newInstance("container","container");
+            getSupportFragmentManager().beginTransaction().replace(R.id.contentFrame,mContainerFragment,
+                    ContainerFragment.TAG).commit();
         }
-        return super.onOptionsItemSelected(item);
+        initDrawerLayout();
+
+    }
+    private void initDrawerLayout() {
+        if (mDrawerFragment==null){
+            mDrawerFragment=DrawerFragment.newInstance("drawer","drawer");
+            getSupportFragmentManager().beginTransaction().replace(R.id.right_drawer,mDrawerFragment,
+                    DrawerFragment.TAG).commit();
+        }
+    }
+
+    public void openDrawer(){
+        mDrawerLayout.openDrawer(Gravity.RIGHT);
+    }
+    public void addToStack(Fragment fragment){
+        FragmentTransaction transaction =getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.right_drawer,fragment,fragment.getClass().getSimpleName());
+        transaction.addToBackStack(fragment.getClass().getSimpleName());
+        transaction.commit();
+    }
+    public void popToStack(){
+        FragmentManager manager = getSupportFragmentManager();
+        manager.popBackStack();
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+        Log.i("onFragmentInteraction--->",uri.toString());
     }
 }
