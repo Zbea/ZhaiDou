@@ -28,7 +28,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.Volley;
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.model.User;
 
 import org.apache.http.HttpResponse;
@@ -120,6 +122,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
         mRequestQueue=Volley.newRequestQueue(getActivity());
         mRegister.setOnClickListener(this);
         mLogin.setOnClickListener(this);
+        view.findViewById(R.id.ll_back).setOnClickListener(this);
 
 
         return view;
@@ -132,8 +135,30 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
                 doRegister();
                 break;
             case R.id.tv_login:
+                if (getActivity()!=null&&getActivity() instanceof ItemDetailActivity){
+                    Log.i("R.id.ll_back:","getActivity()!=null&&getActivity() instanceof ItemDetailActivity");
+                    ((ItemDetailActivity)getActivity()).popToStack();
+                    return;
+                }else if (getActivity()!=null&&getActivity() instanceof MainActivity){
+                    Log.i("R.id.ll_back:","getActivity()!=null&&getActivity() instanceof MainActivity");
+                    ((MainActivity)getActivity()).popToStack(this);
+                    return;
+                }
                 PersonalMainFragment parent=(PersonalMainFragment)getParentFragment();
                 parent.popToStack();
+                break;
+            case R.id.ll_back:
+                if (getActivity()!=null&&getActivity() instanceof ItemDetailActivity){
+                    Log.i("R.id.ll_back:","getActivity()!=null&&getActivity() instanceof ItemDetailActivity");
+                    ((ItemDetailActivity)getActivity()).popToStack();
+                    return;
+                }else if (getActivity()!=null&&getActivity() instanceof MainActivity){
+                    Log.i("R.id.ll_back:","getActivity()!=null&&getActivity() instanceof MainActivity");
+                    ((MainActivity)getActivity()).popToStack(this);
+                    return;
+                }
+                ((PersonalMainFragment)getParentFragment()).popToStack();
+                ((PersonalMainFragment)getParentFragment()).toggleTabContainer();
                 break;
             default:
                 break;
@@ -200,7 +225,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
                 Log.i("nickname--->","nickname");
                 User user=new User(id,email,token,nickname,avatar);
                 Log.i("user------------>",user.toString());
-                mRegisterListener.onRegisterOrLoginSuccess(user);
+                mRegisterListener.onRegisterOrLoginSuccess(user,RegisterFragment.this);
                 Log.i("onRegisterOrLoginSuccess---->","onRegisterOrLoginSuccess");
             }catch (Exception e){
 
@@ -217,7 +242,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
 
 
             // 实例化HTTP方法
-            HttpPost request = new HttpPost("http://www.zhaidou.com/api/v1/users");
+            HttpPost request = new HttpPost("http://192.168.199.171/api/v1/users");
 
             // 创建名/值组列表
             List<NameValuePair> parameters = new ArrayList<NameValuePair>();
@@ -264,6 +289,6 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
     }
 
     public interface RegisterOrLoginListener{
-        public void onRegisterOrLoginSuccess(User user);
+        public void onRegisterOrLoginSuccess(User user,Fragment fragment);
     }
 }

@@ -33,6 +33,7 @@ public class User {
     private String birthday;
     private String description;
     private String mobile;
+    private boolean verified;
 
 
     public User() {
@@ -278,6 +279,14 @@ public class User {
         this.mobile = mobile;
     }
 
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
+    }
+
     public User(int id, String email, String create_at, String avatar, String nickName, String gender, String province, String city, int collocation_number) {
         this.id = id;
         this.email = email;
@@ -290,6 +299,14 @@ public class User {
         this.collocation_number = collocation_number;
     }
 
+    public User(String avatar, String email, String nickName, boolean verified, String mobile, String description) {
+        this.avatar = avatar;
+        this.email = email;
+        this.nickName = nickName;
+        this.verified = verified;
+        this.mobile = mobile;
+        this.description = description;
+    }
 
     @Override
     public String toString() {

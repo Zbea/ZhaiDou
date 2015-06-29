@@ -115,6 +115,7 @@
         </LinearLayout>
         <LinearLayout
             android:id="@+id/ll_bbs_question"
+            android:visibility="gone"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="10dp"
             android:layout_width="match_parent"
@@ -144,6 +145,7 @@
                 android:paddingRight="10dp"/>
         </LinearLayout>
         <LinearLayout
+            android:layout_marginTop="10dp"
             android:id="@+id/ll_collocation"
             android:layout_width="match_parent"
             android:background="@color/white"
@@ -209,6 +211,7 @@
             android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:background="@color/white"
+            android:visibility="gone"
             android:layout_height="40dp">
             <ImageView
                 android:layout_width="20dp"

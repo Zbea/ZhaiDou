@@ -2,15 +2,25 @@ package com.zhaidou.fragments;
 
 
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.model.User;
+
+import org.json.JSONObject;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -18,7 +28,7 @@ import com.zhaidou.R;
  * create an instance of this fragment.
  *
  */
-public class SettingFragment extends Fragment implements View.OnClickListener{
+public class SettingFragment extends Fragment implements View.OnClickListener,ProfileFragment.ProfileListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -30,9 +40,9 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
 
     ProfileFragment mProfileFragment;
 
-
-
-
+    SharedPreferences mSharedPreferences;
+    RequestQueue requestQueue;
+    private ProfileListener profileListener;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -78,6 +88,9 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
         view.findViewById(R.id.ll_award_history).setOnClickListener(this);
         view.findViewById(R.id.ll_score).setOnClickListener(this);
         view.findViewById(R.id.ll_about).setOnClickListener(this);
+        view.findViewById(R.id.bt_logout).setOnClickListener(this);
+        mSharedPreferences=getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
+        requestQueue = Volley.newRequestQueue(getActivity());
         return view;
     }
 
@@ -85,22 +98,77 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.rl_back:
-                ((PersonalMainFragment)getParentFragment()).popToStack();
+//                ((PersonalMainFragment)getParentFragment()).popToStack();
+                ((MainActivity)getActivity()).popToStack(SettingFragment.this);
                 break;
             case R.id.ll_profile:
                 mProfileFragment=ProfileFragment.newInstance("","");
-                ((PersonalMainFragment)getParentFragment()).addToStack(mProfileFragment);
+                mProfileFragment.setProfileListener(this);
+//                ((PersonalMainFragment)getParentFragment()).addToStack(mProfileFragment);
+                ((MainActivity)getActivity()).navigationToFragment(mProfileFragment);
                 break;
             case R.id.ll_competition:
                 WebViewFragment webViewFragment=WebViewFragment.newInstance("http://www.zhaidou.com/competitions/current?zdclient=ios");
-                ((PersonalMainFragment)getParentFragment()).addToStack(webViewFragment);
+//                ((PersonalMainFragment)getParentFragment()).addToStack(webViewFragment);
+                ((MainActivity)getActivity()).navigationToFragment(webViewFragment);
+                break;
+            case R.id.ll_bbs_question:
+                break;
+            case R.id.ll_collocation:
+                ImageBgFragment fragment= ImageBgFragment.newInstance("豆搭教程",R.drawable.bg_collocation);
+//                ((PersonalMainFragment)getParentFragment()).addToStack(fragment);
+                ((MainActivity)getActivity()).navigationToFragment(fragment);
+                break;
+            case R.id.ll_add_v:
+                ImageBgFragment addVFragment= ImageBgFragment.newInstance("如何加V",R.drawable.add_v);
+//                ((PersonalMainFragment)getParentFragment()).addToStack(addVFragment);
+                ((MainActivity)getActivity()).navigationToFragment(addVFragment);
+                break;
+            case R.id.ll_award_history:
+                break;
+            case R.id.ll_score:
                 break;
             case R.id.ll_about:
                 AboutFragment aboutFragment = AboutFragment.newInstance("","");
-                ((PersonalMainFragment)getParentFragment()).addToStack(aboutFragment);
+//                ((PersonalMainFragment)getParentFragment()).addToStack(aboutFragment);
+                ((MainActivity)getActivity()).navigationToFragment(aboutFragment);
+                break;
+            case R.id.bt_logout:
+                logout();
                 break;
             default:
                 break;
         }
+    }
+
+    public void logout(){
+
+        JsonObjectRequest request=new JsonObjectRequest("http://192.168.199.171/api/v1/"+mSharedPreferences.getString("token","")+"/logout"
+         ,new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                Log.i("SettingFragment---->",jsonObject.toString());
+            }
+        },new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        });
+        requestQueue.add(request);
+    }
+
+    @Override
+    public void onProfileChange(User user) {
+        Log.i("SettingFragment--->","onProfileChange");
+        profileListener.onProfileChange(user);
+    }
+
+    public void setProfileListener(ProfileListener profileListener) {
+        this.profileListener = profileListener;
+    }
+
+    public interface ProfileListener{
+        public void onProfileChange(User user);
     }
 }

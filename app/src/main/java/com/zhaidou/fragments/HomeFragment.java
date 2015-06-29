@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -25,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +36,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.pulltorefresh.PullToRefreshBase;
+import com.pulltorefresh.PullToRefreshScrollView;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
@@ -85,7 +89,8 @@ public class HomeFragment extends Fragment implements
                                          ImageSwitchWall.OnItemClickListener,
                                          SwipeRefreshLayout.OnLoadListener,SwipeRefreshLayout.OnRefreshListener,
                                          HomeCategoryFragment.CategorySelectedListener,
-                                         AdapterView.OnItemClickListener,View.OnClickListener{
+                                         AdapterView.OnItemClickListener,View.OnClickListener,
+                                         PullToRefreshBase.OnRefreshListener2<ScrollView>{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String URL = "targetUrl";
@@ -98,6 +103,8 @@ public class HomeFragment extends Fragment implements
     /* pagination */
     private String targetUrl;
     private int currentPage=1;
+    private int count=-1;
+
     private boolean loadedAll = false;
     private final int LOADED = 1;
     private AsyncImageLoader1 imageLoader;
@@ -125,7 +132,9 @@ public class HomeFragment extends Fragment implements
     private ImageSwitchWall imageSwitchWall;
     private HomeCategoryFragment homeCategoryFragment;
     private Category mCategory;
-    SwipeRefreshLayout mSwipeLayout;
+//    SwipeRefreshLayout mSwipeLayout;
+
+    private PullToRefreshScrollView mScrollView;
     private AdapterView.OnItemClickListener itemSelectListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -169,13 +178,15 @@ public class HomeFragment extends Fragment implements
             }else if (msg.what==UPDATE_HOMELIST){
                 Log.i("UPDATE_HOMELIST---------->",articleList.size()+"");
                 mHomeAdapter.setList(articleList);
-                mSwipeLayout.setLoading(false);
-                mSwipeLayout.setRefreshing(false);
+                mScrollView.onRefreshComplete();
+//                mSwipeLayout.setLoading(false);
+//                mSwipeLayout.setRefreshing(false);
 //                loading.dismiss();
             }else if (msg.what==UPDATE_BANNER){
                 List<SwitchImage> banners =(List<SwitchImage>) msg.obj;
                 imageSwitchWall.setDatas(banners);
             }
+            mHomeAdapter.notifyDataSetChanged();
         }
     };
 
@@ -209,16 +220,21 @@ public class HomeFragment extends Fragment implements
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         listView = (ListViewForScrollView) view.findViewById(R.id.homeItemList);
         fl_category_menu=(FrameLayout)view.findViewById(R.id.fl_category_menu);
-        mSwipeLayout=(SwipeRefreshLayout)view.findViewById(R.id.refresh_layout);
+        mScrollView=(PullToRefreshScrollView)view.findViewById(R.id.scrollview);
+
+        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+        mScrollView.setOnRefreshListener(this);
+
+//        mSwipeLayout=(SwipeRefreshLayout)view.findViewById(R.id.refresh_layout);
 
 
-        mSwipeLayout.setOnRefreshListener(this);
-        mSwipeLayout.setOnLoadListener(this);
-        mSwipeLayout.setColor(R.color.holo_blue_bright,
-                R.color.holo_green_light,
-                R.color.holo_orange_light,
-                R.color.holo_red_light);
-        mSwipeLayout.setMode(SwipeRefreshLayout.Mode.BOTH);
+//        mSwipeLayout.setOnRefreshListener(this);
+//        mSwipeLayout.setOnLoadListener(this);
+//        mSwipeLayout.setColor(R.color.holo_blue_bright,
+//                R.color.holo_green_light,
+//                R.color.holo_orange_light,
+//                R.color.holo_red_light);
+//        mSwipeLayout.setMode(SwipeRefreshLayout.Mode.BOTH);
 
         mSearchView=(ImageView)view.findViewById(R.id.iv_search);
         mSearchView.setOnClickListener(this);
@@ -389,7 +405,8 @@ public class HomeFragment extends Fragment implements
     }
 
     private void FetchData(int page,Category category){
-        Log.i("FetchData------------------>","FetchData");
+        Log.i("FetchData------------------>","FetchData--->"+page);
+        currentPage=page;
 
         if (page==1) {
             articleList.clear();
@@ -398,16 +415,17 @@ public class HomeFragment extends Fragment implements
 
         if (loadedAll){
             Toast.makeText(getActivity(),"已经加载完毕了哦！！！",Toast.LENGTH_SHORT).show();
-            mSwipeLayout.setLoading(false);
+//            mSwipeLayout.setLoading(false);
+            mScrollView.onRefreshComplete();
             return;
         }
 
         String categoryId=(category==null?"":category.getId()+"");
         String url;
         if (category==null){
-            url="http://192.168.1.45/article/api/articles?catetory_id";
+            url="http://192.168.199.171/article/api/articles?page="+page+"&catetory_id";
         }else {
-            url="http://192.168.1.45/article/api/articles?catetory_id="+categoryId;
+            url="http://192.168.199.171/article/api/articles?page"+page+"&catetory_id="+categoryId;
         }
         Log.i("categoryId------------>",categoryId);
 
@@ -418,9 +436,11 @@ public class HomeFragment extends Fragment implements
             public void onResponse(JSONObject response) {
                 Log.i("FetchData--->data---->",response.toString());
                 JSONArray articles = response.optJSONArray("articles");
+                JSONObject meta = response.optJSONObject("meta");
+                count=meta==null?0:meta.optInt("count");
                 if (articles==null||articles.length()<=0){
-                    articleList.clear();
-                    handler.sendEmptyMessage(UPDATE_HOMELIST);
+//                    articleList.clear();
+//                    handler.sendEmptyMessage(UPDATE_HOMELIST);
                     return;
                 }
                 for (int i=0;i<articles.length();i++){
@@ -434,11 +454,11 @@ public class HomeFragment extends Fragment implements
                     articleList.add(item);
                 }
 
-                JSONObject meta = response.optJSONObject("meta");
-                int count = meta.optInt("count");
-                int page = meta.optInt("page");
-                int size = meta.optInt("size");
-                loadedAll = count<size;
+//                JSONObject meta = response.optJSONObject("meta");
+//                int count = meta.optInt("count");
+//                int page = meta.optInt("page");
+//                int size = meta.optInt("size");
+//                loadedAll = count<size;
 
                 Message message = new Message();
                 message.what=UPDATE_HOMELIST;
@@ -451,66 +471,7 @@ public class HomeFragment extends Fragment implements
                 Log.i("onErrorResponse------->",error.getMessage());
             }
         });
-//        mRequestQueue.add(jr);
-//        String json =getResources().getString(R.string.index_json);
-//
-//        json="{\n" +
-//                "    \"articles\": [\n" +
-//                "        {\n" +
-//                "            \"id\": 27,\n" +
-//                "            \"title\": \"ksdfkldfnklfsd\",\n" +
-//                "            \"img_url\": \"http://192.168.1.45/uploads/article/article/asset_img/27/thumb_f3ccdd27d2000e3f9255a7e3e2c48800.jpg\",\n" +
-//                "            \"is_new\": true,\n" +
-//                "            \"reviews\": 15\n" +
-//                "        },\n" +
-//                "        {\n" +
-//                "            \"id\": 25,\n" +
-//                "            \"title\": \"大标题\",\n" +
-//                "            \"img_url\": \"http://192.168.1.45/uploads/article/article/asset_img/25/thumb_cfe26cf4ffd2f1c8da6e03ab84664b39.jpg\",\n" +
-//                "            \"is_new\": false,\n" +
-//                "            \"reviews\": 125\n" +
-//                "        },\n" +
-//                "        {\n" +
-//                "            \"id\": 28,\n" +
-//                "            \"title\": \"来了来了\",\n" +
-//                "            \"img_url\": \"http://192.168.1.45/uploads/article/article/asset_img/28/thumb_20b5bc025ce3c0d694f5641a5c359752.jpg\",\n" +
-//                "            \"is_new\": false,\n" +
-//                "            \"reviews\": 15\n" +
-//                "        },\n" +
-//                "        {\n" +
-//                "            \"id\": 29,\n" +
-//                "            \"title\": \"多几个字看看有什么效果效果怎么样么样\",\n" +
-//                "            \"img_url\": \"http://192.168.1.45/uploads/article/article/asset_img/29/thumb_1851084340d47692d0e49bebcd8197d6.png\",\n" +
-//                "            \"is_new\": false,\n" +
-//                "            \"reviews\": 2233\n" +
-//                "        },\n" +
-//                "        {\n" +
-//                "            \"id\": 24,\n" +
-//                "            \"title\": \"文章标题\",\n" +
-//                "            \"img_url\": \"http://192.168.1.45/uploads/article/article/asset_img/24/thumb_cfe26cf4ffd2f1c8da6e03ab84664b39.jpg\",\n" +
-//                "            \"is_new\": false,\n" +
-//                "            \"reviews\": 12\n" +
-//                "        }\n" +
-//                "    ]\n" +
-//                "}";
-//        try {
-//            JSONObject object=new JSONObject(json);
-//            JSONArray articles = object.optJSONArray("articles");
-//            for (int i=0;i<articles.length();i++){
-//                JSONObject article =articles.optJSONObject(i);
-//                int id =article.optInt("id");
-//                String title=article.optString("title");
-//                String img_url=article.optString("img_url");
-//                String is_new=article.optString("is_new");
-//                int reviews = article.optInt("reviews");
-//                Article item =new Article(id,title,img_url,is_new,reviews);
-//                articleList.add(item);
-//            }
-//            Log.i("FetchData()--------------------->","FetchData");
-//            handler.sendEmptyMessage(UPDATE_HOMELIST);
-//        }catch (Exception e){
-//            Log.d("Exception",e.getMessage());
-//        }
+        mRequestQueue.add(jr);
     }
 
     public class HomeAdapter extends BaseListAdapter<Article> {
@@ -581,7 +542,7 @@ public class HomeFragment extends Fragment implements
     }
 
     private void getBannerData(){
-        String url="http://192.168.1.45/article/api/article_categories/index_code?code=zt001";
+        String url="http://192.168.199.171/article/api/article_categories/index_code?code=zt001";
         final List<SwitchImage> banners = new ArrayList<SwitchImage>();
         JsonObjectRequest bannerRequest = new JsonObjectRequest(url,new Response.Listener<JSONObject>(){
             @Override
@@ -625,9 +586,30 @@ public class HomeFragment extends Fragment implements
         detailIntent.putExtra("id", article.getId()+"");
         detailIntent.putExtra("title", article.getTitle());
         detailIntent.putExtra("cover_url", article.getImg_url());
-        detailIntent.putExtra("url","http://192.168.1.45/article/articles/"+article.getId());
+        detailIntent.putExtra("url","http://192.168.199.171/article/articles/"+article.getId());
         startActivity(detailIntent);
     }
 
+    @Override
+    public void onPullDownToRefresh(PullToRefreshBase<ScrollView> refreshView) {
+        String label = DateUtils.formatDateTime(getActivity(), System.currentTimeMillis(),
+                DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
+        refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
+        Log.i("onPullDownToRefresh--->","onPullDownToRefresh");
+        getBannerData();
+        FetchData(currentPage = 1, mCategory);
+        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+    }
 
+    @Override
+    public void onPullUpToRefresh(PullToRefreshBase<ScrollView> refreshView) {
+        Log.i("onPullUpToRefresh---->","onPullUpToRefresh");
+        if (count!=-1&&mHomeAdapter.getCount()==count){
+            Toast.makeText(getActivity(),"已经加载完毕",Toast.LENGTH_SHORT).show();
+            mScrollView.onRefreshComplete();
+            mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+            return;
+        }
+        FetchData(++currentPage, mCategory);
+    }
 }

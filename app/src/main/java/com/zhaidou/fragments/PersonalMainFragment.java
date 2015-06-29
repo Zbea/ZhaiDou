@@ -89,8 +89,6 @@ public class PersonalMainFragment extends Fragment implements View.OnClickListen
 
         token=mSharedPreferences.getString("token", null);
         id=mSharedPreferences.getInt("userId",-1);
-        Toast.makeText(getActivity(),"id--------------------->"+id,0).show();
-        Toast.makeText(getActivity(),"token--------------------->"+token,0).show();
 
         if (TextUtils.isEmpty(token)){
             Toast.makeText(getActivity(),"VISIBLE",0).show();
@@ -164,7 +162,7 @@ public class PersonalMainFragment extends Fragment implements View.OnClickListen
     }
 
     @Override
-    public void onRegisterOrLoginSuccess(User user) {
+    public void onRegisterOrLoginSuccess(User user,Fragment fragment) {
         Log.i("onRegisterOrLoginSuccess--->user-------->",user.toString());
         saveUserToSP(user);
         FragmentManager manager = getChildFragmentManager();

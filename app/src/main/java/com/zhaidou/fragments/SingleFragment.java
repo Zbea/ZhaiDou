@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -24,6 +26,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.Volley;
+import com.pulltorefresh.PullToRefreshBase;
+import com.pulltorefresh.PullToRefreshGridView;
 import com.zhaidou.R;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseListAdapter;
@@ -48,7 +52,7 @@ import java.util.WeakHashMap;
  * create an instance of this fragment.
  *
  */
-public class SingleFragment extends Fragment {
+public class SingleFragment extends Fragment implements PullToRefreshBase.OnRefreshListener2<GridView>{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -60,9 +64,13 @@ public class SingleFragment extends Fragment {
     private String mParam2;
     private int id=-1;
 
+    private int currentpage=1;
+    private int count=-1;
+    private int sort=0;
+
     private ImageView iv_heart;
     private TextView tv_money,tv_count,tv_detail;
-    private GridView gv_single;
+    private PullToRefreshGridView gv_single;
 
     private List<Product> products = new ArrayList<Product>();
     private RequestQueue mRequestQueue;
@@ -75,8 +83,8 @@ public class SingleFragment extends Fragment {
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
-            Log.i("handleMessage----->","handleMessage");
           singleAdapter.setList(products);
+          gv_single.onRefreshComplete();
         }
     };
 
@@ -91,7 +99,6 @@ public class SingleFragment extends Fragment {
      */
     // TODO: Rename and change types and number of parameters
     public static SingleFragment newInstance(String param1, String from) {
-        Log.i("SingleFragment----------->","newInstance");
         SingleFragment fragment = new SingleFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
@@ -126,26 +133,25 @@ public class SingleFragment extends Fragment {
         tv_count=(TextView)view.findViewById(R.id.tv_count);
 //        tv_detail=(TextView)view.findViewById(R.id.tv_detail);
         tv_money=(TextView)view.findViewById(R.id.tv_money);
-        gv_single=(GridView)view.findViewById(R.id.gv_single);
+        gv_single=(PullToRefreshGridView)view.findViewById(R.id.gv_single);
         singleAdapter = new SingleAdapter(getActivity(),products);
         gv_single.setAdapter(singleAdapter);
         mRequestQueue= Volley.newRequestQueue(getActivity());
         Log.i("mParam2----------->",mParam2);
         if ("category".equalsIgnoreCase(mParam2)){
 
-            FetchCategoryData(mParam1, 0, 1);
+            FetchCategoryData(mParam1, 0, currentpage);
         }else {
-            FetchData(mParam1,0,1);
+            FetchData(mParam1,0,currentpage);
         }
 //        FetchData(mParam1,0,1);
 
+        gv_single.setMode(PullToRefreshBase.Mode.BOTH);
+        gv_single.setOnRefreshListener(this);
         singleAdapter.setOnInViewClickListener(R.id.ll_single_layout,new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                Log.i("position-------------->",position+"");
-                Log.i("values----------------->", values.toString());
                 Product product=(Product)values;
-                Log.i("url-------------->",product.getUrl());
                 Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
                 detailIntent.putExtra("id", product.getId()+"");
                 detailIntent.putExtra("title", product.getTitle());
@@ -158,6 +164,8 @@ public class SingleFragment extends Fragment {
     }
 
     public void FetchData(String msg,int sort,int page){
+        this.sort=sort;
+        currentpage=page;
         if (page==1) products.clear();
         Map<String, String> params = new HashMap<String, String>();
         params.put("price", "desc");
@@ -173,13 +181,16 @@ public class SingleFragment extends Fragment {
         }
 
         JsonObjectRequest newMissRequest = new JsonObjectRequest(
-                Request.Method.POST, "http://192.168.1.45/article/api/article_items/search",
+                Request.Method.POST, "http://192.168.199.171/article/api/article_items/search",
                 new JSONObject(params), new Response.Listener<JSONObject>() {
 
             @Override
             public void onResponse(JSONObject json) {
-                Log.i("onResponse",json.toString());
+                Log.i("http://192.168.199.171/article/api/article_items/search",json.toString());
                 JSONArray items = json.optJSONArray("article_items");
+                JSONObject meta = json.optJSONObject("meta");
+
+                count=meta==null?0:meta.optInt("count");
                 if (items==null) return;
                 for (int i=0;i<items.length();i++){
 
@@ -190,12 +201,15 @@ public class SingleFragment extends Fragment {
                     String url=item.optString("url");
                     int bean_like_count=item.optInt("bean_likes_count");
                     JSONArray array = item.optJSONArray("asset_imgs");
-                    JSONArray array1 = array.optJSONArray(0);
-                    JSONObject object =  array1.optJSONObject(1);
-                    JSONObject picObj= object.optJSONObject("picture");
-                    JSONObject thumbObj =picObj.optJSONObject("thumb");
-                    String image =thumbObj.optString("url");
-                    Log.i("image",image);
+                    String image=null;
+                    if (array.length()>0){
+                        JSONArray array1 = array.optJSONArray(0);
+                        JSONObject object =  array1.optJSONObject(1);
+                        JSONObject picObj= object.optJSONObject("picture");
+                        JSONObject thumbObj =picObj.optJSONObject("thumb");
+                        image =thumbObj.optString("url");
+                        Log.i("image",image);
+                    }
 
                     Product product = new Product(id,title,price,url,bean_like_count,null,image);
                     products.add(product);
@@ -209,8 +223,6 @@ public class SingleFragment extends Fragment {
                 Log.i("onErrorResponse",error.toString());
             }
         });
-        Log.i("mRequestQueue------>",mRequestQueue.toString());
-        Log.i("getActivity------>",getActivity().toString());
         if (mRequestQueue==null) mRequestQueue=Volley.newRequestQueue(getActivity());
         mRequestQueue.add(newMissRequest);
     }
@@ -256,11 +268,10 @@ public class SingleFragment extends Fragment {
 //            params.put("price","desc");
 //        }
 
-        String url="http://192.168.1.45/article/api/article_items?item_catetory_id="+id;
+        String url="http://192.168.199.171/article/api/article_items?item_catetory_id="+id;
         JsonObjectRequest fetchCategoryTask = new JsonObjectRequest(url,new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("FetchCategoryData->onResponse",jsonObject.toString());
                 JSONArray items = jsonObject.optJSONArray("article_items");
                 if (items==null) return;
                 for (int i=0;i<items.length();i++){
@@ -277,7 +288,6 @@ public class SingleFragment extends Fragment {
                     JSONObject picObj= object.optJSONObject("picture");
                     JSONObject thumbObj =picObj.optJSONObject("thumb");
                     String image =thumbObj.optString("url");
-                    Log.i("image",image);
 
                     Product product = new Product(id,title,price,url,bean_like_count,null,image);
                     products.add(product);
@@ -287,10 +297,29 @@ public class SingleFragment extends Fragment {
         },new Response.ErrorListener(){
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
             }
         });
         mRequestQueue.add(fetchCategoryTask);
     }
 
+    @Override
+    public void onPullDownToRefresh(PullToRefreshBase<GridView> refreshView) {
+        String label = DateUtils.formatDateTime(getActivity(), System.currentTimeMillis(),
+                DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
+        refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
+        Log.i("onPullDownToRefresh--->","onPullDownToRefresh");
+        FetchData(mParam1,sort,currentpage=1);
+        gv_single.setMode(PullToRefreshBase.Mode.BOTH);
+    }
+
+    @Override
+    public void onPullUpToRefresh(PullToRefreshBase<GridView> refreshView) {
+        Log.i("onPullUpToRefresh---->","onPullUpToRefresh");
+        FetchData(mParam1,sort,++currentpage);
+        if (count!=-1&&singleAdapter.getCount()==count){
+            Toast.makeText(getActivity(),"已经加载完毕",Toast.LENGTH_SHORT).show();
+            gv_single.onRefreshComplete();
+            gv_single.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+        }
+    }
 }

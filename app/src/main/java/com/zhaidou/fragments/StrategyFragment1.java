@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -24,7 +25,9 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -32,6 +35,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.pulltorefresh.PullToRefreshBase;
+import com.pulltorefresh.PullToRefreshListView;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
@@ -53,7 +58,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 
-public class StrategyFragment1 extends BaseFragment {
+public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<ListView>{
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -67,8 +72,12 @@ public class StrategyFragment1 extends BaseFragment {
     private static final String LIVING_ROOM_TAG = "1";
     private static final String ENTIRE_PART_TAG = "2";
 
-    private XListView listView;
+    private PullToRefreshListView listView;
     private RequestQueue mRequestQueue;
+
+    private int currentpage=1;
+    private int sort;
+    private int count;
 
     private List<Article> articleList = new ArrayList<Article>();
     private AsyncImageLoader1 imageLoader;
@@ -82,6 +91,7 @@ public class StrategyFragment1 extends BaseFragment {
             switch (msg.what){
                 case UPDATE_Adapter:
                     strategyAdapter.setList(articleList);
+                    listView.onRefreshComplete();
                     break;
                 default:
                     break;
@@ -117,12 +127,13 @@ public class StrategyFragment1 extends BaseFragment {
 
         View view = inflater.inflate(R.layout.fragment_strategy1, container, false);
 
-        listView=(XListView)view.findViewById(R.id.listview);
+        listView=(PullToRefreshListView)view.findViewById(R.id.listview);
+        listView.setMode(PullToRefreshBase.Mode.BOTH);
+        listView.setOnRefreshListener(this);
         mRequestQueue= Volley.newRequestQueue(getActivity());
         strategyAdapter=new StrategyAdapter(getActivity(),articleList);
         listView.setAdapter(strategyAdapter);
         if ("category".equalsIgnoreCase(mParam2)){
-
             FetchCategoryData(mParam1,0,1);
         }else {
             FetchData(mParam1,0,1);
@@ -138,7 +149,7 @@ public class StrategyFragment1 extends BaseFragment {
                 detailIntent.putExtra("id", article.getId()+"");
                 detailIntent.putExtra("title", article.getTitle());
                 detailIntent.putExtra("cover_url", article.getImg_url());
-                detailIntent.putExtra("url","http://192.168.1.45/article/articles/"+article.getId());
+                detailIntent.putExtra("url","http://http://192.168.199.171/article/articles/"+article.getId());
                 startActivity(detailIntent);
             }
         });
@@ -146,6 +157,8 @@ public class StrategyFragment1 extends BaseFragment {
     }
 
     public void FetchData(String msg,int sort,int page){
+        this.sort=sort;
+        currentpage=page;
         Log.i("page-------------------->",page+"");
         Log.i("articleList------------->",articleList==null?"null":articleList.toString());
         if (page==1) articleList.clear();
@@ -165,13 +178,15 @@ public class StrategyFragment1 extends BaseFragment {
 
 
         JsonObjectRequest newMissRequest = new JsonObjectRequest(
-                Request.Method.POST, "http://192.168.1.45/article/api/articles/search",
+                Request.Method.POST, "http://192.168.199.171/article/api/articles/search",
                 new JSONObject(params), new Response.Listener<JSONObject>() {
 
             @Override
             public void onResponse(JSONObject json) {
                 Log.i("StrategyFragment1----->",json.toString());
                 JSONArray articles = json.optJSONArray("articles");
+                JSONObject meta = json.optJSONObject("meta");
+                count=meta==null?0:meta.optInt("count");
                 if (articles==null) return;
                 for (int i=0;i<articles.length();i++){
                     JSONObject article =articles.optJSONObject(i);
@@ -239,7 +254,7 @@ public class StrategyFragment1 extends BaseFragment {
 //            params.put("price","desc");
 //        }
 
-        String url="http://192.168.1.45/article/api/articles?catetory_id="+id;
+        String url="http://192.168.199.171/article/api/articles?catetory_id="+id;
         JsonObjectRequest fetchCategoryTask = new JsonObjectRequest(url,new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -266,5 +281,26 @@ public class StrategyFragment1 extends BaseFragment {
         });
         if (mRequestQueue==null) mRequestQueue=Volley.newRequestQueue(getActivity());
         mRequestQueue.add(fetchCategoryTask);
+    }
+
+    @Override
+    public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+        String label = DateUtils.formatDateTime(getActivity(), System.currentTimeMillis(),
+                DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
+        refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
+        Log.i("onPullDownToRefresh--->","onPullDownToRefresh");
+        FetchData(mParam1,sort,currentpage=1);
+        listView.setMode(PullToRefreshBase.Mode.BOTH);
+    }
+
+    @Override
+    public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+        Log.i("onPullUpToRefresh---->","onPullUpToRefresh");
+        FetchData(mParam1,sort,++currentpage);
+        if (count!=-1&&strategyAdapter.getCount()==count){
+            Toast.makeText(getActivity(), "已经加载完毕", Toast.LENGTH_SHORT).show();
+            listView.onRefreshComplete();
+            listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+        }
     }
 }

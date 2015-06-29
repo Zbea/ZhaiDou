@@ -13,6 +13,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.activities.WebViewActivity;
 
@@ -57,9 +58,10 @@ public class WebViewFragment extends Fragment implements View.OnClickListener{
 //                intent.putExtra("url", url);
 //                intent.setClass(getActivity(), WebViewActivity.class);
 //                getActivity().startActivity(intent);
-                Toast.makeText(getActivity(),url,1).show();
+//                Toast.makeText(getActivity(),url,1).show();
                 WebViewFragment webViewFragment=WebViewFragment.newInstance(url);
-                ((PersonalMainFragment)getParentFragment()).addToStack(webViewFragment);
+//                ((PersonalMainFragment)getParentFragment()).addToStack(webViewFragment);
+                ((MainActivity)getActivity()).navigationToFragment(webViewFragment);
                 return true;
             }
 //
@@ -121,8 +123,10 @@ public class WebViewFragment extends Fragment implements View.OnClickListener{
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.rl_back:
-                ((PersonalMainFragment)getParentFragment()).popToStack();
-                ((PersonalMainFragment)getParentFragment()).popToStack();
+//                ((PersonalMainFragment)getParentFragment()).popToStack();
+//                ((PersonalMainFragment)getParentFragment()).popToStack();
+                ((MainActivity)getActivity()).popToStack(WebViewFragment.this);
+                ((MainActivity)getActivity()).popToStack(WebViewFragment.this);
                 break;
         }
     }

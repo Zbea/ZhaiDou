@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <GridView
+    <com.pulltorefresh.PullToRefreshGridView
         android:id="@+id/gv_single"
         android:layout_width="match_parent"
         android:numColumns="2"
@@ -11,5 +11,5 @@
         android:verticalSpacing="2dp"
         android:background="#f1f1f1"
         android:listSelector="@android:color/transparent"
-        android:layout_height="match_parent"></GridView>
+        android:layout_height="match_parent"/>
 </LinearLayout>

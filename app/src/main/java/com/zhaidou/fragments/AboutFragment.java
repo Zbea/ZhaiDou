@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 
 /**
@@ -87,7 +88,8 @@ public class AboutFragment extends Fragment implements View.OnClickListener{
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.rl_back:
-                ((PersonalMainFragment)getParentFragment()).popToStack();
+//                ((PersonalMainFragment)getParentFragment()).popToStack();
+                ((MainActivity)getActivity()).popToStack(AboutFragment.this);
                 break;
         }
     }

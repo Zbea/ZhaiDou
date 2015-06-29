@@ -36,18 +36,19 @@
             android:layout_marginRight="10dp"/>
         </RelativeLayout>
 
-    <com.zhaidou.view.SwipeRefreshLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <!--<com.zhaidou.view.SwipeRefreshLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_below="@id/common_actionbar"-->
+        <!--android:id="@+id/refresh_layout">-->
+    <com.pulltorefresh.PullToRefreshScrollView
+        android:id="@+id/scrollview"
         android:layout_below="@id/common_actionbar"
-        android:id="@+id/refresh_layout">
-    <ScrollView
-        android:id="@+id/xscrollview"
         android:layout_width="match_parent"
         android:scrollbars="none"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="vertical"
@@ -152,11 +153,12 @@
                 android:divider="@null"
                 android:scrollbars="none"
                 android:listSelector="@android:color/transparent"
+                android:background="@color/black"
                 android:dividerHeight="0dp">
             </com.zhaidou.view.ListViewForScrollView>
         </LinearLayout>
-    </ScrollView>
-    </com.zhaidou.view.SwipeRefreshLayout>
+    </com.pulltorefresh.PullToRefreshScrollView>
+    <!--</com.zhaidou.view.SwipeRefreshLayout>-->
     <FrameLayout
         android:id="@+id/fl_category_menu"
         android:layout_below="@id/common_actionbar"

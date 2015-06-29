@@ -11,6 +11,7 @@
         android:layout_height="50dp"
         android:background="#39495d">
         <LinearLayout
+            android:id="@+id/ll_back"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
@@ -86,6 +87,7 @@
         </LinearLayout>
         </RelativeLayout>
             <RelativeLayout
+                android:id="@+id/rl_nickname"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@color/white">
@@ -113,6 +115,7 @@
                     android:background="#d2d4d7"/>
             </RelativeLayout>
             <RelativeLayout
+                android:id="@+id/rl_email"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@color/white">
@@ -224,6 +227,7 @@
                     android:background="#d2d4d7"/>
             </RelativeLayout>
             <RelativeLayout
+                android:id="@+id/rl_job"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@color/white">
@@ -279,6 +283,7 @@
                     android:background="#d2d4d7"/>
             </RelativeLayout>
             <RelativeLayout
+                android:id="@+id/rl_mobile"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@color/white">
@@ -352,6 +357,11 @@
     </ScrollView>
     <FrameLayout
         android:id="@+id/rl_header_menu"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <FrameLayout
+        android:id="@+id/fl_child_container"
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

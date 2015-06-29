@@ -2,23 +2,34 @@ package com.zhaidou.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.R;
+import com.zhaidou.fragments.LoginFragment;
+import com.zhaidou.fragments.RegisterFragment;
+import com.zhaidou.model.User;
 
 import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
 
-public class ItemDetailActivity extends Activity implements View.OnClickListener{
+public class ItemDetailActivity extends FragmentActivity implements View.OnClickListener,RegisterFragment.RegisterOrLoginListener{
 
     private WebView webView;
 
@@ -28,15 +39,29 @@ public class ItemDetailActivity extends Activity implements View.OnClickListener
     private String url;
     private TextView tv_back;
     private ImageView iv_share;
+    private FrameLayout mChildContainer;
 
+    private int userId;
+    private String token;
+
+    private LoginFragment loginFragment;
+    private RegisterFragment registerFragment;
+
+    private SharedPreferences mSharedPreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_detail);
 
+        mSharedPreferences=getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
+        userId=mSharedPreferences.getInt("userId", -1);
+        token=mSharedPreferences.getString("token","");
         tv_back=(TextView)findViewById(R.id.tv_back);
         iv_share=(ImageView)findViewById(R.id.iv_share);
+        mChildContainer=(FrameLayout)findViewById(R.id.fl_child_container);
 
+        loginFragment=LoginFragment.newInstance("","");
+        loginFragment.setRegisterOrLoginListener(this);
         tv_back.setOnClickListener(this);
         iv_share.setOnClickListener(this);
 
@@ -51,6 +76,20 @@ public class ItemDetailActivity extends Activity implements View.OnClickListener
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                Log.i("shouldOverrideUrlLoading--->",url);
+                Log.i("token-------------->",token);
+                Log.i("userId-------------->",userId+"");
+                if ("mobile://login?false".equalsIgnoreCase(url)){
+                    if (!TextUtils.isEmpty(token)&&userId>-1){
+                        webView.loadUrl("javascript:ReceiveUserInfo(324, 's2YgsJHNYzhyzTsH3yhc')");
+                    }else {
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container,loginFragment)
+                                .addToBackStack(null).commit();
+                        mChildContainer.setVisibility(View.VISIBLE);
+                    }
+                    return true;
+                }
+
                 Intent intent = new Intent();
                 intent.putExtra("url", url);
                 intent.setClass(ItemDetailActivity.this, WebViewActivity.class);
@@ -61,7 +100,8 @@ public class ItemDetailActivity extends Activity implements View.OnClickListener
         });
 
 //        String postUrl = ZhaiDou.HOME_BASE_URL + "?p=" + postId;
-        String postUrl = "http://192.168.1.45/article/articles/" + postId;
+        String postUrl = "http://192.168.199.171/article/articles/" + postId;
+        Log.i("postUrl-------------->",postUrl);
         webView.loadUrl(postUrl);
         this.setTitle("");
 
@@ -174,4 +214,35 @@ public class ItemDetailActivity extends Activity implements View.OnClickListener
 
         oks.show(this);
     }
+
+    public void popToStack(){
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Log.i("childFragmentManager--->", fragmentManager.getBackStackEntryCount()+"");
+        fragmentManager.popBackStack();
+        Log.i("childFragmentManager--->", fragmentManager.getBackStackEntryCount()+"");
+    }
+
+    @Override
+    public void onRegisterOrLoginSuccess(User user,Fragment fragment) {
+        Log.i("ItemDetailActivity------------->",user.toString());
+        saveUserToSP(user);
+        popToStack();
+        webView.loadUrl("javascript:ReceiveUserInfo("+user.getId()+", '"+user.getAuthentication_token()+"')");
+    }
+    private void saveUserToSP(User user){
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putInt("userId",user.getId());
+        editor.putString("email", user.getEmail());
+        editor.putString("token",user.getAuthentication_token());
+        editor.putString("avatar",user.getAvatar());
+        editor.putString("nickName",user.getNickName());
+        editor.commit();
+    }
+
+    public void navigationToFragment(Fragment fragment){
+        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container,fragment)
+                .addToBackStack(null).commit();
+    }
+
 }

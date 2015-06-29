@@ -5,12 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.zhaidou.R;
 
-public class WebViewActivity extends Activity {
+public class WebViewActivity extends Activity implements View.OnClickListener{
 
     private String url;
     private WebView webView;
@@ -19,6 +20,7 @@ public class WebViewActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view);
+        findViewById(R.id.ll_back).setOnClickListener(this);
 
         // Set Icon
 //        getActionBar().setIcon(R.drawable.buy_close);
@@ -68,5 +70,12 @@ public class WebViewActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.ll_back:
+                finish();
+                break;
+        }
+    }
 }
