@@ -1,5 +1,7 @@
 package com.zhaidou;
 
+import com.alibaba.sdk.android.AlibabaSDK;
+import com.alibaba.sdk.android.callback.InitResultCallback;
 import com.zhaidou.activities.SearchActivity;
 import com.zhaidou.fragments.CategoryFragment;
 import com.zhaidou.fragments.CategoryFragment1;
@@ -104,6 +106,26 @@ public class MainActivity extends FragmentActivity implements DiyFragment.OnFrag
         setContentView(R.layout.main_layout);
         mSharedPreferences=getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         init();
+
+//        String inputData = "1";
+//        int index = Integer.parseInt(inputData);
+//        AlibabaSDK.setProperty("login", "useH5Login", "false");
+//        AlibabaSDK.setEnvironment(com.alibaba.sdk.android.Environment.values()[index]);
+        AlibabaSDK.asyncInit(this,new InitResultCallback() {
+            @Override
+            public void onSuccess() {
+                Log.i("onSuccess---->","初始化成功");
+                Toast.makeText(MainActivity.this, "初始化成功", Toast.LENGTH_SHORT)
+                        .show();
+            }
+
+            @Override
+            public void onFailure(int i, String s) {
+                Log.i("onFailure---->","初始化异常--"+s);
+                Toast.makeText(MainActivity.this, "初始化异常"+s, Toast.LENGTH_SHORT)
+                        .show();
+            }
+        });
 
         initComponents();
     }

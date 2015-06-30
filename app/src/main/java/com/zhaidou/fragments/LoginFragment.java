@@ -8,15 +8,27 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.sdk.android.Environment;
+import com.alibaba.sdk.android.callback.InitResultCallback;
+import com.alibaba.sdk.android.session.model.Session;
+import com.alibaba.sdk.android.util.JSONUtils;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.activities.ItemDetailActivity;
@@ -38,6 +50,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import cn.sharesdk.framework.Platform;
+import cn.sharesdk.framework.PlatformActionListener;
+import cn.sharesdk.framework.ShareSDK;
+import cn.sharesdk.sina.weibo.SinaWeibo;
+import cn.sharesdk.tencent.qq.QQ;
+import cn.sharesdk.wechat.friends.Wechat;
+
+import com.alibaba.sdk.android.AlibabaSDK;
+import com.alibaba.sdk.android.login.LoginService;
+import com.alibaba.sdk.android.login.callback.LoginCallback;
+import com.zhaidou.utils.NativeHttpUtil;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,7 +70,7 @@ import java.util.Map;
  * create an instance of this fragment.
  *
  */
-public class LoginFragment extends Fragment implements View.OnClickListener{
+public class LoginFragment extends Fragment implements View.OnClickListener,PlatformActionListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -55,11 +80,21 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     private String mParam1;
     private String mParam2;
     private TextView mEmailView,mPswView,mRegisterView,mResetView;
+
     private Button mLoginView;
     public static final String TAG=LoginFragment.class.getSimpleName();
 
 
     private RegisterFragment.RegisterOrLoginListener mRegisterOrLoginListener;
+
+    public int index;
+    RequestQueue requestQueue;
+
+    private static final String SHARED_PRE = "_tae_sdk_demo";
+
+    private static final String KEY_ENV_INDEX = "envIndex";
+
+    private static final String FORMAT_STRING = "{\"version\":\"1.0.0.daily\",\"target\":\"thirdpartlogin\",\"params\":{\"loginInfo\":{\"loginId\":\"%s\",\"password\":\"%s\"}}}";
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -102,17 +137,23 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         mRegisterView=(TextView)view.findViewById(R.id.tv_register);
         mResetView=(TextView)view.findViewById(R.id.tv_reset_psw);
 
-
+        requestQueue=Volley.newRequestQueue(getActivity());
         mLoginView.setOnClickListener(this);
         mRegisterView.setOnClickListener(this);
         mResetView.setOnClickListener(this);
         view.findViewById(R.id.ll_back).setOnClickListener(this);
+        view.findViewById(R.id.ll_qq).setOnClickListener(this);
+        view.findViewById(R.id.ll_weixin).setOnClickListener(this);
+        view.findViewById(R.id.ll_weibo).setOnClickListener(this);
+        view.findViewById(R.id.ll_taobao).setOnClickListener(this);
+
 
         return view;
     }
 
     @Override
     public void onClick(View view) {
+        ShareSDK.initSDK(getActivity());
         switch (view.getId()){
             case R.id.bt_login:
                 new MyTask().execute();
@@ -143,6 +184,33 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                 }
                 ((PersonalMainFragment)getParentFragment()).popToStack();
                 ((PersonalMainFragment)getParentFragment()).toggleTabContainer();
+                break;
+            case R.id.ll_weixin:
+                Log.i("ll_weixin--->","ll_weixin");
+                Platform wechat = ShareSDK.getPlatform(Wechat.NAME);
+                authorize(wechat);
+                break;
+            case R.id.ll_qq:
+                Platform qq = ShareSDK.getPlatform(QQ.NAME);
+                authorize(qq);
+                break;
+            case R.id.ll_weibo:
+                //新浪微博
+                Platform sina = ShareSDK.getPlatform(SinaWeibo.NAME);
+                authorize(sina);
+                break;
+            case R.id.ll_taobao:
+                AlibabaSDK.getService(LoginService.class).showLogin(getActivity(),new LoginCallback() {
+                    @Override
+                    public void onSuccess(Session session) {
+                        Log.i("onSuccess-----","onSuccess");
+                    }
+
+                    @Override
+                    public void onFailure(int i, String s) {
+                        Log.i("onFailure---->","onFailure");
+                    }
+                });
                 break;
             default:
                 break;
@@ -247,8 +315,127 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
             }
         }
     }
+    private void authorize(Platform plat) {
+        Log.i("Platform----->",plat.getName());
+        if (plat == null) {
+            return;
+        }
+
+        plat.setPlatformActionListener(this);
+        //关闭SSO授权
+        plat.SSOSetting(true);
+        plat.showUser(null);
+    }
+
+    @Override
+    public void onComplete(final Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
+        Log.i("onComplete----->",platform.getName()+"---"+i);
+//        Log.i("stringObjectHashMap",stringObjectHashMap.toString());
+        String plat =platform.getName();
+        final String provider=plat.equals("QQ")?"tqq":plat.equals("SinaWeibo")?"weibo":"weixin";
+        Log.i("getUserId", platform.getDb().getUserId());
+        Log.i("getUserIcon",platform.getDb().getUserIcon());
+        Log.i("getUserName",platform.getDb().getUserName());
+        Map<String,String> params =new HashMap<String, String>();
+        params.put("uid",platform.getDb().getUserId());
+        params.put("provider",provider);
+        params.put("nick_name",platform.getDb().getUserName());
+
+        JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,"http://192.168.199.171/api/v1/users/verification_other",new JSONObject(params),new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                Log.i("jsonObject--->",jsonObject.toString());
+                int flag=jsonObject.optInt("flag");
+                String email = jsonObject.optString("s_email");
+                String nick=jsonObject.optString("s_nick_name");
+                String str ="[\"user\" :\n" +
+                        "            [   \"email\":"+email+",\n" +
+                        "                \"agreed\":true,\n" +
+                        "                \"nick_name\":"+platform.getDb().getUserName()+",\n" +
+                        "                \"uid\":"+platform.getDb().getUserId()+",\n" +
+                        "                \"provider\":tqq" +
+                        "            ],\n" +
+                        "  \"profile_image\":  "+platform.getDb().getUserIcon()+
+                        "]";
+                if (0==flag){
+                    Log.i("0==flag","0==flag");
+                    Map<String,String> registers = new HashMap<String, String>();
+                    registers.put("user[email]",email);
+                    registers.put("user[nick_name]",platform.getDb().getUserName());
+                    registers.put("user[uid]",platform.getDb().getUserId());
+                    registers.put("user[provider]",provider);
+                    registers.put("user[agreed]",true+"");
+                    registers.put("profile_image",platform.getDb().getUserIcon());
+//                  registers.put("profile_image",platform.getDb().getUserIcon());
+
+                    Map<String,Object> maps = new HashMap<String, Object>();
+                    maps.put("user",registers);
+                    maps.put("profile_image",platform.getDb().getUserIcon());
+
+
+
+                    JsonObjectRequest registerRequest = new JsonObjectRequest(Request.Method.POST,"http://192.168.199.171/api/v1/users",new JSONObject(registers),
+                            new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject jsonObject) {
+                                    Log.i("registerRequest------->",jsonObject.toString());
+                                }
+                            },new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError volleyError) {
+
+                            }
+                    });
+                    requestQueue.add(registerRequest);
+//                    new RegisterTask().execute(registers);
+                }
+            }
+        },new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.i("volleyError--->",volleyError.getMessage());
+            }
+        });
+        requestQueue.add(request);
+    }
+
+    @Override
+    public void onError(Platform platform, int i, Throwable throwable) {
+        Log.i("platform----->",platform.getName()+"---"+i+throwable.getMessage().toString());
+    }
+
+    @Override
+    public void onCancel(Platform platform, int i) {
+        Log.i("onCancel----->",platform.getName()+"---"+i);
+    }
 
     public void setRegisterOrLoginListener(RegisterFragment.RegisterOrLoginListener mRegisterOrLoginListener) {
         this.mRegisterOrLoginListener = mRegisterOrLoginListener;
     }
+
+    private class RegisterTask extends AsyncTask<Map<String,String>,Void,String>{
+        @Override
+        protected String doInBackground(Map<String, String>... maps) {
+            String s=null;
+            try {
+                s=NativeHttpUtil.post("http://192.168.199.171/api/v1/users",null,maps[0]);
+            }catch (Exception e){
+                Log.i("e--->",e.getMessage());
+            }
+            return s;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Log.i("onPostExecute-->s--->",s);
+        }
+    }
+
+    private class RegisterThirdTask extends AsyncTask<String,Void,String>{
+        @Override
+        protected String doInBackground(String... strings) {
+            return null;
+        }
+    }
+
 }

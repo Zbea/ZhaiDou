@@ -6,7 +6,7 @@
         android:allowBackup="true"
         android:icon="@drawable/icon_launcher"
         android:largeHeap="true"
-        android:theme="@style/app_theme" >
+        android:theme="@style/app_theme">
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden"
@@ -84,7 +84,9 @@
             android:theme="@style/StyledIndicators"
             android:label="@string/title_activity_search">
         </activity>
-
+        <activity android:name="com.alibaba.sdk.android.webview.BaseWebViewActivity"/>
+        <activity android:name="com.alibaba.sdk.android.login.ui.LoginWebViewActivity"/>
+        <activity android:name="com.alibaba.sdk.android.login.ui.QrLoginActivity" android:theme="@style/tae_sdk_login_qr_activity_style"/>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -97,5 +99,10 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_SETTINGS"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
 </manifest>
