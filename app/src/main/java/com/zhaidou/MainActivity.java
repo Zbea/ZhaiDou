@@ -1,6 +1,7 @@
 package com.zhaidou;
 
 import com.alibaba.sdk.android.AlibabaSDK;
+import com.alibaba.sdk.android.callback.CallbackContext;
 import com.alibaba.sdk.android.callback.InitResultCallback;
 import com.zhaidou.activities.SearchActivity;
 import com.zhaidou.fragments.CategoryFragment;
@@ -358,5 +359,11 @@ public class MainActivity extends FragmentActivity implements DiyFragment.OnFrag
 
     public interface PhotoSelectListener{
         public void onPhotoSelect();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        CallbackContext.onActivityResult(requestCode,resultCode,data);
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

@@ -185,7 +185,6 @@ public class CollectFragment extends Fragment implements PullToRefreshBase.OnRef
         protected JSONObject doInBackground(Void... voids) {
             return getHttp("http://192.168.199.171/article/api/article_items/like_article_items?per_page=10&page="+currentpage, null);
         }
-
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
 //            Log.i("onPostExecute------>",jsonObject.toString());
@@ -194,25 +193,27 @@ public class CollectFragment extends Fragment implements PullToRefreshBase.OnRef
             count=meta==null?0:meta.optInt("count");
 
 //            Log.i("meta---->",meta.toString());
-            for (int i=0;i<article_items.length();i++){
-                JSONObject articleObj = article_items.optJSONObject(i);
-                int id = articleObj.optInt("id");
-                int bean_likes_count=articleObj.optInt("bean_likes_count");
-                String title=articleObj.optString("title");
-                int price = articleObj.optInt("price");
-                String url=articleObj.optString("url");
-                JSONArray asset_imgs=articleObj.optJSONArray("asset_imgs");
-                String thumb=null;
-                if (asset_imgs!=null&&asset_imgs.length()>0){
-                    JSONObject picObj = asset_imgs.optJSONArray(0).optJSONObject(1);
-                    thumb=picObj.optJSONObject("picture").optJSONObject("thumb").optString("url");
+            if (article_items!=null&&article_items.length()>0){
+                for (int i=0;i<article_items.length();i++){
+                    JSONObject articleObj = article_items.optJSONObject(i);
+                    int id = articleObj.optInt("id");
+                    int bean_likes_count=articleObj.optInt("bean_likes_count");
+                    String title=articleObj.optString("title");
+                    int price = articleObj.optInt("price");
+                    String url=articleObj.optString("url");
+                    JSONArray asset_imgs=articleObj.optJSONArray("asset_imgs");
+                    String thumb=null;
+                    if (asset_imgs!=null&&asset_imgs.length()>0){
+                        JSONObject picObj = asset_imgs.optJSONArray(0).optJSONObject(1);
+                        thumb=picObj.optJSONObject("picture").optJSONObject("thumb").optString("url");
+                    }
+                    Product product=new Product(id,title,price,url,bean_likes_count,null,thumb);
+                    products.add(product);
                 }
-                Product product=new Product(id,title,price,url,bean_likes_count,null,thumb);
-                products.add(product);
+                Message message=new Message();
+                message.arg1=count;
+                mHandler.sendMessage(message);
             }
-            Message message=new Message();
-            message.arg1=count;
-            mHandler.sendMessage(message);
         }
     }
 
@@ -231,7 +232,8 @@ public class CollectFragment extends Fragment implements PullToRefreshBase.OnRef
 //                httpGet.addHeader(key, headers.get(key));
 //            }
 //        }
-        httpGet.addHeader("SECAuthorization", "s2YgsJHNYzhyzTsH3yhc");
+        String token=mSharedPreferences.getString("token","");
+        httpGet.addHeader("SECAuthorization",token);
 
         HttpParams httpParameters = new BasicHttpParams();
         HttpConnectionParams.setConnectionTimeout(httpParameters,

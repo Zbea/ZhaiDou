@@ -38,6 +38,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
@@ -225,6 +226,11 @@ public class HomeFragment extends Fragment implements
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         mScrollView.setOnRefreshListener(this);
 
+        view.findViewById(R.id.ll_lottery).setOnClickListener(this);
+        view.findViewById(R.id.ll_competition).setOnClickListener(this);
+        view.findViewById(R.id.ll_sale).setOnClickListener(this);
+        view.findViewById(R.id.ll_forward).setOnClickListener(this);
+
 //        mSwipeLayout=(SwipeRefreshLayout)view.findViewById(R.id.refresh_layout);
 
 
@@ -380,6 +386,17 @@ public class HomeFragment extends Fragment implements
 //                        }
 //                    }
 //                });
+                break;
+            case R.id.ll_lottery:
+                break;
+            case R.id.ll_competition:
+                break;
+            case R.id.ll_sale:
+                SpecialSaleFragment specialSaleFragment =SpecialSaleFragment.newInstance("","");
+                ((MainActivity)getActivity()).navigationToFragment(specialSaleFragment);
+                break;
+            case R.id.ll_forward:
+
                 break;
         }
     }

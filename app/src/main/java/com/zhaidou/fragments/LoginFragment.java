@@ -23,10 +23,15 @@ import com.alibaba.sdk.android.Environment;
 import com.alibaba.sdk.android.callback.InitResultCallback;
 import com.alibaba.sdk.android.session.model.Session;
 import com.alibaba.sdk.android.util.JSONUtils;
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.zhaidou.MainActivity;
@@ -42,10 +47,12 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -202,13 +209,66 @@ public class LoginFragment extends Fragment implements View.OnClickListener,Plat
             case R.id.ll_taobao:
                 AlibabaSDK.getService(LoginService.class).showLogin(getActivity(),new LoginCallback() {
                     @Override
-                    public void onSuccess(Session session) {
+                    public void onSuccess(final Session session) {
                         Log.i("onSuccess-----","onSuccess");
-                    }
+                        Toast.makeText(getActivity(),"onSuccess",Toast.LENGTH_LONG).show();
+                        Log.i("getUserId", session.getUserId());
+                        Log.i("getUserIcon",session.getUser().avatarUrl);
+                        Log.i("getUserName",session.getUser().nick);
+                        Map<String,String> params =new HashMap<String, String>();
+                        params.put("uid",session.getUserId());
+                        params.put("provider","taobao");
+                        params.put("nick_name",session.getUser().nick);
 
+                        JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,"http://192.168.199.171/api/v1/users/verification_other",new JSONObject(params),new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject jsonObject) {
+                                Log.i("jsonObject--->",jsonObject.toString());
+                                Toast.makeText(getActivity(),jsonObject.toString(),Toast.LENGTH_LONG).show();
+                                int flag=jsonObject.optInt("flag");
+
+                                if (0==flag){
+                                    JSONObject login_user=jsonObject.optJSONObject("user").optJSONObject("login_user");
+                                    String email = login_user.optString("s_email");
+                                    String nick=login_user.optString("s_nick_name");
+                                    Log.i("0==flag","0==flag");
+                                    Map<String,String> registers = new HashMap<String, String>();
+                                    registers.put("user[email]",email);
+                                    registers.put("user[nick_name]",session.getUser().nick);
+                                    registers.put("user[uid]",session.getUserId());
+                                    registers.put("user[provider]","taobao");
+                                    registers.put("profile_image",session.getUser().avatarUrl);
+
+                                    new RegisterTask().execute(registers);
+                                }else {
+                                    Log.i("flag==1","flag==1");
+                                    JSONObject userJson = jsonObject.optJSONObject("user");
+                                    String token =userJson.optJSONObject("user_tokens").optString("token");
+                                    JSONArray userArray = userJson.optJSONArray("users");
+                                    if (userArray!=null&&userArray.length()>0){
+                                        JSONObject user = userArray.optJSONObject(0);
+                                        String nick = user.optString("nick_name");
+                                        int id = user.optInt("id");
+                                        String email = user.optString("email");
+                                        User u = new User(id,email,token,nick,null);
+                                        Log.i("LoginFragment----onRegisterOrLoginSuccess---->","onRegisterOrLoginSuccess");
+                                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(u,LoginFragment.this);
+                                    }
+                                }
+                            }
+                        },new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError volleyError) {
+                                Log.i("volleyError--->",volleyError.getMessage());
+                                Toast.makeText(getActivity(),volleyError.getMessage(),Toast.LENGTH_LONG).show();
+                            }
+                        });
+                        requestQueue.add(request);
+                    }
                     @Override
                     public void onFailure(int i, String s) {
                         Log.i("onFailure---->","onFailure");
+                        Toast.makeText(getActivity(),"onFailure",Toast.LENGTH_LONG).show();
                     }
                 });
                 break;
@@ -346,18 +406,11 @@ public class LoginFragment extends Fragment implements View.OnClickListener,Plat
             public void onResponse(JSONObject jsonObject) {
                 Log.i("jsonObject--->",jsonObject.toString());
                 int flag=jsonObject.optInt("flag");
-                String email = jsonObject.optString("s_email");
-                String nick=jsonObject.optString("s_nick_name");
-                String str ="[\"user\" :\n" +
-                        "            [   \"email\":"+email+",\n" +
-                        "                \"agreed\":true,\n" +
-                        "                \"nick_name\":"+platform.getDb().getUserName()+",\n" +
-                        "                \"uid\":"+platform.getDb().getUserId()+",\n" +
-                        "                \"provider\":tqq" +
-                        "            ],\n" +
-                        "  \"profile_image\":  "+platform.getDb().getUserIcon()+
-                        "]";
+
                 if (0==flag){
+                    JSONObject login_user=jsonObject.optJSONObject("user").optJSONObject("login_user");
+                    String email = login_user.optString("s_email");
+                    String nick=login_user.optString("s_nick_name");
                     Log.i("0==flag","0==flag");
                     Map<String,String> registers = new HashMap<String, String>();
                     registers.put("user[email]",email);
@@ -366,28 +419,22 @@ public class LoginFragment extends Fragment implements View.OnClickListener,Plat
                     registers.put("user[provider]",provider);
                     registers.put("user[agreed]",true+"");
                     registers.put("profile_image",platform.getDb().getUserIcon());
-//                  registers.put("profile_image",platform.getDb().getUserIcon());
 
-                    Map<String,Object> maps = new HashMap<String, Object>();
-                    maps.put("user",registers);
-                    maps.put("profile_image",platform.getDb().getUserIcon());
-
-
-
-                    JsonObjectRequest registerRequest = new JsonObjectRequest(Request.Method.POST,"http://192.168.199.171/api/v1/users",new JSONObject(registers),
-                            new Response.Listener<JSONObject>() {
-                                @Override
-                                public void onResponse(JSONObject jsonObject) {
-                                    Log.i("registerRequest------->",jsonObject.toString());
-                                }
-                            },new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(VolleyError volleyError) {
-
-                            }
-                    });
-                    requestQueue.add(registerRequest);
-//                    new RegisterTask().execute(registers);
+                    new RegisterTask().execute(registers);
+                }else {
+                    Log.i("flag==1","flag==1");
+                    JSONObject userJson = jsonObject.optJSONObject("user");
+                    String token =userJson.optJSONObject("user_tokens").optString("token");
+                    JSONArray userArray = userJson.optJSONArray("users");
+                    if (userArray!=null&&userArray.length()>0){
+                        JSONObject user = userArray.optJSONObject(0);
+                        String nick = user.optString("nick_name");
+                        int id = user.optInt("id");
+                        String email = user.optString("email");
+                        User u = new User(id,email,token,nick,null);
+                        Log.i("LoginFragment----onRegisterOrLoginSuccess---->","onRegisterOrLoginSuccess");
+                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(u,LoginFragment.this);
+                    }
                 }
             }
         },new Response.ErrorListener() {
@@ -416,6 +463,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener,Plat
     private class RegisterTask extends AsyncTask<Map<String,String>,Void,String>{
         @Override
         protected String doInBackground(Map<String, String>... maps) {
+            Log.i("doInBackground--------------->",maps[0].toString());
             String s=null;
             try {
                 s=NativeHttpUtil.post("http://192.168.199.171/api/v1/users",null,maps[0]);
@@ -427,7 +475,21 @@ public class LoginFragment extends Fragment implements View.OnClickListener,Plat
 
         @Override
         protected void onPostExecute(String s) {
-            Log.i("onPostExecute-->s--->",s);
+            Log.i("RegisterTask-->onPostExecute-->s--->",s);
+            try{
+                JSONObject json = new JSONObject(s);
+                JSONObject userJson = json.optJSONObject("user");
+                int id = userJson.optInt("id");
+                String email =userJson.optString("email");
+                String token =userJson.optString("authentication_token");
+                String avatar =userJson.optJSONObject("avatar").optString("url");
+                String nick=userJson.optString("nick_name");
+                Log.i("LoginFragment----onRegisterOrLoginSuccess---->","onRegisterOrLoginSuccess");
+                User user=new User(id,email,token,nick,avatar);
+                mRegisterOrLoginListener.onRegisterOrLoginSuccess(user,LoginFragment.this);
+            }catch (Exception e){
+//                Log.i("e--------->",e.getMessage());
+            }
         }
     }
 
@@ -437,5 +499,4 @@ public class LoginFragment extends Fragment implements View.OnClickListener,Plat
             return null;
         }
     }
-
 }

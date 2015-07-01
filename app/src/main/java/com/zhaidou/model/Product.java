@@ -12,6 +12,7 @@ public class Product {
     private String url;
     private int bean_like_count;
     private List<Category> categories;
+    private int remaining;
 
     private String image;
 
@@ -79,6 +80,14 @@ public class Product {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public int getRemaining() {
+        return remaining;
+    }
+
+    public void setRemaining(int remaining) {
+        this.remaining = remaining;
     }
 
     public Product() {
