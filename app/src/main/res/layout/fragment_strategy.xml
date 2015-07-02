@@ -2,30 +2,43 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <include
+    <RelativeLayout
         android:id="@+id/common_actionbar"
-        layout="@layout/include_action_bar"/>
+        android:layout_width="match_parent"
+        android:background="@color/actionbar_background_color"
+        android:layout_height="50dp">
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/tv_title"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="专业家居美化方案"/>
+    </RelativeLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:orientation="horizontal"
         android:weightSum="1">
 
-        <Button
+        <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/living_room"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="0.5"
+            android:gravity="center"
             android:background="@drawable/strategy_top_button_background"
             android:tag="1"
             android:textColor="@drawable/strategy_top_button_color"
             android:text="客厅方案" />
 
-        <Button
+        <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/entire_part"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="0.5"
+            android:gravity="center"
             android:background="@drawable/strategy_top_button_background"
             android:tag="2"
             android:textColor="@drawable/strategy_top_button_color"

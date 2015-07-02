@@ -21,7 +21,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:src="@drawable/icon_back"/>
-            <TextView
+            <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -31,7 +31,7 @@
                 android:layout_alignParentLeft="true"
                 android:text="返回"/>
         </LinearLayout>
-        <TextView
+        <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/tv_title"
             android:textColor="@color/white"
             android:textSize="18sp"
@@ -92,13 +92,15 @@
             android:inputType="textPassword"
             android:hint="确认密码"/>
     </LinearLayout>
-    <Button
+    <com.zhaidou.view.TypeFaceTextView
+        android:clickable="true"
         android:id="@+id/bt_register"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:text="注册"
+        android:gravity="center"
         android:layout_marginTop="20dp"
         android:textColor="@color/white"
         android:textSize="16sp"
@@ -109,7 +111,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
-        <TextView
+        <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/tv_login"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
@@ -29,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class StrategyFragment extends BaseFragment {
+public class StrategyFragment extends Fragment {
 
     public class CustomWebView extends WebView {
 
@@ -71,8 +73,8 @@ public class StrategyFragment extends BaseFragment {
 
     private WebView webView;
     private ProgressDialog loading;
-    private Button livingRoomButton;
-    private Button entirePartButton;
+    private TextView livingRoomButton;
+    private TextView entirePartButton;
 
     private ViewPager viewPager;
     private Fragment beautyHomeFragment;
@@ -85,7 +87,7 @@ public class StrategyFragment extends BaseFragment {
     private static final String LIVING_ROOM_URL = "http://buy.zhaidou.com/?zdclient=ios&tag=006&count=10";
     private static final String ENTIRE_PART_URL = "http://buy.zhaidou.com/gl.html";
 
-    private Button lastButton;
+    private TextView lastButton;
     private OnFragmentInteractionListener mListener;
 
     public StrategyFragment() {
@@ -101,9 +103,7 @@ public class StrategyFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_strategy, container, false);
-
         viewPager = (ViewPager) view.findViewById(R.id.strategy_pager);
 
         views.add(view.inflate(getActivity(), R.layout.beauty_home, null));
@@ -111,8 +111,8 @@ public class StrategyFragment extends BaseFragment {
 
         viewPager.setAdapter(new MyFragmentAdapter(getChildFragmentManager()));//new MyPagerAdapter(views));
 
-        livingRoomButton = (Button) view.findViewById(R.id.living_room);
-        entirePartButton = (Button) view.findViewById(R.id.entire_part);
+        livingRoomButton = (TextView) view.findViewById(R.id.living_room);
+        entirePartButton = (TextView) view.findViewById(R.id.entire_part);
         livingRoomButton.setSelected(true);
         lastButton = livingRoomButton;
 
@@ -161,7 +161,6 @@ public class StrategyFragment extends BaseFragment {
                 lastButton.setSelected(true);
             }
         });
-
         return view;
 
         // Inflate the layout for this fragment
@@ -223,7 +222,6 @@ public class StrategyFragment extends BaseFragment {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        initTopBarForOnlyTitle("专业家居美化方案");
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -285,7 +283,7 @@ public class StrategyFragment extends BaseFragment {
                     return ElementListFragment.newInstance("http://buy.zhaidou.com/?zdclient=ios&tag=006&count=10&json=1", ZhaiDou.ListType.TAG.toString());
                 }
                 case 1: {
-                    return WebViewFragment.newInstance("http://buy.zhaidou.com/gl.html");
+                    return WebViewFragment.newInstance("http://buy.zhaidou.com/gl.html",false);
                 }
             }
             return null;

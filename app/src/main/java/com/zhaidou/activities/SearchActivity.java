@@ -126,7 +126,6 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
         setContentView(R.layout.activity_search);
         initView();
         getHotSearch();
-
         if (mSortFragment==null)
             mSortFragment=SortFragment.newInstance("",0);
         mSortFragment.setRefreshDataListener(this);
@@ -301,6 +300,7 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
                 return "单品";
             return "攻略";
         }
+
     }
 
     public void toggleSortMenu(){

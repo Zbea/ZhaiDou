@@ -21,7 +21,7 @@
                 <!--android:layout_height="wrap_content"-->
                 <!--android:layout_gravity="center"-->
                 <!--android:src="@drawable/icon_back"/>-->
-            <TextView
+            <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:drawableLeft="@drawable/icon_back"
@@ -47,7 +47,7 @@
                 android:layout_gravity="center"
                 android:clickable="true"
                 android:src="@drawable/search"/>
-            <EditText
+            <com.zhaidou.view.TypeFaceEditText
                 android:id="@+id/et_search"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -67,7 +67,7 @@
                 android:paddingRight="10dp"
                 android:src="@drawable/cancel"/>
             </LinearLayout>
-        <TextView
+        <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/tv_cancel"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -134,7 +134,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-    <TextView
+    <com.zhaidou.view.TypeFaceTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="热门搜索"
@@ -153,7 +153,7 @@
         android:listSelector="@drawable/search_item_selector"
         android:numColumns="5">
     </GridView>
-    <TextView
+    <com.zhaidou.view.TypeFaceTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="16sp"
@@ -177,7 +177,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#c8c8c8"/>
-    <TextView
+    <com.zhaidou.view.TypeFaceTextView
         android:id="@+id/tv_delete"
         android:layout_gravity="center"
         android:layout_marginTop="-10dp"

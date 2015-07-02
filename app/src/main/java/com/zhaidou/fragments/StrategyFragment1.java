@@ -178,7 +178,7 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
 
 
         JsonObjectRequest newMissRequest = new JsonObjectRequest(
-                Request.Method.POST, "http://192.168.199.171/article/api/articles/search",
+                Request.Method.POST, ZhaiDou.SEARCH_ARTICLES_URL,
                 new JSONObject(params), new Response.Listener<JSONObject>() {
 
             @Override
@@ -254,7 +254,7 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
 //            params.put("price","desc");
 //        }
 
-        String url="http://192.168.199.171/article/api/articles?catetory_id="+id;
+        String url=ZhaiDou.ARTICLES_WITH_CATEGORY+id;
         JsonObjectRequest fetchCategoryTask = new JsonObjectRequest(url,new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,13 +22,18 @@ public class WebViewFragment extends Fragment implements View.OnClickListener{
 
     private WebView webView;
     private String url;
+    private boolean isShowTitle;
+
+    public String preUrl;
+
 
     private OnFragmentInteractionListener mListener;
 
-    public static WebViewFragment newInstance(String url) {
+    public static WebViewFragment newInstance(String url,boolean isShowTitle) {
         WebViewFragment fragment = new WebViewFragment();
         Bundle args = new Bundle();
         args.putString("URL", url);
+        args.putBoolean("isShowTitle",isShowTitle);
         fragment.setArguments(args);
         return fragment;
     }
@@ -40,6 +46,7 @@ public class WebViewFragment extends Fragment implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             url = getArguments().getString("URL");
+            isShowTitle=getArguments().getBoolean("isShowTitle");
         }
     }
 
@@ -48,21 +55,28 @@ public class WebViewFragment extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.whole_projects, container, false);
 
-        view.findViewById(R.id.rl_back).setOnClickListener(this);
+        view.findViewById(R.id.rl_back).setVisibility(isShowTitle?View.VISIBLE:View.GONE);
+        view.findViewById(R.id.ll_back).setOnClickListener(this);
         webView = (WebView) view.findViewById(R.id.strategyView);
         webView.setWebViewClient(new WebViewClient() {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+//                if (preUrl!=null&&preUrl.equalsIgnoreCase(url)){
+//                    return true;
+//                }
+//                preUrl=url;
+                Log.i("url------>",url);
 //                Intent intent = new Intent();
 //                intent.putExtra("url", url);
 //                intent.setClass(getActivity(), WebViewActivity.class);
 //                getActivity().startActivity(intent);
 //                Toast.makeText(getActivity(),url,1).show();
-                WebViewFragment webViewFragment=WebViewFragment.newInstance(url);
+//                WebViewFragment webViewFragment=WebViewFragment.newInstance(url);
 //                ((PersonalMainFragment)getParentFragment()).addToStack(webViewFragment);
-                ((MainActivity)getActivity()).navigationToFragment(webViewFragment);
-                return true;
+//                ((MainActivity)getActivity()).navigationToFragment(webViewFragment);
+                return false;
             }
 //
 //            public void onPageFinished(WebView view, String url) {
@@ -125,7 +139,7 @@ public class WebViewFragment extends Fragment implements View.OnClickListener{
             case R.id.rl_back:
 //                ((PersonalMainFragment)getParentFragment()).popToStack();
 //                ((PersonalMainFragment)getParentFragment()).popToStack();
-                ((MainActivity)getActivity()).popToStack(WebViewFragment.this);
+//                ((MainActivity)getActivity()).popToStack(WebViewFragment.this);
                 ((MainActivity)getActivity()).popToStack(WebViewFragment.this);
                 break;
         }

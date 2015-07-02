@@ -14,7 +14,7 @@
         android:background="#ffffff"
         android:orientation="vertical" >
 
-        <TextView
+        <com.zhaidou.view.TypeFaceTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
@@ -28,7 +28,7 @@
             android:layout_height="1dp"
             android:background="#D5D5D5" />
 
-        <TextView
+        <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/tv_category_all"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
@@ -45,13 +45,13 @@
             android:id="@+id/gv_category"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:listSelector="@android:color/transparent"
             android:layout_marginBottom="50dp"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:horizontalSpacing="5dp"
-            android:verticalSpacing="5dp"
+            android:verticalSpacing="10dp"
             android:numColumns="3"/>
         </LinearLayout>
     <RelativeLayout

@@ -98,16 +98,17 @@ public class ItemDetailActivity extends FragmentActivity implements View.OnClick
             }
 
         });
-
+        url = getIntent().getStringExtra("url");
 //        String postUrl = ZhaiDou.HOME_BASE_URL + "?p=" + postId;
         String postUrl = "http://192.168.199.171/article/articles/" + postId;
         Log.i("postUrl-------------->",postUrl);
-        webView.loadUrl(postUrl);
+//        webView.loadUrl(postUrl);
+        webView.loadUrl(url);
         this.setTitle("");
 
         title = getIntent().getStringExtra("title");
         coverUrl = getIntent().getStringExtra("cover_url");
-        url = getIntent().getStringExtra("url");
+
 
         /*
         getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);

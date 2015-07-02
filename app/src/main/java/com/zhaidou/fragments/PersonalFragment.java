@@ -28,6 +28,7 @@ import com.android.volley.toolbox.Volley;
 import com.viewpagerindicator.TabPageIndicator;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.AsyncImageLoader1;
 
@@ -198,7 +199,7 @@ public class PersonalFragment extends Fragment implements View.OnClickListener,C
     public void getUserInfo(){
 
         int id=mSharedPreferences.getInt("userId",-1);
-        JsonObjectRequest request=new JsonObjectRequest("http://192.168.199.171/api/v1/users/"+id,new Response.Listener<JSONObject>(){
+        JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL+id,new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
                 JSONObject userObj = jsonObject.optJSONObject("user");

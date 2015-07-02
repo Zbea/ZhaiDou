@@ -4,18 +4,41 @@
     android:orientation="vertical">
 
     <RelativeLayout
+        android:id="@+id/rl_back"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/actionbar_background_color">
-        <TextView
+        android:background="#39495d">
+        <LinearLayout
+            android:id="@+id/ll_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_marginLeft="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:src="@drawable/icon_back"/>
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textSize="16sp"
+                android:drawablePadding="2dp"
+                android:textColor="@color/white"
+                android:layout_alignParentLeft="true"
+                android:text="返回"/>
+        </LinearLayout>
+        <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/tv_category_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:textSize="18sp"
             android:textColor="@color/white"
-            android:text="Scoield"
-            android:textSize="16sp"/>
-        </RelativeLayout>
+            android:text="分类"/>
+    </RelativeLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

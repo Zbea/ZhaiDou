@@ -247,7 +247,6 @@ public class HomeFragment extends Fragment implements
         mCategoryView=(ImageView)view.findViewById(R.id.iv_category);
         mCategoryView.setOnClickListener(this);
         mTitleView=(TextView)view.findViewById(R.id.tv_title);
-        mTitleView.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "FZLTXHK.TTF"));
 
         imageSwitchWall=(ImageSwitchWall)view.findViewById(R.id.isw_imagewall);
 
@@ -390,6 +389,8 @@ public class HomeFragment extends Fragment implements
             case R.id.ll_lottery:
                 break;
             case R.id.ll_competition:
+                WebViewFragment webViewFragment=WebViewFragment.newInstance(ZhaiDou.COMPETITION_URL,true);
+                ((MainActivity)getActivity()).navigationToFragment(webViewFragment);
                 break;
             case R.id.ll_sale:
                 SpecialSaleFragment specialSaleFragment =SpecialSaleFragment.newInstance("","");
@@ -439,11 +440,12 @@ public class HomeFragment extends Fragment implements
 
         String categoryId=(category==null?"":category.getId()+"");
         String url;
-        if (category==null){
-            url="http://192.168.199.171/article/api/articles?page="+page+"&catetory_id";
-        }else {
-            url="http://192.168.199.171/article/api/articles?page"+page+"&catetory_id="+categoryId;
-        }
+//        if (category==null){
+//            url=ZhaiDou.HOME_BASE_URL+"article/api/articles?page="+page+"&catetory_id";
+//        }else {
+//            url="http://192.168.199.171/article/api/articles?page="+page+"&catetory_id="+categoryId;
+//        }
+        url=ZhaiDou.HOME_CATEGORY_URL+page+((category==null)?"&catetory_id":"&catetory_id="+categoryId);
         Log.i("categoryId------------>",categoryId);
 
         Log.i("url---->",url);
@@ -485,7 +487,7 @@ public class HomeFragment extends Fragment implements
         },new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.i("onErrorResponse------->",error.getMessage());
+//                Log.i("onErrorResponse------->",error.getMessage());
             }
         });
         mRequestQueue.add(jr);
@@ -559,31 +561,35 @@ public class HomeFragment extends Fragment implements
     }
 
     private void getBannerData(){
-        String url="http://192.168.199.171/article/api/article_categories/index_code?code=zt001";
+        String url=ZhaiDou.HOME_BANNER_URL;
+        Log.i("HOME_BANNER_URL------------------->",ZhaiDou.HOME_BANNER_URL);
         final List<SwitchImage> banners = new ArrayList<SwitchImage>();
         JsonObjectRequest bannerRequest = new JsonObjectRequest(url,new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
 //                Log.i("jsonObject------>",jsonObject.toString());
                 JSONArray article_categories=jsonObject.optJSONArray("article_categories");
-                for(int i=0;i<article_categories.length();i++){
-                    JSONObject categoryobj =article_categories.optJSONObject(i);
-                    JSONArray childrenObj =  categoryobj.optJSONArray("children");
+                if (article_categories!=null&&article_categories.length()>0){
+                    for(int i=0;i<article_categories.length();i++){
+                        JSONObject categoryobj =article_categories.optJSONObject(i);
+                        JSONArray childrenObj =  categoryobj.optJSONArray("children");
 //                    SwitchImage switchImage = new SwitchImage();
-                    for (int k=0;k<childrenObj.length();k++){
-                        JSONObject banner = childrenObj.optJSONObject(i);
-                        int id = banner.optInt("id");
-                        String name = banner.optString("name");
-                        String url = banner.optJSONObject("avatar").optString("url");
+                        for (int k=0;k<childrenObj.length();k++){
+                            JSONObject banner = childrenObj.optJSONObject(i);
+                            int id = banner.optInt("id");
+                            String name = banner.optString("name");
+                            String url = banner.optJSONObject("avatar").optString("url");
 
-                        SwitchImage switchImage = new SwitchImage("http://"+url,id,name);
-                        banners.add(switchImage);
+                            SwitchImage switchImage = new SwitchImage("http://"+url,id,name);
+                            banners.add(switchImage);
+                        }
                     }
+                    Message message = new Message();
+                    message.what=UPDATE_BANNER;
+                    message.obj = banners;
+                    handler.sendMessage(message);
                 }
-                Message message = new Message();
-                message.what=UPDATE_BANNER;
-                message.obj = banners;
-                handler.sendMessage(message);
+
             }
         },new Response.ErrorListener(){
             @Override
@@ -603,7 +609,7 @@ public class HomeFragment extends Fragment implements
         detailIntent.putExtra("id", article.getId()+"");
         detailIntent.putExtra("title", article.getTitle());
         detailIntent.putExtra("cover_url", article.getImg_url());
-        detailIntent.putExtra("url","http://192.168.199.171/article/articles/"+article.getId());
+        detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+article.getId());
         startActivity(detailIntent);
     }
 

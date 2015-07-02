@@ -41,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
-                <TextView
+                <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_nickname"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -56,13 +56,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp">
-                <TextView
+                <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_province"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
                     android:text="广州省"/>
-                <TextView
+                <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_city"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -77,13 +77,13 @@
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:layout_height="40dp">
-            <TextView
+            <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:textColor="@color/white"
                 android:text="简介："/>
-            <TextView
+            <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/tv_desc"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

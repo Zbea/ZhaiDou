@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.zhaidou" >
-
     <application
         android:allowBackup="true"
         android:icon="@drawable/icon_launcher"
         android:largeHeap="true"
+        android:name=".ZDApplication"
         android:theme="@style/app_theme">
         <activity
             android:name=".MainActivity"
@@ -89,9 +89,6 @@
         <activity android:name="com.alibaba.sdk.android.login.ui.QrLoginActivity"
             android:theme="@style/tae_sdk_login_qr_activity_style"/>
 
-
-
-
         <activity
             android:name="cn.sharesdk.demo.wxapi.WXEntryActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
@@ -99,13 +96,11 @@
             android:exported="true"
             android:screenOrientation="portrait" />
         <activity
-            android:name="cn.sharesdk.framework.ShareSDKUIShell"
+            android:name=".wxapi.WXEntryActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="unspecified"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            android:launchMode="singleTask"
-            android:noHistory="true"/>
+            android:exported="true"
+            android:screenOrientation="portrait" />
 
     </application>
 

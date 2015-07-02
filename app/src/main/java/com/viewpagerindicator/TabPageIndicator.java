@@ -17,6 +17,7 @@
 package com.viewpagerindicator;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -27,6 +28,8 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
+
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
@@ -260,9 +263,11 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
 
     private class TabView extends TextView {
         private int mIndex;
+        private Typeface mTypeFace;
 
         public TabView(Context context) {
             super(context, null, R.attr.vpiTabPageIndicatorStyle);
+            initTypeFace(context);
         }
 
         @Override
@@ -278,6 +283,13 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
 
         public int getIndex() {
             return mIndex;
+        }
+        public void initTypeFace(Context context){
+            ZDApplication application =(ZDApplication)context.getApplicationContext();
+            Typeface mTypeFace = application.getTypeFace();
+            if (mTypeFace!=null){
+                setTypeface(mTypeFace);
+            }
         }
     }
 }

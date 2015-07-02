@@ -29,6 +29,7 @@ import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshGridView;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -181,12 +182,11 @@ public class SingleFragment extends Fragment implements PullToRefreshBase.OnRefr
         }
 
         JsonObjectRequest newMissRequest = new JsonObjectRequest(
-                Request.Method.POST, "http://192.168.199.171/article/api/article_items/search",
+                Request.Method.POST, ZhaiDou.SEARCH_PRODUCT_URL,
                 new JSONObject(params), new Response.Listener<JSONObject>() {
 
             @Override
             public void onResponse(JSONObject json) {
-                Log.i("http://192.168.199.171/article/api/article_items/search",json.toString());
                 JSONArray items = json.optJSONArray("article_items");
                 JSONObject meta = json.optJSONObject("meta");
 
@@ -268,7 +268,7 @@ public class SingleFragment extends Fragment implements PullToRefreshBase.OnRefr
 //            params.put("price","desc");
 //        }
 
-        String url="http://192.168.199.171/article/api/article_items?item_catetory_id="+id;
+        String url=ZhaiDou.ARTICLE_ITEM_WITH_CATEGORY+id;
         JsonObjectRequest fetchCategoryTask = new JsonObjectRequest(url,new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {

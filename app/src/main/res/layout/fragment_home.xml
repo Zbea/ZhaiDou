@@ -17,7 +17,7 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
             android:src="@drawable/icon_category"/>
-        <TextView
+        <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/tv_title"
             android:textColor="@color/white"
             android:textSize="18sp"
@@ -27,8 +27,8 @@
             android:text="每日精选功能美物"/>
         <ImageView
             android:id="@+id/iv_search"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:scaleType="fitXY"
             android:src="@drawable/icon_search"
             android:layout_alignParentRight="true"
@@ -80,7 +80,7 @@
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:src="@drawable/icon_guajiang"/>
-                    <TextView
+                    <com.zhaidou.view.TypeFaceTextView
                         android:layout_marginTop="10dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:src="@drawable/icon_pintie"/>
-                    <TextView
+                    <com.zhaidou.view.TypeFaceTextView
                         android:layout_marginTop="10dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -120,7 +120,7 @@
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:src="@drawable/icon_special_sale"/>
-                    <TextView
+                    <com.zhaidou.view.TypeFaceTextView
                         android:layout_marginTop="10dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -140,7 +140,7 @@
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:src="@drawable/icon_zhuanfa"/>
-                    <TextView
+                    <com.zhaidou.view.TypeFaceTextView
                         android:layout_marginTop="10dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

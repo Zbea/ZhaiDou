@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -61,7 +62,7 @@ import java.util.WeakHashMap;
  * create an instance of this fragment.
  *
  */
-public class CategoryFragment1 extends BaseFragment {
+public class CategoryFragment1 extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -167,7 +168,6 @@ public class CategoryFragment1 extends BaseFragment {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        initTopBarForOnlyTitle("全类别");
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -196,11 +196,11 @@ public class CategoryFragment1 extends BaseFragment {
 
     private void getCategoryData(){
 
-        String url="http://192.168.1.45/article/api/item_categories";
+        String url=ZhaiDou.CATEGORY_ITEM_URL;
         JsonObjectRequest request =new JsonObjectRequest(url,new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("getCategoryData-------------->",jsonObject.toString());
+//                Log.i("getCategoryData-------------->",jsonObject.toString());
                 Category category=null;
                 JSONArray categoryArr = jsonObject.optJSONArray("item_categories");
                 for (int i=0;i<categoryArr.length();i++){
@@ -281,6 +281,7 @@ public class CategoryFragment1 extends BaseFragment {
             if (convertView==null)
                 convertView=LayoutInflater.from(context).inflate(R.layout.fragment_category_child_grid,null);
             ChildGridView gridView = ViewHolder.get(convertView,R.id.gv_category_child);
+            Log.i("gridView--->getChildView",gridView.toString());
 
             List<CategoryItem> categoryItems = categoryList.get(groupPosition).getCategoryItems();
             ChildAdapter childAdapter =new ChildAdapter(context,categoryItems,gridView);
@@ -296,7 +297,7 @@ public class CategoryFragment1 extends BaseFragment {
                     Intent intent = new Intent(getActivity(),CategoryActivity.class);
                     intent.putExtra("id",item.getId());
                     intent.putExtra("title",item.getName());
-                    startAnimActivity(intent);
+                    startActivity(intent);
                 }
             });
 
@@ -365,16 +366,16 @@ public class CategoryFragment1 extends BaseFragment {
             }
 
             ImageView imageView =ViewHolder.get(view,R.id.iv_category_item);
-            Log.i("imageView------->",imageView.toString());
+//            Log.i("imageView------->",imageView.toString());
             TextView textView=ViewHolder.get(view,R.id.tv_category_name);
             CategoryItem item = getList().get(position);
 
-            Log.i("item.getThumb()-------->",item.getThumb());
-            Log.i("item.getName()-------->",item.getName());
+//            Log.i("item.getThumb()-------->",item.getThumb());
+//            Log.i("item.getName()-------->",item.getName());
             ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
 
-            layoutParams.height=100;
-            layoutParams.width=100;
+            layoutParams.height=80;
+            layoutParams.width=80;
             imageView.setLayoutParams(layoutParams);
             imageLoader.LoadImage("http://"+item.getThumb(),imageView);
 //            imageLoader.LoadSmallImage("http://"+item.getThumb(),imageView);

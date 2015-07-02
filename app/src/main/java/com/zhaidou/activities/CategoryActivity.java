@@ -48,6 +48,12 @@ public class CategoryActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
 
+        findViewById(R.id.rl_back).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         categoryId=getIntent().getIntExtra("id",0);
         title=getIntent().getStringExtra("title");
 

@@ -108,7 +108,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener,Pr
                 ((MainActivity)getActivity()).navigationToFragment(mProfileFragment);
                 break;
             case R.id.ll_competition:
-                WebViewFragment webViewFragment=WebViewFragment.newInstance("http://www.zhaidou.com/competitions/current?zdclient=ios");
+                WebViewFragment webViewFragment=WebViewFragment.newInstance("http://www.zhaidou.com/competitions/current?zdclient=ios",true);
 //                ((PersonalMainFragment)getParentFragment()).addToStack(webViewFragment);
                 ((MainActivity)getActivity()).navigationToFragment(webViewFragment);
                 break;

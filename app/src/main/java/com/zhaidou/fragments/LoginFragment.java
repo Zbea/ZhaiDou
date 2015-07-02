@@ -88,7 +88,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener,Plat
     private String mParam2;
     private TextView mEmailView,mPswView,mRegisterView,mResetView;
 
-    private Button mLoginView;
+    private TextView mLoginView;
     public static final String TAG=LoginFragment.class.getSimpleName();
 
 
@@ -136,11 +136,10 @@ public class LoginFragment extends Fragment implements View.OnClickListener,Plat
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
         View view=inflater.inflate(R.layout.fragment_login, container, false);
         mEmailView=(TextView)view.findViewById(R.id.tv_email);
         mPswView=(TextView)view.findViewById(R.id.tv_password);
-        mLoginView=(Button)view.findViewById(R.id.bt_login);
+        mLoginView=(TextView)view.findViewById(R.id.bt_login);
         mRegisterView=(TextView)view.findViewById(R.id.tv_register);
         mResetView=(TextView)view.findViewById(R.id.tv_reset_psw);
 
@@ -153,8 +152,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener,Plat
         view.findViewById(R.id.ll_weixin).setOnClickListener(this);
         view.findViewById(R.id.ll_weibo).setOnClickListener(this);
         view.findViewById(R.id.ll_taobao).setOnClickListener(this);
-
-
         return view;
     }
 
@@ -180,6 +177,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener,Plat
             case R.id.tv_reset_psw:
                 break;
             case R.id.ll_back:
+                Log.i("ll_back--->","ll_back");
                 if (getActivity()!=null&&getActivity() instanceof ItemDetailActivity){
                     Log.i("R.id.ll_back:","getActivity()!=null&&getActivity() instanceof ItemDetailActivity");
                     ((ItemDetailActivity)getActivity()).popToStack();

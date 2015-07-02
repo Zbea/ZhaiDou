@@ -95,7 +95,6 @@
         android:layout_height="match_parent"
         android:layout_above="@id/tab_container"
         android:orientation="horizontal">
-
     </LinearLayout>
     <FrameLayout
         android:id="@+id/fl_child_container"

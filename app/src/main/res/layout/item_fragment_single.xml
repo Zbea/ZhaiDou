@@ -11,15 +11,18 @@
         android:scaleType="fitXY"
         android:id="@+id/iv_single_item"
         android:background="@color/gray"/>
-    <TextView
+    <com.zhaidou.view.TypeFaceTextView
         android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textSize="12sp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:textSize="16sp"
         android:id="@+id/tv_name"
         android:singleLine="true"
         android:ellipsize="end"
+        android:textColor="#333333"
         android:text="天然环保彩色椅啊斯"/>
     <LinearLayout
         android:background="@color/white"
@@ -47,13 +50,14 @@
                 android:scaleType="fitXY"
                 android:layout_width="16dp"
                 android:background="@drawable/heart_normal"
+                android:layout_marginRight="5dp"
                 android:layout_height="16dp"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:id="@+id/tv_count"
-                android:textColor="#b7b7b7"
+                android:textColor="#666666"
                 android:text="1261"/>
         </LinearLayout>
     </LinearLayout>

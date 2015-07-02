@@ -70,7 +70,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
 
     private EditText mEmailView,mNickView,mPswView,mConfirmPsw;
     private TextView mLogin;
-    private Button mRegister;
+    private TextView mRegister;
     private RequestQueue mRequestQueue;
     SharedPreferences mSharedPreferences;
     static RegisterOrLoginListener mRegisterListener;
@@ -115,7 +115,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
         mPswView=(EditText)view.findViewById(R.id.tv_password);
         mConfirmPsw=(EditText)view.findViewById(R.id.tv_password_confirm);
         mLogin=(TextView)view.findViewById(R.id.tv_login);
-        mRegister=(Button)view.findViewById(R.id.bt_register);
+        mRegister=(TextView)view.findViewById(R.id.bt_register);
 
         mSharedPreferences=getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
 
