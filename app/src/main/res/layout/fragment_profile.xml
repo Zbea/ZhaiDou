@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:src="@drawable/icon_back"/>
-            <TextView
+            <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -32,7 +32,7 @@
                 android:layout_alignParentLeft="true"
                 android:text="返回"/>
         </LinearLayout>
-        <TextView
+        <com.zhaidou.view.TypeFaceTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
@@ -57,7 +57,7 @@
         android:layout_width="match_parent"
         android:background="@color/white"
         android:layout_height="80dp">
-        <TextView
+        <com.zhaidou.view.TypeFaceTextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:textColor="#666666"
@@ -91,14 +91,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@color/white">
-                <TextView
+                <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#666666"
                     android:text="我的昵称"
                     android:layout_centerVertical="true"
                     android:paddingLeft="20dp"/>
-                <TextView
+                <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_nick"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -119,14 +119,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@color/white">
-                <TextView
+                <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="注册邮箱"
                     android:textColor="#666666"
                     android:layout_centerVertical="true"
                     android:paddingLeft="20dp"/>
-                <TextView
+                <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_email"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -147,14 +147,14 @@
                 android:layout_height="40dp"
                 android:visibility="gone"
                 android:background="@color/white">
-                <TextView
+                <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="我的性别"
                     android:textColor="#666666"
                     android:layout_centerVertical="true"
                     android:paddingLeft="20dp"/>
-                <TextView
+                <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_gender"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -175,14 +175,14 @@
             android:layout_height="40dp"
                 android:visibility="gone"
             android:background="@color/white">
-            <TextView
+            <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="我的生日"
                 android:textColor="#666666"
                 android:layout_centerVertical="true"
                 android:paddingLeft="20dp"/>
-            <TextView
+            <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/tv_birthday"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -203,14 +203,14 @@
                 android:layout_height="40dp"
                 android:visibility="gone"
                 android:background="@color/white">
-                <TextView
+                <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="我的城市"
                     android:textColor="#666666"
                     android:layout_centerVertical="true"
                     android:paddingLeft="20dp"/>
-                <TextView
+                <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_city"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -231,14 +231,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@color/white">
-                <TextView
+                <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="我的职业"
                     android:textColor="#666666"
                     android:layout_centerVertical="true"
                     android:paddingLeft="20dp"/>
-                <TextView
+                <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_job"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -287,14 +287,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@color/white">
-                <TextView
+                <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="手机号码"
                     android:textColor="#666666"
                     android:layout_centerVertical="true"
                     android:paddingLeft="20dp"/>
-                <TextView
+                <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_mobile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -331,7 +331,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@color/white">
-                <TextView
+                <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="个人简介"
@@ -345,7 +345,7 @@
                     android:layout_alignParentBottom="true"
                     android:background="#d2d4d7"/>
             </RelativeLayout>
-            <TextView
+            <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/tv_intro"
                 android:background="@color/white"
                 android:layout_width="match_parent"

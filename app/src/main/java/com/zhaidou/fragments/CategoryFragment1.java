@@ -12,6 +12,7 @@ import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -62,7 +63,7 @@ import java.util.WeakHashMap;
  * create an instance of this fragment.
  *
  */
-public class CategoryFragment1 extends Fragment {
+public class CategoryFragment1 extends BaseFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -80,6 +81,8 @@ public class CategoryFragment1 extends Fragment {
     private AsyncImageLoader1 imageLoader;
     private CategoryExpandeAdapter categoryExpandeAdapter;
     private ExpandableListView expandableListView;
+
+    private int screenWidth;
 
     private Handler mHandler = new Handler(){
         @Override
@@ -156,6 +159,10 @@ public class CategoryFragment1 extends Fragment {
         });
         // 设置点击背景色
 //        expandableListView.setSelector(getResources().getColor(R.color.base_bg));
+        DisplayMetrics dm = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
+        screenWidth=dm.widthPixels;
+        Log.i("screenWidth---------->",screenWidth+"");
         return view;
     }
 
@@ -352,6 +359,7 @@ public class CategoryFragment1 extends Fragment {
         public ChildAdapter(Context context, List<CategoryItem> list,ChildGridView gridView) {
             super(context, list);
             this.gridView=gridView;
+
         }
 
         @Override
@@ -360,7 +368,7 @@ public class CategoryFragment1 extends Fragment {
             if (view==null){
                 view=mInflater.inflate(R.layout.fragment_category_child_item,null);
                 AbsListView.LayoutParams param = new AbsListView.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,1080/4);
+                        ViewGroup.LayoutParams.MATCH_PARENT,screenWidth/4);
                 view.setLayoutParams(param);
                 view.setBackgroundResource(R.drawable.grid_category_selector);
             }

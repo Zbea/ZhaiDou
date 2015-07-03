@@ -36,7 +36,10 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
+import com.zhaidou.base.BaseActivity;
+import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.User;
 
 import org.apache.http.HttpResponse;
@@ -77,7 +80,7 @@ import com.zhaidou.utils.NativeHttpUtil;
  * create an instance of this fragment.
  *
  */
-public class LoginFragment extends Fragment implements View.OnClickListener,PlatformActionListener{
+public class LoginFragment extends BaseFragment implements View.OnClickListener,PlatformActionListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -164,31 +167,13 @@ public class LoginFragment extends Fragment implements View.OnClickListener,Plat
                 break;
             case R.id.tv_register:
                 RegisterFragment fragment = RegisterFragment.newInstance("","");
-                if (getActivity()!=null&&getActivity() instanceof ItemDetailActivity){
-                    Log.i("R.id.ll_back:","getActivity()!=null&&getActivity() instanceof ItemDetailActivity");
-                    ((ItemDetailActivity)getActivity()).navigationToFragment(fragment);
-                    return;
-                }else if (getActivity()!=null&&getActivity() instanceof MainActivity){
-                    ((MainActivity)getActivity()).navigationToFragment(fragment);
-                    return;
-                }
-                ((PersonalMainFragment)getParentFragment()).addToStack(fragment);
+                ((BaseActivity)getActivity()).navigationToFragment(fragment);
                 break;
             case R.id.tv_reset_psw:
                 break;
             case R.id.ll_back:
                 Log.i("ll_back--->","ll_back");
-                if (getActivity()!=null&&getActivity() instanceof ItemDetailActivity){
-                    Log.i("R.id.ll_back:","getActivity()!=null&&getActivity() instanceof ItemDetailActivity");
-                    ((ItemDetailActivity)getActivity()).popToStack();
-                    return;
-                }else if (getActivity()!=null&&getActivity() instanceof MainActivity){
-                    Log.i("R.id.ll_back:","getActivity()!=null&&getActivity() instanceof MainActivity");
-                    ((MainActivity)getActivity()).popToStack(this);
-                    return;
-                }
-                ((PersonalMainFragment)getParentFragment()).popToStack();
-                ((PersonalMainFragment)getParentFragment()).toggleTabContainer();
+                ((BaseActivity)getActivity()).popToStack(this);
                 break;
             case R.id.ll_weixin:
                 Log.i("ll_weixin--->","ll_weixin");
@@ -218,7 +203,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener,Plat
                         params.put("provider","taobao");
                         params.put("nick_name",session.getUser().nick);
 
-                        JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,"http://192.168.199.171/api/v1/users/verification_other",new JSONObject(params),new Response.Listener<JSONObject>() {
+                        JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,ZhaiDou.USER_LOGIN_THIRD_VERIFY_URL,new JSONObject(params),new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject jsonObject) {
                                 Log.i("jsonObject--->",jsonObject.toString());
@@ -334,7 +319,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener,Plat
 
 
             // 实例化HTTP方法
-            HttpPost request = new HttpPost("http://192.168.199.171/api/v1/user_tokens");
+            HttpPost request = new HttpPost(ZhaiDou.USER_LOGIN_URL);
 
             // 创建名/值组列表
             List<NameValuePair> parameters = new ArrayList<NameValuePair>();
@@ -399,7 +384,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener,Plat
         params.put("provider",provider);
         params.put("nick_name",platform.getDb().getUserName());
 
-        JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,"http://192.168.199.171/api/v1/users/verification_other",new JSONObject(params),new Response.Listener<JSONObject>() {
+        JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,ZhaiDou.USER_LOGIN_THIRD_VERIFY_URL,new JSONObject(params),new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("jsonObject--->",jsonObject.toString());
@@ -464,7 +449,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener,Plat
             Log.i("doInBackground--------------->",maps[0].toString());
             String s=null;
             try {
-                s=NativeHttpUtil.post("http://192.168.199.171/api/v1/users",null,maps[0]);
+                s=NativeHttpUtil.post(ZhaiDou.USER_REGISTER_URL,null,maps[0]);
             }catch (Exception e){
                 Log.i("e--->",e.getMessage());
             }

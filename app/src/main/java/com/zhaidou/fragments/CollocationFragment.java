@@ -25,6 +25,7 @@ import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshGridView;
 import com.zhaidou.R;
+import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Collocation;
@@ -44,7 +45,7 @@ import java.util.Map;
  * create an instance of this fragment.
  *
  */
-public class CollocationFragment extends Fragment implements PullToRefreshBase.OnRefreshListener2<GridView>{
+public class CollocationFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<GridView>{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -138,11 +139,9 @@ public class CollocationFragment extends Fragment implements PullToRefreshBase.O
             ,new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("jsonObject--->",jsonObject.toString());
                 JSONArray collocationsArr=jsonObject.optJSONArray("bean_collocations");
                 JSONObject meta = jsonObject.optJSONObject("meta");
 
-                Log.i("CollocationFragment--->meta----->",meta.toString());
                 count=meta==null?0:meta.optInt("count");
                 Collocation collocation=null;
                 for (int i=0;i<collocationsArr.length();i++){

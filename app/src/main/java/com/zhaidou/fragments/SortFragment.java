@@ -15,6 +15,7 @@ import android.widget.RelativeLayout;
 
 import com.zhaidou.R;
 import com.zhaidou.activities.SearchActivity;
+import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 
@@ -29,7 +30,7 @@ import java.util.List;
  * create an instance of this fragment.
  *
  */
-public class SortFragment extends Fragment implements AdapterView.OnItemClickListener,
+public class SortFragment extends BaseFragment implements AdapterView.OnItemClickListener,
                                   View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

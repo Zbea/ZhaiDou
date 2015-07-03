@@ -10,6 +10,7 @@
         android:horizontalSpacing="2dp"
         android:verticalSpacing="2dp"
         android:background="#f1f1f1"
+        android:scrollbars="none"
         android:listSelector="@android:color/transparent"
         android:layout_height="match_parent"/>
 </LinearLayout>

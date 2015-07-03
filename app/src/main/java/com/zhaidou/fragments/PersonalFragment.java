@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,7 @@ import com.viewpagerindicator.TabPageIndicator;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.AsyncImageLoader1;
 
@@ -46,7 +48,7 @@ import java.util.Map;
  * create an instance of this fragment.
  *
  */
-public class PersonalFragment extends Fragment implements View.OnClickListener,CollectFragment.CollectCountChangeListener,
+public class PersonalFragment extends BaseFragment implements View.OnClickListener,CollectFragment.CollectCountChangeListener,
         CollocationFragment.CollocationCountChangeListener,SettingFragment.ProfileListener{
 
     private static final String ARG_PARAM1 = "param1";
@@ -73,11 +75,14 @@ public class PersonalFragment extends Fragment implements View.OnClickListener,C
     AsyncImageLoader1 imageLoader;
     private RequestQueue mRequestQueue;
     private final int UPDATE_USER_INFO=1;
+    private final int UPDATE_USER_DESCRIPTION=2;
 
     private Map<String,String> cityMap = new HashMap<String, String>();
 
     private int collect_count=0;
     private int collocation_count=0;
+
+    private User user;
 
     private Handler mHandler=new Handler(){
         @Override
@@ -86,9 +91,14 @@ public class PersonalFragment extends Fragment implements View.OnClickListener,C
                 case UPDATE_USER_INFO:
                     User user=(User)msg.obj;
                     imageLoader.LoadImage("http://"+user.getAvatar(),iv_header);
-                    tv_nickname.setText(user.getNickName());
+                    if (!TextUtils.isEmpty(user.getNickName()))
+                        tv_nickname.setText(user.getNickName());
                     tv_province.setText(cityMap.get(user.getProvince()));
                     tv_city.setText(cityMap.get(user.getCity()));
+                    break;
+                case UPDATE_USER_DESCRIPTION:
+                    User u = (User)msg.obj;
+                    tv_desc.setText(u.getDescription() == null ? "" : u.getDescription());
                     break;
             }
         }
@@ -227,6 +237,34 @@ public class PersonalFragment extends Fragment implements View.OnClickListener,C
         mRequestQueue.add(request);
     }
 
+    public void getUserDetail(){
+        int id=mSharedPreferences.getInt("userId",-1);
+        Log.i("getUserDetail()----id",id+"");
+        JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL+id+"/profile",new Response.Listener<JSONObject>(){
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                Log.i("getUserDetail---->",jsonObject.toString());
+                JSONObject userObj = jsonObject.optJSONObject("profile");
+                String nick_name=userObj.optString("nick_name");
+                String mobile=userObj.optString("mobile");
+                String description=userObj.optString("description");
+//                int profileId=userObj.optString("id");
+                boolean verified=userObj.optBoolean("verified");
+                User user=new User(null,null,nick_name,verified,mobile,description);
+                Message message=new Message();
+                message.what=UPDATE_USER_DESCRIPTION;
+                message.obj=user;
+                mHandler.sendMessage(message);
+            }
+        },new Response.ErrorListener(){
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.i("volleyError---------->",volleyError.toString());
+            }
+        });
+        mRequestQueue.add(request);
+    }
+
     public void getCityList(){
         String city = getString(R.string.city);
         try{
@@ -238,6 +276,7 @@ public class PersonalFragment extends Fragment implements View.OnClickListener,C
                 cityMap.put(index,desc);
             }
             getUserInfo();
+            getUserDetail();
         }catch (Exception e){
 
         }

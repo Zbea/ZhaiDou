@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class StrategyFragment extends Fragment {
+public class StrategyFragment extends BaseFragment {
 
     public class CustomWebView extends WebView {
 

@@ -149,7 +149,7 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
                 detailIntent.putExtra("id", article.getId()+"");
                 detailIntent.putExtra("title", article.getTitle());
                 detailIntent.putExtra("cover_url", article.getImg_url());
-                detailIntent.putExtra("url","http://http://192.168.199.171/article/articles/"+article.getId());
+                detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+article.getId());
                 startActivity(detailIntent);
             }
         });

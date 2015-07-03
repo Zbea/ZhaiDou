@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.zhaidou.R;
 import com.zhaidou.activities.DiyActivity;
+import com.zhaidou.base.BaseFragment;
 
 /**
  * A simple {@link android.support.v4.app.Fragment} subclass.
@@ -22,7 +23,7 @@ import com.zhaidou.activities.DiyActivity;
  * create an instance of this fragment.
  *
  */
-public class DiyDetailFragment extends Fragment {
+public class DiyDetailFragment extends BaseFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";

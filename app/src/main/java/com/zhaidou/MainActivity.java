@@ -4,6 +4,7 @@ import com.alibaba.sdk.android.AlibabaSDK;
 import com.alibaba.sdk.android.callback.CallbackContext;
 import com.alibaba.sdk.android.callback.InitResultCallback;
 import com.zhaidou.activities.SearchActivity;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.fragments.CategoryFragment;
 import com.zhaidou.fragments.CategoryFragment1;
 import com.zhaidou.fragments.DiyFragment;
@@ -17,6 +18,7 @@ import com.zhaidou.fragments.StrategyFragment;
 import com.zhaidou.fragments.WebViewFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.PhotoUtil;
+import com.zhaidou.utils.SharedPreferencesUtil;
 
 import android.content.Context;
 import android.content.Intent;
@@ -33,6 +35,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -60,7 +63,7 @@ import java.util.List;
 
 /**
  */
-public class MainActivity extends FragmentActivity implements DiyFragment.OnFragmentInteractionListener,
+public class MainActivity extends BaseActivity implements DiyFragment.OnFragmentInteractionListener,
         CategoryFragment.OnFragmentInteractionListener, StrategyFragment.OnFragmentInteractionListener,
         ElementListFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
         HomeFragment.OnFragmentInteractionListener,CategoryFragment1.OnFragmentInteractionListener,
@@ -70,21 +73,20 @@ public class MainActivity extends FragmentActivity implements DiyFragment.OnFrag
     private Fragment beautyHomeFragment;
     private Fragment categoryFragment;
     private Fragment diyFragment;
-    private PersonalFragment persoanlFragment;
-    private Fragment currentFragment;
+//    private PersonalFragment persoanlFragment;
+//    private Fragment currentFragment;
 
     private ImageButton homeButton;
     private ImageButton beautyButton;
     private ImageButton categoryButton;
     private ImageButton diyButton;
-    private ImageButton personalButton;
+//    private ImageButton personalButton;
 
     private ImageButton lastButton;
 
     private TextView titleView;
     private LinearLayout mTabContainer;
-    private FrameLayout mChildContainer;
-    private SharedPreferences mSharedPreferences;
+//    private FrameLayout mChildContainer;
     private LoginFragment mLoginFragment;
 
     private String token;
@@ -105,13 +107,7 @@ public class MainActivity extends FragmentActivity implements DiyFragment.OnFrag
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main_layout);
-        mSharedPreferences=getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         init();
-
-//        String inputData = "1";
-//        int index = Integer.parseInt(inputData);
-//        AlibabaSDK.setProperty("login", "useH5Login", "false");
-//        AlibabaSDK.setEnvironment(com.alibaba.sdk.android.Environment.values()[index]);
         AlibabaSDK.asyncInit(this,new InitResultCallback() {
             @Override
             public void onSuccess() {
@@ -136,14 +132,6 @@ public class MainActivity extends FragmentActivity implements DiyFragment.OnFrag
     }
 
     public void initComponents() {
-//        View actionBarView = getLayoutInflater().inflate(R.layout.custom_actionbar, null);
-//        titleView = (TextView) actionBarView.findViewById(R.id.custom_actionbar_title);
-//        titleView.setText("每日精选功能美物");
-//
-//        getActionBar().setDisplayShowHomeEnabled(false);
-//        getActionBar().setDisplayShowTitleEnabled(false);
-//        getActionBar().setDisplayShowCustomEnabled(true);
-//        getActionBar().setCustomView(actionBarView);
 
         mTabContainer=(LinearLayout)findViewById(R.id.tab_container);
         mChildContainer=(FrameLayout)findViewById(R.id.fl_child_container);
@@ -301,61 +289,62 @@ public class MainActivity extends FragmentActivity implements DiyFragment.OnFrag
     }
 
     public boolean checkLogin(){
-        token=mSharedPreferences.getString("token", null);
-        id=mSharedPreferences.getInt("userId",-1);
-//        Log.i("token---------->",token);
-//        Log.i("id------------>",id+"");
-        boolean isLogin=token!=null&&id>-1;
+        token=(String)SharedPreferencesUtil.getData(this,"token","");
+        id=(Integer)SharedPreferencesUtil.getData(this,"userId",-1);
+        boolean isLogin=!TextUtils.isEmpty(token)&&id>-1;
         return isLogin;
     }
+//
+//    public void navigationToFragment(Fragment fragment){
+//        if (fragment!=null&&fragment instanceof RegisterFragment){
+//            RegisterFragment registerFragment=(RegisterFragment)fragment;
+//            registerFragment.setRegisterOrLoginListener(this);
+//        }
+//        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container,fragment,fragment.getClass().getSimpleName())
+//                .addToBackStack(null).commit();
+//        mChildContainer.setVisibility(View.VISIBLE);
+//    }
 
-    public void navigationToFragment(Fragment fragment){
-        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container,fragment,fragment.getClass().getSimpleName())
-                .addToBackStack(null).commit();
-        mChildContainer.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void onRegisterOrLoginSuccess(User user,Fragment fragment) {
-        Log.i("MainActivity---->",user.toString());
-        saveUserToSP(user);
-//        Message message= new Message();
-//        message.obj=fragment;
-//        mHandler.sendMessage(message);
-
-        if (persoanlFragment==null){
-            persoanlFragment= PersonalFragment.newInstance("", "");
-        }
-        selectFragment(currentFragment,persoanlFragment);
-        setButton(personalButton);
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().hide(fragment).commit();
-
-    }
-    public void popToStack(Fragment fragment){
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Log.i("childFragmentManager--->", fragmentManager.getBackStackEntryCount()+"");
-        fragmentManager.popBackStack();
-        fragmentManager.beginTransaction().remove(fragment).commit();
-
-        Log.i("fragment---->",fragment.getClass().getSimpleName());
-        if (fragment!=null&&fragment instanceof LoginFragment)
-            mChildContainer.setVisibility(View.GONE);
-    }
-
-    private void saveUserToSP(User user){
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putInt("userId",user.getId());
-        editor.putString("email", user.getEmail());
-        editor.putString("token",user.getAuthentication_token());
-        editor.putString("avatar",user.getAvatar());
-        editor.putString("nickName",user.getNickName());
-        editor.commit();
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.popBackStack();
-    }
+//    @Override
+//    public void onRegisterOrLoginSuccess(User user,Fragment fragment) {
+////        Log.i("MainActivity---->",user.toString());
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        fragmentManager.popBackStack();
+//        SharedPreferencesUtil.saveUser(this,user);
+//        if (fragment instanceof RegisterFragment){
+//            popToStack(fragment);
+//        }
+//        if (persoanlFragment==null){
+//            persoanlFragment= PersonalFragment.newInstance("", "");
+//        }
+//        selectFragment(currentFragment,persoanlFragment);
+//        setButton(personalButton);
+//
+//        fragmentManager.beginTransaction().hide(fragment).commit();
+//    }
+//    public void popToStack(Fragment fragment){
+//
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        Log.i("childFragmentManager--->", fragmentManager.getBackStackEntryCount()+"");
+//        fragmentManager.popBackStack();
+//        fragmentManager.beginTransaction().remove(fragment).commit();
+//
+//        Log.i("fragment---->",fragment.getClass().getSimpleName());
+////        if (fragment!=null&&fragment instanceof LoginFragment)
+////            mChildContainer.setVisibility(View.GONE);
+//    }
+//
+//    private void saveUserToSP(User user){
+//        SharedPreferences.Editor editor = mSharedPreferences.edit();
+//        editor.putInt("userId",user.getId());
+//        editor.putString("email", user.getEmail());
+//        editor.putString("token",user.getAuthentication_token());
+//        editor.putString("avatar",user.getAvatar());
+//        editor.putString("nickName",user.getNickName());
+//        editor.commit();
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        fragmentManager.popBackStack();
+//    }
 
     public interface PhotoSelectListener{
         public void onPhotoSelect();

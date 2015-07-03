@@ -52,7 +52,7 @@
                 android:background="@drawable/heart_normal"
                 android:layout_marginRight="5dp"
                 android:layout_height="16dp"/>
-            <TextView
+            <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"

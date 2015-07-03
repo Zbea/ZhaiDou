@@ -27,10 +27,15 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
+import com.zhaidou.base.BaseActivity;
+import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.User;
 
 import org.apache.http.HttpResponse;
@@ -57,7 +62,7 @@ import java.util.Map;
  * create an instance of this fragment.
  *
  */
-public class RegisterFragment extends Fragment implements View.OnClickListener{
+public class RegisterFragment extends BaseFragment implements View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -135,30 +140,10 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
                 doRegister();
                 break;
             case R.id.tv_login:
-                if (getActivity()!=null&&getActivity() instanceof ItemDetailActivity){
-                    Log.i("R.id.ll_back:","getActivity()!=null&&getActivity() instanceof ItemDetailActivity");
-                    ((ItemDetailActivity)getActivity()).popToStack();
-                    return;
-                }else if (getActivity()!=null&&getActivity() instanceof MainActivity){
-                    Log.i("R.id.ll_back:","getActivity()!=null&&getActivity() instanceof MainActivity");
-                    ((MainActivity)getActivity()).popToStack(this);
-                    return;
-                }
-                PersonalMainFragment parent=(PersonalMainFragment)getParentFragment();
-                parent.popToStack();
+                ((BaseActivity)getActivity()).popToStack(this);
                 break;
             case R.id.ll_back:
-                if (getActivity()!=null&&getActivity() instanceof ItemDetailActivity){
-                    Log.i("R.id.ll_back:","getActivity()!=null&&getActivity() instanceof ItemDetailActivity");
-                    ((ItemDetailActivity)getActivity()).popToStack();
-                    return;
-                }else if (getActivity()!=null&&getActivity() instanceof MainActivity){
-                    Log.i("R.id.ll_back:","getActivity()!=null&&getActivity() instanceof MainActivity");
-                    ((MainActivity)getActivity()).popToStack(this);
-                    return;
-                }
-                ((PersonalMainFragment)getParentFragment()).popToStack();
-                ((PersonalMainFragment)getParentFragment()).toggleTabContainer();
+                ((BaseActivity)getActivity()).popToStack(this);
                 break;
             default:
                 break;
@@ -242,7 +227,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
 
 
             // 实例化HTTP方法
-            HttpPost request = new HttpPost("http://192.168.199.171/api/v1/users");
+            HttpPost request = new HttpPost(ZhaiDou.USER_REGISTER_URL);
 
             // 创建名/值组列表
             List<NameValuePair> parameters = new ArrayList<NameValuePair>();
@@ -291,4 +276,5 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
     public interface RegisterOrLoginListener{
         public void onRegisterOrLoginSuccess(User user,Fragment fragment);
     }
+
 }

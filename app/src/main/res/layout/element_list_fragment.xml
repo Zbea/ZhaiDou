@@ -5,18 +5,13 @@
     android:layout_height="match_parent"
     android:id="@+id/home_layout"
     >
-
-    <include
-        android:id="@+id/common_actionbar"
-        layout="@layout/include_action_bar"/>
-    <com.zhaidou.view.XListView
+    <com.pulltorefresh.PullToRefreshListView
         android:id="@+id/homeItemList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:drawSelectorOnTop="false"
         android:divider="@null"
         android:listSelector="@android:color/transparent"
-        android:dividerHeight="0dp">
-    </com.zhaidou.view.XListView>
+        android:dividerHeight="0dp"/>
 
 </LinearLayout>

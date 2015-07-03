@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.R;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.model.User;
@@ -29,9 +30,9 @@ import com.zhaidou.model.User;
 import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
 
-public class ItemDetailActivity extends FragmentActivity implements View.OnClickListener,RegisterFragment.RegisterOrLoginListener{
+public class ItemDetailActivity extends BaseActivity implements View.OnClickListener,RegisterFragment.RegisterOrLoginListener{
 
-    private WebView webView;
+//    private WebView webView;
 
     /* 以下代码应该封装为一个对象 */
     private String title;
@@ -216,7 +217,7 @@ public class ItemDetailActivity extends FragmentActivity implements View.OnClick
         oks.show(this);
     }
 
-    public void popToStack(){
+    public void popToStack(Fragment fragment){
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         Log.i("childFragmentManager--->", fragmentManager.getBackStackEntryCount()+"");
@@ -228,7 +229,7 @@ public class ItemDetailActivity extends FragmentActivity implements View.OnClick
     public void onRegisterOrLoginSuccess(User user,Fragment fragment) {
         Log.i("ItemDetailActivity------------->",user.toString());
         saveUserToSP(user);
-        popToStack();
+        popToStack(fragment);
         webView.loadUrl("javascript:ReceiveUserInfo("+user.getId()+", '"+user.getAuthentication_token()+"')");
     }
     private void saveUserToSP(User user){

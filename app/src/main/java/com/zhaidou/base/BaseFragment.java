@@ -5,9 +5,11 @@ package com.zhaidou.base;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -20,13 +22,14 @@ import com.zhaidou.view.HeaderLayout;
  * A simple {@link Fragment} subclass.
  *
  */
-public abstract class BaseFragment extends Fragment {
+public abstract class BaseFragment extends Fragment implements View.OnTouchListener,View.OnClickListener{
     /**
      * 公用的Header布局
      */
     public HeaderLayout mHeaderLayout;
 
     protected View contentView;
+    protected View mBackView;
 
     public LayoutInflater mInflater;
 
@@ -40,6 +43,7 @@ public abstract class BaseFragment extends Fragment {
         handler.post(action);
     }
 
+    private Fragment currentFragment;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
@@ -48,6 +52,21 @@ public abstract class BaseFragment extends Fragment {
         mInflater = LayoutInflater.from(getActivity());
     }
 
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        currentFragment=this;
+        view.setOnTouchListener(this);
+        mBackView=view.findViewById(R.id.ll_back);
+        if (mBackView!=null)
+            mBackView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.i("WebViewFragment--233-->","R.id.rl_back:");
+                    ((BaseActivity)getActivity()).popToStack(currentFragment);
+                }
+            });
+    }
 
     public BaseFragment() {
 
@@ -175,4 +194,17 @@ public abstract class BaseFragment extends Fragment {
         getActivity().startActivity(new Intent(getActivity(), cla));
     }
 
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        return true;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.ll_back:
+                Log.i("onClick---->","onClick");
+                break;
+        }
+    }
 }

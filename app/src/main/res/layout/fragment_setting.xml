@@ -300,13 +300,15 @@
                 android:scaleType="fitXY"/>
         </LinearLayout>
 
-            <Button
+            <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/bt_logout"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="20dp"
+                android:gravity="center"
                 android:text="退出登录"
+                android:background="#38bbba"
                 android:layout_marginRight="10dp"/>
         </LinearLayout>
     </ScrollView>

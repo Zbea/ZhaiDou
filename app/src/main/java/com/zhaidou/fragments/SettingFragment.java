@@ -18,6 +18,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.User;
 
 import org.json.JSONObject;
@@ -28,7 +30,7 @@ import org.json.JSONObject;
  * create an instance of this fragment.
  *
  */
-public class SettingFragment extends Fragment implements View.OnClickListener,ProfileFragment.ProfileListener{
+public class SettingFragment extends BaseFragment implements View.OnClickListener,ProfileFragment.ProfileListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -143,7 +145,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener,Pr
 
     public void logout(){
 
-        JsonObjectRequest request=new JsonObjectRequest("http://192.168.199.171/api/v1/"+mSharedPreferences.getString("token","")+"/logout"
+        JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_LOGOUT_URL+mSharedPreferences.getString("token","")+"/logout"
          ,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {

@@ -17,8 +17,10 @@ import android.widget.Toast;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.activities.WebViewActivity;
+import com.zhaidou.base.BaseActivity;
+import com.zhaidou.base.BaseFragment;
 
-public class WebViewFragment extends Fragment implements View.OnClickListener{
+public class WebViewFragment extends BaseFragment{
 
     private WebView webView;
     private String url;
@@ -56,7 +58,6 @@ public class WebViewFragment extends Fragment implements View.OnClickListener{
         View view =  inflater.inflate(R.layout.whole_projects, container, false);
 
         view.findViewById(R.id.rl_back).setVisibility(isShowTitle?View.VISIBLE:View.GONE);
-        view.findViewById(R.id.ll_back).setOnClickListener(this);
         webView = (WebView) view.findViewById(R.id.strategyView);
         webView.setWebViewClient(new WebViewClient() {
 
@@ -131,17 +132,5 @@ public class WebViewFragment extends Fragment implements View.OnClickListener{
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.rl_back:
-//                ((PersonalMainFragment)getParentFragment()).popToStack();
-//                ((PersonalMainFragment)getParentFragment()).popToStack();
-//                ((MainActivity)getActivity()).popToStack(WebViewFragment.this);
-                ((MainActivity)getActivity()).popToStack(WebViewFragment.this);
-                break;
-        }
     }
 }

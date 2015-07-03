@@ -38,6 +38,7 @@ import com.android.volley.toolbox.Volley;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.PhotoUtil;
@@ -61,7 +62,7 @@ import java.util.Date;
 import java.util.List;
 
 
-public class ProfileFragment extends Fragment implements View.OnClickListener,PhotoMenuFragment.MenuSelectListener,EditProfileFragment.RefreshDataListener{
+public class ProfileFragment extends BaseFragment implements View.OnClickListener,PhotoMenuFragment.MenuSelectListener,EditProfileFragment.RefreshDataListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -115,18 +116,15 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,Ph
             switch (msg.what){
                 case UPDATE_PROFILE_INFO:
                     User user=(User)msg.obj;
-                    Log.i("imageLoader---->",imageLoader.toString());
-                    tv_nick.setText(TextUtils.isEmpty(user.getNickName())?"":user.getNickName());
                     tv_intro.setText(TextUtils.isEmpty(user.getDescription())?"":user.getDescription());
                     tv_mobile.setText(TextUtils.isEmpty(user.getMobile())?"":user.getMobile());
                     tv_job.setText(user.isVerified()?"宅豆认证工程师":"未认证工程师");
-//                    tv_gender.setText("male".equalsIgnoreCase(user.getGender())?"男":"女");
                     break;
                 case UPDATE_USER_INFO:
                     User user1=(User)msg.obj;
-                    Log.i("user1-->",user1.toString());
                     imageLoader.LoadImage("http://"+user1.getAvatar(),iv_header);
                     tv_email.setText(user1.getEmail());
+                    tv_nick.setText(TextUtils.isEmpty(user1.getNickName())?"":user1.getNickName());
                     break;
             }
         }
@@ -287,22 +285,19 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,Ph
 
     public void getUserData(){
 
-        JsonObjectRequest request=new JsonObjectRequest("http://192.168.199.171/api/v1/users/"+id+"/profile",new Response.Listener<JSONObject>(){
+        JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL+id+"/profile",new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("getUserData---->",jsonObject.toString());
                 JSONObject userObj = jsonObject.optJSONObject("profile");
-                String nick_name=userObj.optString("nick_name");
                 String mobile=userObj.optString("mobile");
                 String description=userObj.optString("description");
                 profileId=userObj.optString("id");
                 boolean verified=userObj.optBoolean("verified");
-                User user=new User(null,null,nick_name,verified,mobile,description);
+                User user=new User(null,null,null,verified,mobile,description);
                 Message message=new Message();
                 message.what=UPDATE_PROFILE_INFO;
                 message.obj=user;
                 mHandler.sendMessage(message);
-                Log.i("user--->",user.toString());
             }
         },new Response.ErrorListener(){
             @Override
@@ -315,19 +310,18 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,Ph
 
     public void getUserInfo(){
 
-        JsonObjectRequest request=new JsonObjectRequest("http://192.168.199.171/api/v1/users/"+id,new Response.Listener<JSONObject>(){
+        JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL+id,new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("getUserInfo---->",jsonObject.toString());
                 JSONObject userObj = jsonObject.optJSONObject("user");
                 String email=userObj.optString("email");
+                String nick=userObj.optString("nick_name");
                 String avatar=userObj.optJSONObject("avatar").optString("url");
-                User user=new User(avatar,email,null,false,null,null);
+                User user=new User(avatar,email,nick,false,null,null);
                 Message message=new Message();
                 message.what=UPDATE_USER_INFO;
                 message.obj=user;
                 mHandler.sendMessage(message);
-                Log.i("user--->",user.toString());
             }
         },new Response.ErrorListener(){
             @Override
@@ -337,31 +331,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,Ph
         });
         mRequestQueue.add(request);
     }
-    public void getHeaderBitMap(String url, final ImageView image){
-        ImageRequest irequest = new ImageRequest(
-                "http://"+url,
-                new Response.Listener<Bitmap>() {
-                    @SuppressLint("NewApi")
-                    @SuppressWarnings("deprecation")
-                    @Override
-                    public void onResponse(Bitmap bitmap) {
-                        image.setBackgroundDrawable(new BitmapDrawable(
-                                getActivity().getResources(), bitmap));
-                    }
-                }, 0, 0, Bitmap.Config.ARGB_8888, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError arg0) {
-            }
-        });
-//        mRequestQueue.add(irequest);
-    }
     public void popToStack(){
-
-        Log.i("popToStack---->","popToStack");
         FragmentManager childFragmentManager = getChildFragmentManager();
-        Log.i("childFragmentManager--->", childFragmentManager.getBackStackEntryCount()+"");
         childFragmentManager.popBackStack();
-        Log.i("childFragmentManager--->", childFragmentManager.getBackStackEntryCount()+"");
     }
 
     @Override
@@ -394,7 +366,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,Ph
                     isFromCamera = true;
                     File file = new File(filePath);
                     degree = PhotoUtil.readPictureDegree(file.getAbsolutePath());
-                    Log.i("life", "拍照后的角度：" + degree);
                     startImageAction(Uri.fromFile(file), 200, 200,
                             2, true);
                 }
@@ -425,7 +396,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,Ph
                 Log.i("裁剪头像返回----->","裁剪头像返回");
                 if (data == null) {
                     Toast.makeText(getActivity(), "取消选择", Toast.LENGTH_SHORT).show();
-                    Log.i("data == null----->","data == null");
                     return;
                 } else {
                     saveCropAvator(data);
@@ -439,14 +409,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,Ph
     }
     private void startImageAction(Uri uri, int outputX, int outputY,
                                   int requestCode, boolean isCrop) {
-        Log.i("startImageAction--------------->","startImageAction");
         Intent intent = null;
         if (isCrop) {
             intent = new Intent("com.android.camera.action.CROP");
         } else {
             intent = new Intent(Intent.ACTION_GET_CONTENT, null);
         }
-        Log.i("isCrop-----------------",isCrop+"");
         intent.setDataAndType(uri, "image/*");
         intent.putExtra("crop", "true");
         intent.putExtra("aspectX", 1);
@@ -518,9 +486,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,Ph
                 String email =userJson.optString("email");
                 User user = new User();
                 user.setAvatar(avatar);
-                Log.i("onPostExecute-->avatar-->",avatar);
                 user.setEmail(email);
-                Log.i("onPostExecute-->email-->",email);
                 Message message = new Message();
                 message.what=UPDATE_USER_INFO;
                 message.obj=user;
@@ -541,7 +507,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,Ph
             HttpClient client = new DefaultHttpClient();
 
             // 实例化HTTP方法
-            HttpPost request = new HttpPost("http://192.168.199.171/api/v1/users/"+id);
+            HttpPost request = new HttpPost(ZhaiDou.USER_REGISTER_URL+id);
 
             request.addHeader("SECAuthorization", token);
             // 创建名/值组列表

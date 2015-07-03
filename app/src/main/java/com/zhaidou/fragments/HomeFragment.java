@@ -43,6 +43,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.SearchActivity;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -390,14 +391,15 @@ public class HomeFragment extends Fragment implements
                 break;
             case R.id.ll_competition:
                 WebViewFragment webViewFragment=WebViewFragment.newInstance(ZhaiDou.COMPETITION_URL,true);
-                ((MainActivity)getActivity()).navigationToFragment(webViewFragment);
+                ((BaseActivity)getActivity()).navigationToFragment(webViewFragment);
                 break;
             case R.id.ll_sale:
                 SpecialSaleFragment specialSaleFragment =SpecialSaleFragment.newInstance("","");
                 ((MainActivity)getActivity()).navigationToFragment(specialSaleFragment);
                 break;
             case R.id.ll_forward:
-
+                WebViewFragment forwardFragment=WebViewFragment.newInstance(ZhaiDou.FORWARD_URL,true);
+                ((BaseActivity)getActivity()).navigationToFragment(forwardFragment);
                 break;
         }
     }

@@ -31,7 +31,9 @@ import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshGridView;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.WebViewActivity;
+import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Article;
@@ -71,7 +73,7 @@ import java.util.Set;
  * create an instance of this fragment.
  *
  */
-public class CollectFragment extends Fragment implements PullToRefreshBase.OnRefreshListener2<GridView>{
+public class CollectFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<GridView>{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -183,37 +185,38 @@ public class CollectFragment extends Fragment implements PullToRefreshBase.OnRef
     private class MyTask extends AsyncTask<Void,Void,JSONObject>{
         @Override
         protected JSONObject doInBackground(Void... voids) {
-            return getHttp("http://192.168.199.171/article/api/article_items/like_article_items?per_page=10&page="+currentpage, null);
+            return getHttp(ZhaiDou.USER_COLLECT_ITEM_URL+currentpage, null);
         }
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
-//            Log.i("onPostExecute------>",jsonObject.toString());
-            JSONArray article_items=jsonObject.optJSONArray("article_items");
-            JSONObject meta = jsonObject.optJSONObject("meta");
-            count=meta==null?0:meta.optInt("count");
+            if (!TextUtils.isEmpty(jsonObject.toString())){
+                JSONArray article_items=jsonObject.optJSONArray("article_items");
+                JSONObject meta = jsonObject.optJSONObject("meta");
+                count=meta==null?0:meta.optInt("count");
 
-//            Log.i("meta---->",meta.toString());
-            if (article_items!=null&&article_items.length()>0){
-                for (int i=0;i<article_items.length();i++){
-                    JSONObject articleObj = article_items.optJSONObject(i);
-                    int id = articleObj.optInt("id");
-                    int bean_likes_count=articleObj.optInt("bean_likes_count");
-                    String title=articleObj.optString("title");
-                    int price = articleObj.optInt("price");
-                    String url=articleObj.optString("url");
-                    JSONArray asset_imgs=articleObj.optJSONArray("asset_imgs");
-                    String thumb=null;
-                    if (asset_imgs!=null&&asset_imgs.length()>0){
-                        JSONObject picObj = asset_imgs.optJSONArray(0).optJSONObject(1);
-                        thumb=picObj.optJSONObject("picture").optJSONObject("thumb").optString("url");
+                if (article_items!=null&&article_items.length()>0){
+                    for (int i=0;i<article_items.length();i++){
+                        JSONObject articleObj = article_items.optJSONObject(i);
+                        int id = articleObj.optInt("id");
+                        int bean_likes_count=articleObj.optInt("bean_likes_count");
+                        String title=articleObj.optString("title");
+                        int price = articleObj.optInt("price");
+                        String url=articleObj.optString("url");
+                        JSONArray asset_imgs=articleObj.optJSONArray("asset_imgs");
+                        String thumb=null;
+                        if (asset_imgs!=null&&asset_imgs.length()>0){
+                            JSONObject picObj = asset_imgs.optJSONArray(0).optJSONObject(1);
+                            thumb=picObj.optJSONObject("picture").optJSONObject("thumb").optString("url");
+                        }
+                        Product product=new Product(id,title,price,url,bean_likes_count,null,thumb);
+                        products.add(product);
                     }
-                    Product product=new Product(id,title,price,url,bean_likes_count,null,thumb);
-                    products.add(product);
+                    Message message=new Message();
+                    message.arg1=count;
+                    mHandler.sendMessage(message);
                 }
-                Message message=new Message();
-                message.arg1=count;
-                mHandler.sendMessage(message);
             }
+
         }
     }
 

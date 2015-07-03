@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zhaidou.R;
+import com.zhaidou.base.BaseFragment;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,7 +20,7 @@ import com.zhaidou.R;
  * create an instance of this fragment.
  *
  */
-public class PhotoMenuFragment extends Fragment implements View.OnClickListener{
+public class PhotoMenuFragment extends BaseFragment implements View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";

@@ -21,6 +21,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -29,6 +30,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.pulltorefresh.PullToRefreshBase;
+import com.pulltorefresh.PullToRefreshListView;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
@@ -63,7 +66,7 @@ import java.util.WeakHashMap;
  * create an instance of this fragment.
  *
  */
-public class ElementListFragment extends BaseFragment implements XListView.IXListViewListener,
+public class ElementListFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<ListView>,
                                          HeaderLayout.onLeftImageButtonClickListener,
                                          HeaderLayout.onRightImageButtonClickListener{
     // TODO: Rename parameter arguments, choose names that match
@@ -72,7 +75,7 @@ public class ElementListFragment extends BaseFragment implements XListView.IXLis
     private static final String TYPE = "type";
 
     private ProgressDialog loading;
-    private XListView listView;
+    private PullToRefreshListView listView;
     private ZhaiDou.ListType listType;
 
     /* pagination */
@@ -128,18 +131,11 @@ public class ElementListFragment extends BaseFragment implements XListView.IXLis
                 if (loading.isShowing()) {
                     loading.dismiss();
                 }
-                listView.setPullLoadEnable(true);
                 homeItemsAdapter.notifyDataSetChanged();
             }else if (msg.what==UPDATE_CATEGORY){
                 mCategoryAdapter.setList(categoryList);
             }
-            if (loadedAll) listView.setPullLoadEnable(false);
-            int status=msg.arg1;
-            if (status==STATUS_REFRESH){
-                listView.stopRefresh();
-            }else {
-                listView.stopLoadMore();
-            }
+            listView.onRefreshComplete();
             homeItemsAdapter.notifyDataSetChanged();
         }
     };
@@ -177,7 +173,7 @@ public class ElementListFragment extends BaseFragment implements XListView.IXLis
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.element_list_fragment, container, false);
-        listView = (XListView) view.findViewById(R.id.homeItemList);
+        listView = (PullToRefreshListView) view.findViewById(R.id.homeItemList);
 
         String url = getArguments().getString("targetUrl");
         String type = getArguments().getString("type");
@@ -210,9 +206,8 @@ public class ElementListFragment extends BaseFragment implements XListView.IXLis
         homeItemsAdapter = new ImageAdapter(getActivity());
         listView.setAdapter(homeItemsAdapter);
         listView.setOnItemClickListener(itemSelectListener);
-        listView.setPullLoadEnable(false);
-//        listView.setOnScrollListener(this);
-        listView.setXListViewListener(this);
+        listView.setMode(PullToRefreshBase.Mode.BOTH);
+        listView.setOnRefreshListener(this);
 
         loadMoreData(STATUS_REFRESH);
         loading = ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
@@ -220,16 +215,6 @@ public class ElementListFragment extends BaseFragment implements XListView.IXLis
         setUpPopView();
 //        FetchData();
         return view;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        if (listType.equals(ZhaiDou.ListType.HOME)){
-            initTopBarForBoth("每日精选功能美物",R.drawable.icon_category,R.drawable.icon_search,this,this);
-        }else {
-            findViewById(R.id.common_actionbar).setVisibility(View.GONE);
-        }
-        super.onActivityCreated(savedInstanceState);
     }
 
     private void setUpPopView(){
@@ -251,8 +236,6 @@ public class ElementListFragment extends BaseFragment implements XListView.IXLis
         gv_category.setOnItemClickListener(new GridView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                System.out.print("--------------------->onItemClick");
-                ShowLog(categoryList.get(position));
                 mPopupWindow.dismiss();
             }
         });
@@ -260,37 +243,9 @@ public class ElementListFragment extends BaseFragment implements XListView.IXLis
         mCategoryAdapter.setOnInViewClickListener(R.id.tv_category_item,new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                ShowLog("OnClickListener");
-                ShowLog(categoryList.get(position));
             }
         });
     }
-    @Override
-    public void onRefresh() {
-        Log.i("onRefresh","onRefresh------------------->");
-        currentPage=1;
-//        homeItemsAdapter.clear();
-        loadMoreData(STATUS_REFRESH);
-    }
-
-    @Override
-    public void onLoadMore() {
-        Log.i("onLoadMore","onLoadMore------------------->");
-        loadMoreData(STATUS_LOAD_MORE);
-    }
-
-//    @Override
-//    public void onScrollStateChanged(AbsListView absListView, int state) {
-//        if (state == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && lastVisibleIndex == homeItemsAdapter.getCount()) {
-////            loading.show();
-//            loadMoreData();
-//        }
-//    }
-
-//    @Override
-//    public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-//        lastVisibleIndex = firstVisibleItem + visibleItemCount;
-//    }
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -427,7 +382,7 @@ mHashMap.put(position,view);
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.header_ib_rightbutton:
-                startAnimActivity(SearchActivity.class);
+                startActivity(new Intent(getActivity(),SearchActivity.class));
                 break;
             case R.id.header_ib_leftbutton:
                 mPopupWindow.showAtLocation(getView(), Gravity.TOP, 0, 220);
@@ -504,5 +459,15 @@ mHashMap.put(position,view);
         mRequestQueue.add(jr);
     }
 
+    @Override
+    public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+        currentPage=1;
+//        homeItemsAdapter.clear();
+        loadMoreData(STATUS_REFRESH);
+    }
 
+    @Override
+    public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+        loadMoreData(STATUS_LOAD_MORE);
+    }
 }

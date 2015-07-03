@@ -31,6 +31,7 @@ import com.pulltorefresh.PullToRefreshGridView;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
+import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Product;
@@ -53,7 +54,7 @@ import java.util.WeakHashMap;
  * create an instance of this fragment.
  *
  */
-public class SingleFragment extends Fragment implements PullToRefreshBase.OnRefreshListener2<GridView>{
+public class SingleFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<GridView>{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";

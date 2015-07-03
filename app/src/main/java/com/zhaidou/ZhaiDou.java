@@ -33,6 +33,19 @@ public class ZhaiDou {
 
     //用户简单信息
     public static String USER_SIMPLE_PROFILE_URL=HOME_BASE_URL+"api/v1/users/";
+    //用户编辑信息
+    public static String USER_EDIT_PROFILE_URL=HOME_BASE_URL+"api/v1/profiles/";
+    //用户推出
+    public static String USER_LOGOUT_URL=HOME_BASE_URL+"api/v1/";
+    //用户登录
+    public static String USER_LOGIN_URL=HOME_BASE_URL+"api/v1/user_tokens";
+    //第三方登录--验证
+    public static String USER_LOGIN_THIRD_VERIFY_URL=HOME_BASE_URL+"api/v1/users/verification_other";
+    //用户注册
+    public static String USER_REGISTER_URL=HOME_BASE_URL+"api/v1/users";
+    //用户收藏
+    public static String USER_COLLECT_ITEM_URL=HOME_BASE_URL+"article/api/article_items/like_article_items?per_page=10&page=";
+
     //搜索单品列表
     public static String SEARCH_PRODUCT_URL=HOME_BASE_URL+"article/api/article_items/search";
     //
@@ -41,8 +54,8 @@ public class ZhaiDou {
     public static String SEARCH_ARTICLES_URL=HOME_BASE_URL+"article/api/articles/search";
 
     public static String ARTICLES_WITH_CATEGORY=HOME_BASE_URL+"article/api/articles?catetory_id=";
-    //用户详细信息
-//    public static String USER_DETAIL_PROFILE_URL=HOME_BASE_URL+
+
+    public static String FORWARD_URL="http://192.168.199.146:3000/retweet";
     /**
      * 我的头像保存目录
      */

@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import com.zhaidou.R;
 import com.zhaidou.activities.DiyActivity;
+import com.zhaidou.base.BaseFragment;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,7 +23,7 @@ import com.zhaidou.activities.DiyActivity;
  * create an instance of this fragment.
  *
  */
-public class DiyFragment extends Fragment {
+public class DiyFragment extends BaseFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
