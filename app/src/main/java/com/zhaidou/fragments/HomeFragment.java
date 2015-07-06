@@ -134,6 +134,9 @@ public class HomeFragment extends Fragment implements
     private ImageSwitchWall imageSwitchWall;
     private HomeCategoryFragment homeCategoryFragment;
     private Category mCategory;
+    private LinearLayout mBackView;
+
+    private LinearLayout mSwipeView;
 //    SwipeRefreshLayout mSwipeLayout;
 
     private PullToRefreshScrollView mScrollView;
@@ -223,6 +226,9 @@ public class HomeFragment extends Fragment implements
         listView = (ListViewForScrollView) view.findViewById(R.id.homeItemList);
         fl_category_menu=(FrameLayout)view.findViewById(R.id.fl_category_menu);
         mScrollView=(PullToRefreshScrollView)view.findViewById(R.id.scrollview);
+        mSwipeView=(LinearLayout)view.findViewById(R.id.ll_adview);
+        mBackView=(LinearLayout)view.findViewById(R.id.ll_back);
+        mBackView.setOnClickListener(this);
 
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         mScrollView.setOnRefreshListener(this);
@@ -388,6 +394,11 @@ public class HomeFragment extends Fragment implements
 //                });
                 break;
             case R.id.ll_lottery:
+//                WebViewFragment prizeFragment=WebViewFragment.newInstance(ZhaiDou.PRIZE_SCRAPING_URL,true);
+//                ((BaseActivity)getActivity()).navigationToFragment(prizeFragment);
+                Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
+                detailIntent.putExtra("url",ZhaiDou.PRIZE_SCRAPING_URL);
+                startActivity(detailIntent);
                 break;
             case R.id.ll_competition:
                 WebViewFragment webViewFragment=WebViewFragment.newInstance(ZhaiDou.COMPETITION_URL,true);
@@ -400,6 +411,11 @@ public class HomeFragment extends Fragment implements
             case R.id.ll_forward:
                 WebViewFragment forwardFragment=WebViewFragment.newInstance(ZhaiDou.FORWARD_URL,true);
                 ((BaseActivity)getActivity()).navigationToFragment(forwardFragment);
+                break;
+            case R.id.ll_back:
+                mCategoryView.setVisibility(View.VISIBLE);
+                mBackView.setVisibility(View.GONE);
+                mSwipeView.setVisibility(View.VISIBLE);
                 break;
         }
     }
@@ -526,6 +542,15 @@ public class HomeFragment extends Fragment implements
     @Override
     public void onItemClick(ViewGroup vg, View v, int position) {
         Log.i("position--->",position+"");
+        mCategoryView.setVisibility(View.GONE);
+        mBackView.setVisibility(View.VISIBLE);
+        mSwipeView.setVisibility(View.GONE);
+        List<SwitchImage> switchImages = imageSwitchWall.getData();
+        SwitchImage switchImage = switchImages.get(position);
+        Log.i("switchImage--------------->",switchImage.toString());
+        Category category = new Category();
+        category.setId(switchImage.getId());
+        FetchData(currentPage=0,category);
     }
 
     public void toggleMenu(){
@@ -536,7 +561,7 @@ public class HomeFragment extends Fragment implements
             fl_category_menu.setVisibility(View.GONE);
             getChildFragmentManager().beginTransaction().hide(homeCategoryFragment).commit();
         }
-
+        homeCategoryFragment.notifyDataSetChanged();
     }
 
     private String getTime() {

@@ -84,6 +84,8 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     private TextView tv_intro;
     private TextView tv_mobile;
 
+    private RelativeLayout mWorkLayout;
+
     private RelativeLayout rl_nickname;
     private RelativeLayout rl_mobile;
 
@@ -117,6 +119,8 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 case UPDATE_PROFILE_INFO:
                     User user=(User)msg.obj;
                     tv_intro.setText(TextUtils.isEmpty(user.getDescription())?"":user.getDescription());
+                    Log.i("tv_mobile------->",user.getMobile());
+                    Log.i("TextUtils.isEmpty(user.getMobile())--",TextUtils.isEmpty(user.getMobile())+"");
                     tv_mobile.setText(TextUtils.isEmpty(user.getMobile())?"":user.getMobile());
                     tv_job.setText(user.isVerified()?"宅豆认证工程师":"未认证工程师");
                     break;
@@ -180,6 +184,8 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         tv_register_time=(TextView)view.findViewById(R.id.tv_register_time);
         tv_intro=(TextView)view.findViewById(R.id.tv_intro);
         tv_mobile=(TextView)view.findViewById(R.id.tv_mobile);
+        mWorkLayout=(RelativeLayout)view.findViewById(R.id.rl_job);
+        mWorkLayout.setOnClickListener(this);
 
 
         rl_mobile=(RelativeLayout)view.findViewById(R.id.rl_mobile);
@@ -237,6 +243,10 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container,introFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
                 break;
+            case R.id.rl_job:
+                ImageBgFragment addVFragment= ImageBgFragment.newInstance("如何加V",R.drawable.add_v);
+                ((MainActivity)getActivity()).navigationToFragment(addVFragment);
+                break;
         }
     }
 
@@ -290,7 +300,9 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             public void onResponse(JSONObject jsonObject) {
                 JSONObject userObj = jsonObject.optJSONObject("profile");
                 String mobile=userObj.optString("mobile");
+                mobile=mobile.equals("null")?"":mobile;
                 String description=userObj.optString("description");
+                description=description.equals("null")?"":description;
                 profileId=userObj.optString("id");
                 boolean verified=userObj.optBoolean("verified");
                 User user=new User(null,null,null,verified,mobile,description);
@@ -341,13 +353,17 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         Log.i(type,type);
         Log.i(msg,msg);
         Log.i("json",json);
+        User user = new User();
         if ("mobile".equalsIgnoreCase(type)){
             tv_mobile.setText(msg);
         }else if ("description".equalsIgnoreCase(type)){
+            user.setDescription(msg);
             tv_intro.setText(msg);
         }else {
             tv_nick.setText(msg);
+            user.setNickName(msg);
         }
+        profileListener.onProfileChange(user);
         popToStack();
     }
 

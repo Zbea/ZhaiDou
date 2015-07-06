@@ -21,6 +21,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.User;
+import com.zhaidou.utils.SharedPreferencesUtil;
 
 import org.json.JSONObject;
 
@@ -145,11 +146,13 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
 
     public void logout(){
 
-        JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_LOGOUT_URL+mSharedPreferences.getString("token","")+"/logout"
+        JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_LOGOUT_URL
          ,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("SettingFragment---->",jsonObject.toString());
+                SharedPreferencesUtil.clearUser(getActivity());
+                ((MainActivity)getActivity()).logout(SettingFragment.this);
             }
         },new Response.ErrorListener() {
             @Override
@@ -173,4 +176,6 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     public interface ProfileListener{
         public void onProfileChange(User user);
     }
+
+
 }

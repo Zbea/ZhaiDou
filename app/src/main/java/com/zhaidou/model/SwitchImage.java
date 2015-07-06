@@ -56,4 +56,13 @@ public class SwitchImage {
         }
         return  switchImageList;
     }
+
+    @Override
+    public String toString() {
+        return "SwitchImage{" +
+                "url='" + url + '\'' +
+                ", id=" + id +
+                ", title='" + title + '\'' +
+                '}';
+    }
 }

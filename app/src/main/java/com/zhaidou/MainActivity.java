@@ -201,13 +201,13 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     diyFragment = DiyFragment.newInstance("haha", "haha");
                 }
 //                startActivity(new Intent(MainActivity.this, DiyActivity.class));
-                startActivity(new Intent(MainActivity.this,SearchActivity.class));
-                return;
+//                startActivity(new Intent(MainActivity.this,SearchActivity.class));
+//                return;
 
 
-//                selectFragment(currentFragment, diyFragment);
-//
-//                setButton(view);
+                selectFragment(currentFragment, diyFragment);
+
+                setButton(view);
             }
         });
 
@@ -354,5 +354,15 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         CallbackContext.onActivityResult(requestCode,resultCode,data);
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+    public void logout(Fragment fragment){
+        popToStack(fragment);
+        if (utilityFragment==null){
+            utilityFragment= HomeFragment.newInstance(ZhaiDou.HOME_PAGE_URL, ZhaiDou.ListType.HOME.toString());
+        }
+        selectFragment(currentFragment,utilityFragment);
+        setButton(homeButton);
     }
 }

@@ -56,6 +56,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
 
     private GridView mGridView;
     private TextView mAllCategory;
+    private int mCheckedPosition=-1;
     private List<Category> mCategoryList;
     private RequestQueue mRequestQueue;
     public static String TAG=HomeCategoryFragment.class.getSimpleName();
@@ -111,6 +112,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
         View view=inflater.inflate(R.layout.item_popupwindows, container, false);
         mRelativeLayout = (RelativeLayout)view.findViewById(R.id.ll_category_close);
         mAllCategory=(TextView)view.findViewById(R.id.tv_category_all);
+        mAllCategory.setPressed(true);
         mRelativeLayout.setOnClickListener(this);
         mRequestQueue = Volley.newRequestQueue(getActivity());
         mCategoryList=new ArrayList<Category>();
@@ -122,6 +124,8 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
         mAllCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mCheckedPosition=-1;
+                notifyDataSetChanged();
                 mCategorySelectedListener.onCategorySelected(null);
             }
         });
@@ -134,6 +138,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
                 Category category = mCategoryList.get(position);
                 Log.i("category------------->",category.toString());
                 mCategorySelectedListener.onCategorySelected(category);
+                mCheckedPosition=position;
             }
         });
         return view;
@@ -186,6 +191,12 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
                 convertView=mInflater.inflate(R.layout.category_item_gv,null);
             TextView tv_item = ViewHolder.get(convertView, R.id.tv_category_item);
             Category item = getList().get(position);
+            if (mCheckedPosition==position){
+                tv_item.setPressed(true);
+            }else {
+                tv_item.setPressed(false);
+//                tv_item.setBackgroundDrawable(getResources().getDrawable(R.drawable.category_item_selector));
+            }
             tv_item.setText(item.getName());
 
             return convertView;
@@ -198,5 +209,16 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
 
     public interface CategorySelectedListener{
         public void onCategorySelected(Category category);
+    }
+
+    public void notifyDataSetChanged(){
+        if (mCheckedPosition==-1){
+            mAllCategory.setPressed(true);
+            mCategoryAdapter.notifyDataSetChanged();
+        }else if (mCategoryAdapter!=null&&mCheckedPosition!=-1){
+            mAllCategory.setPressed(false);
+            mCategoryAdapter.notifyDataSetChanged();
+        }
+
     }
 }

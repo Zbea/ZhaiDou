@@ -295,6 +295,12 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     @Override
     public void onProfileChange(User user) {
         Log.i("PersonalFragment--->","onProfileChange");
-        imageLoader.LoadImage("http://"+user.getAvatar(),iv_header);
+        Log.i("onProfileChange---->",user.toString());
+        if (!TextUtils.isEmpty(user.getNickName()))
+            tv_nickname.setText(user.getNickName());
+        if (!TextUtils.isEmpty(user.getAvatar()))
+            imageLoader.LoadImage("http://"+user.getAvatar(),iv_header);
+        if (!TextUtils.isEmpty(user.getDescription()))
+            tv_desc.setText(user.getDescription());
     }
 }

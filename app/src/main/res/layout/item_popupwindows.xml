@@ -36,7 +36,7 @@
             android:layout_marginLeft="30dp"
             android:minWidth="60dp"
             android:gravity="center"
-            android:textColor="@color/gray"
+            android:textColor="@drawable/text_color_selector"
             android:text="全部"
             android:clickable="true"
             android:background="@drawable/category_item_selector"/>

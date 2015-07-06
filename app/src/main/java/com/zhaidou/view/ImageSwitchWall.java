@@ -54,6 +54,7 @@ public class ImageSwitchWall extends RelativeLayout implements
     private OnItemClickListener mListener;
     private CirclePageIndicator mIndicator;
 
+    private List<SwitchImage> list;
     public ImageSwitchWall(Context context) {
         super(context);
         init(context);
@@ -74,6 +75,7 @@ public class ImageSwitchWall extends RelativeLayout implements
     }
 
     public void setDatas(List<SwitchImage> list) {
+        this.list=list;
         mViewList = new ArrayList<View>();
         mDataList = list;
         for (SwitchImage wi : list) {
@@ -109,6 +111,9 @@ public class ImageSwitchWall extends RelativeLayout implements
         }
     }
 
+    public List<SwitchImage> getData(){
+        return list;
+    }
     private void init(Context context) {
         mContext = context;
         mHandler = new ISWHandler(this);

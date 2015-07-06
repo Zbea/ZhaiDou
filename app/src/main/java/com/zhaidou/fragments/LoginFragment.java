@@ -96,6 +96,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
 
 
     private RegisterFragment.RegisterOrLoginListener mRegisterOrLoginListener;
+    private BackClickListener backClickListener;
 
     public int index;
     RequestQueue requestQueue;
@@ -442,6 +443,15 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     public void setRegisterOrLoginListener(RegisterFragment.RegisterOrLoginListener mRegisterOrLoginListener) {
         this.mRegisterOrLoginListener = mRegisterOrLoginListener;
     }
+
+    public void setBackClickListener(BackClickListener backClickListener) {
+        this.backClickListener = backClickListener;
+    }
+
+    public interface BackClickListener{
+        public void onBackClick(Fragment fragment);
+    }
+
 
     private class RegisterTask extends AsyncTask<Map<String,String>,Void,String>{
         @Override

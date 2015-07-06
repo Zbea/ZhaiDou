@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -30,7 +31,7 @@ import com.zhaidou.model.User;
 import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
 
-public class ItemDetailActivity extends BaseActivity implements View.OnClickListener,RegisterFragment.RegisterOrLoginListener{
+public class ItemDetailActivity extends BaseActivity implements View.OnClickListener,RegisterFragment.RegisterOrLoginListener,LoginFragment.BackClickListener{
 
 //    private WebView webView;
 
@@ -44,7 +45,9 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
     private int userId;
     private String token;
+    private String nickName;
 
+    private String from;
     private LoginFragment loginFragment;
     private RegisterFragment registerFragment;
 
@@ -56,13 +59,15 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
         mSharedPreferences=getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         userId=mSharedPreferences.getInt("userId", -1);
-        token=mSharedPreferences.getString("token","");
+        token=mSharedPreferences.getString("token", "");
+        nickName=mSharedPreferences.getString("nickName","");
         tv_back=(TextView)findViewById(R.id.tv_back);
         iv_share=(ImageView)findViewById(R.id.iv_share);
         mChildContainer=(FrameLayout)findViewById(R.id.fl_child_container);
 
         loginFragment=LoginFragment.newInstance("","");
         loginFragment.setRegisterOrLoginListener(this);
+        loginFragment.setBackClickListener(this);
         tv_back.setOnClickListener(this);
         iv_share.setOnClickListener(this);
 
@@ -80,9 +85,15 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
                 Log.i("shouldOverrideUrlLoading--->",url);
                 Log.i("token-------------->",token);
                 Log.i("userId-------------->",userId+"");
+                Log.i("nickName------------->",nickName+"");
+                getDeviceId();
                 if ("mobile://login?false".equalsIgnoreCase(url)){
                     if (!TextUtils.isEmpty(token)&&userId>-1){
-                        webView.loadUrl("javascript:ReceiveUserInfo(324, 's2YgsJHNYzhyzTsH3yhc')");
+                        if (!TextUtils.isEmpty(from)){
+                            webView.loadUrl("javascript:ReceiveUserInfo("+userId+", "+token+", "+getDeviceId()+","+nickName+")");
+                        }else {
+                            webView.loadUrl("javascript:ReceiveUserInfo("+userId+", "+token+")");
+                        }
                     }else {
                         getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container,loginFragment)
                                 .addToBackStack(null).commit();
@@ -91,11 +102,11 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
                     return true;
                 }
 
-                Intent intent = new Intent();
-                intent.putExtra("url", url);
-                intent.setClass(ItemDetailActivity.this, WebViewActivity.class);
-                ItemDetailActivity.this.startActivity(intent);
-                return true;
+//                Intent intent = new Intent();
+//                intent.putExtra("url", url);
+//                intent.setClass(ItemDetailActivity.this, WebViewActivity.class);
+//                ItemDetailActivity.this.startActivity(intent);
+                return false;
             }
 
         });
@@ -181,6 +192,10 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.tv_back:
+                if (webView.canGoBack()){
+                    webView.goBack();
+                    return;
+                }
                 finish();
                 break;
             case R.id.iv_share:
@@ -247,4 +262,14 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
                 .addToBackStack(null).commit();
     }
 
+    public String getDeviceId(){
+        TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        return tm.getDeviceId();
+    }
+
+    @Override
+    public void onBackClick(Fragment fragment) {
+        Log.i("ItemDetailActivity--fragment----->",fragment.getClass().getSimpleName());
+        webView.reload();
+    }
 }

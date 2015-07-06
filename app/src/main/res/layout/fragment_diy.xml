@@ -5,7 +5,23 @@
     android:background="#f1f1f1"
     tools:context="com.zhaidou.activities.DiyActivity">
 
+    <RelativeLayout
+        android:id="@+id/common_actionbar"
+        android:layout_width="match_parent"
+        android:layout_alignParentTop="true"
+        android:background="@color/actionbar_background_color"
+        android:layout_height="50dp">
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/tv_title"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="DIY"/>
+    </RelativeLayout>
     <ImageView
+        android:layout_below="@id/common_actionbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/diy_hint"

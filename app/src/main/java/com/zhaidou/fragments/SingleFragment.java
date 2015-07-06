@@ -128,6 +128,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
         View view=inflater.inflate(R.layout.fragment_single, container, false);
         initView(view);
 //        new FetchDataTask().execute();
+        FetchData(mParam1,sort,currentpage=1);
         return view;
     }
 
@@ -188,6 +189,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
 
             @Override
             public void onResponse(JSONObject json) {
+                Log.i("SingleFragment---->",json.toString());
                 JSONArray items = json.optJSONArray("article_items");
                 JSONObject meta = json.optJSONObject("meta");
 
@@ -247,7 +249,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
             Product product = getList().get(position);
             tv_name.setText(product.getTitle());
             tv_money.setText("￥"+product.getPrice()+"元");
-//            tv_count.setText(product.getBean_like_count());
+            tv_count.setText(product.getBean_like_count()+"");
             imageLoader.LoadImage("http://"+product.getImage(),image);
             mHashMap.put(position,convertView);
             return convertView;

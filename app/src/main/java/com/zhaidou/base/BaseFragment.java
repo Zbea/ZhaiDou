@@ -2,6 +2,7 @@ package com.zhaidou.base;
 
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,10 +13,12 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zhaidou.R;
+import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.view.HeaderLayout;
 
 /**
@@ -43,6 +46,8 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
         handler.post(action);
     }
 
+    private InputMethodManager inputMethodManager;
+
     private Fragment currentFragment;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,11 +63,17 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
         currentFragment=this;
         view.setOnTouchListener(this);
         mBackView=view.findViewById(R.id.ll_back);
+        inputMethodManager=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (mBackView!=null)
             mBackView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Log.i("WebViewFragment--233-->","R.id.rl_back:");
+                    if (inputMethodManager.isActive())
+                        inputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().peekDecorView().getApplicationWindowToken(),0);
+                    if (getActivity() instanceof ItemDetailActivity){
+                        ((ItemDetailActivity)getActivity()).onBackClick(currentFragment);
+                    }
                     ((BaseActivity)getActivity()).popToStack(currentFragment);
                 }
             });

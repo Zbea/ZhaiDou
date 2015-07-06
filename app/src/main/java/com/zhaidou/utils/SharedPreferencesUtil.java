@@ -67,4 +67,16 @@ public class SharedPreferencesUtil {
         editor.putString("nickName",user.getNickName());
         editor.commit();
     }
+
+    public static void clearUser(Context context){
+        SharedPreferences mSharedPreferences = context.getSharedPreferences
+                (SPName, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putInt("userId",-1);
+        editor.putString("email", "");
+        editor.putString("token","");
+        editor.putString("avatar","");
+        editor.putString("nickName","");
+        editor.commit();
+    }
 }

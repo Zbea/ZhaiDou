@@ -14,6 +14,8 @@ public class Product {
     private List<Category> categories;
     private int remaining;
 
+    private String end_date;
+
     private String image;
 
     public int getId() {
@@ -88,6 +90,14 @@ public class Product {
 
     public void setRemaining(int remaining) {
         this.remaining = remaining;
+    }
+
+    public String getEnd_date() {
+        return end_date;
+    }
+
+    public void setEnd_date(String end_date) {
+        this.end_date = end_date;
     }
 
     public Product() {

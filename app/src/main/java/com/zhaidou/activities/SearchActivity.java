@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -23,6 +24,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.viewpagerindicator.TabPageIndicator;
 import com.zhaidou.R;
@@ -37,7 +39,7 @@ import com.zhaidou.utils.HtmlFetcher;
 import org.json.JSONArray;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -149,7 +151,7 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
         ll_viewpager=(LinearLayout)findViewById(R.id.ll_viewpager);
         mSharedPreferences=getSharedPreferences("zhaidou",Context.MODE_PRIVATE);
 
-        mHistorys = mSharedPreferences.getStringSet("history",new HashSet<String>());
+        mHistorys = mSharedPreferences.getStringSet("history",new LinkedHashSet<String>());
 
         if (mHistorys!=null&&mHistorys.size()>0)
              mHistoryList.addAll(CollectionUtils.set2list(mHistorys));
@@ -217,7 +219,13 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
             case R.id.tv_cancel:
                 Log.i("tv_cancel------------>","tv_cancel");
 //                finish();
-                onSearch();
+                if (!TextUtils.isEmpty(mEditText.getText().toString())){
+                    if (inputMethodManager.isActive())
+                        inputMethodManager.hideSoftInputFromWindow(getWindow().peekDecorView().getApplicationWindowToken(),0);
+                    onSearch();
+                }else {
+                    Toast.makeText(SearchActivity.this,"还没输入搜索关键词哦！",Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.ll_back:
                 finish();
@@ -233,7 +241,7 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
         mHistorys.clear();
         mHistoryAdapter.clear();
         SharedPreferences.Editor editor= mSharedPreferences.edit();
-        editor.putStringSet("history",new HashSet<String>()).commit();
+        editor.putStringSet("history",new LinkedHashSet<String>()).commit();
     }
 
     private void onSearch(){

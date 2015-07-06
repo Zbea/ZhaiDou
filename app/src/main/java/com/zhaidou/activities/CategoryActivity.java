@@ -70,9 +70,9 @@ public class CategoryActivity extends FragmentActivity {
 
         if (mFragments.size()<2){
             mSingleFragment=SingleFragment.newInstance(categoryId+"","category");
-            mStrategyFragment=StrategyFragment1.newInstance(categoryId+"","category");
+//            mStrategyFragment=StrategyFragment1.newInstance(categoryId+"","category");
             mFragments.add(mSingleFragment);
-            mFragments.add(mStrategyFragment);
+//            mFragments.add(mStrategyFragment);
         }
 
 
@@ -91,7 +91,8 @@ public class CategoryActivity extends FragmentActivity {
 
         @Override
         public int getCount() {
-            return mFragments.size();
+//            return mFragments.size();
+            return 1;
         }
 
         @Override

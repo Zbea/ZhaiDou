@@ -8,7 +8,7 @@ public class ZhaiDou {
     public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
     public static String TAG_BASE_URL = "http://buy.zhaidou.com/?tag=%s&json=1";
 
-    public static String HOT_SEARCH_URL="http://192.168.199.171/article/api/articles/hot_search";
+    public static String HOT_SEARCH_URL=HOME_BASE_URL+"article/api/articles/hot_search";
     public static String INDEX_CATEGORY_FILTER=HOME_BASE_URL+"article/api/article_categories";
 
 
@@ -17,6 +17,8 @@ public class ZhaiDou {
 
     //获取优惠卷URL
     public static String COUPON_DATA_URL="http://192.168.199.146:3000/api/v1/coupons/current";
+    //天天刮奖
+    public static String PRIZE_SCRAPING_URL="http://192.168.199.230:9000/ggl/index.html";
     //获取0元特卖数据
     public static String SPECIAL_SALE_URL="http://192.168.199.146:3000/api/v1/events/current";
 
@@ -35,8 +37,8 @@ public class ZhaiDou {
     public static String USER_SIMPLE_PROFILE_URL=HOME_BASE_URL+"api/v1/users/";
     //用户编辑信息
     public static String USER_EDIT_PROFILE_URL=HOME_BASE_URL+"api/v1/profiles/";
-    //用户推出
-    public static String USER_LOGOUT_URL=HOME_BASE_URL+"api/v1/";
+    //用户退出登录
+    public static String USER_LOGOUT_URL=HOME_BASE_URL+"api/v1/user_tokens/logout";
     //用户登录
     public static String USER_LOGIN_URL=HOME_BASE_URL+"api/v1/user_tokens";
     //第三方登录--验证
