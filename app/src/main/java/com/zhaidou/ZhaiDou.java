@@ -18,7 +18,7 @@ public class ZhaiDou {
     //获取优惠卷URL
     public static String COUPON_DATA_URL="http://192.168.199.146:3000/api/v1/coupons/current";
     //天天刮奖
-    public static String PRIZE_SCRAPING_URL="http://192.168.199.230:9000/ggl/index.html";
+    public static String PRIZE_SCRAPING_URL="http://192.168.199.230:3000/lotteries";
     //获取0元特卖数据
     public static String SPECIAL_SALE_URL="http://192.168.199.146:3000/api/v1/events/current";
 

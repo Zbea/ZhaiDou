@@ -46,15 +46,19 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
         handler.post(action);
     }
 
-    private InputMethodManager inputMethodManager;
+    protected InputMethodManager inputMethodManager;
 
     private Fragment currentFragment;
+
+    protected View mEmptyView;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
 //        setRetainInstance(true);
         mInflater = LayoutInflater.from(getActivity());
+        Log.i("onCreate------>",mInflater.toString());
+        mEmptyView =mInflater.inflate(R.layout.list_empty_view,null);
     }
 
 
@@ -69,8 +73,13 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
                 @Override
                 public void onClick(View view) {
                     Log.i("WebViewFragment--233-->","R.id.rl_back:");
+//                    Log.i("currentFragment.getParentFragment()",currentFragment.getParentFragment().toString());
                     if (inputMethodManager.isActive())
                         inputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().peekDecorView().getApplicationWindowToken(),0);
+                    if (currentFragment.getParentFragment()!=null){
+                        currentFragment.getParentFragment().getChildFragmentManager().popBackStack();
+                        return;
+                    }
                     if (getActivity() instanceof ItemDetailActivity){
                         ((ItemDetailActivity)getActivity()).onBackClick(currentFragment);
                     }
@@ -218,4 +227,5 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
                 break;
         }
     }
+//    protected void hide
 }

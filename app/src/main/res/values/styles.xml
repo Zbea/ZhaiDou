@@ -4,7 +4,7 @@
     <style name="app_theme" parent="android:Theme.NoTitleBar">
         <item name="android:windowBackground">@color/white</item>
     </style>
-
+<!--android:Theme.Holo.Light.NoActionBar-->
     <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
         <item name="android:homeAsUpIndicator">@drawable/abc_ic_ab_back_holo_dark</item>
         <item name="android:actionBarStyle">@style/MyActionBar</item>
@@ -39,7 +39,7 @@
         <item name="android:drawablePadding">1.0dip</item>
     </style>
 
-    <style name="StyledIndicators" parent="@android:style/Theme.Light">
+    <style name="StyledIndicators" parent="AppTheme">
         <!--<item name="vpiCirclePageIndicatorStyle">@style/CustomCirclePageIndicator</item>-->
         <!--<item name="vpiLinePageIndicatorStyle">@style/CustomLinePageIndicator</item>-->
         <item name="vpiTitlePageIndicatorStyle">@style/CustomTitlePageIndicator</item>

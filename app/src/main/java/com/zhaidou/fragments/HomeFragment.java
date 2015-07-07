@@ -85,7 +85,7 @@ import java.util.WeakHashMap;
  * create an instance of this fragment.
  *
  */
-public class HomeFragment extends Fragment implements
+public class HomeFragment extends BaseFragment implements
                                          HeaderLayout.onLeftImageButtonClickListener,
                                          HeaderLayout.onRightImageButtonClickListener,
                                          ImageSwitchWall.OnItemClickListener,
@@ -171,7 +171,7 @@ public class HomeFragment extends Fragment implements
 
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
-
+            mHomeAdapter.notifyDataSetChanged();
             if (msg.what == LOADED) {
 
                 if (loading.isShowing()) {
@@ -265,7 +265,9 @@ public class HomeFragment extends Fragment implements
         mRequestQueue = Volley.newRequestQueue(getActivity());
         listItem = new ArrayList<JSONObject>();
         mHomeAdapter = new HomeAdapter(getActivity(),articleList);
+        listView.setEmptyView(mEmptyView);
         listView.setAdapter(mHomeAdapter);
+        Log.i("mEmptyView---->",mEmptyView.toString());
 
 //        imageSwitchWall.setDatas(SwitchImage.getTestData());
 
@@ -476,8 +478,8 @@ public class HomeFragment extends Fragment implements
                 JSONObject meta = response.optJSONObject("meta");
                 count=meta==null?0:meta.optInt("count");
                 if (articles==null||articles.length()<=0){
-//                    articleList.clear();
-//                    handler.sendEmptyMessage(UPDATE_HOMELIST);
+                    articleList.clear();
+                    handler.sendEmptyMessage(UPDATE_HOMELIST);
                     return;
                 }
                 for (int i=0;i<articles.length();i++){
@@ -542,15 +544,16 @@ public class HomeFragment extends Fragment implements
     @Override
     public void onItemClick(ViewGroup vg, View v, int position) {
         Log.i("position--->",position+"");
-        mCategoryView.setVisibility(View.GONE);
-        mBackView.setVisibility(View.VISIBLE);
-        mSwipeView.setVisibility(View.GONE);
+//        mCategoryView.setVisibility(View.GONE);
+//        mBackView.setVisibility(View.VISIBLE);
+//        mSwipeView.setVisibility(View.GONE);
         List<SwitchImage> switchImages = imageSwitchWall.getData();
         SwitchImage switchImage = switchImages.get(position);
         Log.i("switchImage--------------->",switchImage.toString());
         Category category = new Category();
         category.setId(switchImage.getId());
-        FetchData(currentPage=0,category);
+//        FetchData(currentPage=1,category);
+//        mHomeAdapter.notifyDataSetChanged();
     }
 
     public void toggleMenu(){

@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,7 +63,8 @@ import java.util.Date;
 import java.util.List;
 
 
-public class ProfileFragment extends BaseFragment implements View.OnClickListener,PhotoMenuFragment.MenuSelectListener,EditProfileFragment.RefreshDataListener{
+public class ProfileFragment extends BaseFragment implements View.OnClickListener,PhotoMenuFragment.MenuSelectListener,
+        EditProfileFragment.RefreshDataListener,AddrManageFragment.AddressListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -83,11 +85,15 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     private TextView tv_register_time;
     private TextView tv_intro;
     private TextView tv_mobile;
+    private TextView tv_addr_username;
+    private TextView tv_addr_mobile;
+    private TextView tv_addr;
 
     private RelativeLayout mWorkLayout;
 
     private RelativeLayout rl_nickname;
     private RelativeLayout rl_mobile;
+    private LinearLayout ll_addr_info;
 
     private FrameLayout mMenuContainer;
     private FrameLayout mChildContainer;
@@ -123,12 +129,21 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     Log.i("TextUtils.isEmpty(user.getMobile())--",TextUtils.isEmpty(user.getMobile())+"");
                     tv_mobile.setText(TextUtils.isEmpty(user.getMobile())?"":user.getMobile());
                     tv_job.setText(user.isVerified()?"宅豆认证工程师":"未认证工程师");
+                    tv_addr_mobile.setText(TextUtils.isEmpty(user.getMobile())?"":user.getMobile());
+                    tv_addr.setText(TextUtils.isEmpty(user.getAddress2())?"":user.getAddress2());
+                    if (TextUtils.isEmpty(user.getAddress2())){
+                        ll_addr_info.setVisibility(View.GONE);
+                    }else {
+                        ll_addr_info.setVisibility(View.VISIBLE);
+                        tv_addr.setText(user.getAddress2());
+                    }
                     break;
                 case UPDATE_USER_INFO:
                     User user1=(User)msg.obj;
                     imageLoader.LoadImage("http://"+user1.getAvatar(),iv_header);
                     tv_email.setText(user1.getEmail());
                     tv_nick.setText(TextUtils.isEmpty(user1.getNickName())?"":user1.getNickName());
+                    tv_addr_username.setText(TextUtils.isEmpty(user1.getNickName())?"":user1.getNickName());
                     break;
             }
         }
@@ -184,9 +199,14 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         tv_register_time=(TextView)view.findViewById(R.id.tv_register_time);
         tv_intro=(TextView)view.findViewById(R.id.tv_intro);
         tv_mobile=(TextView)view.findViewById(R.id.tv_mobile);
+        tv_addr_mobile=(TextView)view.findViewById(R.id.tv_addr_mobile);
+        tv_addr_username=(TextView)view.findViewById(R.id.tv_addr_username);
+        tv_addr=(TextView)view.findViewById(R.id.tv_addr);
+        ll_addr_info=(LinearLayout)view.findViewById(R.id.ll_addr_info);
         mWorkLayout=(RelativeLayout)view.findViewById(R.id.rl_job);
         mWorkLayout.setOnClickListener(this);
 
+        view.findViewById(R.id.rl_manage_address).setOnClickListener(this);
 
         rl_mobile=(RelativeLayout)view.findViewById(R.id.rl_mobile);
         rl_nickname=(RelativeLayout)view.findViewById(R.id.rl_nickname);
@@ -247,6 +267,15 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 ImageBgFragment addVFragment= ImageBgFragment.newInstance("如何加V",R.drawable.add_v);
                 ((MainActivity)getActivity()).navigationToFragment(addVFragment);
                 break;
+            case R.id.rl_manage_address:
+                String name=tv_addr_username.getText().toString();
+                String mobile=tv_addr_mobile.getText().toString();
+                String address=tv_addr.getText().toString();
+                AddrManageFragment addressFragment=AddrManageFragment.newInstance(name,mobile,address,profileId);
+                addressFragment.setAddressListener(this);
+                getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container,addressFragment).addToBackStack(null).commit();
+                mChildContainer.setVisibility(View.VISIBLE);
+                break;
         }
     }
 
@@ -294,10 +323,10 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     }
 
     public void getUserData(){
-
         JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL+id+"/profile",new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
+                Log.i("UPDATE_PROFILE_INFO--->",jsonObject.toString());
                 JSONObject userObj = jsonObject.optJSONObject("profile");
                 String mobile=userObj.optString("mobile");
                 mobile=mobile.equals("null")?"":mobile;
@@ -305,7 +334,10 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 description=description.equals("null")?"":description;
                 profileId=userObj.optString("id");
                 boolean verified=userObj.optBoolean("verified");
+
+                String address2=userObj.optString("address2");
                 User user=new User(null,null,null,verified,mobile,description);
+                user.setAddress2(address2);
                 Message message=new Message();
                 message.what=UPDATE_PROFILE_INFO;
                 message.obj=user;
@@ -561,6 +593,11 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 }
             }
         }
+    }
+
+    @Override
+    public void onAddressDataChange(String name, String mobile, String address) {
+        Log.i("onAddressDataChange--->",name+"----"+mobile+"----->"+address);
     }
 
     public void setProfileListener(ProfileListener profileListener) {

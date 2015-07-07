@@ -130,6 +130,7 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
         listView=(PullToRefreshListView)view.findViewById(R.id.listview);
         listView.setMode(PullToRefreshBase.Mode.BOTH);
         listView.setOnRefreshListener(this);
+        listView.setEmptyView(mEmptyView);
         mRequestQueue= Volley.newRequestQueue(getActivity());
         strategyAdapter=new StrategyAdapter(getActivity(),articleList);
         listView.setAdapter(strategyAdapter);

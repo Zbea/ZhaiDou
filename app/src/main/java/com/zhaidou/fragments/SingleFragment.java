@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -138,6 +139,8 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
         tv_money=(TextView)view.findViewById(R.id.tv_money);
         gv_single=(PullToRefreshGridView)view.findViewById(R.id.gv_single);
         singleAdapter = new SingleAdapter(getActivity(),products);
+        Log.i("mEmptyView----->",mEmptyView.toString());
+        gv_single.setEmptyView(mEmptyView);
         gv_single.setAdapter(singleAdapter);
         mRequestQueue= Volley.newRequestQueue(getActivity());
         Log.i("mParam2----------->",mParam2);

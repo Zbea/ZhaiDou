@@ -76,6 +76,7 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_gravity="center_vertical"
+                android:layout_marginRight="10dp"
                 app:border_width="2dp"
                 app:border_color="#d2d4d7"/>
         <ImageView
@@ -112,7 +113,7 @@
                     android:layout_height="1dp"
                     android:layout_marginLeft="20dp"
                     android:layout_alignParentBottom="true"
-                    android:background="#d2d4d7"/>
+                    android:background="#eeeeee"/>
             </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/rl_email"
@@ -140,7 +141,7 @@
                     android:layout_height="1dp"
                     android:layout_marginLeft="20dp"
                     android:layout_alignParentBottom="true"
-                    android:background="#d2d4d7"/>
+                    android:background="#eeeeee"/>
             </RelativeLayout>
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -168,7 +169,7 @@
                     android:layout_height="1dp"
                     android:layout_marginLeft="20dp"
                     android:layout_alignParentBottom="true"
-                    android:background="#d2d4d7"/>
+                    android:background="#eeeeee"/>
             </RelativeLayout>
             <RelativeLayout
             android:layout_width="match_parent"
@@ -196,7 +197,7 @@
                 android:layout_height="1dp"
                 android:layout_marginLeft="20dp"
                 android:layout_alignParentBottom="true"
-                android:background="#d2d4d7"/>
+                android:background="#eeeeee"/>
         </RelativeLayout>
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -224,7 +225,7 @@
                     android:layout_height="1dp"
                     android:layout_marginLeft="20dp"
                     android:layout_alignParentBottom="true"
-                    android:background="#d2d4d7"/>
+                    android:background="#eeeeee"/>
             </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/rl_job"
@@ -252,7 +253,7 @@
                     android:layout_height="1dp"
                     android:layout_marginLeft="20dp"
                     android:layout_alignParentBottom="true"
-                    android:background="#d2d4d7"/>
+                    android:background="#eeeeee"/>
             </RelativeLayout>
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -280,7 +281,7 @@
                     android:layout_height="1dp"
                     android:layout_marginLeft="20dp"
                     android:layout_alignParentBottom="true"
-                    android:background="#d2d4d7"/>
+                    android:background="#eeeeee"/>
             </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/rl_mobile"
@@ -343,7 +344,7 @@
                     android:layout_height="1dp"
                     android:layout_marginLeft="20dp"
                     android:layout_alignParentBottom="true"
-                    android:background="#d2d4d7"/>
+                    android:background="#eeeeee"/>
             </RelativeLayout>
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/tv_intro"
@@ -351,8 +352,112 @@
                 android:layout_width="match_parent"
                 android:paddingLeft="20dp"
                 android:textColor="#666666"
+                android:paddingTop="5dp"
+                android:visibility="gone"
                 android:text="这时个人简介，哈哈哈哈哈哈哈哈哈哈哈哈哈"
                 android:layout_height="100dp" />
+            <RelativeLayout
+                android:id="@+id/rl_manage_address"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="20dp"
+                android:background="@color/white">
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textColor="#666666"
+                    android:paddingLeft="20dp"
+                    android:gravity="center_vertical"
+                    android:text="管理收货地址"/>
+                <ImageView
+                    android:layout_alignParentRight="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="10dp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/icon_arrow_right"/>
+            </RelativeLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="20dp"
+                android:background="#eeeeee"/>
+            <LinearLayout
+                android:id="@+id/ll_addr_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:background="@color/white"
+                android:orientation="horizontal">
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/tv_addr_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="20dp"
+                    android:textColor="#666666"
+                    android:text="Scoield"/>
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/tv_addr_mobile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:text="185*****123"/>
+            </LinearLayout>
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/tv_addr"
+                android:background="@color/white"
+                android:textColor="#666666"
+                android:paddingLeft="20dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:text="广东省,深圳市,福田区,卓越世纪中心,3栋B座1518室"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:paddingTop="10dp"
+                android:paddingLeft="20dp"
+                android:paddingBottom="10dp"
+                android:layout_marginBottom="20dp"
+                android:background="@color/white"
+                android:layout_height="wrap_content">
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_alignParentLeft="true"
+                    android:layout_width="wrap_content"
+                    android:textColor="#666666"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:drawableLeft="@drawable/icon_addr_checked"
+                    android:drawablePadding="5dp"
+                    android:text="默认地址"/>
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/tv_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="删除"
+                    android:textColor="#666666"
+                    android:paddingRight="10dp"
+                    android:drawableLeft="@drawable/delete"
+                    android:drawablePadding="5dp"
+                    android:gravity="center_vertical"
+                    android:layout_alignParentRight="true"/>
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="编辑"
+                    android:textColor="#666666"
+                    android:paddingRight="10dp"
+                    android:drawablePadding="5dp"
+                    android:layout_marginRight="10dp"
+                    android:drawableLeft="@drawable/icon_edit"
+                    android:gravity="center_vertical"
+                    android:layout_toLeftOf="@id/tv_delete"/>
+            </RelativeLayout>
+        </LinearLayout>
         </LinearLayout>
     </ScrollView>
     <FrameLayout
