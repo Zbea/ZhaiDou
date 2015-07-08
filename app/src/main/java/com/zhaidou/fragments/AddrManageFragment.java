@@ -1,7 +1,4 @@
 package com.zhaidou.fragments;
-
-
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -52,12 +49,14 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     private static final String ARG_MOBILE = "param2";
     private static final String ARG_ADDRESS = "param3";
     private static final String ARG_PROFILE_ID = "param4";
+    private static final String ARG_STATUS = "param5";
 
     // TODO: Rename and change types of parameters
     private String mNickName;
     private String mMobile;
     private String mAddress;
     private String mProfileId;
+    private int mStatus;
 
     private LinearLayout ll_edit_addr;
     private LinearLayout ll_manage_address;
@@ -76,13 +75,14 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
      * @return A new instance of fragment AddrManageFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static AddrManageFragment newInstance(String nickname,String mobile,String address, String profileId) {
+    public static AddrManageFragment newInstance(String nickname,String mobile,String address, String profileId,int status) {
         AddrManageFragment fragment = new AddrManageFragment();
         Bundle args = new Bundle();
         args.putString(ARG_NickName, nickname);
         args.putString(ARG_MOBILE, mobile);
         args.putString(ARG_ADDRESS, address);
         args.putString(ARG_PROFILE_ID, profileId);
+        args.putInt(ARG_STATUS,status);
         fragment.setArguments(args);
         return fragment;
     }
@@ -98,6 +98,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             mMobile = getArguments().getString(ARG_MOBILE);
             mAddress = getArguments().getString(ARG_ADDRESS);
             mProfileId = getArguments().getString(ARG_PROFILE_ID);
+            mStatus=getArguments().getInt(ARG_STATUS);
         }
     }
 
@@ -132,6 +133,14 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             tv_addr.setText(mAddress);
         }
 
+        if (mStatus==1){
+            ll_edit_addr.setVisibility(View.VISIBLE);
+            ll_manage_address.setVisibility(View.GONE);
+            et_addr.setHint(mAddress);
+            et_mobile.setHint(mMobile);
+            et_name.setHint(mNickName);
+        }
+
         mSharedPreferences=getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         token=mSharedPreferences.getString("token", null);
         return view;
@@ -141,6 +150,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.tv_save:
+                hideInputMethod();
                 String name=et_name.getText().toString();
                 String mobile=et_mobile.getText().toString();
                 String address=et_addr.getText().toString();
@@ -224,7 +234,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
 
             parameters.add(new BasicNameValuePair("_method","PUT"));
 //            String newStr = new String(old.getBytes("UTF-8"));
-            parameters.add(new BasicNameValuePair("profile[nick_name]",name));
+            parameters.add(new BasicNameValuePair("profile[first_name]",name));
             parameters.add(new BasicNameValuePair("profile[mobile]",mobile));
             parameters.add(new BasicNameValuePair("profile[address2]",addr));
             parameters.add(new BasicNameValuePair("profile[id]",id));

@@ -11,7 +11,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -35,6 +37,7 @@ import com.zhaidou.fragments.SortFragment;
 import com.zhaidou.fragments.StrategyFragment1;
 import com.zhaidou.utils.CollectionUtils;
 import com.zhaidou.utils.HtmlFetcher;
+import com.zhaidou.view.AutoGridView;
 
 import org.json.JSONArray;
 import java.net.URL;
@@ -45,13 +48,13 @@ import java.util.Set;
 
 
 public class SearchActivity extends FragmentActivity implements View.OnClickListener,AdapterView.OnItemClickListener,
-                              SortFragment.RefreshDataListener{
+                              SortFragment.RefreshDataListener,AutoGridView.OnHistoryItemClickListener{
 
     private GridView gv_hot;
     private  GridView gv_history;
     private EditText mEditText;
     private ImageView mClearView,mSearchiv;
-    private TextView mDeleteView,mCancelView;
+    private TextView mDeleteView,mSearchView;
     private ViewPager mViewPager;
     private LinearLayout ll_viewpager;
     private LinearLayout mBackView;
@@ -83,6 +86,7 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
     private String keyWord;
 
     private int sort=0;
+    private AutoGridView autoGridView;
     private Handler mHandler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -143,7 +147,7 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
         mClearView=(ImageView)findViewById(R.id.iv_cancel);
         mSearchiv=(ImageView)findViewById(R.id.iv_search);
         mDeleteView=(TextView)findViewById(R.id.tv_delete);
-        mCancelView=(TextView)findViewById(R.id.tv_cancel);
+        mSearchView=(TextView)findViewById(R.id.tv_cancel);
         mViewPager=(ViewPager)findViewById(R.id.vp_search);
         mBackView=(LinearLayout)findViewById(R.id.ll_back);
         mSortView=(ImageView)findViewById(R.id.iv_sort);
@@ -164,9 +168,15 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
         mClearView.setOnClickListener(this);
         mSearchiv.setOnClickListener(this);
         mDeleteView.setOnClickListener(this);
-        mCancelView.setOnClickListener(this);
+        mSearchView.setOnClickListener(this);
         mBackView.setOnClickListener(this);
         mSortView.setOnClickListener(this);
+
+        autoGridView=(AutoGridView)findViewById(R.id.ag_search_history);
+        autoGridView.setOnHistoryItemClickListener(this);
+        findViewById(R.id.tv_test).setOnClickListener(this);
+        findViewById(R.id.tv_clear).setOnClickListener(this);
+
         mHotAdapter=new SearchAdapter(SearchActivity.this,mHotList);
 
         Log.i("mHistoryList------>",mHistoryList.size()+"");
@@ -194,6 +204,23 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
                     return true;
                 }
                 return false;
+            }
+        });
+        mEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                mSortView.setVisibility(View.GONE);
+                mSearchView.setVisibility(View.VISIBLE);
             }
         });
 
@@ -233,6 +260,13 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
             case R.id.iv_sort:
                 toggleSortMenu();
                 break;
+            case R.id.tv_test:
+                Log.i("tv_test---->","tv_test");
+                autoGridView.setHistoryList(null);
+                break;
+            case R.id.tv_clear:
+                autoGridView.clear();
+                break;
             default:
                 break;
         }
@@ -248,7 +282,7 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
 
         mBackView.setVisibility(View.VISIBLE);
         mSortView.setVisibility(View.VISIBLE);
-        mCancelView.setVisibility(View.GONE);
+        mSearchView.setVisibility(View.GONE);
 
         keyWord= mEditText.getText().toString();
         SharedPreferences.Editor editor=mSharedPreferences.edit();
@@ -325,13 +359,16 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
     public void refreshData(int index) {
         sort=index;
         mViewPager.setFocusable(true);
-        Log.i("index------>",index+"");
-        Log.i("keyWord--------->",keyWord);
         int page = mViewPager.getCurrentItem();
         if (page==0){
             mSingleFragment.FetchData(keyWord,index,1);
         }else {
             mStrategyFragment.FetchData(keyWord,index,1);
         }
+    }
+
+    @Override
+    public void onHistoryItemClick(int position) {
+        Log.i("position---------------->",position+"");
     }
 }

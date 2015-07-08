@@ -42,6 +42,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.AsyncImageLoader1;
+import com.zhaidou.utils.NativeHttpUtil;
 import com.zhaidou.utils.PhotoUtil;
 
 import org.apache.http.HttpResponse;
@@ -60,7 +61,9 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class ProfileFragment extends BaseFragment implements View.OnClickListener,PhotoMenuFragment.MenuSelectListener,
@@ -87,7 +90,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     private TextView tv_mobile;
     private TextView tv_addr_username;
     private TextView tv_addr_mobile;
-    private TextView tv_addr;
+    private TextView tv_addr,tv_delete,tv_edit;
 
     private RelativeLayout mWorkLayout;
 
@@ -131,6 +134,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     tv_job.setText(user.isVerified()?"宅豆认证工程师":"未认证工程师");
                     tv_addr_mobile.setText(TextUtils.isEmpty(user.getMobile())?"":user.getMobile());
                     tv_addr.setText(TextUtils.isEmpty(user.getAddress2())?"":user.getAddress2());
+                    tv_addr_username.setText(TextUtils.isEmpty(user.getFirst_name())?"":user.getFirst_name());
                     if (TextUtils.isEmpty(user.getAddress2())){
                         ll_addr_info.setVisibility(View.GONE);
                     }else {
@@ -143,7 +147,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     imageLoader.LoadImage("http://"+user1.getAvatar(),iv_header);
                     tv_email.setText(user1.getEmail());
                     tv_nick.setText(TextUtils.isEmpty(user1.getNickName())?"":user1.getNickName());
-                    tv_addr_username.setText(TextUtils.isEmpty(user1.getNickName())?"":user1.getNickName());
+
                     break;
             }
         }
@@ -203,8 +207,12 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         tv_addr_username=(TextView)view.findViewById(R.id.tv_addr_username);
         tv_addr=(TextView)view.findViewById(R.id.tv_addr);
         ll_addr_info=(LinearLayout)view.findViewById(R.id.ll_addr_info);
+        tv_delete=(TextView)view.findViewById(R.id.tv_delete);
+        tv_edit=(TextView)view.findViewById(R.id.tv_edit);
         mWorkLayout=(RelativeLayout)view.findViewById(R.id.rl_job);
         mWorkLayout.setOnClickListener(this);
+        tv_edit.setOnClickListener(this);
+        tv_delete.setOnClickListener(this);
 
         view.findViewById(R.id.rl_manage_address).setOnClickListener(this);
 
@@ -230,6 +238,8 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             getUserData();
             getUserInfo();
         }
+        token=mSharedPreferences.getString("token", null);
+        Log.i("view--------------->",token);
         return view;
     }
 
@@ -271,10 +281,20 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 String name=tv_addr_username.getText().toString();
                 String mobile=tv_addr_mobile.getText().toString();
                 String address=tv_addr.getText().toString();
-                AddrManageFragment addressFragment=AddrManageFragment.newInstance(name,mobile,address,profileId);
+                AddrManageFragment addressFragment=AddrManageFragment.newInstance(name,mobile,address,profileId,0);
                 addressFragment.setAddressListener(this);
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container,addressFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
+                break;
+            case R.id.tv_edit:
+                AddrManageFragment editFragment=AddrManageFragment.newInstance(tv_addr_username.getText().toString(),tv_addr_mobile.getText().toString(),tv_addr.getText().toString(),profileId,1);
+                editFragment.setAddressListener(this);
+                getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container,editFragment).addToBackStack(null).commit();
+                mChildContainer.setVisibility(View.VISIBLE);
+                break;
+            case R.id.tv_delete:
+                Log.i("R.id.tv_delete:","R.id.tv_delete:");
+                new DeleteAddressTask().execute();
                 break;
         }
     }
@@ -287,7 +307,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 getChildFragmentManager().beginTransaction().hide(menuFragment).commit();
             }
         }
-
     }
 
     @Override
@@ -334,10 +353,13 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 description=description.equals("null")?"":description;
                 profileId=userObj.optString("id");
                 boolean verified=userObj.optBoolean("verified");
+                String first_name=userObj.optString("first_name");
+                first_name="null".equalsIgnoreCase(first_name)?"":first_name;
 
                 String address2=userObj.optString("address2");
                 User user=new User(null,null,null,verified,mobile,description);
                 user.setAddress2(address2);
+                user.setFirst_name(first_name);
                 Message message=new Message();
                 message.what=UPDATE_PROFILE_INFO;
                 message.obj=user;
@@ -598,6 +620,15 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     @Override
     public void onAddressDataChange(String name, String mobile, String address) {
         Log.i("onAddressDataChange--->",name+"----"+mobile+"----->"+address);
+        tv_addr.setText(address);
+        tv_addr_mobile.setText(mobile);
+        tv_addr_username.setText(name);
+        if (TextUtils.isEmpty(address)){
+            ll_addr_info.setVisibility(View.GONE);
+        }else {
+            ll_addr_info.setVisibility(View.VISIBLE);
+        }
+        getChildFragmentManager().popBackStack();
     }
 
     public void setProfileListener(ProfileListener profileListener) {
@@ -606,5 +637,55 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
     public interface ProfileListener{
         public void onProfileChange(User user);
+    }
+
+    private class DeleteAddressTask extends AsyncTask<Void,Void,String>{
+        @Override
+        protected String doInBackground(Void... voids) {
+            String name =tv_addr_username.getText().toString();
+            String mobile =tv_addr_mobile.getText().toString();
+            String address =tv_addr.getText().toString();
+
+            Log.i("DeleteAddressTask---->",name+"---"+mobile+"---"+address+"----"+token+"---"+profileId);
+//            parameters.add(new BasicNameValuePair("_method","PUT"));
+////            String newStr = new String(old.getBytes("UTF-8"));
+//            parameters.add(new BasicNameValuePair("profile[nick_name]",name));
+//            parameters.add(new BasicNameValuePair("profile[mobile]",mobile));
+//            parameters.add(new BasicNameValuePair("profile[address2]",addr));
+//            parameters.add(new BasicNameValuePair("profile[id]",id));
+
+            Map<String,String> map=new HashMap<String, String>();
+            map.put("_method","PUT");
+            map.put("profile[first_name]",name);
+            map.put("profile[mobile]",mobile);
+            map.put("profile[address2]","");
+            map.put("profile[id]",profileId);
+            String result=null;
+            try {
+                result=NativeHttpUtil.post(ZhaiDou.USER_EDIT_PROFILE_URL+profileId,token,map);
+                Log.i("result--->",result);
+            }catch (Exception e){
+                Log.e("Exception-------->",e.getMessage());
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Log.i("onPostExecute--->",s);
+            if (!TextUtils.isEmpty(s)){
+                try {
+                    JSONObject json = new JSONObject(s);
+                    JSONObject profile=json.optJSONObject("profile");
+                    tv_addr.setText("");
+                    if (profile!=null){
+                        ll_addr_info.setVisibility(View.GONE);
+                    }
+                }catch (Exception e){
+
+                }
+            }
+        }
     }
 }

@@ -34,6 +34,7 @@ public class User {
     private String description;
     private String mobile;
     private boolean verified;
+    private String first_name;
 
 
     public User() {
@@ -285,6 +286,14 @@ public class User {
 
     public void setVerified(boolean verified) {
         this.verified = verified;
+    }
+
+    public String getFirst_name() {
+        return first_name;
+    }
+
+    public void setFirst_name(String first_name) {
+        this.first_name = first_name;
     }
 
     public User(int id, String email, String create_at, String avatar, String nickName, String gender, String province, String city, int collocation_number) {

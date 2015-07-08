@@ -139,6 +139,7 @@ public class HomeFragment extends BaseFragment implements
     private LinearLayout mSwipeView;
 //    SwipeRefreshLayout mSwipeLayout;
 
+    private ProgressDialog mDialog;
     private PullToRefreshScrollView mScrollView;
     private AdapterView.OnItemClickListener itemSelectListener = new AdapterView.OnItemClickListener() {
         @Override
@@ -192,6 +193,7 @@ public class HomeFragment extends BaseFragment implements
                 imageSwitchWall.setDatas(banners);
             }
             mHomeAdapter.notifyDataSetChanged();
+            mDialog.hide();
         }
     };
 
@@ -282,6 +284,7 @@ public class HomeFragment extends BaseFragment implements
                         ,HomeCategoryFragment.TAG).hide(homeCategoryFragment).commit();
         homeCategoryFragment.setCategorySelectedListener(this);
         listView.setOnItemClickListener(this);
+        mDialog=ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
         return view;
     }
 
@@ -400,6 +403,7 @@ public class HomeFragment extends BaseFragment implements
 //                ((BaseActivity)getActivity()).navigationToFragment(prizeFragment);
                 Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
                 detailIntent.putExtra("url",ZhaiDou.PRIZE_SCRAPING_URL);
+                detailIntent.putExtra("from","lottery");
                 startActivity(detailIntent);
                 break;
             case R.id.ll_competition:
@@ -637,6 +641,7 @@ public class HomeFragment extends BaseFragment implements
         Log.i("id----->",article.getId()+"");
         Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
         detailIntent.putExtra("id", article.getId()+"");
+        detailIntent.putExtra("from", "product");
         detailIntent.putExtra("title", article.getTitle());
         detailIntent.putExtra("cover_url", article.getImg_url());
         detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+article.getId());
@@ -665,4 +670,5 @@ public class HomeFragment extends BaseFragment implements
         }
         FetchData(++currentPage, mCategory);
     }
+
 }

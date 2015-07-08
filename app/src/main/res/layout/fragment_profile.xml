@@ -353,7 +353,6 @@
                 android:paddingLeft="20dp"
                 android:textColor="#666666"
                 android:paddingTop="5dp"
-                android:visibility="gone"
                 android:text="这时个人简介，哈哈哈哈哈哈哈哈哈哈哈哈哈"
                 android:layout_height="100dp" />
             <RelativeLayout
@@ -446,6 +445,7 @@
                     android:gravity="center_vertical"
                     android:layout_alignParentRight="true"/>
                 <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/tv_edit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="编辑"

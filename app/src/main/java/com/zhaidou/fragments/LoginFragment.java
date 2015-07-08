@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -94,6 +95,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     private TextView mLoginView;
     public static final String TAG=LoginFragment.class.getSimpleName();
 
+    private ProgressDialog mDialog;
 
     private RegisterFragment.RegisterOrLoginListener mRegisterOrLoginListener;
     private BackClickListener backClickListener;
@@ -156,6 +158,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         view.findViewById(R.id.ll_weixin).setOnClickListener(this);
         view.findViewById(R.id.ll_weibo).setOnClickListener(this);
         view.findViewById(R.id.ll_taobao).setOnClickListener(this);
+
         return view;
     }
 
@@ -191,6 +194,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                 authorize(sina);
                 break;
             case R.id.ll_taobao:
+
                 AlibabaSDK.getService(LoginService.class).showLogin(getActivity(),new LoginCallback() {
                     @Override
                     public void onSuccess(final Session session) {
@@ -263,6 +267,12 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
 
     private class MyTask extends AsyncTask<Void,Void,String> {
         @Override
+        protected void onPreExecute() {
+            mDialog=ProgressDialog.show(getActivity(), "", "正在努力登录中...", true);
+            super.onPreExecute();
+        }
+
+        @Override
         protected String doInBackground(Void... voids) {
             String str=null;
             try {
@@ -279,6 +289,8 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         @Override
         protected void onPostExecute(String s) {
             Log.i("onPostExecute------------>", s);
+            if (mDialog!=null)
+                mDialog.hide();
             try {
                 JSONObject json = new JSONObject(s);
                 Object obj = json.opt("message");

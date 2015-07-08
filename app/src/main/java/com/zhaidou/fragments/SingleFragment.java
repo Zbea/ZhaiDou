@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -80,12 +81,14 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
     private AsyncImageLoader1 imageLoader;
     private SingleAdapter singleAdapter;
 
+    private ProgressDialog mDialog;
     private WeakHashMap<Integer,View> mHashMap = new WeakHashMap<Integer, View>();
 //    private SingleAdapter mSingleAdapter;
 
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
+//            mDialog.hide();
           singleAdapter.setList(products);
           gv_single.onRefreshComplete();
         }
@@ -128,7 +131,6 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_single, container, false);
         initView(view);
-//        new FetchDataTask().execute();
         FetchData(mParam1,sort,currentpage=1);
         return view;
     }
@@ -139,18 +141,14 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
         tv_money=(TextView)view.findViewById(R.id.tv_money);
         gv_single=(PullToRefreshGridView)view.findViewById(R.id.gv_single);
         singleAdapter = new SingleAdapter(getActivity(),products);
-        Log.i("mEmptyView----->",mEmptyView.toString());
         gv_single.setEmptyView(mEmptyView);
         gv_single.setAdapter(singleAdapter);
         mRequestQueue= Volley.newRequestQueue(getActivity());
-        Log.i("mParam2----------->",mParam2);
         if ("category".equalsIgnoreCase(mParam2)){
-
             FetchCategoryData(mParam1, 0, currentpage);
         }else {
             FetchData(mParam1,0,currentpage);
         }
-//        FetchData(mParam1,0,1);
 
         gv_single.setMode(PullToRefreshBase.Mode.BOTH);
         gv_single.setOnRefreshListener(this);
@@ -185,7 +183,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
         }else if (sort==3){
             params.put("price","desc");
         }
-
+//        mDialog=ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
         JsonObjectRequest newMissRequest = new JsonObjectRequest(
                 Request.Method.POST, ZhaiDou.SEARCH_PRODUCT_URL,
                 new JSONObject(params), new Response.Listener<JSONObject>() {
@@ -273,7 +271,6 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
 //        }else if (sort==3){
 //            params.put("price","desc");
 //        }
-
         String url=ZhaiDou.ARTICLE_ITEM_WITH_CATEGORY+id;
         JsonObjectRequest fetchCategoryTask = new JsonObjectRequest(url,new Response.Listener<JSONObject>(){
             @Override

@@ -16,6 +16,15 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="全类别"/>
+        <ImageView
+            android:id="@+id/iv_search"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/icon_search"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"/>
     </RelativeLayout>
     <ExpandableListView
         android:id="@+id/el_category"

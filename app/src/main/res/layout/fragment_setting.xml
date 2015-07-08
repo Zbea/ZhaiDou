@@ -166,13 +166,11 @@
                 android:src="@drawable/icon_arrow_right"
                 android:paddingRight="10dp"/>
         </LinearLayout>
-            <ImageView
+            <View
                 android:layout_width="match_parent"
-                android:paddingLeft="40dp"
-                android:paddingRight="40dp"
+                android:layout_marginLeft="40dp"
                 android:layout_height="1dp"
-                android:background="@color/white"
-                android:src="#d2d4d7"/>
+                android:background="#eeeeee"/>
         <LinearLayout
             android:id="@+id/ll_add_v"
             android:layout_width="match_parent"
@@ -261,11 +259,9 @@
         </LinearLayout>
             <ImageView
                 android:layout_width="match_parent"
-                android:paddingLeft="40dp"
+                android:layout_marginLeft="40dp"
                 android:layout_height="1dp"
-                android:background="@color/white"
-                android:paddingRight="40dp"
-                android:src="#d2d4d7"/>
+                android:src="#eeeeee"/>
         <LinearLayout
             android:id="@+id/ll_about"
             android:layout_width="match_parent"

@@ -97,46 +97,6 @@
                 android:background="@color/white"
                 android:orientation="horizontal">
                 <LinearLayout
-                    android:id="@+id/ll_lottery"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:layout_weight="1">
-                    <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:src="@drawable/icon_guajiang"/>
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:layout_marginTop="10dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#666666"
-                        android:gravity="center"
-                        android:text="天天刮奖"/>
-                    </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_competition"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:layout_weight="1">
-                    <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:src="@drawable/icon_pintie"/>
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:layout_marginTop="10dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#666666"
-                        android:gravity="center"
-                        android:text="拼贴大赛"/>
-                </LinearLayout>
-
-                <LinearLayout
                     android:id="@+id/ll_sale"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -155,7 +115,25 @@
                         android:gravity="center"
                         android:text="零元特卖"/>
                 </LinearLayout>
-
+                <LinearLayout
+                    android:id="@+id/ll_lottery"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_weight="1">
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/icon_guajiang"/>
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#666666"
+                        android:gravity="center"
+                        android:text="天天刮奖"/>
+                    </LinearLayout>
                 <LinearLayout
                     android:id="@+id/ll_forward"
                     android:layout_width="0dp"
@@ -174,6 +152,25 @@
                         android:textColor="#666666"
                         android:gravity="center"
                         android:text="转发有喜"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/ll_competition"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_weight="1">
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/icon_pintie"/>
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#666666"
+                        android:gravity="center"
+                        android:text="拼贴大赛"/>
                 </LinearLayout>
 
             </LinearLayout>

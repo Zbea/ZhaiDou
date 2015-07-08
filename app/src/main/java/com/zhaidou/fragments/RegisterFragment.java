@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -80,6 +81,7 @@ public class RegisterFragment extends BaseFragment implements View.OnClickListen
     SharedPreferences mSharedPreferences;
     static RegisterOrLoginListener mRegisterListener;
 
+    private ProgressDialog mDialog;
     private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -159,6 +161,12 @@ public class RegisterFragment extends BaseFragment implements View.OnClickListen
 
     private class MyTask extends AsyncTask<Void,Void,String>{
         @Override
+        protected void onPreExecute() {
+            mDialog=ProgressDialog.show(getActivity(), "", "小豆正在注册哦...", true);
+            super.onPreExecute();
+        }
+
+        @Override
         protected String doInBackground(Void... voids) {
             String str=null;
             try {
@@ -181,6 +189,8 @@ public class RegisterFragment extends BaseFragment implements View.OnClickListen
 
         @Override
         protected void onPostExecute(String s) {
+            if (mDialog!=null)
+                mDialog.hide();
             Log.i("onPostExecute------------>",s);
             Log.i("setRegisterOrLoginListener-------->",mRegisterListener.toString());
             try {

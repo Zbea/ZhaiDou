@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -97,6 +98,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
     private int currentpage=1;
 
 
+    private ProgressDialog mDialog;
     private Map<Integer,View> mHashMap=new HashMap<Integer, View>();
     private CollectCountChangeListener collectCountChangeListener;
     private Handler mHandler= new Handler(){
@@ -184,11 +186,18 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
 
     private class MyTask extends AsyncTask<Void,Void,JSONObject>{
         @Override
+        protected void onPreExecute() {
+            mDialog=ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
+            super.onPreExecute();
+        }
+
+        @Override
         protected JSONObject doInBackground(Void... voids) {
             return getHttp(ZhaiDou.USER_COLLECT_ITEM_URL+currentpage, null);
         }
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
+            mDialog.hide();
             if (!TextUtils.isEmpty(jsonObject.toString())){
                 JSONArray article_items=jsonObject.optJSONArray("article_items");
                 JSONObject meta = jsonObject.optJSONObject("meta");
@@ -317,6 +326,8 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
 
         @Override
         protected void onPostExecute(String s) {
+            if (mDialog!=null)
+                mDialog.hide();
             Log.i("CancelTask------>",s);
             try {
                 if (!TextUtils.isEmpty(s)){

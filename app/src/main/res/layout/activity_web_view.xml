@@ -21,8 +21,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:src="@drawable/icon_back"/>
+                android:src="@drawable/buy_close"/>
             <com.zhaidou.view.TypeFaceTextView
+                android:paddingLeft="3dp"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -30,7 +31,7 @@
                 android:drawablePadding="2dp"
                 android:textColor="@color/white"
                 android:layout_alignParentLeft="true"
-                android:text="返回"/>
+                android:text="关闭"/>
         </LinearLayout>
 
     </RelativeLayout>

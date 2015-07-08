@@ -1,6 +1,7 @@
 package com.zhaidou.fragments;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -37,6 +38,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.CategoriesActivity;
 import com.zhaidou.activities.CategoryActivity;
 import com.zhaidou.activities.HomeActivity;
+import com.zhaidou.activities.SearchActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -63,7 +65,7 @@ import java.util.WeakHashMap;
  * create an instance of this fragment.
  *
  */
-public class CategoryFragment1 extends BaseFragment {
+public class CategoryFragment1 extends BaseFragment{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -84,6 +86,7 @@ public class CategoryFragment1 extends BaseFragment {
 
     private int screenWidth;
 
+    private ProgressDialog mDialog;
     private Handler mHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -93,6 +96,7 @@ public class CategoryFragment1 extends BaseFragment {
                 expandableListView.expandGroup(i);
             }
             categoryExpandeAdapter.notifyDataSetChanged();
+            mDialog.hide();
         }
     };
 
@@ -131,6 +135,7 @@ public class CategoryFragment1 extends BaseFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_category1, container, false);
+        view.findViewById(R.id.iv_search).setOnClickListener(this);
         mRequestQueue = Volley.newRequestQueue(getActivity());
         getCategoryData();
         expandableListView=(ExpandableListView)view.findViewById(R.id.el_category);
@@ -163,6 +168,7 @@ public class CategoryFragment1 extends BaseFragment {
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
         screenWidth=dm.widthPixels;
         Log.i("screenWidth---------->",screenWidth+"");
+        mDialog=ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
         return view;
     }
 
@@ -391,6 +397,16 @@ public class CategoryFragment1 extends BaseFragment {
 
             weakHashMap.put(position,view);
             return view;
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.iv_search:
+                Log.i("iv_search---->","iv_search");
+                startActivity(new Intent(getActivity(),SearchActivity.class));
+                break;
         }
     }
 }

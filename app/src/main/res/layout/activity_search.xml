@@ -173,6 +173,35 @@
         android:listSelector="@android:color/transparent"
         android:numColumns="5"/>
 
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_marginTop="50dp"
+            android:id="@+id/tv_test"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:textSize="16sp"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:textColor="#535353"
+            android:background="@color/red"
+            android:text="测试"/>
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_marginTop="50dp"
+            android:id="@+id/tv_clear"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:textSize="16sp"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:textColor="#535353"
+            android:background="@color/red"
+            android:text="清除"/>
+        <com.zhaidou.view.AutoGridView
+            android:id="@+id/ag_search_history"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:listSelector="@android:color/transparent"/>
+
     <View
         android:layout_margin="20dp"
         android:layout_width="match_parent"

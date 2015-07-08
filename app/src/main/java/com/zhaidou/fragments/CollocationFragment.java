@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -70,11 +71,13 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
 
     private CollocationCountChangeListener collocationCountChangeListener;
 
+    private ProgressDialog mDialog;
     private Handler mHandler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 0:
+                    mDialog.hide();
                     mAdapter.notifyDataSetChanged();
                     int num = msg.arg1;
                     if (collocationCountChangeListener!=null){
@@ -134,6 +137,7 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
     }
 
     public void FetchCollocationData(int page){
+        mDialog=ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
         int userId=mSharedPreferences.getInt("userId", -1);
         JsonObjectRequest request =new JsonObjectRequest("http://www.zhaidou.com/api/v1/users/77069/bean_collocations?page="+page
             ,new Response.Listener<JSONObject>(){

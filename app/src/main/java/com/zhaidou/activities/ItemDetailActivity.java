@@ -2,6 +2,7 @@ package com.zhaidou.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -52,11 +53,13 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     private RegisterFragment registerFragment;
 
     private SharedPreferences mSharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_detail);
 
+        from=getIntent().getStringExtra("from");
         mSharedPreferences=getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         userId=mSharedPreferences.getInt("userId", -1);
         token=mSharedPreferences.getString("token", "");
@@ -82,33 +85,45 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                Log.i("shouldOverrideUrlLoading--->",url);
-                Log.i("token-------------->",token);
-                Log.i("userId-------------->",userId+"");
-                Log.i("nickName------------->",nickName+"");
+                Log.i("shouldOverrideUrlLoading---------------->",url);
+//                Log.i("shouldOverrideUrlLoading--->",url);
+//                Log.i("token-------------->",token);
+//                Log.i("userId-------------->",userId+"");
+//                Log.i("nickName------------->",nickName+"");
                 getDeviceId();
                 if ("mobile://login?false".equalsIgnoreCase(url)){
-                    if (!TextUtils.isEmpty(token)&&userId>-1){
-                        if (!TextUtils.isEmpty(from)){
-                            webView.loadUrl("javascript:ReceiveUserInfo("+userId+", "+token+", "+getDeviceId()+","+nickName+")");
-                        }else {
-                            webView.loadUrl("javascript:ReceiveUserInfo("+userId+", "+token+")");
-                        }
-                    }else {
+//                    if (!TextUtils.isEmpty(token)&&userId>-1){
+//                        if (!TextUtils.isEmpty(from)){
+//                            webView.loadUrl("javascript:ReceiveUserInfo("+userId+", "+token+", "+getDeviceId()+","+nickName+")");
+//                        }else {
+//                            webView.loadUrl("javascript:ReceiveUserInfo("+userId+", "+token+")");
+//                        }
+//                    }else {
                         getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container,loginFragment)
                                 .addToBackStack(null).commit();
                         mChildContainer.setVisibility(View.VISIBLE);
-                    }
+//                    }
+                    return true;
+                }else if (url.contains("taobao")){
+                    Intent intent = new Intent();
+                    intent.putExtra("url", url);
+                    intent.setClass(ItemDetailActivity.this, WebViewActivity.class);
+                    ItemDetailActivity.this.startActivity(intent);
                     return true;
                 }
-
-//                Intent intent = new Intent();
-//                intent.putExtra("url", url);
-//                intent.setClass(ItemDetailActivity.this, WebViewActivity.class);
-//                ItemDetailActivity.this.startActivity(intent);
                 return false;
             }
 
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                if ("lottery".equalsIgnoreCase(from)){
+                    Log.i("lottery----------->","onPageFinished"+"------"+token);
+                    webView.loadUrl("javascript:ReceiveUserInfo("+userId+", '"+token+"',"+getDeviceId()+",'"+nickName+"')");
+                }else if ("product".equalsIgnoreCase(from)){
+                    webView.loadUrl("javascript:ReceiveUserInfo("+userId+", '"+token+"')");
+                }
+                super.onPageFinished(view, url);
+            }
         });
         url = getIntent().getStringExtra("url");
 //        String postUrl = ZhaiDou.HOME_BASE_URL + "?p=" + postId;
@@ -193,6 +208,9 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         switch (view.getId()){
             case R.id.tv_back:
                 if (webView.canGoBack()){
+                    if ("product".equalsIgnoreCase(from)){
+                        iv_share.setVisibility(View.VISIBLE);
+                    }
                     webView.goBack();
                     return;
                 }
