@@ -6,11 +6,14 @@ import android.util.Log;
 
 import com.zhaidou.model.User;
 
+import java.util.List;
+
 /**
  * Created by wangclark on 15/7/3.
  */
 public class SharedPreferencesUtil {
     private static final String SPName="zhaidou";
+
 
     public static void saveData(Context context, String key,Object data){
 
@@ -77,6 +80,31 @@ public class SharedPreferencesUtil {
         editor.putString("token","");
         editor.putString("avatar","");
         editor.putString("nickName","");
+        editor.commit();
+    }
+
+    public static void saveHistoryData(Context context,List<String> historyList){
+        Log.i("saveHistoryData--------->",historyList.size()+"");
+        SharedPreferences mSharedPreferences = context.getSharedPreferences
+                (SPName, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putInt("historyCount",historyList.size());
+        for (int i=0;i<historyList.size();i++){
+            editor.putString("history_"+i,historyList.get(i));
+        }
+        editor.commit();
+    }
+
+    public static void clearSearchHistory(Context context){
+        SharedPreferences mSharedPreferences = context.getSharedPreferences
+                (SPName, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+
+        int count=mSharedPreferences.getInt("historyCount",0);
+        for (int i=0;i<count;i++){
+            editor.remove("history_"+i);
+        }
+        editor.putInt("historyCount",0);
         editor.commit();
     }
 }

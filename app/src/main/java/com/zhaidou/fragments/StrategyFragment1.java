@@ -143,14 +143,12 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
         strategyAdapter.setOnInViewClickListener(R.id.rl_fragment_strategy,new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                Log.i("position------------>",position+"");
-                Log.i("values--------------->",values.toString());
                 Article article=(Article)values;
                 Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
                 detailIntent.putExtra("id", article.getId()+"");
                 detailIntent.putExtra("title", article.getTitle());
                 detailIntent.putExtra("cover_url", article.getImg_url());
-                detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+article.getId());
+                detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+article.getId()+"?open=app");
                 startActivity(detailIntent);
             }
         });
@@ -158,19 +156,16 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
     }
 
     public void FetchData(String msg,int sort,int page){
+        Log.i("sort------------------>",sort+"");
         this.sort=sort;
         currentpage=page;
-        Log.i("page-------------------->",page+"");
-        Log.i("articleList------------->",articleList==null?"null":articleList.toString());
         if (page==1) articleList.clear();
-        Log.i("FetchData------>","FetchData");
         Map<String, String> params = new HashMap<String, String>();
-        params.put("reviews", "desc");
         params.put("per_page", "10");
         params.put("search", msg);
         params.put("page", page+"");
         if (sort==1){
-            params.put("hot_d","desc");
+            params.put("reviews", "desc");
         }else if (sort==2){
             params.put("price","asc");
         }else if (sort==3){
@@ -184,7 +179,7 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
 
             @Override
             public void onResponse(JSONObject json) {
-                Log.i("StrategyFragment1----->",json.toString());
+                listView.onRefreshComplete();
                 JSONArray articles = json.optJSONArray("articles");
                 JSONObject meta = json.optJSONObject("meta");
                 count=meta==null?0:meta.optInt("count");
@@ -240,21 +235,6 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
     }
 
     public void FetchCategoryData(String id,int sort,int page){
-        Log.i("FetchCategoryData--------->","FetchCategoryData");
-//        if (page==1) products.clear();
-//        Map<String, String> params = new HashMap<String, String>();
-//        params.put("price", "desc");
-//        params.put("hot_d", "desc");
-//        params.put("search", msg);
-//        params.put("page",page+"");
-//        if (sort==1){
-//            params.put("hot_d","desc");
-//        }else if (sort==2){
-//            params.put("price","asc");
-//        }else if (sort==3){
-//            params.put("price","desc");
-//        }
-
         String url=ZhaiDou.ARTICLES_WITH_CATEGORY+id;
         JsonObjectRequest fetchCategoryTask = new JsonObjectRequest(url,new Response.Listener<JSONObject>(){
             @Override

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="securityguard-1.2.36">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/libs/securityguard-1.2.36.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

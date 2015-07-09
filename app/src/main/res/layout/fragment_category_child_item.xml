@@ -23,7 +23,6 @@
         android:layout_height="wrap_content"
         android:paddingTop="10dp"
         android:gravity="center"
-        android:textColor="#666666"
-        android:text="Scoield"/>
+        android:textColor="#666666"/>
     </LinearLayout>
 </RelativeLayout>

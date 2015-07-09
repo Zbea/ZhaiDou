@@ -177,7 +177,6 @@ public class AsyncImageLoader1 {
                 new AsyncImageLoader1.ImageCallback() {
                     // 请参见实现：如果第一次加载url时下面方法会执行
                     public synchronized void imageLoaded(Drawable imageDrawable) {
-                        System.out.print("imageDrawable----->"+imageDrawable.toString());
                         iv.setImageDrawable(imageDrawable);
                         // iv.startAnimation(AnimationUtils.loadAnimation(
                         // mContext, R.anim.fade_in));

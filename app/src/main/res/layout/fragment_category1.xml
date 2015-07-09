@@ -30,9 +30,9 @@
         android:id="@+id/el_category"
         android:layout_width="match_parent"
         android:groupIndicator="@null"
+        android:background="#eeeeee"
+        android:divider="#eeeeee"
         android:listSelector="@android:color/transparent"
-        android:divider="#ececec"
-        android:dividerHeight="2dp"
         android:layout_height="wrap_content"
         android:scrollbars="none"/>
 </LinearLayout>

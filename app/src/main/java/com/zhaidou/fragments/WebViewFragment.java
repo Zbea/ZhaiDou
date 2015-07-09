@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
@@ -69,10 +70,10 @@ public class WebViewFragment extends BaseFragment{
 //                }
 //                preUrl=url;
                 Log.i("url------>",url);
-//                Intent intent = new Intent();
-//                intent.putExtra("url", url);
-//                intent.setClass(getActivity(), WebViewActivity.class);
-//                getActivity().startActivity(intent);
+                Intent intent = new Intent();
+                intent.putExtra("url", url);
+                intent.setClass(getActivity(), ItemDetailActivity.class);
+                getActivity().startActivity(intent);
 //                Toast.makeText(getActivity(),url,1).show();
 //                WebViewFragment webViewFragment=WebViewFragment.newInstance(url);
 //                ((PersonalMainFragment)getParentFragment()).addToStack(webViewFragment);

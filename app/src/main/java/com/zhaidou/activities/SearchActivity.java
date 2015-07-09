@@ -37,6 +37,7 @@ import com.zhaidou.fragments.SortFragment;
 import com.zhaidou.fragments.StrategyFragment1;
 import com.zhaidou.utils.CollectionUtils;
 import com.zhaidou.utils.HtmlFetcher;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.view.AutoGridView;
 
 import org.json.JSONArray;
@@ -51,13 +52,12 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
                               SortFragment.RefreshDataListener,AutoGridView.OnHistoryItemClickListener{
 
     private GridView gv_hot;
-    private  GridView gv_history;
     private EditText mEditText;
     private ImageView mClearView,mSearchiv;
     private TextView mDeleteView,mSearchView;
     private ViewPager mViewPager;
     private LinearLayout ll_viewpager;
-    private LinearLayout mBackView;
+    private LinearLayout mBackView,mSearchLayout;
     private ImageView mSortView;
     private TabPageIndicator indicator;
 
@@ -75,6 +75,7 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
     private List<String> mHotList = new ArrayList<String>();
     private Set<String> mHistorys;
     private List<String> mHistoryList=new ArrayList<String>();
+    private int historyCount=0;
 
     private SortFragment mSortFragment;
 
@@ -93,18 +94,15 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
             switch (msg.what){
                 case UPDATE_HISTORY:
                     String text = (String)msg.obj;
-                    Log.i("text----->",text);
-                    mHistoryAdapter.add(text);
-                    Log.i("mFragments.size()----------->",mFragments.size()+"");
+                    autoGridView.setHistoryList(mHistoryList);
                     if (mFragments.size()<2){
-                        Log.i("mFragments.size()----------->",mFragments.size()+"");
+                        Log.i("mFragments.size()<2",mFragments.size()+"");
                         mSingleFragment=SingleFragment.newInstance(text,text);
                         mStrategyFragment=StrategyFragment1.newInstance(text, text);
                         mFragments.add(mSingleFragment);
                         mFragments.add(mStrategyFragment);
                     }else if (mFragments.size()==2){
-                        Log.i("mSingleFragment---------->",mSingleFragment.toString());
-                        Log.i("mStrategyFragment---------->",mStrategyFragment.toString());
+                        Log.i("mFragments.size()==2",mSingleFragment.toString());
                         mSingleFragment.FetchData(text,sort,1);
                         mStrategyFragment.FetchData(text,sort,1);
                     }
@@ -112,12 +110,10 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
                     mSearchFragmentAdapter.notifyDataSetChanged();
                     indicator.notifyDataSetChanged();
                     ll_viewpager.setVisibility(View.VISIBLE);
-//                    if(inputMethodManager.isActive()){
-//                        inputMethodManager.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
-//                    }
                     break;
                 case UPDATE_HOTDATA:
                     mHotAdapter.setList(mHotList);
+                    autoGridView.setHistoryList(mHistoryList);
                     break;
                 default:
                     break;
@@ -141,7 +137,6 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
 
     private void initView(){
 
-        gv_history=(GridView)findViewById(R.id.gv_search_history);
         gv_hot=(GridView)findViewById(R.id.gv_hot_search);
         mEditText=(EditText)findViewById(R.id.et_search);
         mClearView=(ImageView)findViewById(R.id.iv_cancel);
@@ -151,14 +146,29 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
         mViewPager=(ViewPager)findViewById(R.id.vp_search);
         mBackView=(LinearLayout)findViewById(R.id.ll_back);
         mSortView=(ImageView)findViewById(R.id.iv_sort);
+        mSearchLayout=(LinearLayout)findViewById(R.id.ll_history);
         indicator = (TabPageIndicator)findViewById(R.id.indicator);
         ll_viewpager=(LinearLayout)findViewById(R.id.ll_viewpager);
         mSharedPreferences=getSharedPreferences("zhaidou",Context.MODE_PRIVATE);
 
+        autoGridView=(AutoGridView)findViewById(R.id.ag_search_history);
+        autoGridView.setOnHistoryItemClickListener(this);
         mHistorys = mSharedPreferences.getStringSet("history",new LinkedHashSet<String>());
-
-        if (mHistorys!=null&&mHistorys.size()>0)
-             mHistoryList.addAll(CollectionUtils.set2list(mHistorys));
+        historyCount=(Integer)SharedPreferencesUtil.getData(this,"historyCount",0);
+        Log.i("historyCount----->",historyCount+"");
+        mSearchLayout.setVisibility(View.GONE);
+        if (historyCount!=0){
+            for (int i=0;i<historyCount;i++){
+                String history=(String)SharedPreferencesUtil.getData(this,"history_"+i,"");
+                if (!TextUtils.isEmpty(history)){
+                    mHistoryList.add(history);
+                }
+                Log.i("history------------->",history);
+            }
+            mSearchLayout.setVisibility(View.VISIBLE);
+        }
+//        if (mHistorys!=null&&mHistorys.size()>0)
+//             mHistoryList.addAll(CollectionUtils.set2list(mHistorys));
 
         mFragments = new ArrayList<Fragment>();
         mSearchFragmentAdapter=new SearchFragmentAdapter(getSupportFragmentManager());
@@ -172,18 +182,12 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
         mBackView.setOnClickListener(this);
         mSortView.setOnClickListener(this);
 
-        autoGridView=(AutoGridView)findViewById(R.id.ag_search_history);
-        autoGridView.setOnHistoryItemClickListener(this);
-        findViewById(R.id.tv_test).setOnClickListener(this);
-        findViewById(R.id.tv_clear).setOnClickListener(this);
-
         mHotAdapter=new SearchAdapter(SearchActivity.this,mHotList);
 
         Log.i("mHistoryList------>",mHistoryList.size()+"");
 
 
         mHistoryAdapter=new SearchAdapter(SearchActivity.this,mHistoryList);
-        gv_history.setAdapter(mHistoryAdapter);
         gv_hot.setAdapter(mHotAdapter);
         inputMethodManager=(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 
@@ -225,7 +229,6 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
         });
 
         gv_hot.setOnItemClickListener(this);
-        gv_history.setOnItemClickListener(this);
     }
 
     @Override
@@ -241,7 +244,10 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
 
                 break;
             case R.id.tv_delete:
-                historyCancel();
+//                historyCancel();
+                mSearchLayout.setVisibility(View.GONE);
+                autoGridView.clear();
+                SharedPreferencesUtil.clearSearchHistory(this);
                 break;
             case R.id.tv_cancel:
                 Log.i("tv_cancel------------>","tv_cancel");
@@ -259,13 +265,6 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
                 break;
             case R.id.iv_sort:
                 toggleSortMenu();
-                break;
-            case R.id.tv_test:
-                Log.i("tv_test---->","tv_test");
-                autoGridView.setHistoryList(null);
-                break;
-            case R.id.tv_clear:
-                autoGridView.clear();
                 break;
             default:
                 break;
@@ -285,11 +284,19 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
         mSearchView.setVisibility(View.GONE);
 
         keyWord= mEditText.getText().toString();
-        SharedPreferences.Editor editor=mSharedPreferences.edit();
+//        SharedPreferences.Editor editor=mSharedPreferences.edit();
         Log.i("msg-------->",keyWord);
-        mHistorys.add(keyWord);
-        editor.putStringSet("history",mHistorys);
-        editor.commit();
+//        mHistorys.add(keyWord);
+//        editor.putStringSet("history",mHistorys);
+//        editor.commit();
+
+        Log.i("mHistoryList.contains(keyWord)--->",mHistoryList.contains(keyWord)+"");
+        if (mHistoryList.contains(keyWord)){
+            mHistoryList.remove(keyWord);
+        }
+        mHistoryList.add(keyWord);
+        SharedPreferencesUtil.saveHistoryData(this,mHistoryList);
+
         Message message = new Message();
         message.what=UPDATE_HISTORY;
         message.obj=keyWord;
@@ -368,7 +375,8 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
     }
 
     @Override
-    public void onHistoryItemClick(int position) {
-        Log.i("position---------------->",position+"");
+    public void onHistoryItemClick(int position,String history) {
+        Log.i("position---------------->",position+"----->"+history);
+        mEditText.setText(history);
     }
 }

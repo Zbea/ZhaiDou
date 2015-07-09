@@ -154,53 +154,24 @@
         android:listSelector="@drawable/search_item_selector"
         android:numColumns="5">
     </GridView>
+    <LinearLayout
+            android:id="@+id/ll_history"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
     <com.zhaidou.view.TypeFaceTextView
+        android:id="@+id/tv_search_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:layout_margin="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
         android:textColor="#535353"
         android:text="搜索历史"/>
-    <GridView
-        android:id="@+id/gv_search_history"
+    <com.zhaidou.view.AutoGridView
+        android:id="@+id/ag_search_history"
         android:layout_width="match_parent"
-        android:minHeight="150dp"
-        android:layout_height="wrap_content"
-        android:verticalSpacing="10dp"
-        android:horizontalSpacing="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:listSelector="@android:color/transparent"
-        android:numColumns="5"/>
-
-
-        <com.zhaidou.view.TypeFaceTextView
-            android:layout_marginTop="50dp"
-            android:id="@+id/tv_test"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:textSize="16sp"
-            android:layout_margin="10dp"
-            android:gravity="center"
-            android:textColor="#535353"
-            android:background="@color/red"
-            android:text="测试"/>
-        <com.zhaidou.view.TypeFaceTextView
-            android:layout_marginTop="50dp"
-            android:id="@+id/tv_clear"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:textSize="16sp"
-            android:layout_margin="10dp"
-            android:gravity="center"
-            android:textColor="#535353"
-            android:background="@color/red"
-            android:text="清除"/>
-        <com.zhaidou.view.AutoGridView
-            android:id="@+id/ag_search_history"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:listSelector="@android:color/transparent"/>
+        android:layout_height="wrap_content"/>
 
     <View
         android:layout_margin="20dp"
@@ -220,6 +191,7 @@
         android:textColor="#5B5B5B"
         android:onClick="onHistoryCancel"
         android:text="@string/search_history_clear"/>
+    </LinearLayout>
     </LinearLayout>
     <FrameLayout
         android:layout_width="match_parent"

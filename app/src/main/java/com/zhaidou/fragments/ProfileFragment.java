@@ -95,7 +95,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     private RelativeLayout mWorkLayout;
 
     private RelativeLayout rl_nickname;
-    private RelativeLayout rl_mobile;
+    private RelativeLayout rl_mobile,mIntroLayout;
     private LinearLayout ll_addr_info;
 
     private FrameLayout mMenuContainer;
@@ -209,10 +209,12 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         ll_addr_info=(LinearLayout)view.findViewById(R.id.ll_addr_info);
         tv_delete=(TextView)view.findViewById(R.id.tv_delete);
         tv_edit=(TextView)view.findViewById(R.id.tv_edit);
+
         mWorkLayout=(RelativeLayout)view.findViewById(R.id.rl_job);
         mWorkLayout.setOnClickListener(this);
         tv_edit.setOnClickListener(this);
         tv_delete.setOnClickListener(this);
+        view.findViewById(R.id.rl_into).setOnClickListener(this);
 
         view.findViewById(R.id.rl_manage_address).setOnClickListener(this);
 
@@ -221,7 +223,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
         rl_nickname.setOnClickListener(this);
         rl_mobile.setOnClickListener(this);
-        tv_intro.setOnClickListener(this);
+//        tv_intro.setOnClickListener(this);
 
 
         mSharedPreferences=getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
@@ -267,12 +269,12 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container,mobileFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
                 break;
-            case R.id.tv_intro:
-                EditProfileFragment introFragment=EditProfileFragment.newInstance("description",tv_intro.getText().toString(),profileId);
-                introFragment.setRefreshDataListener(this);
-                getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container,introFragment).addToBackStack(null).commit();
-                mChildContainer.setVisibility(View.VISIBLE);
-                break;
+//            case R.id.tv_intro:
+//                EditProfileFragment introFragment=EditProfileFragment.newInstance("description",tv_intro.getText().toString(),profileId);
+//                introFragment.setRefreshDataListener(this);
+//                getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container,introFragment).addToBackStack(null).commit();
+//                mChildContainer.setVisibility(View.VISIBLE);
+//                break;
             case R.id.rl_job:
                 ImageBgFragment addVFragment= ImageBgFragment.newInstance("如何加V",R.drawable.add_v);
                 ((MainActivity)getActivity()).navigationToFragment(addVFragment);
@@ -295,6 +297,12 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             case R.id.tv_delete:
                 Log.i("R.id.tv_delete:","R.id.tv_delete:");
                 new DeleteAddressTask().execute();
+                break;
+            case R.id.rl_into:
+                EditProfileFragment introFragment=EditProfileFragment.newInstance("description",tv_intro.getText().toString(),profileId);
+                introFragment.setRefreshDataListener(this);
+                getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container,introFragment).addToBackStack(null).commit();
+                mChildContainer.setVisibility(View.VISIBLE);
                 break;
         }
     }

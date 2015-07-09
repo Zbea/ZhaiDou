@@ -447,6 +447,7 @@ public class HomeFragment extends BaseFragment implements
     }
 
     private void FetchData(int page,Category category){
+        final ProgressDialog progressDialog=ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
         Log.i("FetchData------------------>","FetchData--->"+page);
         currentPage=page;
 
@@ -479,6 +480,7 @@ public class HomeFragment extends BaseFragment implements
             public void onResponse(JSONObject response) {
                 Log.i("FetchData--->data---->",response.toString());
                 JSONArray articles = response.optJSONArray("articles");
+                progressDialog.hide();
                 JSONObject meta = response.optJSONObject("meta");
                 count=meta==null?0:meta.optInt("count");
                 if (articles==null||articles.length()<=0){
@@ -503,9 +505,9 @@ public class HomeFragment extends BaseFragment implements
 //                int size = meta.optInt("size");
 //                loadedAll = count<size;
 
+
                 Message message = new Message();
                 message.what=UPDATE_HOMELIST;
-
                 handler.sendMessage(message);
             }
         },new Response.ErrorListener() {
@@ -591,6 +593,7 @@ public class HomeFragment extends BaseFragment implements
     public void onCategorySelected(Category category) {
         Log.i("HomeFragment-------------->",category==null?"全部":category.getName());
         FetchData(currentPage = 1, mCategory = category);
+        mHomeAdapter.notifyDataSetChanged();
         toggleMenu();
     }
 
@@ -644,7 +647,7 @@ public class HomeFragment extends BaseFragment implements
         detailIntent.putExtra("from", "product");
         detailIntent.putExtra("title", article.getTitle());
         detailIntent.putExtra("cover_url", article.getImg_url());
-        detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+article.getId());
+        detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+article.getId()+"?open=app");
         startActivity(detailIntent);
     }
 

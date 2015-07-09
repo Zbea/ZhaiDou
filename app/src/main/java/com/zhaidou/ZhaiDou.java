@@ -16,11 +16,11 @@ public class ZhaiDou {
     public static String COMPETITION_URL="http://www.zhaidou.com/competitions/current?zdclient=ios";
 
     //获取优惠卷URL
-    public static String COUPON_DATA_URL="http://192.168.199.146:3000/api/v1/coupons/current";
+    public static String COUPON_DATA_URL=HOME_BASE_URL+"api/v1/coupons/current";
     //天天刮奖
-    public static String PRIZE_SCRAPING_URL="http://192.168.199.230:3000/lotteries";
+    public static String PRIZE_SCRAPING_URL=HOME_BASE_URL+"lotteries";
     //获取0元特卖数据
-    public static String SPECIAL_SALE_URL="http://192.168.199.146:3000/api/v1/events/current";
+    public static String SPECIAL_SALE_URL=HOME_BASE_URL+"api/v1/events/current";
 
     //首页分类文章
     public static String HOME_CATEGORY_URL=HOME_BASE_URL+"article/api/articles?page=";

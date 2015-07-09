@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -38,6 +38,11 @@
             android:textColor="@color/white"
             android:text="关于"/>
     </RelativeLayout>
+    <LinearLayout
+        android:layout_below="@id/rl_back"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -116,5 +121,24 @@
             android:layout_centerVertical="true"
             android:paddingRight="20dp"/>
     </RelativeLayout>
-
-</LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/dd"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true">
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="#a8a8a8"
+            android:text="深圳雅革科技有限公司"/>
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="#a8a8a8"
+            android:text="Copyright©.2014-2015,All Rights Reserved"/>
+    </LinearLayout>
+</RelativeLayout>

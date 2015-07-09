@@ -33,12 +33,14 @@ import com.pulltorefresh.PullToRefreshGridView;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
+import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Product;
 import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.HtmlFetcher;
+import com.zhaidou.utils.NativeHttpUtil;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -81,14 +83,14 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
     private AsyncImageLoader1 imageLoader;
     private SingleAdapter singleAdapter;
 
-    private ProgressDialog mDialog;
     private WeakHashMap<Integer,View> mHashMap = new WeakHashMap<Integer, View>();
+    private ProgressDialog mDialog;
 //    private SingleAdapter mSingleAdapter;
 
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
-//            mDialog.hide();
+            mDialog.hide();
           singleAdapter.setList(products);
           gv_single.onRefreshComplete();
         }
@@ -131,11 +133,12 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_single, container, false);
         initView(view);
-        FetchData(mParam1,sort,currentpage=1);
+//        FetchData(mParam1,sort,currentpage=1);
         return view;
     }
 
     private void initView(View view){
+        mDialog=ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
         tv_count=(TextView)view.findViewById(R.id.tv_count);
 //        tv_detail=(TextView)view.findViewById(R.id.tv_detail);
         tv_money=(TextView)view.findViewById(R.id.tv_money);
@@ -145,9 +148,9 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
         gv_single.setAdapter(singleAdapter);
         mRequestQueue= Volley.newRequestQueue(getActivity());
         if ("category".equalsIgnoreCase(mParam2)){
-            FetchCategoryData(mParam1, 0, currentpage);
+            FetchCategoryData(mParam1, sort, currentpage=1);
         }else {
-            FetchData(mParam1,0,currentpage);
+            FetchData(mParam1, sort, currentpage=1);
         }
 
         gv_single.setMode(PullToRefreshBase.Mode.BOTH);
@@ -156,7 +159,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 Product product=(Product)values;
-                Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
+                Intent detailIntent = new Intent(getActivity(), WebViewActivity.class);
                 detailIntent.putExtra("id", product.getId()+"");
                 detailIntent.putExtra("title", product.getTitle());
 //                detailIntent.putExtra("cover_url", product.getImg_url());
@@ -164,16 +167,14 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
                 startActivity(detailIntent);
             }
         });
-
     }
 
     public void FetchData(String msg,int sort,int page){
+        Log.i("FetchData------>","FetchData");
         this.sort=sort;
         currentpage=page;
         if (page==1) products.clear();
         Map<String, String> params = new HashMap<String, String>();
-        params.put("price", "desc");
-        params.put("hot_d", "desc");
         params.put("search", msg);
         params.put("page",page+"");
         if (sort==1){
@@ -183,14 +184,13 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
         }else if (sort==3){
             params.put("price","desc");
         }
-//        mDialog=ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
+//        new ProductTask().execute(params);
         JsonObjectRequest newMissRequest = new JsonObjectRequest(
                 Request.Method.POST, ZhaiDou.SEARCH_PRODUCT_URL,
                 new JSONObject(params), new Response.Listener<JSONObject>() {
 
             @Override
             public void onResponse(JSONObject json) {
-                Log.i("SingleFragment---->",json.toString());
                 JSONArray items = json.optJSONArray("article_items");
                 JSONObject meta = json.optJSONObject("meta");
 
@@ -230,6 +230,36 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
         if (mRequestQueue==null) mRequestQueue=Volley.newRequestQueue(getActivity());
         mRequestQueue.add(newMissRequest);
     }
+
+    private class ProductTask extends AsyncTask<Map<String,String>,Void,String>{
+        @Override
+        protected String doInBackground(Map<String, String>... maps) {
+            String result=null;
+            try {
+                result= NativeHttpUtil.post(ZhaiDou.SEARCH_PRODUCT_URL,null,maps[0]);
+            }catch (Exception e){
+
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Log.i("onPostExecute---->ProductTask--->",s);
+        }
+        //        @Override
+//        protected String doInBackground(Void... voids) {
+//            String result=null;
+//            try {
+//                result= NativeHttpUtil.post(ZhaiDou.SEARCH_PRODUCT_URL,null,)
+//            }catch (Exception e){
+//
+//            }
+//            return null;
+//        }
+    }
+
+
     public class SingleAdapter extends BaseListAdapter<Product> {
         public SingleAdapter(Context context, List<Product> list) {
             super(context, list);
@@ -258,19 +288,6 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
     }
     public void FetchCategoryData(String id,int sort,int page){
         Log.i("FetchCategoryData--------->","FetchCategoryData");
-//        if (page==1) products.clear();
-//        Map<String, String> params = new HashMap<String, String>();
-//        params.put("price", "desc");
-//        params.put("hot_d", "desc");
-//        params.put("search", msg);
-//        params.put("page",page+"");
-//        if (sort==1){
-//            params.put("hot_d","desc");
-//        }else if (sort==2){
-//            params.put("price","asc");
-//        }else if (sort==3){
-//            params.put("price","desc");
-//        }
         String url=ZhaiDou.ARTICLE_ITEM_WITH_CATEGORY+id;
         JsonObjectRequest fetchCategoryTask = new JsonObjectRequest(url,new Response.Listener<JSONObject>(){
             @Override

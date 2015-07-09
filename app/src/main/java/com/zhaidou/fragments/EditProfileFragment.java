@@ -135,7 +135,7 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
                 Log.i("beforeTextChanged--i",""+i);
                 Log.i("beforeTextChanged--i2",""+i2);
                 Log.i("beforeTextChanged--i3",""+i3);
-                tv_length.setText((20-tv_description.getText().toString().length())+"");
+                tv_length.setText((75-tv_description.getText().toString().length())+"");
             }
 
             @Override
@@ -145,7 +145,7 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
                 Log.i("onTextChanged--i",""+i);
                 Log.i("onTextChanged--i2",""+i2);
                 Log.i("onTextChanged--i3",""+i3);
-                tv_length.setText((20-tv_description.getText().toString().length())+"");
+                tv_length.setText((75-tv_description.getText().toString().length())+"");
             }
 
             @Override
@@ -159,7 +159,7 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
             ll_input_msg.setVisibility(View.GONE);
             rl_description.setVisibility(View.VISIBLE);
             tv_description.setText(TextUtils.isEmpty(mParam2)?"":mParam2);
-            tv_length.setText((20-(!TextUtils.isEmpty(tv_description.getText().toString())?tv_description.getText().toString().length():0))+"");
+            tv_length.setText((75-(!TextUtils.isEmpty(tv_description.getText().toString())?tv_description.getText().toString().length():0))+"");
         }else {
             ll_input_msg.setVisibility(View.VISIBLE);
             rl_description.setVisibility(View.GONE);

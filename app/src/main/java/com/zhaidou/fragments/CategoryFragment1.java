@@ -250,6 +250,12 @@ public class CategoryFragment1 extends BaseFragment{
                         childList.add(childItem);
                     }
 
+                    while (4-childList.size()%4<4&&4-childList.size()%4>0){
+                        CategoryItem item = new CategoryItem();
+                        childList.add(item);
+                    }
+
+
                     category = new Category(id,name,url,thumb,childList);
                     if (id==26){
                         categoryList.add(0,category);
@@ -294,9 +300,9 @@ public class CategoryFragment1 extends BaseFragment{
             if (convertView==null)
                 convertView=LayoutInflater.from(context).inflate(R.layout.fragment_category_child_grid,null);
             ChildGridView gridView = ViewHolder.get(convertView,R.id.gv_category_child);
-            Log.i("gridView--->getChildView",gridView.toString());
 
             List<CategoryItem> categoryItems = categoryList.get(groupPosition).getCategoryItems();
+
             ChildAdapter childAdapter =new ChildAdapter(context,categoryItems,gridView);
             gridView.setAdapter(childAdapter);
 
@@ -391,9 +397,11 @@ public class CategoryFragment1 extends BaseFragment{
             layoutParams.height=80;
             layoutParams.width=80;
             imageView.setLayoutParams(layoutParams);
-            imageLoader.LoadImage("http://"+item.getThumb(),imageView);
+            if (!TextUtils.isEmpty(item.getThumb()))
+               imageLoader.LoadImage("http://"+item.getThumb(),imageView);
 //            imageLoader.LoadSmallImage("http://"+item.getThumb(),imageView);
-            textView.setText(item.getName());
+            if (!TextUtils.isEmpty(item.getName()))
+               textView.setText(item.getName());
 
             weakHashMap.put(position,view);
             return view;

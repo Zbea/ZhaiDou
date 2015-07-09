@@ -14,6 +14,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -44,7 +45,6 @@ public class AutoGridView extends LinearLayout implements View.OnClickListener{
     private OnHistoryItemClickListener onHistoryItemClickListener;
     public AutoGridView(Context context) {
         super(context);
-        Log.i("AutoGridView(Context context)","AutoGridView(Context context)");
         mContext=context;
         setOrientation(LinearLayout.VERTICAL);
         screenWidth=this.getMeasuredWidth();
@@ -53,7 +53,6 @@ public class AutoGridView extends LinearLayout implements View.OnClickListener{
 
     public AutoGridView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        Log.i("AutoGridView(Context context, AttributeSet attrs)","AutoGridView(Context context, AttributeSet attrs)");
         mContext=context;
         setOrientation(LinearLayout.VERTICAL);
         screenWidth=this.getMeasuredWidth();
@@ -73,43 +72,47 @@ public class AutoGridView extends LinearLayout implements View.OnClickListener{
     public void setHistoryList(List<String> mHistoryList) {
         Log.i("setHistoryList----->","setHistoryList");
         this.mHistoryList = mHistoryList;
-        init(mContext,array);
+        init(mContext,mHistoryList);
     }
-    private void init(Context context,String[] array){
+    private void init(Context context,List<String> list){
+        Log.i("init-------->",list.size()+"");
 //        removeAllViews();
-        for (int i=0;i<array.length;i++){
+        for (int i=0;i<list.size();i++){
             mChildLinearLayout=new LinearLayout(mContext);
             mChildLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             lp.setMargins(dp_10,dp_10,dp_10, 0);
             mChildLinearLayout.setLayoutParams(lp);
 
-            while (mTextWidth<getMeasuredWidth()&&i<array.length){
-                TypeFaceTextView textView=new TypeFaceTextView(context);
-                textView.setId(100);
-                textView.setClickable(true);
-                textView.setSingleLine(true);
-                textView.setMinWidth(dp_55);
-                textView.setPadding(dp_10,dp_5,dp_10,dp_5);
+            while (mTextWidth<getMeasuredWidth()&&i<list.size()){
+                View view= LayoutInflater.from(mContext).inflate(R.layout.view_autogridview_item,null);
+                TextView textView =(TextView)view.findViewById(R.id.tv_history_item);
+//                TypeFaceTextView textView=new TypeFaceTextView(context);
+//                textView.setId(100);
+//                textView.setClickable(true);
+//                textView.setSingleLine(true);
+//                textView.setMinWidth(dp_55);
+//                textView.setPadding(dp_10,dp_5,dp_10,dp_5);
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 layoutParams.setMargins(0,0,dp_10,0);
                 textView.setLayoutParams(layoutParams);
-                textView.setGravity(Gravity.CENTER);
-                textView.setTextSize(16);
+//                textView.setGravity(Gravity.CENTER);
+//                textView.setTextSize(16);
 
                 textView.setTag(i);
                 textView.setOnClickListener(this);
 //                textView.setTextColor(getResources().getColorStateList(R.color.text_color_selector));
-                textView.setTextColor(Color.parseColor("#000000"));
-                textView.setBackgroundResource(R.drawable.search_item_selector);
+//                textView.setTextColor(Color.parseColor("#000000"));
+//                textView.setBackgroundResource(R.drawable.search_item_selector);
 
                 TextPaint paint = textView.getPaint();
-                String item=array[i];
+                String item=list.get(i);
                 if (item.length()>TEXT_LENGTH)
                     item=item.substring(0,TEXT_LENGTH)+"...";
+                Log.i("item----------------->",item);
                 textView.setText(item);
                 float length =paint.measureText(item);
-                textView.setTextColor(getResources().getColor(R.color.gray_9));
+//                textView.setTextColor(getResources().getColor(R.color.gray_9));
 
                 if (length+dp_10+dp_10<dp_55){
                     mTextWidth=dp_55+mTextWidth+dp_10;
@@ -149,7 +152,7 @@ public class AutoGridView extends LinearLayout implements View.OnClickListener{
     @Override
     public void onClick(View view) {
         Integer position=(Integer)view.getTag();
-        onHistoryItemClickListener.onHistoryItemClick(position);
+        onHistoryItemClickListener.onHistoryItemClick(position,mHistoryList.get(position));
     }
 
     public void setOnHistoryItemClickListener(OnHistoryItemClickListener onHistoryItemClickListener) {
@@ -157,6 +160,6 @@ public class AutoGridView extends LinearLayout implements View.OnClickListener{
     }
 
     public interface OnHistoryItemClickListener{
-        public void onHistoryItemClick(int position);
+        public void onHistoryItemClick(int position,String history);
     }
 }
