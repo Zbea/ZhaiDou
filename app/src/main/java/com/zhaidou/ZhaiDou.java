@@ -17,7 +17,7 @@ public class ZhaiDou {
 
     //获取优惠卷URL
     public static String COUPON_DATA_URL=HOME_BASE_URL+"api/v1/coupons/current";
-    //天天刮奖
+    //天天刮奖  "http://192.168.199.230:3000/lotteries";//
     public static String PRIZE_SCRAPING_URL=HOME_BASE_URL+"lotteries";
     //获取0元特卖数据
     public static String SPECIAL_SALE_URL=HOME_BASE_URL+"api/v1/events/current";
@@ -47,6 +47,8 @@ public class ZhaiDou {
     public static String USER_REGISTER_URL=HOME_BASE_URL+"api/v1/users";
     //用户收藏
     public static String USER_COLLECT_ITEM_URL=HOME_BASE_URL+"article/api/article_items/like_article_items?per_page=10&page=";
+    //用户豆搭
+    public static String USER_COLLOCATION_ITEM_URL=HOME_BASE_URL+"api/v1/users/";
 
     //搜索单品列表
     public static String SEARCH_PRODUCT_URL=HOME_BASE_URL+"article/api/article_items/search";

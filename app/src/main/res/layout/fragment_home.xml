@@ -64,13 +64,15 @@
         <!--android:layout_below="@id/common_actionbar"-->
         <!--android:id="@+id/refresh_layout">-->
     <com.pulltorefresh.PullToRefreshScrollView
+        xmlns:ptr="http://schemas.android.com/apk/res-auto"
         android:id="@+id/scrollview"
         android:layout_below="@id/home_actionbar"
         android:layout_width="match_parent"
         android:scrollbars="none"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        ptr:ptrHeaderTextColor="@color/gray_9">
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="vertical"
@@ -83,12 +85,12 @@
             <FrameLayout
                 android:id="@+id/fl_images_main"
                 android:layout_width="match_parent"
-                android:layout_height="200dp" >
+                android:layout_height="wrap_content" >
 
                 <com.zhaidou.view.ImageSwitchWall
                     android:id="@+id/isw_imagewall"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
+                    android:layout_height="wrap_content" >
                 </com.zhaidou.view.ImageSwitchWall>
             </FrameLayout>
             <LinearLayout

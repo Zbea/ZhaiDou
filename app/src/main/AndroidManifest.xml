@@ -33,18 +33,6 @@
             android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" >
         </activity>
         <activity
-            android:name=".activities.CategoriesActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:label="@string/title_activity_categories"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name=".activities.MeActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:label="@string/title_activity_me"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
             android:name=".activities.StrategyActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_strategy" >

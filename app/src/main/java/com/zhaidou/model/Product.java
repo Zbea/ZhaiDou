@@ -17,6 +17,7 @@ public class Product {
     private String end_date;
 
     private String image;
+    private boolean collect;
 
     public int getId() {
         return id;
@@ -98,6 +99,14 @@ public class Product {
 
     public void setEnd_date(String end_date) {
         this.end_date = end_date;
+    }
+
+    public boolean isCollect() {
+        return collect;
+    }
+
+    public void setCollect(boolean collect) {
+        this.collect = collect;
     }
 
     public Product() {

@@ -1,11 +1,12 @@
 package com.zhaidou.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by wangclark on 15/6/12.
  */
-public class Category {
+public class Category implements Serializable{
     private int id;
     private String name;
     private String avatar;

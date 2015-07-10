@@ -34,6 +34,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.WebViewActivity;
+import com.zhaidou.adapter.ProductAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -81,7 +82,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
     private List<Product> products = new ArrayList<Product>();
     private RequestQueue mRequestQueue;
     private AsyncImageLoader1 imageLoader;
-    private SingleAdapter singleAdapter;
+    private ProductAdapter productAdapter;
 
     private WeakHashMap<Integer,View> mHashMap = new WeakHashMap<Integer, View>();
     private ProgressDialog mDialog;
@@ -91,7 +92,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
         @Override
         public void handleMessage(Message msg) {
             mDialog.hide();
-          singleAdapter.setList(products);
+          productAdapter.setList(products);
           gv_single.onRefreshComplete();
         }
     };
@@ -143,9 +144,9 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
 //        tv_detail=(TextView)view.findViewById(R.id.tv_detail);
         tv_money=(TextView)view.findViewById(R.id.tv_money);
         gv_single=(PullToRefreshGridView)view.findViewById(R.id.gv_single);
-        singleAdapter = new SingleAdapter(getActivity(),products);
+        productAdapter = new ProductAdapter(getActivity(),products);
         gv_single.setEmptyView(mEmptyView);
-        gv_single.setAdapter(singleAdapter);
+        gv_single.setAdapter(productAdapter);
         mRequestQueue= Volley.newRequestQueue(getActivity());
         if ("category".equalsIgnoreCase(mParam2)){
             FetchCategoryData(mParam1, sort, currentpage=1);
@@ -155,7 +156,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
 
         gv_single.setMode(PullToRefreshBase.Mode.BOTH);
         gv_single.setOnRefreshListener(this);
-        singleAdapter.setOnInViewClickListener(R.id.ll_single_layout,new BaseListAdapter.onInternalClickListener() {
+        productAdapter.setOnInViewClickListener(R.id.ll_single_layout,new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 Product product=(Product)values;
@@ -260,34 +261,33 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
     }
 
 
-    public class SingleAdapter extends BaseListAdapter<Product> {
-        public SingleAdapter(Context context, List<Product> list) {
-            super(context, list);
-            imageLoader = new AsyncImageLoader1(context);
-        }
-
-        @Override
-        public View bindView(int position, View convertView, ViewGroup parent) {
-            convertView=mHashMap.get(position);
-            if (convertView==null)
-                convertView=mInflater.inflate(R.layout.item_fragment_single,null);
-            TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
-            ImageView image =ViewHolder.get(convertView,R.id.iv_single_item);
-            TextView tv_money=ViewHolder.get(convertView,R.id.tv_money);
-            ImageView iv_heart=ViewHolder.get(convertView,R.id.iv_heart);
-            TextView tv_count=ViewHolder.get(convertView,R.id.tv_count);
-
-            Product product = getList().get(position);
-            tv_name.setText(product.getTitle());
-            tv_money.setText("￥"+product.getPrice()+"元");
-            tv_count.setText(product.getBean_like_count()+"");
-            imageLoader.LoadImage("http://"+product.getImage(),image);
-            mHashMap.put(position,convertView);
-            return convertView;
-        }
-    }
+//    public class SingleAdapter extends BaseListAdapter<Product> {
+//        public SingleAdapter(Context context, List<Product> list) {
+//            super(context, list);
+//            imageLoader = new AsyncImageLoader1(context);
+//        }
+//
+//        @Override
+//        public View bindView(int position, View convertView, ViewGroup parent) {
+//            convertView=mHashMap.get(position);
+//            if (convertView==null)
+//                convertView=mInflater.inflate(R.layout.item_fragment_single,null);
+//            TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
+//            ImageView image =ViewHolder.get(convertView,R.id.iv_single_item);
+//            TextView tv_money=ViewHolder.get(convertView,R.id.tv_money);
+//            ImageView iv_heart=ViewHolder.get(convertView,R.id.iv_heart);
+//            TextView tv_count=ViewHolder.get(convertView,R.id.tv_count);
+//
+//            Product product = getList().get(position);
+//            tv_name.setText(product.getTitle());
+//            tv_money.setText("￥"+product.getPrice()+"元");
+//            tv_count.setText(product.getBean_like_count()+"");
+//            imageLoader.LoadImage("http://"+product.getImage(),image);
+//            mHashMap.put(position,convertView);
+//            return convertView;
+//        }
+//    }
     public void FetchCategoryData(String id,int sort,int page){
-        Log.i("FetchCategoryData--------->","FetchCategoryData");
         String url=ZhaiDou.ARTICLE_ITEM_WITH_CATEGORY+id;
         JsonObjectRequest fetchCategoryTask = new JsonObjectRequest(url,new Response.Listener<JSONObject>(){
             @Override
@@ -336,7 +336,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
     public void onPullUpToRefresh(PullToRefreshBase<GridView> refreshView) {
         Log.i("onPullUpToRefresh---->","onPullUpToRefresh");
         FetchData(mParam1,sort,++currentpage);
-        if (count!=-1&&singleAdapter.getCount()==count){
+        if (count!=-1&&productAdapter.getCount()==count){
             Toast.makeText(getActivity(),"已经加载完毕",Toast.LENGTH_SHORT).show();
             gv_single.onRefreshComplete();
             gv_single.setMode(PullToRefreshBase.Mode.PULL_FROM_START);

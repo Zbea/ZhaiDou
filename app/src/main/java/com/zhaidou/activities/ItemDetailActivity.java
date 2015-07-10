@@ -1,17 +1,12 @@
 package com.zhaidou.activities;
 
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.telephony.TelephonyManager;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,7 +17,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.zhaidou.ZhaiDou;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.fragments.LoginFragment;
@@ -62,7 +56,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         from=getIntent().getStringExtra("from");
         mSharedPreferences=getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         userId=mSharedPreferences.getInt("userId", -1);
-        token=mSharedPreferences.getString("token", "");
+        token=mSharedPreferences.getString("token", null);
         nickName=mSharedPreferences.getString("nickName","");
         tv_back=(TextView)findViewById(R.id.tv_back);
         iv_share=(ImageView)findViewById(R.id.iv_share);
@@ -263,7 +257,13 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         Log.i("ItemDetailActivity------------->",user.toString());
         saveUserToSP(user);
         popToStack(fragment);
-        webView.loadUrl("javascript:ReceiveUserInfo("+user.getId()+", '"+user.getAuthentication_token()+"')");
+        if ("lottery".equalsIgnoreCase(from)){
+            Log.i("onRegisterOrLoginSuccess--lottery----------->","onPageFinished"+"------"+token);
+            webView.loadUrl("javascript:ReceiveUserInfo("+user.getId()+", '"+user.getAuthentication_token()+"',"+getDeviceId()+",'"+user.getNickName()+"')");
+        }else if ("product".equalsIgnoreCase(from)){
+            webView.loadUrl("javascript:ReceiveUserInfo("+user.getId()+", '"+user.getAuthentication_token()+"')");
+        }
+
     }
     private void saveUserToSP(User user){
         SharedPreferences.Editor editor = mSharedPreferences.edit();

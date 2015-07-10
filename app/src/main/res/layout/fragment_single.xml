@@ -4,6 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
     <com.pulltorefresh.PullToRefreshGridView
+        xmlns:ptr="http://schemas.android.com/apk/res-auto"
+        ptr:ptrHeaderTextColor="@color/gray_9"
         android:id="@+id/gv_single"
         android:layout_width="match_parent"
         android:numColumns="2"

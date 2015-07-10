@@ -11,14 +11,12 @@
         android:layout_height="50dp"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/tab_background"
-        >
+        android:background="@drawable/tab_background">
 
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1">
-
             <ImageButton
                 android:id="@+id/tab_home"
                 android:layout_width="wrap_content"

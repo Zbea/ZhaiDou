@@ -10,7 +10,7 @@
         android:layout_height="150dp"
         android:scaleType="fitXY"
         android:id="@+id/iv_single_item"
-        android:background="@color/gray"/>
+        android:background="@drawable/icon_loading_defalut"/>
     <com.zhaidou.view.TypeFaceTextView
         android:background="@color/white"
         android:layout_width="match_parent"

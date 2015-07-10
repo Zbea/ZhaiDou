@@ -34,6 +34,7 @@ import com.pulltorefresh.PullToRefreshGridView;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.WebViewActivity;
+import com.zhaidou.adapter.ProductAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -92,7 +93,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
     private RequestQueue mRequestQueue;
     private SharedPreferences mSharedPreferences;
     private AsyncImageLoader1 imageLoader;
-    private SingleAdapter singleAdapter;
+    private ProductAdapter productAdapter;
 
     private int count;
     private int currentpage=1;
@@ -104,7 +105,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
     private Handler mHandler= new Handler(){
         @Override
         public void handleMessage(Message msg) {
-            singleAdapter.notifyDataSetChanged();
+            productAdapter.notifyDataSetChanged();
             int num =msg.arg1;
             if (collectCountChangeListener!=null){
                 collectCountChangeListener.onCountChange(count,CollectFragment.this);
@@ -154,10 +155,10 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
 
         mRequestQueue= Volley.newRequestQueue(getActivity());
         mSharedPreferences=getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
-        singleAdapter=new SingleAdapter(getActivity(),products);
-        mGridView.setAdapter(singleAdapter);
+        productAdapter=new ProductAdapter(getActivity(),products);
+        mGridView.setAdapter(productAdapter);
 
-        singleAdapter.setOnInViewClickListener(R.id.ll_single_layout,new BaseListAdapter.onInternalClickListener() {
+        productAdapter.setOnInViewClickListener(R.id.ll_single_layout,new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 Product product=(Product)values;
@@ -168,7 +169,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
                 getActivity().startActivity(intent);
             }
         });
-        singleAdapter.setOnInViewClickListener(R.id.ll_collect_heart,new BaseListAdapter.onInternalClickListener() {
+        productAdapter.setOnInViewClickListener(R.id.ll_collect_heart,new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 Log.i("ll_collect_heart---->","ll_collect_heart");
@@ -218,6 +219,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
                             thumb=picObj.optJSONObject("picture").optJSONObject("thumb").optString("url");
                         }
                         Product product=new Product(id,title,price,url,bean_likes_count,null,thumb);
+                        product.setCollect(true);
                         products.add(product);
                     }
                     Message message=new Message();
@@ -277,39 +279,6 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
         }
     }
 
-    public class SingleAdapter extends BaseListAdapter<Product> {
-        public SingleAdapter(Context context, List<Product> list) {
-            super(context, list);
-            imageLoader = new AsyncImageLoader1(context);
-        }
-
-        @Override
-        public View bindView(int position, View convertView, ViewGroup parent) {
-            convertView=mHashMap.get(position);
-            if (convertView==null)
-                convertView=mInflater.inflate(R.layout.item_fragment_single,null);
-            TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
-            ImageView image =ViewHolder.get(convertView,R.id.iv_single_item);
-            TextView tv_money=ViewHolder.get(convertView,R.id.tv_money);
-            ImageView iv_heart=ViewHolder.get(convertView,R.id.iv_heart);
-            TextView tv_count=ViewHolder.get(convertView,R.id.tv_count);
-
-            Product product = getList().get(position);
-            tv_name.setText(product.getTitle());
-            tv_money.setText("￥"+product.getPrice()+"元");
-//            tv_count.setText(product.getBean_like_count());
-            imageLoader.LoadImage("http://"+product.getImage(),image);
-            iv_heart.setImageResource(R.drawable.heart_pressed);
-            mHashMap.put(position,convertView);
-            return convertView;
-        }
-    }
-
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        Log.i("hidden--------------->",hidden+"");
-    }
-
     private class CancelTask extends AsyncTask<String,Void,String>{
         String position;
         @Override
@@ -334,9 +303,9 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
                     JSONObject jsonObject = new JSONObject(s);
                     String like_state=jsonObject.optString("like_state");
                     String likes=jsonObject.optString("likes");
-                    if (Integer.parseInt(position)<singleAdapter.getCount()){
-                        singleAdapter.remove(Integer.parseInt(position));
-                        singleAdapter.notifyDataSetChanged();
+                    if (Integer.parseInt(position)<productAdapter.getCount()){
+                        productAdapter.remove(Integer.parseInt(position));
+                        productAdapter.notifyDataSetChanged();
                         if (collectCountChangeListener!=null){
                             collectCountChangeListener.onCountChange(count-1,CollectFragment.this);
                         }
@@ -421,7 +390,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
 
     @Override
     public void onPullUpToRefresh(PullToRefreshBase<GridView> refreshView) {
-        if (count!=-1&&singleAdapter.getCount()==count){
+        if (count!=-1&&productAdapter.getCount()==count){
             Toast.makeText(getActivity(), "已经加载完毕", Toast.LENGTH_SHORT).show();
             mGridView.onRefreshComplete();
             mGridView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);

@@ -5,12 +5,14 @@
     android:background="#f1f1f1">
 
     <com.pulltorefresh.PullToRefreshGridView
+        xmlns:ptr="http://schemas.android.com/apk/res-auto"
         android:id="@+id/gv_collect"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:verticalSpacing="5dp"
         android:horizontalSpacing="5dp"
         android:scrollbars="none"
-        android:numColumns="2"/>
+        android:numColumns="2"
+        ptr:ptrHeaderTextColor="@color/gray_9"/>
 
 </FrameLayout>

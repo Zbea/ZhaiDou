@@ -3,9 +3,7 @@ package com.zhaidou;
 import com.alibaba.sdk.android.AlibabaSDK;
 import com.alibaba.sdk.android.callback.CallbackContext;
 import com.alibaba.sdk.android.callback.InitResultCallback;
-import com.zhaidou.activities.SearchActivity;
 import com.zhaidou.base.BaseActivity;
-import com.zhaidou.fragments.CategoryFragment;
 import com.zhaidou.fragments.CategoryFragment1;
 import com.zhaidou.fragments.DiyFragment;
 import com.zhaidou.fragments.ElementListFragment;
@@ -16,23 +14,14 @@ import com.zhaidou.fragments.PersonalMainFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.fragments.StrategyFragment;
 import com.zhaidou.fragments.WebViewFragment;
-import com.zhaidou.model.User;
-import com.zhaidou.utils.PhotoUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
@@ -45,26 +34,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 /**
  */
 public class MainActivity extends BaseActivity implements DiyFragment.OnFragmentInteractionListener,
-        CategoryFragment.OnFragmentInteractionListener, StrategyFragment.OnFragmentInteractionListener,
+        StrategyFragment.OnFragmentInteractionListener,
         ElementListFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
         HomeFragment.OnFragmentInteractionListener,CategoryFragment1.OnFragmentInteractionListener,
         PersonalMainFragment.OnFragmentInteractionListener,RegisterFragment.RegisterOrLoginListener{
@@ -269,16 +242,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     }
 
-    public void onClick_Event(View v) {
-        if (categoryFragment != null) {
-            CategoryFragment fragment = (CategoryFragment) categoryFragment;
-            fragment.onClick(v);
-        }
-    }
-
-    public void onAllClick(View view){
-        Log.i("onAllClick","onAllClick--------------->" + ((TextView) view).getText().toString());
-    }
 
     public void toggleTabContainer(){
         mTabContainer.setVisibility(mTabContainer.isShown()?View.GONE:View.VISIBLE);

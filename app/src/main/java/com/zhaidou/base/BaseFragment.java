@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -49,6 +50,9 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     private Fragment currentFragment;
 
     protected View mEmptyView;
+
+    protected int screenWidth;
+    protected int screenHeight;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
@@ -57,6 +61,10 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
         mInflater = LayoutInflater.from(getActivity());
         Log.i("onCreate------>",mInflater.toString());
         mEmptyView =mInflater.inflate(R.layout.list_empty_view,null);
+        DisplayMetrics dm = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
+        screenWidth=dm.widthPixels;
+        screenHeight=dm.heightPixels;
     }
 
 
@@ -89,6 +97,7 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     public BaseFragment() {
 
     }
+
 
     Toast mToast;
 

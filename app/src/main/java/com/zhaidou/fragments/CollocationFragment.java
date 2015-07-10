@@ -26,6 +26,7 @@ import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshGridView;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -77,7 +78,6 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 0:
-                    mDialog.hide();
                     mAdapter.notifyDataSetChanged();
                     int num = msg.arg1;
                     if (collocationCountChangeListener!=null){
@@ -139,10 +139,13 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
     public void FetchCollocationData(int page){
         mDialog=ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
         int userId=mSharedPreferences.getInt("userId", -1);
-        JsonObjectRequest request =new JsonObjectRequest("http://www.zhaidou.com/api/v1/users/77069/bean_collocations?page="+page
+        Log.i("FetchCollocationData------->",userId+"");
+        //"http://www.zhaidou.com/api/v1/users/77069/bean_collocations?page="+page
+        JsonObjectRequest request =new JsonObjectRequest(ZhaiDou.USER_COLLOCATION_ITEM_URL+userId+"/bean_collocations?page="+page
             ,new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
+                mDialog.hide();
                 JSONArray collocationsArr=jsonObject.optJSONArray("bean_collocations");
                 JSONObject meta = jsonObject.optJSONObject("meta");
 

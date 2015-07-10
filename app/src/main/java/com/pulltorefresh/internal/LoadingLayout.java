@@ -23,6 +23,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -388,5 +389,4 @@ public abstract class LoadingLayout extends FrameLayout implements ILoadingLayou
 			mSubHeaderText.setTextColor(color);
 		}
 	}
-
 }

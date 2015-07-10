@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.viewpagerindicator.CirclePageIndicator;
+import com.zhaidou.R;
 import com.zhaidou.model.SwitchImage;
 import com.zhaidou.utils.AsyncImageLoader1;
 
@@ -164,12 +165,15 @@ public class ImageSwitchWall extends RelativeLayout implements
         RelativeLayout.LayoutParams params3 = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT, dp2px(10));
         params3.addRule(ALIGN_PARENT_BOTTOM);
+        params3.bottomMargin=dp2px(2);
         mIndicator.setLayoutParams(params3);
         mIndicator.setBackgroundColor(mResources
                 .getColor(android.R.color.transparent));
         mIndicator.setRadius(dp2px(4));
-        mIndicator.setPageColor(Color.argb(127, 255, 255, 255));
-        mIndicator.setFillColor(Color.argb(255, 0, 97, 161));
+//        mIndicator.setPageColor(Color.argb(127, 245, 245, 245));
+//        mIndicator.setFillColor(Color.argb(255, 0, 97, 161));
+        mIndicator.setPageColor(getResources().getColor(R.color.gray_light));
+        mIndicator.setFillColor(getResources().getColor(R.color.white));
         mIndicator.setStrokeWidth(0);
 
         // addView(v);

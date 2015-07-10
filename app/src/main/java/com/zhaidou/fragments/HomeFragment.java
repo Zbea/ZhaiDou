@@ -13,6 +13,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.format.DateUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -53,6 +54,7 @@ import com.zhaidou.model.SwitchImage;
 import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.HtmlFetcher;
 import com.zhaidou.utils.ImageDownloader;
+import com.zhaidou.utils.PixelUtil;
 import com.zhaidou.view.HeaderLayout;
 import com.zhaidou.view.ImageSwitchWall;
 import com.zhaidou.view.ListViewForScrollView;
@@ -98,7 +100,6 @@ public class HomeFragment extends BaseFragment implements
     private static final String URL = "targetUrl";
     private static final String TYPE = "type";
 
-    private ProgressDialog loading;
     private ListView listView;
     private ZhaiDou.ListType listType;
 
@@ -137,9 +138,7 @@ public class HomeFragment extends BaseFragment implements
     private LinearLayout mBackView;
 
     private LinearLayout mSwipeView;
-//    SwipeRefreshLayout mSwipeLayout;
 
-    private ProgressDialog mDialog;
     private PullToRefreshScrollView mScrollView;
     private AdapterView.OnItemClickListener itemSelectListener = new AdapterView.OnItemClickListener() {
         @Override
@@ -175,10 +174,6 @@ public class HomeFragment extends BaseFragment implements
             mHomeAdapter.notifyDataSetChanged();
             if (msg.what == LOADED) {
 
-                if (loading.isShowing()) {
-                    loading.dismiss();
-                }
-//                listView.setPullLoadEnable(true);
             }else if (msg.what==UPDATE_CATEGORY){
                 mCategoryAdapter.setList(categoryList);
             }else if (msg.what==UPDATE_HOMELIST){
@@ -193,7 +188,6 @@ public class HomeFragment extends BaseFragment implements
                 imageSwitchWall.setDatas(banners);
             }
             mHomeAdapter.notifyDataSetChanged();
-            mDialog.hide();
         }
     };
 
@@ -232,6 +226,11 @@ public class HomeFragment extends BaseFragment implements
         mBackView=(LinearLayout)view.findViewById(R.id.ll_back);
         mBackView.setOnClickListener(this);
 
+        Log.i("PixelUtil.px2dp(288,getActivity());---->",screenHeight+"");
+        Log.i("PixelUtil.px2dp(288,getActivity());---->",screenWidth+"");
+
+
+
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         mScrollView.setOnRefreshListener(this);
 
@@ -240,17 +239,6 @@ public class HomeFragment extends BaseFragment implements
         view.findViewById(R.id.ll_sale).setOnClickListener(this);
         view.findViewById(R.id.ll_forward).setOnClickListener(this);
 
-//        mSwipeLayout=(SwipeRefreshLayout)view.findViewById(R.id.refresh_layout);
-
-
-//        mSwipeLayout.setOnRefreshListener(this);
-//        mSwipeLayout.setOnLoadListener(this);
-//        mSwipeLayout.setColor(R.color.holo_blue_bright,
-//                R.color.holo_green_light,
-//                R.color.holo_orange_light,
-//                R.color.holo_red_light);
-//        mSwipeLayout.setMode(SwipeRefreshLayout.Mode.BOTH);
-
         mSearchView=(ImageView)view.findViewById(R.id.iv_search);
         mSearchView.setOnClickListener(this);
         mCategoryView=(ImageView)view.findViewById(R.id.iv_category);
@@ -258,6 +246,12 @@ public class HomeFragment extends BaseFragment implements
         mTitleView=(TextView)view.findViewById(R.id.tv_title);
 
         imageSwitchWall=(ImageSwitchWall)view.findViewById(R.id.isw_imagewall);
+
+        ViewGroup.LayoutParams layoutParams=imageSwitchWall.getLayoutParams();
+        layoutParams.width=screenWidth;
+        layoutParams.height=screenWidth*300/750;
+        imageSwitchWall.setLayoutParams(layoutParams);
+
 
         imageSwitchWall.setOnItemClickListener(this);
         currentPage = 1;
@@ -271,9 +265,6 @@ public class HomeFragment extends BaseFragment implements
         listView.setAdapter(mHomeAdapter);
         Log.i("mEmptyView---->",mEmptyView.toString());
 
-//        imageSwitchWall.setDatas(SwitchImage.getTestData());
-
-//        loading = ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
         getBannerData();
         FetchData(currentPage,null);
         setUpPopView();
@@ -284,14 +275,11 @@ public class HomeFragment extends BaseFragment implements
                         ,HomeCategoryFragment.TAG).hide(homeCategoryFragment).commit();
         homeCategoryFragment.setCategorySelectedListener(this);
         listView.setOnItemClickListener(this);
-        mDialog=ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-
-//        initTopBarForBoth("每日精选功能美物",R.drawable.icon_category,R.drawable.icon_search,this,this);
         super.onActivityCreated(savedInstanceState);
 
     }
@@ -407,8 +395,12 @@ public class HomeFragment extends BaseFragment implements
                 startActivity(detailIntent);
                 break;
             case R.id.ll_competition:
-                WebViewFragment webViewFragment=WebViewFragment.newInstance(ZhaiDou.COMPETITION_URL,true);
-                ((BaseActivity)getActivity()).navigationToFragment(webViewFragment);
+//                WebViewFragment webViewFragment=WebViewFragment.newInstance(ZhaiDou.COMPETITION_URL,true);
+//                ((BaseActivity)getActivity()).navigationToFragment(webViewFragment);
+                Intent intent = new Intent(getActivity(), ItemDetailActivity.class);
+                intent.putExtra("url",ZhaiDou.COMPETITION_URL);
+                intent.putExtra("from","competition");
+                startActivity(intent);
                 break;
             case R.id.ll_sale:
                 SpecialSaleFragment specialSaleFragment =SpecialSaleFragment.newInstance("","");
@@ -447,7 +439,6 @@ public class HomeFragment extends BaseFragment implements
     }
 
     private void FetchData(int page,Category category){
-        final ProgressDialog progressDialog=ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
         Log.i("FetchData------------------>","FetchData--->"+page);
         currentPage=page;
 
@@ -458,7 +449,6 @@ public class HomeFragment extends BaseFragment implements
 
         if (loadedAll){
             Toast.makeText(getActivity(),"已经加载完毕了哦！！！",Toast.LENGTH_SHORT).show();
-//            mSwipeLayout.setLoading(false);
             mScrollView.onRefreshComplete();
             return;
         }
@@ -480,7 +470,6 @@ public class HomeFragment extends BaseFragment implements
             public void onResponse(JSONObject response) {
                 Log.i("FetchData--->data---->",response.toString());
                 JSONArray articles = response.optJSONArray("articles");
-                progressDialog.hide();
                 JSONObject meta = response.optJSONObject("meta");
                 count=meta==null?0:meta.optInt("count");
                 if (articles==null||articles.length()<=0){
@@ -536,6 +525,10 @@ public class HomeFragment extends BaseFragment implements
             TextView articleViews = ViewHolder.get(convertView,R.id.views);
             ImageView cover = ViewHolder.get(convertView,R.id.cover);
 
+//            ViewGroup.LayoutParams layoutParams=cover.getLayoutParams();
+//            layoutParams.width=screenWidth;
+//            layoutParams.height=710*310/720;
+//            cover.setLayoutParams(layoutParams);
             Article article = getList().get(position);
 
             title.setText(article.getTitle());
@@ -560,6 +553,8 @@ public class HomeFragment extends BaseFragment implements
         category.setId(switchImage.getId());
 //        FetchData(currentPage=1,category);
 //        mHomeAdapter.notifyDataSetChanged();
+        SpecialFragment fragment=SpecialFragment.newInstance("",category);
+        ((BaseActivity)getActivity()).navigationToFragment(fragment);
     }
 
     public void toggleMenu(){

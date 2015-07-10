@@ -1,6 +1,8 @@
 package com.zhaidou.fragments;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -22,6 +24,8 @@ import com.android.volley.toolbox.Volley;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.ItemDetailActivity;
+import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -153,7 +157,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         view.findViewById(R.id.ll_back).setOnClickListener(this);
         view.findViewById(R.id.iv_coupon).setOnClickListener(this);
         requestQueue= Volley.newRequestQueue(getActivity());
-        Log.i("onCreateView------------->",products.size()+"");
         FetchCouponData();
         if (products!=null&&products.size()==0)
             FetchData();
@@ -163,8 +166,12 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 Log.i("value--->",values.toString());
-                WebViewFragment webViewFragment = WebViewFragment.newInstance(((Product)values).getUrl(),true);
-                ((MainActivity)getActivity()).navigationToFragment(webViewFragment);
+//                WebViewFragment webViewFragment = WebViewFragment.newInstance(((Product)values).getUrl(),true);
+//                ((MainActivity)getActivity()).navigationToFragment(webViewFragment);
+                Intent intent = new Intent(getActivity(), WebViewActivity.class);
+                intent.putExtra("url",((Product)values).getUrl());
+                intent.putExtra("from","product");
+                startActivity(intent);
             }
         });
 
@@ -179,10 +186,13 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 ((MainActivity)getActivity()).popToStack(SpecialSaleFragment.this);
                 break;
             case R.id.iv_coupon:
-                Log.i("iv_coupo------------->","iv_coupon");
                 if (mCoupon!=null){
-                    WebViewFragment webViewFragment =WebViewFragment.newInstance(mCoupon.getUrl(),true);
-                    ((MainActivity)getActivity()).navigationToFragment(webViewFragment);
+//                    WebViewFragment webViewFragment =WebViewFragment.newInstance(mCoupon.getUrl(),true);
+//                    ((MainActivity)getActivity()).navigationToFragment(webViewFragment);
+                    Intent intent = new Intent(getActivity(), WebViewActivity.class);
+                    intent.putExtra("url",mCoupon.getUrl());
+                    intent.putExtra("from","coupon");
+                    startActivity(intent);
                 }
                 break;
         }
@@ -282,7 +292,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     }
     @Override
     public void onDestroyView() {
-        Log.i("onDestroyView---->","onDestroyView");
         if (mTimer!=null){
             mTimer.cancel();
             mTimer=null;
