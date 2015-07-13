@@ -364,7 +364,7 @@ public void clear(){
                 title.setText(item.get("title").toString());
                 JSONObject customFields = item.getJSONObject("custom_fields");
                 articleViews.setText(customFields.getJSONArray("views").get(0).toString());
-                imageDownloader.download(item.get("thumbnail").toString(), cover);
+//                imageDownloader.download(item.get("thumbnail").toString(), cover);
                 imageLoader.LoadImage(item.get("thumbnail").toString(),cover);
 
             } catch (JSONException e) {

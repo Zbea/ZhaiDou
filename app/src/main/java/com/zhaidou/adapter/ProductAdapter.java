@@ -1,6 +1,7 @@
 package com.zhaidou.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -38,9 +39,10 @@ public class ProductAdapter extends BaseListAdapter<Product>{
         TextView tv_count=ViewHolder.get(convertView,R.id.tv_count);
 
         Product product = getList().get(position);
+        Log.i("product---->",product.toString());
         tv_name.setText(product.getTitle());
         tv_money.setText("￥"+product.getPrice()+"元");
-//        tv_count.setText(product.getBean_like_count()+"");
+        tv_count.setText(product.getBean_like_count()+"");
         imageLoader.LoadImage("http://"+product.getImage(),image);
         iv_heart.setImageResource(R.drawable.heart_normal);
         if (product.isCollect()){

@@ -104,7 +104,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         }
     };
 
-
     // TODO: Rename and change types and number of parameters
     public static PersonalFragment newInstance(String param1, String param2) {
         PersonalFragment fragment = new PersonalFragment();
@@ -201,8 +200,8 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         @Override
         public CharSequence getPageTitle(int position) {
             if (position==0)
-                return collect_count==0?"收藏":"收藏("+collect_count+")";
-            return collocation_count==0?"豆搭":"豆搭("+collocation_count+")";
+                return collect_count==0?"收藏":"收藏 "+collect_count;
+            return collocation_count==0?"豆搭":"豆搭 "+collocation_count;
         }
     }
 

@@ -1,7 +1,6 @@
 package com.zhaidou.fragments;
 
 
-
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;

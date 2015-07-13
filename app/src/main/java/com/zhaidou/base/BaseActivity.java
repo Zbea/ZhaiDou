@@ -27,7 +27,6 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
     protected Fragment currentFragment;
     protected WebView webView;
 
-
     public void navigationToFragment(Fragment fragment){
         if (fragment!=null&&fragment instanceof RegisterFragment){
             RegisterFragment registerFragment=(RegisterFragment)fragment;

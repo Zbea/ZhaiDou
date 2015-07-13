@@ -1,7 +1,5 @@
 package com.zhaidou.fragments;
 
-
-
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,12 +9,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -27,20 +22,15 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
-import com.zhaidou.model.Article;
 import com.zhaidou.model.Category;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link HomeCategoryFragment#newInstance} factory method to
  * create an instance of this fragment.
- *
  */
 public class HomeCategoryFragment extends BaseFragment implements  View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
@@ -199,6 +189,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
             }
             tv_item.setText(item.getName());
 
+            mAllCategory.setWidth(tv_item.getMeasuredWidth());
             return convertView;
         }
     }

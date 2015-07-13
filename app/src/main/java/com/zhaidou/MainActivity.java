@@ -38,7 +38,7 @@ import android.widget.Toast;
  */
 public class MainActivity extends BaseActivity implements DiyFragment.OnFragmentInteractionListener,
         StrategyFragment.OnFragmentInteractionListener,
-        ElementListFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
+        ElementListFragment.OnFragmentInteractionListener,WebViewFragment.OnFragmentInteractionListener,
         HomeFragment.OnFragmentInteractionListener,CategoryFragment1.OnFragmentInteractionListener,
         PersonalMainFragment.OnFragmentInteractionListener,RegisterFragment.RegisterOrLoginListener{
 

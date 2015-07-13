@@ -54,6 +54,7 @@ import com.zhaidou.model.SwitchImage;
 import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.HtmlFetcher;
 import com.zhaidou.utils.ImageDownloader;
+import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.PixelUtil;
 import com.zhaidou.view.HeaderLayout;
 import com.zhaidou.view.ImageSwitchWall;
@@ -226,11 +227,6 @@ public class HomeFragment extends BaseFragment implements
         mBackView=(LinearLayout)view.findViewById(R.id.ll_back);
         mBackView.setOnClickListener(this);
 
-        Log.i("PixelUtil.px2dp(288,getActivity());---->",screenHeight+"");
-        Log.i("PixelUtil.px2dp(288,getActivity());---->",screenWidth+"");
-
-
-
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         mScrollView.setOnRefreshListener(this);
 
@@ -238,6 +234,7 @@ public class HomeFragment extends BaseFragment implements
         view.findViewById(R.id.ll_competition).setOnClickListener(this);
         view.findViewById(R.id.ll_sale).setOnClickListener(this);
         view.findViewById(R.id.ll_forward).setOnClickListener(this);
+        view.findViewById(R.id.ll_category_view).setOnClickListener(this);
 
         mSearchView=(ImageView)view.findViewById(R.id.iv_search);
         mSearchView.setOnClickListener(this);
@@ -358,7 +355,8 @@ public class HomeFragment extends BaseFragment implements
             case R.id.iv_search:
                 startActivity(new Intent(getActivity(),SearchActivity.class));
                 break;
-            case R.id.iv_category:
+            case R.id.ll_category_view:
+                Log.i("ll_category_view----------->","ll_category_view");
                 toggleMenu();
 //                mPopupWindow.showAtLocation(getView(), Gravity.TOP, 0, 220);
 //                mPopupWindow.setFocusable(true);
@@ -559,9 +557,11 @@ public class HomeFragment extends BaseFragment implements
 
     public void toggleMenu(){
         if (homeCategoryFragment.isHidden()){
+            mCategoryView.setImageResource(R.drawable.icon_close);
             fl_category_menu.setVisibility(View.VISIBLE);
             getChildFragmentManager().beginTransaction().show(homeCategoryFragment).commit();
         }else {
+            mCategoryView.setImageResource(R.drawable.icon_category);
             fl_category_menu.setVisibility(View.GONE);
             getChildFragmentManager().beginTransaction().hide(homeCategoryFragment).commit();
         }

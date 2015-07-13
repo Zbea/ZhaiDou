@@ -118,12 +118,12 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
             case R.id.ll_bbs_question:
                 break;
             case R.id.ll_collocation:
-                ImageBgFragment fragment= ImageBgFragment.newInstance("豆搭教程",R.drawable.bg_collocation);
+                ImageBgFragment fragment= ImageBgFragment.newInstance("豆搭教程");
 //                ((PersonalMainFragment)getParentFragment()).addToStack(fragment);
                 ((MainActivity)getActivity()).navigationToFragment(fragment);
                 break;
             case R.id.ll_add_v:
-                ImageBgFragment addVFragment= ImageBgFragment.newInstance("如何加V",R.drawable.add_v);
+                ImageBgFragment addVFragment= ImageBgFragment.newInstance("如何加V");
 //                ((PersonalMainFragment)getParentFragment()).addToStack(addVFragment);
                 ((MainActivity)getActivity()).navigationToFragment(addVFragment);
                 break;

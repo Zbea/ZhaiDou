@@ -25,14 +25,12 @@ public class ImageBgFragment extends BaseFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String TITLE = "title";
-    private static final String RESID = "ResId";
 
     // TODO: Rename and change types of parameters
     private String mTitle;
-    private int mResId;
 
     private TextView tv_title;
-    private ImageView iv_bg;
+    private ImageView iv_bg_1,iv_bg_2,iv_bg_3;
 
 
 
@@ -40,16 +38,15 @@ public class ImageBgFragment extends BaseFragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param title Parameter 1.
+     * @param ResId Parameter 2.
      * @return A new instance of fragment AddVFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ImageBgFragment newInstance(String title, int ResId) {
+    public static ImageBgFragment newInstance(String title) {
         ImageBgFragment fragment = new ImageBgFragment();
         Bundle args = new Bundle();
         args.putString(TITLE, title);
-        args.putInt(RESID, ResId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -62,7 +59,6 @@ public class ImageBgFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mTitle = getArguments().getString(TITLE);
-            mResId = getArguments().getInt(RESID);
         }
     }
 
@@ -74,11 +70,19 @@ public class ImageBgFragment extends BaseFragment {
         View view=inflater.inflate(R.layout.fragment_add_v, container, false);
         tv_title=(TextView)view.findViewById(R.id.tv_title);
         Log.i("tv_title---->",tv_title.toString());
-        iv_bg=(ImageView)view.findViewById(R.id.iv_bg);
-        Log.i("iv_bg---->",iv_bg.toString());
+        iv_bg_1=(ImageView)view.findViewById(R.id.iv_bg_1);
+        iv_bg_2=(ImageView)view.findViewById(R.id.iv_bg_2);
+        iv_bg_3=(ImageView)view.findViewById(R.id.iv_bg_3);
         tv_title.setText(mTitle);
-        Log.i("mResId---->", mResId + "");
-        iv_bg.setImageResource(mResId);
+        if ("豆搭教程".equalsIgnoreCase(mTitle)){
+            iv_bg_1.setImageResource(R.drawable.bg_collocation_1);
+            iv_bg_2.setImageResource(R.drawable.bg_collocation_2);
+            iv_bg_3.setImageResource(R.drawable.bg_collocation_3);
+        }else {
+            iv_bg_1.setImageResource(R.drawable.add_v_1);
+            iv_bg_2.setImageResource(R.drawable.add_v_2);
+        }
+
         view.findViewById(R.id.rl_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

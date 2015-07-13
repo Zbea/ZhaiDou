@@ -18,8 +18,8 @@
             android:text="全类别"/>
         <ImageView
             android:id="@+id/iv_search"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:scaleType="fitXY"
             android:src="@drawable/icon_search"
             android:layout_alignParentRight="true"

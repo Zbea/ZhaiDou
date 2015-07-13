@@ -8,13 +8,16 @@
         android:id="@+id/tv_category_item"
         android:singleLine="true"
         android:layout_width="wrap_content"
-        android:layout_height="30dp"
+        android:layout_height="wrap_content"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
         android:minWidth="60dp"
         android:gravity="center"
         android:textColor="@drawable/text_color_selector"
         android:clickable="true"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
+        android:textSize="12sp"
         android:background="@drawable/category_item_selector"
         android:text="美食"/>
 

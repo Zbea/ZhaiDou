@@ -276,7 +276,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 //                mChildContainer.setVisibility(View.VISIBLE);
 //                break;
             case R.id.rl_job:
-                ImageBgFragment addVFragment= ImageBgFragment.newInstance("如何加V",R.drawable.add_v);
+                ImageBgFragment addVFragment= ImageBgFragment.newInstance("如何加V");
                 ((MainActivity)getActivity()).navigationToFragment(addVFragment);
                 break;
             case R.id.rl_manage_address:

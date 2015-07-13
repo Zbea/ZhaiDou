@@ -1,9 +1,10 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f1f1f1"
-    android:orientation="vertical">
+    android:background="#f1f1f1">
+
     <RelativeLayout
         android:id="@+id/rl_back"
         android:layout_width="match_parent"
@@ -38,8 +39,18 @@
             android:textColor="@color/white"
             android:text="关于"/>
     </RelativeLayout>
-    <LinearLayout
+
+    <ImageView
+        android:id="@+id/iv_version"
         android:layout_below="@id/rl_back"
+        android:layout_width="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_height="wrap_content"
+        android:paddingTop="50dp"
+        android:paddingBottom="50dp"
+        android:src="@drawable/icon_version"/>
+    <LinearLayout
+        android:layout_below="@id/iv_version"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -123,22 +134,16 @@
     </RelativeLayout>
     </LinearLayout>
     <LinearLayout
-        android:id="@+id/dd"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_alignParentBottom="true">
-        <com.zhaidou.view.TypeFaceTextView
-            android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp">
+        <ImageView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="#a8a8a8"
-            android:text="深圳雅革科技有限公司"/>
-        <com.zhaidou.view.TypeFaceTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="#a8a8a8"
-            android:text="Copyright©.2014-2015,All Rights Reserved"/>
+            android:scaleType="fitXY"
+            android:src="@drawable/icon_copyrights"/>
     </LinearLayout>
 </RelativeLayout>

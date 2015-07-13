@@ -240,4 +240,7 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
         if (inputMethodManager.isActive())
             inputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().peekDecorView().getApplicationWindowToken(),0);
     }
+
+
+
 }

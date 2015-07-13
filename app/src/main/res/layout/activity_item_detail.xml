@@ -2,8 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.zhaidou.activities.ItemDetailActivity"
-    >
+    tools:context="com.zhaidou.activities.ItemDetailActivity">
 
     <RelativeLayout
         android:id="@+id/rl_actionbar"
@@ -24,11 +23,12 @@
         <ImageView
             android:id="@+id/iv_share"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
             android:layout_marginRight="10dp"
-            android:src="@drawable/share"/>
+            android:src="@drawable/share"
+            android:scaleType="fitXY"/>
         </RelativeLayout>
     <WebView
         android:layout_below="@id/rl_actionbar"
