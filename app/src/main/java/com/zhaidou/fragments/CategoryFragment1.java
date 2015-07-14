@@ -35,6 +35,7 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Category;
 import com.zhaidou.model.CategoryItem;
 import com.zhaidou.utils.AsyncImageLoader1;
+import com.zhaidou.utils.PixelUtil;
 import com.zhaidou.view.ChildGridView;
 
 import org.json.JSONArray;
@@ -360,7 +361,6 @@ public class CategoryFragment1 extends BaseFragment{
         public ChildAdapter(Context context, List<CategoryItem> list,ChildGridView gridView) {
             super(context, list);
             this.gridView=gridView;
-
         }
 
         @Override
@@ -383,8 +383,8 @@ public class CategoryFragment1 extends BaseFragment{
 //            Log.i("item.getName()-------->",item.getName());
             ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
 
-            layoutParams.height=80;
-            layoutParams.width=80;
+            layoutParams.height=PixelUtil.dp2px(30,mContext);
+            layoutParams.width=PixelUtil.dp2px(30,mContext);
             imageView.setLayoutParams(layoutParams);
             if (!TextUtils.isEmpty(item.getThumb()))
                imageLoader.LoadImage("http://"+item.getThumb(),imageView);
