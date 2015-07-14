@@ -26,6 +26,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
@@ -68,6 +69,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     boolean isFromCamera = false;// 区分拍照旋转
     int degree = 0;
     public String filePath = "";
+
+    private long mTime;
 
     private Handler mHandler =new Handler(){
         @Override
@@ -327,5 +330,30 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         }
         selectFragment(currentFragment,utilityFragment);
         setButton(homeButton);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        FragmentManager manager=getSupportFragmentManager();
+        int num=manager.getBackStackEntryCount();
+        Log.i("zhaidou", "返回栈大小:" + num);
+        if (num==0)
+        {
+            if (keyCode == KeyEvent.KEYCODE_BACK)
+            {
+                if ((System.currentTimeMillis()-mTime)>2000)
+                {
+                    Toast.makeText(this,"再按一次退出",Toast.LENGTH_SHORT).show();
+                    mTime=System.currentTimeMillis();
+                }
+                else
+                {
+                    finish();
+                }
+                return true;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

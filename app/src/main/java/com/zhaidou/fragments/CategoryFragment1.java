@@ -1,6 +1,7 @@
 package com.zhaidou.fragments;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -32,6 +33,7 @@ import com.zhaidou.activities.SearchActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Category;
 import com.zhaidou.model.CategoryItem;
 import com.zhaidou.utils.AsyncImageLoader1;
@@ -75,7 +77,7 @@ public class CategoryFragment1 extends BaseFragment{
 
     private int screenWidth;
 
-    private ProgressDialog mDialog;
+    private Dialog mDialog;
     private Handler mHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -85,7 +87,11 @@ public class CategoryFragment1 extends BaseFragment{
                 expandableListView.expandGroup(i);
             }
             categoryExpandeAdapter.notifyDataSetChanged();
-            mDialog.hide();
+            if (mDialog!=null)
+            {
+                mDialog.dismiss();
+            }
+
         }
     };
 
@@ -158,7 +164,7 @@ public class CategoryFragment1 extends BaseFragment{
         screenWidth=dm.widthPixels;
         Log.i("screenWidth---------->",screenWidth+"");
         Log.i("screenHeight---------->",dm.heightPixels+"");
-        mDialog=ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
+        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading...");
         return view;
     }
 
