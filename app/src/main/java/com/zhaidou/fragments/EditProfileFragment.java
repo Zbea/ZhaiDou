@@ -183,6 +183,7 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
                 tv_edit_msg.setText("");
                 break;
             case R.id.tv_done:
+                hideInputMethod();
                 new MyTask().execute(mParam1,mParam2,mProfileId);
                 break;
         }

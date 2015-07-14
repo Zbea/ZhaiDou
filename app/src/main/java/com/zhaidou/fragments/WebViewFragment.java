@@ -72,13 +72,14 @@ public class WebViewFragment extends BaseFragment{
                 Log.i("url------>",url);
                 Intent intent = new Intent();
                 intent.putExtra("url", url);
+                intent.putExtra("from","beauty");
                 intent.setClass(getActivity(), ItemDetailActivity.class);
                 getActivity().startActivity(intent);
 //                Toast.makeText(getActivity(),url,1).show();
 //                WebViewFragment webViewFragment=WebViewFragment.newInstance(url);
 //                ((PersonalMainFragment)getParentFragment()).addToStack(webViewFragment);
 //                ((MainActivity)getActivity()).navigationToFragment(webViewFragment);
-                return false;
+                return true;
             }
 //
 //            public void onPageFinished(WebView view, String url) {

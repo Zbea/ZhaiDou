@@ -91,7 +91,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
-
+            mDialog.hide();
           productAdapter.setList(products);
           gv_single.onRefreshComplete();
         }
@@ -192,6 +192,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
 
             @Override
             public void onResponse(JSONObject json) {
+                mDialog.hide();
                 JSONArray items = json.optJSONArray("article_items");
                 JSONObject meta = json.optJSONObject("meta");
 

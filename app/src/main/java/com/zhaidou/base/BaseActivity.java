@@ -51,7 +51,6 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
 
     @Override
     public void onRegisterOrLoginSuccess(User user, Fragment fragment) {
-        Log.i("BaseActivity---->",user.toString());
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.popBackStack();
         SharedPreferencesUtil.saveUser(this, user);
@@ -66,6 +65,7 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
             MainActivity mainActivity = (MainActivity)this;
             mainActivity.selectFragment(currentFragment, persoanlFragment);
             mainActivity.setButton(personalButton);
+            persoanlFragment.refreshData();
         }else if ("ItemDetailActivity".equalsIgnoreCase(this.getClass().getSimpleName())){
             webView.loadUrl("javascript:ReceiveUserInfo("+user.getId()+", '"+user.getAuthentication_token()+"')");
         }

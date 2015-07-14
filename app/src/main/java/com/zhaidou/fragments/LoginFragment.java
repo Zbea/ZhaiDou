@@ -167,6 +167,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         ShareSDK.initSDK(getActivity());
         switch (view.getId()){
             case R.id.bt_login:
+                hideInputMethod();
                 new MyTask().execute();
                 break;
             case R.id.tv_register:
@@ -288,7 +289,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
 
         @Override
         protected void onPostExecute(String s) {
-            Log.i("onPostExecute------------>", s);
+            Log.i("login---->onPostExecute------------>", s);
             if (mDialog!=null)
                 mDialog.hide();
             try {

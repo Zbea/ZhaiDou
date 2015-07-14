@@ -104,6 +104,9 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                         long millionSeconds = sdf.parse(date).getTime();//毫秒
 //                        Log.i("millionSeconds",millionSeconds+"");
 //                        Log.i("current---->",System.currentTimeMillis()+"");
+                        long hour=3600*1000;
+                        long minute=60*1000;
+                        millionSeconds=millionSeconds+hour*23+minute*59+59*1000;
                         long temp = millionSeconds-System.currentTimeMillis();
                         mTimer=new MyTimer(temp,1000);
                         mTimer.start();

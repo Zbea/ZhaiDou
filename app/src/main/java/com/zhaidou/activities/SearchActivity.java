@@ -202,7 +202,11 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
                         inputMethodManager.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
                     }
                     if (isHidenKeyBoard=!isHidenKeyBoard){
-                        onSearch();
+                        if (!TextUtils.isEmpty(mEditText.getText().toString().trim())){
+                            onSearch();
+                        }else {
+                            Toast.makeText(SearchActivity.this,"还没有输入关键词哦。。。",Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     return true;
@@ -252,7 +256,7 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
             case R.id.tv_cancel:
                 Log.i("tv_cancel------------>","tv_cancel");
 //                finish();
-                if (!TextUtils.isEmpty(mEditText.getText().toString())){
+                if (!TextUtils.isEmpty(mEditText.getText().toString().trim())){
                     if (inputMethodManager.isActive())
                         inputMethodManager.hideSoftInputFromWindow(getWindow().peekDecorView().getApplicationWindowToken(),0);
                     onSearch();

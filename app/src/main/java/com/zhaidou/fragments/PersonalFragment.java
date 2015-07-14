@@ -98,7 +98,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                     break;
                 case UPDATE_USER_DESCRIPTION:
                     User u = (User)msg.obj;
-                    tv_desc.setText(u.getDescription() == null ? "" : u.getDescription());
+                    tv_desc.setText("null".equalsIgnoreCase(u.getDescription())||u.getDescription() == null ? "" : u.getDescription());
                     break;
             }
         }
@@ -238,11 +238,9 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 
     public void getUserDetail(){
         int id=mSharedPreferences.getInt("userId",-1);
-        Log.i("getUserDetail()----id",id+"");
         JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL+id+"/profile",new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("getUserDetail---->",jsonObject.toString());
                 JSONObject userObj = jsonObject.optJSONObject("profile");
                 String nick_name=userObj.optString("nick_name");
                 String mobile=userObj.optString("mobile");
@@ -283,6 +281,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 
     @Override
     public void onCountChange(int count,Fragment fragment) {
+        Log.i("onCountChange------->",count+"");
         if (fragment instanceof CollectFragment){
             collect_count=count;
         }else if (fragment instanceof CollocationFragment){
@@ -301,5 +300,15 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             imageLoader.LoadImage("http://"+user.getAvatar(),iv_header);
         if (!TextUtils.isEmpty(user.getDescription()))
             tv_desc.setText(user.getDescription());
+    }
+
+    public void refreshData(){
+        Log.i("PersonalFragment------->","refreshData");
+        getUserDetail();
+        getUserInfo();
+        if (mFragments.size()>0){
+            mCollocationFragment.refreshData();
+            mCollectFragment.refreshData();
+        }
     }
 }

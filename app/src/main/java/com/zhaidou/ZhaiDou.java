@@ -47,6 +47,8 @@ public class ZhaiDou {
     public static String USER_REGISTER_URL=HOME_BASE_URL+"api/v1/users";
     //用户收藏
     public static String USER_COLLECT_ITEM_URL=HOME_BASE_URL+"article/api/article_items/like_article_items?per_page=10&page=";
+    //用户取消收藏
+    public static String USER_DELETE_COLLECT_ITEM_URL=HOME_BASE_URL+"article/api/article_items/like";
     //用户豆搭
     public static String USER_COLLOCATION_ITEM_URL=HOME_BASE_URL+"api/v1/users/";
 

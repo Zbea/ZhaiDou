@@ -39,14 +39,17 @@ public class ProductAdapter extends BaseListAdapter<Product>{
         TextView tv_count=ViewHolder.get(convertView,R.id.tv_count);
 
         Product product = getList().get(position);
-        Log.i("product---->",product.toString());
         tv_name.setText(product.getTitle());
         tv_money.setText("￥"+product.getPrice()+"元");
         tv_count.setText(product.getBean_like_count()+"");
         imageLoader.LoadImage("http://"+product.getImage(),image);
         iv_heart.setImageResource(R.drawable.heart_normal);
+        tv_count.setVisibility(View.GONE);
         if (product.isCollect()){
-            iv_heart.setImageResource(R.drawable.heart_pressed);
+//            iv_heart.setImageResource(R.drawable.heart_pressed);
+            iv_heart.setPressed(true);
+            iv_heart.setSelected(true);
+            tv_count.setVisibility(View.GONE);
         }
         mHashMap.put(position,convertView);
         return convertView;

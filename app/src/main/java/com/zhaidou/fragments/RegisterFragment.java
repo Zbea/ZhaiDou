@@ -131,7 +131,6 @@ public class RegisterFragment extends BaseFragment implements View.OnClickListen
         mLogin.setOnClickListener(this);
         view.findViewById(R.id.ll_back).setOnClickListener(this);
 
-
         return view;
     }
 
@@ -139,6 +138,7 @@ public class RegisterFragment extends BaseFragment implements View.OnClickListen
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.bt_register:
+                hideInputMethod();
                 doRegister();
                 break;
             case R.id.tv_login:

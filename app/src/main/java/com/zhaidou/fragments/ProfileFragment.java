@@ -131,7 +131,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     Log.i("tv_mobile------->",user.getMobile());
                     Log.i("TextUtils.isEmpty(user.getMobile())--",TextUtils.isEmpty(user.getMobile())+"");
                     tv_mobile.setText(TextUtils.isEmpty(user.getMobile())?"":user.getMobile());
-                    tv_job.setText(user.isVerified()?"宅豆认证工程师":"未认证工程师");
+                    tv_job.setText(user.isVerified()?"宅豆认证设计师":"未认证设计师");
                     tv_addr_mobile.setText(TextUtils.isEmpty(user.getMobile())?"":user.getMobile());
                     tv_addr.setText(TextUtils.isEmpty(user.getAddress2())?"":user.getAddress2());
                     tv_addr_username.setText(TextUtils.isEmpty(user.getFirst_name())?"":user.getFirst_name());
@@ -276,8 +276,10 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 //                mChildContainer.setVisibility(View.VISIBLE);
 //                break;
             case R.id.rl_job:
-                ImageBgFragment addVFragment= ImageBgFragment.newInstance("如何加V");
-                ((MainActivity)getActivity()).navigationToFragment(addVFragment);
+                if ("未认证工程师".equalsIgnoreCase(tv_job.getText().toString())){
+                    ImageBgFragment addVFragment= ImageBgFragment.newInstance("如何加V");
+                    ((MainActivity)getActivity()).navigationToFragment(addVFragment);
+                }
                 break;
             case R.id.rl_manage_address:
                 String name=tv_addr_username.getText().toString();
@@ -353,7 +355,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL+id+"/profile",new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("UPDATE_PROFILE_INFO--->",jsonObject.toString());
+                Log.i("getUserData--->",jsonObject.toString());
                 JSONObject userObj = jsonObject.optJSONObject("profile");
                 String mobile=userObj.optString("mobile");
                 mobile=mobile.equals("null")?"":mobile;
@@ -387,6 +389,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL+id,new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
+                Log.i("getUserInfo--->",jsonObject.toString());
                 JSONObject userObj = jsonObject.optJSONObject("user");
                 String email=userObj.optString("email");
                 String nick=userObj.optString("nick_name");
@@ -431,6 +434,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.i("onActivityResult------------------->","MENU_CAMERA_SELECTED");
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case MENU_CAMERA_SELECTED:// 拍照修改头像
@@ -585,7 +589,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             HttpClient client = new DefaultHttpClient();
 
             // 实例化HTTP方法
-            HttpPost request = new HttpPost(ZhaiDou.USER_REGISTER_URL+id);
+            HttpPost request = new HttpPost(ZhaiDou.USER_REGISTER_URL+"/"+id);
 
             request.addHeader("SECAuthorization", token);
             // 创建名/值组列表
@@ -612,6 +616,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             }
             in.close();
             String result = sb.toString();
+            Log.i("ProfileFragment----------->",result);
             return result;
 
         } finally {

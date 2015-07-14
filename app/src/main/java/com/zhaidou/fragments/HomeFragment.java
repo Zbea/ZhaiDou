@@ -599,15 +599,14 @@ public class HomeFragment extends BaseFragment implements
         JsonObjectRequest bannerRequest = new JsonObjectRequest(url,new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
-//                Log.i("jsonObject------>",jsonObject.toString());
+                Log.i("bannerRequest------>",jsonObject.toString());
                 JSONArray article_categories=jsonObject.optJSONArray("article_categories");
                 if (article_categories!=null&&article_categories.length()>0){
                     for(int i=0;i<article_categories.length();i++){
                         JSONObject categoryobj =article_categories.optJSONObject(i);
                         JSONArray childrenObj =  categoryobj.optJSONArray("children");
-//                    SwitchImage switchImage = new SwitchImage();
                         for (int k=0;k<childrenObj.length();k++){
-                            JSONObject banner = childrenObj.optJSONObject(i);
+                            JSONObject banner = childrenObj.optJSONObject(k);
                             int id = banner.optInt("id");
                             String name = banner.optString("name");
                             String url = banner.optJSONObject("avatar").optString("url");

@@ -46,11 +46,14 @@ import com.zhaidou.utils.ImageDownloader;
 import com.zhaidou.view.HeaderLayout;
 import com.zhaidou.view.XListView;
 
+import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -263,7 +266,7 @@ public class ElementListFragment extends BaseFragment implements PullToRefreshBa
                     String requestUrl = MessageFormat.format(targetUrl, currentPage);
                     java.net.URL url = new URL(requestUrl);
                     String jsonContent = HtmlFetcher.fetch(url);
-//                    Log.d(DEBUG_CAT, "-------> 加载jsonContent: " + jsonContent);
+                   System.out.print("-------> 加载jsonContent: " + jsonContent);
                     try {
                         JSONObject root = new JSONObject(jsonContent);
                         JSONArray items = root.getJSONArray("posts");
@@ -365,9 +368,10 @@ public void clear(){
                 JSONObject customFields = item.getJSONObject("custom_fields");
                 articleViews.setText(customFields.getJSONArray("views").get(0).toString());
 //                imageDownloader.download(item.get("thumbnail").toString(), cover);
-                imageLoader.LoadImage(item.get("thumbnail").toString(),cover);
+                Log.i("item.get(\"thumbnail\")----->",item.get("thumbnail").toString());
+                imageLoader.LoadImage(URLDecoder.decode(item.get("thumbnail").toString(), "utf-8"),cover);
 
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 mHashMap.put(position,view);

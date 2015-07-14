@@ -68,6 +68,9 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         tv_back.setOnClickListener(this);
         iv_share.setOnClickListener(this);
 
+        if ("lottery".equals(from)||"beauty".equals(from)||"competition".equalsIgnoreCase(from))
+            iv_share.setVisibility(View.GONE);
+
         String postId = getIntent().getStringExtra("id");
 
         /* WebView Settings */

@@ -2,8 +2,11 @@ package com.zhaidou.fragments;
 
 
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -98,6 +101,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
     private int count;
     private int currentpage=1;
 
+    private long lastClickTime;
 
     private ProgressDialog mDialog;
     private Map<Integer,View> mHashMap=new HashMap<Integer, View>();
@@ -152,7 +156,6 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
         mGridView.setMode(PullToRefreshBase.Mode.BOTH);
         mGridView.setOnRefreshListener(this);
 
-
         mRequestQueue= Volley.newRequestQueue(getActivity());
         mSharedPreferences=getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         productAdapter=new ProductAdapter(getActivity(),products);
@@ -161,8 +164,12 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
         productAdapter.setOnInViewClickListener(R.id.ll_single_layout,new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                if (System.currentTimeMillis()-lastClickTime<1000){
+                    Toast.makeText(getActivity(),"豆豆，你点击太快啦。。。",Toast.LENGTH_SHORT).show();
+                    lastClickTime=System.currentTimeMillis();
+                    return;
+                }
                 Product product=(Product)values;
-                Log.i("product",product.toString());
                 Intent intent = new Intent();
                 intent.putExtra("url", product.getUrl());
                 intent.setClass(getActivity(), WebViewActivity.class);
@@ -172,13 +179,37 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
         productAdapter.setOnInViewClickListener(R.id.ll_collect_heart,new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                Log.i("ll_collect_heart---->","ll_collect_heart");
-                Product product=(Product)values;
-                Log.i("product",product.toString());
-                int userId= mSharedPreferences.getInt("userId", -1);
-                String token=mSharedPreferences.getString("token","");
-                int itemId=product.getId();
-                new CancelTask().execute(userId+"",itemId+"",token,""+position);
+                 final Product product=(Product)values;
+                final int index=position;
+
+//                ImageView mHeartView=(ImageView)v.findViewById(R.id.iv_heart);
+//                mHeartView.setSelected(!mHeartView.isSelected());
+//                Log.i("mHeartView.isPressed()----->",(mHeartView.isSelected())+"");
+//                new CancelTask().execute(userId+"",itemId+"",token,""+position);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("取消收藏")
+                        .setMessage("真的不要我了吗?")
+                        .setCancelable(false)
+                        .setNegativeButton("取消",new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Log.i("i----->", i + "");
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Log.i("i----->", i + "");
+                                dialogInterface.dismiss();
+
+                                int userId= mSharedPreferences.getInt("userId", -1);
+                                String token=mSharedPreferences.getString("token","");
+                                int itemId=product.getId();
+                                new CancelTask().execute(userId+"",itemId+"",token,""+index);
+                            }
+                        }).show();
             }
         });
         new MyTask().execute();
@@ -222,10 +253,10 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
                         product.setCollect(true);
                         products.add(product);
                     }
-                    Message message=new Message();
-                    message.arg1=count;
-                    mHandler.sendMessage(message);
                 }
+                Message message=new Message();
+                message.arg1=count;
+                mHandler.sendMessage(message);
             }
 
         }
@@ -257,7 +288,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
         HttpClient httpclient = new DefaultHttpClient(httpParameters);
         try {
             HttpResponse httpResponse = httpclient.execute(httpGet);
-            InputStream inStream =     httpResponse.getEntity().getContent();
+            InputStream inStream = httpResponse.getEntity().getContent();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inStream,"utf-8"));
             StringBuilder strber = new StringBuilder();
             String line = null;
@@ -305,10 +336,10 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
                     String likes=jsonObject.optString("likes");
                     if (Integer.parseInt(position)<productAdapter.getCount()){
                         productAdapter.remove(Integer.parseInt(position));
-                        productAdapter.notifyDataSetChanged();
                         if (collectCountChangeListener!=null){
-                            collectCountChangeListener.onCountChange(count-1,CollectFragment.this);
+                            collectCountChangeListener.onCountChange(productAdapter.getCount(),CollectFragment.this);
                         }
+                        productAdapter.notifyDataSetChanged();
                     }
                 }
             }catch (Exception e){
@@ -317,9 +348,6 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
         }
     }
     public String executeHttpPost(String liker_id,String article_item_id,String token) throws Exception {
-        Log.i("liker_id--->",liker_id==null?"":liker_id);
-        Log.i("article_item_id--->",article_item_id==null?"":article_item_id);
-        Log.i("token--->",token==null?"":token);
         BufferedReader in = null;
         try {
             // 定义HttpClient
@@ -327,7 +355,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
 
 
             // 实例化HTTP方法
-            HttpPost request = new HttpPost("http://192.168.199.171/article/api/article_items/like");
+            HttpPost request = new HttpPost(ZhaiDou.USER_DELETE_COLLECT_ITEM_URL);
             request.addHeader("SECAuthorization", token);
 
             // 创建名/值组列表
@@ -353,7 +381,6 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
             }
             in.close();
             String result = sb.toString();
-            Log.i("EditProfileFragment--------->",result);
             return result;
 
         } finally {
@@ -380,12 +407,17 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
         String label = DateUtils.formatDateTime(getActivity(), System.currentTimeMillis(),
                 DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
         refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
-        Log.i("onPullDownToRefresh--->","onPullDownToRefresh");
 //        FetchData(mParam1,sort,currentpage=1);
 //        gv_single.setMode(PullToRefreshBase.Mode.BOTH);
         currentpage=1;
         products.clear();
         new MyTask().execute();
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mGridView.onRefreshComplete();
+            }
+        },3000);
     }
 
     @Override
@@ -397,6 +429,13 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
             return;
         }
         ++currentpage;
+        new MyTask().execute();
+    }
+
+    public void refreshData(){
+        currentpage=1;
+        products.clear();
+        productAdapter.notifyDataSetChanged();
         new MyTask().execute();
     }
 }

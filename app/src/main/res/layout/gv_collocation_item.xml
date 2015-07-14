@@ -11,7 +11,9 @@
     <ImageView
         android:id="@+id/iv_collocation_thumb"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:background="@drawable/icon_loading_defalut"
+        android:scaleType="fitXY"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:background="@color/white"

@@ -78,6 +78,8 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 0:
+                    if (mDialog.isShowing())
+                        mDialog.dismiss();
                     mAdapter.notifyDataSetChanged();
                     int num = msg.arg1;
                     if (collocationCountChangeListener!=null){
@@ -145,6 +147,7 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
             ,new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
+                Log.i("FetchCollocationData----->",jsonObject.toString());
                 mDialog.hide();
                 JSONArray collocationsArr=jsonObject.optJSONArray("bean_collocations");
                 JSONObject meta = jsonObject.optJSONObject("meta");
@@ -163,10 +166,10 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
                     collocation.setThumb_pic(thumb_pic);
                     collocation.setMedia_pic(media_pic);
                     collocations.add(collocation);
-                    Message message=new Message();
-                    message.arg1=count;
-                    mHandler.sendMessage(message);
                 }
+                Message message=new Message();
+                message.arg1=count;
+                mHandler.sendMessage(message);
             }
         },new Response.ErrorListener(){
             @Override
@@ -207,6 +210,8 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
 
     @Override
     public void onPullDownToRefresh(PullToRefreshBase<GridView> refreshView) {
+        collocations.clear();
+        mAdapter.clear();
         FetchCollocationData(currentpage=1);
     }
 
@@ -219,5 +224,9 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
             return;
         }
         FetchCollocationData(++currentpage);
+    }
+
+    public void refreshData(){
+        FetchCollocationData(currentpage=1);
     }
 }
