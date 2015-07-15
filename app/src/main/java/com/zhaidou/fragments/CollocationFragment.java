@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -30,6 +31,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Collocation;
 import com.zhaidou.utils.AsyncImageLoader1;
 
@@ -72,7 +74,7 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
 
     private CollocationCountChangeListener collocationCountChangeListener;
 
-    private ProgressDialog mDialog;
+    private Dialog mDialog;
     private Handler mHandler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -139,7 +141,8 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
     }
 
     public void FetchCollocationData(int page){
-        mDialog=ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
+
+        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading...");
         int userId=mSharedPreferences.getInt("userId", -1);
         Log.i("FetchCollocationData------->",userId+"");
         //"http://www.zhaidou.com/api/v1/users/77069/bean_collocations?page="+page
@@ -148,7 +151,10 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("FetchCollocationData----->",jsonObject.toString());
-                mDialog.hide();
+                if (mDialog!=null)
+                {
+                    mDialog.dismiss();
+                }
                 JSONArray collocationsArr=jsonObject.optJSONArray("bean_collocations");
                 JSONObject meta = jsonObject.optJSONObject("meta");
 

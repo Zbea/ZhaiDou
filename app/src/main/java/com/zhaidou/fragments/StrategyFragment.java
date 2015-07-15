@@ -1,6 +1,7 @@
 package com.zhaidou.fragments;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
@@ -72,7 +73,7 @@ public class StrategyFragment extends BaseFragment {
     private static final String ARG_PARAM2 = "param2";
 
     private WebView webView;
-    private ProgressDialog loading;
+    private Dialog loading;
     private TextView livingRoomButton;
     private TextView entirePartButton;
 
@@ -214,7 +215,6 @@ public class StrategyFragment extends BaseFragment {
 
         livingRoomButton.setSelected(true);
         lastButton = livingRoomButton;
-
         loading = ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
         return view;
         */

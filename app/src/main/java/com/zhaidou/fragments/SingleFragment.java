@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -38,6 +39,7 @@ import com.zhaidou.adapter.ProductAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Product;
 import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.HtmlFetcher;
@@ -85,13 +87,13 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
     private ProductAdapter productAdapter;
 
     private WeakHashMap<Integer,View> mHashMap = new WeakHashMap<Integer, View>();
-    private ProgressDialog mDialog;
+    private Dialog mDialog;
 //    private SingleAdapter mSingleAdapter;
 
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
-            mDialog.hide();
+            if (mDialog!=null)mDialog.dismiss();
           productAdapter.setList(products);
           gv_single.onRefreshComplete();
         }
@@ -139,7 +141,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
     }
 
     private void initView(View view){
-        mDialog=ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
+        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading...");
         tv_count=(TextView)view.findViewById(R.id.tv_count);
 //        tv_detail=(TextView)view.findViewById(R.id.tv_detail);
         tv_money=(TextView)view.findViewById(R.id.tv_money);

@@ -41,6 +41,7 @@ import com.zhaidou.adapter.ProductAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
 import com.zhaidou.model.Product;
 import com.zhaidou.utils.AsyncImageLoader1;
@@ -103,7 +104,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
 
     private long lastClickTime;
 
-    private ProgressDialog mDialog;
+    private Dialog mDialog;
     private Map<Integer,View> mHashMap=new HashMap<Integer, View>();
     private CollectCountChangeListener collectCountChangeListener;
     private Handler mHandler= new Handler(){
@@ -219,7 +220,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
     private class MyTask extends AsyncTask<Void,Void,JSONObject>{
         @Override
         protected void onPreExecute() {
-            mDialog=ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
+            mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), "loading...");
             super.onPreExecute();
         }
 
@@ -229,7 +230,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
         }
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
-            mDialog.hide();
+            mDialog.dismiss();
             if (!TextUtils.isEmpty(jsonObject.toString())){
                 JSONArray article_items=jsonObject.optJSONArray("article_items");
                 JSONObject meta = jsonObject.optJSONObject("meta");
