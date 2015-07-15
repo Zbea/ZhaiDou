@@ -276,7 +276,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 //                mChildContainer.setVisibility(View.VISIBLE);
 //                break;
             case R.id.rl_job:
-                if ("未认证设计师".equalsIgnoreCase(tv_job.getText().toString())){
+                if ("未认证工程师".equalsIgnoreCase(tv_job.getText().toString())){
                     ImageBgFragment addVFragment= ImageBgFragment.newInstance("如何加V");
                     ((MainActivity)getActivity()).navigationToFragment(addVFragment);
                 }
@@ -569,7 +569,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 User user = new User();
                 user.setAvatar(avatar);
                 user.setEmail(email);
-                user.setNickName(tv_nick.getText().toString());
                 Message message = new Message();
                 message.what=UPDATE_USER_INFO;
                 message.obj=user;

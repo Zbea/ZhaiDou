@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -22,6 +24,7 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.SharedPreferencesUtil;
 
@@ -50,6 +53,9 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     SharedPreferences mSharedPreferences;
     RequestQueue requestQueue;
     private ProfileListener profileListener;
+    private Dialog mDialog;
+    private boolean isNetState;
+    private Context mContext;
 
     private Handler mHandler=new Handler(){
         @Override
@@ -97,6 +103,8 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_setting, container, false);
+
+        mContext=getActivity();
 
         view.findViewById(R.id.rl_back).setOnClickListener(this);
         view.findViewById(R.id.ll_profile).setOnClickListener(this);
@@ -153,6 +161,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                 ((MainActivity)getActivity()).navigationToFragment(aboutFragment);
                 break;
             case R.id.bt_logout:
+                mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"注销中");
                 logout();
                 break;
             default:
@@ -166,6 +175,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
          ,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+                if (mDialog!=null) mDialog.dismiss();
                 Log.i("SettingFragment---->",jsonObject.toString());
 
                 mHandler.sendEmptyMessage(CLEAR_USER_DATA);

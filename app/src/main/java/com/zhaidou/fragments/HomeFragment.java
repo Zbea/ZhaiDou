@@ -1,6 +1,7 @@
 package com.zhaidou.fragments;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -48,6 +49,7 @@ import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
 import com.zhaidou.model.Category;
 import com.zhaidou.model.SwitchImage;
@@ -139,6 +141,8 @@ public class HomeFragment extends BaseFragment implements
     private LinearLayout mBackView;
 
     private LinearLayout mSwipeView;
+    private Dialog mDialog;
+    private Context mContext;
 
     private PullToRefreshScrollView mScrollView;
     private AdapterView.OnItemClickListener itemSelectListener = new AdapterView.OnItemClickListener() {
@@ -189,6 +193,10 @@ public class HomeFragment extends BaseFragment implements
                 imageSwitchWall.setDatas(banners);
             }
             mHomeAdapter.notifyDataSetChanged();
+            if (mDialog.isShowing())
+            {
+                mDialog.dismiss();
+            }
         }
     };
 
@@ -220,12 +228,18 @@ public class HomeFragment extends BaseFragment implements
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        mContext=getActivity();
+
         listView = (ListViewForScrollView) view.findViewById(R.id.homeItemList);
         fl_category_menu=(FrameLayout)view.findViewById(R.id.fl_category_menu);
         mScrollView=(PullToRefreshScrollView)view.findViewById(R.id.scrollview);
         mSwipeView=(LinearLayout)view.findViewById(R.id.ll_adview);
         mBackView=(LinearLayout)view.findViewById(R.id.ll_back);
         mBackView.setOnClickListener(this);
+
+        mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"loading");
+        mDialog.show();
 
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         mScrollView.setOnRefreshListener(this);
@@ -596,7 +610,7 @@ public class HomeFragment extends BaseFragment implements
     @Override
     public void onCategorySelected(Category category) {
         Log.i("HomeFragment-------------->",category==null?"全部":category.getName());
-//        mHashMap.clear();
+        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
         FetchData(currentPage = 1, mCategory = category);
         mHomeAdapter.notifyDataSetChanged();
         toggleMenu();
