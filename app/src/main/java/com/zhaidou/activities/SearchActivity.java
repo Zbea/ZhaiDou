@@ -287,7 +287,7 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
         mSortView.setVisibility(View.VISIBLE);
         mSearchView.setVisibility(View.GONE);
 
-        keyWord= mEditText.getText().toString();
+        keyWord= mEditText.getText().toString().trim();
 //        SharedPreferences.Editor editor=mSharedPreferences.edit();
         Log.i("msg-------->",keyWord);
 //        mHistorys.add(keyWord);

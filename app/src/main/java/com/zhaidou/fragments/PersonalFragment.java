@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.AsyncImageLoader1;
+import com.zhaidou.utils.SharedPreferencesUtil;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -51,7 +53,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         CollocationFragment.CollocationCountChangeListener,SettingFragment.ProfileListener{
 
     private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_CONTEXT = "context";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -81,6 +83,8 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     private int collect_count=0;
     private int collocation_count=0;
 
+    private Activity mActivity;
+
     private User user;
 
     private Handler mHandler=new Handler(){
@@ -104,11 +108,11 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     };
 
     // TODO: Rename and change types and number of parameters
-    public static PersonalFragment newInstance(String param1, String param2) {
+    public static PersonalFragment newInstance(String param1, String context) {
         PersonalFragment fragment = new PersonalFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putSerializable(ARG_CONTEXT,context);
         fragment.setArguments(args);
         return fragment;
     }
@@ -121,7 +125,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mParam2 = getArguments().getString(ARG_CONTEXT);
         }
     }
 
@@ -167,6 +171,13 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     }
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        Log.i("activity------------------->",activity.toString());
+        mActivity=activity;
+    }
+
+    @Override
     public void onClick(View view) {
 //        LoginFragment fragment = LoginFragment.newInstance("","");
 //        ((PersonalMainFragment)getParentFragment()).addToStack(fragment);
@@ -206,7 +217,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 
     public void getUserInfo(){
 
-        int id=mSharedPreferences.getInt("userId",-1);
+        Object id= SharedPreferencesUtil.getData(mActivity, "userId", 0);
         JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL+id,new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -236,7 +247,8 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     }
 
     public void getUserDetail(){
-        int id=mSharedPreferences.getInt("userId",-1);
+        Object id= SharedPreferencesUtil.getData(mActivity,"userId",0);
+        Log.i("getUserDetail-----id---->",id+"");
         JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL+id+"/profile",new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -258,6 +270,8 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 Log.i("volleyError---------->",volleyError.toString());
             }
         });
+        if (mRequestQueue==null)
+            mRequestQueue=Volley.newRequestQueue(mActivity);
         mRequestQueue.add(request);
     }
 
@@ -301,11 +315,25 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             tv_desc.setText(user.getDescription());
     }
 
+
     public void refreshData(){
         Log.i("PersonalFragment------->","refreshData");
         getUserDetail();
         getUserInfo();
-        if (mFragments.size()>0){
+        if (mFragments!=null){
+            if (mFragments.size()>0){
+                mCollocationFragment.refreshData();
+                mCollectFragment.refreshData();
+            }
+        }else {
+            mFragments=new ArrayList<Fragment>();
+            Log.i("mFragments-------------------->","mFragments");
+            mCollocationFragment=CollocationFragment.newInstance("","");
+            mCollocationFragment.setCollocationCountChangeListener(this);
+            mCollectFragment =CollectFragment.newInstance("","");
+            mCollectFragment.setCollectCountChangeListener(this);
+            mFragments.add(mCollectFragment);
+            mFragments.add(mCollocationFragment);
             mCollocationFragment.refreshData();
             mCollectFragment.refreshData();
         }

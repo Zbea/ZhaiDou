@@ -18,6 +18,7 @@
             android:gravity="center_vertical"
             android:layout_marginLeft="10dp"
             android:textColor="@color/white"
+            android:drawablePadding="6dp"
             android:text="返回"
             android:drawableLeft="@drawable/icon_back"/>
         <com.zhaidou.view.TypeFaceTextView
@@ -45,12 +46,29 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
             <ImageView
                 android:id="@+id/iv_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scaleType="fitXY"
+                android:visibility="gone"
                 android:background="@drawable/icon_loading_item"/>
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/tv_msg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:paddingLeft="10dp"
+                    android:gravity="bottom"
+                    android:paddingBottom="10dp"
+                    android:visibility="gone"
+                    android:background="@drawable/shadow"
+                    android:layout_alignParentBottom="true"/>
+            </RelativeLayout>
     <WebView
         android:id="@+id/detailView"
         android:layout_width="fill_parent"

@@ -33,7 +33,7 @@
             android:paddingLeft="15dp"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:textColor="@color/red"
+            android:textColor="#ff6262"
             android:id="@+id/tv_money"
             android:layout_height="wrap_content" />
         <LinearLayout
@@ -60,4 +60,8 @@
                 android:textColor="#666666"/>
         </LinearLayout>
     </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#D2D2D2"/>
 </LinearLayout>

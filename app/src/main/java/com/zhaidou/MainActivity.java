@@ -88,15 +88,11 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             @Override
             public void onSuccess() {
                 Log.i("onSuccess---->","初始化成功");
-                Toast.makeText(MainActivity.this, "初始化成功", Toast.LENGTH_SHORT)
-                        .show();
             }
 
             @Override
             public void onFailure(int i, String s) {
                 Log.i("onFailure---->","初始化异常--"+s);
-                Toast.makeText(MainActivity.this, "初始化异常"+s, Toast.LENGTH_SHORT)
-                        .show();
             }
         });
 

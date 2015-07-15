@@ -8,7 +8,7 @@ import java.util.List;
 public class Product {
     private int id;
     private String title;
-    private int price;
+    private double price;
     private String url;
     private int bean_like_count;
     private List<Category> categories;
@@ -27,11 +27,11 @@ public class Product {
         this.id = id;
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
@@ -67,7 +67,7 @@ public class Product {
         this.categories = categories;
     }
 
-    public Product(int id, String title, int price, String url, int bean_like_count, List<Category> categories, String image) {
+    public Product(int id, String title, double price, String url, int bean_like_count, List<Category> categories, String image) {
         this.id = id;
         this.title = title;
         this.price = price;

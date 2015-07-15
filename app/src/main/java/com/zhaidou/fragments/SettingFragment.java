@@ -5,6 +5,8 @@ package com.zhaidou.fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,6 +39,8 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    private static final int CLEAR_USER_DATA=0;
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -46,6 +50,18 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     SharedPreferences mSharedPreferences;
     RequestQueue requestQueue;
     private ProfileListener profileListener;
+
+    private Handler mHandler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case CLEAR_USER_DATA:
+                    SharedPreferencesUtil.clearUser(getActivity());
+                    ((MainActivity)getActivity()).logout(SettingFragment.this);
+                    break;
+            }
+        }
+    };
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -151,8 +167,8 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("SettingFragment---->",jsonObject.toString());
-                SharedPreferencesUtil.clearUser(getActivity());
-                ((MainActivity)getActivity()).logout(SettingFragment.this);
+
+                mHandler.sendEmptyMessage(CLEAR_USER_DATA);
             }
         },new Response.ErrorListener() {
             @Override

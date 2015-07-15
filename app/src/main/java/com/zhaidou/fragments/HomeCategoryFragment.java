@@ -203,6 +203,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
     }
 
     public void notifyDataSetChanged(){
+
         if (mCheckedPosition==-1){
             mAllCategory.setPressed(true);
             mCategoryAdapter.notifyDataSetChanged();

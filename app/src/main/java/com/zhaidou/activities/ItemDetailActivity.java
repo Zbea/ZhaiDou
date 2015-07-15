@@ -39,12 +39,13 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     private TextView tv_back;
     private ImageView iv_share,mHeaderView;
     private FrameLayout mChildContainer;
-    private TextView mTitleView;
+    private TextView mTitleView,mHeaderText;
     private AsyncImageLoader1 imageLoader;
 
     private int userId;
     private String token;
     private String nickName;
+    private boolean isShowHeader;
 
     private String from;
     private LoginFragment loginFragment;
@@ -68,6 +69,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         mChildContainer=(FrameLayout)findViewById(R.id.fl_child_container);
         mTitleView=(TextView)findViewById(R.id.tv_title);
         mHeaderView=(ImageView)findViewById(R.id.iv_header);
+        mHeaderText=(TextView)findViewById(R.id.tv_msg);
         imageLoader=new AsyncImageLoader1(this);
 
         loginFragment=LoginFragment.newInstance("","");
@@ -136,14 +138,19 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
         title = getIntent().getStringExtra("title");
         coverUrl = getIntent().getStringExtra("cover_url");
-        if (!TextUtils.isEmpty(coverUrl)){
-            imageLoader.LoadImage(coverUrl,mHeaderView);
-        }
-
         if (!TextUtils.isEmpty(title)){
             mTitleView.setText(title);
-            mHeaderView.setVisibility(View.GONE);
         }
+        if (!TextUtils.isEmpty(coverUrl)){
+            Log.i("cover_url---------------->",coverUrl);
+            mHeaderView.setVisibility(View.VISIBLE);
+            imageLoader.LoadImage(coverUrl,mHeaderView);
+            mTitleView.setVisibility(View.GONE);
+            mHeaderText.setText(title);
+            mHeaderText.setVisibility(View.VISIBLE);
+        }
+
+        isShowHeader=getIntent().getBooleanExtra("show_header",false);
 
         /*
         getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);

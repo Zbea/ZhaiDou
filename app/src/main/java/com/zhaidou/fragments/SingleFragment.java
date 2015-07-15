@@ -147,7 +147,6 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
         tv_money=(TextView)view.findViewById(R.id.tv_money);
         gv_single=(PullToRefreshGridView)view.findViewById(R.id.gv_single);
         productAdapter = new ProductAdapter(getActivity(),products);
-        gv_single.setEmptyView(mEmptyView);
         gv_single.setAdapter(productAdapter);
         mRequestQueue= Volley.newRequestQueue(getActivity());
         if ("category".equalsIgnoreCase(mParam2)){
@@ -194,6 +193,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
 
             @Override
             public void onResponse(JSONObject json) {
+                Log.i("json-------->",json.toString());
                 mDialog.hide();
                 JSONArray items = json.optJSONArray("article_items");
                 JSONObject meta = json.optJSONObject("meta");
@@ -205,7 +205,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
                     JSONObject item = items.optJSONObject(i);
                     int id=item.optInt("id");
                     String title =item.optString("title");
-                    int price=item.optInt("price");
+                    double price=item.optDouble("price");
                     String url=item.optString("url");
                     int bean_like_count=item.optInt("bean_likes_count");
                     JSONArray array = item.optJSONArray("asset_imgs");

@@ -40,11 +40,13 @@ public class SharedPreferencesUtil {
         public static Object getData(Context context, String key, Object defValue){
 
         String type = defValue.getClass().getSimpleName();
+            Log.i("context--------------->",context==null?"null":context.toString());
         SharedPreferences sharedPreferences = context.getSharedPreferences
                 (SPName, Context.MODE_PRIVATE);
-
+        Log.i("type------------>",type);
         //defValue为为默认值，如果当前获取不到数据就返回它
         if ("Integer".equals(type)){
+            Log.i("sharedPreferences.getInt(key, (Integer)defValue)--->",sharedPreferences.getInt(key, (Integer)defValue)+"");
             return sharedPreferences.getInt(key, (Integer)defValue);
         }else if ("Boolean".equals(type)){
             return sharedPreferences.getBoolean(key, (Boolean)defValue);

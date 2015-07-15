@@ -242,7 +242,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
                         int id = articleObj.optInt("id");
                         int bean_likes_count=articleObj.optInt("bean_likes_count");
                         String title=articleObj.optString("title");
-                        int price = articleObj.optInt("price");
+                        double price = articleObj.optDouble("price");
                         String url=articleObj.optString("url");
                         JSONArray asset_imgs=articleObj.optJSONArray("asset_imgs");
                         String thumb=null;

@@ -194,6 +194,10 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
             case R.id.ll_weixin:
                 Log.i("ll_weixin--->","ll_weixin");
                 Platform wechat = ShareSDK.getPlatform(Wechat.NAME);
+                if (!wechat.isClientValid()){
+                    Toast.makeText(getActivity(),"没有安装微信客户端哦！",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 authorize(wechat);
                 break;
             case R.id.ll_qq:
@@ -305,10 +309,10 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                 mDialog.dismiss();
             try {
                 JSONObject json = new JSONObject(s);
-                Object obj = json.opt("message");
-                if (obj!=null){
-                    JSONArray errMsg =  json.optJSONArray("message");
-                    Toast.makeText(getActivity(),errMsg.optString(0),Toast.LENGTH_LONG).show();
+                String msg = json.optString("message");
+                if (!TextUtils.isEmpty(msg)){
+//                    JSONArray errMsg =  json.optJSONArray("message");
+                    Toast.makeText(getActivity(),msg,Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -388,7 +392,19 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         if (plat == null) {
             return;
         }
-
+//        if(plat.isValid()) {
+//            String userId = plat.getDb().getUserId();
+//            String username = plat.getDb().getUserName();
+//            String token = plat.getDb().getToken();
+//            if (userId != null) {
+//                Log.i("userId---------->",userId+"");
+//                Log.i("username---------->",username+"");
+//                Log.i("token---------->",token+"");
+////                UIHandler.sendEmptyMessage(MSG_USERID_FOUND, this);
+////                login(plat.getName(), userId, null);
+//                return;
+//            }
+//        }
         plat.setPlatformActionListener(this);
         //关闭SSO授权
         plat.SSOSetting(true);
@@ -440,7 +456,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                         int id = user.optInt("id");
                         String email = user.optString("email");
                         User u = new User(id,email,token,nick,null);
-                        Log.i("LoginFragment----onRegisterOrLoginSuccess---->","onRegisterOrLoginSuccess");
+                        Log.i("LoginFragment----onRegisterOrLoginSuccess---->",mRegisterOrLoginListener==null?"null":mRegisterOrLoginListener.toString());
                         mRegisterOrLoginListener.onRegisterOrLoginSuccess(u,LoginFragment.this);
                     }
                 }
@@ -448,7 +464,6 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         },new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                Log.i("volleyError--->",volleyError.getMessage());
             }
         });
         requestQueue.add(request);

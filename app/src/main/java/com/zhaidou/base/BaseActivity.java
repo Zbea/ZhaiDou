@@ -61,6 +61,7 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
         if ("MainActivity".equalsIgnoreCase(this.getClass().getSimpleName())){
             if (persoanlFragment==null){
                 persoanlFragment= PersonalFragment.newInstance("", "");
+                persoanlFragment.onAttach(this);
             }
             MainActivity mainActivity = (MainActivity)this;
             mainActivity.selectFragment(currentFragment, persoanlFragment);

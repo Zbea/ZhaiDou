@@ -450,6 +450,7 @@ public class HomeFragment extends BaseFragment implements
 
         if (page==1) {
             articleList.clear();
+            mHomeAdapter.clear();
             loadedAll = false;
         }
 
@@ -595,6 +596,7 @@ public class HomeFragment extends BaseFragment implements
     @Override
     public void onCategorySelected(Category category) {
         Log.i("HomeFragment-------------->",category==null?"全部":category.getName());
+//        mHashMap.clear();
         FetchData(currentPage = 1, mCategory = category);
         mHomeAdapter.notifyDataSetChanged();
         toggleMenu();

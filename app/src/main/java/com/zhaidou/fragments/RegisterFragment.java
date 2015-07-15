@@ -146,9 +146,19 @@ public class RegisterFragment extends BaseFragment implements View.OnClickListen
                 String password =mPswView.getText().toString();
                 String psw_confirm=mConfirmPsw.getText().toString();
                 String nick =mNickView.getText().toString();
-//                if (TextUtils.isEmpty(email)){
-//
-//                }
+                if (TextUtils.isEmpty(email)){
+                    Toast.makeText(getActivity(),"邮箱不能为空哦！",Toast.LENGTH_SHORT).show();
+                    return;
+                }else if (TextUtils.isEmpty(nick)){
+                    Toast.makeText(getActivity(),"昵称不能为空哦！",Toast.LENGTH_SHORT).show();
+                    return;
+                }else if (TextUtils.isEmpty(password)){
+                    Toast.makeText(getActivity(),"密码不能为空哦！",Toast.LENGTH_SHORT).show();
+                    return;
+                }else if (!password.equals(psw_confirm)){
+                    Toast.makeText(getActivity(),"两次密码不一致哦！",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 doRegister();
                 break;
             case R.id.tv_login:
