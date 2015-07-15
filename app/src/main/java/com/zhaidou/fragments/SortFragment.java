@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.zhaidou.R;
 import com.zhaidou.activities.SearchActivity;

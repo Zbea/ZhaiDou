@@ -70,16 +70,20 @@ public class WebViewFragment extends BaseFragment{
 //                }
 //                preUrl=url;
                 Log.i("url------>",url);
-                Intent intent = new Intent();
-                intent.putExtra("url", url);
-                intent.putExtra("from","beauty");
-                intent.setClass(getActivity(), ItemDetailActivity.class);
-                getActivity().startActivity(intent);
+                if (url.contains("taobao")){
+                    Intent intent = new Intent();
+                    intent.putExtra("url", url);
+                    intent.putExtra("from","beauty");
+                    intent.setClass(getActivity(), ItemDetailActivity.class);
+                    getActivity().startActivity(intent);
+                    return true;
+                }
+
 //                Toast.makeText(getActivity(),url,1).show();
 //                WebViewFragment webViewFragment=WebViewFragment.newInstance(url);
 //                ((PersonalMainFragment)getParentFragment()).addToStack(webViewFragment);
 //                ((MainActivity)getActivity()).navigationToFragment(webViewFragment);
-                return true;
+                return false;
             }
 //
 //            public void onPageFinished(WebView view, String url) {

@@ -168,6 +168,15 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         switch (view.getId()){
             case R.id.bt_login:
                 hideInputMethod();
+                String email = mEmailView.getText().toString();
+                String password =mPswView.getText().toString();
+                if (TextUtils.isEmpty(email)){
+                    Toast.makeText(getActivity(),"邮箱不能为空哦！",Toast.LENGTH_SHORT).show();
+                    return;
+                }else if (TextUtils.isEmpty(password)){
+                    Toast.makeText(getActivity(),"密码不能为空哦!",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 new MyTask().execute();
                 break;
             case R.id.tv_register:

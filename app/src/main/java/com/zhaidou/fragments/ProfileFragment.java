@@ -258,13 +258,13 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             case R.id.ll_add_v:
                 break;
             case R.id.rl_nickname:
-                EditProfileFragment profileFragment=EditProfileFragment.newInstance("nick_name",tv_nick.getText().toString(),profileId);
+                EditProfileFragment profileFragment=EditProfileFragment.newInstance("nick_name",tv_nick.getText().toString(),profileId,"个人昵称");
                 profileFragment.setRefreshDataListener(this);
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container,profileFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
                 break;
             case R.id.rl_mobile:
-                EditProfileFragment mobileFragment=EditProfileFragment.newInstance("mobile",tv_mobile.getText().toString(),profileId);
+                EditProfileFragment mobileFragment=EditProfileFragment.newInstance("mobile",tv_mobile.getText().toString(),profileId,"手机号码");
                 mobileFragment.setRefreshDataListener(this);
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container,mobileFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
@@ -276,7 +276,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 //                mChildContainer.setVisibility(View.VISIBLE);
 //                break;
             case R.id.rl_job:
-                if ("未认证工程师".equalsIgnoreCase(tv_job.getText().toString())){
+                if ("未认证设计师".equalsIgnoreCase(tv_job.getText().toString())){
                     ImageBgFragment addVFragment= ImageBgFragment.newInstance("如何加V");
                     ((MainActivity)getActivity()).navigationToFragment(addVFragment);
                 }
@@ -301,7 +301,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 new DeleteAddressTask().execute();
                 break;
             case R.id.rl_into:
-                EditProfileFragment introFragment=EditProfileFragment.newInstance("description",tv_intro.getText().toString(),profileId);
+                EditProfileFragment introFragment=EditProfileFragment.newInstance("description",tv_intro.getText().toString(),profileId,"个人简介");
                 introFragment.setRefreshDataListener(this);
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container,introFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
@@ -569,6 +569,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 User user = new User();
                 user.setAvatar(avatar);
                 user.setEmail(email);
+                user.setNickName(tv_nick.getText().toString());
                 Message message = new Message();
                 message.what=UPDATE_USER_INFO;
                 message.obj=user;
