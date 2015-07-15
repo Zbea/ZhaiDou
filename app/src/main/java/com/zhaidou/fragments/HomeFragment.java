@@ -142,6 +142,7 @@ public class HomeFragment extends BaseFragment implements
 
     private LinearLayout mSwipeView;
     private Dialog mDialog;
+    private Context mContext;
 
     private PullToRefreshScrollView mScrollView;
     private AdapterView.OnItemClickListener itemSelectListener = new AdapterView.OnItemClickListener() {
@@ -232,6 +233,9 @@ public class HomeFragment extends BaseFragment implements
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        mContext=getActivity();
+
         listView = (ListViewForScrollView) view.findViewById(R.id.homeItemList);
         fl_category_menu=(FrameLayout)view.findViewById(R.id.fl_category_menu);
         mScrollView=(PullToRefreshScrollView)view.findViewById(R.id.scrollview);
@@ -239,7 +243,7 @@ public class HomeFragment extends BaseFragment implements
         mBackView=(LinearLayout)view.findViewById(R.id.ll_back);
         mBackView.setOnClickListener(this);
 
-        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
+        mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"loading");
         mDialog.show();
 
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
@@ -610,11 +614,9 @@ public class HomeFragment extends BaseFragment implements
     @Override
     public void onCategorySelected(Category category) {
         Log.i("HomeFragment-------------->",category==null?"全部":category.getName());
-        Log.i("Loading-------------->","loading加载中");
         mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
         FetchData(currentPage = 1, mCategory = category);
         mHomeAdapter.notifyDataSetChanged();
-        Log.i("Loading-------------->","loading加载结束");
         toggleMenu();
     }
 

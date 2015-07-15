@@ -103,7 +103,6 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
     private int currentpage=1;
 
     private long lastClickTime;
-
     private Dialog mDialog;
     private Map<Integer,View> mHashMap=new HashMap<Integer, View>();
     private CollectCountChangeListener collectCountChangeListener;
@@ -217,10 +216,19 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
         return view;
     }
 
+    /**
+     * 开启进度条显示
+     * @param msg
+     */
+    private void setLoadingProgress(String msg)
+    {
+        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), msg);
+    }
+
     private class MyTask extends AsyncTask<Void,Void,JSONObject>{
         @Override
         protected void onPreExecute() {
-            mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
+            setLoadingProgress("loading");
             super.onPreExecute();
         }
 
@@ -316,6 +324,14 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
 
     private class CancelTask extends AsyncTask<String,Void,String>{
         String position;
+
+        @Override
+        protected void onPreExecute()
+        {
+            setLoadingProgress("取消中");
+            super.onPreExecute();
+        }
+
         @Override
         protected String doInBackground(String... strings) {
             String s=null;

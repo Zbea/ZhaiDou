@@ -36,7 +36,8 @@ import java.util.List;
  * Created by wangclark on 15/6/12.
  */
 public class ImageSwitchWall extends RelativeLayout implements
-        ViewPager.OnPageChangeListener, View.OnClickListener {
+        ViewPager.OnPageChangeListener, View.OnClickListener
+{
 
     public static final int NEXT_DIRECTION = 5;
     public static final int PREV_DIRECTION = 6;
@@ -57,30 +58,37 @@ public class ImageSwitchWall extends RelativeLayout implements
     private CirclePageIndicator mIndicator;
 
     private List<SwitchImage> list;
-    public ImageSwitchWall(Context context) {
+
+    public ImageSwitchWall(Context context)
+    {
         super(context);
         init(context);
     }
 
-    public ImageSwitchWall(Context context, AttributeSet attrs) {
+    public ImageSwitchWall(Context context, AttributeSet attrs)
+    {
         super(context, attrs);
         init(context);
     }
 
-    public ImageSwitchWall(Context context, AttributeSet attrs, int defStyle) {
+    public ImageSwitchWall(Context context, AttributeSet attrs, int defStyle)
+    {
         super(context, attrs, defStyle);
         init(context);
     }
 
-    public void setOnItemClickListener(OnItemClickListener listener) {
+    public void setOnItemClickListener(OnItemClickListener listener)
+    {
         mListener = listener;
     }
 
-    public void setDatas(List<SwitchImage> list) {
-        this.list=list;
+    public void setDatas(List<SwitchImage> list)
+    {
+        this.list = list;
         mViewList = new ArrayList<View>();
         mDataList = list;
-        for (SwitchImage wi : list) {
+        for (SwitchImage wi : list)
+        {
             ImageView iv = new ImageView(mContext);
             ViewPager.LayoutParams params = new ViewPager.LayoutParams();
             params.width = ViewPager.LayoutParams.MATCH_PARENT;
@@ -97,26 +105,32 @@ public class ImageSwitchWall extends RelativeLayout implements
         mIndicator.setViewPager(mViewPager);
         mIndicator.setCurrentItem(0);
         mIndicator.setOnPageChangeListener(this);
-        if (mThread != null) {
+        if (mThread != null)
+        {
             mThread.setStop(true);
         }
-        if (list.size() > 1) {
+        if (list.size() > 1)
+        {
             mIndicator.setVisibility(View.VISIBLE);
             mTextView.setPadding(0, 0, 0, dp2px(11));
             mTextView.setText(mDataList.get(0).getTitle());
             mThread = new ScollThread();
             mThread.start();
-        } else if (list.size() == 1) {
+        } else if (list.size() == 1)
+        {
             mTextView.setText(mDataList.get(0).getTitle());
             mIndicator.setVisibility(View.GONE);
             mTextView.setPadding(0, 0, 0, 0);
         }
     }
 
-    public List<SwitchImage> getData(){
+    public List<SwitchImage> getData()
+    {
         return list;
     }
-    private void init(Context context) {
+
+    private void init(Context context)
+    {
         mContext = context;
         mHandler = new ISWHandler(this);
         mResources = getResources();
@@ -131,7 +145,7 @@ public class ImageSwitchWall extends RelativeLayout implements
         // v.setBackgroundResource(R.drawable.bg_images);
 
 		/*
-		 * 初始化ViewPager
+         * 初始化ViewPager
 		 */
         mViewPager = new ViewPager(context);
         RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(
@@ -166,7 +180,7 @@ public class ImageSwitchWall extends RelativeLayout implements
         RelativeLayout.LayoutParams params3 = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT, dp2px(10));
         params3.addRule(ALIGN_PARENT_BOTTOM);
-        params3.bottomMargin=dp2px(2);
+        params3.bottomMargin = dp2px(2);
         mIndicator.setLayoutParams(params3);
         mIndicator.setBackgroundColor(mResources
                 .getColor(android.R.color.transparent));
@@ -183,23 +197,28 @@ public class ImageSwitchWall extends RelativeLayout implements
         addView(mIndicator);
     }
 
-    private int dp2px(float dpValue) {
+    private int dp2px(float dpValue)
+    {
         final float scale = mResources.getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
     }
 
     @Override
-    public void onPageScrollStateChanged(int arg0) {
+    public void onPageScrollStateChanged(int arg0)
+    {
 
     }
 
     @Override
-    public void onPageScrolled(int arg0, float arg1, int arg2) {
+    public void onPageScrolled(int arg0, float arg1, int arg2)
+    {
     }
 
     @Override
-    public void onPageSelected(int arg0) {
-        if (!isAuto) {
+    public void onPageSelected(int arg0)
+    {
+        if (!isAuto)
+        {
             mThread.setStop(true);
             mThread = new ScollThread();
             mThread.start();
@@ -208,39 +227,50 @@ public class ImageSwitchWall extends RelativeLayout implements
     }
 
     @Override
-    public void onClick(View v) {
-        if (mListener != null) {
+    public void onClick(View v)
+    {
+        if (mListener != null)
+        {
             mListener.onItemClick(this, v, (Integer) v.getTag());
         }
     }
 
-    public interface OnItemClickListener {
+    public interface OnItemClickListener
+    {
         public void onItemClick(ViewGroup vg, View v, int position);
     }
 
-    private static class ISWHandler extends Handler {
+    private static class ISWHandler extends Handler
+    {
 
         private WeakReference<ImageSwitchWall> mReference;
 
-        public ISWHandler(ImageSwitchWall wall) {
+        public ISWHandler(ImageSwitchWall wall)
+        {
             mReference = new WeakReference<ImageSwitchWall>(wall);
         }
 
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(Message msg)
+        {
             ImageSwitchWall wall = mReference.get();
-            if (wall == null) {
+            if (wall == null)
+            {
                 return;
             }
             int item = wall.mViewPager.getCurrentItem();
-            if (item == wall.mViewList.size() - 1) {
+            if (item == wall.mViewList.size() - 1)
+            {
                 wall.current_direction = PREV_DIRECTION;
-            } else if (item == 0) {
+            } else if (item == 0)
+            {
                 wall.current_direction = NEXT_DIRECTION;
             }
-            if (wall.current_direction == NEXT_DIRECTION) {
+            if (wall.current_direction == NEXT_DIRECTION)
+            {
                 item++;
-            } else {
+            } else
+            {
                 item--;
             }
             wall.isAuto = true;
@@ -250,20 +280,24 @@ public class ImageSwitchWall extends RelativeLayout implements
     }
 
 
-    private class ISWAdapter extends PagerAdapter {
+    private class ISWAdapter extends PagerAdapter
+    {
 
         @Override
-        public int getCount() {
+        public int getCount()
+        {
             return mViewList.size();
         }
 
         @Override
-        public boolean isViewFromObject(View arg0, Object arg1) {
+        public boolean isViewFromObject(View arg0, Object arg1)
+        {
             return arg0 == arg1;
         }
 
         @Override
-        public Object instantiateItem(ViewGroup container, int position) {
+        public Object instantiateItem(ViewGroup container, int position)
+        {
             View v = mViewList.get(position);
             v.setTag(position);
             container.addView(v);
@@ -271,41 +305,49 @@ public class ImageSwitchWall extends RelativeLayout implements
         }
 
         @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
+        public void destroyItem(ViewGroup container, int position, Object object)
+        {
             container.removeView((View) object);
         }
 
     }
 
     @SuppressWarnings("unused")
-    private class DownLoadImage extends AsyncTask<Object, Void, Void> {
+    private class DownLoadImage extends AsyncTask<Object, Void, Void>
+    {
 
         private ImageView mImageView;
         private String mImageUrl;
         private WeakReference<Bitmap> mReference;
 
-        public DownLoadImage(ImageView imageView, String imageUrl) {
+        public DownLoadImage(ImageView imageView, String imageUrl)
+        {
             super();
             this.mImageView = imageView;
             this.mImageUrl = imageUrl;
         }
 
         @Override
-        protected Void doInBackground(Object... params) {
+        protected Void doInBackground(Object... params)
+        {
             mReference = new WeakReference<Bitmap>(getBitmap(mImageUrl));
             return null;
         }
 
         @Override
-        protected void onPostExecute(Void result) {
+        protected void onPostExecute(Void result)
+        {
             Bitmap b = mReference.get();
-            if (b != null && !b.isRecycled()) {
+            if (b != null && !b.isRecycled())
+            {
                 mImageView.setImageBitmap(mReference.get());
             }
         }
 
-        private Bitmap getBitmap(String imageUrl) {
-            try {
+        private Bitmap getBitmap(String imageUrl)
+        {
+            try
+            {
                 URL url = new URL(imageUrl);
                 HttpURLConnection conn = (HttpURLConnection) url
                         .openConnection();
@@ -313,44 +355,54 @@ public class ImageSwitchWall extends RelativeLayout implements
                 conn.setConnectTimeout(1000);
                 conn.setRequestMethod("GET");
                 conn.connect();
-                if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                if (conn.getResponseCode() == HttpURLConnection.HTTP_OK)
+                {
                     InputStream is = conn.getInputStream();
                     Bitmap bmp = BitmapFactory.decodeStream(is, null, null);
-                    if (is != null) {
+                    if (is != null)
+                    {
                         is.close();
                         is = null;
                     }
-                    if (conn != null) {
+                    if (conn != null)
+                    {
                         conn.disconnect();
                         conn = null;
                     }
                     return bmp;
                 }
-            } catch (Exception e) {
+            } catch (Exception e)
+            {
 
             }
             return null;
         }
     }
 
-    private class ScollThread extends Thread {
+    private class ScollThread extends Thread
+    {
 
         private boolean isStop;
 
-        public void setStop(boolean isStop) {
+        public void setStop(boolean isStop)
+        {
             this.isStop = isStop;
             mHandler.removeMessages(0);
         }
 
         @Override
-        public void run() {
+        public void run()
+        {
             super.run();
-            try {
-                do {
+            try
+            {
+                do
+                {
                     mHandler.sendEmptyMessageDelayed(0, WAIT_TIME);
                     sleep(WAIT_TIME);
                 } while (!isStop);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException e)
+            {
                 e.printStackTrace();
             }
         }
