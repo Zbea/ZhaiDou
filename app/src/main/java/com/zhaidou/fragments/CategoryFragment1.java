@@ -164,7 +164,7 @@ public class CategoryFragment1 extends BaseFragment{
         screenWidth=dm.widthPixels;
         Log.i("screenWidth---------->",screenWidth+"");
         Log.i("screenHeight---------->",dm.heightPixels+"");
-        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading...");
+        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
         return view;
     }
 

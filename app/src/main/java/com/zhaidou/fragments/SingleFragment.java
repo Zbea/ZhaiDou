@@ -141,7 +141,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
     }
 
     private void initView(View view){
-        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading...");
+        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
         tv_count=(TextView)view.findViewById(R.id.tv_count);
 //        tv_detail=(TextView)view.findViewById(R.id.tv_detail);
         tv_money=(TextView)view.findViewById(R.id.tv_money);

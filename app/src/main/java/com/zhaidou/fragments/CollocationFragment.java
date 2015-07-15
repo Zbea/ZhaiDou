@@ -142,7 +142,7 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
 
     public void FetchCollocationData(int page){
 
-        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading...");
+        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
         int userId=mSharedPreferences.getInt("userId", -1);
         Log.i("FetchCollocationData------->",userId+"");
         //"http://www.zhaidou.com/api/v1/users/77069/bean_collocations?page="+page

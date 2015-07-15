@@ -1,6 +1,7 @@
 package com.zhaidou.fragments;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -39,6 +40,7 @@ import com.zhaidou.activities.SearchActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
 import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.HtmlFetcher;
@@ -77,7 +79,7 @@ public class ElementListFragment extends BaseFragment implements PullToRefreshBa
     private static final String URL = "targetUrl";
     private static final String TYPE = "type";
 
-    private ProgressDialog loading;
+    private Dialog loading;
     private PullToRefreshListView listView;
     private ZhaiDou.ListType listType;
 
@@ -213,8 +215,7 @@ public class ElementListFragment extends BaseFragment implements PullToRefreshBa
         listView.setOnRefreshListener(this);
 
         loadMoreData(STATUS_REFRESH);
-        loading = ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
-
+        loading= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
         setUpPopView();
 //        FetchData();
         return view;

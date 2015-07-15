@@ -1,7 +1,10 @@
 package com.zhaidou.base;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -18,6 +21,7 @@ import android.widget.Toast;
 
 import com.zhaidou.R;
 import com.zhaidou.activities.ItemDetailActivity;
+import com.zhaidou.utils.NetStateUtils;
 import com.zhaidou.view.HeaderLayout;
 
 /**
@@ -53,6 +57,8 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
 
     protected int screenWidth;
     protected int screenHeight;
+    public static NetStateUtils netStateUtils;
+    public static boolean isNetState;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
@@ -67,10 +73,12 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     }
 
 
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         currentFragment=this;
         view.setOnTouchListener(this);
+//        initRegisterBroadcast();
         mBackView=view.findViewById(R.id.ll_back);
         inputMethodManager=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (mBackView!=null)
@@ -97,6 +105,19 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
 
     }
 
+    private void initRegisterBroadcast()
+    {
+        netStateUtils=new NetStateUtils();
+        IntentFilter intentFilter=new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        getActivity().registerReceiver(netStateUtils,intentFilter);
+    }
+
+    public static Boolean getNetState()
+    {
+        isNetState=netStateUtils.isNetState;
+        return isNetState;
+    }
 
     Toast mToast;
 
@@ -240,6 +261,9 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
             inputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().peekDecorView().getApplicationWindowToken(),0);
     }
 
-
-
+    @Override
+    public void onDestroy() {
+//        getActivity().unregisterReceiver(netStateUtils);
+        super.onDestroy();
+    }
 }

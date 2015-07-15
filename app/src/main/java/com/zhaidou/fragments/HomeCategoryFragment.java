@@ -1,5 +1,6 @@
 package com.zhaidou.fragments;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,6 +23,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Category;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -54,6 +56,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
     private CategorySelectedListener mCategorySelectedListener;
     private CategoryAdapter mCategoryAdapter;
     private static final int UPDATE_CATEGORY_LIST=0;
+
     private Handler mHandler =new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -129,6 +132,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
                 Log.i("category------------->",category.toString());
                 mCategorySelectedListener.onCategorySelected(category);
                 mCheckedPosition=position;
+
             }
         });
         return view;

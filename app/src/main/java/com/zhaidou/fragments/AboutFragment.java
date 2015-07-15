@@ -1,6 +1,7 @@
 package com.zhaidou.fragments;
 
 
+import android.app.Dialog;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.dialog.CustomLoadingDialog;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,6 +37,7 @@ public class AboutFragment extends BaseFragment implements View.OnClickListener{
 
     private TextView tv_version;
     private RelativeLayout rl_back;
+    private Dialog mDialog;
 
     /**
      * Use this factory method to create a new instance of
@@ -81,6 +84,7 @@ public class AboutFragment extends BaseFragment implements View.OnClickListener{
         if (!TextUtils.isEmpty(version)){
             tv_version.setText(version);
         }
+
         return view;
     }
 

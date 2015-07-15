@@ -1,6 +1,7 @@
 package com.zhaidou.fragments;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -48,6 +49,7 @@ import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
 import com.zhaidou.model.Category;
 import com.zhaidou.model.SwitchImage;
@@ -139,6 +141,7 @@ public class HomeFragment extends BaseFragment implements
     private LinearLayout mBackView;
 
     private LinearLayout mSwipeView;
+    private Dialog mDialog;
 
     private PullToRefreshScrollView mScrollView;
     private AdapterView.OnItemClickListener itemSelectListener = new AdapterView.OnItemClickListener() {
@@ -171,24 +174,33 @@ public class HomeFragment extends BaseFragment implements
     public static final String DEBUG_CAT = "DEBUG";
 
     private Handler handler = new Handler() {
-        public void handleMessage(Message msg) {
+        public void handleMessage(Message msg)
+        {
             mHomeAdapter.notifyDataSetChanged();
-            if (msg.what == LOADED) {
+            if (msg.what == LOADED)
+            {
 
-            }else if (msg.what==UPDATE_CATEGORY){
+            } else if (msg.what == UPDATE_CATEGORY)
+            {
                 mCategoryAdapter.setList(categoryList);
-            }else if (msg.what==UPDATE_HOMELIST){
-                Log.i("UPDATE_HOMELIST---------->",articleList.size()+"");
+            } else if (msg.what == UPDATE_HOMELIST)
+            {
+                Log.i("UPDATE_HOMELIST---------->", articleList.size() + "");
                 mHomeAdapter.setList(articleList);
                 mScrollView.onRefreshComplete();
 //                mSwipeLayout.setLoading(false);
 //                mSwipeLayout.setRefreshing(false);
 //                loading.dismiss();
-            }else if (msg.what==UPDATE_BANNER){
-                List<SwitchImage> banners =(List<SwitchImage>) msg.obj;
+            } else if (msg.what == UPDATE_BANNER)
+            {
+                List<SwitchImage> banners = (List<SwitchImage>) msg.obj;
                 imageSwitchWall.setDatas(banners);
             }
             mHomeAdapter.notifyDataSetChanged();
+            if (mDialog.isShowing())
+            {
+                mDialog.dismiss();
+            }
         }
     };
 
@@ -226,6 +238,9 @@ public class HomeFragment extends BaseFragment implements
         mSwipeView=(LinearLayout)view.findViewById(R.id.ll_adview);
         mBackView=(LinearLayout)view.findViewById(R.id.ll_back);
         mBackView.setOnClickListener(this);
+
+        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
+        mDialog.show();
 
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         mScrollView.setOnRefreshListener(this);
@@ -587,8 +602,11 @@ public class HomeFragment extends BaseFragment implements
     @Override
     public void onCategorySelected(Category category) {
         Log.i("HomeFragment-------------->",category==null?"全部":category.getName());
+        Log.i("Loading-------------->","loading加载中");
+        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
         FetchData(currentPage = 1, mCategory = category);
         mHomeAdapter.notifyDataSetChanged();
+        Log.i("Loading-------------->","loading加载结束");
         toggleMenu();
     }
 

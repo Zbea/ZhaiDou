@@ -220,7 +220,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
     private class MyTask extends AsyncTask<Void,Void,JSONObject>{
         @Override
         protected void onPreExecute() {
-            mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), "loading...");
+            mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
             super.onPreExecute();
         }
 
@@ -230,8 +230,11 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
         }
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
-            mDialog.dismiss();
-            if (!TextUtils.isEmpty(jsonObject.toString())){
+            if(mDialog!=null)
+            {
+                mDialog.dismiss();
+            }
+            if (jsonObject!=null){
                 JSONArray article_items=jsonObject.optJSONArray("article_items");
                 JSONObject meta = jsonObject.optJSONObject("meta");
                 count=meta==null?0:meta.optInt("count");
@@ -328,7 +331,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
         @Override
         protected void onPostExecute(String s) {
             if (mDialog!=null)
-                mDialog.hide();
+                mDialog.dismiss();
             Log.i("CancelTask------>",s);
             try {
                 if (!TextUtils.isEmpty(s)){

@@ -14,7 +14,7 @@ import android.util.Log;
 public class NetStateUtils extends BroadcastReceiver
 {
 
-    private boolean isNetState;
+    public boolean isNetState;
 
     @Override
     public void onReceive(Context context, Intent intent)
@@ -24,27 +24,26 @@ public class NetStateUtils extends BroadcastReceiver
 
     private void NetGetState(Context context, Intent intent)
     {
-        NetworkInfo networkInfo = (NetworkInfo) intent.getExtras().get(ConnectivityManager.CONNECTIVITY_ACTION);
-        if (networkInfo.isConnected()&&networkInfo.isAvailable())
+        NetworkInfo networkInfo = (NetworkInfo)intent.getExtras().get(ConnectivityManager.EXTRA_NETWORK_INFO);
+        if (networkInfo.isConnected() && networkInfo.isAvailable())
         {
-            switch(networkInfo.getType())
+            switch (networkInfo.getType())
             {
                 case ConnectivityManager.TYPE_WIFI:
-                    isNetState=true;
-                    Log.i("zhaidou","wifi链接");
+                    isNetState = true;
+                    Log.i("zhaidou", "wifi链接");
                     break;
                 case ConnectivityManager.TYPE_MOBILE:
-                    isNetState=true;
-                    Log.i("zhaidou","mobile链接");
+                    isNetState = true;
+                    Log.i("zhaidou", "mobile链接");
                     break;
                 default:
-                    isNetState=false;
+                    isNetState = false;
                     break;
             }
-        }
-        else
+        } else
         {
-            isNetState=false;
+            isNetState = false;
         }
 
 
