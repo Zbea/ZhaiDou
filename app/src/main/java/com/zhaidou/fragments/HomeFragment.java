@@ -400,11 +400,12 @@ public class HomeFragment extends BaseFragment implements
 //                });
                 break;
             case R.id.ll_lottery:
-//                WebViewFragment prizeFragment=WebViewFragment.newInstance(ZhaiDou.PRIZE_SCRAPING_URL,true);
+//                WebViewFragment prizeFragment=WebViewFragment.newInstance("http://192.168.199.158/test1.html",true);
 //                ((BaseActivity)getActivity()).navigationToFragment(prizeFragment);
                 Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
                 detailIntent.putExtra("url",ZhaiDou.PRIZE_SCRAPING_URL);
                 detailIntent.putExtra("from","lottery");
+                detailIntent.putExtra("title","天天刮奖");
                 startActivity(detailIntent);
                 break;
             case R.id.ll_competition:
@@ -413,6 +414,7 @@ public class HomeFragment extends BaseFragment implements
                 Intent intent = new Intent(getActivity(), ItemDetailActivity.class);
                 intent.putExtra("url",ZhaiDou.COMPETITION_URL);
                 intent.putExtra("from","competition");
+                intent.putExtra("title","拼贴大赛");
                 startActivity(intent);
                 break;
             case R.id.ll_sale:
@@ -420,8 +422,14 @@ public class HomeFragment extends BaseFragment implements
                 ((MainActivity)getActivity()).navigationToFragment(specialSaleFragment);
                 break;
             case R.id.ll_forward:
-                WebViewFragment forwardFragment=WebViewFragment.newInstance(ZhaiDou.FORWARD_URL,true);
-                ((BaseActivity)getActivity()).navigationToFragment(forwardFragment);
+//                WebViewFragment forwardFragment=WebViewFragment.newInstance(ZhaiDou.FORWARD_URL,true);
+//                ((BaseActivity)getActivity()).navigationToFragment(forwardFragment);
+                Intent intent1 = new Intent();
+                intent1.putExtra("url", ZhaiDou.FORWARD_URL);
+                intent1.putExtra("from","beauty");
+                intent1.putExtra("title","转发有喜");
+                intent1.setClass(getActivity(), ItemDetailActivity.class);
+                getActivity().startActivity(intent1);
                 break;
             case R.id.ll_back:
                 mCategoryView.setVisibility(View.VISIBLE);

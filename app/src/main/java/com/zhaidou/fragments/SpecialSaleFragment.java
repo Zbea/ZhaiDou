@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -196,6 +197,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     intent.putExtra("url",mCoupon.getUrl());
                     intent.putExtra("from","coupon");
                     startActivity(intent);
+                }else {
+                    Toast.makeText(getActivity(),"特卖已结束",Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
@@ -274,6 +277,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 
 
     public void FetchCouponData(){
+        Log.i("FetchCouponData----------->","begin");
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.COUPON_DATA_URL,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -288,7 +292,10 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         },new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
+                if (null==volleyError.networkResponse){
+                    Log.i("String---------------->","null");
+                    mHandler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
+                }
             }
         });
         requestQueue.add(request);

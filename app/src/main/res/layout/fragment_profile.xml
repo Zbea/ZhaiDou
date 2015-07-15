@@ -111,7 +111,6 @@
                     android:id="@+id/tv_nick"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Scoield"
                     android:textColor="#a8a8a8"
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
@@ -142,7 +141,6 @@
                     android:id="@+id/tv_email"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="110@qq.com"
                     android:textColor="#a8a8a8"
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
@@ -170,7 +168,6 @@
                     android:id="@+id/tv_gender"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="男"
                     android:textColor="#a8a8a8"
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
@@ -198,7 +195,6 @@
                 android:id="@+id/tv_birthday"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="1990-02-01"
                 android:textColor="#a8a8a8"
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
@@ -226,7 +222,6 @@
                     android:id="@+id/tv_city"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="广东 深圳"
                     android:textColor="#a8a8a8"
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
@@ -262,7 +257,6 @@
                     android:id="@+id/tv_job"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="未认证设计师"
                     android:textColor="#a8a8a8"
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
@@ -293,7 +287,6 @@
                     android:id="@+id/tv_company"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="宅豆"
                     android:textColor="#a8a8a8"
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
@@ -329,7 +322,6 @@
                     android:id="@+id/tv_mobile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1101101010"
                     android:textColor="#a8a8a8"
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
@@ -354,7 +346,6 @@
                     android:id="@+id/tv_register_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="2015-02-03"
                     android:textColor="#a8a8a8"
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
@@ -395,7 +386,6 @@
                 android:paddingLeft="20dp"
                 android:textColor="#666666"
                 android:paddingTop="5dp"
-                android:text="这时个人简介，哈哈哈哈哈哈哈哈哈哈哈哈哈"
                 android:layout_height="100dp" />
             <RelativeLayout
                 android:id="@+id/rl_manage_address"
@@ -439,14 +429,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingLeft="20dp"
-                    android:textColor="#666666"
-                    android:text="Scoield"/>
+                    android:textColor="#666666"/>
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_addr_mobile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:text="185*****123"/>
+                    android:layout_marginLeft="20dp"/>
             </LinearLayout>
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/tv_addr"
@@ -455,7 +443,6 @@
                 android:paddingLeft="20dp"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:text="广东省,深圳市,福田区,卓越世纪中心,3栋B座1518室"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"/>
@@ -475,8 +462,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:drawableLeft="@drawable/icon_addr_checked"
-                    android:drawablePadding="5dp"
-                    android:text="默认地址"/>
+                    android:drawablePadding="5dp"/>
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_delete"
                     android:layout_width="wrap_content"

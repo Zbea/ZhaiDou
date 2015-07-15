@@ -40,7 +40,7 @@ public class ProductAdapter extends BaseListAdapter<Product>{
 
         Product product = getList().get(position);
         tv_name.setText(product.getTitle());
-        tv_money.setText("￥"+product.getPrice()+"元");
+        tv_money.setText("￥"+product.getPrice());
         tv_count.setText(product.getBean_like_count()+"");
         imageLoader.LoadImage("http://"+product.getImage(),image);
         iv_heart.setImageResource(R.drawable.heart_normal);

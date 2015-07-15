@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,6 +23,7 @@ import com.zhaidou.base.BaseActivity;
 import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.model.User;
+import com.zhaidou.utils.AsyncImageLoader1;
 
 import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
@@ -35,8 +37,10 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     private String coverUrl;
     private String url;
     private TextView tv_back;
-    private ImageView iv_share;
+    private ImageView iv_share,mHeaderView;
     private FrameLayout mChildContainer;
+    private TextView mTitleView;
+    private AsyncImageLoader1 imageLoader;
 
     private int userId;
     private String token;
@@ -54,6 +58,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         setContentView(R.layout.activity_item_detail);
 
         from=getIntent().getStringExtra("from");
+        from=getIntent().getStringExtra("from");
         mSharedPreferences=getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         userId=mSharedPreferences.getInt("userId", -1);
         token=mSharedPreferences.getString("token", null);
@@ -61,6 +66,9 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         tv_back=(TextView)findViewById(R.id.tv_back);
         iv_share=(ImageView)findViewById(R.id.iv_share);
         mChildContainer=(FrameLayout)findViewById(R.id.fl_child_container);
+        mTitleView=(TextView)findViewById(R.id.tv_title);
+        mHeaderView=(ImageView)findViewById(R.id.iv_header);
+        imageLoader=new AsyncImageLoader1(this);
 
         loginFragment=LoginFragment.newInstance("","");
         loginFragment.setRegisterOrLoginListener(this);
@@ -123,16 +131,19 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
             }
         });
         url = getIntent().getStringExtra("url");
-//        String postUrl = ZhaiDou.HOME_BASE_URL + "?p=" + postId;
-        String postUrl = "http://192.168.199.171/article/articles/" + postId;
-        Log.i("postUrl-------------->",postUrl);
-//        webView.loadUrl(postUrl);
         webView.loadUrl(url);
         this.setTitle("");
 
         title = getIntent().getStringExtra("title");
         coverUrl = getIntent().getStringExtra("cover_url");
+        if (!TextUtils.isEmpty(coverUrl)){
+            imageLoader.LoadImage(coverUrl,mHeaderView);
+        }
 
+        if (!TextUtils.isEmpty(title)){
+            mTitleView.setText(title);
+            mHeaderView.setVisibility(View.GONE);
+        }
 
         /*
         getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);

@@ -233,6 +233,8 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
     }
 
     public void refreshData(){
+        collocations.clear();
+        mAdapter.clear();
         FetchCollocationData(currentpage=1);
     }
 }

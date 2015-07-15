@@ -62,16 +62,19 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String PROFILE_ID="profileId";
+    private static final String ARG_TITLE="title";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private String mProfileId;
+    private String mTitle;
 
     private String token;
 
     private TextView tv_edit_msg,tv_done,tv_description,tv_length;
     private ImageView iv_cancel;
+    private TextView mTitleView;
 
     private RequestQueue mRequestQueue;
     private SharedPreferences mSharedPreferences;
@@ -90,12 +93,13 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
      * @return A new instance of fragment EditProfileFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static EditProfileFragment newInstance(String param1, String param2,String profileId) {
+    public static EditProfileFragment newInstance(String param1, String param2,String profileId,String title) {
         EditProfileFragment fragment = new EditProfileFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         args.putString(PROFILE_ID,profileId);
+        args.putString(ARG_TITLE,title);
         fragment.setArguments(args);
         return fragment;
     }
@@ -110,6 +114,7 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
             mProfileId=getArguments().getString(PROFILE_ID);
+            mTitle=getArguments().getString(ARG_TITLE);
         }
     }
 
@@ -120,6 +125,8 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
         View view=inflater.inflate(R.layout.fragment_edit_profile, container, false);
         rl_description=(RelativeLayout)view.findViewById(R.id.rl_description);
         ll_input_msg=(LinearLayout)view.findViewById(R.id.ll_input_msg);
+        mTitleView=(TextView)view.findViewById(R.id.tv_title);
+        mTitleView.setText(mTitle);
 
         iv_cancel=(ImageView)view.findViewById(R.id.iv_cancel);
         tv_edit_msg=(EditText)view.findViewById(R.id.tv_edit_msg);
@@ -135,7 +142,7 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
                 Log.i("beforeTextChanged--i",""+i);
                 Log.i("beforeTextChanged--i2",""+i2);
                 Log.i("beforeTextChanged--i3",""+i3);
-                tv_length.setText((75-tv_description.getText().toString().length())+"");
+//                tv_length.setText((75-tv_description.getText().toString().length())+"");
             }
 
             @Override

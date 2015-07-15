@@ -51,7 +51,7 @@
         <com.zhaidou.view.TypeFaceEditText
             android:id="@+id/tv_email"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="40dp"
             android:gravity="center_vertical"
             android:paddingLeft="10dp"
             android:background="@color/white"
@@ -66,7 +66,7 @@
         <com.zhaidou.view.TypeFaceEditText
             android:id="@+id/tv_nick"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="40dp"
             android:gravity="center_vertical"
             android:paddingLeft="10dp"
             android:textSize="16sp"
@@ -80,7 +80,7 @@
         <com.zhaidou.view.TypeFaceEditText
             android:id="@+id/tv_password"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="40dp"
             android:gravity="center_vertical"
             android:paddingLeft="10dp"
             android:background="@color/white"
@@ -95,7 +95,7 @@
         <com.zhaidou.view.TypeFaceEditText
             android:id="@+id/tv_password_confirm"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="40dp"
             android:gravity="center_vertical"
             android:background="@color/white"
             android:paddingLeft="10dp"
@@ -110,7 +110,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:text="注册"
         android:gravity="center"
         android:layout_marginTop="20dp"

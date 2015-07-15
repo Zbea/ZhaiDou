@@ -142,6 +142,13 @@ public class RegisterFragment extends BaseFragment implements View.OnClickListen
         switch (view.getId()){
             case R.id.bt_register:
                 hideInputMethod();
+                String email = mEmailView.getText().toString();
+                String password =mPswView.getText().toString();
+                String psw_confirm=mConfirmPsw.getText().toString();
+                String nick =mNickView.getText().toString();
+//                if (TextUtils.isEmpty(email)){
+//
+//                }
                 doRegister();
                 break;
             case R.id.tv_login:

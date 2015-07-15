@@ -64,7 +64,7 @@ import java.util.WeakHashMap;
 public class SingleFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<GridView>{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM1 = "categoryId";
     private static final String ARG_FROM = "from";
     private static final String ID = "id";
 
@@ -109,10 +109,10 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
      * @return A new instance of fragment SingleFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SingleFragment newInstance(String param1, String from) {
+    public static SingleFragment newInstance(String categoryId, String from) {
         SingleFragment fragment = new SingleFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM1, categoryId);
         args.putString(ARG_FROM, from);
         fragment.setArguments(args);
         return fragment;
@@ -291,7 +291,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
 //        }
 //    }
     public void FetchCategoryData(String id,int sort,int page){
-        String url=ZhaiDou.ARTICLE_ITEM_WITH_CATEGORY+id;
+        String url=ZhaiDou.ARTICLE_ITEM_WITH_CATEGORY+id+"&page="+page;
         JsonObjectRequest fetchCategoryTask = new JsonObjectRequest(url,new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -332,18 +332,28 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
                 DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
         refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
         Log.i("onPullDownToRefresh--->","onPullDownToRefresh");
-        FetchData(mParam1,sort,currentpage=1);
+//        FetchData(mParam1,sort,currentpage=1);
+        products.clear();
+        if ("category".equalsIgnoreCase(mParam2)){
+            FetchCategoryData(mParam1, sort, currentpage=1);
+        }else {
+            FetchData(mParam1, sort, currentpage=1);
+        }
         gv_single.setMode(PullToRefreshBase.Mode.BOTH);
     }
 
     @Override
     public void onPullUpToRefresh(PullToRefreshBase<GridView> refreshView) {
-        Log.i("onPullUpToRefresh---->","onPullUpToRefresh");
-        FetchData(mParam1,sort,++currentpage);
+//        FetchData(mParam1,sort,++currentpage);
         if (count!=-1&&productAdapter.getCount()==count){
             Toast.makeText(getActivity(),"已经加载完毕",Toast.LENGTH_SHORT).show();
             gv_single.onRefreshComplete();
             gv_single.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+        }
+        if ("category".equalsIgnoreCase(mParam2)){
+            FetchCategoryData(mParam1, sort,++currentpage);
+        }else {
+            FetchData(mParam1, sort, ++currentpage);
         }
     }
 }

@@ -23,8 +23,7 @@
         android:singleLine="true"
         android:ellipsize="end"
         android:textColor="#333333"
-        android:paddingLeft="15dp"
-        android:text="天然环保彩色椅啊斯"/>
+        android:paddingLeft="15dp"/>
     <LinearLayout
         android:background="@color/white"
         android:layout_width="match_parent"
@@ -35,7 +34,6 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:textColor="@color/red"
-            android:text="￥99.00元"
             android:id="@+id/tv_money"
             android:layout_height="wrap_content" />
         <LinearLayout
@@ -59,8 +57,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:id="@+id/tv_count"
-                android:textColor="#666666"
-                android:text="1261"/>
+                android:textColor="#666666"/>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

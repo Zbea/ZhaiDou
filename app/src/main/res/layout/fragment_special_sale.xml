@@ -84,8 +84,7 @@
                 android:paddingLeft="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:text="剩余4天06时12分11秒"/>
+                android:textColor="@color/white"/>
         </LinearLayout>
     </LinearLayout>
     <ImageView
