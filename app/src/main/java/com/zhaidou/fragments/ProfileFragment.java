@@ -135,7 +135,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     tv_addr_mobile.setText(TextUtils.isEmpty(user.getMobile())?"":user.getMobile());
                     tv_addr.setText(TextUtils.isEmpty(user.getAddress2())?"":user.getAddress2());
                     tv_addr_username.setText(TextUtils.isEmpty(user.getFirst_name())?"":user.getFirst_name());
-                    if (TextUtils.isEmpty(user.getAddress2())){
+                    if (TextUtils.isEmpty(user.getAddress2())||"null".equals(user.getAddress2())){
                         ll_addr_info.setVisibility(View.GONE);
                     }else {
                         ll_addr_info.setVisibility(View.VISIBLE);

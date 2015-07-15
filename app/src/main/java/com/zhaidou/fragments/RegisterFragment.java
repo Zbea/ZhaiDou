@@ -48,6 +48,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -252,7 +253,7 @@ public class RegisterFragment extends BaseFragment implements View.OnClickListen
 
             // 创建UrlEncodedFormEntity对象
             UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
-                    parameters);
+                    parameters, HTTP.UTF_8);
             request.setEntity(formEntiry);
             // 执行请求
             HttpResponse response = client.execute(request);
