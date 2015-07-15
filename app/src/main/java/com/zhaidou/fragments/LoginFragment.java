@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -41,6 +42,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.User;
 
 import org.apache.http.HttpResponse;
@@ -95,7 +97,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     private TextView mLoginView;
     public static final String TAG=LoginFragment.class.getSimpleName();
 
-    private ProgressDialog mDialog;
+    private Dialog mDialog;
 
     private RegisterFragment.RegisterOrLoginListener mRegisterOrLoginListener;
     private BackClickListener backClickListener;
@@ -278,7 +280,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     private class MyTask extends AsyncTask<Void,Void,String> {
         @Override
         protected void onPreExecute() {
-            mDialog=ProgressDialog.show(getActivity(), "", "正在努力登录中...", true);
+            mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), "登陆中");
             super.onPreExecute();
         }
 
@@ -300,7 +302,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         protected void onPostExecute(String s) {
             Log.i("login---->onPostExecute------------>", s);
             if (mDialog!=null)
-                mDialog.hide();
+                mDialog.dismiss();
             try {
                 JSONObject json = new JSONObject(s);
                 Object obj = json.opt("message");

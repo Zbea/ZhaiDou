@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -37,6 +38,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.User;
 
 import org.apache.http.HttpResponse;
@@ -82,7 +84,7 @@ public class RegisterFragment extends BaseFragment implements View.OnClickListen
     SharedPreferences mSharedPreferences;
     static RegisterOrLoginListener mRegisterListener;
 
-    private ProgressDialog mDialog;
+    private Dialog mDialog;
     private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -170,7 +172,7 @@ public class RegisterFragment extends BaseFragment implements View.OnClickListen
     private class MyTask extends AsyncTask<Void,Void,String>{
         @Override
         protected void onPreExecute() {
-            mDialog=ProgressDialog.show(getActivity(), "", "小豆正在注册哦...", true);
+            mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"注册中");
             super.onPreExecute();
         }
 
@@ -198,7 +200,7 @@ public class RegisterFragment extends BaseFragment implements View.OnClickListen
         @Override
         protected void onPostExecute(String s) {
             if (mDialog!=null)
-                mDialog.hide();
+                mDialog.dismiss();
             Log.i("onPostExecute------------>",s);
             Log.i("setRegisterOrLoginListener-------->",mRegisterListener.toString());
             try {
