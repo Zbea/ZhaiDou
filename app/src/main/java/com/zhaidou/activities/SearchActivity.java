@@ -331,6 +331,7 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
         Adapter adapter =adapterView.getAdapter();
         String item =(String)adapter.getItem(position);
         mEditText.setText(item);
+        onSearch();
     }
 
     private class SearchFragmentAdapter extends FragmentPagerAdapter{
@@ -382,5 +383,6 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
     public void onHistoryItemClick(int position,String history) {
         Log.i("position---------------->",position+"----->"+history);
         mEditText.setText(history);
+        onSearch();
     }
 }

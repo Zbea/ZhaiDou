@@ -61,7 +61,7 @@ public class ZhaiDou {
 
     public static String ARTICLES_WITH_CATEGORY=HOME_BASE_URL+"article/api/articles?catetory_id=";
 
-    public static String FORWARD_URL="http://192.168.199.146:3000/retweet";
+    public static String FORWARD_URL=HOME_BASE_URL+"retweet";
     /**
      * 我的头像保存目录
      */
