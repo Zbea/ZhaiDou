@@ -1,5 +1,6 @@
 package com.zhaidou.activities;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,13 +18,19 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.zhaidou.R;
 import com.zhaidou.base.BaseActivity;
+import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.fragments.HomeFragment;
 import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.RegisterFragment;
+import com.zhaidou.model.Article;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.AsyncImageLoader1;
+import com.zhaidou.utils.NetworkUtils;
+import com.zhaidou.utils.ToolUtils;
 
 import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
@@ -40,17 +47,21 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     private ImageView iv_share,mHeaderView;
     private FrameLayout mChildContainer;
     private TextView mTitleView,mHeaderText;
-    private AsyncImageLoader1 imageLoader;
+    private Article article;
+    private String is_new;
+    private String is_id;
 
     private int userId;
     private String token;
     private String nickName;
     private boolean isShowHeader;
 
+    private String from;
     private LoginFragment loginFragment;
     private RegisterFragment registerFragment;
 
     private SharedPreferences mSharedPreferences;
+    private Dialog mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +70,24 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
         from=getIntent().getStringExtra("from");
         from=getIntent().getStringExtra("from");
+        article=(Article)getIntent().getSerializableExtra("article");
+        if (article!=null)
+        {
+            is_id=String.valueOf(article.getId());
+            is_new=article.getIs_new();
+
+            if(is_new.equals("true"))
+            {
+                SharedPreferences sharedPreferences=getSharedPreferences(is_id,0);
+                SharedPreferences.Editor editor= sharedPreferences.edit();
+                editor.putBoolean("is_new",true);
+                editor.commit();
+
+                HomeFragment.newInstance("","").refresh();
+            }
+
+        }
+
         mSharedPreferences=getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         userId=mSharedPreferences.getInt("userId", -1);
         token=mSharedPreferences.getString("token", null);
@@ -69,7 +98,15 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         mTitleView=(TextView)findViewById(R.id.tv_title);
         mHeaderView=(ImageView)findViewById(R.id.iv_header);
         mHeaderText=(TextView)findViewById(R.id.tv_msg);
-        imageLoader=new AsyncImageLoader1(this);
+
+        if(NetworkUtils.isNetworkAvailable(this))
+        {
+            mDialog= CustomLoadingDialog.setLoadingDialog(this,"loading");
+        }
+        else
+        {
+            Toast.makeText(this,"抱歉，请检查网络",Toast.LENGTH_SHORT).show();
+        }
 
         loginFragment=LoginFragment.newInstance("","");
         loginFragment.setRegisterOrLoginListener(this);
@@ -80,26 +117,27 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         if ("lottery".equals(from)||"beauty".equals(from)||"competition".equalsIgnoreCase(from))
             iv_share.setVisibility(View.GONE);
 
-        String postId = getIntent().getStringExtra("id");
+        //String postId = getIntent().getStringExtra("id");
 
         /* WebView Settings */
         webView = (WebView) findViewById(R.id.detailView);
         webView.getSettings().setUseWideViewPort(true);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setInitialScale(1);
-        webView.clearCache(true);
-        webView.clearHistory();
-        webView.setWebViewClient(new WebViewClient() {
+        webView.setWebViewClient(new WebViewClient()
+        {
 
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                Log.i("shouldOverrideUrlLoading---------------->",url);
+            public boolean shouldOverrideUrlLoading(WebView view, String url)
+            {
+                Log.i("shouldOverrideUrlLoading---------------->", url);
 //                Log.i("shouldOverrideUrlLoading--->",url);
 //                Log.i("token-------------->",token);
 //                Log.i("userId-------------->",userId+"");
 //                Log.i("nickName------------->",nickName+"");
                 getDeviceId();
-                if ("mobile://login?false".equalsIgnoreCase(url)){
+                if ("mobile://login?false".equalsIgnoreCase(url))
+                {
 //                    if (!TextUtils.isEmpty(token)&&userId>-1){
 //                        if (!TextUtils.isEmpty(from)){
 //                            webView.loadUrl("javascript:ReceiveUserInfo("+userId+", "+token+", "+getDeviceId()+","+nickName+")");
@@ -107,12 +145,13 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 //                            webView.loadUrl("javascript:ReceiveUserInfo("+userId+", "+token+")");
 //                        }
 //                    }else {
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container,loginFragment)
-                                .addToBackStack(null).commit();
-                        mChildContainer.setVisibility(View.VISIBLE);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, loginFragment)
+                            .addToBackStack(null).commit();
+                    mChildContainer.setVisibility(View.VISIBLE);
 //                    }
                     return true;
-                }else if (url.contains("taobao")){
+                } else if (url.contains("taobao"))
+                {
                     Intent intent = new Intent();
                     intent.putExtra("url", url);
                     intent.setClass(ItemDetailActivity.this, WebViewActivity.class);
@@ -121,9 +160,9 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
                 }
                 return false;
             }
-
             @Override
-            public void onPageFinished(WebView view, String url) {
+            public void onPageFinished(WebView view, String url)
+            {
                 if ("lottery".equalsIgnoreCase(from)){
                     Log.i("lottery----------->","onPageFinished"+"------"+token);
                     if (!TextUtils.isEmpty(token)){
@@ -134,24 +173,30 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
                 }else if ("product".equalsIgnoreCase(from)){
                     if (!TextUtils.isEmpty(token))
-                    webView.loadUrl("javascript:ReceiveUserInfo("+userId+", '"+token+"')");
+                        webView.loadUrl("javascript:ReceiveUserInfo("+userId+", '"+token+"')");
+                }
+                if (mDialog!=null)
+                {
+                    mDialog.dismiss();
                 }
                 super.onPageFinished(view, url);
             }
         });
         url = getIntent().getStringExtra("url");
+        Log.i("url----------->","url"+"------"+url);
         webView.loadUrl(url+"?open=app");
         this.setTitle("");
 
         title = getIntent().getStringExtra("title");
         coverUrl = getIntent().getStringExtra("cover_url");
+
         if (!TextUtils.isEmpty(title)){
             mTitleView.setText(title);
         }
         if (!TextUtils.isEmpty(coverUrl)){
-            Log.i("cover_url---------------->",coverUrl);
+            Log.i("cover_url---------------->", coverUrl);
             mHeaderView.setVisibility(View.VISIBLE);
-            imageLoader.LoadImage(coverUrl,mHeaderView);
+            ToolUtils.setImageUrl(coverUrl, mHeaderView);
             mTitleView.setVisibility(View.GONE);
             mHeaderText.setText(title);
             mHeaderText.setVisibility(View.VISIBLE);
@@ -279,7 +324,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 //        fragmentManager.popBackStack();
 //        Log.i("childFragmentManager--->", fragmentManager.getBackStackEntryCount()+"");
 //    }
-
+//
 //    @Override
 //    public void onRegisterOrLoginSuccess(User user,Fragment fragment) {
 //        Log.i("ItemDetailActivity------------->",user.toString());
@@ -302,7 +347,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 //        editor.putString("nickName",user.getNickName());
 //        editor.commit();
 //    }
-
+//
 //    public void navigationToFragment(Fragment fragment){
 //        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container,fragment)
 //                .addToBackStack(null).commit();

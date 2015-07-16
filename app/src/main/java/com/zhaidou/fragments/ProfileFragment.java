@@ -3,6 +3,7 @@ package com.zhaidou.fragments;
 
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,6 +31,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -40,10 +42,12 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.NativeHttpUtil;
 import com.zhaidou.utils.PhotoUtil;
+import com.zhaidou.utils.ToolUtils;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -121,6 +125,8 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
     private ProfileListener profileListener;
 
+    private Dialog mDialog;
+
     private Handler mHandler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -144,12 +150,15 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     break;
                 case UPDATE_USER_INFO:
                     User user1=(User)msg.obj;
-                    imageLoader.LoadImage("http://"+user1.getAvatar(),iv_header);
+                    ToolUtils.setImageUrl("http://"+user1.getAvatar(),iv_header);
+                    //imageLoader.LoadImage("http://"+user1.getAvatar(),iv_header);
                     tv_email.setText(user1.getEmail());
                     tv_nick.setText(TextUtils.isEmpty(user1.getNickName())?"":user1.getNickName());
 
                     break;
             }
+            setEndLoading();
+            initEndLoading();
         }
     };
 
@@ -188,6 +197,9 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_profile, container, false);
+
+        setStartLoading();
+
         mMenuContainer=(FrameLayout)view.findViewById(R.id.rl_header_menu);
         mChildContainer=(FrameLayout)view.findViewById(R.id.fl_child_container);
         view.findViewById(R.id.rl_header_layout).setOnClickListener(this);
@@ -307,6 +319,40 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 mChildContainer.setVisibility(View.VISIBLE);
                 break;
         }
+    }
+
+    /**
+     * 设置开始加载进度
+     */
+    private void setStartLoading()
+    {
+        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
+    }
+
+    /**
+     * 结束加载过程
+     */
+    private void setEndLoading()
+    {
+        if (mDialog != null)
+        {
+            mDialog.dismiss();
+        }
+    }
+
+    /**
+     * 初始运行加载结束
+     */
+    private void initEndLoading()
+    {
+        mRequestQueue.addRequestFinishedListener(new RequestQueue.RequestFinishedListener<Object>()
+        {
+            @Override
+            public void onRequestFinished(Request<Object> objectRequest)
+            {
+                setEndLoading();
+            }
+        });
     }
 
     public void toggleMenu(){
@@ -547,6 +593,13 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     }
 
     private class UpLoadAvatar extends AsyncTask<String,Void,String> {
+
+        @Override
+        protected void onPreExecute()
+        {
+            setStartLoading();
+        }
+
         @Override
         protected String doInBackground(String... strings) {
             String s=null;
@@ -560,7 +613,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
         @Override
         protected void onPostExecute(String s) {
-            Log.i("UpLoadAvatar-------->",s);
+            if (s==null) return;
             try {
                 JSONObject jsonObject=new JSONObject(s);
                 JSONObject userJson = jsonObject.optJSONObject("user");
@@ -569,6 +622,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 User user = new User();
                 user.setAvatar(avatar);
                 user.setEmail(email);
+                user.setNickName(tv_nick.getText().toString());
                 Message message = new Message();
                 message.what=UPDATE_USER_INFO;
                 message.obj=user;
