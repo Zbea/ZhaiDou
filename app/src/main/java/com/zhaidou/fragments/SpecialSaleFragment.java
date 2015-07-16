@@ -1,6 +1,7 @@
 package com.zhaidou.fragments;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CountTime;
 import com.zhaidou.model.Coupon;
 import com.zhaidou.model.Product;
@@ -75,6 +77,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     private final int UPDATE_COUNT_DOWN_TIME=1;
     private final int UPDATE_UI_TIMER_FINISH=2;
     private final int UPDATE_TIMER_START=3;
+
+    private Dialog mDialog;
 
     private Coupon mCoupon;
     private Handler mHandler=new Handler(){
@@ -160,6 +164,9 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         mGridView.setAdapter(mAdapter);
         view.findViewById(R.id.ll_back).setOnClickListener(this);
         view.findViewById(R.id.iv_coupon).setOnClickListener(this);
+
+        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
+
         requestQueue= Volley.newRequestQueue(getActivity());
         FetchCouponData();
         if (products!=null&&products.size()==0)
@@ -209,7 +216,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
-
+                        mDialog.dismiss();
                         String end_date=jsonObject.optString("end_date");
                         Message timerMsg = new Message();
                         timerMsg.what=UPDATE_TIMER_START;
@@ -242,6 +249,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 },new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
+                Toast.makeText(getActivity(),"加载失败,重新进入",Toast.LENGTH_SHORT).show();
+                mDialog.dismiss();
 
             }
         });

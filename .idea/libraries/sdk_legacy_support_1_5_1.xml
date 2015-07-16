@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="sdk-legacy-support-1.5.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/libs/sdk-legacy-support-1.5.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

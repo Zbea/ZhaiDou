@@ -1,4 +1,5 @@
 package com.zhaidou.fragments;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.dialog.CustomLoadingDialog;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -66,12 +68,12 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     private SharedPreferences mSharedPreferences;
 
     private AddressListener addressListener;
+
+    private Dialog mDialog;
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment AddrManageFragment.
      */
     // TODO: Rename and change types and number of parameters
@@ -187,6 +189,13 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
 
 
     private class MyTask extends AsyncTask<String,Void,String> {
+
+        @Override
+        protected void onPreExecute()
+        {
+            mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
+        }
+
         @Override
         protected String doInBackground(String... strings) {
 
@@ -203,6 +212,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
         protected void onPostExecute(String s) {
             Log.i("AddrManageFragment--onPostExecute-->",s);
             try {
+                mDialog.dismiss();
                 JSONObject json =new JSONObject(s);
                 JSONObject profile =json.optJSONObject("profile");
                 String mobile=profile.optString("mobile");

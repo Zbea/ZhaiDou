@@ -104,7 +104,6 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
      * @param from Parameter 2.
      * @return A new instance of fragment SingleFragment.
      */
@@ -141,7 +140,6 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
     }
 
     private void initView(View view){
-        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
         tv_count=(TextView)view.findViewById(R.id.tv_count);
 //        tv_detail=(TextView)view.findViewById(R.id.tv_detail);
         tv_money=(TextView)view.findViewById(R.id.tv_money);
@@ -171,7 +169,27 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
         });
     }
 
+    /**
+     *开始加载进度
+     */
+    private void setStartLoading()
+    {
+        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
+    }
+
+    /**
+     * 结束加载进度
+     */
+    private void setEndLoading()
+    {
+        if (mDialog!=null)
+        {
+            mDialog.dismiss();
+        }
+    }
+
     public void FetchData(String msg,int sort,int page){
+        setStartLoading();
         Log.i("FetchData------>","FetchData");
         this.sort=sort;
         currentpage=page;
@@ -193,19 +211,24 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
 
             @Override
             public void onResponse(JSONObject json) {
-                Log.i("json-------->",json.toString());
+
                 mDialog.hide();
                 JSONArray items = json.optJSONArray("article_items");
                 JSONObject meta = json.optJSONObject("meta");
 
                 count=meta==null?0:meta.optInt("count");
-                if (items==null) return;
+                if (items==null)
+                {
+                    Toast.makeText(getActivity(),"抱歉，未找到商品",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 for (int i=0;i<items.length();i++){
 
                     JSONObject item = items.optJSONObject(i);
                     int id=item.optInt("id");
                     String title =item.optString("title");
                     double price=item.optDouble("price");
+                    Log.i("zhaidou-------->","价格：￥"+price);
                     String url=item.optString("url");
                     int bean_like_count=item.optInt("bean_likes_count");
                     JSONArray array = item.optJSONArray("asset_imgs");
@@ -225,9 +248,10 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
                 handler.sendEmptyMessage(0);
             }
         }, new Response.ErrorListener() {
-
             @Override
             public void onErrorResponse(VolleyError error) {
+                setEndLoading();
+                Toast.makeText(getActivity(),"抱歉,加载失败",Toast.LENGTH_SHORT).show();
                 Log.i("onErrorResponse",error.toString());
             }
         });
@@ -251,59 +275,27 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
         protected void onPostExecute(String s) {
             Log.i("onPostExecute---->ProductTask--->",s);
         }
-        //        @Override
-//        protected String doInBackground(Void... voids) {
-//            String result=null;
-//            try {
-//                result= NativeHttpUtil.post(ZhaiDou.SEARCH_PRODUCT_URL,null,)
-//            }catch (Exception e){
-//
-//            }
-//            return null;
-//        }
     }
 
-
-//    public class SingleAdapter extends BaseListAdapter<Product> {
-//        public SingleAdapter(Context context, List<Product> list) {
-//            super(context, list);
-//            imageLoader = new AsyncImageLoader1(context);
-//        }
-//
-//        @Override
-//        public View bindView(int position, View convertView, ViewGroup parent) {
-//            convertView=mHashMap.get(position);
-//            if (convertView==null)
-//                convertView=mInflater.inflate(R.layout.item_fragment_single,null);
-//            TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
-//            ImageView image =ViewHolder.get(convertView,R.id.iv_single_item);
-//            TextView tv_money=ViewHolder.get(convertView,R.id.tv_money);
-//            ImageView iv_heart=ViewHolder.get(convertView,R.id.iv_heart);
-//            TextView tv_count=ViewHolder.get(convertView,R.id.tv_count);
-//
-//            Product product = getList().get(position);
-//            tv_name.setText(product.getTitle());
-//            tv_money.setText("￥"+product.getPrice()+"元");
-//            tv_count.setText(product.getBean_like_count()+"");
-//            imageLoader.LoadImage("http://"+product.getImage(),image);
-//            mHashMap.put(position,convertView);
-//            return convertView;
-//        }
-//    }
     public void FetchCategoryData(String id,int sort,int page){
+        setStartLoading();
         String url=ZhaiDou.ARTICLE_ITEM_WITH_CATEGORY+id+"&page="+page;
         JsonObjectRequest fetchCategoryTask = new JsonObjectRequest(url,new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
                 mDialog.hide();
                 JSONArray items = jsonObject.optJSONArray("article_items");
-                if (items==null) return;
+                if (items==null)
+                {
+                    Toast.makeText(getActivity(),"抱歉，未找到商品",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 for (int i=0;i<items.length();i++){
 
                     JSONObject item = items.optJSONObject(i);
                     int id=item.optInt("id");
                     String title =item.optString("title");
-                    int price=item.optInt("price");
+                    Double price=item.optDouble("price");
                     String url=item.optString("url");
                     int bean_like_count=item.optInt("bean_likes_count");
                     JSONArray array = item.optJSONArray("asset_imgs");
@@ -321,6 +313,8 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
         },new Response.ErrorListener(){
             @Override
             public void onErrorResponse(VolleyError volleyError) {
+                setEndLoading();
+                Toast.makeText(getActivity(),"抱歉，加载失败",Toast.LENGTH_SHORT).show();
             }
         });
         mRequestQueue.add(fetchCategoryTask);

@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -30,6 +31,7 @@ import com.android.volley.toolbox.Volley;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.dialog.CustomLoadingDialog;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -83,6 +85,8 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
     private RelativeLayout rl_description;
 
     RefreshDataListener refreshDataListener;
+
+    private Dialog mDialog;
 
     /**
      * Use this factory method to create a new instance of
@@ -197,6 +201,13 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
     }
 
     private class MyTask extends AsyncTask<String,Void,String>{
+
+        @Override
+        protected void onPreExecute()
+        {
+            mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
+        }
+
         @Override
         protected String doInBackground(String... strings) {
 
@@ -211,6 +222,7 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
 
         @Override
         protected void onPostExecute(String s) {
+            mDialog.dismiss();
             Log.i("EditProfileFragment---->onPostExecute---->",s);
             if ("description".equalsIgnoreCase(mParam1)){
                 refreshDataListener.onRefreshData(mParam1,tv_description.getText().toString(),s);

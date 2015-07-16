@@ -46,7 +46,8 @@
         android:layout_gravity="right"
         android:layout_marginRight="10dp"
         android:background="@drawable/views2"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="10dp"
+        android:id="@+id/relativeLayout">
 
         <ImageView
             android:id="@+id/icon_eye"
@@ -62,6 +63,7 @@
             android:layout_centerVertical="true"
             android:paddingLeft="2dp"
             android:text="123"
+            android:layout_marginLeft="5dp"
             android:singleLine="true"
             android:ellipsize="end"
             android:layout_width="wrap_content"
@@ -69,4 +71,13 @@
             android:textColor="@color/dark_color_for_text"
             android:textSize="11dp" />
     </RelativeLayout>
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/newsView"
+        android:visibility="gone"
+        android:src="@drawable/home_info_news_icon"/>
+
+
 </RelativeLayout>

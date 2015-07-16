@@ -1,9 +1,12 @@
 package com.zhaidou.model;
 
+import java.io.Serializable;
+
 /**
  * Created by wangclark on 15/6/12.
  */
-public class Article {
+public class Article implements Serializable
+{
     private int id;
     private String title;
     private String img_url;
