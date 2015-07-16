@@ -280,6 +280,14 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
                     webView.goBack();
                     return;
                 }
+                if (user!=null){
+                    Intent intent=new Intent();
+                    intent.putExtra("id",user.getId());
+                    intent.putExtra("email",user.getEmail());
+                    intent.putExtra("token",user.getAuthentication_token());
+                    intent.putExtra("nick",user.getNickName());
+                    setResult(RESULT_OK, intent);
+                }
                 finish();
                 break;
             case R.id.iv_share:

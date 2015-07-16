@@ -109,13 +109,15 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     };
 
     // TODO: Rename and change types and number of parameters
+    public static PersonalFragment personalFragment;
     public static PersonalFragment newInstance(String param1, String context) {
-        PersonalFragment fragment = new PersonalFragment();
+        if (personalFragment==null)
+        personalFragment = new PersonalFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putSerializable(ARG_CONTEXT,context);
-        fragment.setArguments(args);
-        return fragment;
+        personalFragment.setArguments(args);
+        return personalFragment;
     }
     public PersonalFragment() {
         // Required empty public constructor
