@@ -69,7 +69,6 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         setContentView(R.layout.activity_item_detail);
 
         from=getIntent().getStringExtra("from");
-        from=getIntent().getStringExtra("from");
         article=(Article)getIntent().getSerializableExtra("article");
         if (article!=null)
         {
@@ -83,7 +82,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
                 editor.putBoolean("is_new",true);
                 editor.commit();
 
-                HomeFragment.newInstance("","").refresh();
+//                HomeFragment.newInstance("","").refresh();
             }
 
         }
