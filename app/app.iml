@@ -84,6 +84,7 @@
     <orderEntry type="library" exported="" name="support-annotations-20.0.0" level="project" />
     <orderEntry type="library" exported="" name="ShareSDK-Core-2.6.0" level="project" />
     <orderEntry type="library" exported="" name="securityguard-1.2.36" level="project" />
+    <orderEntry type="library" exported="" name="universal-image-loader-1.9.2" level="project" />
   </component>
 </module>
 

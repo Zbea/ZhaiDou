@@ -13,11 +13,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.text.format.DateUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -38,6 +40,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.zhaidou.MainActivity;
@@ -45,6 +49,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.SearchActivity;
+import com.zhaidou.adapter.AdViewAdpater;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
@@ -91,13 +96,13 @@ import java.util.WeakHashMap;
  *
  */
 public class HomeFragment extends BaseFragment implements
-                                         HeaderLayout.onLeftImageButtonClickListener,
-                                         HeaderLayout.onRightImageButtonClickListener,
-                                         ImageSwitchWall.OnItemClickListener,
-                                         SwipeRefreshLayout.OnLoadListener,SwipeRefreshLayout.OnRefreshListener,
-                                         HomeCategoryFragment.CategorySelectedListener,
-                                         AdapterView.OnItemClickListener,View.OnClickListener,
-                                         PullToRefreshBase.OnRefreshListener2<ScrollView>{
+        HeaderLayout.onLeftImageButtonClickListener,
+        HeaderLayout.onRightImageButtonClickListener,
+        SwipeRefreshLayout.OnLoadListener, SwipeRefreshLayout.OnRefreshListener,
+        HomeCategoryFragment.CategorySelectedListener,
+        AdapterView.OnItemClickListener, View.OnClickListener,
+        PullToRefreshBase.OnRefreshListener2<ScrollView>
+{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String URL = "targetUrl";
@@ -135,7 +140,16 @@ public class HomeFragment extends BaseFragment implements
     private RequestQueue mRequestQueue;
     private List<Article> articleList = new ArrayList<Article>();
     private HomeAdapter mHomeAdapter;
-    private ImageSwitchWall imageSwitchWall;
+    private ViewPager viewPager;
+    private LinearLayout tipsLine;//轮播指示标志
+    private List<SwitchImage> banners;
+    private ImageView[] dots;
+    private List<View> adPics=new ArrayList<View>();
+    private AdViewAdpater adpater;
+    private int currentItem = 5000;
+    boolean nowAction = false;
+    boolean isStop=true;
+
     private HomeCategoryFragment homeCategoryFragment;
     private Category mCategory;
     private LinearLayout mBackView;
@@ -175,22 +189,29 @@ public class HomeFragment extends BaseFragment implements
     public static final String DEBUG_CAT = "DEBUG";
 
     private Handler handler = new Handler() {
-        public void handleMessage(Message msg) {
+        public void handleMessage(Message msg)
+        {
             mHomeAdapter.notifyDataSetChanged();
-            if (msg.what == LOADED) {
+            if (msg.what == LOADED)
+            {
 
-            }else if (msg.what==UPDATE_CATEGORY){
+            } else if (msg.what == UPDATE_CATEGORY)
+            {
                 mCategoryAdapter.setList(categoryList);
-            }else if (msg.what==UPDATE_HOMELIST){
-                Log.i("UPDATE_HOMELIST---------->",articleList.size()+"");
+            } else if (msg.what == UPDATE_HOMELIST)
+            {
+                Log.i("UPDATE_HOMELIST---------->", articleList.size() + "");
                 mHomeAdapter.setList(articleList);
                 mScrollView.onRefreshComplete();
 //                mSwipeLayout.setLoading(false);
 //                mSwipeLayout.setRefreshing(false);
 //                loading.dismiss();
-            }else if (msg.what==UPDATE_BANNER){
-                List<SwitchImage> banners =(List<SwitchImage>) msg.obj;
-                imageSwitchWall.setDatas(banners);
+            } else if (msg.what == UPDATE_BANNER)
+            {
+//                List<SwitchImage> banners = (List<SwitchImage>) msg.obj;
+//                imageSwitchWall.setDatas(banners);
+                adPics.removeAll(adPics);
+                setAdView();
             }
             mHomeAdapter.notifyDataSetChanged();
             if (mDialog.isShowing())
@@ -199,6 +220,122 @@ public class HomeFragment extends BaseFragment implements
             }
         }
     };
+
+    private Handler mhandler=new Handler()
+    {
+        @Override
+        public void handleMessage(Message msg)
+        {
+            viewPager.setCurrentItem(currentItem);
+        }
+    };
+
+    private void setAdView()
+    {
+//        if(adpater!=null)
+//        {
+//            viewPager.setCurrentItem(0);
+//        }
+        tipsLine.removeAllViews();
+        if(banners.size()>0)
+        {
+            for (int i = 0; i < banners.size(); i++)
+            {
+                final int tag=i;
+                final ImageView img = new ImageView(mContext);
+                img.setBackgroundResource(R.drawable.icon_loading_item);
+                img.setScaleType(ImageView.ScaleType.FIT_XY);
+                img.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        SwitchImage switchImage = banners.get(tag);
+                        Category category = new Category();
+                        category.setId(switchImage.getId());
+                        SpecialFragment fragment = SpecialFragment.newInstance("", category);
+                        ((BaseActivity) getActivity()).navigationToFragment(fragment);
+                    }
+                });
+                ImageLoader.getInstance().displayImage(banners.get(i).getUrl(), img);
+                adPics.add(img);
+            }
+            dots = new ImageView[adPics.size()];
+            for (int i = 0; i < adPics.size(); i++)
+            {
+                ImageView dot_iv = new ImageView(mContext);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                params.bottomMargin = 10;
+                if(i==0)
+                {
+                    params.leftMargin = 0;
+                }
+                else
+                {
+                    params.leftMargin = 20;
+                }
+
+                dot_iv.setLayoutParams(params);
+                dots[i] = dot_iv;
+                tipsLine.addView(dot_iv);
+                    if (i == 0)
+                    {
+                        dots[i].setBackgroundResource(R.drawable.home_tips_foucs_icon);
+                    }
+                    else
+                    {
+                        dots[i].setBackgroundResource(R.drawable.home_tips_icon);
+                    }
+
+            }
+            if(adpater==null)
+            {
+                adpater=new AdViewAdpater(mContext,adPics);
+                viewPager.setAdapter(adpater);
+                viewPager.setOnPageChangeListener(new MyPageChangeListener());
+                viewPager.setOnTouchListener(new View.OnTouchListener()
+                {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event)
+                    {
+                        v.getParent().requestDisallowInterceptTouchEvent(true);
+                        return false;
+                    }
+                });
+
+                new Thread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        while (isStop)
+                        {
+                            try
+                            {
+                                Thread.sleep(5000);
+                            }
+                            catch (InterruptedException e)
+                            {
+                                e.printStackTrace();
+                            }
+                            if (!nowAction)
+                            {
+                                currentItem = currentItem + 1;
+                                mhandler.obtainMessage().sendToTarget();
+                            }
+                        }
+                    }
+                }).start();
+            }
+            else
+            {
+                adpater.notifyDataSetChanged();
+            }
+
+        }
+
+
+    }
 
     private OnFragmentInteractionListener mListener;
 
@@ -255,55 +392,49 @@ public class HomeFragment extends BaseFragment implements
         mCategoryView=(ImageView)view.findViewById(R.id.iv_category);
         mCategoryView.setOnClickListener(this);
         mTitleView=(TextView)view.findViewById(R.id.tv_title);
-
-        imageSwitchWall=(ImageSwitchWall)view.findViewById(R.id.isw_imagewall);
-
-        ViewGroup.LayoutParams layoutParams=imageSwitchWall.getLayoutParams();
-        layoutParams.width=screenWidth;
-        layoutParams.height=screenWidth*300/750;
-        imageSwitchWall.setLayoutParams(layoutParams);
-
-
-        imageSwitchWall.setOnItemClickListener(this);
+        viewPager = (ViewPager) view.findViewById(R.id.home_adv_pager);
+        tipsLine = (LinearLayout) view.findViewById(R.id.home_viewGroup);
         currentPage = 1;
 
         loadedAll = false;
 
         mRequestQueue = Volley.newRequestQueue(getActivity());
         listItem = new ArrayList<JSONObject>();
-        mHomeAdapter = new HomeAdapter(getActivity(),articleList);
+        mHomeAdapter = new HomeAdapter(getActivity(), articleList);
         listView.setEmptyView(mEmptyView);
         listView.setAdapter(mHomeAdapter);
-        Log.i("mEmptyView---->",mEmptyView.toString());
+        Log.i("mEmptyView---->", mEmptyView.toString());
 
         getBannerData();
-        FetchData(currentPage,null);
+        FetchData(currentPage, null);
         setUpPopView();
 
-        if (homeCategoryFragment==null)
-            homeCategoryFragment =HomeCategoryFragment.newInstance("","");
-        getChildFragmentManager().beginTransaction().add(R.id.fl_category_menu,homeCategoryFragment
-                        ,HomeCategoryFragment.TAG).hide(homeCategoryFragment).commit();
+        if (homeCategoryFragment == null)
+            homeCategoryFragment = HomeCategoryFragment.newInstance("", "");
+        getChildFragmentManager().beginTransaction().add(R.id.fl_category_menu, homeCategoryFragment
+                , HomeCategoryFragment.TAG).hide(homeCategoryFragment).commit();
         homeCategoryFragment.setCategorySelectedListener(this);
         listView.setOnItemClickListener(this);
         return view;
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState)
+    {
         super.onActivityCreated(savedInstanceState);
 
     }
 
-    private void setUpPopView(){
+    private void setUpPopView()
+    {
         mPopupWindow = new PopupWindow(getActivity());
         View view = getActivity().getLayoutInflater().inflate(R.layout.item_popupwindows, null);
 
         ll_poplayout = (LinearLayout) view.findViewById(R.id.ll_popup);
 
-        gv_category = (GridView)view.findViewById(R.id.gv_category);
-        categoryList=new ArrayList<String>();
-        mCategoryAdapter=new CategoryAdapter(getActivity(),categoryList);
+        gv_category = (GridView) view.findViewById(R.id.gv_category);
+        categoryList = new ArrayList<String>();
+        mCategoryAdapter = new CategoryAdapter(getActivity(), categoryList);
         gv_category.setAdapter(mCategoryAdapter);
         mPopupWindow.setWidth(LinearLayout.LayoutParams.MATCH_PARENT);
         mPopupWindow.setHeight(LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -311,39 +442,51 @@ public class HomeFragment extends BaseFragment implements
 
         mPopupWindow.setOutsideTouchable(true);
         mPopupWindow.setContentView(view);
-        gv_category.setOnItemClickListener(new GridView.OnItemClickListener() {
+        gv_category.setOnItemClickListener(new GridView.OnItemClickListener()
+        {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
+            {
 
                 mPopupWindow.dismiss();
             }
         });
 
-        mCategoryAdapter.setOnInViewClickListener(R.id.tv_category_item,new BaseListAdapter.onInternalClickListener() {
+        mCategoryAdapter.setOnInViewClickListener(R.id.tv_category_item, new BaseListAdapter.onInternalClickListener()
+        {
             @Override
-            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+            public void OnClickListener(View parentV, View v, Integer position, Object values)
+            {
             }
         });
     }
+
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
+    public void onButtonPressed(Uri uri)
+    {
+        if (mListener != null)
+        {
             mListener.onFragmentInteraction(uri);
         }
     }
+
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(Activity activity)
+    {
         super.onAttach(activity);
-        try {
+        try
+        {
             mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
+        } catch (ClassCastException e)
+        {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
     }
 
     @Override
-    public void onDetach() {
+    public void onDetach()
+    {
         super.onDetach();
         mListener = null;
     }
@@ -353,24 +496,27 @@ public class HomeFragment extends BaseFragment implements
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p>
+     * <p/>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface OnFragmentInteractionListener
+    {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
 
     @Override
-    public void onClick(View view) {
-        switch (view.getId()){
+    public void onClick(View view)
+    {
+        switch (view.getId())
+        {
             case R.id.iv_search:
-                startActivity(new Intent(getActivity(),SearchActivity.class));
+                startActivity(new Intent(getActivity(), SearchActivity.class));
                 break;
             case R.id.ll_category_view:
-                Log.i("ll_category_view----------->","ll_category_view");
+                Log.i("ll_category_view----------->", "ll_category_view");
                 toggleMenu();
 //                mPopupWindow.showAtLocation(getView(), Gravity.TOP, 0, 220);
 //                mPopupWindow.setFocusable(true);
@@ -402,31 +548,31 @@ public class HomeFragment extends BaseFragment implements
 //                WebViewFragment prizeFragment=WebViewFragment.newInstance("http://192.168.199.158/test1.html",true);
 //                ((BaseActivity)getActivity()).navigationToFragment(prizeFragment);
                 Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
-                detailIntent.putExtra("url",ZhaiDou.PRIZE_SCRAPING_URL);
-                detailIntent.putExtra("from","lottery");
-                detailIntent.putExtra("title","天天刮奖");
+                detailIntent.putExtra("url", ZhaiDou.PRIZE_SCRAPING_URL);
+                detailIntent.putExtra("from", "lottery");
+                detailIntent.putExtra("title", "天天刮奖");
                 startActivity(detailIntent);
                 break;
             case R.id.ll_competition:
 //                WebViewFragment webViewFragment=WebViewFragment.newInstance(ZhaiDou.COMPETITION_URL,true);
 //                ((BaseActivity)getActivity()).navigationToFragment(webViewFragment);
                 Intent intent = new Intent(getActivity(), ItemDetailActivity.class);
-                intent.putExtra("url",ZhaiDou.COMPETITION_URL);
-                intent.putExtra("from","competition");
-                intent.putExtra("title","拼贴大赛");
+                intent.putExtra("url", ZhaiDou.COMPETITION_URL);
+                intent.putExtra("from", "competition");
+                intent.putExtra("title", "拼贴大赛");
                 startActivity(intent);
                 break;
             case R.id.ll_sale:
-                SpecialSaleFragment specialSaleFragment =SpecialSaleFragment.newInstance("","");
-                ((MainActivity)getActivity()).navigationToFragment(specialSaleFragment);
+                SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", "");
+                ((MainActivity) getActivity()).navigationToFragment(specialSaleFragment);
                 break;
             case R.id.ll_forward:
 //                WebViewFragment forwardFragment=WebViewFragment.newInstance(ZhaiDou.FORWARD_URL,true);
 //                ((BaseActivity)getActivity()).navigationToFragment(forwardFragment);
                 Intent intent1 = new Intent();
                 intent1.putExtra("url", ZhaiDou.FORWARD_URL);
-                intent1.putExtra("from","beauty");
-                intent1.putExtra("title","转发有喜");
+                intent1.putExtra("from", "beauty");
+                intent1.putExtra("title", "转发有喜");
                 intent1.setClass(getActivity(), ItemDetailActivity.class);
                 getActivity().startActivity(intent1);
                 break;
@@ -438,18 +584,21 @@ public class HomeFragment extends BaseFragment implements
         }
     }
 
-    public class CategoryAdapter extends BaseListAdapter<String> {
-        public CategoryAdapter(Context context, List<String> list) {
+    public class CategoryAdapter extends BaseListAdapter<String>
+    {
+        public CategoryAdapter(Context context, List<String> list)
+        {
             super(context, list);
         }
 
 
 
         @Override
-        public View bindView(int position, View convertView, ViewGroup parent) {
+        public View bindView(int position, View convertView, ViewGroup parent)
+        {
 
-            if (convertView==null)
-                convertView=mInflater.inflate(R.layout.category_item_gv,null);
+            if (convertView == null)
+                convertView = mInflater.inflate(R.layout.category_item_gv, null);
             TextView tv_item = ViewHolder.get(convertView, R.id.tv_category_item);
             String item = getList().get(position);
             tv_item.setText(item);
@@ -458,54 +607,61 @@ public class HomeFragment extends BaseFragment implements
         }
     }
 
-    private void FetchData(int page,Category category){
-        Log.i("FetchData------------------>","FetchData--->"+page);
-        currentPage=page;
+    private void FetchData(int page, Category category)
+    {
+        Log.i("FetchData------------------>", "FetchData--->" + page);
+        currentPage = page;
 
-        if (page==1) {
+        if (page == 1)
+        {
             articleList.clear();
             mHomeAdapter.clear();
             loadedAll = false;
         }
 
-        if (loadedAll){
-            Toast.makeText(getActivity(),"已经加载完毕了哦！！！",Toast.LENGTH_SHORT).show();
+        if (loadedAll)
+        {
+            Toast.makeText(getActivity(), "已经加载完毕了哦！！！", Toast.LENGTH_SHORT).show();
             mScrollView.onRefreshComplete();
             return;
         }
 
-        String categoryId=(category==null?"":category.getId()+"");
+        String categoryId = (category == null ? "" : category.getId() + "");
         String url;
 //        if (category==null){
 //            url=ZhaiDou.HOME_BASE_URL+"article/api/articles?page="+page+"&catetory_id";
 //        }else {
 //            url="http://192.168.199.171/article/api/articles?page="+page+"&catetory_id="+categoryId;
 //        }
-        url=ZhaiDou.HOME_CATEGORY_URL+page+((category==null)?"&catetory_id":"&catetory_id="+categoryId);
-        Log.i("categoryId------------>",categoryId);
+        url = ZhaiDou.HOME_CATEGORY_URL + page + ((category == null) ? "&catetory_id" : "&catetory_id=" + categoryId);
+        Log.i("categoryId------------>", categoryId);
 
-        Log.i("url---->",url);
+        Log.i("url---->", url);
 
-        JsonObjectRequest jr = new JsonObjectRequest(url,new Response.Listener<JSONObject>() {
+        JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
             @Override
-            public void onResponse(JSONObject response) {
-                Log.i("FetchData--->data---->",response.toString());
+            public void onResponse(JSONObject response)
+            {
+                Log.i("FetchData--->data---->", response.toString());
                 JSONArray articles = response.optJSONArray("articles");
                 JSONObject meta = response.optJSONObject("meta");
-                count=meta==null?0:meta.optInt("count");
-                if (articles==null||articles.length()<=0){
+                count = meta == null ? 0 : meta.optInt("count");
+                if (articles == null || articles.length() <= 0)
+                {
                     articleList.clear();
                     handler.sendEmptyMessage(UPDATE_HOMELIST);
                     return;
                 }
-                for (int i=0;i<articles.length();i++){
-                    JSONObject article =articles.optJSONObject(i);
-                    int id =article.optInt("id");
-                    String title=article.optString("title");
-                    String img_url=article.optString("img_url");
-                    String is_new=article.optString("is_new");
+                for (int i = 0; i < articles.length(); i++)
+                {
+                    JSONObject article = articles.optJSONObject(i);
+                    int id = article.optInt("id");
+                    String title = article.optString("title");
+                    String img_url = article.optString("img_url");
+                    String is_new = article.optString("is_new");
                     int reviews = article.optInt("reviews");
-                    Article item =new Article(id,title,img_url,is_new,reviews);
+                    Article item = new Article(id, title, img_url, is_new, reviews);
                     articleList.add(item);
                 }
 
@@ -517,34 +673,39 @@ public class HomeFragment extends BaseFragment implements
 
 
                 Message message = new Message();
-                message.what=UPDATE_HOMELIST;
+                message.what = UPDATE_HOMELIST;
                 handler.sendMessage(message);
             }
-        },new Response.ErrorListener() {
+        }, new Response.ErrorListener()
+        {
             @Override
-            public void onErrorResponse(VolleyError error) {
+            public void onErrorResponse(VolleyError error)
+            {
 //                Log.i("onErrorResponse------->",error.getMessage());
             }
         });
         mRequestQueue.add(jr);
     }
 
-    public class HomeAdapter extends BaseListAdapter<Article> {
-        public HomeAdapter(Context context, List<Article> list) {
+    public class HomeAdapter extends BaseListAdapter<Article>
+    {
+        public HomeAdapter(Context context, List<Article> list)
+        {
             super(context, list);
-            imageLoader=new AsyncImageLoader1(context);
+            imageLoader = new AsyncImageLoader1(context);
         }
 
         @Override
-        public View bindView(int position, View convertView, ViewGroup parent) {
+        public View bindView(int position, View convertView, ViewGroup parent)
+        {
             convertView = mHashMap.get(position);
 
-            if (convertView==null)
-                convertView=mInflater.inflate(R.layout.home_item_list,null);
+            if (convertView == null)
+                convertView = mInflater.inflate(R.layout.home_item_list, null);
 
             TextView title = ViewHolder.get(convertView, R.id.title);
-            TextView articleViews = ViewHolder.get(convertView,R.id.views);
-            ImageView cover = ViewHolder.get(convertView,R.id.cover);
+            TextView articleViews = ViewHolder.get(convertView, R.id.views);
+            ImageView cover = ViewHolder.get(convertView, R.id.cover);
 
 //            ViewGroup.LayoutParams layoutParams=cover.getLayoutParams();
 //            layoutParams.width=screenWidth;
@@ -553,37 +714,23 @@ public class HomeFragment extends BaseFragment implements
             Article article = getList().get(position);
 
             title.setText(article.getTitle());
-            articleViews.setText(article.getReviews()+"");
-            imageLoader.LoadImage(article.getImg_url(),cover);
+            articleViews.setText(article.getReviews() + "");
+            imageLoader.LoadImage(article.getImg_url(), cover);
 
-            mHashMap.put(position,convertView);
+            mHashMap.put(position, convertView);
             return convertView;
         }
     }
 
-    @Override
-    public void onItemClick(ViewGroup vg, View v, int position) {
-        Log.i("position--->",position+"");
-//        mCategoryView.setVisibility(View.GONE);
-//        mBackView.setVisibility(View.VISIBLE);
-//        mSwipeView.setVisibility(View.GONE);
-        List<SwitchImage> switchImages = imageSwitchWall.getData();
-        SwitchImage switchImage = switchImages.get(position);
-        Log.i("switchImage--------------->",switchImage.toString());
-        Category category = new Category();
-        category.setId(switchImage.getId());
-//        FetchData(currentPage=1,category);
-//        mHomeAdapter.notifyDataSetChanged();
-        SpecialFragment fragment=SpecialFragment.newInstance("",category);
-        ((BaseActivity)getActivity()).navigationToFragment(fragment);
-    }
-
-    public void toggleMenu(){
-        if (homeCategoryFragment.isHidden()){
+    public void toggleMenu()
+    {
+        if (homeCategoryFragment.isHidden())
+        {
             mCategoryView.setImageResource(R.drawable.icon_close);
             fl_category_menu.setVisibility(View.VISIBLE);
             getChildFragmentManager().beginTransaction().show(homeCategoryFragment).commit();
-        }else {
+        } else
+        {
             mCategoryView.setImageResource(R.drawable.icon_category);
             fl_category_menu.setVisibility(View.GONE);
             getChildFragmentManager().beginTransaction().hide(homeCategoryFragment).commit();
@@ -591,64 +738,79 @@ public class HomeFragment extends BaseFragment implements
         homeCategoryFragment.notifyDataSetChanged();
     }
 
-    private String getTime() {
+    private String getTime()
+    {
         return new SimpleDateFormat("MM-dd HH:mm", Locale.CHINA).format(new Date());
     }
 
     @Override
-    public void onRefresh() {
-        Log.i("OnRefreshListener---->","OnRefreshListener");
-        FetchData(currentPage=1,mCategory);
+    public void onRefresh()
+    {
+        Log.i("OnRefreshListener---->", "OnRefreshListener");
+        FetchData(currentPage = 1, mCategory);
     }
 
     @Override
-    public void onLoad() {
-        Log.i("onLoad------>","onLoad");
-        FetchData(++currentPage,mCategory);
+    public void onLoad()
+    {
+        Log.i("onLoad------>", "onLoad");
+        FetchData(++currentPage, mCategory);
     }
 
     @Override
-    public void onCategorySelected(Category category) {
-        Log.i("HomeFragment-------------->",category==null?"全部":category.getName());
-        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
+    public void onCategorySelected(Category category)
+    {
+        Log.i("HomeFragment-------------->", category == null ? "全部" : category.getName());
+        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
         FetchData(currentPage = 1, mCategory = category);
         mHomeAdapter.notifyDataSetChanged();
         toggleMenu();
     }
 
-    private void getBannerData(){
-        String url=ZhaiDou.HOME_BANNER_URL;
-        Log.i("HOME_BANNER_URL------------------->",ZhaiDou.HOME_BANNER_URL);
-        final List<SwitchImage> banners = new ArrayList<SwitchImage>();
-        JsonObjectRequest bannerRequest = new JsonObjectRequest(url,new Response.Listener<JSONObject>(){
+    /**
+     * 获得广告数据
+     */
+    private void getBannerData()
+    {
+        String url = ZhaiDou.HOME_BANNER_URL;
+        Log.i("HOME_BANNER_URL------------------->", ZhaiDou.HOME_BANNER_URL);
+        banners = new ArrayList<SwitchImage>();
+        JsonObjectRequest bannerRequest = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
             @Override
-            public void onResponse(JSONObject jsonObject) {
-                Log.i("bannerRequest------>",jsonObject.toString());
-                JSONArray article_categories=jsonObject.optJSONArray("article_categories");
-                if (article_categories!=null&&article_categories.length()>0){
-                    for(int i=0;i<article_categories.length();i++){
-                        JSONObject categoryobj =article_categories.optJSONObject(i);
-                        JSONArray childrenObj =  categoryobj.optJSONArray("children");
-                        for (int k=0;k<childrenObj.length();k++){
+            public void onResponse(JSONObject jsonObject)
+            {
+                Log.i("bannerRequest------>", jsonObject.toString());
+                JSONArray article_categories = jsonObject.optJSONArray("article_categories");
+                if (article_categories != null && article_categories.length() > 0)
+                {
+                    for (int i = 0; i < article_categories.length(); i++)
+                    {
+                        JSONObject categoryobj = article_categories.optJSONObject(i);
+                        JSONArray childrenObj = categoryobj.optJSONArray("children");
+                        for (int k = 0; k < childrenObj.length(); k++)
+                        {
                             JSONObject banner = childrenObj.optJSONObject(k);
                             int id = banner.optInt("id");
                             String name = banner.optString("name");
                             String url = banner.optJSONObject("avatar").optString("url");
 
-                            SwitchImage switchImage = new SwitchImage("http://"+url,id,name);
+                            SwitchImage switchImage = new SwitchImage("http://" + url, id, name);
                             banners.add(switchImage);
                         }
                     }
                     Message message = new Message();
-                    message.what=UPDATE_BANNER;
+                    message.what = UPDATE_BANNER;
                     message.obj = banners;
                     handler.sendMessage(message);
                 }
 
             }
-        },new Response.ErrorListener(){
+        }, new Response.ErrorListener()
+        {
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
+            public void onErrorResponse(VolleyError volleyError)
+            {
 
             }
         });
@@ -656,12 +818,13 @@ public class HomeFragment extends BaseFragment implements
     }
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
+    {
 
         Article article = articleList.get(position);
-        Log.i("id----->",article.getId()+"");
+        Log.i("id----->", article.getId() + "");
         Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
-        detailIntent.putExtra("id", article.getId()+"");
+        detailIntent.putExtra("id", article.getId() + "");
         detailIntent.putExtra("from", "product");
         detailIntent.putExtra("title", article.getTitle());
         detailIntent.putExtra("cover_url", article.getImg_url());
@@ -692,4 +855,55 @@ public class HomeFragment extends BaseFragment implements
         FetchData(++currentPage, mCategory);
     }
 
+    private class MyPageChangeListener implements ViewPager.OnPageChangeListener
+    {
+        public void onPageSelected(int position)
+        {
+            currentItem = position;
+            if (adPics.size()!=0)
+            {
+                changeDotsBg(currentItem % adPics.size());
+            }
+        }
+        public void onPageScrollStateChanged(int arg0)
+        {
+            if (arg0 == 0)
+            {
+                nowAction = false;
+            }
+            if (arg0 == 1)
+            {
+                nowAction = true;
+            }
+            if (arg0 == 2)
+            {
+            }
+        }
+        public void onPageScrolled(int arg0, float arg1, int arg2)
+        {
+            viewPager.getParent().requestDisallowInterceptTouchEvent(true);
+        }
+
+        private void changeDotsBg(int currentitem)
+        {
+            for (int i = 0; i < dots.length; i++)
+            {
+                if (currentitem==i)
+                {
+                    dots[currentitem].setBackgroundResource(R.drawable.home_tips_foucs_icon);
+                }
+                else
+                {
+                    dots[i].setBackgroundResource(R.drawable.home_tips_icon);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        isStop=false;
+        super.onDestroy();
+    }
 }
