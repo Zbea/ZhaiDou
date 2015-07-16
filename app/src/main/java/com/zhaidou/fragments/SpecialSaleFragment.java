@@ -240,6 +240,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                                 product.setUrl(url);
                                 product.setTitle(title);
                                 product.setImage(image);
+                                product.setRemaining(remaining);
                                 products.add(product);
                             }
                             mHandler.sendEmptyMessage(UPDATE_ADAPTER);
@@ -277,6 +278,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             tv_name.setText(product.getTitle());
             imageLoader.LoadImage("http://"+product.getImage(),image);
             tv_price.setText("￥"+product.getPrice()+"元");
+            Log.i("zhaidou","剩余："+product.getRemaining());
             tv_count.setText("剩余"+product.getRemaining()+"%");
             mHashMap.put(position,convertView);
 

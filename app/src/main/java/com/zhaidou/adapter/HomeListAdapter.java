@@ -68,47 +68,80 @@ public class HomeListAdapter extends BaseAdapter
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
-        if (convertView == null)
-        {
-            convertView = LayoutInflater.from(context).inflate(R.layout.home_item_list, null);
-            viewHolder = new ViewHolder();
-            viewHolder.title = (TextView) convertView.findViewById(R.id.title);
-            viewHolder.articleViews = (TextView) convertView.findViewById(R.id.views);
-            viewHolder.cover = (ImageView) convertView.findViewById(R.id.cover);
-            viewHolder.newView = (ImageView) convertView.findViewById(R.id.newsView);
-            convertView.setTag(viewHolder);
-        }
-        else
-        {
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
+       View view=LayoutInflater.from(context).inflate(R.layout.home_item_list, null);
+        TextView title = (TextView) view.findViewById(R.id.title);
+        TextView articleViews = (TextView) view.findViewById(R.id.views);
+        ImageView cover = (ImageView) view.findViewById(R.id.cover);
+        ImageView newView = (ImageView) view.findViewById(R.id.newsView);
 
         Article article = items.get(position);
 
-        viewHolder.title.setText(article.getTitle());
-        viewHolder.articleViews.setText(article.getReviews() + "");
-        ToolUtils.setImageUrl(article.getImg_url(), viewHolder.cover);
+        title.setText(article.getTitle());
+        articleViews.setText(article.getReviews() + "");
+        ToolUtils.setImageUrl(article.getImg_url(), cover);
 
         SharedPreferences editor=context.getSharedPreferences(String.valueOf(article.getId()),0);
-        Log.i("zhaidou------------>",""+editor.getBoolean("is_new",false));
         if (article.getIs_new().equals("true"))
         {
             if (editor.getBoolean("is_new",false))
             {
-                viewHolder.newView.setVisibility(View.GONE);
+                newView.setVisibility(View.GONE);
             }
             else
             {
-                viewHolder.newView.setVisibility(View.VISIBLE);
+                newView.setVisibility(View.VISIBLE);
             }
         }
         else
         {
-            viewHolder.newView.setVisibility(View.GONE);
+            newView.setVisibility(View.GONE);
         }
 
 
 
-        return convertView;
+//        if (convertView == null)
+//        {
+//            convertView = LayoutInflater.from(context).inflate(R.layout.home_item_list, null);
+//            viewHolder = new ViewHolder();
+//            viewHolder.title = (TextView) convertView.findViewById(R.id.title);
+//            viewHolder.articleViews = (TextView) convertView.findViewById(R.id.views);
+//            viewHolder.cover = (ImageView) convertView.findViewById(R.id.cover);
+//            viewHolder.newView = (ImageView) convertView.findViewById(R.id.newsView);
+//            convertView.setTag(viewHolder);
+//        }
+//        else
+//        {
+//            viewHolder = (ViewHolder) convertView.getTag();
+//        }
+//
+//
+//
+//        Article article = items.get(position);
+//
+//        viewHolder.title.setText(article.getTitle());
+//        viewHolder.articleViews.setText(article.getReviews() + "");
+//        ToolUtils.setImageUrl(article.getImg_url(), viewHolder.cover);
+//
+//        SharedPreferences editor=context.getSharedPreferences(String.valueOf(article.getId()),0);
+//        Log.i("zhaidou------------>",""+editor.getBoolean("is_new",false));
+//        if (article.getIs_new().equals("true"))
+//        {
+//            if (editor.getBoolean("is_new",false))
+//            {
+//                viewHolder.newView.setVisibility(View.GONE);
+//            }
+//            else
+//            {
+//                viewHolder.newView.setVisibility(View.VISIBLE);
+//            }
+//        }
+//        else
+//        {
+//            viewHolder.newView.setVisibility(View.GONE);
+//        }
+
+
+
+        return view;
     }
 }

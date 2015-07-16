@@ -32,7 +32,8 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
             <com.zhaidou.view.TypeFaceTextView
                 android:paddingLeft="5dp"
                 android:layout_width="wrap_content"
@@ -41,7 +42,8 @@
                 android:id="@+id/tv_money"
                 android:layout_height="wrap_content" />
             <FrameLayout
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="3dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
                 <com.zhaidou.view.TypeFaceTextView
@@ -71,7 +73,7 @@
                 android:ellipsize="end"
                 android:id="@+id/tv_count"
                 android:textColor="#55000000"
-                android:text="剩余50%"/>
+                android:text=""/>
         </LinearLayout>
     </RelativeLayout>
 </LinearLayout>
