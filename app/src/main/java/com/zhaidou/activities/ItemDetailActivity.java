@@ -81,8 +81,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
                 SharedPreferences.Editor editor= sharedPreferences.edit();
                 editor.putBoolean("is_new",true);
                 editor.commit();
-
-//                HomeFragment.newInstance("","").refresh();
+                HomeFragment.refresh();
             }
 
         }

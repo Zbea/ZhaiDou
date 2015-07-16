@@ -39,7 +39,6 @@ public class ImageBgFragment extends BaseFragment {
      * this fragment using the provided parameters.
      *
      * @param title Parameter 1.
-     * @param ResId Parameter 2.
      * @return A new instance of fragment AddVFragment.
      */
     // TODO: Rename and change types and number of parameters
