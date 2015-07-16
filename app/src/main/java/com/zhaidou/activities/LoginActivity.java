@@ -1,49 +1,39 @@
-package com.zhaidou.fragments;
-
-
+package com.zhaidou.activities;
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
+import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alibaba.sdk.android.Environment;
-import com.alibaba.sdk.android.callback.InitResultCallback;
+import com.alibaba.sdk.android.AlibabaSDK;
+import com.alibaba.sdk.android.callback.CallbackContext;
+import com.alibaba.sdk.android.login.LoginService;
+import com.alibaba.sdk.android.login.callback.LoginCallback;
 import com.alibaba.sdk.android.session.model.Session;
-import com.alibaba.sdk.android.util.JSONUtils;
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseActivity;
-import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.model.User;
+import com.zhaidou.utils.NativeHttpUtil;
+import com.zhaidou.utils.SharedPreferencesUtil;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -53,17 +43,14 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import cn.sharesdk.framework.Platform;
 import cn.sharesdk.framework.PlatformActionListener;
@@ -72,30 +59,14 @@ import cn.sharesdk.sina.weibo.SinaWeibo;
 import cn.sharesdk.tencent.qq.QQ;
 import cn.sharesdk.wechat.friends.Wechat;
 
-import com.alibaba.sdk.android.AlibabaSDK;
-import com.alibaba.sdk.android.login.LoginService;
-import com.alibaba.sdk.android.login.callback.LoginCallback;
-import com.zhaidou.utils.NativeHttpUtil;
-
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link LoginFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
+ * Created by wangclark on 15/7/16.
  */
-public class LoginFragment extends BaseFragment implements View.OnClickListener,PlatformActionListener{
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+        public class LoginActivity extends FragmentActivity implements View.OnClickListener,PlatformActionListener,RegisterFragment.RegisterOrLoginListener{
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
     private TextView mEmailView,mPswView,mRegisterView,mResetView;
 
     private TextView mLoginView;
-    public static final String TAG=LoginFragment.class.getSimpleName();
 
     private Dialog mDialog;
 
@@ -108,94 +79,84 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     private static final String SHARED_PRE = "_tae_sdk_demo";
 
     private static final String KEY_ENV_INDEX = "envIndex";
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case 0:
+                    User u=(User)msg.obj;//id,email,token,nick,null
+                    Log.i("handleMessage------------>",u.toString());
+                    SharedPreferencesUtil.saveUser(getApplicationContext(), u);
+                    Intent intent=new Intent();
+                    intent.putExtra("id",u.getId());
+                    intent.putExtra("email",u.getEmail());
+                    intent.putExtra("token",u.getAuthentication_token());
+                    intent.putExtra("nick",u.getNickName());
+                    setResult(RESULT_OK, intent);
+                    finish();//此处一定要调用finish()方法
+                    break;
+            }
 
-    private static final String FORMAT_STRING = "{\"version\":\"1.0.0.daily\",\"target\":\"thirdpartlogin\",\"params\":{\"loginInfo\":{\"loginId\":\"%s\",\"password\":\"%s\"}}}";
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment LoginFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static LoginFragment newInstance(String param1, String param2) {
-        LoginFragment fragment = new LoginFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-    public LoginFragment() {
-        // Required empty public constructor
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
         }
-    }
+    };
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view=inflater.inflate(R.layout.fragment_login, container, false);
-        mEmailView=(TextView)view.findViewById(R.id.tv_email);
-        mPswView=(TextView)view.findViewById(R.id.tv_password);
-        mLoginView=(TextView)view.findViewById(R.id.bt_login);
-        mRegisterView=(TextView)view.findViewById(R.id.tv_register);
-        mResetView=(TextView)view.findViewById(R.id.tv_reset_psw);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.fragment_login);
+        mEmailView=(TextView)findViewById(R.id.tv_email);
+        mPswView=(TextView)findViewById(R.id.tv_password);
+        mLoginView=(TextView)findViewById(R.id.bt_login);
+        mRegisterView=(TextView)findViewById(R.id.tv_register);
+        mResetView=(TextView)findViewById(R.id.tv_reset_psw);
 
-        requestQueue=Volley.newRequestQueue(getActivity());
+        requestQueue= Volley.newRequestQueue(this);
         mLoginView.setOnClickListener(this);
         mRegisterView.setOnClickListener(this);
         mResetView.setOnClickListener(this);
-        view.findViewById(R.id.ll_back).setOnClickListener(this);
-        view.findViewById(R.id.ll_qq).setOnClickListener(this);
-        view.findViewById(R.id.ll_weixin).setOnClickListener(this);
-        view.findViewById(R.id.ll_weibo).setOnClickListener(this);
-        view.findViewById(R.id.ll_taobao).setOnClickListener(this);
+        findViewById(R.id.ll_back).setOnClickListener(this);
+        findViewById(R.id.ll_qq).setOnClickListener(this);
+        findViewById(R.id.ll_weixin).setOnClickListener(this);
+        findViewById(R.id.ll_weibo).setOnClickListener(this);
+        findViewById(R.id.ll_taobao).setOnClickListener(this);
 
-        return view;
+        setRegisterOrLoginListener(this);
     }
 
     @Override
     public void onClick(View view) {
-        ShareSDK.initSDK(getActivity());
+        ShareSDK.initSDK(this);
         switch (view.getId()){
             case R.id.bt_login:
-                hideInputMethod();
                 String email = mEmailView.getText().toString();
                 String password =mPswView.getText().toString();
                 if (TextUtils.isEmpty(email)){
-                    Toast.makeText(getActivity(),"邮箱不能为空哦！",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "邮箱不能为空哦！", Toast.LENGTH_SHORT).show();
                     return;
                 }else if (TextUtils.isEmpty(password)){
-                    Toast.makeText(getActivity(),"密码不能为空哦!",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,"密码不能为空哦!",Toast.LENGTH_SHORT).show();
                     return;
                 }
                 new MyTask().execute();
                 break;
             case R.id.tv_register:
-                RegisterFragment fragment = RegisterFragment.newInstance("","");
-                ((BaseActivity)getActivity()).navigationToFragment(fragment);
+//                RegisterFragment fragment = RegisterFragment.newInstance("","");
+//                ((BaseActivity)).navigationToFragment(fragment);
+                startActivityForResult(new Intent(LoginActivity.this,RegisterActivity.class),200);
                 break;
             case R.id.tv_reset_psw:
                 break;
             case R.id.ll_back:
-                Log.i("ll_back--->","ll_back");
-                ((BaseActivity)getActivity()).popToStack(this);
+                Log.i("ll_back--->", "ll_back");
+//                ((BaseActivity)getActivity()).popToStack(this);
+                finish();
                 break;
             case R.id.ll_weixin:
                 Log.i("ll_weixin--->","ll_weixin");
                 Platform wechat = ShareSDK.getPlatform(Wechat.NAME);
                 if (!wechat.isClientValid()){
-                    Toast.makeText(getActivity(),"没有安装微信客户端哦！",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,"没有安装微信客户端哦！",Toast.LENGTH_SHORT).show();
                     return;
                 }
                 authorize(wechat);
@@ -212,7 +173,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                 break;
             case R.id.ll_taobao:
 
-                AlibabaSDK.getService(LoginService.class).showLogin(getActivity(),new LoginCallback() {
+                AlibabaSDK.getService(LoginService.class).showLogin(LoginActivity.this,new LoginCallback() {
                     @Override
                     public void onSuccess(final Session session) {
                         Log.i("onSuccess-----","onSuccess");
@@ -224,7 +185,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                         params.put("provider","taobao");
                         params.put("nick_name",session.getUser().nick);
 
-                        JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,ZhaiDou.USER_LOGIN_THIRD_VERIFY_URL,new JSONObject(params),new Response.Listener<JSONObject>() {
+                        JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_THIRD_VERIFY_URL,new JSONObject(params),new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject jsonObject) {
                                 Log.i("jsonObject--->",jsonObject.toString());
@@ -254,8 +215,8 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                                         int id = user.optInt("id");
                                         String email = user.optString("email");
                                         User u = new User(id,email,token,nick,null);
-                                        Log.i("LoginFragment----onRegisterOrLoginSuccess---->","onRegisterOrLoginSuccess");
-                                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(u,LoginFragment.this);
+                                        Log.i("LoginFragment----onRegisterOrLoginSuccess---->",user.toString());
+                                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(u,null);
                                     }
                                 }
                             }
@@ -277,11 +238,10 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                 break;
         }
     }
-
     private class MyTask extends AsyncTask<Void,Void,String> {
         @Override
         protected void onPreExecute() {
-            mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), "登陆中");
+            mDialog= CustomLoadingDialog.setLoadingDialog(LoginActivity.this, "登陆中");
             super.onPreExecute();
         }
 
@@ -309,7 +269,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                 String msg = json.optString("message");
                 if (!TextUtils.isEmpty(msg)){
 //                    JSONArray errMsg =  json.optJSONArray("message");
-                    Toast.makeText(getActivity(),msg,Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this,msg,Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -327,8 +287,9 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                     Log.i("token--->",token);
 
                     User user = new User(id,email,token,nick,null);
+                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user,null);
                     Log.i("LoginFragment----onRegisterOrLoginSuccess---->","onRegisterOrLoginSuccess");
-                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user,LoginFragment.this);
+//                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user,LoginFragment.this);
                 }
 
             }catch (Exception e){
@@ -453,8 +414,17 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                         int id = user.optInt("id");
                         String email = user.optString("email");
                         User u = new User(id,email,token,nick,null);
-                        Log.i("LoginFragment----onRegisterOrLoginSuccess---->",mRegisterOrLoginListener==null?"null":mRegisterOrLoginListener.toString());
-                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(u,LoginFragment.this);
+                        Log.i("LoginFragment----onRegisterOrLoginSuccess---->",u.toString());
+                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(u,null);
+//                        Message message=new Message();
+//                        message.obj=u;
+//                        mHandler.sendEmptyMessage(0);
+//                        Intent intent=new Intent();
+//                        intent.putExtra("id",u.getId());
+//                        intent.putExtra("email",u.getEmail());
+//                        intent.putExtra("token",u.getAuthentication_token());
+//                        intent.putExtra("nick",u.getNickName());
+//                        setResult(1000000, intent);
                     }
                 }
             }
@@ -495,7 +465,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
             Log.i("doInBackground--------------->",maps[0].toString());
             String s=null;
             try {
-                s=NativeHttpUtil.post(ZhaiDou.USER_REGISTER_URL,null,maps[0]);
+                s= NativeHttpUtil.post(ZhaiDou.USER_REGISTER_URL, null, maps[0]);
             }catch (Exception e){
                 Log.i("e--->",e.getMessage());
             }
@@ -515,7 +485,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                 String nick=userJson.optString("nick_name");
                 Log.i("LoginFragment----onRegisterOrLoginSuccess---->","onRegisterOrLoginSuccess");
                 User user=new User(id,email,token,nick,avatar);
-                mRegisterOrLoginListener.onRegisterOrLoginSuccess(user,LoginFragment.this);
+                mRegisterOrLoginListener.onRegisterOrLoginSuccess(user,null);
             }catch (Exception e){
 //                Log.i("e--------->",e.getMessage());
             }
@@ -527,5 +497,36 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         protected String doInBackground(String... strings) {
             return null;
         }
+    }
+
+    @Override
+    public void onRegisterOrLoginSuccess(User user, Fragment fragment) {
+        Log.i("onRegisterOrLoginSuccess----------->", user.toString());
+        Message message=new Message();
+        message.obj=user;
+        message.what=0;
+        mHandler.sendMessage(message);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        CallbackContext.onActivityResult(requestCode, resultCode, data);
+        switch (resultCode){
+            case RESULT_OK:
+                if (data!=null){
+                    int id=data.getIntExtra("id",-1);
+                    String email=data.getStringExtra("email");
+                    String token=data.getStringExtra("token");
+                    String nick=data.getStringExtra("nick");
+                    User user=new User(id,email,token,nick,null);
+
+                    Message message=new Message();
+                    message.what=0;
+                    message.obj=user;
+                    mHandler.sendMessage(message);
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

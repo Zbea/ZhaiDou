@@ -47,7 +47,6 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     private String nickName;
     private boolean isShowHeader;
 
-    private String from;
     private LoginFragment loginFragment;
     private RegisterFragment registerFragment;
 
@@ -88,6 +87,8 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         webView.getSettings().setUseWideViewPort(true);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setInitialScale(1);
+        webView.clearCache(true);
+        webView.clearHistory();
         webView.setWebViewClient(new WebViewClient() {
 
             @Override
@@ -125,15 +126,21 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
             public void onPageFinished(WebView view, String url) {
                 if ("lottery".equalsIgnoreCase(from)){
                     Log.i("lottery----------->","onPageFinished"+"------"+token);
-                    webView.loadUrl("javascript:ReceiveUserInfo("+userId+", '"+token+"',"+getDeviceId()+",'"+nickName+"')");
+                    if (!TextUtils.isEmpty(token)){
+                        webView.loadUrl("javascript:ReceiveUserInfo("+userId+", '"+token+"',"+getDeviceId()+",'"+nickName+"')");
+                    }else {
+                        webView.loadUrl("javascript:ReceiveUserInfo("+userId+", '"+""+"',"+getDeviceId()+",'"+nickName+"')");
+                    }
+
                 }else if ("product".equalsIgnoreCase(from)){
+                    if (!TextUtils.isEmpty(token))
                     webView.loadUrl("javascript:ReceiveUserInfo("+userId+", '"+token+"')");
                 }
                 super.onPageFinished(view, url);
             }
         });
         url = getIntent().getStringExtra("url");
-        webView.loadUrl(url);
+        webView.loadUrl(url+"?open=app");
         this.setTitle("");
 
         title = getIntent().getStringExtra("title");
@@ -246,11 +253,11 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 // 分享时Notification的图标和文字  2.5.9以后的版本不调用此方法
         //oks.setNotification(R.drawable.ic_launcher, getString(R.string.app_name));
         // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
-        oks.setTitle(getString(R.string.share));
+        oks.setTitle(title);
         // titleUrl是标题的网络链接，仅在人人网和QQ空间使用
         oks.setTitleUrl(url);
         // text是分享文本，所有平台都需要这个字段
-        oks.setText(title);
+        oks.setText(title+"   "+url);
         // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
         oks.setImageUrl(coverUrl);//确保SDcard下面存在此张图片
         // url仅在微信（包括好友和朋友圈）中使用
@@ -265,41 +272,41 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         oks.show(this);
     }
 
-    public void popToStack(Fragment fragment){
+//    public void popToStack(Fragment fragment){
+//
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        Log.i("childFragmentManager--->", fragmentManager.getBackStackEntryCount()+"");
+//        fragmentManager.popBackStack();
+//        Log.i("childFragmentManager--->", fragmentManager.getBackStackEntryCount()+"");
+//    }
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Log.i("childFragmentManager--->", fragmentManager.getBackStackEntryCount()+"");
-        fragmentManager.popBackStack();
-        Log.i("childFragmentManager--->", fragmentManager.getBackStackEntryCount()+"");
-    }
+//    @Override
+//    public void onRegisterOrLoginSuccess(User user,Fragment fragment) {
+//        Log.i("ItemDetailActivity------------->",user.toString());
+//        saveUserToSP(user);
+//        popToStack(fragment);
+//        if ("lottery".equalsIgnoreCase(from)){
+//            Log.i("onRegisterOrLoginSuccess--lottery----------->","onPageFinished"+"------"+token);
+//            webView.loadUrl("javascript:ReceiveUserInfo("+user.getId()+", '"+user.getAuthentication_token()+"',"+getDeviceId()+",'"+user.getNickName()+"')");
+//        }else if ("product".equalsIgnoreCase(from)){
+//            webView.loadUrl("javascript:ReceiveUserInfo("+user.getId()+", '"+user.getAuthentication_token()+"')");
+//        }
+//
+//    }
+//    private void saveUserToSP(User user){
+//        SharedPreferences.Editor editor = mSharedPreferences.edit();
+//        editor.putInt("userId",user.getId());
+//        editor.putString("email", user.getEmail());
+//        editor.putString("token",user.getAuthentication_token());
+//        editor.putString("avatar",user.getAvatar());
+//        editor.putString("nickName",user.getNickName());
+//        editor.commit();
+//    }
 
-    @Override
-    public void onRegisterOrLoginSuccess(User user,Fragment fragment) {
-        Log.i("ItemDetailActivity------------->",user.toString());
-        saveUserToSP(user);
-        popToStack(fragment);
-        if ("lottery".equalsIgnoreCase(from)){
-            Log.i("onRegisterOrLoginSuccess--lottery----------->","onPageFinished"+"------"+token);
-            webView.loadUrl("javascript:ReceiveUserInfo("+user.getId()+", '"+user.getAuthentication_token()+"',"+getDeviceId()+",'"+user.getNickName()+"')");
-        }else if ("product".equalsIgnoreCase(from)){
-            webView.loadUrl("javascript:ReceiveUserInfo("+user.getId()+", '"+user.getAuthentication_token()+"')");
-        }
-
-    }
-    private void saveUserToSP(User user){
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putInt("userId",user.getId());
-        editor.putString("email", user.getEmail());
-        editor.putString("token",user.getAuthentication_token());
-        editor.putString("avatar",user.getAvatar());
-        editor.putString("nickName",user.getNickName());
-        editor.commit();
-    }
-
-    public void navigationToFragment(Fragment fragment){
-        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container,fragment)
-                .addToBackStack(null).commit();
-    }
+//    public void navigationToFragment(Fragment fragment){
+//        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container,fragment)
+//                .addToBackStack(null).commit();
+//    }
 
     public String getDeviceId(){
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);

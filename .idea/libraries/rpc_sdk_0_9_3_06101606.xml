@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="rpc-sdk-0.9.3_06101606">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/libs/rpc-sdk-0.9.3_06101606.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -41,6 +41,7 @@
             android:name=".activities.ItemDetailActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_item_detail"
+            android:windowSoftInputMode="adjustPan|stateHidden"
             android:screenOrientation="portrait" >
         </activity>
         <activity
@@ -69,6 +70,16 @@
         </activity>
         <activity
             android:name=".activities.CategoryActivity"
+            android:theme="@style/StyledIndicators"
+            android:label="@string/title_activity_search">
+        </activity>
+        <activity
+            android:name=".activities.LoginActivity"
+            android:theme="@style/StyledIndicators"
+            android:label="@string/title_activity_search">
+        </activity>
+        <activity
+            android:name=".activities.RegisterActivity"
             android:theme="@style/StyledIndicators"
             android:label="@string/title_activity_search">
         </activity>

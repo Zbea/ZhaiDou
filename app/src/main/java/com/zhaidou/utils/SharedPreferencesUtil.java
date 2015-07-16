@@ -61,7 +61,7 @@ public class SharedPreferencesUtil {
     }
 
     public static void saveUser(Context context,User user){
-        Log.i("SharedPreferencesUtil--->",user.toString());
+        Log.i("SharedPreferencesUtil--->saveUser",context==null?"null":"no null");
         SharedPreferences mSharedPreferences = context.getSharedPreferences
                 (SPName, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = mSharedPreferences.edit();

@@ -1,45 +1,30 @@
-package com.zhaidou.fragments;
-
-
+package com.zhaidou.activities;
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.ParseError;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.activities.ItemDetailActivity;
-import com.zhaidou.base.BaseActivity;
-import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.User;
+import com.zhaidou.utils.SharedPreferencesUtil;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -54,135 +39,106 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link RegisterFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
+ * Created by wangclark on 15/7/16.
  */
-public class RegisterFragment extends BaseFragment implements View.OnClickListener{
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    public static final String TAG=RegisterFragment.class.getSimpleName();
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
+public class RegisterActivity extends FragmentActivity implements View.OnClickListener{
     private EditText mEmailView,mNickView,mPswView,mConfirmPsw;
     private TextView mLogin;
     private TextView mRegister;
     private RequestQueue mRequestQueue;
     SharedPreferences mSharedPreferences;
-    static RegisterOrLoginListener mRegisterListener;
-
     private Dialog mDialog;
     private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
-            String s = (String)msg.obj;
+            switch (msg.what){
+                case 0:
+                    User user =(User)msg.obj;
+                    SharedPreferencesUtil.saveUser(getApplicationContext(), user);
+                    Log.i("handleMessage---------->",user.toString());
+                    Intent intent=new Intent();
+                    intent.putExtra("id",user.getId());
+                    intent.putExtra("email",user.getEmail());
+                    intent.putExtra("token",user.getAuthentication_token());
+                    intent.putExtra("nick",user.getNickName());
+                    setResult(RESULT_OK, intent);
+                    finish();//此处一定要调用finish()方法
+                    break;
+            }
         }
     };
 
-    // TODO: Rename and change types and number of parameters
-    public static RegisterFragment newInstance(String param1, String param2) {
-        RegisterFragment fragment= new RegisterFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-//        mRegisterListener = registerOrLoginListener;
-        return fragment;
-    }
-    public RegisterFragment() {
-        // Required empty public constructor
-    }
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.fragment_register);
+        mEmailView=(EditText)findViewById(R.id.tv_email);
+        mNickView=(EditText)findViewById(R.id.tv_nick);
+        mPswView=(EditText)findViewById(R.id.tv_password);
+        mConfirmPsw=(EditText)findViewById(R.id.tv_password_confirm);
+        mLogin=(TextView)findViewById(R.id.tv_login);
+        mRegister=(TextView)findViewById(R.id.bt_register);
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view=inflater.inflate(R.layout.fragment_register, container, false);
-        mEmailView=(EditText)view.findViewById(R.id.tv_email);
-        mNickView=(EditText)view.findViewById(R.id.tv_nick);
-        mPswView=(EditText)view.findViewById(R.id.tv_password);
-        mConfirmPsw=(EditText)view.findViewById(R.id.tv_password_confirm);
-        mLogin=(TextView)view.findViewById(R.id.tv_login);
-        mRegister=(TextView)view.findViewById(R.id.bt_register);
+        mSharedPreferences=getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
 
-        mSharedPreferences=getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
-
-        mRequestQueue=Volley.newRequestQueue(getActivity());
+        mRequestQueue= Volley.newRequestQueue(this);
         mRegister.setOnClickListener(this);
         mLogin.setOnClickListener(this);
-        view.findViewById(R.id.ll_back).setOnClickListener(this);
-
-        return view;
+        findViewById(R.id.ll_back).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.bt_register:
-                hideInputMethod();
                 String email = mEmailView.getText().toString();
                 String password =mPswView.getText().toString();
                 String psw_confirm=mConfirmPsw.getText().toString();
                 String nick =mNickView.getText().toString();
                 if (TextUtils.isEmpty(email)){
-                    Toast.makeText(getActivity(),"邮箱不能为空哦！",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "邮箱不能为空哦！", Toast.LENGTH_SHORT).show();
                     return;
                 }else if (TextUtils.isEmpty(nick)){
-                    Toast.makeText(getActivity(),"昵称不能为空哦！",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,"昵称不能为空哦！",Toast.LENGTH_SHORT).show();
                     return;
                 }else if (TextUtils.isEmpty(password)){
-                    Toast.makeText(getActivity(),"密码不能为空哦！",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,"密码不能为空哦！",Toast.LENGTH_SHORT).show();
                     return;
                 }else if (!password.equals(psw_confirm)){
-                    Toast.makeText(getActivity(),"两次密码不一致哦！",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,"两次密码不一致哦！",Toast.LENGTH_SHORT).show();
                     return;
                 }
                 doRegister();
                 break;
             case R.id.tv_login:
-                ((BaseActivity)getActivity()).popToStack(this);
+//                ((BaseActivity)getActivity()).popToStack(this);
                 break;
             case R.id.ll_back:
-                ((BaseActivity)getActivity()).popToStack(this);
+//                ((BaseActivity)getActivity()).popToStack(this);
+                finish();
                 break;
             default:
                 break;
         }
     }
-
     private void doRegister(){
-        Log.i("doRegister------->","doRegister");
+        Log.i("doRegister------->", "doRegister");
 
         new MyTask().execute();
     }
 
 
-    private class MyTask extends AsyncTask<Void,Void,String>{
+    private class MyTask extends AsyncTask<Void,Void,String> {
         @Override
         protected void onPreExecute() {
-            mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"注册中");
+            mDialog= CustomLoadingDialog.setLoadingDialog(RegisterActivity.this, "注册中");
             super.onPreExecute();
         }
 
@@ -211,15 +167,12 @@ public class RegisterFragment extends BaseFragment implements View.OnClickListen
         protected void onPostExecute(String s) {
             if (mDialog!=null)
                 mDialog.dismiss();
-            Log.i("onPostExecute------------>",s);
-            Log.i("setRegisterOrLoginListener-------->",mRegisterListener.toString());
             try {
                 JSONObject json = new JSONObject(s);
                 Object obj = json.opt("message");
                 if (obj!=null){
-//                    mRegisterListener.onRegisterOrLoginSuccess(null);
                     JSONArray errMsg =  json.optJSONArray("message");
-                    Toast.makeText(getActivity(),errMsg.optString(0),Toast.LENGTH_LONG).show();
+                    Toast.makeText(RegisterActivity.this,errMsg.optString(0),Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -240,12 +193,11 @@ public class RegisterFragment extends BaseFragment implements View.OnClickListen
                 Log.i("nickname--->","nickname");
                 User user=new User(id,email,token,nickname,avatar);
                 Log.i("user------------>",user.toString());
-                if (getActivity()!=null&&getActivity() instanceof ItemDetailActivity){
-                    ((BaseActivity)getActivity()).onRegisterOrLoginSuccess(user,RegisterFragment.this);
-                }else {
-                    mRegisterListener.onRegisterOrLoginSuccess(user,RegisterFragment.this);
-                }
                 Log.i("onRegisterOrLoginSuccess---->","onRegisterOrLoginSuccess");
+                Message message=new Message();
+                message.what=0;
+                message.obj=user;
+                handler.sendMessage(message);
             }catch (Exception e){
 
             }
@@ -300,15 +252,6 @@ public class RegisterFragment extends BaseFragment implements View.OnClickListen
                 }
             }
         }
-    }
-
-    public void setRegisterOrLoginListener(RegisterOrLoginListener mRegisterListerner) {
-        Log.i("setRegisterOrLoginListener-------->",mRegisterListerner.toString());
-        this.mRegisterListener = mRegisterListerner;
-    }
-
-    public interface RegisterOrLoginListener{
-        public void onRegisterOrLoginSuccess(User user,Fragment fragment);
     }
 
 }

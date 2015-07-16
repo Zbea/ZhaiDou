@@ -308,7 +308,9 @@ public class CategoryFragment1 extends BaseFragment{
                     Log.i("position----->",position+"");
                     Log.i("values----->",values+"");
                     CategoryItem item = (CategoryItem)values;
-                    Log.i("CategoryItem item----------------->",item.getId()+"");
+                    if (TextUtils.isEmpty(item.getName()))
+                        return;
+                    Log.i("CategoryItem item----------------->",item.getName()+"");
                     Intent intent = new Intent(getActivity(),CategoryActivity.class);
                     intent.putExtra("id",item.getId());
                     intent.putExtra("title",item.getName());

@@ -3,6 +3,7 @@ package com.zhaidou;
 import com.alibaba.sdk.android.AlibabaSDK;
 import com.alibaba.sdk.android.callback.CallbackContext;
 import com.alibaba.sdk.android.callback.InitResultCallback;
+import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.fragments.CategoryFragment1;
 import com.zhaidou.fragments.DiyFragment;
@@ -14,8 +15,10 @@ import com.zhaidou.fragments.PersonalMainFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.fragments.StrategyFragment;
 import com.zhaidou.fragments.WebViewFragment;
+import com.zhaidou.model.User;
 import com.zhaidou.utils.SharedPreferencesUtil;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -71,10 +74,26 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     public String filePath = "";
 
     private long mTime;
+    private Activity mContext;
 
     private Handler mHandler =new Handler(){
         @Override
         public void handleMessage(Message msg) {
+            switch (msg.what){
+                case 0:
+                    User user=(User)msg.obj;
+                    if (persoanlFragment==null){
+                        persoanlFragment= PersonalFragment.newInstance("", "");
+                    }else {
+                        persoanlFragment.refreshData(MainActivity.this);
+                    }
+                    Log.i("currentFragment----------->",currentFragment.toString());
+                    Log.i("persoanlFragment----------->",persoanlFragment.toString());
+
+                    selectFragment(currentFragment, persoanlFragment);
+                    setButton(personalButton);
+                    break;
+            }
 
         }
     };
@@ -83,6 +102,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main_layout);
+        mContext=this;
         init();
         AlibabaSDK.asyncInit(this,new InitResultCallback() {
             @Override
@@ -189,10 +209,12 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             public void onClick(View view) {
                 Log.i("---personalButton-->",checkLogin()+"");
                 if (!checkLogin()){
-                    mLoginFragment=LoginFragment.newInstance("","");
-                    mLoginFragment.setRegisterOrLoginListener(MainActivity.this);
-                    navigationToFragment(mLoginFragment);
-                    mChildContainer.setVisibility(View.VISIBLE);
+//                    mLoginFragment=LoginFragment.newInstance("","");
+//                    mLoginFragment.setRegisterOrLoginListener(MainActivity.this);
+//                    navigationToFragment(mLoginFragment);
+//                    mChildContainer.setVisibility(View.VISIBLE);
+                    Intent intent=new Intent(MainActivity.this, LoginActivity.class);
+                    MainActivity.this.startActivityForResult(intent, 10000);
                 }else {
                     if (persoanlFragment==null){
                         persoanlFragment= PersonalFragment.newInstance("", "");
@@ -222,17 +244,19 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     }
 
     public void selectFragment(Fragment from, Fragment to) {
-
+Log.i("selectFragment---->","selectFragment1");
         if (currentFragment != to) {
             currentFragment = to;
-
+            Log.i("selectFragment---->","selectFragment2");
             FragmentManager manager = getSupportFragmentManager();
-
+            Log.i("selectFragment---->","selectFragment3");
             FragmentTransaction transaction = manager.beginTransaction();
-
+            Log.i("selectFragment---->","selectFragment4");
             if (!to.isAdded()) {
+                Log.i("selectFragment---->","selectFragment5");
                 transaction.hide(from).add(R.id.content, to).commit();
             } else {
+                Log.i("selectFragment---->","selectFragment6");
                 transaction.hide(from).show(to).commit();
             }
         }
@@ -314,10 +338,32 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        CallbackContext.onActivityResult(requestCode,resultCode,data);
+        switch (resultCode){
+            case RESULT_OK:
+
+//                User user =(User)(data.getBundleExtra("user").getSerializable("user"));
+                //id,email,token,nick,null
+                int id=data.getIntExtra("id",-1);
+                String email=data.getStringExtra("email");
+                String token=data.getStringExtra("token");
+                String nick=data.getStringExtra("nick");
+                User user=new User(id,email,token,nick,null);
+                Log.i("onActivityResult---user---------->",user.toString());
+                Message message=new Message();
+                message.obj=user;
+                message.what=0;
+                mHandler.sendMessage(message);
+                break;
+        }
+
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @Override
+    protected void onDestroy() {
+        Log.i("onDestroy------------->","onDestroy");
+        super.onDestroy();
+    }
 
     public void logout(Fragment fragment){
         popToStack(fragment);

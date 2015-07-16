@@ -1,9 +1,11 @@
 package com.zhaidou.model;
 
+import java.io.Serializable;
+
 /**
  * Created by wangclark on 15/6/18.
  */
-public class User {
+public class User implements Serializable{
     private int id;
     private String email;
     private String create_at;

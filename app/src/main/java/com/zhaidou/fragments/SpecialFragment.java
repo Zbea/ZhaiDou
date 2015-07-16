@@ -1,6 +1,7 @@
 package com.zhaidou.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -24,6 +25,7 @@ import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshListView;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -114,6 +116,20 @@ public class SpecialFragment extends BaseFragment implements PullToRefreshBase.O
         listView.setAdapter(mHomeAdapter);
         mRequestQueue = Volley.newRequestQueue(getActivity());
         FetchData(currentPage=1,mCategory);
+
+        mHomeAdapter.setOnInViewClickListener(R.id.rl_fragment_strategy,new BaseListAdapter.onInternalClickListener() {
+            @Override
+            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                Article article=(Article)values;
+                Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
+                detailIntent.putExtra("id", article.getId() + "");
+                detailIntent.putExtra("from", "product");
+                detailIntent.putExtra("title", article.getTitle());
+                detailIntent.putExtra("cover_url", article.getImg_url());
+                detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+article.getId());
+                startActivity(detailIntent);
+            }
+        });
         return view;
     }
 

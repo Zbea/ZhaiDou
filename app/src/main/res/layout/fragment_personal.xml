@@ -45,8 +45,7 @@
                     android:id="@+id/tv_nickname"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:text="周杰伦"/>
+                    android:textColor="@color/white"/>
                 <ImageView
                     android:id="@+id/iv_gender"
                     android:layout_width="wrap_content"
@@ -60,15 +59,13 @@
                     android:id="@+id/tv_province"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:text="广州省"/>
+                    android:textColor="@color/white"/>
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_city"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingLeft="5dp"
-                    android:textColor="@color/white"
-                    android:text="深圳市"/>
+                    android:textColor="@color/white"/>
                 </LinearLayout>
         </LinearLayout>
         <LinearLayout
@@ -91,8 +88,7 @@
                 android:singleLine="true"
                 android:gravity="center_vertical"
                 android:ellipsize="end"
-                android:textColor="@color/white"
-                android:text="我是减速机HD阿呆回复爱回复i啊哈还付海峰hi阿富汗i阿海珐i挨罚hi法海"/>
+                android:textColor="@color/white"/>
         </LinearLayout>
     </RelativeLayout>
 

@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -38,6 +39,7 @@ import com.zhaidou.utils.AsyncImageLoader1;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -72,6 +74,7 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
     private AsyncImageLoader1 imageLoader;
     private CollocationAdapter mAdapter;
 
+    private Activity mActivity;
     private CollocationCountChangeListener collocationCountChangeListener;
 
     private Dialog mDialog;
@@ -116,9 +119,32 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+        }
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        mActivity=activity;
+        super.onAttach(activity);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        try {
+            Field childFragmentManager = Fragment.class
+                    .getDeclaredField("mChildFragmentManager");
+            childFragmentManager.setAccessible(true);
+            childFragmentManager.set(this, null);
+
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -142,7 +168,9 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
 
     public void FetchCollocationData(int page){
 
-        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
+        Log.i("getParentFragment().getActivity()------------->",getParentFragment()==null?"null":getParentFragment().getActivity().toString());
+Log.i("mActivity------------->",mActivity==null?"null":mActivity.toString());
+        mDialog= CustomLoadingDialog.setLoadingDialog(mActivity,"loading");
         int userId=mSharedPreferences.getInt("userId", -1);
         Log.i("FetchCollocationData------->",userId+"");
         //"http://www.zhaidou.com/api/v1/users/77069/bean_collocations?page="+page
@@ -234,7 +262,10 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
 
     public void refreshData(){
         collocations.clear();
-        mAdapter.clear();
+        if (mAdapter!=null){
+            mAdapter.clear();
+            mAdapter.notifyDataSetChanged();
+        }
         FetchCollocationData(currentpage=1);
     }
 }

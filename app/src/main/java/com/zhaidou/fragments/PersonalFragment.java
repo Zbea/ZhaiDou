@@ -4,6 +4,7 @@ package com.zhaidou.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -252,17 +253,21 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL+id+"/profile",new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
+                Log.i("getUserDetail----->",jsonObject.toString());
                 JSONObject userObj = jsonObject.optJSONObject("profile");
-                String nick_name=userObj.optString("nick_name");
-                String mobile=userObj.optString("mobile");
-                String description=userObj.optString("description");
+                if (userObj!=null){
+                    String nick_name=userObj.optString("nick_name");
+                    String mobile=userObj.optString("mobile");
+                    String description=userObj.optString("description");
 //                int profileId=userObj.optString("id");
-                boolean verified=userObj.optBoolean("verified");
-                User user=new User(null,null,nick_name,verified,mobile,description);
-                Message message=new Message();
-                message.what=UPDATE_USER_DESCRIPTION;
-                message.obj=user;
-                mHandler.sendMessage(message);
+                    boolean verified=userObj.optBoolean("verified");
+                    User user=new User(null,null,nick_name,verified,mobile,description);
+                    Message message=new Message();
+                    message.what=UPDATE_USER_DESCRIPTION;
+                    message.obj=user;
+                    mHandler.sendMessage(message);
+                }
+
             }
         },new Response.ErrorListener(){
             @Override
@@ -316,7 +321,8 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     }
 
 
-    public void refreshData(){
+    public void refreshData(Activity activity){
+        mActivity=activity;
         Log.i("PersonalFragment------->","refreshData");
         getUserDetail();
         getUserInfo();
@@ -334,8 +340,15 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             mCollectFragment.setCollectCountChangeListener(this);
             mFragments.add(mCollectFragment);
             mFragments.add(mCollocationFragment);
+            mIndicator.notifyDataSetChanged();
             mCollocationFragment.refreshData();
             mCollectFragment.refreshData();
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.i("onActivityResult------------>","resultCode------->"+"requestCode--->"+data.getBundleExtra("user").toString());
     }
 }
