@@ -394,6 +394,8 @@ public class HomeFragment extends BaseFragment implements
 
         initBroadcastReceiver();
 
+
+
         WindowManager wm = ((Activity)mContext).getWindowManager();
         screenWidth = wm.getDefaultDisplay().getWidth();
 
@@ -762,6 +764,8 @@ public class HomeFragment extends BaseFragment implements
         //mHomeAdapter.notifyDataSetChanged();
         toggleMenu();
     }
+
+
 
     /**
      * 获得广告数据
