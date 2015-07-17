@@ -1,8 +1,11 @@
 package com.zhaidou.fragments;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -36,6 +39,7 @@ import com.zhaidou.model.Category;
 import com.zhaidou.model.SwitchImage;
 import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.NetworkUtils;
+import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -61,18 +65,38 @@ public class SpecialFragment extends BaseFragment implements PullToRefreshBase.O
     private Category mCategory;
 
     private WeakHashMap<Integer,View> mHashMap = new WeakHashMap<Integer, View>();
-    private AsyncImageLoader1 imageLoader;
     private PullToRefreshListView listView;
     private int currentPage=1;
     private int count=-1;
 
     private Dialog mDialog;
+    private Context mContext;
 
     private static final int UPDATE_HOMELIST=3;
     private RequestQueue mRequestQueue;
     private List<Article> articleList = new ArrayList<Article>();
 
     private HomeAdapter mHomeAdapter;
+
+    private BroadcastReceiver broadcastReceiver=new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            String tag=intent.getAction();
+            if (tag.equals(ZhaiDou.IntentRefreshListTag))
+            {
+                refresh();
+            }
+
+        }
+    };
+
+    private void refresh()
+    {
+        mHomeAdapter.notifyDataSetChanged();
+    }
+
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             mHomeAdapter.notifyDataSetChanged();
@@ -117,6 +141,11 @@ public class SpecialFragment extends BaseFragment implements PullToRefreshBase.O
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_special, container, false);
+
+        mContext=getActivity();
+
+        initBroadcastReceiver();
+
         listView=(PullToRefreshListView)view.findViewById(R.id.lv_special_list);
         listView.setMode(PullToRefreshBase.Mode.BOTH);
         listView.setOnRefreshListener(this);
@@ -153,6 +182,16 @@ public class SpecialFragment extends BaseFragment implements PullToRefreshBase.O
             }
         });
         return view;
+    }
+
+    /**
+     * 广播注册
+     */
+    private void initBroadcastReceiver()
+    {
+        IntentFilter intentFilter=new IntentFilter();
+        intentFilter.addAction(ZhaiDou.IntentRefreshListTag);
+        mContext.registerReceiver(broadcastReceiver,intentFilter);
     }
 
     private void FetchData(final int page,Category category){
@@ -206,9 +245,10 @@ public class SpecialFragment extends BaseFragment implements PullToRefreshBase.O
     }
 
     public class HomeAdapter extends BaseListAdapter<Article> {
+        Context context;
         public HomeAdapter(Context context, List<Article> list) {
             super(context, list);
-            imageLoader=new AsyncImageLoader1(context);
+            this.context=context;
         }
 
         @Override
@@ -221,12 +261,28 @@ public class SpecialFragment extends BaseFragment implements PullToRefreshBase.O
             TextView title = ViewHolder.get(convertView, R.id.title);
             TextView articleViews = ViewHolder.get(convertView,R.id.views);
             ImageView cover = ViewHolder.get(convertView,R.id.cover);
+            ImageView newView = ViewHolder.get(convertView,R.id.newsView);
 
             Article article = getList().get(position);
 
             title.setText(article.getTitle());
             articleViews.setText(article.getReviews()+"");
-            imageLoader.LoadImage(article.getImg_url(),cover);
+            ToolUtils.setImageCacheUrl(article.getImg_url(), cover);
+
+            SharedPreferences editor = context.getSharedPreferences(String.valueOf(article.getId()), 0);
+            if (article.getIs_new().equals("true"))
+            {
+                if (editor.getBoolean("is_new", false))
+                {
+                    newView.setVisibility(View.GONE);
+                } else
+                {
+                    newView.setVisibility(View.VISIBLE);
+                }
+            } else
+            {
+                newView.setVisibility(View.GONE);
+            }
 
             mHashMap.put(position,convertView);
             return convertView;

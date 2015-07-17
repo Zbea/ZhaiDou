@@ -38,9 +38,13 @@ import com.zhaidou.utils.ToolUtils;
 import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
 
-public class ItemDetailActivity extends BaseActivity implements View.OnClickListener,RegisterFragment.RegisterOrLoginListener,LoginFragment.BackClickListener{
+public class ItemDetailActivity extends BaseActivity implements View.OnClickListener,
+        RegisterFragment.RegisterOrLoginListener,
+        LoginFragment.BackClickListener
 
-//    private WebView webView;
+{
+
+    private WebView webView;
 
     /* 以下代码应该封装为一个对象 */
     private String title;
