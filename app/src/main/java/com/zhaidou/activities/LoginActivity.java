@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -84,6 +85,9 @@ import cn.sharesdk.wechat.friends.Wechat;
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 0:
+                    if (mDialog!=null){
+                        mDialog.dismiss();
+                    }
                     User u=(User)msg.obj;//id,email,token,nick,null
                     Log.i("handleMessage------------>",u.toString());
                     SharedPreferencesUtil.saveUser(getApplicationContext(), u);
@@ -365,12 +369,16 @@ import cn.sharesdk.wechat.friends.Wechat;
 //        }
         plat.setPlatformActionListener(this);
         //关闭SSO授权
-        plat.SSOSetting(false);
+        if ("SinaWeibo".equalsIgnoreCase(plat.getName())){
+            plat.SSOSetting(true);
+        }else {
+            plat.SSOSetting(false);
+        }
         plat.showUser(null);
     }
 
     @Override
-    public void onComplete(final Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
+    public void onComplete(final Platform platform, int i, final HashMap<String, Object> stringObjectHashMap) {
         Log.i("onComplete----->",platform.getName()+"---"+i);
         Log.i("stringObjectHashMap",stringObjectHashMap.toString());
         String plat =platform.getName();
@@ -400,7 +408,12 @@ import cn.sharesdk.wechat.friends.Wechat;
                     registers.put("user[nick_name]",platform.getDb().getUserName());
                     registers.put("user[uid]",platform.getDb().getUserId());
                     registers.put("user[provider]",provider);
-                    registers.put("profile_image",platform.getDb().getUserIcon());
+                    Log.i("provider---------------->",provider);
+                    if ("tqq".equalsIgnoreCase(provider)){//http://www.zhaidou.com/uploads/user/avatar/77069/thumb_f713f712d202b1ecab67497877401835.png
+                        registers.put("profile_image","http://www.zhaidou.com/uploads/user/avatar/77069/thumb_f713f712d202b1ecab67497877401835.png");
+                    }else {
+                        registers.put("profile_image",platform.getDb().getUserIcon());
+                    }
 
                     new RegisterTask().execute(registers);
                 }else {
@@ -431,6 +444,7 @@ import cn.sharesdk.wechat.friends.Wechat;
         },new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
+                Toast.makeText(LoginActivity.this,"网络状况不太好哦",Toast.LENGTH_SHORT).show();
             }
         });
         requestQueue.add(request);

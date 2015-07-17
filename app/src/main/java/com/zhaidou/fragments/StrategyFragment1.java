@@ -180,10 +180,14 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
 
             @Override
             public void onResponse(JSONObject json) {
+                Log.i("FetchData--------------->",json.toString());
                 listView.onRefreshComplete();
                 JSONArray articles = json.optJSONArray("articles");
                 JSONObject meta = json.optJSONObject("meta");
+                int size = meta.optInt("size");
                 count=meta==null?0:meta.optInt("count");
+                if (count<size)
+                    listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                 if (articles==null) return;
                 for (int i=0;i<articles.length();i++){
                     JSONObject article =articles.optJSONObject(i);

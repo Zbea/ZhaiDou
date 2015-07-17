@@ -12,7 +12,6 @@ public class ZhaiDou {
     public static String HOT_SEARCH_URL=HOME_BASE_URL+"article/api/articles/hot_search";
     public static String INDEX_CATEGORY_FILTER=HOME_BASE_URL+"article/api/article_categories";
 
-
     //拼贴大赛
     public static String COMPETITION_URL="http://www.zhaidou.com/competitions/current?zdclient=ios";
 

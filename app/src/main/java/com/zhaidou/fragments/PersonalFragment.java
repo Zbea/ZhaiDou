@@ -344,6 +344,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         getUserInfo();
         if (mFragments!=null){
             if (mFragments.size()>0){
+                Log.i("mFragments.size()>0-------------->","mFragments.size()>0");
                 mCollocationFragment.refreshData();
                 mCollectFragment.refreshData();
             }

@@ -85,7 +85,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     if (persoanlFragment==null){
                         persoanlFragment= PersonalFragment.newInstance("", "");
                     }else {
-                        persoanlFragment.refreshData(MainActivity.this);
+//                        persoanlFragment.refreshData(MainActivity.this);
                     }
                     Log.i("currentFragment----------->",currentFragment.toString());
                     Log.i("persoanlFragment----------->",persoanlFragment.toString());

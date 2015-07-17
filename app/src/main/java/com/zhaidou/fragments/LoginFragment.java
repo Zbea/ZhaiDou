@@ -97,13 +97,13 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     private TextView mLoginView;
     public static final String TAG=LoginFragment.class.getSimpleName();
 
-    private Dialog mDialog;
-
     private RegisterFragment.RegisterOrLoginListener mRegisterOrLoginListener;
     private BackClickListener backClickListener;
 
     public int index;
     RequestQueue requestQueue;
+
+    private Dialog mDialog;
 
     private static final String SHARED_PRE = "_tae_sdk_demo";
 
@@ -446,7 +446,11 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                     registers.put("user[uid]",platform.getDb().getUserId());
                     registers.put("user[provider]",provider);
                     registers.put("user[agreed]",true+"");
-                    registers.put("profile_image",platform.getDb().getUserIcon());
+                    if ("tqq".equalsIgnoreCase(provider)){//http://www.zhaidou.com/uploads/user/avatar/77069/thumb_f713f712d202b1ecab67497877401835.png
+                        registers.put("profile_image","http://www.zhaidou.com/uploads/user/avatar/77069/thumb_f713f712d202b1ecab67497877401835.png");
+                    }else {
+                        registers.put("profile_image",platform.getDb().getUserIcon());
+                    }
 
                     new RegisterTask().execute(registers);
                 }else {

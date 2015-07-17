@@ -83,7 +83,7 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 0:
-                    if (mDialog.isShowing())
+                    if (mDialog!=null&&mDialog.isShowing())
                         mDialog.dismiss();
                     mAdapter.notifyDataSetChanged();
                     int num = msg.arg1;
@@ -167,9 +167,6 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
     }
 
     public void FetchCollocationData(int page){
-
-        Log.i("getParentFragment().getActivity()------------->",getParentFragment()==null?"null":getParentFragment().getActivity().toString());
-Log.i("mActivity------------->",mActivity==null?"null":mActivity.toString());
         mDialog= CustomLoadingDialog.setLoadingDialog(mActivity,"loading");
         int userId=mSharedPreferences.getInt("userId", -1);
         Log.i("FetchCollocationData------->",userId+"");
@@ -180,7 +177,7 @@ Log.i("mActivity------------->",mActivity==null?"null":mActivity.toString());
             public void onResponse(JSONObject jsonObject) {
                 Log.i("FetchCollocationData----->",jsonObject.toString());
                 if (mDialog!=null)
-                {
+                {Log.i("mDialog!=null----------->","mDialog!=null");
                     mDialog.dismiss();
                 }
                 JSONArray collocationsArr=jsonObject.optJSONArray("bean_collocations");
@@ -208,7 +205,10 @@ Log.i("mActivity------------->",mActivity==null?"null":mActivity.toString());
         },new Response.ErrorListener(){
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
+                if (mDialog!=null)
+                {
+                    mDialog.dismiss();
+                }
             }
         });
         mRequestQueue.add(request);

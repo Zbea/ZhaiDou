@@ -110,6 +110,10 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
     private Handler mHandler= new Handler(){
         @Override
         public void handleMessage(Message msg) {
+            if(mDialog!=null)
+            {
+                mDialog.dismiss();
+            }
             productAdapter.notifyDataSetChanged();
             int num =msg.arg1;
             if (collectCountChangeListener!=null){
@@ -230,7 +234,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
      */
     private void setLoadingProgress(String msg)
     {
-        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), msg);
+//        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), msg);
     }
 
     private class MyTask extends AsyncTask<Void,Void,JSONObject>{

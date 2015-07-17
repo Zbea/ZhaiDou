@@ -123,6 +123,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         /* WebView Settings */
         webView = (WebView) findViewById(R.id.detailView);
         webView.getSettings().setUseWideViewPort(true);
+        webView.getSettings().setDomStorageEnabled(true);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setInitialScale(1);
         webView.setWebViewClient(new WebViewClient()
