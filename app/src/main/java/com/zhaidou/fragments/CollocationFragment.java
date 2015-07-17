@@ -177,7 +177,7 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
             public void onResponse(JSONObject jsonObject) {
                 Log.i("FetchCollocationData----->",jsonObject.toString());
                 if (mDialog!=null)
-                {Log.i("mDialog!=null----------->","mDialog!=null");
+                {
                     mDialog.dismiss();
                 }
                 JSONArray collocationsArr=jsonObject.optJSONArray("bean_collocations");

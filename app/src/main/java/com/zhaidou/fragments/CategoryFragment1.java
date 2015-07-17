@@ -38,6 +38,7 @@ import com.zhaidou.model.Category;
 import com.zhaidou.model.CategoryItem;
 import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.PixelUtil;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ChildGridView;
 
 import org.json.JSONArray;
@@ -279,7 +280,6 @@ public class CategoryFragment1 extends BaseFragment{
         public CategoryExpandeAdapter(Context context, List<Category> categories) {
             this.context = context;
             mCatrgoryList=categories;
-            imageLoader=new AsyncImageLoader1(context);
         }
         @Override
         public Object getChild(int groupPosition, int childPosition) {
@@ -395,8 +395,7 @@ public class CategoryFragment1 extends BaseFragment{
             layoutParams.width=PixelUtil.dp2px(30,mContext);
             imageView.setLayoutParams(layoutParams);
             if (!TextUtils.isEmpty(item.getThumb()))
-               imageLoader.LoadImage("http://"+item.getThumb(),imageView);
-//            imageLoader.LoadSmallImage("http://"+item.getThumb(),imageView);
+            ToolUtils.setImageCacheUrl("http://"+item.getThumb(),imageView);
             if (!TextUtils.isEmpty(item.getName()))
                textView.setText(item.getName());
 
