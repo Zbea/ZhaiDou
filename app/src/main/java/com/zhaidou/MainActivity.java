@@ -340,7 +340,6 @@ Log.i("selectFragment---->","selectFragment1");
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode){
             case RESULT_OK:
-
 //                User user =(User)(data.getBundleExtra("user").getSerializable("user"));
                 //id,email,token,nick,null
                 int id=data.getIntExtra("id",-1);
@@ -353,6 +352,10 @@ Log.i("selectFragment---->","selectFragment1");
                 message.obj=user;
                 message.what=0;
                 mHandler.sendMessage(message);
+                break;
+            case 1000:
+
+                Log.i("onActivityResult---user----1000------>","sadadadada");
                 break;
         }
 

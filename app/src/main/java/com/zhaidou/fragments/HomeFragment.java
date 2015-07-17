@@ -808,7 +808,7 @@ public class HomeFragment extends BaseFragment implements
         detailIntent.putExtra("title", article.getTitle());
         detailIntent.putExtra("cover_url", article.getImg_url());
         detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+article.getId());
-        startActivity(detailIntent);
+        startActivityForResult(detailIntent,100);
     }
 
     @Override

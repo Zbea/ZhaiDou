@@ -422,10 +422,17 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         params.put("provider",provider);
         params.put("nick_name",platform.getDb().getUserName());
 
+        Set<String> keys =stringObjectHashMap.keySet();
+        Log.i("stringObjectHashMap--------->",stringObjectHashMap.toString());
+        for(String key:keys){
+            Log.i("key------------->"+key,"   value-------------"+stringObjectHashMap.get(key));
+        }
+
+
         JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,ZhaiDou.USER_LOGIN_THIRD_VERIFY_URL,new JSONObject(params),new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("jsonObject--->",jsonObject.toString());
+//                Log.i("jsonObject--->",jsonObject.toString());
                 int flag=jsonObject.optInt("flag");
 
                 if (0==flag){

@@ -57,7 +57,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     private String nickName;
     private boolean isShowHeader;
 
-    private String from;
+//    private String from;
     private LoginFragment loginFragment;
     private RegisterFragment registerFragment;
 
@@ -326,19 +326,17 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 //        Log.i("childFragmentManager--->", fragmentManager.getBackStackEntryCount()+"");
 //    }
 //
-//    @Override
-//    public void onRegisterOrLoginSuccess(User user,Fragment fragment) {
-//        Log.i("ItemDetailActivity------------->",user.toString());
-//        saveUserToSP(user);
-//        popToStack(fragment);
-//        if ("lottery".equalsIgnoreCase(from)){
-//            Log.i("onRegisterOrLoginSuccess--lottery----------->","onPageFinished"+"------"+token);
-//            webView.loadUrl("javascript:ReceiveUserInfo("+user.getId()+", '"+user.getAuthentication_token()+"',"+getDeviceId()+",'"+user.getNickName()+"')");
-//        }else if ("product".equalsIgnoreCase(from)){
-//            webView.loadUrl("javascript:ReceiveUserInfo("+user.getId()+", '"+user.getAuthentication_token()+"')");
-//        }
-//
-//    }
+    @Override
+    public void onRegisterOrLoginSuccess(User user,Fragment fragment) {
+
+        if ("lottery".equalsIgnoreCase(from)){
+            Log.i("onRegisterOrLoginSuccess--lottery----------->","onPageFinished"+"------"+token);
+            webView.loadUrl("javascript:ReceiveUserInfo("+user.getId()+", '"+user.getAuthentication_token()+"',"+getDeviceId()+",'"+user.getNickName()+"')");
+        }else if ("product".equalsIgnoreCase(from)){
+            webView.loadUrl("javascript:ReceiveUserInfo("+user.getId()+", '"+user.getAuthentication_token()+"')");
+        }
+        super.onRegisterOrLoginSuccess(user,fragment);
+    }
 //    private void saveUserToSP(User user){
 //        SharedPreferences.Editor editor = mSharedPreferences.edit();
 //        editor.putInt("userId",user.getId());

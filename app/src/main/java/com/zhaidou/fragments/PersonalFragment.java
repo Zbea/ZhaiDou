@@ -109,13 +109,15 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     };
 
     // TODO: Rename and change types and number of parameters
+    public static PersonalFragment personalFragment;
     public static PersonalFragment newInstance(String param1, String context) {
-        PersonalFragment fragment = new PersonalFragment();
+        if (personalFragment==null)
+        personalFragment = new PersonalFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putSerializable(ARG_CONTEXT,context);
-        fragment.setArguments(args);
-        return fragment;
+        personalFragment.setArguments(args);
+        return personalFragment;
     }
     public PersonalFragment() {
         // Required empty public constructor
@@ -134,6 +136,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        Log.i("onCreateView----------------->","onCreateView");
         View view=inflater.inflate(R.layout.fragment_personal, container, false);
         mIndicator=(TabPageIndicator)view.findViewById(R.id.tab_personal);
         mViewpager=(ViewPager)view.findViewById(R.id.vp_personal);
@@ -169,6 +172,17 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         iv_setting.setOnClickListener(this);
         getCityList();
         return view;
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        Log.i("onHiddenChanged-------->",hidden+"");
+        Integer userId= (Integer)SharedPreferencesUtil.getData(getActivity(), "userId", -1);
+        if (!hidden&&userId!=-1){
+            Log.i("userId------------------>",userId+"");
+            refreshData(getActivity());
+        }
+        super.onHiddenChanged(hidden);
     }
 
     @Override
@@ -215,6 +229,8 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             return collocation_count==0?"豆搭":"豆搭 "+collocation_count;
         }
     }
+
+
 
     public void getUserInfo(){
 

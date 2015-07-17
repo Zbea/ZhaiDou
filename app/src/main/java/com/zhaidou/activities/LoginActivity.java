@@ -365,22 +365,23 @@ import cn.sharesdk.wechat.friends.Wechat;
 //        }
         plat.setPlatformActionListener(this);
         //关闭SSO授权
-        plat.SSOSetting(true);
+        plat.SSOSetting(false);
         plat.showUser(null);
     }
 
     @Override
     public void onComplete(final Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
         Log.i("onComplete----->",platform.getName()+"---"+i);
-//        Log.i("stringObjectHashMap",stringObjectHashMap.toString());
+        Log.i("stringObjectHashMap",stringObjectHashMap.toString());
         String plat =platform.getName();
         final String provider=plat.equals("QQ")?"tqq":plat.equals("SinaWeibo")?"weibo":"weixin";
         Log.i("getUserId", platform.getDb().getUserId());
-        Log.i("getUserIcon",platform.getDb().getUserIcon());
+//        Log.i("getUserIcon","");//platform.getDb().getUserIcon()
         Log.i("getUserName",platform.getDb().getUserName());
         Map<String,String> params =new HashMap<String, String>();
         params.put("uid",platform.getDb().getUserId());
         params.put("provider",provider);
+
         params.put("nick_name",platform.getDb().getUserName());
 
         JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,ZhaiDou.USER_LOGIN_THIRD_VERIFY_URL,new JSONObject(params),new Response.Listener<JSONObject>() {
@@ -399,7 +400,6 @@ import cn.sharesdk.wechat.friends.Wechat;
                     registers.put("user[nick_name]",platform.getDb().getUserName());
                     registers.put("user[uid]",platform.getDb().getUserId());
                     registers.put("user[provider]",provider);
-                    registers.put("user[agreed]",true+"");
                     registers.put("profile_image",platform.getDb().getUserIcon());
 
                     new RegisterTask().execute(registers);
