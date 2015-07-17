@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -187,29 +188,36 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
 //                Log.i("mHeartView.isPressed()----->",(mHeartView.isSelected())+"");
 //                new CancelTask().execute(userId+"",itemId+"",token,""+position);
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("取消收藏")
-                        .setMessage("真的不要我了吗?")
-                        .setCancelable(false)
-                        .setNegativeButton("取消",new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Log.i("i----->", i + "");
-                                dialogInterface.dismiss();
-                            }
-                        })
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Log.i("i----->", i + "");
-                                dialogInterface.dismiss();
+                final Dialog dialog=new Dialog(getActivity(), R.style.custom_dialog);
 
-                                int userId= mSharedPreferences.getInt("userId", -1);
-                                String token=mSharedPreferences.getString("token","");
-                                int itemId=product.getId();
-                                new CancelTask().execute(userId+"",itemId+"",token,""+index);
-                            }
-                        }).show();
+                View view= LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint,null);
+                TextView cancelTv=(TextView)view.findViewById(R.id.cancelTv);
+                cancelTv.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        dialog.dismiss();
+                    }
+                });
+
+                TextView okTv=(TextView)view.findViewById(R.id.okTv);
+                okTv.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        dialog.dismiss();
+                        int userId= mSharedPreferences.getInt("userId", -1);
+                        String token=mSharedPreferences.getString("token","");
+                        int itemId=product.getId();
+                        new CancelTask().execute(userId+"",itemId+"",token,""+index);
+                    }
+                });
+                dialog.setCanceledOnTouchOutside(true);
+                dialog.setCancelable(true);
+                dialog.addContentView(view,new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                dialog.show();
             }
         });
         new MyTask().execute();

@@ -250,7 +250,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 },new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                Toast.makeText(getActivity(),"加载失败,重新进入",Toast.LENGTH_SHORT).show();
                 mDialog.dismiss();
 
             }

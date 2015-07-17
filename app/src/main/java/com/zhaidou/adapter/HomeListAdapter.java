@@ -68,7 +68,7 @@ public class HomeListAdapter extends BaseAdapter
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
-       View view=LayoutInflater.from(context).inflate(R.layout.home_item_list, null);
+        View view = LayoutInflater.from(context).inflate(R.layout.home_item_list, null);
         TextView title = (TextView) view.findViewById(R.id.title);
         TextView articleViews = (TextView) view.findViewById(R.id.views);
         ImageView cover = (ImageView) view.findViewById(R.id.cover);
@@ -78,27 +78,25 @@ public class HomeListAdapter extends BaseAdapter
 
         title.setText(article.getTitle());
         articleViews.setText(article.getReviews() + "");
-        ToolUtils.setImageUrl(article.getImg_url(), cover);
+        ToolUtils.setImageCacheUrl(article.getImg_url(), cover);
 
-        SharedPreferences editor=context.getSharedPreferences(String.valueOf(article.getId()),0);
+        SharedPreferences editor = context.getSharedPreferences(String.valueOf(article.getId()), 0);
         if (article.getIs_new().equals("true"))
         {
-            if (editor.getBoolean("is_new",false))
+            if (editor.getBoolean("is_new", false))
             {
                 newView.setVisibility(View.GONE);
-            }
-            else
+            } else
             {
                 newView.setVisibility(View.VISIBLE);
             }
-        }
-        else
+        } else
         {
             newView.setVisibility(View.GONE);
         }
 
 
-
+//
 //        if (convertView == null)
 //        {
 //            convertView = LayoutInflater.from(context).inflate(R.layout.home_item_list, null);
@@ -106,7 +104,6 @@ public class HomeListAdapter extends BaseAdapter
 //            viewHolder.title = (TextView) convertView.findViewById(R.id.title);
 //            viewHolder.articleViews = (TextView) convertView.findViewById(R.id.views);
 //            viewHolder.cover = (ImageView) convertView.findViewById(R.id.cover);
-//            viewHolder.newView = (ImageView) convertView.findViewById(R.id.newsView);
 //            convertView.setTag(viewHolder);
 //        }
 //        else
@@ -120,10 +117,10 @@ public class HomeListAdapter extends BaseAdapter
 //
 //        viewHolder.title.setText(article.getTitle());
 //        viewHolder.articleViews.setText(article.getReviews() + "");
+//        viewHolder.newView = (ImageView) convertView.findViewById(R.id.newsView);
 //        ToolUtils.setImageUrl(article.getImg_url(), viewHolder.cover);
 //
 //        SharedPreferences editor=context.getSharedPreferences(String.valueOf(article.getId()),0);
-//        Log.i("zhaidou------------>",""+editor.getBoolean("is_new",false));
 //        if (article.getIs_new().equals("true"))
 //        {
 //            if (editor.getBoolean("is_new",false))
@@ -139,9 +136,6 @@ public class HomeListAdapter extends BaseAdapter
 //        {
 //            viewHolder.newView.setVisibility(View.GONE);
 //        }
-
-
-
         return view;
     }
 }

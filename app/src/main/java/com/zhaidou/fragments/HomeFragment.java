@@ -3,8 +3,10 @@ package com.zhaidou.fragments;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -103,7 +105,9 @@ public class HomeFragment extends BaseFragment implements
         SwipeRefreshLayout.OnLoadListener, SwipeRefreshLayout.OnRefreshListener,
         HomeCategoryFragment.CategorySelectedListener,
         AdapterView.OnItemClickListener, View.OnClickListener,
+        ItemDetailActivity.RefreshNotifyListener,
         PullToRefreshBase.OnRefreshListener2<ScrollView>
+
 {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -144,7 +148,7 @@ public class HomeFragment extends BaseFragment implements
     private List<Article> formerList = new ArrayList<Article>();
     //private HomeAdapter mHomeAdapter;
 
-    public static HomeListAdapter mListAdapter;
+    public HomeListAdapter mListAdapter;
     private ViewPager viewPager;
     private LinearLayout tipsLine;//轮播指示标志
     private List<SwitchImage> banners;
@@ -167,6 +171,21 @@ public class HomeFragment extends BaseFragment implements
     /* Log cat */
     public static final String ERROR_CAT = "ERROR";
     public static final String DEBUG_CAT = "DEBUG";
+
+
+    private BroadcastReceiver broadcastReceiver=new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            String tag=intent.getAction();
+            if (tag.equals(ZhaiDou.IntentRefreshListTag))
+            {
+                refresh();
+            }
+
+        }
+    };
 
     private Handler handler = new Handler()
     {
@@ -351,7 +370,7 @@ public class HomeFragment extends BaseFragment implements
     /**
      * 刷新mAdapterList
      */
-    public static void  refresh()
+    public void  refresh()
     {
         mListAdapter.notifyDataSetChanged();
     }
@@ -364,6 +383,8 @@ public class HomeFragment extends BaseFragment implements
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         mContext = getActivity();
+
+        initBroadcastReceiver();
 
         listView = (ListViewForScrollView) view.findViewById(R.id.homeItemList);
         listView.setOnItemClickListener(this);
@@ -415,6 +436,16 @@ public class HomeFragment extends BaseFragment implements
                 , HomeCategoryFragment.TAG).hide(homeCategoryFragment).commit();
         homeCategoryFragment.setCategorySelectedListener(this);
         return view;
+    }
+
+    /**
+     * 广播注册
+     */
+    private void initBroadcastReceiver()
+    {
+        IntentFilter intentFilter=new IntentFilter();
+        intentFilter.addAction(ZhaiDou.IntentRefreshListTag);
+        mContext.registerReceiver(broadcastReceiver,intentFilter);
     }
 
     @Override
@@ -488,6 +519,12 @@ public class HomeFragment extends BaseFragment implements
     {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void setRefreshList()
+    {
+        refresh();
     }
 
     /**
@@ -852,6 +889,7 @@ public class HomeFragment extends BaseFragment implements
     public void onDestroy()
     {
         isStop = false;
+        mContext.unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 }

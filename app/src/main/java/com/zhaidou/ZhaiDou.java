@@ -71,5 +71,10 @@ public class ZhaiDou {
         HOME,
         TAG,
     }
+    /**
+     * 广播标识集合
+     */
+    public static String IntentRefreshListTag="com.zhaidou.home.refesh.list";
+
 }
 //http://192.168.1.45/article/api/article_categories?catetory_id=13

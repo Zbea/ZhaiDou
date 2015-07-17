@@ -1,5 +1,6 @@
 package com.zhaidou.fragments;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,10 +30,12 @@ import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
 import com.zhaidou.model.Category;
 import com.zhaidou.model.SwitchImage;
 import com.zhaidou.utils.AsyncImageLoader1;
+import com.zhaidou.utils.NetworkUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -63,6 +66,8 @@ public class SpecialFragment extends BaseFragment implements PullToRefreshBase.O
     private int currentPage=1;
     private int count=-1;
 
+    private Dialog mDialog;
+
     private static final int UPDATE_HOMELIST=3;
     private RequestQueue mRequestQueue;
     private List<Article> articleList = new ArrayList<Article>();
@@ -71,6 +76,10 @@ public class SpecialFragment extends BaseFragment implements PullToRefreshBase.O
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             mHomeAdapter.notifyDataSetChanged();
+            if (mDialog!=null)
+            {
+                mDialog.dismiss();
+            }
         }
     };
     /**
@@ -114,14 +123,25 @@ public class SpecialFragment extends BaseFragment implements PullToRefreshBase.O
         listView.setEmptyView(mEmptyView);
         mHomeAdapter = new HomeAdapter(getActivity(),articleList);
         listView.setAdapter(mHomeAdapter);
+
         mRequestQueue = Volley.newRequestQueue(getActivity());
-        FetchData(currentPage=1,mCategory);
+
+        if (NetworkUtils.isNetworkAvailable(getActivity()))
+        {
+            mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
+            FetchData(currentPage=1,mCategory);
+        }
+        else
+        {
+            Toast.makeText(getActivity(),"抱歉,网络链接失败",Toast.LENGTH_SHORT).show();
+        }
 
         mHomeAdapter.setOnInViewClickListener(R.id.rl_fragment_strategy,new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 Article article=(Article)values;
                 Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
+                detailIntent.putExtra("article", article);
                 detailIntent.putExtra("id", article.getId() + "");
                 detailIntent.putExtra("from", "product");
                 detailIntent.putExtra("title", article.getTitle());
@@ -174,6 +194,10 @@ public class SpecialFragment extends BaseFragment implements PullToRefreshBase.O
             @Override
             public void onErrorResponse(VolleyError error) {
 //                Log.i("onErrorResponse------->",error.getMessage());
+                if (mDialog!=null)
+                {
+                    mDialog.dismiss();
+                }
             }
         });
         mRequestQueue.add(jr);

@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.fragments.HomeFragment;
@@ -62,6 +63,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
     private SharedPreferences mSharedPreferences;
     private Dialog mDialog;
+    public static RefreshNotifyListener refreshNotifyListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +83,8 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
                 SharedPreferences.Editor editor= sharedPreferences.edit();
                 editor.putBoolean("is_new",true);
                 editor.commit();
-                HomeFragment.refresh();
+                Intent intent=new Intent(ZhaiDou.IntentRefreshListTag);
+                sendBroadcast(intent);
             }
 
         }
@@ -361,4 +364,15 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         Log.i("ItemDetailActivity--fragment----->",fragment.getClass().getSimpleName());
         webView.reload();
     }
+
+    public void setRefreshNotifyListenter(RefreshNotifyListener refreshNotifyListenter)
+    {
+        this.refreshNotifyListener=refreshNotifyListenter;
+    }
+
+    public interface RefreshNotifyListener
+    {
+        public void setRefreshList();
+    }
+
 }
