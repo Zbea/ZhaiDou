@@ -5,6 +5,8 @@
     <dimen name="default_image_view_height">140dp</dimen>
     <dimen name="default_margin">5dp</dimen>
 
+    <dimen name="home_item_dimen">155dp</dimen>
+
     <!--actionbar-->
     <dimen name="base_action_bar_height">50.0dip</dimen>
     <dimen name="base_action_bar_title_size">22.0sp</dimen>
