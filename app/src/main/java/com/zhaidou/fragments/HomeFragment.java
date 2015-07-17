@@ -397,6 +397,8 @@ public class HomeFragment extends BaseFragment implements
 
         initBroadcastReceiver();
 
+
+
         WindowManager wm = ((Activity)mContext).getWindowManager();
         screenWidth = wm.getDefaultDisplay().getWidth();
 
