@@ -51,6 +51,7 @@ import com.pulltorefresh.internal.Utils;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.SearchActivity;
 import com.zhaidou.adapter.AdViewAdpater;
@@ -252,6 +253,7 @@ public class HomeFragment extends BaseFragment implements
                 final ImageView img = new ImageView(mContext);
                 img.setBackgroundResource(R.drawable.icon_loading_item);
                 img.setScaleType(ImageView.ScaleType.FIT_XY);
+                img.setLayoutParams(new ViewGroup.LayoutParams(screenWidth,screenWidth*300/750));
 //                ViewGroup.LayoutParams layoutParams=img.getLayoutParams();
 //                layoutParams.width=screenWidth;
 //                layoutParams.height=screenWidth*300/750;
@@ -395,8 +397,8 @@ public class HomeFragment extends BaseFragment implements
 
         initBroadcastReceiver();
 
-//        WindowManager wm = ((Activity)mContext).getWindowManager();
-//        screenWidth = wm.getDefaultDisplay().getWidth();
+        WindowManager wm = ((Activity)mContext).getWindowManager();
+        screenWidth = wm.getDefaultDisplay().getWidth();
 
         listView = (ListViewForScrollView) view.findViewById(R.id.homeItemList);
         listView.setOnItemClickListener(this);
@@ -577,11 +579,17 @@ public class HomeFragment extends BaseFragment implements
                 startActivity(detailIntent);
                 break;
             case R.id.ll_competition:
-                Intent intent = new Intent(getActivity(), ItemDetailActivity.class);
+
+                Intent intent = new Intent(getActivity(), HomePTActivity.class);
                 intent.putExtra("url", ZhaiDou.COMPETITION_URL);
-                intent.putExtra("from", "competition");
                 intent.putExtra("title", "拼贴大赛");
                 startActivity(intent);
+
+//                Intent intent = new Intent(getActivity(), ItemDetailActivity.class);
+//                intent.putExtra("url", ZhaiDou.COMPETITION_URL);
+//                intent.putExtra("from", "competition");
+//                intent.putExtra("title", "拼贴大赛");
+//                startActivity(intent);
                 break;
             case R.id.ll_sale:
                 SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", "");
