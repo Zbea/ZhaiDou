@@ -189,6 +189,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
     }
 
     public void FetchData(String msg,int sort,int page){
+        mParam1=msg;
         setStartLoading();
         Log.i("FetchData------>","FetchData");
         this.sort=sort;
@@ -219,6 +220,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
                 count=meta==null?0:meta.optInt("count");
                 if (items==null)
                 {
+                    gv_single.onRefreshComplete();
                     Toast.makeText(getActivity(),"抱歉，未找到商品",Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -287,6 +289,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
                 JSONArray items = jsonObject.optJSONArray("article_items");
                 if (items==null)
                 {
+                    gv_single.onRefreshComplete();
                     Toast.makeText(getActivity(),"抱歉，未找到商品",Toast.LENGTH_SHORT).show();
                     return;
                 }

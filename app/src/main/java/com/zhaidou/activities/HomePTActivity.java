@@ -89,11 +89,9 @@ public class HomePTActivity extends Activity
         webSettings.setDomStorageEnabled(true);
         webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
         webSettings.setUseWideViewPort(false);
-        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 //        webSettings.setA
 //        webSettings.ardwareAccelerated="true";
-
-        webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 
 
         webView.setWebViewClient(new WebViewClient()

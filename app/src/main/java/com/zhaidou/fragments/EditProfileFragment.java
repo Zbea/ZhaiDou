@@ -1,7 +1,6 @@
 package com.zhaidou.fragments;
 
 
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;

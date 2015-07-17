@@ -158,6 +158,7 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
     }
 
     public void FetchData(String msg,int sort,int page){
+        mParam1=msg;
         Log.i("sort------------------>",sort+"");
         this.sort=sort;
         currentpage=page;
@@ -242,7 +243,7 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
     }
 
     public void FetchCategoryData(String id,int sort,int page){
-        String url=ZhaiDou.ARTICLES_WITH_CATEGORY+id;
+        String url=ZhaiDou.ARTICLES_WITH_CATEGORY+id+"&page="+page;
         JsonObjectRequest fetchCategoryTask = new JsonObjectRequest(url,new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
