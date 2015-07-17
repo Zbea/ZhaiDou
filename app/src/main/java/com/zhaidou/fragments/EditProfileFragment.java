@@ -57,6 +57,7 @@ import java.util.Map;
  * create an instance of this fragment.
  *
  */
+
 public class EditProfileFragment extends BaseFragment implements View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
