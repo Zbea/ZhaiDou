@@ -74,6 +74,8 @@ import cn.sharesdk.wechat.friends.Wechat;
     private RegisterFragment.RegisterOrLoginListener mRegisterOrLoginListener;
     private BackClickListener backClickListener;
 
+    private static final int SHOW_DIALOG=1;
+    private static final int CLOSE_DIALOG=2;
     public int index;
     RequestQueue requestQueue;
 
@@ -96,9 +98,17 @@ import cn.sharesdk.wechat.friends.Wechat;
                     intent.putExtra("email",u.getEmail());
                     intent.putExtra("token",u.getAuthentication_token());
                     intent.putExtra("nick",u.getNickName());
-                    setResult(RESULT_OK, intent);
+                    setResult(2000, intent);
                     finish();//此处一定要调用finish()方法
                     break;
+                case SHOW_DIALOG:
+                    if (mDialog==null)
+                        mDialog=CustomLoadingDialog.setLoadingDialog(LoginActivity.this, "登陆中");
+                    mDialog.show();
+                    break;
+                case CLOSE_DIALOG:
+                    if (mDialog!=null)
+                        mDialog.dismiss();
             }
 
         }
@@ -379,6 +389,7 @@ import cn.sharesdk.wechat.friends.Wechat;
 
     @Override
     public void onComplete(final Platform platform, int i, final HashMap<String, Object> stringObjectHashMap) {
+        mHandler.sendEmptyMessage(SHOW_DIALOG);
         Log.i("onComplete----->",platform.getName()+"---"+i);
         Log.i("stringObjectHashMap",stringObjectHashMap.toString());
         String plat =platform.getName();
@@ -405,7 +416,7 @@ import cn.sharesdk.wechat.friends.Wechat;
                     Log.i("0==flag","0==flag");
                     Map<String,String> registers = new HashMap<String, String>();
                     registers.put("user[email]",email);
-                    registers.put("user[nick_name]",platform.getDb().getUserName());
+                    registers.put("user[nick_name]",nick);
                     registers.put("user[uid]",platform.getDb().getUserId());
                     registers.put("user[provider]",provider);
                     Log.i("provider---------------->",provider);
@@ -526,7 +537,7 @@ import cn.sharesdk.wechat.friends.Wechat;
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         CallbackContext.onActivityResult(requestCode, resultCode, data);
         switch (resultCode){
-            case RESULT_OK:
+            case 2000:
                 if (data!=null){
                     int id=data.getIntExtra("id",-1);
                     String email=data.getStringExtra("email");
@@ -542,5 +553,14 @@ import cn.sharesdk.wechat.friends.Wechat;
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mDialog!=null){
+            mDialog.dismiss();
+            mDialog=null;
+        }
+        super.onDestroy();
     }
 }

@@ -575,7 +575,7 @@ public class HomeFragment extends BaseFragment implements
                 break;
             case R.id.ll_competition:
                 Intent intent = new Intent(getActivity(), ItemDetailActivity.class);
-                intent.putExtra("url", "http://www.zhaidou.com/arena/first/index.html");//"http://www.zhaidou.com/arena/first/index.html"ZhaiDou.COMPETITION_URL
+                intent.putExtra("url",ZhaiDou.COMPETITION_URL);//"http://www.zhaidou.com/arena/first/index.html"ZhaiDou.COMPETITION_URL
                 intent.putExtra("from", "competition");
                 intent.putExtra("title", "拼贴大赛");
                 startActivity(intent);

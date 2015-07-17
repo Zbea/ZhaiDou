@@ -5,6 +5,7 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.sdk.android.Environment;
+import com.alibaba.sdk.android.callback.CallbackContext;
 import com.alibaba.sdk.android.callback.InitResultCallback;
 import com.alibaba.sdk.android.session.model.Session;
 import com.alibaba.sdk.android.util.JSONUtils;
@@ -538,5 +540,11 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         protected String doInBackground(String... strings) {
             return null;
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        CallbackContext.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

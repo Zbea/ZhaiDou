@@ -20,6 +20,7 @@ public class ZDApplication extends Application{
     private Typeface mTypeFace;
     @Override
     public void onCreate() {
+
         super.onCreate();
         initTypeFace();
 

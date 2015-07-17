@@ -67,7 +67,7 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
                     intent.putExtra("email",user.getEmail());
                     intent.putExtra("token",user.getAuthentication_token());
                     intent.putExtra("nick",user.getNickName());
-                    setResult(RESULT_OK, intent);
+                    setResult(2000, intent);
                     finish();//此处一定要调用finish()方法
                     break;
             }

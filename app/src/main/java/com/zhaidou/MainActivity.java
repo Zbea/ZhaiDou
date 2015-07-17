@@ -82,6 +82,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             switch (msg.what){
                 case 0:
                     User user=(User)msg.obj;
+                    Log.i("persoanlFragment---------------->",persoanlFragment==null?"null":"no null");
                     if (persoanlFragment==null){
                         persoanlFragment= PersonalFragment.newInstance("", "");
                     }else {
@@ -338,8 +339,9 @@ Log.i("selectFragment---->","selectFragment1");
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        CallbackContext.onActivityResult(requestCode, resultCode, data);
         switch (resultCode){
-            case RESULT_OK:
+            case 2000:
 //                User user =(User)(data.getBundleExtra("user").getSerializable("user"));
                 //id,email,token,nick,null
                 int id=data.getIntExtra("id",-1);
