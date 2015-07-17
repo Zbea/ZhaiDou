@@ -95,6 +95,7 @@ public class HomePTActivity extends Activity
 
         webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 
+
         webView.setWebViewClient(new WebViewClient()
         {
             @Override
