@@ -144,7 +144,7 @@ public class HomeFragment extends BaseFragment implements
     private List<Article> formerList = new ArrayList<Article>();
     //private HomeAdapter mHomeAdapter;
 
-    public static HomeListAdapter mListAdapter;
+    public HomeListAdapter mListAdapter;
     private ViewPager viewPager;
     private LinearLayout tipsLine;//轮播指示标志
     private List<SwitchImage> banners;
@@ -351,7 +351,7 @@ public class HomeFragment extends BaseFragment implements
     /**
      * 刷新mAdapterList
      */
-    public static void  refresh()
+    public void  refresh()
     {
         mListAdapter.notifyDataSetChanged();
     }

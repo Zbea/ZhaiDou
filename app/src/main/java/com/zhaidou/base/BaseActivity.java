@@ -68,7 +68,6 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
         if (fragment instanceof RegisterFragment) {
             popToStack(fragment);
         }
-        Log.i("ItemDetailActivity-------------->", this.getClass().getSimpleName());
         if ("MainActivity".equalsIgnoreCase(this.getClass().getSimpleName())) {
             if (persoanlFragment == null) {
                 Log.i("persoanlFragment==null--------->", persoanlFragment == null ? "null" : "nut null");
@@ -81,14 +80,15 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
             mainActivity.selectFragment(currentFragment, persoanlFragment);
             mainActivity.setButton(personalButton);
         } else if ("ItemDetailActivity".equalsIgnoreCase(this.getClass().getSimpleName())) {
+            Log.i("ItemDetailActivity-------------->", this.getClass().getSimpleName());
             this.user=user;
-            Log.i("ItemDetailActivity-------------->", "this.getClass().getSimpleName()");
-                if ("lottery".equalsIgnoreCase(from)) {
-                    Log.i("onRegisterOrLoginSuccess--lottery----------->", "onPageFinished" + "------" + user.getAuthentication_token());
-                    webView.loadUrl("javascript:ReceiveUserInfo(" + user.getId() + ", '" + user.getAuthentication_token() + "'," + getDeviceId() + ",'" + user.getNickName() + "')");
-                } else if ("product".equalsIgnoreCase(from)) {
-                    webView.loadUrl("javascript:ReceiveUserInfo(" + user.getId() + ", '" + user.getAuthentication_token() + "')");
-                }
+            Log.i("from-------------->", from);
+            if ("lottery".equalsIgnoreCase(from)) {
+                Log.i("onRegisterOrLoginSuccess--lottery----------->", "onPageFinished" + "------" + user.getAuthentication_token());
+                webView.loadUrl("javascript:ReceiveUserInfo(" + user.getId() + ", '" + user.getAuthentication_token() + "'," + getDeviceId() + ",'" + user.getNickName() + "')");
+            } else if ("product".equalsIgnoreCase(from)) {
+                webView.loadUrl("javascript:ReceiveUserInfo(" + user.getId() + ", '" + user.getAuthentication_token() + "')");
+            }
             fragmentManager.beginTransaction().hide(fragment).commit();
         }
     }

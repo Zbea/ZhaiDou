@@ -132,6 +132,7 @@ public class NativeHttpUtil {
             if (params!=null){
                 Set<String> set =params.keySet();
                 for (String key:set){
+//                    Log.i("key--->"+key,"   value----->"+params.get(key));
                     parameters.add(new BasicNameValuePair(key,params.get(key)));
                 }
             }

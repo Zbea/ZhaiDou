@@ -136,6 +136,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        Log.i("onCreateView----------------->","onCreateView");
         View view=inflater.inflate(R.layout.fragment_personal, container, false);
         mIndicator=(TabPageIndicator)view.findViewById(R.id.tab_personal);
         mViewpager=(ViewPager)view.findViewById(R.id.vp_personal);
@@ -171,6 +172,17 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         iv_setting.setOnClickListener(this);
         getCityList();
         return view;
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        Log.i("onHiddenChanged-------->",hidden+"");
+        Integer userId= (Integer)SharedPreferencesUtil.getData(getActivity(), "userId", -1);
+        if (!hidden&&userId!=-1){
+            Log.i("userId------------------>",userId+"");
+            refreshData(getActivity());
+        }
+        super.onHiddenChanged(hidden);
     }
 
     @Override
@@ -217,6 +229,8 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             return collocation_count==0?"豆搭":"豆搭 "+collocation_count;
         }
     }
+
+
 
     public void getUserInfo(){
 
