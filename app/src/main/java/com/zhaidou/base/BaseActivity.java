@@ -88,7 +88,8 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
 //                Log.i("onRegisterOrLoginSuccess--lottery----------->", "onPageFinished" + "------" + user.getAuthentication_token());
 //                webView.loadUrl("javascript:ReceiveUserInfo(" + user.getId() + ", '" + user.getAuthentication_token() + "'," + getDeviceId() + ",'" + user.getNickName() + "')");
             } else if ("product".equalsIgnoreCase(from)) {
-                webView.loadUrl("javascript:ReceiveUserInfo(" + user.getId() + ", '" + user.getAuthentication_token() + "')");
+                return;
+//                webView.loadUrl("javascript:ReceiveUserInfo(" + user.getId() + ", '" + user.getAuthentication_token() + "')");
             }
             fragmentManager.beginTransaction().hide(fragment).commit();
         }

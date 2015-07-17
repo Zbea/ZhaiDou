@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -223,6 +224,10 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
         protected void onPostExecute(String s) {
             mDialog.dismiss();
             Log.i("EditProfileFragment---->onPostExecute---->",s);
+            if (s!=null&&s.contains("message")){
+                Toast.makeText(getActivity(),"昵称已经被使用",Toast.LENGTH_SHORT).show();
+                return;
+            }
             if ("description".equalsIgnoreCase(mParam1)){
                 refreshDataListener.onRefreshData(mParam1,tv_description.getText().toString(),s);
             }else {

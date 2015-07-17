@@ -98,6 +98,7 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
             }
         }
     };
+
     public static StrategyFragment1 newInstance(String param1, String param2) {
         Log.i("StrategyFragment1----------->","newInstance");
         StrategyFragment1 fragment = new StrategyFragment1();
