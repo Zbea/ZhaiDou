@@ -766,6 +766,8 @@ public class HomeFragment extends BaseFragment implements
         toggleMenu();
     }
 
+
+
     /**
      * 获得广告数据
      */
