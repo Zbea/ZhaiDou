@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
@@ -136,6 +137,7 @@ public class HomeFragment extends BaseFragment implements
 
     private ImageView mSearchView, mCategoryView;
     private TextView mTitleView;
+    private int screenWidth;
 
     private PopupWindow mPopupWindow = null;
     private LinearLayout ll_poplayout;
@@ -209,6 +211,10 @@ public class HomeFragment extends BaseFragment implements
                 mScrollView.onRefreshComplete();
 //                mHomeAdapter.setList(articleList);
 //                mScrollView.onRefreshComplete();
+                if (mDialog.isShowing())
+                {
+                    mDialog.dismiss();
+                }
 
             } else if (msg.what == UPDATE_BANNER)
             {
@@ -220,11 +226,6 @@ public class HomeFragment extends BaseFragment implements
             // mHomeAdapter.notifyDataSetChanged();
             if (mListAdapter != null)
                 mListAdapter.notifyDataSetChanged();
-
-            if (mDialog.isShowing())
-            {
-                mDialog.dismiss();
-            }
         }
     };
 
@@ -251,6 +252,10 @@ public class HomeFragment extends BaseFragment implements
                 final ImageView img = new ImageView(mContext);
                 img.setBackgroundResource(R.drawable.icon_loading_item);
                 img.setScaleType(ImageView.ScaleType.FIT_XY);
+//                ViewGroup.LayoutParams layoutParams=img.getLayoutParams();
+//                layoutParams.width=screenWidth;
+//                layoutParams.height=screenWidth*300/750;
+//                img.setLayoutParams(layoutParams);
                 img.setOnClickListener(new View.OnClickListener()
                 {
                     @Override
@@ -263,7 +268,8 @@ public class HomeFragment extends BaseFragment implements
                         ((BaseActivity) getActivity()).navigationToFragment(fragment);
                     }
                 });
-                ImageLoader.getInstance().displayImage(banners.get(i).getUrl(), img);
+                ToolUtils.setImageCacheUrl(banners.get(i).getUrl(), img);
+                //ImageLoader.getInstance().displayImage(banners.get(i).getUrl(), img);
                 adPics.add(img);
             }
             dots = new ImageView[adPics.size()];
@@ -388,6 +394,9 @@ public class HomeFragment extends BaseFragment implements
         mContext = getActivity();
 
         initBroadcastReceiver();
+
+//        WindowManager wm = ((Activity)mContext).getWindowManager();
+//        screenWidth = wm.getDefaultDisplay().getWidth();
 
         listView = (ListViewForScrollView) view.findViewById(R.id.homeItemList);
         listView.setOnItemClickListener(this);
@@ -689,13 +698,13 @@ public class HomeFragment extends BaseFragment implements
             @Override
             public void onErrorResponse(VolleyError error)
             {
-                if (mListAdapter != null)
-                    mListAdapter.notifyDataSetChanged();
                 Toast.makeText(mContext, "加载失败", Toast.LENGTH_SHORT).show();
                 if (mDialog.isShowing())
                 {
                     mDialog.dismiss();
                 }
+                mScrollView.onRefreshComplete();
+                mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
 //                Log.i("onErrorResponse------->",error.getMessage());
             }
         });
@@ -811,7 +820,7 @@ public class HomeFragment extends BaseFragment implements
         detailIntent.putExtra("title", article.getTitle());
         detailIntent.putExtra("cover_url", article.getImg_url());
         detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+article.getId());
-        startActivityForResult(detailIntent,100);
+        startActivityForResult(detailIntent, 100);
     }
 
     @Override

@@ -159,7 +159,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 Product product=(Product)values;
-                Intent detailIntent = new Intent(getActivity(), WebViewActivity.class);
+                Intent detailIntent = new Intent(getActivity(), WebViewActivity.class);;
                 detailIntent.putExtra("id", product.getId()+"");
                 detailIntent.putExtra("title", product.getTitle());
 //                detailIntent.putExtra("cover_url", product.getImg_url());

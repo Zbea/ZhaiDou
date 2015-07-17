@@ -208,7 +208,7 @@ Log.i("mActivity------------->",mActivity==null?"null":mActivity.toString());
         },new Response.ErrorListener(){
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
+                mDialog.dismiss();
             }
         });
         mRequestQueue.add(request);

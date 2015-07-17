@@ -132,20 +132,9 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
             public boolean shouldOverrideUrlLoading(WebView view, String url)
             {
                 Log.i("shouldOverrideUrlLoading---------------->", url);
-//                Log.i("shouldOverrideUrlLoading--->",url);
-//                Log.i("token-------------->",token);
-//                Log.i("userId-------------->",userId+"");
-//                Log.i("nickName------------->",nickName+"");
                 getDeviceId();
                 if ("mobile://login?false".equalsIgnoreCase(url))
                 {
-//                    if (!TextUtils.isEmpty(token)&&userId>-1){
-//                        if (!TextUtils.isEmpty(from)){
-//                            webView.loadUrl("javascript:ReceiveUserInfo("+userId+", "+token+", "+getDeviceId()+","+nickName+")");
-//                        }else {
-//                            webView.loadUrl("javascript:ReceiveUserInfo("+userId+", "+token+")");
-//                        }
-//                    }else {
                     getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, loginFragment)
                             .addToBackStack(null).commit();
                     mChildContainer.setVisibility(View.VISIBLE);
@@ -197,7 +186,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         if (!TextUtils.isEmpty(coverUrl)){
             Log.i("cover_url---------------->", coverUrl);
             mHeaderView.setVisibility(View.VISIBLE);
-            ToolUtils.setImageUrl(coverUrl, mHeaderView);
+            ToolUtils.setImageCacheUrl(coverUrl, mHeaderView);
             mTitleView.setVisibility(View.GONE);
             mHeaderText.setText(title);
             mHeaderText.setVisibility(View.VISIBLE);

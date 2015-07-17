@@ -46,6 +46,7 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Article;
 import com.zhaidou.model.Product;
 import com.zhaidou.utils.AsyncImageLoader1;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.XListView;
 
 import org.json.JSONArray;
@@ -80,7 +81,6 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
     private int count;
 
     private List<Article> articleList = new ArrayList<Article>();
-    private AsyncImageLoader1 imageLoader;
     private StrategyAdapter strategyAdapter;
     private WeakHashMap<Integer,View> mHashMap = new WeakHashMap<Integer, View>();
 
@@ -145,11 +145,12 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 Article article=(Article)values;
                 Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
+                detailIntent.putExtra("article", article);
                 detailIntent.putExtra("id", article.getId()+"");
                 detailIntent.putExtra("title", article.getTitle());
                 detailIntent.putExtra("cover_url", article.getImg_url());
                 detailIntent.putExtra("from", "product");
-                detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+article.getId()+"?open=app");
+                detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+article.getId());
                 startActivity(detailIntent);
             }
         });
@@ -211,7 +212,6 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
     public class StrategyAdapter extends BaseListAdapter<Article> {
         public StrategyAdapter(Context context, List<Article> list) {
             super(context, list);
-            imageLoader=new AsyncImageLoader1(context);
         }
 
         @Override
@@ -228,7 +228,7 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
 
             title.setText(article.getTitle());
             articleViews.setText(article.getReviews()+"");
-            imageLoader.LoadImage(article.getImg_url(),cover);
+            ToolUtils.setImageCacheUrl(article.getImg_url(),cover);
 
             mHashMap.put(position,convertView);
             return convertView;
@@ -278,6 +278,7 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
     @Override
     public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
         Log.i("onPullUpToRefresh---->","onPullUpToRefresh");
+        listView.onRefreshComplete();
         FetchData(mParam1,sort,++currentpage);
         if (count!=-1&&strategyAdapter.getCount()==count){
             Toast.makeText(getActivity(), "已经加载完毕", Toast.LENGTH_SHORT).show();
