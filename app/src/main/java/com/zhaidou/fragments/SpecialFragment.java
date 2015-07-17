@@ -136,6 +136,8 @@ public class SpecialFragment extends BaseFragment implements PullToRefreshBase.O
             Toast.makeText(getActivity(),"抱歉,网络链接失败",Toast.LENGTH_SHORT).show();
         }
 
+
+
         mHomeAdapter.setOnInViewClickListener(R.id.rl_fragment_strategy,new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
