@@ -22,7 +22,6 @@ public class AdViewAdpater extends PagerAdapter
         this.context = context;
         this.views = advPics;
     }
-
     @Override
     public void destroyItem(ViewGroup container, int position, Object object)
     {
