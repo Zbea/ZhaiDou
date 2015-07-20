@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
@@ -121,16 +122,22 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         tv_back.setOnClickListener(this);
         iv_share.setOnClickListener(this);
 
-        if ("lottery".equals(from)||"beauty".equals(from)||"competition".equalsIgnoreCase(from))
-            iv_share.setVisibility(View.GONE);
+
 
         //String postId = getIntent().getStringExtra("id");
 
         /* WebView Settings */
         webView = (WebView) findViewById(R.id.detailView);
         webView.getSettings().setUseWideViewPort(true);
-        webView.getSettings().setDomStorageEnabled(true);
+        webView.getSettings().setLoadWithOverviewMode(true);
         webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setDomStorageEnabled(true);
+
+        webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        webView.setVerticalScrollBarEnabled(false);
+        webView.setVerticalScrollbarOverlay(false);
+        webView.setHorizontalScrollbarOverlay(false);
+        webView.setHorizontalFadingEdgeEnabled(false);
         webView.setInitialScale(1);
         webView.setWebChromeClient(new WebChromeClient(){
 
@@ -200,6 +207,14 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
             mTitleView.setVisibility(View.GONE);
             mHeaderText.setText(title);
             mHeaderText.setVisibility(View.VISIBLE);
+        }
+        if ("lottery".equals(from)||"beauty".equals(from)||"competition".equalsIgnoreCase(from)){
+            iv_share.setVisibility(View.GONE);
+        }
+        if ("beauty1".equalsIgnoreCase(from)){
+            iv_share.setVisibility(View.VISIBLE);
+            mHeaderView.setVisibility(View.GONE);
+            mHeaderText.setVisibility(View.GONE);
         }
 
         isShowHeader=getIntent().getBooleanExtra("show_header",false);

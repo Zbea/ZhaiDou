@@ -8,6 +8,7 @@
         android:icon="@drawable/icon_launcher"
         android:largeHeap="true"
         android:name=".ZDApplication"
+        android:label="@string/app_name"
         android:theme="@style/app_theme">
         <activity
             android:name=".MainActivity"

@@ -112,12 +112,13 @@ public class ElementListFragment extends BaseFragment implements PullToRefreshBa
             Log.i("onItemClick--->", "onItemClick");
             try
             {
-
-                JSONObject item = listItem.get(i);
+                JSONObject item = listItem.get(i-1);
+                Log.i("item---------------->",item.toString());
                 Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
                 detailIntent.putExtra("id", item.get("id").toString());
-                detailIntent.putExtra("title", "");
-                detailIntent.putExtra("cover_url", "");
+                detailIntent.putExtra("title", item.get("title").toString());
+                detailIntent.putExtra("cover_url", URLDecoder.decode(item.get("thumbnail").toString()));
+                detailIntent.putExtra("from","beauty1");
                 detailIntent.putExtra("url", item.get("url").toString());
                 detailIntent.putExtra("show_header", false);
                 startActivity(detailIntent);
