@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/home_item_bg"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/home_item_dimen"
+        android:scaleType="fitXY"
+        android:src="@drawable/icon_loading_item"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center_vertical"
+        android:padding="10dp">
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/shop_name_sale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/red"
+            android:layout_weight="0.000001"
+            android:text="3折起"
+            />
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/shop_name_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/text_main_color"
+            android:text="item的名称"
+            />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.000001"
+            android:gravity="center_vertical">
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_gary_color"
+                android:textSize="13sp"
+                android:text="剩余时间"
+                />
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/shop_time_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:textColor="@color/text_gary_color"
+                android:text="1"
+                />
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_gary_color"
+                android:textSize="13sp"
+                android:text="天"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
