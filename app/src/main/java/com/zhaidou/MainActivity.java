@@ -11,6 +11,7 @@ import com.zhaidou.fragments.ElementListFragment;
 import com.zhaidou.fragments.HomeFragment;
 import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.PersonalFragment;
+import com.zhaidou.fragments.PersonalFragment1;
 import com.zhaidou.fragments.PersonalMainFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.fragments.StrategyFragment;
@@ -217,10 +218,11 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     Intent intent=new Intent(MainActivity.this, LoginActivity.class);
                     MainActivity.this.startActivityForResult(intent, 10000);
                 }else {
-                    if (persoanlFragment==null){
-                        persoanlFragment= PersonalFragment.newInstance("", "");
+                    if (persoanlFragment1==null){
+//                        persoanlFragment= PersonalFragment.newInstance("", "");
+                        persoanlFragment1= PersonalFragment1.newInstance("","");
                     }
-                    selectFragment(currentFragment,persoanlFragment);
+                    selectFragment(currentFragment,persoanlFragment1);
                     setButton(view);
                 }
 
@@ -402,5 +404,9 @@ Log.i("selectFragment---->","selectFragment1");
             }
         }
         return super.onKeyDown(keyCode, event);
+    }
+    public void toHomeFragment(){
+        selectFragment(currentFragment, utilityFragment);
+        setButton(homeButton);
     }
 }

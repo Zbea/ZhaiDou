@@ -15,6 +15,7 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.PersonalFragment;
+import com.zhaidou.fragments.PersonalFragment1;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -25,6 +26,7 @@ import com.zhaidou.utils.SharedPreferencesUtil;
 public class BaseActivity extends FragmentActivity implements RegisterFragment.RegisterOrLoginListener {
     protected FrameLayout mChildContainer;
     protected PersonalFragment persoanlFragment;
+    protected PersonalFragment1 persoanlFragment1;
     protected ImageButton personalButton;
     protected Fragment currentFragment;
     protected WebView webView;
@@ -39,6 +41,7 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
         getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, fragment, fragment.getClass().getSimpleName())
                 .addToBackStack(null).commit();
         if ("MainActivity".equalsIgnoreCase(this.getClass().getSimpleName())) {
+            Log.i("MainActivity---->","this.getClass().getSimpleName()");
             mChildContainer.setVisibility(View.VISIBLE);
         }
     }
@@ -70,7 +73,6 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
         }
         if ("MainActivity".equalsIgnoreCase(this.getClass().getSimpleName())) {
             if (persoanlFragment == null) {
-                Log.i("persoanlFragment==null--------->", persoanlFragment == null ? "null" : "nut null");
                 persoanlFragment = PersonalFragment.newInstance("", "");
                 persoanlFragment.onAttach(this);
             } else {

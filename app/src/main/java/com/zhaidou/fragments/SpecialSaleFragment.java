@@ -9,6 +9,7 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.WebViewActivity;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -35,7 +37,9 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CountTime;
 import com.zhaidou.model.Coupon;
 import com.zhaidou.model.Product;
+import com.zhaidou.model.User;
 import com.zhaidou.utils.AsyncImageLoader1;
+import com.zhaidou.utils.SharedPreferencesUtil;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -53,7 +57,7 @@ import java.util.Timer;
  * create an instance of this fragment.
  *
  */
-public class SpecialSaleFragment extends BaseFragment implements View.OnClickListener{
+public class SpecialSaleFragment extends BaseFragment implements View.OnClickListener,RegisterFragment.RegisterOrLoginListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -81,6 +85,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     private Dialog mDialog;
 
     private Coupon mCoupon;
+    private View rootView;
     private Handler mHandler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -95,7 +100,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     String minStr=String.format("%02d", time.getMinute());
                     String secondStr=String.format("%02d", time.getSecond());
                     String timer = String.format(timerFormat,time.getDay(),hourStr,minStr,secondStr);
-                    Log.i("timer---->",timer);
                     mTimerView.setText(timer);
                     break;
                 case UPDATE_UI_TIMER_FINISH:
@@ -156,38 +160,45 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view=inflater.inflate(R.layout.fragment_special_sale, container, false);
-        mGridView=(GridView)view.findViewById(R.id.gv_sale);
-        mGridView.setEmptyView(mEmptyView);
-        mTimerView=(TextView)view.findViewById(R.id.tv_count_time);
-        mAdapter=new ProductAdapter(getActivity(),products);
-        mGridView.setAdapter(mAdapter);
-        view.findViewById(R.id.ll_back).setOnClickListener(this);
-        view.findViewById(R.id.iv_coupon).setOnClickListener(this);
+        if(rootView==null){
+            rootView=inflater.inflate(R.layout.fragment_special_sale, container, false);
+            mGridView=(GridView)rootView.findViewById(R.id.gv_sale);
+            mGridView.setEmptyView(mEmptyView);
+            mTimerView=(TextView)rootView.findViewById(R.id.tv_count_time);
+            mAdapter=new ProductAdapter(getActivity(),products);
+            mGridView.setAdapter(mAdapter);
+            rootView.findViewById(R.id.ll_back).setOnClickListener(this);
+            rootView.findViewById(R.id.iv_coupon).setOnClickListener(this);
 
-        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
+//            mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
 
-        requestQueue= Volley.newRequestQueue(getActivity());
-        FetchCouponData();
-        if (products!=null&&products.size()==0)
-            FetchData();
+            requestQueue= Volley.newRequestQueue(getActivity());
+            FetchCouponData();
+            if (products!=null&&products.size()==0)
+                FetchData();
 
 
-        mAdapter.setOnInViewClickListener(R.id.ll_single_layout,new BaseListAdapter.onInternalClickListener() {
-            @Override
-            public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                Log.i("value--->",values.toString());
+            mAdapter.setOnInViewClickListener(R.id.ll_single_layout,new BaseListAdapter.onInternalClickListener() {
+                @Override
+                public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                    Log.i("value--->",values.toString());
 //                WebViewFragment webViewFragment = WebViewFragment.newInstance(((Product)values).getUrl(),true);
 //                ((MainActivity)getActivity()).navigationToFragment(webViewFragment);
-                Intent intent = new Intent(getActivity(), WebViewActivity.class);
-                intent.putExtra("url",((Product)values).getUrl());
-                intent.putExtra("from","product");
-                startActivity(intent);
-            }
-        });
+                    Intent intent = new Intent(getActivity(), WebViewActivity.class);
+                    intent.putExtra("url",((Product)values).getUrl());
+                    intent.putExtra("from","product");
+                    startActivity(intent);
+                }
+            });
+        }
+        ViewGroup parent = (ViewGroup) rootView.getParent();
+        if (parent != null) {
+            parent.removeView(rootView);
+        }
+//        View view=inflater.inflate(R.layout.fragment_special_sale, container, false);
 
 
-        return view;
+        return rootView;
     }
 
     @Override
@@ -200,6 +211,14 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 if (mCoupon!=null){
 //                    WebViewFragment webViewFragment =WebViewFragment.newInstance(mCoupon.getUrl(),true);
 //                    ((MainActivity)getActivity()).navigationToFragment(webViewFragment);
+                    String token = (String)SharedPreferencesUtil.getData(getActivity(),"token","");
+                    Log.i("token------------>",token);
+                    if (TextUtils.isEmpty(token)){
+                        LoginFragment1 loginFragment=LoginFragment1.newInstance("special","");
+                        loginFragment.setRegisterOrLoginListener(this);
+                        ((BaseActivity)getActivity()).navigationToFragment(loginFragment);
+                        return;
+                    }
                     Intent intent = new Intent(getActivity(), WebViewActivity.class);
                     intent.putExtra("url",mCoupon.getUrl());
                     intent.putExtra("from","coupon");
@@ -216,7 +235,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
-                        mDialog.dismiss();
+                        Log.i("SpecialSaleFragment---------->",jsonObject.toString());
+//                        mDialog.dismiss();
                         String end_date=jsonObject.optString("end_date");
                         Message timerMsg = new Message();
                         timerMsg.what=UPDATE_TIMER_START;
@@ -250,7 +270,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 },new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                mDialog.dismiss();
+//                mDialog.dismiss();
 
             }
         });
@@ -261,7 +281,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             super(context, list);
             imageLoader = new AsyncImageLoader1(context);
         }
-
         @Override
         public View bindView(int position, View convertView, ViewGroup parent) {
             convertView=mHashMap.get(position);
@@ -277,15 +296,11 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             tv_name.setText(product.getTitle());
             imageLoader.LoadImage("http://"+product.getImage(),image);
             tv_price.setText("￥"+product.getPrice()+"元");
-            Log.i("zhaidou","剩余："+product.getRemaining());
-            tv_count.setText("剩余"+product.getRemaining()+"%");
+            tv_count.setText("剩余 "+product.getRemaining());
             mHashMap.put(position,convertView);
-
             return convertView;
         }
     }
-
-
     public void FetchCouponData(){
         Log.i("FetchCouponData----------->","begin");
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.COUPON_DATA_URL,new Response.Listener<JSONObject>() {
@@ -347,5 +362,15 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             Log.i("onFinish---------->","onFinish");
             mHandler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
         }
+    }
+
+    @Override
+    public void onRegisterOrLoginSuccess(User user, Fragment fragment) {
+        Log.i("SpecialSaleFragment-------------->",user.toString());
+        SharedPreferencesUtil.saveUser(getActivity(),user);
+        getActivity().getSupportFragmentManager().popBackStack();
+//        if (fragment instanceof RegisterFragment){
+//            ((MainActivity)getActivity()).toHomeFragment();
+//        }
     }
 }

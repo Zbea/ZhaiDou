@@ -75,6 +75,7 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
     private CollocationAdapter mAdapter;
 
     private Activity mActivity;
+    private ImageView mEmptyView;
     private CollocationCountChangeListener collocationCountChangeListener;
 
     private Dialog mDialog;
@@ -154,6 +155,7 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_collocation, container, false);
         mGridView=(PullToRefreshGridView)view.findViewById(R.id.gv_collocation);
+        mEmptyView=(ImageView)view.findViewById(R.id.iv_collocation_empty);
         mGridView.setMode(PullToRefreshBase.Mode.BOTH);
         mGridView.setOnRefreshListener(this);
         mRequestQueue = Volley.newRequestQueue(getActivity());
@@ -182,21 +184,24 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
                 }
                 JSONArray collocationsArr=jsonObject.optJSONArray("bean_collocations");
                 JSONObject meta = jsonObject.optJSONObject("meta");
-
                 count=meta==null?0:meta.optInt("count");
                 Collocation collocation=null;
-                for (int i=0;i<collocationsArr.length();i++){
-                    JSONObject collocationObj=collocationsArr.optJSONObject(i);
-                    int id=collocationObj.optInt("id");
-                    String title=collocationObj.optString("title");
-                    String thumb_pic=collocationObj.optString("thumb_pic");
-                    String media_pic=collocationObj.optString("media_pic");
-                    collocation=new Collocation();
-                    collocation.setId(id);
-                    collocation.setTitle(title);
-                    collocation.setThumb_pic(thumb_pic);
-                    collocation.setMedia_pic(media_pic);
-                    collocations.add(collocation);
+                mEmptyView.setVisibility(View.VISIBLE);
+                if (collocationsArr!=null&&collocationsArr.length()>0){
+                    mEmptyView.setVisibility(View.GONE);
+                    for (int i=0;i<collocationsArr.length();i++){
+                        JSONObject collocationObj=collocationsArr.optJSONObject(i);
+                        int id=collocationObj.optInt("id");
+                        String title=collocationObj.optString("title");
+                        String thumb_pic=collocationObj.optString("thumb_pic");
+                        String media_pic=collocationObj.optString("media_pic");
+                        collocation=new Collocation();
+                        collocation.setId(id);
+                        collocation.setTitle(title);
+                        collocation.setThumb_pic(thumb_pic);
+                        collocation.setMedia_pic(media_pic);
+                        collocations.add(collocation);
+                    }
                 }
                 Message message=new Message();
                 message.arg1=count;

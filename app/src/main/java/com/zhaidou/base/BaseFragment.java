@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.zhaidou.R;
 import com.zhaidou.activities.ItemDetailActivity;
+import com.zhaidou.fragments.LoginFragment1;
 import com.zhaidou.utils.NetStateUtils;
 import com.zhaidou.view.HeaderLayout;
 
@@ -51,7 +52,7 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
 
     protected InputMethodManager inputMethodManager;
 
-    private Fragment currentFragment;
+    protected Fragment currentFragment;
 
     protected View mEmptyView;
 
@@ -91,6 +92,8 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
                         inputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().peekDecorView().getApplicationWindowToken(),0);
                     if (currentFragment.getParentFragment()!=null){
                         currentFragment.getParentFragment().getChildFragmentManager().popBackStack();
+                        if (currentFragment.getParentFragment() instanceof LoginFragment1)
+                            ((LoginFragment1)currentFragment.getParentFragment()).toggleChildView();
                         return;
                     }
                     if (getActivity() instanceof ItemDetailActivity){

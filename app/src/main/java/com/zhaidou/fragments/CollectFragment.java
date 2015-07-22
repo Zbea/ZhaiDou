@@ -104,6 +104,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
     private int currentpage=1;
 
     private long lastClickTime;
+    private ImageView mEmptyView;
     private Dialog mDialog;
     private Map<Integer,View> mHashMap=new HashMap<Integer, View>();
     private CollectCountChangeListener collectCountChangeListener;
@@ -160,6 +161,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
         mGridView=(PullToRefreshGridView)view.findViewById(R.id.gv_collect);
         mGridView.setMode(PullToRefreshBase.Mode.BOTH);
         mGridView.setOnRefreshListener(this);
+        mEmptyView=(ImageView)view.findViewById(R.id.iv_collect_empty);
 
         mRequestQueue= Volley.newRequestQueue(getActivity());
         mSharedPreferences=getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
@@ -258,8 +260,9 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
                 JSONArray article_items=jsonObject.optJSONArray("article_items");
                 JSONObject meta = jsonObject.optJSONObject("meta");
                 count=meta==null?0:meta.optInt("count");
-
+                mEmptyView.setVisibility(View.VISIBLE);
                 if (article_items!=null&&article_items.length()>0){
+                    mEmptyView.setVisibility(View.GONE);
                     for (int i=0;i<article_items.length();i++){
                         JSONObject articleObj = article_items.optJSONObject(i);
                         int id = articleObj.optInt("id");

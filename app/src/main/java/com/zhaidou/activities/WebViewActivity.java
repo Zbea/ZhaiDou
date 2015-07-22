@@ -3,6 +3,7 @@ package com.zhaidou.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,13 +30,14 @@ public class WebViewActivity extends Activity implements View.OnClickListener{
         webView = (WebView) findViewById(R.id.webView);
 
         webView.setWebViewClient(new WebViewClient() {
-
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                Log.i("shouldOverrideUrlLoading----->", url);
+                if (url.startsWith("taobao://"))
+                    return true;
                 view.loadUrl(url);
                 return true;
             }
-
         });
 
         webView.getSettings().setJavaScriptEnabled(true);
