@@ -105,11 +105,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         mHeaderView=(ImageView)findViewById(R.id.iv_header);
         mHeaderText=(TextView)findViewById(R.id.tv_msg);
 
-        if(NetworkUtils.isNetworkAvailable(this))
-        {
-//            mDialog= CustomLoadingDialog.setLoadingDialog(this,"loading");
-        }
-        else
+        if(!NetworkUtils.isNetworkAvailable(this))
         {
             Toast.makeText(this,"抱歉，请检查网络",Toast.LENGTH_SHORT).show();
         }
@@ -121,15 +117,18 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         iv_share.setOnClickListener(this);
 
 
-
         //String postId = getIntent().getStringExtra("id");
 
         /* WebView Settings */
         webView = (CustomProgressWebview) findViewById(R.id.detailView);
-        webView.getSettings().setUseWideViewPort(true);
-        webView.getSettings().setLoadWithOverviewMode(true);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setDomStorageEnabled(true);
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        webSettings.setAllowFileAccess(true);
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setUseWideViewPort(true);
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         if (!"lottery".equalsIgnoreCase(from))
            webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
@@ -181,13 +180,29 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
                     if (!TextUtils.isEmpty(token))
                         webView.loadUrl("javascript:ReceiveUserInfo("+userId+", '"+token+"')");
                 }
-//                if (mDialog!=null)
-//                {
-//                    mDialog.dismiss();
-//                }
                 super.onPageFinished(view, url);
             }
         });
+
+        webView.setWebChromeClient(new WebChromeClient()
+        {
+            @Override
+            public void onProgressChanged(WebView view, int newProgress)
+            {
+                if (newProgress==100)
+                {
+                    webView.progressBar.setVisibility(View.GONE);
+
+                }
+                else
+                {
+                    webView.progressBar.setVisibility(View.VISIBLE);
+                    webView.progressBar.setProgress(newProgress);
+                }
+                super.onProgressChanged(view, newProgress);
+            }
+        });
+
         url = getIntent().getStringExtra("url");
         Log.i("url----------->","url"+"------"+url);
         webView.loadUrl(url+"?open=app");
