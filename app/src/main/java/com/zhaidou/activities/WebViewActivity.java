@@ -11,11 +11,12 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.zhaidou.R;
+import com.zhaidou.view.CustomProgressWebview;
 
 public class WebViewActivity extends Activity implements View.OnClickListener{
 
     private String url;
-    private WebView webView;
+    private CustomProgressWebview webView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,11 +24,7 @@ public class WebViewActivity extends Activity implements View.OnClickListener{
         setContentView(R.layout.activity_web_view);
         findViewById(R.id.ll_back).setOnClickListener(this);
 
-        // Set Icon
-//        getActionBar().setIcon(R.drawable.buy_close);
-//        getActionBar().setHomeButtonEnabled(true);
-
-        webView = (WebView) findViewById(R.id.webView);
+        webView = (CustomProgressWebview) findViewById(R.id.webView);
 
         webView.setWebViewClient(new WebViewClient() {
             @Override

@@ -410,9 +410,6 @@ public class HomeFragment extends BaseFragment implements
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
         mDialog.show();
 
-        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
-        mScrollView.setOnRefreshListener(this);
-
         view.findViewById(R.id.ll_lottery).setOnClickListener(this);
         view.findViewById(R.id.ll_competition).setOnClickListener(this);
         view.findViewById(R.id.ll_sale).setOnClickListener(this);

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <include
+        android:id="@+id/headLine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        layout="@layout/head_style_page"></include>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="10dp">
+
+        <LinearLayout
+            android:layout_width="80dp"
+            android:layout_weight="0.0001"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="全选"
+                android:textSize="16sp"
+                android:textColor="@color/text_main_color"
+                android:id="@+id/allCB"/>
+
+        </LinearLayout>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical">
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/priceInfoTT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="@color/text_main_color"
+                android:layout_centerVertical="true"
+                android:text="总价："
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:marqueeRepeatLimit="marquee_forever"/>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/priceTotalTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="@color/red"
+                android:layout_toRightOf="@+id/priceInfoTT"
+                android:layout_centerVertical="true"
+                android:text="$ 40000"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:marqueeRepeatLimit="marquee_forever"/>
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:textSize="12sp"
+                android:textColor="@color/text_gary_color"
+                android:layout_below="@+id/priceTotalTv"
+                android:layout_alignLeft="@+id/priceTotalTv"
+                android:text="不包含运费"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:marqueeRepeatLimit="marquee_forever"/>
+
+            </RelativeLayout>
+
+        <Button
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.000001"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:background="@drawable/shop_buy_btn_selector"
+            android:padding="10dp"
+            android:text="结算"/>
+
+        </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="商品详情"
+            android:textColor="@color/text_main_color"
+            android:background="@color/transparent"
+            android:padding="10dp"
+            android:gravity="center"
+            android:button="@null"
+            android:textSize="16sp"
+            android:id="@+id/infoRb"/>
+
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="咨询与售后服务"
+            android:background="@color/transparent"
+            android:padding="10dp"
+            android:textColor="@color/text_main_color"
+            android:gravity="center"
+            android:button="@null"
+            android:textSize="16sp"
+            android:id="@+id/afterSaleRb"/>
+    </RadioGroup>
+
+</LinearLayout>
