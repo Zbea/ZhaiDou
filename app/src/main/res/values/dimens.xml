@@ -6,6 +6,7 @@
     <dimen name="default_margin">5dp</dimen>
 
     <dimen name="home_item_dimen">155dp</dimen>
+    <dimen name="goods_height_dimen">220dp</dimen>
 
     <!--actionbar-->
     <dimen name="base_action_bar_height">50.0dip</dimen>

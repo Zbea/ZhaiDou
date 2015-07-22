@@ -13,6 +13,9 @@
     <string name="title_activity_item_detail"></string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_web_view">关闭</string>
+    
+    <string name="home_shop_special_text">特卖商城</string>
+    <string name="shop_taday_special_text">今日特卖</string>
 
     <!-- Tab -->
     <string name="tab_utility_title">最实用</string>
