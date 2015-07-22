@@ -218,11 +218,11 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     Intent intent=new Intent(MainActivity.this, LoginActivity.class);
                     MainActivity.this.startActivityForResult(intent, 10000);
                 }else {
-                    if (persoanlFragment1==null){
+                    if (persoanlFragment==null){
 //                        persoanlFragment= PersonalFragment.newInstance("", "");
-                        persoanlFragment1= PersonalFragment1.newInstance("","");
+                        persoanlFragment= PersonalFragment.newInstance("","");
                     }
-                    selectFragment(currentFragment,persoanlFragment1);
+                    selectFragment(currentFragment,persoanlFragment);
                     setButton(view);
                 }
 

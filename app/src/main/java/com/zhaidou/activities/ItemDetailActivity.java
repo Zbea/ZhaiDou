@@ -1,13 +1,11 @@
 
 package com.zhaidou.activities;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -22,7 +20,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.alibaba.sdk.android.callback.CallbackContext;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
@@ -134,7 +131,8 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
 
-        webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        if (!"lottery".equalsIgnoreCase(from))
+           webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         webView.setVerticalScrollBarEnabled(false);
         webView.setVerticalScrollbarOverlay(false);
         webView.setHorizontalScrollbarOverlay(false);
