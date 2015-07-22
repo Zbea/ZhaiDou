@@ -25,7 +25,7 @@ public class CustomProgressWebview extends WebView
 		progressBar.setMax(100);  
 		addView(progressBar);
 		setWebChromeClient(new WebChromeClient());
-        setWebViewClient(new CustomWebViewClient());
+//        setWebViewClient(new CustomWebViewClient());
 
 	}
 
@@ -49,13 +49,13 @@ public class CustomProgressWebview extends WebView
 		}
 	}
 
-    public class CustomWebViewClient extends WebViewClient
-    {
-        @Override
-        public void onPageFinished(WebView view, String url)
-        {
-            progressBar.setVisibility(GONE);
-            super.onPageFinished(view, url);
-        }
-    };
+//    public class CustomWebViewClient extends WebViewClient
+//    {
+//        @Override
+//        public void onPageFinished(WebView view, String url)
+//        {
+//            progressBar.setVisibility(GONE);
+//            super.onPageFinished(view, url);
+//        }
+//    };
 }
