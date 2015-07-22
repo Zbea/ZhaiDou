@@ -35,6 +35,7 @@ import com.zhaidou.model.User;
 import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.CustomProgressWebview;
 
 import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
@@ -45,7 +46,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
 {
 
-    private WebView webView;
+    private CustomProgressWebview webView;
 
     /* 以下代码应该封装为一个对象 */
     private String title;
@@ -69,7 +70,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     private RegisterFragment registerFragment;
 
     private SharedPreferences mSharedPreferences;
-    private Dialog mDialog;
+//    private Dialog mDialog;
     public static RefreshNotifyListener refreshNotifyListener;
 
     @Override
@@ -109,7 +110,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
         if(NetworkUtils.isNetworkAvailable(this))
         {
-            mDialog= CustomLoadingDialog.setLoadingDialog(this,"loading");
+//            mDialog= CustomLoadingDialog.setLoadingDialog(this,"loading");
         }
         else
         {
@@ -127,7 +128,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         //String postId = getIntent().getStringExtra("id");
 
         /* WebView Settings */
-        webView = (WebView) findViewById(R.id.detailView);
+        webView = (CustomProgressWebview) findViewById(R.id.detailView);
         webView.getSettings().setUseWideViewPort(true);
         webView.getSettings().setLoadWithOverviewMode(true);
         webView.getSettings().setJavaScriptEnabled(true);
@@ -182,10 +183,10 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
                     if (!TextUtils.isEmpty(token))
                         webView.loadUrl("javascript:ReceiveUserInfo("+userId+", '"+token+"')");
                 }
-                if (mDialog!=null)
-                {
-                    mDialog.dismiss();
-                }
+//                if (mDialog!=null)
+//                {
+//                    mDialog.dismiss();
+//                }
                 super.onPageFinished(view, url);
             }
         });
