@@ -11,6 +11,7 @@ import com.zhaidou.fragments.ElementListFragment;
 import com.zhaidou.fragments.HomeFragment;
 import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.PersonalFragment;
+import com.zhaidou.fragments.PersonalFragment1;
 import com.zhaidou.fragments.PersonalMainFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.fragments.StrategyFragment;
@@ -402,5 +403,9 @@ Log.i("selectFragment---->","selectFragment1");
             }
         }
         return super.onKeyDown(keyCode, event);
+    }
+    public void toHomeFragment(){
+        selectFragment(currentFragment, utilityFragment);
+        setButton(homeButton);
     }
 }
