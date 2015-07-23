@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -93,6 +94,25 @@ public class HomePTActivity extends Activity
             public void onPageFinished(WebView view, String url)
             {
                 super.onPageFinished(view, url);
+            }
+        });
+
+        webView.setWebChromeClient(new WebChromeClient()
+        {
+            @Override
+            public void onProgressChanged(WebView view, int newProgress)
+            {
+                if (newProgress==100)
+                {
+                    webView.progressBar.setVisibility(View.GONE);
+
+                }
+                else
+                {
+                    webView.progressBar.setVisibility(View.VISIBLE);
+                    webView.progressBar.setProgress(newProgress);
+                }
+                super.onProgressChanged(view, newProgress);
             }
         });
 

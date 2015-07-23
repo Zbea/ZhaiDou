@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -35,6 +36,25 @@ public class WebViewActivity extends Activity implements View.OnClickListener{
                     return true;
                 view.loadUrl(url);
                 return true;
+            }
+        });
+
+        webView.setWebChromeClient(new WebChromeClient()
+        {
+            @Override
+            public void onProgressChanged(WebView view, int newProgress)
+            {
+                if (newProgress==100)
+                {
+                    webView.progressBar.setVisibility(View.GONE);
+
+                }
+                else
+                {
+                    webView.progressBar.setVisibility(View.VISIBLE);
+                    webView.progressBar.setProgress(newProgress);
+                }
+                super.onProgressChanged(view, newProgress);
             }
         });
 
