@@ -31,34 +31,27 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/home_item_dimen"
+                android:background="@color/white"
                 >
-
-                <ImageView
-                    android:id="@+id/shopAdImage"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/home_item_dimen"
-                    android:scaleType="fitXY"
-                    android:background="@drawable/icon_loading_item"
-                    />
 
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/adText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_margin="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:textSize="14sp"
                     android:layout_centerInParent="true"
-                    android:textColor="@color/white"
-                    android:text="新特卖每天早10点更新"/>
+                    android:textColor="#a8a8a8"
+                    android:text="新特卖每天早10点更新,新特卖每天早10点更新新特卖每天早10点更新,新特卖每天早10点更新新特卖每天早10点更新"/>
             </RelativeLayout>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/gray_9"
+                android:background="@color/green_color"
                 android:padding="10dp"
                 android:gravity="center_vertical">
 
@@ -95,8 +88,6 @@
                 android:id="@+id/shopListView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
                 android:divider="@null"
                 android:scrollbars="none"
                 android:listSelector="@android:color/transparent"

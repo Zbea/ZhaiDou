@@ -75,6 +75,7 @@ import com.zhaidou.view.HeaderLayout;
 import com.zhaidou.view.ImageSwitchWall;
 import com.zhaidou.view.ListViewForScrollView;
 import com.zhaidou.view.SwipeRefreshLayout;
+import com.zhaidou.view.TypeFaceTextView;
 import com.zhaidou.view.XListView;
 
 import org.json.JSONArray;
@@ -137,6 +138,9 @@ public class HomeFragment extends BaseFragment implements
     private ImageView mSearchView, mCategoryView;
     private TextView mTitleView;
     private int screenWidth;
+    private View view;
+    private Dialog mDialog;
+    private Context mContext;
 
     private PopupWindow mPopupWindow = null;
     private LinearLayout ll_poplayout;
@@ -162,8 +166,13 @@ public class HomeFragment extends BaseFragment implements
 
     private HomeCategoryFragment homeCategoryFragment;
     private Category mCategory;
-    private Dialog mDialog;
-    private Context mContext;
+
+    //特卖view初始化
+    private ImageView itemTipsIv;
+    private ImageView itemImageIv;
+    private TypeFaceTextView itemNameTv;
+    private TypeFaceTextView itemTimeTv;
+    private TypeFaceTextView itemSaleTv;
 
     private PullToRefreshScrollView mScrollView;
     /* Log cat */
@@ -383,7 +392,7 @@ public class HomeFragment extends BaseFragment implements
                              Bundle savedInstanceState)
     {
 
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        view = inflater.inflate(R.layout.fragment_home, container, false);
 
         mContext = getActivity();
 
@@ -401,8 +410,10 @@ public class HomeFragment extends BaseFragment implements
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
         mDialog.show();
 
+        initView();
+
         view.findViewById(R.id.ll_lottery).setOnClickListener(this);
-        view.findViewById(R.id.ll_competition).setOnClickListener(this);
+        view.findViewById(R.id.ll_special_shop).setOnClickListener(this);
         view.findViewById(R.id.ll_sale).setOnClickListener(this);
         view.findViewById(R.id.ll_forward).setOnClickListener(this);
         view.findViewById(R.id.ll_category_view).setOnClickListener(this);
@@ -436,6 +447,21 @@ public class HomeFragment extends BaseFragment implements
         homeCategoryFragment.setCategorySelectedListener(this);
         return view;
     }
+
+    private void initView()
+    {
+        itemTipsIv=(ImageView)view.findViewById(R.id.homeGoodsTips);
+        itemImageIv=(ImageView)view.findViewById(R.id.homeGoodsImage);;
+        itemNameTv=(TypeFaceTextView)view.findViewById(R.id.homeGoodsName);
+        itemTimeTv=(TypeFaceTextView)view.findViewById(R.id.shop_time_item);
+        itemSaleTv=(TypeFaceTextView)view.findViewById(R.id.homeGoodsSale);
+
+        String url="http://stg.zhaidou.com/uploads/article/article/asset_img/303/99d2fa9df325d76ac941b246ecf1488c.jpg";
+        ToolUtils.setImageCacheUrl(url,itemImageIv);
+        itemNameTv.setText("DISSION女装专场");
+
+    }
+
 
     /**
      * 广播注册
@@ -555,27 +581,18 @@ public class HomeFragment extends BaseFragment implements
                 toggleMenu();
                 break;
             case R.id.ll_lottery:
-//                WebViewFragment prizeFragment=WebViewFragment.newInstance("http://192.168.199.158/test1.html",true);
-//                ((BaseActivity)getActivity()).navigationToFragment(prizeFragment);
                 Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
                 detailIntent.putExtra("url", ZhaiDou.PRIZE_SCRAPING_URL);
                 detailIntent.putExtra("from", "lottery");
                 detailIntent.putExtra("title", "天天刮奖");
                 startActivity(detailIntent);
                 break;
-            case R.id.ll_competition:
-                Intent intent = new Intent(getActivity(), HomePTActivity.class);
-                intent.putExtra("url", ZhaiDou.COMPETITION_URL);
-                intent.putExtra("from", "competition");
-                intent.putExtra("title", "拼贴大赛");
-                startActivity(intent);
 
-//                Intent intent = new Intent(getActivity(), ItemDetailActivity.class);
-//                intent.putExtra("url", ZhaiDou.COMPETITION_URL);
-//                intent.putExtra("from", "competition");
-//                intent.putExtra("title", "拼贴大赛");
-//                startActivity(intent);
+            case R.id.ll_special_shop:
+                ShopSpecialFragment shopSpecialFragment = ShopSpecialFragment.newInstance("", 0);
+                ((MainActivity) getActivity()).navigationToFragment(shopSpecialFragment);
                 break;
+
             case R.id.ll_sale:
                 SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragment(specialSaleFragment);

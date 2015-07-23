@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/specialIitem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:clickable="true"
-    android:orientation="vertical">
+    android:orientation="vertical"
+>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/default_margin"
+        android:layout_marginLeft="@dimen/default_margin"
+        android:layout_marginRight="@dimen/default_margin"
+        android:background="@drawable/item_click_selector"
+>
 
     <ImageView
+        android:id="@+id/itemsImageIv"
         android:layout_width="match_parent"
         android:layout_height="@dimen/home_item_dimen"
         android:scaleType="fitXY"
@@ -17,7 +27,6 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:gravity="center_vertical"
-        android:background="@color/white"
         android:padding="10dp">
 
         <com.zhaidou.view.TypeFaceTextView
@@ -26,7 +35,6 @@
             android:layout_height="wrap_content"
             android:textColor="@color/red"
             android:layout_weight="0.000001"
-            android:textSize="18sp"
             android:text="3折起"
             />
 
@@ -35,8 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="18sp"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="5dp"
             android:layout_marginRight="10dp"
             android:textColor="@color/text_main_color"
             android:text="item的名称"
@@ -49,11 +56,17 @@
             android:layout_weight="0.000001"
             android:gravity="center_vertical">
 
+            <ImageView
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:src="@drawable/home_goods_item_time_icon"/>
+
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
                 android:textColor="@color/text_gary_color"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:text="剩余时间"
                 />
             <com.zhaidou.view.TypeFaceTextView
@@ -62,16 +75,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="2dp"
                 android:textColor="@color/text_gary_color"
+                android:textSize="12sp"
                 android:text="1"
                 />
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/text_gary_color"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:text="天"
                 />
         </LinearLayout>
+    </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

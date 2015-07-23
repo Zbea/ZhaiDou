@@ -76,8 +76,8 @@
     </RelativeLayout>
 
     <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="@dimen/home_tips_dimen"
+        android:layout_height="@dimen/home_tips_dimen"
         android:id="@+id/newsView"
         android:visibility="gone"
         android:src="@drawable/home_info_news_icon"/>

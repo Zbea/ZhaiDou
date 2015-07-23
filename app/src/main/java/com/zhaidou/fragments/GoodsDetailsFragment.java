@@ -1,28 +1,31 @@
 package com.zhaidou.fragments;
 
 
-
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.adapter.ShopTodaySpecialAdapter;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.model.TodayShopItem;
 import com.zhaidou.view.ListViewForScrollView;
 import com.zhaidou.view.TypeFaceTextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * Created by roy on 15/7/23.
  */
-public class GoodsFragment extends BaseFragment {
+public class GoodsDetailsFragment extends BaseFragment {
     private static final String PAGE = "page";
     private static final String INDEX = "index";
 
@@ -31,11 +34,7 @@ public class GoodsFragment extends BaseFragment {
     private View mView;
     private Context mContext;
 
-    private ImageView adIv;
-    private LinearLayout backBtn;
-    private TypeFaceTextView titleTv;
-    private PullToRefreshScrollView mScrollView;
-    private ListViewForScrollView mListView;
+    private TypeFaceTextView backBtn,titleTv;
 
     /**
      * 下拉刷新
@@ -45,12 +44,31 @@ public class GoodsFragment extends BaseFragment {
         @Override
         public void onPullDownToRefresh(PullToRefreshBase refreshView)
         {
-
+//            new Handler().postDelayed(new Runnable()
+//            {
+//                @Override
+//                public void run()
+//                {
+//                    mScrollView.onRefreshComplete();
+//                    items.removeAll(items);
+//                    initDate();
+//                    adapter.notifyDataSetChanged();
+//                }
+//            },2000);
         }
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView)
         {
-
+//            new Handler().postDelayed(new Runnable()
+//            {
+//                @Override
+//                public void run()
+//                {
+//                    mScrollView.onRefreshComplete();
+//                    initDate();
+//                    adapter.notifyDataSetChanged();
+//                }
+//            },2000);
         }
     };
 
@@ -65,21 +83,21 @@ public class GoodsFragment extends BaseFragment {
             switch (view.getId())
             {
                 case R.id.back_btn:
-                    ((MainActivity)getActivity()).popToStack(GoodsFragment.this);
+                    ((MainActivity)getActivity()).popToStack(GoodsDetailsFragment.this);
                 break;
             }
         }
     };
 
-    public static GoodsFragment newInstance(String page, int index) {
-        GoodsFragment fragment = new GoodsFragment();
+    public static GoodsDetailsFragment newInstance(String page, int index) {
+        GoodsDetailsFragment fragment = new GoodsDetailsFragment();
         Bundle args = new Bundle();
         args.putString(PAGE, page);
         args.putInt(INDEX, index);
         fragment.setArguments(args);
         return fragment;
     }
-    public GoodsFragment() {
+    public GoodsDetailsFragment() {
     }
 
     @Override
@@ -94,7 +112,7 @@ public class GoodsFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mView=inflater.inflate(R.layout.shop_today_special_page, container, false);
+        mView=inflater.inflate(R.layout.goods_details_page, container, false);
         mContext=getActivity();
 
         initView();
@@ -102,24 +120,17 @@ public class GoodsFragment extends BaseFragment {
         return mView;
     }
 
+
     /**
      * 初始化数据
      */
     private void initView()
     {
-        backBtn=(LinearLayout)mView.findViewById(R.id.back_btn);
+        backBtn=(TypeFaceTextView)mView.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(onClickListener);
         titleTv=(TypeFaceTextView)mView.findViewById(R.id.title_tv);
-        titleTv.setText(R.string.shop_taday_special_text);
-        adIv=(ImageView)mView.findViewById(R.id.shopAdImage);
-
-        mScrollView = (PullToRefreshScrollView)mView.findViewById(R.id.scrollview);
-        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
-        mScrollView.setOnRefreshListener(refreshListener);
-
-        mListView=(ListViewForScrollView)mView.findViewById(R.id.shopListView);
+        titleTv.setText(mPage);
 
     }
-
 
 }
