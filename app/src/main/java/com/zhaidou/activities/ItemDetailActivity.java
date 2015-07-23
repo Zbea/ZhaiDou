@@ -169,7 +169,6 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
             public void onPageFinished(WebView view, String url)
             {
                 if ("lottery".equalsIgnoreCase(from)){
-                    Log.i("lottery----------->","onPageFinished"+"------"+token);
                     if (!TextUtils.isEmpty(token)){
                         webView.loadUrl("javascript:ReceiveUserInfo("+userId+", '"+token+"',"+getDeviceId()+",'"+nickName+"')");
                     }else {

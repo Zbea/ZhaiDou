@@ -403,6 +403,7 @@ public class HomeFragment extends BaseFragment implements
         listView.setOnItemClickListener(this);
         fl_category_menu = (FrameLayout) view.findViewById(R.id.fl_category_menu);
         mScrollView = (PullToRefreshScrollView) view.findViewById(R.id.scrollview);
+        mScrollView.setOnRefreshListener(this);
         mSwipeView = (LinearLayout) view.findViewById(R.id.ll_adview);
         mBackView = (LinearLayout) view.findViewById(R.id.ll_back);
         mBackView.setOnClickListener(this);
@@ -570,6 +571,7 @@ public class HomeFragment extends BaseFragment implements
 //                ((BaseActivity)getActivity()).navigationToFragment(prizeFragment);
                 Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
                 detailIntent.putExtra("url", ZhaiDou.PRIZE_SCRAPING_URL);
+//                detailIntent.putExtra("url","http://192.168.199.230:3000/lotteries");
                 detailIntent.putExtra("from", "lottery");
                 detailIntent.putExtra("title", "天天刮奖");
                 startActivity(detailIntent);
