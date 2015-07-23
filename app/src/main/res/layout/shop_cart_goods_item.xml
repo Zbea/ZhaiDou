@@ -14,18 +14,23 @@
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="0.00001"
+            android:layout_marginLeft="10dp"
             android:id="@+id/chartItemCB"/>
 
         <ImageView
             android:id="@+id/cartImageItemTv"
+            android:layout_weight="0.00001"
             android:layout_width="@dimen/image_height_dimen"
             android:layout_height="@dimen/image_height_dimen"
+            android:layout_margin="10dp"
             android:src="@drawable/icon_loading_defalut"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:layout_marginRight="10dp"
             android:layout_weight="1">
 
             <com.zhaidou.view.TypeFaceTextView
@@ -34,7 +39,7 @@
                 android:layout_marginTop="10dp"
                 android:textSize="15sp"
                 android:textColor="@color/text_main_color"
-                android:text="不包含运费"
+                android:text="商品价格名称哈哈啊哈哈"
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:marqueeRepeatLimit="marquee_forever"/>
@@ -89,9 +94,56 @@
                         android:text="L"
                         />
                 </LinearLayout>
+
             </LinearLayout>
 
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textSize="12sp"
+                android:textColor="@color/text_gary_color"
+                android:text="商品价格名称哈哈啊哈哈"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:marqueeRepeatLimit="marquee_forever"/>
+
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_weight="0.00001"
+            android:layout_marginRight="20dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="right"
+            >
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/red"
+                android:text="$ 123.5"
+                />
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:textSize="12sp"
+                android:textColor="@color/text_gary_color"
+                android:text="$ 123.5"
+                />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:src="@drawable/delete"/>
+
+            </LinearLayout>
 
     </LinearLayout>
 </LinearLayout>

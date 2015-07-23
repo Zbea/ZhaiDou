@@ -5,7 +5,10 @@
     android:layout_height="@dimen/home_item_dimen"
     android:clipChildren="true"
     android:clipToPadding="true"
-    android:padding="@dimen/default_margin">
+    android:paddingLeft="@dimen/default_margin"
+    android:paddingRight="@dimen/default_margin"
+    android:paddingTop="@dimen/default_margin"
+    >
 
     <ImageView
         android:id="@+id/cover"

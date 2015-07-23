@@ -3,7 +3,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">8dp</dimen>
     <dimen name="default_image_view_height">140dp</dimen>
-    <dimen name="default_margin">5dp</dimen>
+    <dimen name="default_margin">10dp</dimen>
 
     <dimen name="home_item_dimen">155dp</dimen>
     <dimen name="goods_height_dimen">220dp</dimen>

@@ -104,7 +104,6 @@ import java.util.WeakHashMap;
 public class HomeFragment extends BaseFragment implements
         HeaderLayout.onLeftImageButtonClickListener,
         HeaderLayout.onRightImageButtonClickListener,
-        SwipeRefreshLayout.OnLoadListener, SwipeRefreshLayout.OnRefreshListener,
         HomeCategoryFragment.CategorySelectedListener,
         AdapterView.OnItemClickListener, View.OnClickListener,
         ItemDetailActivity.RefreshNotifyListener,
@@ -119,14 +118,13 @@ public class HomeFragment extends BaseFragment implements
     private ListView listView;
     private ZhaiDou.ListType listType;
 
-    /* pagination */
     private String targetUrl;
     private int currentPage = 1;
     private int count = -1;
 
     private boolean loadedAll = false;
     private final int LOADED = 1;
-    //private AsyncImageLoader1 imageLoader;
+
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     /* Data Definition*/
     List<JSONObject> listItem;
@@ -148,8 +146,8 @@ public class HomeFragment extends BaseFragment implements
     private List<String> categoryList;
     private RequestQueue mRequestQueue;
     private List<Article> articleList = new ArrayList<Article>();
-    private List<Article> formerList = new ArrayList<Article>();
-    //private HomeAdapter mHomeAdapter;
+
+    private LinearLayout itemBtn;
 
     public HomeListAdapter mListAdapter;
     private ViewPager viewPager;
@@ -164,9 +162,6 @@ public class HomeFragment extends BaseFragment implements
 
     private HomeCategoryFragment homeCategoryFragment;
     private Category mCategory;
-    private LinearLayout mBackView;
-
-    private LinearLayout mSwipeView;
     private Dialog mDialog;
     private Context mContext;
 
@@ -394,8 +389,6 @@ public class HomeFragment extends BaseFragment implements
 
         initBroadcastReceiver();
 
-
-
         WindowManager wm = ((Activity)mContext).getWindowManager();
         screenWidth = wm.getDefaultDisplay().getWidth();
 
@@ -403,9 +396,7 @@ public class HomeFragment extends BaseFragment implements
         listView.setOnItemClickListener(this);
         fl_category_menu = (FrameLayout) view.findViewById(R.id.fl_category_menu);
         mScrollView = (PullToRefreshScrollView) view.findViewById(R.id.scrollview);
-        mSwipeView = (LinearLayout) view.findViewById(R.id.ll_adview);
-        mBackView = (LinearLayout) view.findViewById(R.id.ll_back);
-        mBackView.setOnClickListener(this);
+        mScrollView.setOnRefreshListener(this);
 
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
         mDialog.show();
@@ -423,18 +414,16 @@ public class HomeFragment extends BaseFragment implements
         mTitleView = (TextView) view.findViewById(R.id.tv_title);
         viewPager = (ViewPager) view.findViewById(R.id.home_adv_pager);
         tipsLine = (LinearLayout) view.findViewById(R.id.home_viewGroup);
+
+        itemBtn=(LinearLayout)view.findViewById(R.id.home_item_goods);
+        itemBtn.setOnClickListener(this);
+
         currentPage = 1;
 
         loadedAll = false;
 
         mRequestQueue = Volley.newRequestQueue(getActivity());
         listItem = new ArrayList<JSONObject>();
-
-
-//        mHomeAdapter = new HomeAdapter(getActivity(), articleList);
-//        listView.setEmptyView(mEmptyView);
-//        listView.setAdapter(mHomeAdapter);
-        Log.i("mEmptyView---->", mEmptyView.toString());
 
         getBannerData();
         FetchData(currentPage, null);
@@ -601,9 +590,13 @@ public class HomeFragment extends BaseFragment implements
                 break;
             case R.id.ll_back:
                 mCategoryView.setVisibility(View.VISIBLE);
-                mBackView.setVisibility(View.GONE);
-                mSwipeView.setVisibility(View.VISIBLE);
                 break;
+
+            case R.id.home_item_goods:
+                ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance("", 0);
+                ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
+                break;
+
         }
     }
 
@@ -737,19 +730,7 @@ public class HomeFragment extends BaseFragment implements
         return new SimpleDateFormat("MM-dd HH:mm", Locale.CHINA).format(new Date());
     }
 
-    @Override
-    public void onRefresh()
-    {
-        Log.i("OnRefreshListener---->", "OnRefreshListener");
-        FetchData(currentPage = 1, mCategory);
-    }
 
-    @Override
-    public void onLoad()
-    {
-        Log.i("onLoad------>", "onLoad");
-        FetchData(++currentPage, mCategory);
-    }
 
     @Override
     public void onCategorySelected(Category category)

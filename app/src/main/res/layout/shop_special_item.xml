@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/specialIitem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/home_item_bg"
+    android:clickable="true"
     android:orientation="vertical">
 
     <ImageView
@@ -16,6 +17,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:gravity="center_vertical"
+        android:background="@color/white"
         android:padding="10dp">
 
         <com.zhaidou.view.TypeFaceTextView
@@ -24,6 +26,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/red"
             android:layout_weight="0.000001"
+            android:textSize="18sp"
             android:text="3折起"
             />
 
@@ -32,6 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="18sp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:textColor="@color/text_main_color"
