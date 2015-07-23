@@ -33,7 +33,7 @@ public class PersonalFragment1 extends BaseFragment implements View.OnClickListe
     private TextView mPrePayView,mPreReceivedView,mReturnView;
     private RelativeLayout mCouponsView,mRewardView,mAddrView,mSettingView;
     private FrameLayout mChildContainer;
-
+    SettingFragment settingFragment;
     // TODO: Rename and change types and number of parameters
     public static PersonalFragment1 personalFragment;
     public static PersonalFragment1 newInstance(String param1, String context) {
@@ -81,7 +81,7 @@ public class PersonalFragment1 extends BaseFragment implements View.OnClickListe
         mRewardView.setOnClickListener(this);
         mAddrView.setOnClickListener(this);
         mSettingView.setOnClickListener(this);
-
+        settingFragment=SettingFragment.newInstance("","");
         return view;
     }
 
@@ -102,13 +102,10 @@ public class PersonalFragment1 extends BaseFragment implements View.OnClickListe
                 break;
             case R.id.rl_setting:
                 Log.i("rl_setting---->","rl_setting");
-                SettingFragment settingFragment=SettingFragment.newInstance("","");
-//                getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container,settingFragment).show(settingFragment).addToBackStack(null).commit();
-//                mChildContainer.setVisibility(View.VISIBLE);
+//              SettingFragment settingFragment1=SettingFragment.newInstance("","");
+                Log.i("getactivity---------->",getActivity().toString());
                 ((MainActivity)getActivity()).navigationToFragment(settingFragment);
                 break;
         }
     }
-
-
 }

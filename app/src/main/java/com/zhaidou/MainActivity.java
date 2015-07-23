@@ -14,6 +14,7 @@ import com.zhaidou.fragments.PersonalFragment;
 import com.zhaidou.fragments.PersonalFragment1;
 import com.zhaidou.fragments.PersonalMainFragment;
 import com.zhaidou.fragments.RegisterFragment;
+import com.zhaidou.fragments.SettingFragment;
 import com.zhaidou.fragments.StrategyFragment;
 import com.zhaidou.fragments.WebViewFragment;
 import com.zhaidou.model.User;
@@ -250,16 +251,11 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 Log.i("selectFragment---->","selectFragment1");
         if (currentFragment != to) {
             currentFragment = to;
-            Log.i("selectFragment---->","selectFragment2");
             FragmentManager manager = getSupportFragmentManager();
-            Log.i("selectFragment---->","selectFragment3");
             FragmentTransaction transaction = manager.beginTransaction();
-            Log.i("selectFragment---->","selectFragment4");
             if (!to.isAdded()) {
-                Log.i("selectFragment---->","selectFragment5");
                 transaction.hide(from).add(R.id.content, to).commit();
             } else {
-                Log.i("selectFragment---->","selectFragment6");
                 transaction.hide(from).show(to).commit();
             }
         }
@@ -408,5 +404,11 @@ Log.i("selectFragment---->","selectFragment1");
     public void toHomeFragment(){
         selectFragment(currentFragment, utilityFragment);
         setButton(homeButton);
+    }
+
+    public void replaceFragment(Fragment fragment){
+        SettingFragment settingFragment=SettingFragment.newInstance("","");
+        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container,settingFragment).addToBackStack(null).show(settingFragment).commit();
+        mChildContainer.setVisibility(View.VISIBLE);
     }
 }
