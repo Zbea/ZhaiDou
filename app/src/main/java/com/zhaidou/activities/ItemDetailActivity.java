@@ -1,12 +1,11 @@
+
 package com.zhaidou.activities;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -21,23 +20,22 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.alibaba.sdk.android.callback.CallbackContext;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
-import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.fragments.HomeFragment;
 import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.model.Article;
 import com.zhaidou.model.User;
-import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
 
 import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
+
+import com.zhaidou.view.CustomProgressWebview;
+
 
 public class ItemDetailActivity extends BaseActivity implements View.OnClickListener,
         RegisterFragment.RegisterOrLoginListener,
@@ -45,7 +43,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
 {
 
-    private WebView webView;
+    private CustomProgressWebview webView;
 
     /* 以下代码应该封装为一个对象 */
     private String title;
@@ -69,7 +67,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     private RegisterFragment registerFragment;
 
     private SharedPreferences mSharedPreferences;
-    private Dialog mDialog;
+//    private Dialog mDialog;
     public static RefreshNotifyListener refreshNotifyListener;
 
     @Override
@@ -107,11 +105,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         mHeaderView=(ImageView)findViewById(R.id.iv_header);
         mHeaderText=(TextView)findViewById(R.id.tv_msg);
 
-        if(NetworkUtils.isNetworkAvailable(this))
-        {
-            mDialog= CustomLoadingDialog.setLoadingDialog(this,"loading");
-        }
-        else
+        if(!NetworkUtils.isNetworkAvailable(this))
         {
             Toast.makeText(this,"抱歉，请检查网络",Toast.LENGTH_SHORT).show();
         }
@@ -123,17 +117,21 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         iv_share.setOnClickListener(this);
 
 
-
         //String postId = getIntent().getStringExtra("id");
 
         /* WebView Settings */
-        webView = (WebView) findViewById(R.id.detailView);
-        webView.getSettings().setUseWideViewPort(true);
-        webView.getSettings().setLoadWithOverviewMode(true);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setDomStorageEnabled(true);
+        webView = (CustomProgressWebview) findViewById(R.id.detailView);
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        webSettings.setAllowFileAccess(true);
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setUseWideViewPort(true);
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
-        webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        if (!"lottery".equalsIgnoreCase(from))
+           webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         webView.setVerticalScrollBarEnabled(false);
         webView.setVerticalScrollbarOverlay(false);
         webView.setHorizontalScrollbarOverlay(false);
@@ -171,7 +169,6 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
             public void onPageFinished(WebView view, String url)
             {
                 if ("lottery".equalsIgnoreCase(from)){
-                    Log.i("lottery----------->","onPageFinished"+"------"+token);
                     if (!TextUtils.isEmpty(token)){
                         webView.loadUrl("javascript:ReceiveUserInfo("+userId+", '"+token+"',"+getDeviceId()+",'"+nickName+"')");
                     }else {
@@ -182,13 +179,29 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
                     if (!TextUtils.isEmpty(token))
                         webView.loadUrl("javascript:ReceiveUserInfo("+userId+", '"+token+"')");
                 }
-                if (mDialog!=null)
-                {
-                    mDialog.dismiss();
-                }
                 super.onPageFinished(view, url);
             }
         });
+
+        webView.setWebChromeClient(new WebChromeClient()
+        {
+            @Override
+            public void onProgressChanged(WebView view, int newProgress)
+            {
+                if (newProgress==100)
+                {
+                    webView.progressBar.setVisibility(View.GONE);
+
+                }
+                else
+                {
+                    webView.progressBar.setVisibility(View.VISIBLE);
+                    webView.progressBar.setProgress(newProgress);
+                }
+                super.onProgressChanged(view, newProgress);
+            }
+        });
+
         url = getIntent().getStringExtra("url");
         Log.i("url----------->","url"+"------"+url);
         webView.loadUrl(url+"?open=app");

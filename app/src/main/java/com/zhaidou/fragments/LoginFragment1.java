@@ -1,51 +1,38 @@
 package com.zhaidou.fragments;
 
 
-
 import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alibaba.sdk.android.Environment;
+import com.alibaba.sdk.android.AlibabaSDK;
 import com.alibaba.sdk.android.callback.CallbackContext;
-import com.alibaba.sdk.android.callback.InitResultCallback;
+import com.alibaba.sdk.android.login.LoginService;
+import com.alibaba.sdk.android.login.callback.LoginCallback;
 import com.alibaba.sdk.android.session.model.Session;
-import com.alibaba.sdk.android.util.JSONUtils;
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.User;
+import com.zhaidou.utils.NativeHttpUtil;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -55,12 +42,10 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,18 +59,13 @@ import cn.sharesdk.sina.weibo.SinaWeibo;
 import cn.sharesdk.tencent.qq.QQ;
 import cn.sharesdk.wechat.friends.Wechat;
 
-import com.alibaba.sdk.android.AlibabaSDK;
-import com.alibaba.sdk.android.login.LoginService;
-import com.alibaba.sdk.android.login.callback.LoginCallback;
-import com.zhaidou.utils.NativeHttpUtil;
-
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link LoginFragment#newInstance} factory method to
+ * A simple {@link android.support.v4.app.Fragment} subclass.
+ * Use the {@link com.zhaidou.fragments.LoginFragment1#newInstance} factory method to
  * create an instance of this fragment.
  *
  */
-public class LoginFragment extends BaseFragment implements View.OnClickListener,PlatformActionListener{
+public class LoginFragment1 extends BaseFragment implements View.OnClickListener,PlatformActionListener,RegisterFragment1.RegisterOrLoginListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -97,7 +77,8 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     private TextView mEmailView,mPswView,mRegisterView,mResetView;
 
     private TextView mLoginView;
-    public static final String TAG=LoginFragment.class.getSimpleName();
+    private FrameLayout mChildContainer;
+    public static final String TAG=LoginFragment1.class.getSimpleName();
 
     private RegisterFragment.RegisterOrLoginListener mRegisterOrLoginListener;
     private BackClickListener backClickListener;
@@ -121,15 +102,15 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
      * @return A new instance of fragment LoginFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static LoginFragment newInstance(String param1, String param2) {
-        LoginFragment fragment = new LoginFragment();
+    public static LoginFragment1 newInstance(String param1, String param2) {
+        LoginFragment1 fragment = new LoginFragment1();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
-    public LoginFragment() {
+    public LoginFragment1() {
         // Required empty public constructor
     }
 
@@ -146,13 +127,13 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view=inflater.inflate(R.layout.fragment_login, container, false);
+        View view=inflater.inflate(R.layout.fragment_login1, container, false);
         mEmailView=(TextView)view.findViewById(R.id.tv_email);
         mPswView=(TextView)view.findViewById(R.id.tv_password);
         mLoginView=(TextView)view.findViewById(R.id.bt_login);
         mRegisterView=(TextView)view.findViewById(R.id.tv_register);
         mResetView=(TextView)view.findViewById(R.id.tv_reset_psw);
-
+        mChildContainer=(FrameLayout)view.findViewById(R.id.fl_child_container);
         requestQueue=Volley.newRequestQueue(getActivity());
         mLoginView.setOnClickListener(this);
         mRegisterView.setOnClickListener(this);
@@ -184,8 +165,10 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                 new MyTask().execute();
                 break;
             case R.id.tv_register:
-                RegisterFragment fragment = RegisterFragment.newInstance(mParam1,"");
-                ((BaseActivity)getActivity()).navigationToFragment(fragment);
+                RegisterFragment1 fragment = RegisterFragment1.newInstance(mParam1,"");
+                fragment.setRegisterOrLoginListener(this);
+                getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container,fragment).addToBackStack(null).show(fragment).commit();
+                mChildContainer.setVisibility(View.VISIBLE);
                 break;
             case R.id.tv_reset_psw:
                 break;
@@ -257,7 +240,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                                         String email = user.optString("email");
                                         User u = new User(id,email,token,nick,null);
                                         Log.i("LoginFragment----onRegisterOrLoginSuccess---->","onRegisterOrLoginSuccess");
-                                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(u,LoginFragment.this);
+                                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(u,LoginFragment1.this);
                                     }
                                 }
                             }
@@ -330,7 +313,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
 
                     User user = new User(id,email,token,nick,null);
                     Log.i("LoginFragment----onRegisterOrLoginSuccess---->","onRegisterOrLoginSuccess");
-                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user,LoginFragment.this);
+                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user,LoginFragment1.this);
                 }
 
             }catch (Exception e){
@@ -467,7 +450,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                         String email = user.optString("email");
                         User u = new User(id,email,token,nick,null);
                         Log.i("LoginFragment----onRegisterOrLoginSuccess---->",mRegisterOrLoginListener==null?"null":mRegisterOrLoginListener.toString());
-                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(u,LoginFragment.this);
+                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(u,LoginFragment1.this);
                     }
                 }
             }
@@ -528,7 +511,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                 String nick=userJson.optString("nick_name");
                 Log.i("LoginFragment----onRegisterOrLoginSuccess---->","onRegisterOrLoginSuccess");
                 User user=new User(id,email,token,nick,avatar);
-                mRegisterOrLoginListener.onRegisterOrLoginSuccess(user,LoginFragment.this);
+                mRegisterOrLoginListener.onRegisterOrLoginSuccess(user,LoginFragment1.this);
             }catch (Exception e){
 //                Log.i("e--------->",e.getMessage());
             }
@@ -546,5 +529,16 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         CallbackContext.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRegisterOrLoginSuccess(User user, Fragment fragment) {
+        Log.i("LoginFragment1--------------->",user.toString());
+        getChildFragmentManager().popBackStack();
+        mRegisterOrLoginListener.onRegisterOrLoginSuccess(user,LoginFragment1.this);
+    }
+
+    public void toggleChildView(){
+        mChildContainer.setVisibility(mChildContainer.isShown()?View.GONE:View.VISIBLE);
     }
 }

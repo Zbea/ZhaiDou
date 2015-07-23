@@ -41,7 +41,8 @@
     <ScrollView
         android:layout_below="@id/rl_actionbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:scrollbars="none">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -69,10 +70,11 @@
                     android:background="@drawable/shadow"
                     android:layout_alignParentBottom="true"/>
             </RelativeLayout>
-    <WebView
+    <com.zhaidou.view.CustomProgressWebview
         android:id="@+id/detailView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:scrollbars="none"
         />
         </LinearLayout>
     </ScrollView>
