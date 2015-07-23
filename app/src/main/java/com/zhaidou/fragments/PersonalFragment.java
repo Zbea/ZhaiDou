@@ -19,7 +19,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
@@ -88,6 +90,11 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 
     private User user;
 
+
+    private TextView mPrePayView,mPreReceivedView,mReturnView;
+    private RelativeLayout mCouponsView,mRewardView,mAddrView,mSettingView;
+    private FrameLayout mChildContainer;
+
     private Handler mHandler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -137,40 +144,64 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         Log.i("onCreateView----------------->","onCreateView");
-        View view=inflater.inflate(R.layout.fragment_personal, container, false);
-        mIndicator=(TabPageIndicator)view.findViewById(R.id.tab_personal);
-        mViewpager=(ViewPager)view.findViewById(R.id.vp_personal);
-        iv_setting=(ImageView)view.findViewById(R.id.iv_setting);
-        iv_header=(ImageView)view.findViewById(R.id.iv_header);
-        tv_city=(TextView)view.findViewById(R.id.tv_city);
-        tv_province=(TextView)view.findViewById(R.id.tv_province);
-        tv_nickname=(TextView)view.findViewById(R.id.tv_nickname);
-        tv_desc=(TextView)view.findViewById(R.id.tv_desc);
+        View view=inflater.inflate(R.layout.personal, container, false);
 
-        mFragments=new ArrayList<Fragment>();
-        mCollectFragment =CollectFragment.newInstance("","");
-        mCollocationFragment=CollocationFragment.newInstance("","");
+
+        mPrePayView=(TextView)view.findViewById(R.id.tv_pre_pay);
+        mPreReceivedView=(TextView)view.findViewById(R.id.tv_pre_received);
+        mReturnView=(TextView)view.findViewById(R.id.tv_return);
+        mChildContainer=(FrameLayout)view.findViewById(R.id.fl_child_container);
+
+        mCouponsView=(RelativeLayout)view.findViewById(R.id.rl_coupons);
+        mRewardView=(RelativeLayout)view.findViewById(R.id.rl_reward_history);
+        mAddrView=(RelativeLayout)view.findViewById(R.id.rl_reward_history);
+        mSettingView=(RelativeLayout)view.findViewById(R.id.rl_setting);
+
+        mPrePayView.setOnClickListener(this);
+        mPreReceivedView.setOnClickListener(this);
+        mReturnView.setOnClickListener(this);
+        mCouponsView.setOnClickListener(this);
+        mRewardView.setOnClickListener(this);
+        mAddrView.setOnClickListener(this);
+        mSettingView.setOnClickListener(this);
         mSettingFragment=SettingFragment.newInstance("","");
 
         mSettingFragment.setProfileListener(this);
 
-        mSharedPreferences=getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
-        mCollectFragment.setCollectCountChangeListener(this);
-        mCollocationFragment.setCollocationCountChangeListener(this);
 
-        mRequestQueue= Volley.newRequestQueue(getActivity());
-        imageLoader=new AsyncImageLoader1(getActivity());
 
-        mFragments.add(mCollectFragment);
-        mFragments.add(mCollocationFragment);
 
-        mAdapter =new PersonalFragmentAdapter(getFragmentManager());
-        mViewpager.setAdapter(mAdapter);
-        mIndicator.setViewPager(mViewpager);
-        Button login=(Button)view.findViewById(R.id.bt_login);
-        login.setOnClickListener(this);
-        iv_setting.setOnClickListener(this);
-        getCityList();
+//        mIndicator=(TabPageIndicator)view.findViewById(R.id.tab_personal);
+//        mViewpager=(ViewPager)view.findViewById(R.id.vp_personal);
+//        iv_setting=(ImageView)view.findViewById(R.id.iv_setting);
+//        iv_header=(ImageView)view.findViewById(R.id.iv_header);
+//        tv_city=(TextView)view.findViewById(R.id.tv_city);
+//        tv_province=(TextView)view.findViewById(R.id.tv_province);
+//        tv_nickname=(TextView)view.findViewById(R.id.tv_nickname);
+//        tv_desc=(TextView)view.findViewById(R.id.tv_desc);
+//
+//        mFragments=new ArrayList<Fragment>();
+//        mCollectFragment =CollectFragment.newInstance("","");
+//        mCollocationFragment=CollocationFragment.newInstance("","");
+//
+//
+//        mSharedPreferences=getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
+//        mCollectFragment.setCollectCountChangeListener(this);
+//        mCollocationFragment.setCollocationCountChangeListener(this);
+//
+//        mRequestQueue= Volley.newRequestQueue(getActivity());
+//        imageLoader=new AsyncImageLoader1(getActivity());
+//
+//        mFragments.add(mCollectFragment);
+//        mFragments.add(mCollocationFragment);
+//
+//        mAdapter =new PersonalFragmentAdapter(getFragmentManager());
+//        mViewpager.setAdapter(mAdapter);
+//        mIndicator.setViewPager(mViewpager);
+//        Button login=(Button)view.findViewById(R.id.bt_login);
+//        login.setOnClickListener(this);
+//        iv_setting.setOnClickListener(this);
+//        getCityList();
         return view;
     }
 
