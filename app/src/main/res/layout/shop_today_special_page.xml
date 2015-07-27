@@ -44,10 +44,10 @@
                     android:textSize="14sp"
                     android:layout_centerInParent="true"
                     android:textColor="#a8a8a8"
-                    android:text="新特卖每天早10点更新,新特卖每天早10点更新新特卖每天早10点更新,新特卖每天早10点更新新特卖每天早10点更新"/>
+                    android:text=""/>
             </RelativeLayout>
 
-            <LinearLayout
+            <RelativeLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -57,32 +57,45 @@
 
                 <LinearLayout
                     android:orientation="horizontal"
-                    android:layout_width="fill_parent"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_alignParentLeft="true"
                     android:layout_height="wrap_content">
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:src="@drawable/icon_inform_white"/>
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
+                        android:layout_marginLeft="5dp"
                         android:text="限时限量 疯狂抢购"/>
                 </LinearLayout>
 
                 <LinearLayout
                     android:orientation="horizontal"
-                    android:layout_width="fill_parent"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentRight="true"
                     android:gravity="center_vertical|right"
                     android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:src="@drawable/icon_time_white"/>
+
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
-                        android:text="剩余时间 2天 10：16：50"
+                        android:text=""
+                        android:layout_marginLeft="5dp"
                         android:id="@+id/shopTimeTv"/>
                 </LinearLayout>
-            </LinearLayout>
+            </RelativeLayout>
 
             <com.zhaidou.view.ListViewForScrollView
                 android:id="@+id/shopListView"
@@ -96,5 +109,33 @@
 
         </LinearLayout>
     </com.pulltorefresh.PullToRefreshScrollView>
+
+    <RelativeLayout
+        android:id="@+id/myCartBtn"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:clickable="true"
+        android:layout_margin="20dp">
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:layout_centerInParent="true"
+        android:src="@drawable/shop_goods_my_cart_selector"/>
+
+        <TextView
+            android:id="@+id/myCartTipsTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:layout_alignParentRight="true"
+            android:text="19"
+            android:gravity="center"
+            android:background="@drawable/shop_goods_my_cart_tips_red_bg"
+            android:textSize="12sp"/>
+    </RelativeLayout>
 
 </RelativeLayout>

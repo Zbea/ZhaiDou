@@ -45,6 +45,8 @@
                 <TextView
                     android:layout_width="10dp"
                     android:layout_height="match_parent"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginBottom="3dp"
                     android:background="@color/red"/>
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
@@ -69,5 +71,33 @@
 
         </LinearLayout>
     </com.pulltorefresh.PullToRefreshScrollView>
+
+    <RelativeLayout
+        android:id="@+id/myCartBtn"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:clickable="true"
+        android:layout_margin="20dp">
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:layout_centerInParent="true"
+            android:src="@drawable/shop_goods_my_cart_selector"/>
+
+        <TextView
+            android:id="@+id/myCartTipsTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:layout_alignParentRight="true"
+            android:text="19"
+            android:gravity="center"
+            android:background="@drawable/shop_goods_my_cart_tips_red_bg"
+            android:textSize="12sp"/>
+    </RelativeLayout>
 
 </RelativeLayout>

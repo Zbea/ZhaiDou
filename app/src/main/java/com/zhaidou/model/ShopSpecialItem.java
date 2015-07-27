@@ -8,70 +8,27 @@ import java.io.Serializable;
 public class ShopSpecialItem implements Serializable
 {
     //id
-    int id;
+    public int id;
     //名称
-    String title;
-    String sale;
-    String time;
-    String imageUrl;
+    public String title;
+    public String sale;
+    public String time;
+    public String startTime;
+    public String endTime;
+    //剩余时间
+    public String overTime;
+    public String imageUrl;
 
-    public int getId()
-    {
-        return id;
-    }
-
-    public void setId(int id)
-    {
-        this.id = id;
-    }
-
-    public String getImageUrl()
-    {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl)
-    {
-        this.imageUrl = imageUrl;
-    }
-
-    public String getTime()
-    {
-        return time;
-    }
-
-    public void setTime(String time)
-    {
-        this.time = time;
-    }
-
-    public String getSale()
-    {
-        return sale;
-    }
-
-    public void setSale(String sale)
-    {
-        this.sale = sale;
-    }
-
-    public String getTitle()
-    {
-        return title;
-    }
-
-    public void setTitle(String title)
-    {
-        this.title = title;
-    }
-
-    public ShopSpecialItem(int id, String imageUrl, String time, String sale, String title)
+    public ShopSpecialItem(int id, String title, String sale, String time, String startTime, String endTime, String overTime, String imageUrl)
     {
         this.id = id;
-        this.imageUrl = imageUrl;
-        this.time = time;
-        this.sale = sale;
         this.title = title;
+        this.sale = sale;
+        this.time = time;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.overTime = overTime;
+        this.imageUrl = imageUrl;
     }
 
     public ShopSpecialItem()
@@ -86,6 +43,9 @@ public class ShopSpecialItem implements Serializable
                 ", title='" + title + '\'' +
                 ", sale='" + sale + '\'' +
                 ", time='" + time + '\'' +
+                ", startTime='" + startTime + '\'' +
+                ", endTime='" + endTime + '\'' +
+                ", overTime='" + overTime + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +
                 '}';
     }

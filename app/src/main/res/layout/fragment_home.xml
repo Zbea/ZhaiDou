@@ -260,6 +260,9 @@
                         android:textSize="16sp"
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
+                        android:singleLine="true"
+                        android:ellipsize="marquee"
+                        android:marqueeRepeatLimit="marquee_forever"
                         android:textColor="@color/text_main_color"
                         android:text="item的名称"
                         />
@@ -274,7 +277,7 @@
                         <ImageView
                             android:layout_width="13dp"
                             android:layout_height="13dp"
-                            android:src="@drawable/home_goods_item_time_icon"/>
+                            android:src="@drawable/icon_time_block"/>
 
                         <com.zhaidou.view.TypeFaceTextView
                             android:layout_width="wrap_content"

@@ -63,6 +63,7 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
 import com.zhaidou.model.Category;
+import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.SwitchImage;
 //import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.HtmlFetcher;
@@ -166,6 +167,7 @@ public class HomeFragment extends BaseFragment implements
 
     private HomeCategoryFragment homeCategoryFragment;
     private Category mCategory;
+    private ShopSpecialItem shopSpecialItem;
 
     //特卖view初始化
     private ImageView itemTipsIv;
@@ -227,6 +229,10 @@ public class HomeFragment extends BaseFragment implements
 //                imageSwitchWall.setDatas(banners);
                 adPics.removeAll(adPics);
                 setAdView();
+            }
+            else if(msg.what==1001)
+            {
+                initView();
             }
             // mHomeAdapter.notifyDataSetChanged();
             if (mListAdapter != null)
@@ -429,6 +435,7 @@ public class HomeFragment extends BaseFragment implements
         tipsLine = (LinearLayout) view.findViewById(R.id.home_viewGroup);
 
         itemBtn=(LinearLayout)view.findViewById(R.id.home_item_goods);
+        itemBtn.setVisibility(View.GONE);
         itemBtn.setOnClickListener(this);
 
         currentPage = 1;
@@ -438,6 +445,7 @@ public class HomeFragment extends BaseFragment implements
         mRequestQueue = Volley.newRequestQueue(getActivity());
         listItem = new ArrayList<JSONObject>();
 
+        FetchShopData();
         getBannerData();
         FetchData(currentPage, null);
         setUpPopView();
@@ -458,9 +466,13 @@ public class HomeFragment extends BaseFragment implements
         itemTimeTv=(TypeFaceTextView)view.findViewById(R.id.shop_time_item);
         itemSaleTv=(TypeFaceTextView)view.findViewById(R.id.homeGoodsSale);
 
-        String url="http://stg.zhaidou.com/uploads/article/article/asset_img/303/99d2fa9df325d76ac941b246ecf1488c.jpg";
-        ToolUtils.setImageCacheUrl(url,itemImageIv);
-        itemNameTv.setText("DISSION女装专场");
+        if(shopSpecialItem!=null)
+        {
+            itemBtn.setVisibility(View.VISIBLE);
+            ToolUtils.setImageCacheUrl(shopSpecialItem.imageUrl,itemImageIv);
+            itemNameTv.setText(shopSpecialItem.title);
+            itemTimeTv.setText(shopSpecialItem.overTime);
+        }
 
     }
 
@@ -612,9 +624,12 @@ public class HomeFragment extends BaseFragment implements
                 break;
 
             case R.id.home_item_goods:
-                ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance("", 0);
-                ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
-                break;
+                if (shopSpecialItem != null)
+                {
+                    ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(shopSpecialItem.title, shopSpecialItem.id);
+                    ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
+                    break;
+                }
 
         }
     }
@@ -814,6 +829,59 @@ public class HomeFragment extends BaseFragment implements
         mRequestQueue.add(bannerRequest);
     }
 
+    /**
+     * 加载列表数据
+     */
+    private void FetchShopData()
+    {
+        final String url;
+        url = ZhaiDou.shopSpecialListUrl+"&page="+1;
+        JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+                String result=response.toString();
+                JSONObject obj;
+                try
+                {
+                    JSONObject jsonObject=new JSONObject(result);
+                    JSONArray jsonArray=jsonObject.optJSONArray("sales");
+                    if (jsonArray.length()>0)
+                    {
+                        obj=jsonArray.optJSONObject(0);
+                        int id=obj.optInt("id");
+                        String title=obj.optString("title");
+                        String sales=obj.optString("tags");
+                        String time=obj.optString("day");
+                        String startTime=obj.optString("start_time");
+                        String endTime=obj.optString("end_time");
+                        String overTime=obj.optString("over_day");
+                        String imageUrl=obj.optString("banner");
+                        shopSpecialItem=new ShopSpecialItem(id,title,sales,time,startTime,endTime,overTime,imageUrl);
+                    }
+                } catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+                Message message = new Message();
+                message.what = 1001;
+                handler.sendMessage(message);
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                mDialog.dismiss();
+                Toast.makeText(mContext, "加载失败", Toast.LENGTH_SHORT).show();
+                mScrollView.onRefreshComplete();
+                mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+            }
+        });
+        mRequestQueue.add(jr);
+    }
+
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
     {
@@ -837,6 +905,7 @@ public class HomeFragment extends BaseFragment implements
         refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
         Log.i("onPullDownToRefresh--->", "onPullDownToRefresh");
         getBannerData();
+        FetchShopData();
         articleList.clear();
         FetchData(currentPage = 1, mCategory);
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
