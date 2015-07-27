@@ -18,12 +18,11 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     
     <item
-        android:state_pressed="true"
-        android:color="@color/gray" >
+        android:state_pressed="true" >
         <shape
             android:shape="rectangle">
             <!-- 填充颜色 -->
-            <solid android:color="@color/gray_9"></solid>
+            <solid android:color="#aaff6262"></solid>
 
             <!-- 矩形的圆角半径 -->
             <corners android:radius="3dp" />
@@ -31,12 +30,11 @@
         </shape>
         </item>
     
-    <item
-        android:color="@color/gray_9" >
+    <item >
         <shape
             android:shape="rectangle">
             <!-- 填充颜色 -->
-            <solid android:color="@color/sale_color"></solid>
+            <solid android:color="@color/red"></solid>
 
             <!-- 矩形的圆角半径 -->
             <corners android:radius="3dp" />

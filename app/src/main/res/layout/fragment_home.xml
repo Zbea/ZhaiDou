@@ -282,7 +282,7 @@
                             android:textColor="@color/text_gary_color"
                             android:layout_marginLeft="5dp"
                             android:textSize="13sp"
-                            android:text="剩余时间"
+                            android:text="剩余"
                             />
 
                         <com.zhaidou.view.TypeFaceTextView

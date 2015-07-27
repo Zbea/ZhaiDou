@@ -3,8 +3,9 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval"
     >
-
-    <solid android:color="@color/gray_light" />
+    <!--背景色-->
+    <solid android:color="#a8a8a8" />
+    <!--圆形大小-->
     <size android:height="8dp" android:width="8dp" />
 
 </shape>

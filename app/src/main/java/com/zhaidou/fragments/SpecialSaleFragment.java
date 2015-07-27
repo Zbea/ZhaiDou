@@ -86,7 +86,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 
     private Coupon mCoupon;
     private View rootView;
-    private Handler mHandler=new Handler(){
+    private Handler mHandler=new Handler()
+    {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
@@ -107,6 +108,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     break;
                 case UPDATE_TIMER_START:
                     String date = (String)msg.obj;
+                    Log.i("zhaidou","开始刷新:"+date);
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
                     try{

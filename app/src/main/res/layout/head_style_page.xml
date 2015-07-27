@@ -21,11 +21,15 @@
             android:text="返回"
             android:drawableLeft="@drawable/icon_back"/>
         <com.zhaidou.view.TypeFaceTextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:layout_toRightOf="@+id/back_btn"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="80dp"
             android:textSize="18sp"
             android:textColor="@color/white"
+            android:gravity="center"
             android:text="我的标题"
             android:singleLine="true"
             android:ellipsize="marquee"

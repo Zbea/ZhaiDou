@@ -401,6 +401,8 @@ public class HomeFragment extends BaseFragment implements
         WindowManager wm = ((Activity)mContext).getWindowManager();
         screenWidth = wm.getDefaultDisplay().getWidth();
 
+        screenWidth=getScreenWidth();
+
         listView = (ListViewForScrollView) view.findViewById(R.id.homeItemList);
         listView.setOnItemClickListener(this);
         fl_category_menu = (FrameLayout) view.findViewById(R.id.fl_category_menu);
