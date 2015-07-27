@@ -152,24 +152,31 @@
             android:layout_height="wrap_content"
             android:src="@drawable/icon_arrow_right"/>
     </LinearLayout>
-    <LinearLayout
+    <RelativeLayout
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:background="@color/white"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:gravity="center_vertical"
             android:paddingLeft="15dp"
             android:textColor="@color/gray_9"
-            android:text="订单时间 2015-07-03"/>
-        <ImageView
+            android:text="收货信息"/>
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#EEEEEE"/>
-    </LinearLayout>
+            android:layout_height="40dp"
+            android:gravity="right|center_vertical"
+            android:paddingRight="15dp"
+            android:textColor="@color/gray_9"
+            android:text="修改"/>
+    </RelativeLayout>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#EEEEEE"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -261,6 +268,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/gray"
+            android:textColor="@color/white"
             android:text="支付15:00"/>
     </LinearLayout>
 </LinearLayout>

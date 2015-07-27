@@ -23,6 +23,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -160,6 +161,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         mAddrView.setOnClickListener(this);
         mSettingView.setOnClickListener(this);
         mSettingFragment=SettingFragment.newInstance("","");
+        view.findViewById(R.id.tv_shopping_cart).setOnClickListener(this);
 
         mSettingFragment.setProfileListener(this);
 
@@ -173,6 +175,9 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     @Override
     public void onClick(View view) {
         switch (view.getId()){
+            case R.id.tv_shopping_cart:
+                Toast.makeText(getActivity(),"购物车",Toast.LENGTH_SHORT).show();
+                break;
             case R.id.all_order:
                 AllOrdersFragment allOrdersFragment=AllOrdersFragment.newInstance("","");
                 ((MainActivity)getActivity()).navigationToFragment(allOrdersFragment);

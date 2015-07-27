@@ -1,7 +1,5 @@
 package com.zhaidou.fragments;
 
-
-
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.TextPaint;
@@ -9,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
 
