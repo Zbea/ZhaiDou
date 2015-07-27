@@ -406,7 +406,7 @@ public class HomeFragment extends BaseFragment implements
         listView = (ListViewForScrollView) view.findViewById(R.id.homeItemList);
         listView.setOnItemClickListener(this);
         fl_category_menu = (FrameLayout) view.findViewById(R.id.fl_category_menu);
-        mScrollView = (PullToRefreshScrollView) view.findViewById(R.id.scrollview);
+        mScrollView = (PullToRefreshScrollView) view.findViewById(R.id.sv_home_scrollview);
         mScrollView.setOnRefreshListener(this);
 
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");

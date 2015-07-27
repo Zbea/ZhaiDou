@@ -14,7 +14,7 @@
 
     <com.pulltorefresh.PullToRefreshScrollView
         xmlns:ptr="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/scrollview"
+        android:id="@+id/sv_special_scrollview"
         android:layout_width="match_parent"
         android:scrollbars="none"
         android:focusable="true"

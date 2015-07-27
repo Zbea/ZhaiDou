@@ -159,7 +159,7 @@ public class ShopSpecialFragment extends BaseFragment {
         adIv=(ImageView)mView.findViewById(R.id.shopAdImage);
         ToolUtils.setImageCacheUrl(url,adIv);
 
-        mScrollView = (PullToRefreshScrollView)mView.findViewById(R.id.scrollview);
+        mScrollView = (PullToRefreshScrollView)mView.findViewById(R.id.sv_special_scrollview);
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         mScrollView.setOnRefreshListener(refreshListener);
 

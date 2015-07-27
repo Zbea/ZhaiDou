@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +41,7 @@ import com.zhaidou.model.Product;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -70,6 +72,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 
     private GridView mGridView;
     private TextView mTimerView;
+    private ImageView iv_banner;
     private ProductAdapter mAdapter;
     private Map<Integer,View> mHashMap = new HashMap<Integer, View>();
     private AsyncImageLoader1 imageLoader;
@@ -81,6 +84,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     private final int UPDATE_COUNT_DOWN_TIME=1;
     private final int UPDATE_UI_TIMER_FINISH=2;
     private final int UPDATE_TIMER_START=3;
+    private final int UPDATE_BANNER=4;
 
     private Dialog mDialog;
 
@@ -125,6 +129,14 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                         Log.i("Exception e",e.getMessage());
                     }
                     break;
+                case UPDATE_BANNER:
+                    JSONObject jsonObject=(JSONObject)msg.obj;
+                    if (jsonObject!=null){
+                        String imgs=jsonObject.optJSONArray("sale_banners").optJSONObject(0).optString("imgs");
+                        Log.i("imgs--------------->",imgs.toString());
+                        ToolUtils.setImageUrl(imgs,iv_banner);
+                    }
+                    break;
             }
         }
     };
@@ -167,6 +179,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             mGridView=(GridView)rootView.findViewById(R.id.gv_sale);
             mGridView.setEmptyView(mEmptyView);
             mTimerView=(TextView)rootView.findViewById(R.id.tv_count_time);
+            iv_banner=(ImageView)rootView.findViewById(R.id.iv_special_banner);
             mAdapter=new ProductAdapter(getActivity(),products);
             mGridView.setAdapter(mAdapter);
             rootView.findViewById(R.id.ll_back).setOnClickListener(this);
@@ -176,6 +189,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 
             requestQueue= Volley.newRequestQueue(getActivity());
             FetchCouponData();
+            getBanner();
             if (products!=null&&products.size()==0)
                 FetchData();
 
@@ -237,29 +251,27 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
-                        Log.i("SpecialSaleFragment---------->",jsonObject.toString());
+                        Log.i("SpecialSaleFragment---------->FetchData---",jsonObject.toString());
 //                        mDialog.dismiss();
-                        String end_date=jsonObject.optString("end_date");
+                        JSONObject saleJson = jsonObject.optJSONObject("sale");
+                        String end_date=saleJson.optString("end_time");
                         Message timerMsg = new Message();
                         timerMsg.what=UPDATE_TIMER_START;
                         timerMsg.obj=end_date;
                         mHandler.sendMessage(timerMsg);
 
-                        JSONArray items = jsonObject.optJSONArray("event_items");
+                        JSONArray items = saleJson.optJSONArray("merchandises");
                         if (items!=null&&items.length()>0){
                             for (int i=0;i<items.length();i++){
                                 JSONObject item = items.optJSONObject(i);
                                 int id = item.optInt("id");
-                                int event_id=item.optInt("event_id");
-                                String url=item.optString("url");
-                                int price=item.optInt("price");
                                 String title=item.optString("title");
-                                String image=item.optJSONObject("image").optString("url");
-                                int remaining=item.optInt("remaining");
+                                double price=item.optDouble("price");
+                                String image=item.optString("img");
+                                int remaining=item.optInt("total_count");
                                 Product product=new Product();
                                 product.setId(id);
                                 product.setPrice(price);
-                                product.setUrl(url);
                                 product.setTitle(title);
                                 product.setImage(image);
                                 product.setRemaining(remaining);
@@ -293,12 +305,13 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             TextView tv_money=ViewHolder.get(convertView,R.id.tv_money);
             TextView tv_price=ViewHolder.get(convertView,R.id.tv_price);
             TextView tv_count=ViewHolder.get(convertView,R.id.tv_count);
-
+            LinearLayout ll_sale_out=ViewHolder.get(convertView,R.id.ll_sale_out);
             Product product = getList().get(position);
             tv_name.setText(product.getTitle());
-            imageLoader.LoadImage("http://"+product.getImage(),image);
+            imageLoader.LoadImage(product.getImage(),image);
             tv_price.setText("￥"+product.getPrice()+"元");
             tv_count.setText("剩余 "+product.getRemaining());
+            ll_sale_out.setVisibility(product.getRemaining()==0?View.VISIBLE:View.GONE);
             mHashMap.put(position,convertView);
             return convertView;
         }
@@ -323,6 +336,25 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     Log.i("String---------------->","null");
                     mHandler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
                 }
+            }
+        });
+        requestQueue.add(request);
+    }
+
+    public void getBanner(){
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.SPECIAL_SALE_BANNER_URL,new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                Log.i("getBanner---------------->",jsonObject.toString());
+                Message message=new Message();
+                message.obj=jsonObject;
+                message.what=UPDATE_BANNER;
+                mHandler.sendMessage(message);
+            }
+        },new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Toast.makeText(getActivity(),"网络异常",Toast.LENGTH_SHORT).show();
             }
         });
         requestQueue.add(request);
