@@ -8,6 +8,7 @@
 
 package cn.sharesdk.onekeyshare.theme.classic;
 
+import static com.mob.tools.utils.R.getColorRes;
 import static com.mob.tools.utils.R.getStringRes;
 import static com.mob.tools.utils.R.getBitmapRes;
 
@@ -23,7 +24,13 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
+
 import cn.sharesdk.onekeyshare.PlatformListFakeActivity;
 
 public class PlatformListPage extends PlatformListFakeActivity implements View.OnClickListener {
@@ -61,6 +68,7 @@ public class PlatformListPage extends PlatformListFakeActivity implements View.O
 	}
 
 	private void initPageView() {
+        int dp_10 = com.mob.tools.utils.R.dipToPx(getContext(), 10);
 		flPage = new FrameLayout(getContext());
 		flPage.setOnClickListener(this);
 		flPage.setBackgroundDrawable(new ColorDrawable(0x55000000));
@@ -79,23 +87,45 @@ public class PlatformListPage extends PlatformListFakeActivity implements View.O
 		llPage.setLayoutParams(lpLl);
 		flPage.addView(llPage);
 
+        //title
+        TextView textView =new TextView(getContext());
+        LinearLayout.LayoutParams tvlp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,dp_10*4);
+        tvlp.setMargins(dp_10*4,0,0,0);
+        textView.setLayoutParams(tvlp);
+        textView.setText("分享到");
+        textView.setTextColor(getColorRes(getContext(),"gray_9"));
+        textView.setGravity(Gravity.BOTTOM);
+        llPage.addView(textView);
+
 		// gridview
 		grid = new PlatformGridView(getContext());
 		grid.setEditPageBackground(getBackgroundView());
 		LinearLayout.LayoutParams lpWg = new LinearLayout.LayoutParams(
 				LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		grid.setLayoutParams(lpWg);
+        lpWg.setMargins(0, dp_10, 0, dp_10);
 		llPage.addView(grid);
+
+        //line
+        ImageView imageView=new ImageView(getContext());
+        imageView.setBackgroundDrawable(new ColorDrawable(0xe7e7e7e7));
+        LinearLayout.LayoutParams lpline = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, com.mob.tools.utils.R.dipToPx(getContext(),1));
+        imageView.setLayoutParams(lpline);
+        llPage.addView(imageView);
 
 		// cancel button
 		btnCancel = new Button(getContext());
-		btnCancel.setTextColor(0xff3a65ff);
+		btnCancel.setTextColor(0xffffffff);
 		btnCancel.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+        btnCancel.setTypeface(((ZDApplication)getContext().getApplicationContext()).getTypeFace());
+        btnCancel.setGravity(Gravity.CENTER);
 		int resId = getStringRes(getContext(), "cancel");
 		if (resId > 0) {
 			btnCancel.setText(resId);
 		}
-		btnCancel.setPadding(0, 0, 0, com.mob.tools.utils.R.dipToPx(getContext(), 5));
+//		btnCancel.setPadding(0, 0, 0, com.mob.tools.utils.R.dipToPx(getContext(), 5));
 
 		resId = getBitmapRes(getContext(), "classic_platform_corners_bg");
 		if(resId > 0){
@@ -105,9 +135,9 @@ public class PlatformListPage extends PlatformListFakeActivity implements View.O
 		}
 
 		LinearLayout.LayoutParams lpBtn = new LinearLayout.LayoutParams(
-				LinearLayout.LayoutParams.MATCH_PARENT, com.mob.tools.utils.R.dipToPx(getContext(), 45));
-		int dp_10 = com.mob.tools.utils.R.dipToPx(getContext(), 10);
-		lpBtn.setMargins(dp_10, dp_10, dp_10, dp_10);
+				LinearLayout.LayoutParams.MATCH_PARENT, com.mob.tools.utils.R.dipToPx(getContext(), 40));
+//		int dp_10 = com.mob.tools.utils.R.dipToPx(getContext(), 10);
+		lpBtn.setMargins(dp_10*3, dp_10, dp_10*3, dp_10);
 		btnCancel.setLayoutParams(lpBtn);
 		llPage.addView(btnCancel);
 	}

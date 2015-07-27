@@ -51,7 +51,7 @@
         android:background="@color/white"
         android:layout_height="40dp"
         android:orientation="vertical">
-        <TextView
+        <com.zhaidou.view.TypeFaceTextView
             android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -82,16 +82,16 @@
             android:layout_height="wrap_content"
             android:paddingLeft="15dp"
             android:orientation="vertical">
-            <TextView
+            <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/black"
                 android:text="女款连衣裙"/>
-            <TextView
+            <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="颜色:蓝色  尺寸:L"/>
-            <TextView
+            <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="数量 1"/>
@@ -101,7 +101,7 @@
             android:layout_height="match_parent"
             android:gravity="right"
             android:orientation="vertical">
-            <TextView
+            <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/black"
@@ -110,7 +110,7 @@
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
-                <TextView
+                <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_outdated"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -129,10 +129,9 @@
         android:background="@color/white"
         android:layout_height="40dp"
         android:orientation="vertical">
-        <TextView
-            android:layout_marginTop="10dp"
+        <com.zhaidou.view.TypeFaceTextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:paddingLeft="15dp"
             android:paddingTop="5dp"
@@ -150,37 +149,40 @@
         android:background="@color/white"
         android:paddingTop="20dp"
         android:paddingBottom="20dp"
+        android:paddingLeft="15dp"
         android:orientation="horizontal">
-        <TextView
+        <com.zhaidou.view.TypeFaceTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="换货"
+            android:background="@drawable/shape_line_frame"
             android:textColor="#999999"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"/>
-        <TextView
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"/>
+        <com.zhaidou.view.TypeFaceTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/shape_line_frame"
             android:text="退货"
             android:textColor="#999999"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"/>
+            android:paddingTop="4dp"
+            android:layout_marginLeft="20dp"
+            android:paddingBottom="4dp"/>
     </LinearLayout>
 
     <LinearLayout
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:background="@color/white"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
-        <TextView
-            android:layout_marginTop="10dp"
+        <com.zhaidou.view.TypeFaceTextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:gravity="center_vertical"
             android:paddingLeft="15dp"
             android:textColor="@color/gray_9"
@@ -193,17 +195,27 @@
         <!--android:layout_width="match_parent"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:text="换货"/>-->
+        <com.zhaidou.view.TypeFaceEditText
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:gravity="top"
+            android:text="换货"
+            android:padding="5dp"
+            android:textSize="14sp"
+            android:textColor="@color/gray_9"
+            android:background="@drawable/shape_line_frame"/>
     </LinearLayout>
+
     <LinearLayout
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:background="@color/white"
         android:layout_height="40dp"
         android:orientation="vertical">
-        <TextView
-            android:layout_marginTop="10dp"
+        <com.zhaidou.view.TypeFaceTextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:paddingLeft="15dp"
             android:textColor="@color/gray_9"

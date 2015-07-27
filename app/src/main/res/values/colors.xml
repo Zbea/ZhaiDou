@@ -64,4 +64,7 @@
 
     <!---->
     <color name="gray_light">#ececec</color>
+
+    <!---->
+    <color name="all_e">#EEEEEE</color>
 </resources>
