@@ -13,10 +13,12 @@
         android:background="@color/gray"
         android:layout_height="200dp">
         <com.zhaidou.view.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            app:border_width="2dp"
+            app:border_color="@color/white"
             android:id="@+id/iv_header"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:background="@color/white"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:layout_centerVertical="true"
             android:layout_marginRight="20dp"
             android:layout_marginLeft="20dp"/>
@@ -27,18 +29,17 @@
             android:layout_centerInParent="true"
             android:orientation="vertical">
             <TextView
+                android:id="@+id/tv_nickname"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Scoield"/>
+                android:layout_height="wrap_content"/>
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="广东省 深圳市"/>
+                android:layout_height="wrap_content"/>
             <TextView
+                android:id="@+id/tv_desc"
                 android:layout_marginTop="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="简介：哈哈，这是我的简介，哈哈哈哈哈哈"
                 android:paddingRight="10dp"/>
         </LinearLayout>
     </RelativeLayout>
@@ -85,6 +86,7 @@
         </LinearLayout>
     </LinearLayout>
     <RelativeLayout
+        android:id="@+id/all_order"
         android:layout_width="match_parent"
         android:gravity="center_vertical"
         android:background="@color/white"
@@ -218,10 +220,4 @@
             android:src="@drawable/icon_arrow_right"/>
     </RelativeLayout>
 </LinearLayout>
-    <FrameLayout
-        android:id="@id/fl_child_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone">
-    </FrameLayout>
 </RelativeLayout>

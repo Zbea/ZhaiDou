@@ -8,14 +8,21 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
 import android.widget.TextView;
 
+import com.pulltorefresh.PullToRefreshExpandableListView;
 import com.pulltorefresh.PullToRefreshListView;
 import com.zhaidou.R;
+import com.zhaidou.adapter.TimeLineAdapter;
+import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.model.ChildStatusEntity;
+import com.zhaidou.model.GroupStatusEntity;
 import com.zhaidou.model.Logistics;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,7 +31,7 @@ import java.util.List;
  * create an instance of this fragment.
  *
  */
-public class LogisticsMsgFragment extends Fragment {
+public class LogisticsMsgFragment extends BaseFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -34,7 +41,10 @@ public class LogisticsMsgFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private PullToRefreshListView mLogisticsView;
+    private ExpandableListView mLogisticsView;
+
+    private TimeLineAdapter statusAdapter;
+    private Context context;
 
     /**
      * Use this factory method to create a new instance of
@@ -71,20 +81,58 @@ public class LogisticsMsgFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_logistics, container, false);
-        mLogisticsView=(PullToRefreshListView)view.findViewById(R.id.lv_logistics);
+        context = getActivity();
+        mLogisticsView = (ExpandableListView)view.findViewById(R.id.lv_logistics);
+        initExpandListView();
         return view;
     }
 
-//    private class LogisticsAdapter extends BaseListAdapter<Logistics>{
-//        public LogisticsAdapter(Context context, List<String> list) {
-//            super(context, list);
-//        }
-//
-//        @Override
-//        public View bindView(int position, View convertView, ViewGroup parent) {
-//            if (convertView==null)
-//                convertView=mInflater.inflate(R.layout.search_item_gv,null);
-//            return convertView;
-//        }
-//    }
+    private void initExpandListView() {
+        statusAdapter = new TimeLineAdapter(context, getListData());
+        mLogisticsView.setAdapter(statusAdapter);
+        mLogisticsView.setGroupIndicator(null); // 去掉默认带的箭头
+        mLogisticsView.setSelection(0);// 设置默认选中项
+
+        // 遍历所有group,将所有项设置成默认展开
+        int groupCount = mLogisticsView.getCount();
+        for (int i = 0; i < groupCount; i++) {
+            mLogisticsView.expandGroup(i);
+        }
+
+        mLogisticsView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+
+            @Override
+            public boolean onGroupClick(ExpandableListView parent, View v,
+                                        int groupPosition, long id) {
+                // TODO Auto-generated method stub
+                return true;
+            }
+        });
+    }
+
+    private List<GroupStatusEntity> getListData() {
+        List<GroupStatusEntity> groupList;
+        String[] strArray = new String[] { "10月22日方法嘎嘎水电费撒咖啡壶看撒富士康大公司酷狗", "10月23日", "10月25日" };
+        String[][] childTimeArray = new String[][] {
+                { " ", " ", " ", " " },
+                { " " }, { " " } };
+        groupList = new ArrayList<GroupStatusEntity>();
+        for (int i = 0; i < strArray.length; i++) {
+            GroupStatusEntity groupStatusEntity = new GroupStatusEntity();
+            groupStatusEntity.setGroupName(strArray[i]);
+
+            List<ChildStatusEntity> childList = new ArrayList<ChildStatusEntity>();
+
+            for (int j = 0; j < childTimeArray[i].length; j++) {
+                ChildStatusEntity childStatusEntity = new ChildStatusEntity();
+                childStatusEntity.setCompleteTime(childTimeArray[i][j]);
+                childStatusEntity.setIsfinished(true);
+                childList.add(childStatusEntity);
+            }
+
+            groupStatusEntity.setChildList(childList);
+            groupList.add(groupStatusEntity);
+        }
+        return groupList;
+    }
 }
