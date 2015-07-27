@@ -3,7 +3,6 @@ package com.zhaidou.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,19 +11,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.pulltorefresh.PullToRefreshBase;
-import com.pulltorefresh.PullToRefreshScrollView;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
-import com.zhaidou.adapter.AdViewAdpater;
 import com.zhaidou.adapter.GoodsImageAdapter;
 import com.zhaidou.adapter.GoodsSizeAdapter;
-import com.zhaidou.adapter.ShopTodaySpecialAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.GoodsSizeItem;
-import com.zhaidou.model.SwitchImage;
-import com.zhaidou.model.TodayShopItem;
 import com.zhaidou.view.ChildGridView;
-import com.zhaidou.view.ListViewForScrollView;
 import com.zhaidou.view.TypeFaceTextView;
 
 import java.util.ArrayList;

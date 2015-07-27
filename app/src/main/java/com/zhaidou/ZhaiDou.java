@@ -31,7 +31,9 @@ public class ZhaiDou {
     public static String ARTICLE_DETAIL_URL=HOME_BASE_URL+"article/articles/";
 
     //特卖列表
-    public static String shopSpecialListUrl="http://127.0.0.1/special_mall/api/sales?sale_cate=0";
+    public static String shopSpecialListUrl="http://192.168.199.173/special_mall/api/sales?sale_cate=0";
+    //特卖详情
+    public static String shopSpecialTadayUrl="http://192.168.199.173/special_mall/api/sales/";
 
     //TAB分类
     public static String CATEGORY_ITEM_URL=HOME_BASE_URL+"article/api/item_categories";

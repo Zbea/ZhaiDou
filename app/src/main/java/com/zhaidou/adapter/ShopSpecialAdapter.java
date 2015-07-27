@@ -1,17 +1,14 @@
 package com.zhaidou.adapter;
 
 import android.content.Context;
-import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import com.zhaidou.R;
 import com.zhaidou.model.ShopSpecialItem;
-import com.zhaidou.model.TodayShopItem;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
 
@@ -84,11 +81,10 @@ public class ShopSpecialAdapter extends BaseAdapter
         }
         ShopSpecialItem shopSpecialItem=items.get(position);
 
-        viewHolder.itemName.setText(shopSpecialItem.getTitle());
-        viewHolder.itemSale.setText(shopSpecialItem.getSale() + "折起");
-        viewHolder.itemTime.setText(shopSpecialItem.getTime());
-        ToolUtils.setImageCacheUrl(shopSpecialItem.getImageUrl(),viewHolder.itemImage);
-
+        viewHolder.itemName.setText(shopSpecialItem.title);
+        viewHolder.itemSale.setText(shopSpecialItem.sale);
+        viewHolder.itemTime.setText(shopSpecialItem.overTime);
+        ToolUtils.setImageCacheUrl(shopSpecialItem.imageUrl,viewHolder.itemImage);
 
         return convertView;
     }

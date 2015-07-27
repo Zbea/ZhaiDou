@@ -36,7 +36,7 @@ public class WelcomePage extends Activity
             {
                 Intent intent=new Intent(WelcomePage.this,MainActivity.class);
                 startActivity(intent);
-                overridePendingTransition(R.anim.main_into_the, R.anim.main_out_the);
+                overridePendingTransition(R.anim.enter_into_the, R.anim.enter_out_the);
                 finish();
             }
         },  2000);
