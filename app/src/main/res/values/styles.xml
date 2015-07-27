@@ -113,4 +113,8 @@
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
+    <style name="CustomCheckboxTheme" parent="@android:style/Widget.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/custom_checkbox_selector</item>
+    </style>
+
 </resources>

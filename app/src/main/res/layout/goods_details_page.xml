@@ -17,32 +17,81 @@
         android:layout_height="match_parent"
         android:scrollbars="none">
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/goods_height_dimen"
             android:orientation="vertical"
-            android:visibility="gone"
+            android:background="@color/white"
             >
             <android.support.v4.view.ViewPager
-                android:id="@+id/home_adv_pager"
+                android:id="@+id/goods_adv_pager"
                 android:layout_width="fill_parent"
-                android:layout_height="@dimen/goods_height_dimen" >
+                android:layout_height="match_parent" >
             </android.support.v4.view.ViewPager>
 
             <LinearLayout
-                android:id="@+id/home_viewGroup"
+                android:id="@+id/goods_viewGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_marginLeft="10dp"
-                android:layout_marginBottom="15dp"
+                android:layout_above="@+id/timeLine"
+                android:layout_marginBottom="30dp"
                 android:layout_centerHorizontal="true"
                 android:orientation="horizontal" >
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/timeLine"
+                android:layout_alignParentBottom="true"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:background="#aa39495D"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="13dp"
+                    android:layout_height="13dp"
+                    android:src="@drawable/home_goods_item_time_icon"/>
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:layout_marginLeft="5dp"
+                    android:textSize="13sp"
+                    android:text="剩余"
+                    />
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/shop_time_item"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="2dp"
+                    android:textColor="@color/white"
+                    android:text="1"
+                    />
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:text="天"
+                    />
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:text="10:46:30"
+                    />
+
             </LinearLayout>
 
         </RelativeLayout>
@@ -51,7 +100,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="gone"
             android:background="@drawable/content_part_bg"
             >
 
@@ -59,9 +107,9 @@
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="10dp">
+                android:paddingLeft="@dimen/default_margin"
+                android:paddingRight="@dimen/default_margin"
+                android:paddingTop="@dimen/default_margin">
 
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
@@ -71,9 +119,9 @@
                     android:textColor="@color/text_main_color"
                     android:text="哈哈哈哈哈哈哈哈哈哈哈"
                     android:singleLine="true"
-                    android:ellipsize="end"
+                    android:ellipsize="marquee"
                     android:marqueeRepeatLimit="marquee_forever"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginRight="@dimen/default_margin"
                     android:id="@+id/goodsName"/>
 
                 <com.zhaidou.view.TypeFaceTextView
@@ -82,11 +130,11 @@
                     android:text="3折"
                     android:layout_weight="0.0001"
                     android:textColor="@color/white"
-                    android:background="@color/gray_9"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
+                    android:background="@drawable/btn_green_click_bg"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
                     android:id="@+id/buyGoodsBtn"/>
 
             </LinearLayout>
@@ -95,97 +143,53 @@
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:padding="10dp">
+                android:padding="@dimen/default_margin">
 
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
                     android:textColor="@color/red"
-                    android:text="$ 1396"
+                    android:text="￥ 1396"
                     android:id="@+id/goodsCurrentPrice"/>
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginLeft="@dimen/default_margin"
                     android:textColor="@color/text_gary_color"
-                    android:text="$ 3000"
+                    android:text="￥ 3000"
                     android:id="@+id/goodsFormerPrice"/>
 
             </LinearLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/line_color"/>
-
-
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:gravity="center">
-
-            <com.zhaidou.view.TypeFaceTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_gary_color"
-                android:textSize="13sp"
-                android:text="剩余时间"
-                />
-            <com.zhaidou.view.TypeFaceTextView
-                android:id="@+id/shop_time_item"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="2dp"
-                android:textColor="@color/text_gary_color"
-                android:text="1"
-                />
-            <com.zhaidou.view.TypeFaceTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_gary_color"
-                android:textSize="13sp"
-                android:text="天"
-                />
-            <com.zhaidou.view.TypeFaceTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_gary_color"
-                android:textSize="13sp"
-                android:text="10:46:30"
-                />
-
-        </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="@dimen/default_margin">
 
             <LinearLayout
                 android:id="@+id/colorLine"
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:background="@drawable/content_part_bg">
+                android:background="@color/white">
 
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    android:padding="10dp"
+                    android:padding="@dimen/default_margin"
                     android:textColor="@color/text_main_color"
                     android:text="颜色"/>
 
                 <TextView
                 android:layout_width="match_parent"
                 android:layout_height="1px"
+                android:layout_marginLeft="@dimen/default_margin"
+                android:layout_marginRight="@dimen/default_margin"
                 android:background="@color/line_color"/>
 
                 <com.zhaidou.view.ChildGridView
@@ -195,9 +199,17 @@
                     android:scrollbars="none"
                     android:listSelector="@color/transparent"
                     android:numColumns="3"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginRight="10dp"></com.zhaidou.view.ChildGridView>
+                    android:horizontalSpacing="@dimen/default_margin"
+                    android:verticalSpacing="@dimen/default_margin"
+                    android:layout_margin="@dimen/default_margin">
+
+                    </com.zhaidou.view.ChildGridView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#aad5d5d5"/>
+
             </LinearLayout>
 
 
@@ -213,13 +225,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    android:padding="10dp"
+                    android:padding="@dimen/default_margin"
                     android:textColor="@color/text_main_color"
                     android:text="尺寸"/>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="1px"
+                    android:layout_marginLeft="@dimen/default_margin"
+                    android:layout_marginRight="@dimen/default_margin"
                     android:background="@color/line_color"/>
 
                 <com.zhaidou.view.ChildGridView
@@ -229,9 +243,9 @@
                     android:scrollbars="none"
                     android:listSelector="@color/transparent"
                     android:numColumns="3"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginRight="10dp"></com.zhaidou.view.ChildGridView>
+                    android:horizontalSpacing="@dimen/default_margin"
+                    android:verticalSpacing="@dimen/default_margin"
+                    android:layout_margin="@dimen/default_margin"></com.zhaidou.view.ChildGridView>
             </LinearLayout>
 
         </LinearLayout>
@@ -240,8 +254,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="10dp"
-            android:padding="10dp"
+            android:layout_marginTop="@dimen/default_margin"
+            android:padding="@dimen/default_margin"
             android:background="@drawable/content_part_bg">
 
             <LinearLayout
@@ -296,18 +310,20 @@
             android:layout_height="wrap_content"
             android:background="@drawable/content_part_bg"
             android:orientation="vertical"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="@dimen/default_margin">
 
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
-                android:padding="10dp"
+                android:padding="@dimen/default_margin"
                 android:textColor="@color/text_main_color"
                 android:text="设计师评语"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="1px"
+                android:layout_marginLeft="@dimen/default_margin"
+                android:layout_marginRight="@dimen/default_margin"
                 android:background="@color/line_color"/>
 
             <com.zhaidou.view.TypeFaceTextView
@@ -315,7 +331,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:padding="10dp"
+                android:padding="@dimen/default_margin"
                 android:textColor="@color/text_gary_color"
                 android:text="哈哈哈哈哈哈哈哈哈哈哈哈哈哈啊哈哈哈哈哈哈啊哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈"/>
 
@@ -325,22 +341,31 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="@dimen/default_margin"
             android:orientation="vertical"
             android:background="@drawable/content_part_bg">
 
             <include
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 layout="@layout/goods_details_tip_style"
                 ></include>
         </LinearLayout>
 
         <include
             android:id="@+id/topInfoShow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
             layout="@layout/goods_details_tip_style"
             ></include>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="70dp"></LinearLayout>
 
-    </FrameLayout>
+    </LinearLayout>
 
     </ScrollView>
 
@@ -349,11 +374,11 @@
         android:layout_width="fill_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:background="@color/gray_9">
+        android:paddingLeft="@dimen/default_margin"
+        android:paddingRight="@dimen/default_margin"
+        android:paddingTop="@dimen/default_margin"
+        android:paddingBottom="@dimen/default_margin"
+        android:background="@color/white">
 
         <LinearLayout
             android:id="@+id/goodsMyCartBtn"
@@ -362,24 +387,25 @@
             android:clickable="true"
             android:layout_weight="0.00001"
             android:gravity="center"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="@dimen/default_margin"
             android:orientation="horizontal"
-            android:background="@drawable/goods_buy_btn_selector"></LinearLayout>
+            android:background="@drawable/btn_green_click_bg">
+
+            </LinearLayout>
 
         <LinearLayout
             android:id="@+id/goodsLjBuyBtn"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clickable="true"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="@dimen/default_margin"
             android:layout_weight="1"
             android:gravity="center"
-            android:background="@drawable/goods_buy_btn_selector">
+            android:background="@drawable/btn_green_click_bg">
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="@color/text_main_color"
+                android:textColor="@color/white"
                 android:text="立即购买"
                 android:singleLine="true"
                 android:ellipsize="end"
@@ -393,13 +419,11 @@
             android:clickable="true"
             android:layout_weight="1"
             android:gravity="center"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/goods_buy_btn_selector">
+            android:background="@drawable/btn_red_click_selector">
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="@color/text_main_color"
+                android:textColor="@color/white"
                 android:text="加入购物车"
                 android:singleLine="true"
                 android:ellipsize="end"

@@ -1,7 +1,6 @@
 package com.zhaidou.fragments;
 
 
-
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,19 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
-import com.zhaidou.adapter.ShopSpecialAdapter;
+import com.zhaidou.adapter.ShopTodaySpecialAdapter;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.TodayShopItem;
-import com.zhaidou.utils.ToolUtils;
-import com.zhaidou.view.ImageSwitchWall;
 import com.zhaidou.view.ListViewForScrollView;
 import com.zhaidou.view.TypeFaceTextView;
 
@@ -30,9 +24,9 @@ import java.util.List;
 
 
 /**
- * Created by roy on 15/7/20.
+ * Created by roy on 15/7/23.
  */
-public class ShopSpecialFragment extends BaseFragment {
+public class ShopTodaySpecialFragment extends BaseFragment {
     private static final String PAGE = "page";
     private static final String INDEX = "index";
 
@@ -40,14 +34,13 @@ public class ShopSpecialFragment extends BaseFragment {
     private int mIndex;
     private View mView;
     private Context mContext;
-    private String url="http://stg.zhaidou.com/uploads/article/article/asset_img/303/99d2fa9df325d76ac941b246ecf1488c.jpg";
 
-    private ImageView adIv;
     private TypeFaceTextView backBtn,titleTv;
     private PullToRefreshScrollView mScrollView;
     private ListViewForScrollView mListView;
-    private List<ShopSpecialItem> items=new ArrayList<ShopSpecialItem>();
-    private ShopSpecialAdapter adapter;
+
+    private List<TodayShopItem> items=new ArrayList<TodayShopItem>();
+    private ShopTodaySpecialAdapter adapter;
 
     /**
      * 下拉刷新
@@ -93,8 +86,8 @@ public class ShopSpecialFragment extends BaseFragment {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
         {
-            ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance("", 0);
-            ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
+            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(i).title, 0);
+            ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
         }
     };
 
@@ -109,21 +102,21 @@ public class ShopSpecialFragment extends BaseFragment {
             switch (view.getId())
             {
                 case R.id.back_btn:
-                    ((MainActivity)getActivity()).popToStack(ShopSpecialFragment.this);
+                    ((MainActivity)getActivity()).popToStack(ShopTodaySpecialFragment.this);
                 break;
             }
         }
     };
 
-    public static ShopSpecialFragment newInstance(String page, int index) {
-        ShopSpecialFragment fragment = new ShopSpecialFragment();
+    public static ShopTodaySpecialFragment newInstance(String page, int index) {
+        ShopTodaySpecialFragment fragment = new ShopTodaySpecialFragment();
         Bundle args = new Bundle();
         args.putString(PAGE, page);
         args.putInt(INDEX, index);
         fragment.setArguments(args);
         return fragment;
     }
-    public ShopSpecialFragment() {
+    public ShopTodaySpecialFragment() {
     }
 
     @Override
@@ -138,7 +131,7 @@ public class ShopSpecialFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mView=inflater.inflate(R.layout.shop_special_page, container, false);
+        mView=inflater.inflate(R.layout.shop_today_special_page, container, false);
         mContext=getActivity();
 
         initView();
@@ -150,37 +143,37 @@ public class ShopSpecialFragment extends BaseFragment {
     /**
      * 初始化数据
      */
+    private void initDate()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            TodayShopItem todayShopItem=new TodayShopItem("简述护手霜哈哈哈哈哈哈哈哈啊哈哈啊哈哈啊哈哈哈哈哈啊哈哈","哈哈哈哈哈哈哈哈哈哈啊哈哈哈哈啊哈哈哈哈啊哈"
+                    ,"http://stg.zhaidou.com/uploads/article/article/asset_img/303/99d2fa9df325d76ac941b246ecf1488c.jpg",1999,3000);
+            items.add(todayShopItem);
+
+        }
+    }
+
+    /**
+     * 初始化数据
+     */
     private void initView()
     {
         backBtn=(TypeFaceTextView)mView.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(onClickListener);
         titleTv=(TypeFaceTextView)mView.findViewById(R.id.title_tv);
-        titleTv.setText(R.string.home_shop_special_text);
-        adIv=(ImageView)mView.findViewById(R.id.shopAdImage);
-        ToolUtils.setImageCacheUrl(url,adIv);
+        titleTv.setText(R.string.shop_taday_special_text);
 
         mScrollView = (PullToRefreshScrollView)mView.findViewById(R.id.scrollview);
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         mScrollView.setOnRefreshListener(refreshListener);
 
         mListView=(ListViewForScrollView)mView.findViewById(R.id.shopListView);
-        adapter=new ShopSpecialAdapter(mContext,items);
+        adapter=new ShopTodaySpecialAdapter(mContext,items);
         mListView.setAdapter(adapter);
         mListView.setOnItemClickListener(onItemClickListener);
 
-    }
 
-    /**
-     * 初始化数据
-     */
-    private void initDate()
-    {
-        for (int i = 0; i < 4; i++)
-        {
-            ShopSpecialItem shopSpecialItem=new ShopSpecialItem(i,url,""+(i+1),""+(i+1),"DISSION女装专场"+i);
-            items.add(shopSpecialItem);
-        }
     }
-
 
 }

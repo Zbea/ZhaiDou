@@ -53,7 +53,7 @@
             <ImageView
                 android:id="@+id/iv_header"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/home_item_dimen"
                 android:scaleType="fitXY"
                 android:visibility="gone"
                 android:background="@drawable/icon_loading_item"/>

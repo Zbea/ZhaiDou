@@ -60,6 +60,8 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     protected int screenHeight;
     public static NetStateUtils netStateUtils;
     public static boolean isNetState;
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
@@ -120,6 +122,11 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     {
         isNetState=netStateUtils.isNetState;
         return isNetState;
+    }
+
+    public int getScreenWidth()
+    {
+        return screenWidth;
     }
 
     Toast mToast;

@@ -75,6 +75,7 @@ import com.zhaidou.view.HeaderLayout;
 import com.zhaidou.view.ImageSwitchWall;
 import com.zhaidou.view.ListViewForScrollView;
 import com.zhaidou.view.SwipeRefreshLayout;
+import com.zhaidou.view.TypeFaceTextView;
 import com.zhaidou.view.XListView;
 
 import org.json.JSONArray;
@@ -104,7 +105,6 @@ import java.util.WeakHashMap;
 public class HomeFragment extends BaseFragment implements
         HeaderLayout.onLeftImageButtonClickListener,
         HeaderLayout.onRightImageButtonClickListener,
-        SwipeRefreshLayout.OnLoadListener, SwipeRefreshLayout.OnRefreshListener,
         HomeCategoryFragment.CategorySelectedListener,
         AdapterView.OnItemClickListener, View.OnClickListener,
         ItemDetailActivity.RefreshNotifyListener,
@@ -119,14 +119,13 @@ public class HomeFragment extends BaseFragment implements
     private ListView listView;
     private ZhaiDou.ListType listType;
 
-    /* pagination */
     private String targetUrl;
     private int currentPage = 1;
     private int count = -1;
 
     private boolean loadedAll = false;
     private final int LOADED = 1;
-    //private AsyncImageLoader1 imageLoader;
+
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     /* Data Definition*/
     List<JSONObject> listItem;
@@ -139,6 +138,9 @@ public class HomeFragment extends BaseFragment implements
     private ImageView mSearchView, mCategoryView;
     private TextView mTitleView;
     private int screenWidth;
+    private View view;
+    private Dialog mDialog;
+    private Context mContext;
 
     private PopupWindow mPopupWindow = null;
     private LinearLayout ll_poplayout;
@@ -148,8 +150,8 @@ public class HomeFragment extends BaseFragment implements
     private List<String> categoryList;
     private RequestQueue mRequestQueue;
     private List<Article> articleList = new ArrayList<Article>();
-    private List<Article> formerList = new ArrayList<Article>();
-    //private HomeAdapter mHomeAdapter;
+
+    private LinearLayout itemBtn;
 
     public HomeListAdapter mListAdapter;
     private ViewPager viewPager;
@@ -164,11 +166,13 @@ public class HomeFragment extends BaseFragment implements
 
     private HomeCategoryFragment homeCategoryFragment;
     private Category mCategory;
-    private LinearLayout mBackView;
 
-    private LinearLayout mSwipeView;
-    private Dialog mDialog;
-    private Context mContext;
+    //特卖view初始化
+    private ImageView itemTipsIv;
+    private ImageView itemImageIv;
+    private TypeFaceTextView itemNameTv;
+    private TypeFaceTextView itemTimeTv;
+    private TypeFaceTextView itemSaleTv;
 
     private PullToRefreshScrollView mScrollView;
     /* Log cat */
@@ -388,31 +392,30 @@ public class HomeFragment extends BaseFragment implements
                              Bundle savedInstanceState)
     {
 
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        view = inflater.inflate(R.layout.fragment_home, container, false);
 
         mContext = getActivity();
 
         initBroadcastReceiver();
 
-
-
         WindowManager wm = ((Activity)mContext).getWindowManager();
         screenWidth = wm.getDefaultDisplay().getWidth();
+
+        screenWidth=getScreenWidth();
 
         listView = (ListViewForScrollView) view.findViewById(R.id.homeItemList);
         listView.setOnItemClickListener(this);
         fl_category_menu = (FrameLayout) view.findViewById(R.id.fl_category_menu);
         mScrollView = (PullToRefreshScrollView) view.findViewById(R.id.scrollview);
         mScrollView.setOnRefreshListener(this);
-        mSwipeView = (LinearLayout) view.findViewById(R.id.ll_adview);
-        mBackView = (LinearLayout) view.findViewById(R.id.ll_back);
-        mBackView.setOnClickListener(this);
 
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
         mDialog.show();
 
+        initView();
+
         view.findViewById(R.id.ll_lottery).setOnClickListener(this);
-        view.findViewById(R.id.ll_competition).setOnClickListener(this);
+        view.findViewById(R.id.ll_special_shop).setOnClickListener(this);
         view.findViewById(R.id.ll_sale).setOnClickListener(this);
         view.findViewById(R.id.ll_forward).setOnClickListener(this);
         view.findViewById(R.id.ll_category_view).setOnClickListener(this);
@@ -424,18 +427,16 @@ public class HomeFragment extends BaseFragment implements
         mTitleView = (TextView) view.findViewById(R.id.tv_title);
         viewPager = (ViewPager) view.findViewById(R.id.home_adv_pager);
         tipsLine = (LinearLayout) view.findViewById(R.id.home_viewGroup);
+
+        itemBtn=(LinearLayout)view.findViewById(R.id.home_item_goods);
+        itemBtn.setOnClickListener(this);
+
         currentPage = 1;
 
         loadedAll = false;
 
         mRequestQueue = Volley.newRequestQueue(getActivity());
         listItem = new ArrayList<JSONObject>();
-
-
-//        mHomeAdapter = new HomeAdapter(getActivity(), articleList);
-//        listView.setEmptyView(mEmptyView);
-//        listView.setAdapter(mHomeAdapter);
-        Log.i("mEmptyView---->", mEmptyView.toString());
 
         getBannerData();
         FetchData(currentPage, null);
@@ -448,6 +449,21 @@ public class HomeFragment extends BaseFragment implements
         homeCategoryFragment.setCategorySelectedListener(this);
         return view;
     }
+
+    private void initView()
+    {
+        itemTipsIv=(ImageView)view.findViewById(R.id.homeGoodsTips);
+        itemImageIv=(ImageView)view.findViewById(R.id.homeGoodsImage);;
+        itemNameTv=(TypeFaceTextView)view.findViewById(R.id.homeGoodsName);
+        itemTimeTv=(TypeFaceTextView)view.findViewById(R.id.shop_time_item);
+        itemSaleTv=(TypeFaceTextView)view.findViewById(R.id.homeGoodsSale);
+
+        String url="http://stg.zhaidou.com/uploads/article/article/asset_img/303/99d2fa9df325d76ac941b246ecf1488c.jpg";
+        ToolUtils.setImageCacheUrl(url,itemImageIv);
+        itemNameTv.setText("DISSION女装专场");
+
+    }
+
 
     /**
      * 广播注册
@@ -567,28 +583,18 @@ public class HomeFragment extends BaseFragment implements
                 toggleMenu();
                 break;
             case R.id.ll_lottery:
-//                WebViewFragment prizeFragment=WebViewFragment.newInstance("http://192.168.199.158/test1.html",true);
-//                ((BaseActivity)getActivity()).navigationToFragment(prizeFragment);
                 Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
                 detailIntent.putExtra("url", ZhaiDou.PRIZE_SCRAPING_URL);
-//                detailIntent.putExtra("url","http://192.168.199.230:3000/lotteries");
                 detailIntent.putExtra("from", "lottery");
                 detailIntent.putExtra("title", "天天刮奖");
                 startActivity(detailIntent);
                 break;
-            case R.id.ll_competition:
-                Intent intent = new Intent(getActivity(), HomePTActivity.class);
-                intent.putExtra("url", ZhaiDou.COMPETITION_URL);
-                intent.putExtra("from", "competition");
-                intent.putExtra("title", "拼贴大赛");
-                startActivity(intent);
 
-//                Intent intent = new Intent(getActivity(), ItemDetailActivity.class);
-//                intent.putExtra("url", ZhaiDou.COMPETITION_URL);
-//                intent.putExtra("from", "competition");
-//                intent.putExtra("title", "拼贴大赛");
-//                startActivity(intent);
+            case R.id.ll_special_shop:
+                ShopSpecialFragment shopSpecialFragment = ShopSpecialFragment.newInstance("", 0);
+                ((MainActivity) getActivity()).navigationToFragment(shopSpecialFragment);
                 break;
+
             case R.id.ll_sale:
                 SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragment(specialSaleFragment);
@@ -603,9 +609,13 @@ public class HomeFragment extends BaseFragment implements
                 break;
             case R.id.ll_back:
                 mCategoryView.setVisibility(View.VISIBLE);
-                mBackView.setVisibility(View.GONE);
-                mSwipeView.setVisibility(View.VISIBLE);
                 break;
+
+            case R.id.home_item_goods:
+                ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance("", 0);
+                ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
+                break;
+
         }
     }
 
@@ -739,19 +749,7 @@ public class HomeFragment extends BaseFragment implements
         return new SimpleDateFormat("MM-dd HH:mm", Locale.CHINA).format(new Date());
     }
 
-    @Override
-    public void onRefresh()
-    {
-        Log.i("OnRefreshListener---->", "OnRefreshListener");
-        FetchData(currentPage = 1, mCategory);
-    }
 
-    @Override
-    public void onLoad()
-    {
-        Log.i("onLoad------>", "onLoad");
-        FetchData(++currentPage, mCategory);
-    }
 
     @Override
     public void onCategorySelected(Category category)

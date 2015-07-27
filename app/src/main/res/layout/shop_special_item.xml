@@ -2,10 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/home_item_bg"
-    android:orientation="vertical">
+    android:orientation="vertical"
+>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/default_margin"
+        android:layout_marginLeft="@dimen/default_margin"
+        android:layout_marginRight="@dimen/default_margin"
+        android:background="@drawable/item_click_selector"
+>
 
     <ImageView
+        android:id="@+id/itemsImageIv"
         android:layout_width="match_parent"
         android:layout_height="@dimen/home_item_dimen"
         android:scaleType="fitXY"
@@ -32,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="5dp"
             android:layout_marginRight="10dp"
             android:textColor="@color/text_main_color"
             android:text="item的名称"
@@ -45,12 +56,18 @@
             android:layout_weight="0.000001"
             android:gravity="center_vertical">
 
+            <ImageView
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:src="@drawable/home_goods_item_time_icon"/>
+
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
                 android:textColor="@color/text_gary_color"
-                android:textSize="13sp"
-                android:text="剩余时间"
+                android:textSize="12sp"
+                android:text="剩余"
                 />
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/shop_time_item"
@@ -58,16 +75,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="2dp"
                 android:textColor="@color/text_gary_color"
+                android:textSize="12sp"
                 android:text="1"
                 />
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/text_gary_color"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:text="天"
                 />
         </LinearLayout>
+    </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

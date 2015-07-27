@@ -1,6 +1,7 @@
 package com.zhaidou.view;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -31,5 +32,23 @@ public class TypeFaceTextView extends TextView {
         if (mTypeFace!=null){
             setTypeface(mTypeFace);
         }
+    }
+
+    @Override
+    protected void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect)
+    {
+        if (focused)super.onFocusChanged(focused, direction, previouslyFocusedRect);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasWindowFocus)
+    {
+        if (hasWindowFocus)super.onWindowFocusChanged(hasWindowFocus);
+    }
+
+    @Override
+    public boolean isFocused()
+    {
+        return true;
     }
 }
