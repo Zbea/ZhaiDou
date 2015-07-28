@@ -403,6 +403,7 @@ public class HomeFragment extends BaseFragment implements
         listView.setOnItemClickListener(this);
         fl_category_menu = (FrameLayout) view.findViewById(R.id.fl_category_menu);
         mScrollView = (PullToRefreshScrollView) view.findViewById(R.id.scrollview);
+        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         mScrollView.setOnRefreshListener(this);
         mSwipeView = (LinearLayout) view.findViewById(R.id.ll_adview);
         mBackView = (LinearLayout) view.findViewById(R.id.ll_back);
