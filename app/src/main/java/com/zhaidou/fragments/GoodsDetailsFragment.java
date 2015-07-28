@@ -1,13 +1,19 @@
 package com.zhaidou.fragments;
 
-
 import android.content.Context;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -28,8 +34,9 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.model.GoodDetail;
 import com.zhaidou.model.GoodInfo;
-import com.zhaidou.model.GoodsSizeItem;
 import com.zhaidou.model.Specification;
+import com.zhaidou.utils.CollectionUtils;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ChildGridView;
 import com.zhaidou.view.TypeFaceTextView;
 
@@ -38,7 +45,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * Created by roy on 15/7/23.
@@ -75,7 +81,7 @@ public class GoodsDetailsFragment extends BaseFragment {
     private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
-            Log.i("handleMessage------------>",msg.what+"");
+            Log.i("handleMessage------------>", msg.what + "");
             switch (msg.what){
                 case UPDATE_GOOD_DETAIL:
                     GoodDetail detail=(GoodDetail)msg.obj;
@@ -85,6 +91,9 @@ public class GoodsDetailsFragment extends BaseFragment {
                     mTitle.setText(detail.getTitle());
                     mDiscount.setText(detail.getDiscount()+"折");
                     specificationAdapter.addAll(detail.getSpecifications());
+
+                    List<String> urls=new ArrayList<String>();
+                    initData(urls);
                     break;
             }
         }
@@ -240,7 +249,7 @@ public class GoodsDetailsFragment extends BaseFragment {
         tv_comment=(TextView)mView.findViewById(R.id.tv_comment);
         mCurrentPrice=(TextView)mView.findViewById(R.id.goodsCurrentPrice);
         mOldPrice=(TextView)mView.findViewById(R.id.goodsFormerPrice);
-        mOldPrice.getPaint().setAntiAlias(true);//抗锯齿
+        mOldPrice.getPaint().setAntiAlias(true);
         mOldPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
 
         mDiscount=(TextView)mView.findViewById(R.id.tv_discount);
@@ -248,65 +257,52 @@ public class GoodsDetailsFragment extends BaseFragment {
 
         mRequestQueue= Volley.newRequestQueue(getActivity());
 
-        initData();
+        initData(null);
         FetchDetailData();
-
-        dots=new ImageView[adPics.size()];
-        for (int i = 0; i < adPics.size(); i++)
-        {
-            ImageView dot_iv = new ImageView(mContext);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            params.bottomMargin = 10;
-            if (i == 0)
-            {
-                params.leftMargin = 0;
-            } else
-            {
-                params.leftMargin = 20;
-            }
-
-            dot_iv.setLayoutParams(params);
-            dots[i] = dot_iv;
-            viewGroupe.addView(dot_iv);
-            if (i == 0)
-            {
-                dots[i].setBackgroundResource(R.drawable.home_tips_foucs_icon);
-            } else
-            {
-                dots[i].setBackgroundResource(R.drawable.home_tips_icon);
-            }
-        }
-        GoodsImageAdapter adapter=new GoodsImageAdapter(mContext,adPics);
-        viewPager.setAdapter(adapter);
-        viewPager.setOnPageChangeListener(onPageChangeListener);
-        viewPager.setCurrentItem(adPics.size()*100);
 
     }
 
     /**
      * 初始化数据
      */
-    private void initData()
+    private void initData(List<String> urls)
     {
-        ImageView imageView=new ImageView(mContext);
-        imageView.setImageResource(R.drawable.goods1);
-//        imageView.setBackgroundResource(R.drawable.goods1);
-        adPics.add(imageView);
+        if (CollectionUtils.isNotNull(urls)){
+            for (String url:urls){
+                ImageView imageView=new ImageView(mContext);
+                ToolUtils.setImageCacheUrl(url,imageView);
+                adPics.add(imageView);
+            }
+            dots=new ImageView[adPics.size()];
+            for (int i = 0; i < adPics.size(); i++){
+                ImageView dot_iv = new ImageView(mContext);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                params.bottomMargin = 10;
+                if (i == 0)
+                {
+                    params.leftMargin = 0;
+                } else
+                {
+                    params.leftMargin = 20;
+                }
 
-        ImageView imageView1=new ImageView(mContext);
-        imageView1.setImageResource(R.drawable.goods2);
-//        imageView1.setBackgroundResource(R.drawable.goods2);
-        adPics.add(imageView1);
+                dot_iv.setLayoutParams(params);
+                dots[i] = dot_iv;
+                viewGroupe.addView(dot_iv);
+                if (i == 0)
+                {
+                    dots[i].setBackgroundResource(R.drawable.home_tips_foucs_icon);
+                } else
+                {
+                    dots[i].setBackgroundResource(R.drawable.home_tips_icon);
+                }
+            }
+            GoodsImageAdapter adapter=new GoodsImageAdapter(mContext,adPics);
+            viewPager.setAdapter(adapter);
+            viewPager.setOnPageChangeListener(onPageChangeListener);
+            viewPager.setCurrentItem(adPics.size() * 100);
+        }
 
-        ImageView imageView2=new ImageView(mContext);
-        imageView2.setImageResource(R.drawable.goods3);
-//        imageView2.setBackgroundResource(R.drawable.goods3);
-        adPics.add(imageView2);
-
-        ImageView imageView3=new ImageView(mContext);
-        imageView3.setImageResource(R.drawable.goods4);
-//        imageView3.setBackgroundResource(R.drawable.goods4);
-        adPics.add(imageView3);
     }
 
     /**
@@ -342,6 +338,18 @@ public class GoodsDetailsFragment extends BaseFragment {
                     double cost_price=merchandise.optDouble("cost_price");
                     int discount=merchandise.optInt("discount");
                     GoodDetail detail=new GoodDetail(id,title,designer,total_count,price,cost_price,discount);
+
+                    JSONArray imgsArray = merchandise.optJSONArray("imgs");
+                    if (imgsArray!=null&&imgsArray.length()>0){
+                        List<String> imgsList=new ArrayList<String>();
+                        for (int i=0;i<imgsArray.length();i++){
+                            JSONObject imgObj = imgsArray.optJSONObject(i);
+                            String url=imgObj.optString("url");
+                            imgsList.add(url);
+                        }
+                        detail.setImgs(imgsList);
+                    }
+
                     JSONArray specifications=merchandise.optJSONArray("specifications");
                     if (specifications!=null&&specifications.length()>0){
                         List<Specification> specificationList=new ArrayList<Specification>();
@@ -351,8 +359,8 @@ public class GoodsDetailsFragment extends BaseFragment {
                             String specificationTitle=specificationObj.optString("title");
                             Specification specification=new Specification(specificationId,specificationTitle);
                             specificationList.add(specification);
-                            detail.setSpecifications(specificationList);
                         }
+                        detail.setSpecifications(specificationList);
                     }
                     Message message=new Message();
                     message.what=UPDATE_GOOD_DETAIL;
@@ -370,7 +378,6 @@ public class GoodsDetailsFragment extends BaseFragment {
         });
         mRequestQueue.add(request);
     }
-
 
     private class GoodsDetailFragmentAdapter extends FragmentPagerAdapter {
         private List<GoodInfo> mData;

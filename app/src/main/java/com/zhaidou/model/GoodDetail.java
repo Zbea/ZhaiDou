@@ -14,6 +14,7 @@ public class GoodDetail {
     private double cost_price;
     private int discount;
     private List<Specification> specifications;
+    private List<String> imgs;
 
     public int getId() {
         return id;
@@ -77,6 +78,14 @@ public class GoodDetail {
 
     public void setSpecifications(List<Specification> specifications) {
         this.specifications = specifications;
+    }
+
+    public List<String> getImgs() {
+        return imgs;
+    }
+
+    public void setImgs(List<String> imgs) {
+        this.imgs = imgs;
     }
 
     public GoodDetail(int id, String title, String designer, int total_count, double price, double cost_price, int discount) {
