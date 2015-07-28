@@ -9,6 +9,7 @@ public class GoodDetail {
     private int id;
     private String title;
     private String designer;
+    private String end_time;
     private int total_count;
     private double price;
     private double cost_price;
@@ -86,6 +87,14 @@ public class GoodDetail {
 
     public void setImgs(List<String> imgs) {
         this.imgs = imgs;
+    }
+
+    public String getEnd_time() {
+        return end_time;
+    }
+
+    public void setEnd_time(String end_time) {
+        this.end_time = end_time;
     }
 
     public GoodDetail(int id, String title, String designer, int total_count, double price, double cost_price, int discount) {

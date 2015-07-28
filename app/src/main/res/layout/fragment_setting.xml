@@ -265,6 +265,7 @@
                 android:layout_height="1dp"
                 android:src="#eeeeee"/>
         <LinearLayout
+            android:layout_marginTop="10dp"
             android:id="@+id/ll_about"
             android:layout_width="match_parent"
             android:background="@color/white"
@@ -281,7 +282,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:text="关于我们"
+                android:text="关于"
                 android:textColor="#666666"
                 android:gravity="center_vertical"/>
             <ImageView
@@ -302,7 +303,7 @@
                 android:gravity="center"
                 android:text="退出登录"
                 android:textColor="@color/white"
-                android:background="#38bbba"
+                android:background="@color/red"
                 android:layout_marginRight="10dp"/>
         </LinearLayout>
     </ScrollView>
