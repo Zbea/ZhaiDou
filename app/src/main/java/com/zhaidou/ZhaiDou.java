@@ -6,7 +6,7 @@ package com.zhaidou;
 public class ZhaiDou {
     public static String HOME_PAGE_URL = "http://buy.zhaidou.com/?json=get_category_posts&slug=%E5%AE%B6%E9%A5%B0%E4%BC%98%E9%80%89&status=publish";
     public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
-//    public static String HOME_BASE_URL = "http://192.168.199.171/";
+//    public static String HOME_BASE_URL = "http://192.168.199.173/";
     public static String TAG_BASE_URL = "http://buy.zhaidou.com/?tag=%s&json=1";
 
     public static String HOT_SEARCH_URL=HOME_BASE_URL+"article/api/articles/hot_search";
@@ -20,7 +20,10 @@ public class ZhaiDou {
     //天天刮奖  "http://192.168.199.230:3000/lotteries";//
     public static String PRIZE_SCRAPING_URL=HOME_BASE_URL+"lotteries";
     //获取0元特卖数据
-    public static String SPECIAL_SALE_URL=HOME_BASE_URL+"api/v1/events/current";
+//    public static String SPECIAL_SALE_URL=HOME_BASE_URL+"api/v1/events/current";
+    public static String SPECIAL_SALE_URL="http://192.168.199.173/special_mall/api/sales/zero_sale";
+    //0元特卖banner
+    public static String SPECIAL_SALE_BANNER_URL="http://192.168.199.173/special_mall/api/sales/sale_banner?status=0";
 
     //首页分类文章
     public static String HOME_CATEGORY_URL=HOME_BASE_URL+"article/api/articles?page=";

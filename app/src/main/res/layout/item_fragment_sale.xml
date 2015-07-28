@@ -5,12 +5,35 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/white" >
-    <ImageView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:scaleType="fitXY"
-        android:id="@+id/iv_single_item"
-        android:background="@drawable/icon_loading_defalut"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:scaleType="fitXY"
+                android:id="@+id/iv_single_item"
+                android:background="@drawable/icon_loading_defalut"/>
+            <LinearLayout
+                android:id="@+id/ll_sale_out"
+                android:layout_width="match_parent"
+                android:gravity="center"
+                android:visibility="gone"
+                android:background="#88aaaaaa"
+                android:layout_height="150dp">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_sale_out"/>
+            </LinearLayout>
+        </RelativeLayout>
+
     <com.zhaidou.view.TypeFaceTextView
         android:background="@color/white"
         android:layout_width="match_parent"
@@ -76,4 +99,5 @@
                 android:text=""/>
         </LinearLayout>
     </RelativeLayout>
+    </LinearLayout>
 </LinearLayout>

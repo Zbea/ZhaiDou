@@ -37,7 +37,6 @@ import com.zhaidou.adapter.ShopSpecialAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.model.Category;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.SwitchImage;
 import com.zhaidou.utils.ToolUtils;
@@ -232,6 +231,7 @@ public class ShopSpecialFragment extends BaseFragment
         titleTv.setText(R.string.home_shop_special_text);
 
         mScrollView = (PullToRefreshScrollView) mView.findViewById(R.id.scrollview);
+        mScrollView = (PullToRefreshScrollView)mView.findViewById(R.id.sv_special_scrollview);
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         mScrollView.setOnRefreshListener(refreshListener);
 

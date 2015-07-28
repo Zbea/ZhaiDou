@@ -17,34 +17,9 @@
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     
-    <item
-        android:color="@color/gray"
-        android:state_pressed="true" >
-        <shape
-            android:shape="rectangle">
-            <!-- 填充颜色 -->
-            <solid android:color="@color/black"></solid>
-
-            <stroke android:color="@color/line_color" android:width="1dp"></stroke>
-            <!-- 矩形的圆角半径 -->
-            <corners android:radius="3dp" />
-
-        </shape>
-        </item>
+    <item android:state_pressed="true" android:drawable="@drawable/icon_pecification_selected"/>
+    <item android:state_selected="true" android:drawable="@drawable/icon_pecification_selected"/>
     
-    <item
-        android:color="@color/white"
-        >
-        <shape
-            android:shape="rectangle">
-            <!-- 填充颜色 -->
-            <solid android:color="@color/white"></solid>
-
-            <stroke android:color="@color/line_color" android:width="1dp"></stroke>
-            <!-- 矩形的圆角半径 -->
-            <corners android:radius="3dp" />
-
-        </shape>
-        </item>
+    <item android:drawable="@drawable/icon_pecification_normal"/>
 
 </selector>

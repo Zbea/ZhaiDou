@@ -52,6 +52,7 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
         Log.i("childFragmentManager--->", fragmentManager.getBackStackEntryCount() + "");
         fragmentManager.beginTransaction().remove(fragment).commit();
         fragmentManager.popBackStack();
+        fragmentManager.beginTransaction().remove(fragment).commit();
 
         Log.i("fragment---->", fragment.getClass().getSimpleName());
         if (fragment != null && fragment instanceof LoginFragment) {

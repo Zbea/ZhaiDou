@@ -167,6 +167,7 @@ public class ElementListFragment extends BaseFragment implements PullToRefreshBa
     // TODO: Rename and change types and number of parameters
     public static ElementListFragment newInstance(String url, String type)
     {
+        Log.i("ElementListFragment---->","ElementListFragment");
         ElementListFragment fragment = new ElementListFragment();
         Bundle args = new Bundle();
         args.putString(URL, url);

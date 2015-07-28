@@ -8,7 +8,9 @@ import java.util.List;
 public class Product {
     private int id;
     private String title;
+    private String designer;
     private double price;
+    private double cost_price;
     private String url;
     private int bean_like_count;
     private List<Category> categories;
@@ -107,6 +109,22 @@ public class Product {
 
     public void setCollect(boolean collect) {
         this.collect = collect;
+    }
+
+    public String getDesigner() {
+        return designer;
+    }
+
+    public void setDesigner(String designer) {
+        this.designer = designer;
+    }
+
+    public double getCost_price() {
+        return cost_price;
+    }
+
+    public void setCost_price(double cost_price) {
+        this.cost_price = cost_price;
     }
 
     public Product() {

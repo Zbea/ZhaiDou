@@ -254,9 +254,11 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         titleTv=(TypeFaceTextView)mView.findViewById(R.id.title_tv);
         titleTv.setText(mTitle);
 
+        mScrollView = (PullToRefreshScrollView)mView.findViewById(R.id.sv_shop_today_special_scrollview);
+        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         timeTv=(TypeFaceTextView)mView.findViewById(R.id.shopTimeTv);
 
-        mScrollView = (PullToRefreshScrollView)mView.findViewById(R.id.scrollview);
+        mScrollView = (PullToRefreshScrollView)mView.findViewById(R.id.sv_shop_today_special_scrollview);
         mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
         mScrollView.setOnRefreshListener(refreshListener);
 
