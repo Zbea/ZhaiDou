@@ -1,6 +1,7 @@
 package com.zhaidou.utils;
 
 import android.os.Environment;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -56,6 +57,15 @@ public class ToolUtils
     public static final void setImageUrl(String url,ImageView imageView)
     {
         ImageLoader.getInstance().displayImage(url, imageView);
+    }
+
+    /**
+     * 打印信息
+     * @param msg
+     */
+    public static final void setLog(String msg)
+    {
+        Log.i("zhaidou",msg);
     }
 
 }

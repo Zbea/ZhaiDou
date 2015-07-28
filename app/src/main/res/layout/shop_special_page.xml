@@ -28,13 +28,29 @@
             android:orientation="vertical"
             android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/shopAdImage"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/home_item_dimen"
-                android:scaleType="fitXY"
-                android:background="@drawable/icon_loading_item"
-                />
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/home_adv_pager"
+                    android:layout_width="fill_parent"
+                    android:layout_height="152dp">
+                </android.support.v4.view.ViewPager>
+
+                <LinearLayout
+                    android:id="@+id/home_viewGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginBottom="15dp"
+                    android:layout_centerHorizontal="true"
+                    android:orientation="horizontal">
+                </LinearLayout>
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -73,15 +89,14 @@
     </com.pulltorefresh.PullToRefreshScrollView>
 
     <RelativeLayout
-        android:id="@+id/myCartBtn"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
-        android:clickable="true"
         android:layout_margin="20dp">
 
 
         <ImageView
+            android:id="@+id/myCartBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="true"

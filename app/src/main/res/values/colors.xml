@@ -21,7 +21,7 @@
     <color name="tab_text_selected">#336699</color>
     <color name="black">#F1F1F1</color>
     <color name="text_main_color">#333333</color>
-    <color name="text_gary_color">#77000000</color>
+    <color name="text_gary_color">#999999</color>
     <color name="line_color">#f3f3f3</color>
     <color name="sale_color">#ff6262</color>
     <color name="green_color">#38C3BF</color>

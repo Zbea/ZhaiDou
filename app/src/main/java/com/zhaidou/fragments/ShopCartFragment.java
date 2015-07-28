@@ -95,11 +95,19 @@ public class ShopCartFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mView=inflater.inflate(R.layout.shop_cart_page, container, false);
+
         mContext=getActivity();
-
-        initView();
-
+        if(mView==null)
+        {
+            mView=inflater.inflate(R.layout.shop_cart_page, container, false);
+            initView();
+        }
+        //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
+        ViewGroup parent = (ViewGroup) mView.getParent();
+        if (parent != null)
+        {
+            parent.removeView(mView);
+        }
         return mView;
     }
 

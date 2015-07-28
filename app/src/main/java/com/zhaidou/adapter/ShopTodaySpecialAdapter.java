@@ -94,7 +94,7 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
         viewHolder.itemFormerPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
 
         viewHolder.itemName.setText(todayShopItem.title);
-        viewHolder.itemIntorduce.setText("                         "+todayShopItem.designer);
+        viewHolder.itemIntorduce.setText("                           "+todayShopItem.designer);
         viewHolder.itemCurrentPrice.setText("￥ "+todayShopItem.currentPrice);
         viewHolder.itemFormerPrice.getPaint().setAntiAlias(true);//去锯齿
         viewHolder.itemFormerPrice.setText("￥ "+todayShopItem.formerPrice);

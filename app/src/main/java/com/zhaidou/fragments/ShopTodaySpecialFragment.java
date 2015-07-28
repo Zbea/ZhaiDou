@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -72,7 +73,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private ListViewForScrollView mListView;
 
     private TextView myCartTips;
-    private RelativeLayout myCartBtn;
+    private ImageView myCartBtn;
 
     private List<ShopTodayItem> items=new ArrayList<ShopTodayItem>();
     private ShopTodaySpecialAdapter adapter;
@@ -133,6 +134,11 @@ public class ShopTodaySpecialFragment extends BaseFragment {
             mScrollView.onRefreshComplete();
 
             items.removeAll(items);
+            if (mTimer!=null)
+            {
+                mTimer.cancel();
+                mTimer=null;
+            }
             initDate();
             adapter.notifyDataSetChanged();
         }
@@ -201,12 +207,20 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mView=inflater.inflate(R.layout.shop_today_special_page, container, false);
+
         mContext=getActivity();
-
-        initView();
-        initDate();
-
+        if(mView==null)
+        {
+            mView=inflater.inflate(R.layout.shop_today_special_page, container, false);
+            initView();
+            initDate();
+        }
+        //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
+        ViewGroup parent = (ViewGroup) mView.getParent();
+        if (parent != null)
+        {
+            parent.removeView(mView);
+        }
         return mView;
     }
 
@@ -215,16 +229,17 @@ public class ShopTodaySpecialFragment extends BaseFragment {
      */
     private void initDate()
     {
-        if (items.size()>0 )
-        {
-            adapter.notifyDataSetChanged();
-            mDialog.dismiss();
-        }
-        else
-        {
-            FetchData(id);
-        }
-
+//        if (items.size()>0 )
+//        {
+//            introduceTv.setText(introduce);
+//            adapter.notifyDataSetChanged();
+//            mDialog.dismiss();
+//        }
+//        else
+//        {
+//            FetchData(id);
+//        }
+        FetchData(id);
     }
 
     /**
@@ -253,7 +268,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         introduceTv=(TypeFaceTextView)mView.findViewById(R.id.adText);
 
         myCartTips=(TextView)mView.findViewById(R.id.myCartTipsTv);
-        myCartBtn=(RelativeLayout)mView.findViewById(R.id.myCartBtn);
+        myCartBtn=(ImageView)mView.findViewById(R.id.myCartBtn);
         myCartBtn.setOnClickListener(onClickListener);
 
         mRequestQueue= Volley.newRequestQueue(mContext);
@@ -286,7 +301,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     String overTime=josnObject1.optString("over_day");
                     introduce=josnObject1.optString("quotation");
                     shopSpecialItem=new ShopSpecialItem(id,title,null,time,startTime,endTime,overTime,null);
-                    Log.i("zhaidou","endTime:"+endTime);
                     handler.obtainMessage(UPDATE_TIMER_START,endTime).sendToTarget();//开始倒计时
 
                     JSONArray jsonArray=josnObject1.optJSONArray("merchandises");
@@ -298,7 +312,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                         String designer=obj.optString("designer");
                         double price=obj.optDouble("price");
                         double cost_price=obj.optDouble("cost_price");
-                        String imageUrl=obj.optString("img");
+                        String imageUrl="http://"+obj.optString("img");
                         int num=obj.optInt("total_count");
                         ShopTodayItem shopTodayItem=new ShopTodayItem(Baseid,Listtitle,designer,imageUrl,price,cost_price,num);
                         items.add(shopTodayItem);
@@ -359,6 +373,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         if (mTimer!=null)
         {
             mTimer.cancel();
+            mTimer=null;
         }
     }
 }

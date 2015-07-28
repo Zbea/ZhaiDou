@@ -42,7 +42,7 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
             Log.i("MainActivity---->","this.getClass().getSimpleName()------------"+fragment.getClass().getSimpleName());
             mChildContainer.setVisibility(View.VISIBLE);
         }
-        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.enter_into_the, R.anim.enter_out_the).replace(R.id.fl_child_container, fragment, fragment.getClass().getSimpleName())
+        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, fragment, fragment.getClass().getSimpleName())
                 .addToBackStack(null).commit();
     }
 
@@ -50,8 +50,8 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         Log.i("childFragmentManager--->", fragmentManager.getBackStackEntryCount() + "");
+        fragmentManager.beginTransaction().remove(fragment).commit();
         fragmentManager.popBackStack();
-        fragmentManager.beginTransaction().setCustomAnimations(R.anim.out_into_the,R.anim.out_out_the).remove(fragment).commit();
 
         Log.i("fragment---->", fragment.getClass().getSimpleName());
         if (fragment != null && fragment instanceof LoginFragment) {
