@@ -4,36 +4,34 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
-import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.base.BaseListAdapter;
-import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.model.Address;
+import com.zhaidou.model.Area;
+import com.zhaidou.model.City;
+import com.zhaidou.model.PCityArea;
+import com.zhaidou.model.Province;
+import com.zhaidou.utils.CollectionUtils;
+import com.zhaidou.view.WheelView;
+import com.zhaidou.view.WheelViewContainer;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -54,12 +52,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link AddrManageFragment#newInstance} factory method to
+ * A simple {@link android.support.v4.app.Fragment} subclass.
+ * Use the {@link com.zhaidou.fragments.NewAddrFragment#newInstance} factory method to
  * create an instance of this fragment.
  *
  */
-public class AddrManageFragment extends BaseFragment implements View.OnClickListener{
+public class NewAddrFragment extends BaseFragment implements View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_NickName = "param1";
@@ -75,10 +73,6 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     private String mProfileId;
     private int mStatus;
 
-    private LinearLayout ll_edit_addr;
-    private LinearLayout ll_manage_address;
-    private EditText et_mobile,et_addr,et_name;
-    private TextView tv_save,tv_edit,tv_addr_username,tv_addr_mobile,tv_addr,tv_delete;
     private String token;
     private SharedPreferences mSharedPreferences;
 
@@ -86,30 +80,17 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
 
     private Dialog mDialog;
     private RequestQueue mRequestQueue;
-    private ListView mListview;
-    private AddressAdapter addressAdapter;
-    private List<Address> addressList=new ArrayList<Address>();
-    private final int UPDATE_ADDRESS_LIST=0;
-    private int mCheckedPosition=0;
-    private View rootView;
-    private Handler handler=new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what){
-                case UPDATE_ADDRESS_LIST:
-                    addressAdapter.notifyDataSetChanged();
-                    break;
-            }
-        }
-    };
+    private EditText et_name,et_mobile,et_location,et_address_detail;
+
+    private List<Province> provinceList=new ArrayList<Province>();
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      * @return A new instance of fragment AddrManageFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static AddrManageFragment newInstance(String nickname,String mobile,String address, String profileId,int status) {
-        AddrManageFragment fragment = new AddrManageFragment();
+    public static NewAddrFragment newInstance(String nickname,String mobile,String address, String profileId,int status) {
+        NewAddrFragment fragment = new NewAddrFragment();
         Bundle args = new Bundle();
         args.putString(ARG_NickName, nickname);
         args.putString(ARG_MOBILE, mobile);
@@ -119,8 +100,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
         fragment.setArguments(args);
         return fragment;
     }
-    public AddrManageFragment() {
-        // Required empty public constructor
+    public NewAddrFragment() {
     }
 
     @Override
@@ -138,48 +118,23 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.i("onCreateView----------------->","onCreateView");
-        if (null != rootView) {
-            ViewGroup parent = (ViewGroup) rootView.getParent();
-            if (null != parent) {
-                parent.removeView(rootView);
-            }
-        } else {
-            rootView = inflater.inflate(R.layout.fragment_addr_manage,container, false);
-            initView(rootView);
-        }
-        return rootView;
-    }
+        // Inflate the layout for this fragment
+        View view=inflater.inflate(R.layout.fragment_new_addr, container, false);
 
-    private void initView(View view){
-        mListview=(ListView)view.findViewById(R.id.lv_addresses);
-        addressAdapter=new AddressAdapter(getActivity(),addressList);
-        mListview.setAdapter(addressAdapter);
-        view.findViewById(R.id.bt_new_address).setOnClickListener(this);
-        mRequestQueue= Volley.newRequestQueue(getActivity());
+        et_name=(EditText)view.findViewById(R.id.tv_addr_username);
+        et_address_detail=(EditText)view.findViewById(R.id.tv_addr_detail);
+        et_mobile=(EditText)view.findViewById(R.id.tv_addr_mobile);
+        et_location=(EditText)view.findViewById(R.id.tv_addr_loc);
+
+        view.findViewById(R.id.tv_save).setOnClickListener(this);
+        view.findViewById(R.id.ll_address).setOnClickListener(this);
+        mRequestQueue= Volley.newRequestQueue(getActivity(),new HttpClientStack(new DefaultHttpClient()));
         mSharedPreferences=getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         token=mSharedPreferences.getString("token", null);
-        FetchData();
-        addressAdapter.setOnInViewClickListener(R.id.tv_defalue_addr,new BaseListAdapter.onInternalClickListener() {
-            @Override
-            public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                mCheckedPosition=position;
-                addressAdapter.notifyDataSetChanged();
-            }
-        });
-        addressAdapter.setOnInViewClickListener(R.id.tv_delete,new BaseListAdapter.onInternalClickListener() {
-            @Override
-            public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                ShowToast("删除");
-            }
-        });
-        addressAdapter.setOnInViewClickListener(R.id.tv_edit,new BaseListAdapter.onInternalClickListener() {
-            @Override
-            public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                ShowToast("编辑");
-            }
-        });
+        FetchCityData();
+        return view;
     }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()){
@@ -187,7 +142,8 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 hideInputMethod();
                 String name=et_name.getText().toString();
                 String mobile=et_mobile.getText().toString();
-                String address=et_addr.getText().toString();
+                String location=et_location.getText().toString();
+                String address=et_address_detail.getText().toString();
                 if (TextUtils.isEmpty(name)){
                     Toast.makeText(getActivity(),"收货人信息不能为空",Toast.LENGTH_SHORT).show();
                     return;
@@ -197,6 +153,9 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 }else if (TextUtils.isEmpty(address)){
                     Toast.makeText(getActivity(),"收货地址不能为空",Toast.LENGTH_SHORT).show();
                     return;
+                }else if (TextUtils.isEmpty(location)){
+                    Toast.makeText(getActivity(),"详细地址不能为空",Toast.LENGTH_SHORT).show();
+                    return;
                 }
                 mNickName=name;
                 mMobile=mobile;
@@ -205,20 +164,45 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 new MyTask().execute(name,mobile,address,mProfileId);
                 break;
             case R.id.tv_edit:
-                ll_edit_addr.setVisibility(View.VISIBLE);
-                ll_manage_address.setVisibility(View.GONE);
-                et_addr.setHint(mAddress);
-                et_mobile.setHint(mMobile);
-                et_name.setHint(mNickName);
+//                ll_edit_addr.setVisibility(View.VISIBLE);
+//                ll_manage_address.setVisibility(View.GONE);
+//                et_addr.setHint(mAddress);
+//                et_mobile.setHint(mMobile);
+//                et_name.setHint(mNickName);
                 break;
             case R.id.tv_delete:
-                Log.i("tv_addr_username.getText().toString()--->",tv_addr_username.getText().toString());
-                Log.i("tv_addr_mobile.getText().toString()--->",tv_addr_mobile.getText().toString());
-                new MyTask().execute(tv_addr_username.getText().toString(),tv_addr_mobile.getText().toString(),"",mProfileId);
+//                new MyTask().execute(tv_addr_username.getText().toString(),tv_addr_mobile.getText().toString(),"",mProfileId);
                 break;
-            case R.id.bt_new_address:
-                NewAddrFragment newAddrFragment=NewAddrFragment.newInstance("","","","",0);
-                ((MainActivity)getActivity()).navigationToFragment(newAddrFragment);
+            case R.id.ll_address:
+                final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
+
+                View mDialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_adddress, null,false);
+                WheelViewContainer wheelView=(WheelViewContainer)mDialogView.findViewById(R.id.wheel_view_wv);
+//                WheelView wheelView1=(WheelView)mDialogView.findViewById(R.id.wheel_view_wv1);
+//                WheelView areaView=(WheelView)mDialogView.findViewById(R.id.wheel_view_wv2);
+                if (CollectionUtils.isNotNull(provinceList))
+                wheelView.setData(provinceList);
+//                wheelView1.setItems(cityList);
+//                areaView.setItems(areaList);
+//                TextView cancelTv = (TextView) view1.findViewById(R.id.cancelTv);
+//                cancelTv.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        dialog.dismiss();
+//                    }
+//                });
+//
+//                TextView okTv = (TextView) view1.findViewById(R.id.okTv);
+//                okTv.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        dialog.dismiss();
+//                    }
+//                });
+                dialog.setCanceledOnTouchOutside(true);
+                dialog.setCancelable(true);
+                dialog.addContentView(mDialogView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                dialog.show();
                 break;
         }
     }
@@ -246,14 +230,12 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
 
         @Override
         protected void onPostExecute(String s) {
-            Log.i("AddrManageFragment--onPostExecute-->",s);
             try {
                 mDialog.dismiss();
                 JSONObject json =new JSONObject(s);
                 JSONObject profile =json.optJSONObject("profile");
                 String mobile=profile.optString("mobile");
                 String address=profile.optString("address2");
-                addressListener.onAddressDataChange(mNickName,mMobile,address);
             }catch (Exception e){
 
             }
@@ -271,19 +253,17 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
 
 
             // 实例化HTTP方法
-            HttpPost request = new HttpPost(ZhaiDou.USER_EDIT_PROFILE_URL+id);
-            request.addHeader("SECAuthorization", token);
+            HttpPost request = new HttpPost("http://192.168.199.173/special_mall/api/receivers");
+            request.addHeader("SECAuthorization", "Yk77mfWaq_xYyeEibAxx");
 
 
             // 创建名/值组列表
             List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 
-            parameters.add(new BasicNameValuePair("_method","PUT"));
-//            String newStr = new String(old.getBytes("UTF-8"));
-            parameters.add(new BasicNameValuePair("profile[first_name]",name));
-            parameters.add(new BasicNameValuePair("profile[mobile]",mobile));
-            parameters.add(new BasicNameValuePair("profile[address2]",addr));
-            parameters.add(new BasicNameValuePair("profile[id]",id));
+            parameters.add(new BasicNameValuePair("receivers[name]",name));
+            parameters.add(new BasicNameValuePair("receivers[phone]",mobile));
+            parameters.add(new BasicNameValuePair("receivers[address]",addr));
+            parameters.add(new BasicNameValuePair("receivers[provider_id]",id));
 
             // 创建UrlEncodedFormEntity对象
             UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
@@ -321,70 +301,74 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     }
 
     public interface AddressListener{
-        public void onAddressDataChange(String name,String mobile,String address);
+        public void onAddressDataChange(String name, String mobile, String address);
     }
 
-
-    private void FetchData(){
-        JsonObjectRequest request=new JsonObjectRequest("http://192.168.199.173/special_mall/api/receivers",new Response.Listener<JSONObject>() {
+    private void FetchCityData(){
+        JsonObjectRequest request=new JsonObjectRequest("http://192.168.199.173/special_mall/api/sales/provider",new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("AddrManageFragment------------>",jsonObject.toString());
-                JSONArray receiversArr=jsonObject.optJSONArray("receivers");
-                if (receiversArr!=null&&receiversArr.length()>0){
-                    for (int i=0;i<receiversArr.length();i++){
-                        JSONObject receiverObj = receiversArr.optJSONObject(i);
-                        String phone=receiverObj.optString("phone");
-                        int user_id=receiverObj.optInt("user_id");
-                        String addr=receiverObj.optString("address");
-                        String name=receiverObj.optString("name");
-                        Address address=new Address();
-                        address.setAddress(addr);
-                        address.setName(name);
-                        address.setUser_id(user_id);
-                        address.setPhone(phone);
-                        addressList.add(address);
+                Log.i("FetchCityData---->",jsonObject.toString());
+                if (jsonObject!=null){
+                    JSONArray providerArr=jsonObject.optJSONArray("providers");
+                    for (int i=0;i<providerArr.length();i++){
+                        JSONObject provinceObj=providerArr.optJSONObject(i);
+                        int provinceId=provinceObj.optInt("id");
+                        String provinceName=provinceObj.optString("name");
+                        Province province=new Province();
+                        province.setId(provinceId);
+                        province.setName(provinceName);
+                        List<City> cityList=new ArrayList<City>();
+                        JSONArray cityArr=provinceObj.optJSONArray("cities");
+                        if (cityArr!=null&&cityArr.length()>0){
+                            for (int k=0;k<cityArr.length();k++){
+                                JSONObject cityObj =cityArr.optJSONObject(k);
+                                int cityId=cityObj.optInt("id");
+                                String cityName=cityObj.optString("name");
+                                JSONArray areaArr=cityObj.optJSONArray("children");
+                                City city=new City();
+                                city.setId(cityId);
+                                city.setName(cityName);
+                                List<Area> areaList=new ArrayList<Area>();
+                                if (areaArr!=null&&areaArr.length()>0){
+                                    for (int j=0;j<areaArr.length();j++){
+                                        JSONObject areaObj=areaArr.optJSONObject(j);
+                                        int areaId=areaObj.optInt("id");
+                                        String areaName=areaObj.optString("name");
+                                        int areaPrice=areaObj.optInt("price");
+                                        Area area=new Area();
+                                        area.setId(areaId);
+                                        area.setName(areaName);
+                                        area.setPrice(areaPrice);
+                                        areaList.add(area);
+                                    }
+                                    city.setAreas(areaList);
+                                    cityList.add(city);
+                                }
+
+                            }
+                        }
+                        province.setCityList(cityList);
+                        provinceList.add(province);
                     }
-                    handler.sendEmptyMessage(UPDATE_ADDRESS_LIST);
+
                 }
+//                for(Province province:provinceList){
+//                    Log.i("provinceList------>",province.getName());
+//                }
+//                for(City province:cityList){
+//                    Log.i("cityList------>",province.getName());
+//                }
+//                for(Area province:areaList){
+//                    Log.i("areaList------>",province.getName());
+//                }
             }
         },new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                Toast.makeText(getActivity(),"网络异常",Toast.LENGTH_SHORT).show();
+
             }
-        }){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers=new HashMap<String, String>();
-                if (!TextUtils.isEmpty(token))
-                    headers.put("SECAuthorization","Yk77mfWaq_xYyeEibAxx");
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
-    }
-
-    public class AddressAdapter extends BaseListAdapter<Address> {
-        public AddressAdapter(Context context, List<Address> list) {
-            super(context, list);
-        }
-
-        @Override
-        public View bindView(int position, View convertView, ViewGroup parent) {
-            if (convertView==null)
-                convertView=mInflater.inflate(R.layout.item_addresses_list,null);
-            TextView tv_name = ViewHolder.get(convertView, R.id.tv_addr_username);
-            TextView tv_mobile = ViewHolder.get(convertView, R.id.tv_addr_mobile);
-            TextView tv_addr= ViewHolder.get(convertView, R.id.tv_addr);
-            TextView tv_defalue=ViewHolder.get(convertView,R.id.tv_defalue_addr);
-            Address address=getList().get(position);
-            tv_name.setText(address.getName());
-            tv_mobile.setText(address.getPhone());
-            tv_addr.setText(address.getAddress());
-            mCheckedPosition=address.isIs_default()?position:0;
-            tv_defalue.setSelected(mCheckedPosition==position?true:false);
-            return convertView;
-        }
     }
 }

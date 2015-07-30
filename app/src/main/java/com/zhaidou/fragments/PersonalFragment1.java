@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -30,7 +31,7 @@ public class PersonalFragment1 extends BaseFragment implements View.OnClickListe
     private String mParam2;
 
 
-    private TextView mPrePayView,mPreReceivedView,mReturnView;
+    private ImageView mPrePayView,mPreReceivedView,mReturnView;
     private RelativeLayout mCouponsView,mRewardView,mAddrView,mSettingView;
     private FrameLayout mChildContainer;
     SettingFragment settingFragment;
@@ -64,14 +65,11 @@ public class PersonalFragment1 extends BaseFragment implements View.OnClickListe
         // Inflate the layout for this fragment
         Log.i("onCreateView----------------->","onCreateView");
         View view=inflater.inflate(R.layout.personal, container, false);
-        mPrePayView=(TextView)view.findViewById(R.id.tv_pre_pay);
-        mPreReceivedView=(TextView)view.findViewById(R.id.tv_pre_received);
-        mReturnView=(TextView)view.findViewById(R.id.tv_return);
+        mPrePayView=(ImageView)view.findViewById(R.id.tv_pre_pay);
+        mPreReceivedView=(ImageView)view.findViewById(R.id.tv_pre_received);
+        mReturnView=(ImageView)view.findViewById(R.id.tv_return);
         mChildContainer=(FrameLayout)view.findViewById(R.id.fl_child_container);
 
-        mCouponsView=(RelativeLayout)view.findViewById(R.id.rl_coupons);
-        mRewardView=(RelativeLayout)view.findViewById(R.id.rl_reward_history);
-        mAddrView=(RelativeLayout)view.findViewById(R.id.rl_reward_history);
         mSettingView=(RelativeLayout)view.findViewById(R.id.rl_setting);
 
         mPrePayView.setOnClickListener(this);
@@ -93,10 +91,6 @@ public class PersonalFragment1 extends BaseFragment implements View.OnClickListe
             case R.id.tv_pre_received:
                 break;
             case R.id.tv_return:
-                break;
-            case R.id.rl_coupons:
-                break;
-            case R.id.rl_reward_history:
                 break;
             case R.id.rl_manage_address:
                 break;

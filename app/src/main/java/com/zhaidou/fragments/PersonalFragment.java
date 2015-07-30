@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -25,18 +24,15 @@ import com.android.volley.toolbox.Volley;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -74,7 +70,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 
     private ImageView iv_header,mPrePayView, mPreReceivedView, mReturnView;
     private TextView tv_nickname, tv_desc;
-    private RelativeLayout mCouponsView, mRewardView, mAddrView, mSettingView, mAllOrderView;
+    private RelativeLayout mCouponsView, mSettingView, mAllOrderView;
     private FrameLayout mChildContainer;
     private TextView mCartCount;
 
@@ -136,9 +132,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         mAllOrderView = (RelativeLayout) view.findViewById(R.id.all_order);
         mChildContainer = (FrameLayout) view.findViewById(R.id.fl_child_container);
 
-        mCouponsView = (RelativeLayout) view.findViewById(R.id.rl_coupons);
-        mRewardView = (RelativeLayout) view.findViewById(R.id.rl_reward_history);
-        mAddrView = (RelativeLayout) view.findViewById(R.id.rl_reward_history);
         mSettingView = (RelativeLayout) view.findViewById(R.id.rl_setting);
         iv_header = (ImageView) view.findViewById(R.id.iv_header);
         tv_desc = (TextView) view.findViewById(R.id.tv_desc);
@@ -149,13 +142,13 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         mPreReceivedView.setOnClickListener(this);
         mReturnView.setOnClickListener(this);
         mAllOrderView.setOnClickListener(this);
-        mCouponsView.setOnClickListener(this);
-        mRewardView.setOnClickListener(this);
-        mAddrView.setOnClickListener(this);
         mSettingView.setOnClickListener(this);
         mSettingFragment = SettingFragment.newInstance("", "");
         view.findViewById(R.id.tv_shopping_cart).setOnClickListener(this);
         view.findViewById(R.id.rl_contact).setOnClickListener(this);
+        view.findViewById(R.id.rl_competition).setOnClickListener(this);
+        view.findViewById(R.id.rl_taobao_order).setOnClickListener(this);
+        view.findViewById(R.id.rl_addr_manage).setOnClickListener(this);
 
         mSettingFragment.setProfileListener(this);
 
@@ -176,6 +169,8 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 AllOrdersFragment allOrdersFragment = AllOrdersFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragment(allOrdersFragment);
                 break;
+            case R.id.rl_taobao_order:
+                break;
             case R.id.tv_pre_pay:
                 UnPayFragment unPayFragment = UnPayFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragment(unPayFragment);
@@ -188,21 +183,23 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 ReturnFragment returnFragment = ReturnFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragment(returnFragment);
                 break;
-            case R.id.rl_coupons:
-                break;
-            case R.id.rl_reward_history:
-                break;
-            case R.id.rl_manage_address:
+            case R.id.rl_addr_manage:
+                AddrManageFragment addrManageFragment=AddrManageFragment.newInstance("","","","",0);
+                ((MainActivity)getActivity()).navigationToFragment(addrManageFragment);
                 break;
             case R.id.rl_setting:
-                Log.i("rl_setting---->", "rl_setting");
-//              SettingFragment settingFragment1=SettingFragment.newInstance("","");
-                Log.i("getactivity---------->", getActivity().toString());
                 ((MainActivity) getActivity()).navigationToFragment(mSettingFragment);
                 break;
             case R.id.rl_contact:
                 ContactUsFragment contactUsFragment=ContactUsFragment.newInstance("","");
                 ((MainActivity)getActivity()).navigationToFragment(contactUsFragment);
+                break;
+            case R.id.rl_competition:
+                Intent intent = new Intent(getActivity(), HomePTActivity.class);
+                intent.putExtra("url", ZhaiDou.COMPETITION_URL);
+                intent.putExtra("from", "competition");
+                intent.putExtra("title", "拼贴大赛");
+                startActivity(intent);
                 break;
         }
 

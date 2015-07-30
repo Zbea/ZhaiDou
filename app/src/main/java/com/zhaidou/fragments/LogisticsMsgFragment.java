@@ -8,6 +8,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
@@ -45,6 +48,7 @@ public class LogisticsMsgFragment extends BaseFragment {
 
     private TimeLineAdapter statusAdapter;
     private Context context;
+    private WebView mWebView;
 
     /**
      * Use this factory method to create a new instance of
@@ -83,6 +87,28 @@ public class LogisticsMsgFragment extends BaseFragment {
         View view=inflater.inflate(R.layout.fragment_logistics, container, false);
         context = getActivity();
         mLogisticsView = (ExpandableListView)view.findViewById(R.id.lv_logistics);
+        mWebView=(WebView)view.findViewById(R.id.wv_logistics);
+        mWebView.getSettings().setJavaScriptEnabled(true);
+        WebSettings webSettings = mWebView.getSettings();
+//        webSettings.setUseWideViewPort(true);
+//        webSettings.setLoadWithOverviewMode(true);
+//        mWebView.setVerticalScrollBarEnabled(false);
+//        mWebView.setVerticalScrollbarOverlay(false);
+//        mWebView.setHorizontalScrollbarOverlay(false);
+//        mWebView.setHorizontalFadingEdgeEnabled(false);
+//        mWebView.setInitialScale(1);
+        mWebView.loadUrl("http://m.kuaidi100.com/index_all.html?type=huitongkuaidi&postid=50109307408462#result");
+
+        mWebView.setWebViewClient(new WebViewClient(){
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                mWebView.loadUrl("javascript:$('.smart-header').remove();$('.adsbygoogle').hide();$('#result').css('padding-top','0px');" +
+                        "$('.smart-footer').remove();");
+//                mWebView.loadUrl("javascript:$('.adsbygoogle').hide();");
+//                mWebView.loadUrl("javascript:$('#result').css('padding-top','0px');");
+//                mWebView.loadUrl("javascript:$('.smart-footer').removeClass('ui-footer-fixed');");
+            }
+        });
         initExpandListView();
         return view;
     }

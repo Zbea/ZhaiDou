@@ -213,7 +213,7 @@
             </LinearLayout>
 
             <RelativeLayout
-                android:id="@+id/rl_coupons"
+                android:id="@+id/rl_taobao_order"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginTop="20dp"
@@ -243,7 +243,7 @@
                 android:background="#EEEEEE" />
 
             <RelativeLayout
-                android:id="@+id/rl_reward_history"
+                android:id="@+id/rl_competition"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginTop="20dp"

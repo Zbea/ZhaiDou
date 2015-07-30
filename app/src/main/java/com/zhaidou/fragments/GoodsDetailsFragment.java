@@ -202,7 +202,6 @@ public class GoodsDetailsFragment extends BaseFragment {
                     ((MainActivity) getActivity()).navigationToFragment(shopOrderOkFragment);
                     break;
                 case R.id.goodsAddBuyBtn:
-                    Log.i("goodsAddBuyBtn----------->","goodsAddBuyBtn");
                     int[] location = new int[2];
                     mTipView.getLocationInWindow(location);
                     Drawable drawable =mTipView.getDrawable();
