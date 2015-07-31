@@ -13,8 +13,8 @@
         android:layout_margin="@dimen/default_margin">
 
         <RelativeLayout
-            android:layout_width="@dimen/image_height_dimen"
-            android:layout_height="@dimen/image_width_dimen">
+            android:layout_width="@dimen/image_width_dimen"
+            android:layout_height="@dimen/image_height_dimen">
 
             <ImageView
                 android:id="@+id/shopGoodsImage"

@@ -17,11 +17,19 @@ import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.fragments.SettingFragment;
 import com.zhaidou.fragments.StrategyFragment;
 import com.zhaidou.fragments.WebViewFragment;
+import com.zhaidou.model.CartItem;
 import com.zhaidou.model.User;
+import com.zhaidou.sqlite.CreatCartDB;
+import com.zhaidou.sqlite.CreatCartTools;
 import com.zhaidou.utils.SharedPreferencesUtil;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,6 +47,9 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  */
@@ -77,6 +88,22 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     private long mTime;
     private Activity mContext;
+    private CreatCartDB creatCartDB;
+    public static int num=0;
+    private List<CartItem> items=new ArrayList<CartItem>();
+
+    private BroadcastReceiver broadcastReceiver=new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            String action=intent.getAction();
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
+            {
+                initCartTips();
+            }
+        }
+    };
 
     private Handler mHandler =new Handler(){
         @Override
@@ -106,6 +133,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main_layout);
         mContext=this;
+        initBroadcastReceiver();
         init();
         AlibabaSDK.asyncInit(this,new InitResultCallback() {
             @Override
@@ -122,8 +150,43 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         initComponents();
     }
 
-    public void init() {
+    /**
+     * 注册广播
+     */
+    private void initBroadcastReceiver()
+    {
+        IntentFilter intentFilter=new IntentFilter();
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+        mContext.registerReceiver(broadcastReceiver,intentFilter);
+    }
 
+    public void init()
+    {
+        creatCartDB=new CreatCartDB(mContext);
+        initCartTips();
+    }
+
+    /**
+     * 红色标识提示显示数量
+     */
+    private void initCartTips()
+    {
+        num=0;
+        items=CreatCartTools.selectByAll(creatCartDB);
+        for (int i = 0; i <items.size() ; i++)
+        {
+            if (items.get(i).isPublish.equals("true"))
+            {
+                items.remove(items.get(i));
+            }
+        }
+        if (items.size()>0)
+        {
+            for (int i = 0; i < items.size(); i++)
+            {
+                num=num+items.get(i).num;
+            }
+        }
     }
 
     public void initComponents() {
@@ -364,7 +427,7 @@ Log.i("selectFragment---->","selectFragment1");
 
     @Override
     protected void onDestroy() {
-        Log.i("onDestroy------------->","onDestroy");
+        unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 

@@ -2,8 +2,10 @@ package com.zhaidou.fragments;
 
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -72,7 +74,7 @@ public class ShopSpecialFragment extends BaseFragment
     private final static int UPDATE_BANNER = 1003;
 
     private TypeFaceTextView backBtn, titleTv;
-    private TextView myCartTips;
+    private TextView cartTipsTv;
     private ImageView myCartBtn;
     private PullToRefreshScrollView mScrollView;
     private ListViewForScrollView mListView;
@@ -88,6 +90,20 @@ public class ShopSpecialFragment extends BaseFragment
     private int currentItem = 5000;
     boolean nowAction = false;
     boolean isStop = true;
+
+
+    private BroadcastReceiver broadcastReceiver=new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            String action=intent.getAction();
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
+            {
+                initCartTips();
+            }
+        }
+    };
 
 
     private Handler handler = new Handler()
@@ -204,6 +220,7 @@ public class ShopSpecialFragment extends BaseFragment
                              Bundle savedInstanceState)
     {
         mContext = getActivity();
+        initBroadcastReceiver();
         if(mView==null)
         {
             mView = inflater.inflate(R.layout.shop_special_page, container, false);
@@ -220,6 +237,16 @@ public class ShopSpecialFragment extends BaseFragment
     }
 
     /**
+     * 注册广播
+     */
+    private void initBroadcastReceiver()
+    {
+        IntentFilter intentFilter=new IntentFilter();
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+        mContext.registerReceiver(broadcastReceiver,intentFilter);
+    }
+
+    /**
      * 初始化数据
      */
     private void initView()
@@ -230,7 +257,6 @@ public class ShopSpecialFragment extends BaseFragment
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(R.string.home_shop_special_text);
 
-        mScrollView = (PullToRefreshScrollView) mView.findViewById(R.id.scrollview);
         mScrollView = (PullToRefreshScrollView)mView.findViewById(R.id.sv_special_scrollview);
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         mScrollView.setOnRefreshListener(refreshListener);
@@ -240,15 +266,34 @@ public class ShopSpecialFragment extends BaseFragment
         mListView.setAdapter(adapter);
         mListView.setOnItemClickListener(onItemClickListener);
 
-        myCartTips = (TextView) mView.findViewById(R.id.myCartTipsTv);
         myCartBtn = (ImageView) mView.findViewById(R.id.myCartBtn);
         myCartBtn.setOnClickListener(onClickListener);
+        cartTipsTv=(TextView)mView.findViewById(R.id.myCartTipsTv);
+
 
         viewPager = (ViewPager) mView.findViewById(R.id.home_adv_pager);
 
 
         mRequestQueue = Volley.newRequestQueue(mContext);
+        initCartTips();
 
+
+    }
+
+    /**
+     * 红色标识提示显示数量
+     */
+    private void initCartTips()
+    {
+        if (MainActivity.num>0)
+        {
+            cartTipsTv.setVisibility(View.VISIBLE);
+            cartTipsTv.setText(""+MainActivity.num);
+        }
+        else
+        {
+            cartTipsTv.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -443,7 +488,6 @@ public class ShopSpecialFragment extends BaseFragment
             @Override
             public void onErrorResponse(VolleyError volleyError)
             {
-                Toast.makeText(mContext, "抱歉,轮播图加载失败", Toast.LENGTH_SHORT).show();
             }
         });
         mRequestQueue.add(bannerRequest);
@@ -496,7 +540,7 @@ public class ShopSpecialFragment extends BaseFragment
             public void onErrorResponse(VolleyError error)
             {
                 mDialog.dismiss();
-                Toast.makeText(mContext, "抱歉,特卖列表加载失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "加载失败", Toast.LENGTH_SHORT).show();
                 mScrollView.onRefreshComplete();
                 mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
             }
@@ -557,6 +601,7 @@ public class ShopSpecialFragment extends BaseFragment
     public void onDestroy()
     {
         isStop = false;
+        mContext.unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 

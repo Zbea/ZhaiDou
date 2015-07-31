@@ -834,7 +834,7 @@ public class HomeFragment extends BaseFragment implements
     private void FetchShopData()
     {
         final String url;
-        url = ZhaiDou.shopSpecialListUrl+"&page="+1;
+        url = ZhaiDou.shopHomeSpecialUrl;
         JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override

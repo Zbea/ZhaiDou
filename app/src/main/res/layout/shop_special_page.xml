@@ -109,8 +109,9 @@
             android:layout_height="wrap_content"
             android:textColor="@color/white"
             android:layout_alignParentRight="true"
-            android:text="19"
+            android:text=""
             android:gravity="center"
+            android:visibility="gone"
             android:background="@drawable/shop_goods_my_cart_tips_red_bg"
             android:textSize="12sp"/>
     </RelativeLayout>

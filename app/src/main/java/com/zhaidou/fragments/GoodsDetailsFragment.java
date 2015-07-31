@@ -1,6 +1,13 @@
 package com.zhaidou.fragments;
 
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,13 +36,18 @@ import com.pulltorefresh.PullToRefreshBase;
 import com.viewpagerindicator.TabPageIndicator;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.adapter.GoodsImageAdapter;
 import com.zhaidou.adapter.SpecificationAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
+import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.model.CartItem;
 import com.zhaidou.model.GoodDetail;
 import com.zhaidou.model.GoodInfo;
 import com.zhaidou.model.Specification;
+import com.zhaidou.sqlite.CreatCartDB;
+import com.zhaidou.sqlite.CreatCartTools;
 import com.zhaidou.utils.CollectionUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ChildGridView;
@@ -43,6 +56,7 @@ import com.zhaidou.view.TypeFaceTextView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,34 +71,60 @@ public class GoodsDetailsFragment extends BaseFragment {
     private int mIndex;
     private View mView;
     private Context mContext;
+    private Dialog mDialog;
+
+    private CreatCartDB creatCartDB;
+    private List<CartItem> items=new ArrayList<CartItem>();
 
     private TypeFaceTextView backBtn,titleTv;
     private ImageView[] dots;
     private List<View> adPics = new ArrayList<View>();
     private ViewPager viewPager;
     private LinearLayout viewGroupe;//指示器容器
-    private LinearLayout myCartBtn,ljBtn,addCartBtn;
+    private LinearLayout ljBtn,addCartBtn;
+    private RelativeLayout myCartBtn;
+    private TextView cartTipsTv;
 
     private GridView mGridView;
     private RequestQueue mRequestQueue;
     private TabPageIndicator mTabPageIndicator;
     private ViewPager mViewPager;
     private List<GoodInfo> goodInfos = new ArrayList<GoodInfo>();
-    private int mSpecificationSelectPosition=0;
+    private int mSpecificationSelectPosition=-1;
+    private Specification mSpecification;//选中规格
 
     private TextView tv_comment,mCurrentPrice,mOldPrice,mDiscount,mTitle;
 
     private static final int UPDATE_GOOD_DETAIL=0;
 
-    SpecificationAdapter specificationAdapter;
+    private SpecificationAdapter specificationAdapter;//规格适配器
+    private GoodDetail detail;
+
+
+
+    private BroadcastReceiver broadcastReceiver=new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            String action=intent.getAction();
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
+            {
+                initCartTips();
+            }
+        }
+    };
 
     private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
-            Log.i("handleMessage------------>", msg.what + "");
             switch (msg.what){
                 case UPDATE_GOOD_DETAIL:
-                    GoodDetail detail=(GoodDetail)msg.obj;
+                    if (mDialog!=null)
+                    {
+                        mDialog.dismiss();
+                    }
+                    detail=(GoodDetail)msg.obj;
                     mCurrentPrice.setText("￥"+detail.getPrice()+"");
                     mOldPrice.setText("￥"+detail.getCost_price()+"");
                     tv_comment.setText(detail.getDesigner());
@@ -106,31 +146,10 @@ public class GoodsDetailsFragment extends BaseFragment {
         @Override
         public void onPullDownToRefresh(PullToRefreshBase refreshView)
         {
-//            new Handler().postDelayed(new Runnable()
-//            {
-//                @Override
-//                public void run()
-//                {
-//                    mScrollView.onRefreshComplete();
-//                    items.removeAll(items);
-//                    initDate();
-//                    adapter.notifyDataSetChanged();
-//                }
-//            },2000);
         }
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView)
         {
-//            new Handler().postDelayed(new Runnable()
-//            {
-//                @Override
-//                public void run()
-//                {
-//                    mScrollView.onRefreshComplete();
-//                    initDate();
-//                    adapter.notifyDataSetChanged();
-//                }
-//            },2000);
         }
     };
 
@@ -170,12 +189,16 @@ public class GoodsDetailsFragment extends BaseFragment {
                     ((MainActivity)getActivity()).navigationToFragment(shopCartFragment);
                     break;
                 case R.id.goodsLjBuyBtn:
-                    ShopOrderOkFragment shopOrderOkFragment=ShopOrderOkFragment.newInstance("",0);
-                    ((MainActivity)getActivity()).navigationToFragment(shopOrderOkFragment);
+                    buyGoods();
+                    break;
+                case R.id.goodsAddBuyBtn:
+                    addGoods();
                     break;
             }
         }
     };
+
+
 
     public static GoodsDetailsFragment newInstance(String page, int index) {
         GoodsDetailsFragment fragment = new GoodsDetailsFragment();
@@ -200,26 +223,32 @@ public class GoodsDetailsFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mView=inflater.inflate(R.layout.goods_details_page, container, false);
         mContext=getActivity();
+        initBroadcastReceiver();
 
-        initView();
+        if(mView==null)
+        {
+            mView=inflater.inflate(R.layout.goods_details_page, container, false);
+            initView();
+        }
+        //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
+        ViewGroup parent = (ViewGroup) mView.getParent();
+        if (parent != null)
+        {
+            parent.removeView(mView);
+        }
 
-        mTabPageIndicator=(TabPageIndicator)mView.findViewById(R.id.tab_goods_detail);
-        mViewPager=(ViewPager)mView.findViewById(R.id.vp_goods_detail);
-        mViewPager.setAdapter(new GoodsDetailFragmentAdapter(getChildFragmentManager(),goodInfos));
-        mTabPageIndicator.setViewPager(mViewPager);
-        specificationAdapter=new SpecificationAdapter(getActivity(),new ArrayList<Specification>(),mSpecificationSelectPosition);
-        mGridView.setAdapter(specificationAdapter);
-
-        specificationAdapter.setOnInViewClickListener(R.id.sizeTitleTv,new BaseListAdapter.onInternalClickListener() {
-            @Override
-            public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                specificationAdapter.setCheckPosition(mSpecificationSelectPosition=position);
-                specificationAdapter.notifyDataSetChanged();
-            }
-        });
         return mView;
+    }
+
+    /**
+     * 注册广播
+     */
+    private void initBroadcastReceiver()
+    {
+        IntentFilter intentFilter=new IntentFilter();
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+        mContext.registerReceiver(broadcastReceiver,intentFilter);
     }
 
 
@@ -228,6 +257,7 @@ public class GoodsDetailsFragment extends BaseFragment {
      */
     private void initView()
     {
+        mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"loading");
 
         backBtn=(TypeFaceTextView)mView.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(onClickListener);
@@ -239,7 +269,7 @@ public class GoodsDetailsFragment extends BaseFragment {
 
         mGridView=(ChildGridView)mView.findViewById(R.id.gv_specification);
 
-        myCartBtn=(LinearLayout)mView.findViewById(R.id.goodsMyCartBtn);
+        myCartBtn=(RelativeLayout)mView.findViewById(R.id.goodsMyCartBtn);
         myCartBtn.setOnClickListener(onClickListener);
         ljBtn=(LinearLayout)mView.findViewById(R.id.goodsLjBuyBtn);
         ljBtn.setOnClickListener(onClickListener);
@@ -255,11 +285,65 @@ public class GoodsDetailsFragment extends BaseFragment {
         mDiscount=(TextView)mView.findViewById(R.id.tv_discount);
         mTitle=(TextView)mView.findViewById(R.id.tv_title);
 
+        cartTipsTv=(TextView)mView.findViewById(R.id.myCartTipsTv);
+
         mRequestQueue= Volley.newRequestQueue(getActivity());
 
-        initData(null);
+        creatCartDB=new CreatCartDB(mContext);
+        initCartTips();
+
+        mTabPageIndicator=(TabPageIndicator)mView.findViewById(R.id.tab_goods_detail);
+        mViewPager=(ViewPager)mView.findViewById(R.id.vp_goods_detail);
+        mViewPager.setAdapter(new GoodsDetailFragmentAdapter(getChildFragmentManager(),goodInfos));
+        mTabPageIndicator.setViewPager(mViewPager);
+        specificationAdapter=new SpecificationAdapter(mContext,new ArrayList<Specification>(),mSpecificationSelectPosition);
+        mGridView.setAdapter(specificationAdapter);
+
+        specificationAdapter.setOnInViewClickListener(R.id.sizeTitleTv,new BaseListAdapter.onInternalClickListener() {
+            @Override
+            public void OnClickListener(View parentV, View v, Integer position, Object values)
+            {
+                specificationAdapter.setCheckPosition(mSpecificationSelectPosition=position);
+                specificationAdapter.notifyDataSetChanged();
+                if (detail!=null)
+                {
+                  mSpecification=detail.getSpecifications().get(position);
+                }
+            }
+        });
+
+//        initData(null);
         FetchDetailData();
 
+    }
+
+    /**
+     * 红色标识提示显示数量
+     */
+    private void initCartTips()
+    {
+        items=CreatCartTools.selectByAll(creatCartDB);
+        for (int i = 0; i <items.size() ; i++)
+        {
+            if (items.get(i).isPublish.equals("true"))
+            {
+                items.remove(items.get(i));
+            }
+        }
+        if (items.size()>0)
+        {
+            int num=0;
+            for (int i = 0; i < items.size(); i++)
+            {
+                num=num+items.get(i).num;
+            }
+            cartTipsTv.setVisibility(View.VISIBLE);
+            cartTipsTv.setText(""+num);
+        }
+        else
+        {
+            cartTipsTv.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -322,13 +406,115 @@ public class GoodsDetailsFragment extends BaseFragment {
         }
     }
 
+    /**
+     * 立即购买
+     */
+    private void buyGoods()
+    {
+        if (detail!=null)
+        if (mSpecification!=null)
+        {
+            CartItem cartItem=new CartItem();
+            cartItem.id=detail.getId();
+            cartItem.name=detail.getTitle();
+            cartItem.creatTime=System.currentTimeMillis();
+            cartItem.imageUrl=detail.getImgs().get(0);
+            cartItem.currentPrice=detail.getPrice();
+            cartItem.formalPrice=detail.getCost_price();
+            DecimalFormat df = new DecimalFormat("##.0");
+            double saveMoney=Double.parseDouble(df.format(detail.getCost_price() - detail.getPrice()));
+            cartItem.saveMoney=saveMoney;
+            cartItem.saveTotalMoney=saveMoney;
+            cartItem.totalMoney=detail.getPrice();
+            cartItem.num=1;
+            cartItem.size=mSpecification.getTitle();
+            cartItem.sizeId=mSpecification.getId();
+            cartItem.isPublish="false";
+
+            ArrayList<CartItem> itemsCheck=new ArrayList<CartItem>();
+            itemsCheck.add(cartItem);
+
+            ShopOrderOkFragment shopOrderOkFragment = ShopOrderOkFragment.newInstance("", 0);
+            Bundle bundle=new Bundle();
+            bundle.putSerializable("goodsList",itemsCheck);
+            shopOrderOkFragment.setArguments(bundle);
+            ((MainActivity) getActivity()).navigationToFragment(shopOrderOkFragment);
+
+        }
+        else
+        {
+            Toast.makeText(mContext,"抱歉,先选择规格",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * 添加商品
+     */
+    private void addGoods()
+    {
+        if(detail!=null)
+        {
+            if (mSpecification!=null)
+            {
+                items= CreatCartTools.selectByAll(creatCartDB);
+                CartItem cartItem=new CartItem();
+                cartItem.id=detail.getId();
+                cartItem.name=detail.getTitle();
+                cartItem.creatTime=System.currentTimeMillis();
+                cartItem.imageUrl=detail.getImgs().get(0);
+                cartItem.currentPrice=detail.getPrice();
+                cartItem.formalPrice=detail.getCost_price();
+                DecimalFormat df = new DecimalFormat("##.0");
+                double saveMoney=Double.parseDouble(df.format(detail.getCost_price() - detail.getPrice()));
+                cartItem.saveMoney=saveMoney;
+                cartItem.saveTotalMoney=saveMoney;
+                cartItem.totalMoney=detail.getPrice();
+                cartItem.num=1;
+                cartItem.size=mSpecification.getTitle();
+                cartItem.sizeId=mSpecification.getId();
+                cartItem.isPublish="false";
+
+                mDialog=CustomLoadingDialog.setLoadingDialog(mContext,"添加中");
+
+                CreatCartTools.insertByData(creatCartDB,items,cartItem);
+//                List<Specification> itemsSp=detail.getSpecifications();
+//                for (int i = 0; i <itemsSp.size() ; i++)
+//                {
+//                    if (mSpecification.getId() == itemsSp.get(i).getId())
+//                    {
+//                        itemsSp.get(i).num=itemsSp.get(i).num-1;
+//                    }
+//                }
+
+                new Handler().postDelayed(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        mDialog.dismiss();
+                        //发送广播
+                        Intent intent=new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
+                        mContext.sendBroadcast(intent);
+                    }
+                },1000);
+            }
+            else
+            {
+                Toast.makeText(mContext,"抱歉,先选择规格",Toast.LENGTH_SHORT).show();
+            }
+
+        }
+    }
+
+
+
     public void FetchDetailData(){
-        JsonObjectRequest request=new JsonObjectRequest("http://192.168.199.173/special_mall/api/merchandises/6",new Response.Listener<JSONObject>() {
+                String url="http://192.168.199.173/special_mall/api/merchandises/"+mIndex;
+        JsonObjectRequest request=new JsonObjectRequest(url,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
 
                 if (jsonObject!=null){
-                    Log.i("jsonObject!=null---------------------->",jsonObject.toString());
                     JSONObject merchandise=jsonObject.optJSONObject("merchandise");
                     int id=merchandise.optInt("id");
                     String title=merchandise.optString("title");
@@ -373,6 +559,10 @@ public class GoodsDetailsFragment extends BaseFragment {
         },new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
+                if (mDialog!=null)
+                {
+                    mDialog.dismiss();
+                }
                 Toast.makeText(getActivity(),"网络异常",Toast.LENGTH_SHORT).show();
             }
         });
@@ -410,5 +600,12 @@ public class GoodsDetailsFragment extends BaseFragment {
             return "咨询与售后服务";
         }
 
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        mContext.unregisterReceiver(broadcastReceiver);
     }
 }

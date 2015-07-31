@@ -7,11 +7,15 @@ import java.io.Serializable;
  */
 public class CartItem implements Serializable
 {
-
+    //商品id
     public int id;
+    //名称
     public String name;
+    //图片地址
     public String imageUrl;
+    //现价
     public double currentPrice;
+    //原价
     public double formalPrice;
     //省钱数单价
     public double saveMoney;
@@ -26,6 +30,33 @@ public class CartItem implements Serializable
     //规格id
     public int sizeId;
     //是否下架
-    public boolean isPublish;
+    public String isPublish;
+    //是否选中
+    public boolean isCheck;
+    //生成时间
+    public long creatTime;
 
+    public CartItem(int id, long creatTime, String name, String imageUrl, double currentPrice,
+                    double formalPrice,double saveMoney, double saveTotalMoney, double totalMoney,
+                    int num, String size, int sizeId, String isPublish, boolean isCheck)
+    {
+        this.id = id;
+        this.creatTime = creatTime;
+        this.name = name;
+        this.imageUrl = imageUrl;
+        this.currentPrice = currentPrice;
+        this.formalPrice = formalPrice;
+        this.saveMoney = saveMoney;
+        this.saveTotalMoney = saveTotalMoney;
+        this.totalMoney = totalMoney;
+        this.num = num;
+        this.size = size;
+        this.sizeId = sizeId;
+        this.isPublish = isPublish;
+        this.isCheck = isCheck;
+    }
+
+    public CartItem()
+    {
+    }
 }

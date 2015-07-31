@@ -2,7 +2,10 @@ package com.zhaidou.fragments;
 
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -78,6 +81,19 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private List<ShopTodayItem> items=new ArrayList<ShopTodayItem>();
     private ShopTodaySpecialAdapter adapter;
     private ShopSpecialItem shopSpecialItem;
+
+    private BroadcastReceiver broadcastReceiver=new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            String action=intent.getAction();
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
+            {
+                initCartTips();
+            }
+        }
+    };
 
 
     private Handler handler = new Handler()
@@ -156,7 +172,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
         {
-            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(i).title, 0);
+            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(i).title, items.get(i).id);
             ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
         }
     };
@@ -209,6 +225,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                              Bundle savedInstanceState) {
 
         mContext=getActivity();
+        initBroadcastReceiver();
         if(mView==null)
         {
             mView=inflater.inflate(R.layout.shop_today_special_page, container, false);
@@ -225,20 +242,20 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     }
 
     /**
+     * 注册广播
+     */
+    private void initBroadcastReceiver()
+    {
+        IntentFilter intentFilter=new IntentFilter();
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+        mContext.registerReceiver(broadcastReceiver,intentFilter);
+    }
+
+    /**
      * 初始化数据
      */
     private void initDate()
     {
-//        if (items.size()>0 )
-//        {
-//            introduceTv.setText(introduce);
-//            adapter.notifyDataSetChanged();
-//            mDialog.dismiss();
-//        }
-//        else
-//        {
-//            FetchData(id);
-//        }
         FetchData(id);
     }
 
@@ -275,6 +292,24 @@ public class ShopTodaySpecialFragment extends BaseFragment {
 
         mRequestQueue= Volley.newRequestQueue(mContext);
 
+        initCartTips();
+
+    }
+
+    /**
+     * 红色标识提示显示数量
+     */
+    private void initCartTips()
+    {
+        if (MainActivity.num>0)
+        {
+            myCartTips.setVisibility(View.VISIBLE);
+            myCartTips.setText(""+MainActivity.num);
+        }
+        else
+        {
+            myCartTips.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -371,6 +406,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     @Override
     public void onDestroy()
     {
+        mContext.unregisterReceiver(broadcastReceiver);
         super.onDestroy();
         if (mTimer!=null)
         {

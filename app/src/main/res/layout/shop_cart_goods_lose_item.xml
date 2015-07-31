@@ -4,7 +4,6 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:background="@drawable/item_click_selector"
     >
 
     <LinearLayout
@@ -13,13 +12,9 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical">
 
-        <CheckBox
-            android:layout_width="22dp"
-            android:layout_height="50dp"
-            android:layout_marginLeft="10dp"
-            android:layout_weight="0.00001"
-            style="@style/CustomCheckboxTheme"
-            android:id="@+id/chatItemCB"/>
+        <TextView
+            android:layout_width="32dp"
+            android:layout_height="wrap_content"/>
 
         <ImageView
             android:id="@+id/cartImageItemTv"
@@ -94,24 +89,18 @@
 
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/cartItemSubBtn"
-                    android:layout_width="30dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/shop_cart_sub_selector"/>
+                    android:textColor="@color/text_gary_color"
+                    android:text="数量："/>
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/cartItemNum"
-                    android:layout_width="40dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:gravity="center"
                     android:textColor="@color/text_gary_color"
-                    android:text="1"
-                    android:background="@drawable/shop_cart_num"/>
-                <com.zhaidou.view.TypeFaceTextView
-                    android:id="@+id/cartItemAddBtn"
-                    android:layout_width="30dp"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:background="@drawable/shop_cart_add_selector"/>
+                    android:text="1"/>
 
                 </LinearLayout>
 

@@ -321,36 +321,45 @@
         android:layout_width="fill_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
-        android:paddingLeft="@dimen/default_margin"
-        android:paddingRight="@dimen/default_margin"
-        android:paddingTop="@dimen/default_margin"
-        android:paddingBottom="@dimen/default_margin"
+        android:padding="@dimen/default_margin"
         android:background="@color/white">
 
-        <LinearLayout
+
+
+        <RelativeLayout
             android:id="@+id/goodsMyCartBtn"
-            android:layout_width="60dp"
+            android:layout_width="70dp"
+            android:layout_marginRight="30dp"
+            android:padding="2dp"
             android:layout_height="match_parent"
             android:clickable="true"
-            android:layout_weight="0.00001"
-            android:gravity="center"
-            android:layout_marginRight="@dimen/default_margin"
-            android:orientation="horizontal"
             android:background="@drawable/btn_green_click_bg">
 
+            <TextView
+                android:id="@+id/myCartTipsTv"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:textColor="@color/white"
+                android:layout_alignParentRight="true"
+                android:text=""
+                android:visibility="gone"
+                android:gravity="center"
+                android:background="@drawable/shop_goods_my_cart_tips_red_bg"
+                android:textSize="12sp"/>
+
             <ImageView
-                android:layout_gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
                 android:src="@drawable/icon_shopping_cart"/>
-            </LinearLayout>
+            </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/goodsLjBuyBtn"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clickable="true"
-            android:layout_marginRight="@dimen/default_margin"
+            android:layout_marginRight="5dp"
             android:layout_weight="1"
             android:gravity="center"
             android:background="@drawable/btn_green_click_bg">
@@ -369,6 +378,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clickable="true"
+            android:layout_marginLeft="5dp"
             android:layout_weight="1"
             android:gravity="center"
             android:background="@drawable/btn_red_click_selector">

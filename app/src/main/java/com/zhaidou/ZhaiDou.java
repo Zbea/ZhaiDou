@@ -33,6 +33,8 @@ public class ZhaiDou {
     //文章页面
     public static String ARTICLE_DETAIL_URL=HOME_BASE_URL+"article/articles/";
 
+    //特卖首页
+    public static String shopHomeSpecialUrl="http://192.168.199.173/special_mall/api/sales/new_sale";
     //特卖banner
     public static String shopSpecialBannerUrl="http://192.168.199.173/special_mall/api/sales/sale_banner?status=";
     //特卖列表
@@ -83,10 +85,19 @@ public class ZhaiDou {
         HOME,
         TAG,
     }
+    //广播标识集合
     /**
-     * 广播标识集合
+     * 首页点击标识刷新
      */
     public static String IntentRefreshListTag="com.zhaidou.home.refesh.list";
+    /**
+     *  购物车商品刷新
+     */
+    public static String IntentRefreshCartGoodsTag="com.zhaidou.home.refesh.cart.goods";
+    /**
+     * 购物车选中商品刷新
+     */
+    public static String IntentRefreshCartGoodsCheckTag="com.zhaidou.home.refesh.cart.goods.check";
 
 }
 //http://192.168.1.45/article/api/article_categories?catetory_id=13

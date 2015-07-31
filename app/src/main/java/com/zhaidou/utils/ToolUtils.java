@@ -1,8 +1,10 @@
 package com.zhaidou.utils;
 
+import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -66,6 +68,12 @@ public class ToolUtils
     public static final void setLog(String msg)
     {
         Log.i("zhaidou",msg);
+    }
+
+
+    public static final void setToast(Context mContext,String msg)
+    {
+        Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
     }
 
 }
