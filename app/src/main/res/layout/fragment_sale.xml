@@ -29,6 +29,7 @@
         android:layout_height="0.5dp"
         android:background="#EEEEEE"/>
     <RelativeLayout
+        android:id="@+id/rl_qq_contact"
         android:layout_width="match_parent"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="10dp"

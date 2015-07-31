@@ -393,6 +393,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginTop="20dp"
+                android:visibility="gone"
                 android:background="@color/white">
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"

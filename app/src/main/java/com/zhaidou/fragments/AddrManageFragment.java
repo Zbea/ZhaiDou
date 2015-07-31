@@ -4,22 +4,36 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.base.BaseListAdapter;
+import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.model.Address;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -29,6 +43,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -70,7 +85,23 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     private AddressListener addressListener;
 
     private Dialog mDialog;
-
+    private RequestQueue mRequestQueue;
+    private ListView mListview;
+    private AddressAdapter addressAdapter;
+    private List<Address> addressList=new ArrayList<Address>();
+    private final int UPDATE_ADDRESS_LIST=0;
+    private int mCheckedPosition=0;
+    private View rootView;
+    private Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case UPDATE_ADDRESS_LIST:
+                    addressAdapter.notifyDataSetChanged();
+                    break;
+            }
+        }
+    };
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -107,47 +138,48 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view=inflater.inflate(R.layout.fragment_addr_manage, container, false);
-        Log.i("onCreateView---->",mNickName+"---"+mMobile+"---"+mAddress);
-        ll_manage_address=(LinearLayout)view.findViewById(R.id.ll_manage_address);
-        ll_edit_addr=(LinearLayout)view.findViewById(R.id.ll_edit_addr);
-        et_name=(EditText)view.findViewById(R.id.et_addr_name);
-        et_addr=(EditText)view.findViewById(R.id.et_addr);
-        et_mobile=(EditText)view.findViewById(R.id.et_mobile);
-        tv_addr=(TextView)view.findViewById(R.id.tv_addr);
-        tv_delete=(TextView)view.findViewById(R.id.tv_delete);
-        tv_addr_mobile=(TextView)view.findViewById(R.id.tv_addr_mobile);
-        tv_addr_username=(TextView)view.findViewById(R.id.tv_addr_username);
-        tv_save=(TextView)view.findViewById(R.id.tv_save);
-        tv_edit=(TextView)view.findViewById(R.id.tv_edit);
-        tv_save.setOnClickListener(this);
-        tv_edit.setOnClickListener(this);
-        tv_delete.setOnClickListener(this);
-        if (TextUtils.isEmpty(mNickName)||TextUtils.isEmpty(mMobile)||TextUtils.isEmpty(mAddress)){
-            ll_edit_addr.setVisibility(View.VISIBLE);
-            ll_manage_address.setVisibility(View.GONE);
-        }else {
-            ll_edit_addr.setVisibility(View.GONE);
-            ll_manage_address.setVisibility(View.VISIBLE);
-            tv_addr_username.setText(mNickName);
-            tv_addr_mobile.setText(mMobile);
-            tv_addr.setText(mAddress);
+        Log.i("onCreateView----------------->","onCreateView");
+        if (null != rootView) {
+            ViewGroup parent = (ViewGroup) rootView.getParent();
+            if (null != parent) {
+                parent.removeView(rootView);
+            }
+        } else {
+            rootView = inflater.inflate(R.layout.fragment_addr_manage,container, false);
+            initView(rootView);
         }
-
-        if (mStatus==1){
-            ll_edit_addr.setVisibility(View.VISIBLE);
-            ll_manage_address.setVisibility(View.GONE);
-            et_addr.setHint(mAddress);
-            et_mobile.setHint(mMobile);
-            et_name.setHint(mNickName);
-        }
-
-        mSharedPreferences=getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
-        token=mSharedPreferences.getString("token", null);
-        return view;
+        return rootView;
     }
 
+    private void initView(View view){
+        mListview=(ListView)view.findViewById(R.id.lv_addresses);
+        addressAdapter=new AddressAdapter(getActivity(),addressList);
+        mListview.setAdapter(addressAdapter);
+        view.findViewById(R.id.bt_new_address).setOnClickListener(this);
+        mRequestQueue= Volley.newRequestQueue(getActivity());
+        mSharedPreferences=getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
+        token=mSharedPreferences.getString("token", null);
+        FetchData();
+        addressAdapter.setOnInViewClickListener(R.id.tv_defalue_addr,new BaseListAdapter.onInternalClickListener() {
+            @Override
+            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                mCheckedPosition=position;
+                addressAdapter.notifyDataSetChanged();
+            }
+        });
+        addressAdapter.setOnInViewClickListener(R.id.tv_delete,new BaseListAdapter.onInternalClickListener() {
+            @Override
+            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                ShowToast("删除");
+            }
+        });
+        addressAdapter.setOnInViewClickListener(R.id.tv_edit,new BaseListAdapter.onInternalClickListener() {
+            @Override
+            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                ShowToast("编辑");
+            }
+        });
+    }
     @Override
     public void onClick(View view) {
         switch (view.getId()){
@@ -183,6 +215,10 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 Log.i("tv_addr_username.getText().toString()--->",tv_addr_username.getText().toString());
                 Log.i("tv_addr_mobile.getText().toString()--->",tv_addr_mobile.getText().toString());
                 new MyTask().execute(tv_addr_username.getText().toString(),tv_addr_mobile.getText().toString(),"",mProfileId);
+                break;
+            case R.id.bt_new_address:
+                NewAddrFragment newAddrFragment=NewAddrFragment.newInstance("","","","",0);
+                ((MainActivity)getActivity()).navigationToFragment(newAddrFragment);
                 break;
         }
     }
@@ -286,5 +322,69 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
 
     public interface AddressListener{
         public void onAddressDataChange(String name,String mobile,String address);
+    }
+
+
+    private void FetchData(){
+        JsonObjectRequest request=new JsonObjectRequest("http://192.168.199.173/special_mall/api/receivers",new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                Log.i("AddrManageFragment------------>",jsonObject.toString());
+                JSONArray receiversArr=jsonObject.optJSONArray("receivers");
+                if (receiversArr!=null&&receiversArr.length()>0){
+                    for (int i=0;i<receiversArr.length();i++){
+                        JSONObject receiverObj = receiversArr.optJSONObject(i);
+                        String phone=receiverObj.optString("phone");
+                        int user_id=receiverObj.optInt("user_id");
+                        String addr=receiverObj.optString("address");
+                        String name=receiverObj.optString("name");
+                        Address address=new Address();
+                        address.setAddress(addr);
+                        address.setName(name);
+                        address.setUser_id(user_id);
+                        address.setPhone(phone);
+                        addressList.add(address);
+                    }
+                    handler.sendEmptyMessage(UPDATE_ADDRESS_LIST);
+                }
+            }
+        },new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Toast.makeText(getActivity(),"网络异常",Toast.LENGTH_SHORT).show();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                if (!TextUtils.isEmpty(token))
+                    headers.put("SECAuthorization","Yk77mfWaq_xYyeEibAxx");
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
+    }
+
+    public class AddressAdapter extends BaseListAdapter<Address> {
+        public AddressAdapter(Context context, List<Address> list) {
+            super(context, list);
+        }
+
+        @Override
+        public View bindView(int position, View convertView, ViewGroup parent) {
+            if (convertView==null)
+                convertView=mInflater.inflate(R.layout.item_addresses_list,null);
+            TextView tv_name = ViewHolder.get(convertView, R.id.tv_addr_username);
+            TextView tv_mobile = ViewHolder.get(convertView, R.id.tv_addr_mobile);
+            TextView tv_addr= ViewHolder.get(convertView, R.id.tv_addr);
+            TextView tv_defalue=ViewHolder.get(convertView,R.id.tv_defalue_addr);
+            Address address=getList().get(position);
+            tv_name.setText(address.getName());
+            tv_mobile.setText(address.getPhone());
+            tv_addr.setText(address.getAddress());
+            mCheckedPosition=address.isIs_default()?position:0;
+            tv_defalue.setSelected(mCheckedPosition==position?true:false);
+            return convertView;
+        }
     }
 }

@@ -1,7 +1,6 @@
 package com.zhaidou.fragments;
 
 
-
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,9 +18,8 @@ import com.zhaidou.base.BaseFragment;
  * A simple {@link Fragment} subclass.
  * Use the {@link UnReceiveFragment#newInstance} factory method to
  * create an instance of this fragment.
- *
  */
-public class UnReceiveFragment extends BaseFragment implements View.OnClickListener{
+public class UnReceiveFragment extends BaseFragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -31,7 +29,7 @@ public class UnReceiveFragment extends BaseFragment implements View.OnClickListe
     private String mParam1;
     private String mParam2;
 
-    private TextView mLogisticsButton,mReceivedButton;
+    private TextView mLogisticsButton, mReceivedButton;
 
     /**
      * Use this factory method to create a new instance of
@@ -50,6 +48,7 @@ public class UnReceiveFragment extends BaseFragment implements View.OnClickListe
         fragment.setArguments(args);
         return fragment;
     }
+
     public UnReceiveFragment() {
         // Required empty public constructor
     }
@@ -67,9 +66,9 @@ public class UnReceiveFragment extends BaseFragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view=inflater.inflate(R.layout.fragment_un_receive, container, false);
-        mLogisticsButton=(TextView)view.findViewById(R.id.bt_logistics);
-        mReceivedButton=(TextView)view.findViewById(R.id.bt_received);
+        View view = inflater.inflate(R.layout.fragment_un_receive, container, false);
+        mLogisticsButton = (TextView) view.findViewById(R.id.bt_logistics);
+        mReceivedButton = (TextView) view.findViewById(R.id.bt_received);
         mLogisticsButton.setOnClickListener(this);
         mReceivedButton.setOnClickListener(this);
         return view;
@@ -77,37 +76,33 @@ public class UnReceiveFragment extends BaseFragment implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.bt_logistics:
-                LogisticsMsgFragment logisticsMsgFragment=LogisticsMsgFragment.newInstance("","");
-                ((MainActivity)getActivity()).navigationToFragment(logisticsMsgFragment);
+                LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "");
+                ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
                 break;
             case R.id.bt_received:
-                final Dialog dialog=new Dialog(getActivity(), R.style.custom_dialog);
+                final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
 
-                View view1= LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_receiced,null);
-                TextView cancelTv=(TextView)view1.findViewById(R.id.cancelTv);
-                cancelTv.setOnClickListener(new View.OnClickListener()
-                {
+                View view1 = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_receiced, null);
+                TextView cancelTv = (TextView) view1.findViewById(R.id.cancelTv);
+                cancelTv.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View view)
-                    {
+                    public void onClick(View view) {
                         dialog.dismiss();
                     }
                 });
 
-                TextView okTv=(TextView)view1.findViewById(R.id.okTv);
-                okTv.setOnClickListener(new View.OnClickListener()
-                {
+                TextView okTv = (TextView) view1.findViewById(R.id.okTv);
+                okTv.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View view)
-                    {
+                    public void onClick(View view) {
                         dialog.dismiss();
                     }
                 });
                 dialog.setCanceledOnTouchOutside(true);
                 dialog.setCancelable(true);
-                dialog.addContentView(view1,new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                dialog.addContentView(view1, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 dialog.show();
                 break;
         }
