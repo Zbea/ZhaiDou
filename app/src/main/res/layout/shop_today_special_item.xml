@@ -9,22 +9,23 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/image_height_dimen"
+        android:layout_height="wrap_content"
         android:layout_margin="@dimen/default_margin">
 
         <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
+            android:layout_width="@dimen/image_width_dimen"
+            android:layout_height="@dimen/image_height_dimen">
 
             <ImageView
                 android:id="@+id/shopGoodsImage"
-                android:layout_width="@dimen/image_height_dimen"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:scaleType="fitXY"
                 android:src="@drawable/icon_loading_defalut"/>
 
             <ImageView
                 android:id="@+id/shopGoodsImageNo"
-                android:layout_width="@dimen/image_height_dimen"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="gone"
                 android:src="@drawable/icon_loading_defalut_no"/>
@@ -85,8 +86,8 @@
                 android:layout_marginTop="5dp">
 
                 <ImageView
-                    android:layout_width="85dp"
-                    android:layout_height="16dp"
+                    android:layout_width="88dp"
+                    android:layout_height="17dp"
                     android:src="@drawable/shop_special_subclass_dester_icon"/>
 
                 <com.zhaidou.view.TypeFaceTextView
@@ -97,7 +98,7 @@
                     android:layout_marginTop="2dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/text_gary_color"
-                    android:text="                             哈哈"
+                    android:text=""
                     android:id="@+id/shopIntroduceItem"/>
 
 

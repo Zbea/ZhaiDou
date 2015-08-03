@@ -15,6 +15,8 @@ import java.util.List;
  */
 public class SpecificationAdapter extends BaseListAdapter<Specification>{
     int mCheckPosition=0;
+    boolean isCheck=false;
+
     public SpecificationAdapter(Context context, List<Specification> list,int checked) {
         super(context, list);
         mCheckPosition=checked;
@@ -27,11 +29,24 @@ public class SpecificationAdapter extends BaseListAdapter<Specification>{
         TextView tv_item = ViewHolder.get(convertView, R.id.sizeTitleTv);
         Specification specification=getList().get(position);
         tv_item.setText(specification.getTitle());
-        tv_item.setSelected(position==mCheckPosition?true:false);
+        if (position == mCheckPosition)
+        {
+            isCheck = true;
+            tv_item.setSelected(true);
+        }
+        else
+        {
+            tv_item.setSelected(false);
+        }
         return convertView;
     }
 
     public void setCheckPosition(int mCheckPosition) {
         this.mCheckPosition = mCheckPosition;
+    }
+
+    public boolean getChecK()
+    {
+        return isCheck;
     }
 }

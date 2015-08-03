@@ -15,10 +15,12 @@ import com.pulltorefresh.PullToRefreshBase;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.model.CartItem;
 import com.zhaidou.model.CountTime;
 import com.zhaidou.view.TypeFaceTextView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -43,6 +45,12 @@ public class ShopPaymentFailFragment extends BaseFragment {
     private TypeFaceTextView backBtn,titleTv;
     private TypeFaceTextView timeInfoTv;
     private Timer mTimer;
+
+    private ArrayList<CartItem> items;
+    private int num = 0;
+    private double money = 0;
+    private double moneyYF=0;
+    private double totalMoney = 0;
 
     /**
      * 下拉刷新
@@ -97,6 +105,10 @@ public class ShopPaymentFailFragment extends BaseFragment {
         if (getArguments() != null) {
             mPage = getArguments().getString(PAGE);
             mIndex = getArguments().getInt(INDEX);
+            items=(ArrayList<CartItem>)getArguments().getSerializable("goodsList");
+            num=getArguments().getInt("moneyNum");
+            money=getArguments().getDouble("money");
+            moneyYF=getArguments().getDouble("moneyYF");
         }
     }
 

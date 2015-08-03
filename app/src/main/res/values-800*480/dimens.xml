@@ -2,7 +2,8 @@
 <resources>
     <dimen name="home_item_dimen">135dp</dimen>
     <dimen name="goods_height_dimen">200dp</dimen>
-    <dimen name="image_height_dimen">100dp</dimen>
+    <dimen name="image_height_dimen">110dp</dimen>
+    <dimen name="image_width_dimen">104dp</dimen>
     <dimen name="goods_bottom_height_dimen">55dp</dimen>
     <dimen name="home_tips_dimen">45dp</dimen>
 </resources>

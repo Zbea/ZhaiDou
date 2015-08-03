@@ -151,6 +151,7 @@ public class GoodsDetailsChildFragment extends BaseFragment {
         },new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
+                if (volleyError!=null)
                 Toast.makeText(getActivity(),"网络异常",Toast.LENGTH_SHORT).show();
             }
         });

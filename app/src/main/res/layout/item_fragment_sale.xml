@@ -61,7 +61,7 @@
                 android:paddingLeft="5dp"
                 android:layout_width="wrap_content"
                 android:textColor="@color/red"
-                android:text="￥0元"
+                android:text="￥0"
                 android:id="@+id/tv_money"
                 android:layout_height="wrap_content" />
             <FrameLayout
@@ -76,11 +76,6 @@
                     android:singleLine="true"
                     android:textSize="10sp"
                     android:text="￥88元"/>
-                <View
-                    android:layout_width="35dp"
-                    android:layout_height="1dp"
-                    android:layout_gravity="center"
-                    android:background="@color/gray"/>
             </FrameLayout>
 
         </LinearLayout>

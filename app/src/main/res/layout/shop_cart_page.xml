@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/black">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/black">
 
     <include
         android:id="@+id/headLine"
@@ -12,86 +12,301 @@
         layout="@layout/head_style_page"></include>
 
     <LinearLayout
+        android:id="@+id/cartNullLine"
+        android:layout_below="@+id/headLine"
         android:layout_width="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_height="@dimen/goods_bottom_height_dimen"
-        android:background="@color/white"
-        android:orientation="horizontal"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:gravity="center_vertical">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/image_height_dimen"
+        android:gravity="center_horizontal"
+        >
 
-        <LinearLayout
-            android:layout_width="80dp"
-            android:layout_weight="0.0001"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical">
-
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="全选"
-                android:textColor="@color/text_main_color"
-                android:id="@+id/allCB"/>
-
-        </LinearLayout>
-        <RelativeLayout
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="10dp"
-            android:layout_weight="1"
-            android:gravity="center_vertical">
+            android:src="@drawable/icon_null_shop_cart"/>
 
-            <com.zhaidou.view.TypeFaceTextView
-                android:id="@+id/priceInfoTT"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_main_color"
-                android:layout_centerVertical="true"
-                android:text="总价："
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:marqueeRepeatLimit="marquee_forever"/>
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_main_color"
+            android:layout_marginTop="40dp"
+            android:text="购物车暂时为空"
+            android:textSize="16sp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:marqueeRepeatLimit="marquee_forever"/>
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_gary_color"
+            android:layout_marginTop="5dp"
+            android:text="快去挑点喜欢的宝贝吧"
+            android:textSize="13sp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:marqueeRepeatLimit="marquee_forever"/>
 
-            <com.zhaidou.view.TypeFaceTextView
-                android:id="@+id/priceTotalTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/red"
-                android:layout_toRightOf="@+id/priceInfoTT"
-                android:layout_centerVertical="true"
-                android:text="$ 40000"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:marqueeRepeatLimit="marquee_forever"/>
-            <com.zhaidou.view.TypeFaceTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:textSize="10sp"
-                android:textColor="@color/text_gary_color"
-                android:layout_below="@+id/priceTotalTv"
-                android:layout_alignLeft="@+id/priceTotalTv"
-                android:text="不包含运费"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:marqueeRepeatLimit="marquee_forever"/>
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/cartGgTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/red"
+            android:layout_marginTop="40dp"
+            android:clickable="true"
+            android:text="去逛逛"
+            android:textSize="15sp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="80dp"
+            android:paddingRight="80dp"
+            android:background="@drawable/shop_cart_gg_selector"
+            android:marqueeRepeatLimit="marquee_forever"/>
 
-            </RelativeLayout>
+    </LinearLayout>
 
-        <Button
-            android:id="@+id/okBuyBtn"
-            android:layout_width="120dp"
+    <RelativeLayout
+        android:layout_below="@+id/headLine"
+        android:id="@+id/cartContentLine"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.000001"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:textSize="18sp"
-            android:textColor="@color/white"
-            android:background="@drawable/btn_red_click_selector"
-            android:text="结算"/>
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/cartGoodsLine"
+                ></LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/line_color"></LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="10dp"
+                android:gravity="center_vertical|right"
+                android:background="@drawable/content_part_bg">
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_main_color"
+                    android:text="共"
+                    android:textSize="16sp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:marqueeRepeatLimit="marquee_forever"/>
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/cartNum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_main_color"
+                    android:text="0"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:textSize="16sp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:marqueeRepeatLimit="marquee_forever"/>
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_main_color"
+                    android:text="件商品"
+                    android:textSize="16sp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:marqueeRepeatLimit="marquee_forever"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cartLoseLine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center">
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_gary_color"
+                        android:text="以下商品已下架"
+                        android:layout_margin="20dp"
+                        android:textSize="18sp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:marqueeRepeatLimit="marquee_forever"/>
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/shop_cart_line_bg"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:id="@+id/cartGoodsLoseLine"
+                    ></LinearLayout>
+
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/shop_cart_line_bg"/>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="70dp"></LinearLayout>
 
         </LinearLayout>
+        </ScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_height="@dimen/goods_bottom_height_dimen"
+            android:background="@color/white"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="80dp"
+                android:layout_weight="0.0001"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <CheckBox
+                    android:layout_width="25dp"
+                    android:layout_height="wrap_content"
+                    style="@style/CustomCheckboxTheme"
+                    android:textColor="@color/text_main_color"
+                    android:id="@+id/allCB"/>
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_main_color"
+                    android:text="全选"
+                    android:layout_marginLeft="5dp"
+                    android:textSize="14sp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:marqueeRepeatLimit="marquee_forever"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center_vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/red"
+                        android:text="总价:"
+                        android:textSize="16sp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:marqueeRepeatLimit="marquee_forever"/>
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:id="@+id/moneyTotalTv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/red"
+                        android:textSize="16sp"
+                        android:text="￥0.0"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:marqueeRepeatLimit="marquee_forever"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:orientation="horizontal">
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="13sp"
+                        android:textColor="@color/text_gary_color"
+                        android:text="已省"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:marqueeRepeatLimit="marquee_forever"/>
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:id="@+id/moneySaveTv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="13sp"
+                        android:textColor="@color/text_gary_color"
+                        android:text="￥0.0"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:marqueeRepeatLimit="marquee_forever"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/okBuyBtn"
+                android:layout_width="120dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.000001"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:textSize="18sp"
+                android:textColor="@color/white"
+                android:background="@drawable/btn_red_click_selector"
+                android:text="提交订单"/>
+
+        </LinearLayout>
+    </RelativeLayout>
 
 </RelativeLayout>

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -185,7 +186,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             rootView.findViewById(R.id.ll_back).setOnClickListener(this);
             rootView.findViewById(R.id.iv_coupon).setOnClickListener(this);
 
-//            mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
+            mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
 
             requestQueue= Volley.newRequestQueue(getActivity());
             FetchCouponData();
@@ -225,10 +226,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 break;
             case R.id.iv_coupon:
                 if (mCoupon!=null){
-//                    WebViewFragment webViewFragment =WebViewFragment.newInstance(mCoupon.getUrl(),true);
-//                    ((MainActivity)getActivity()).navigationToFragment(webViewFragment);
                     String token = (String)SharedPreferencesUtil.getData(getActivity(),"token","");
-                    Log.i("token------------>",token);
                     if (TextUtils.isEmpty(token)){
                         LoginFragment1 loginFragment=LoginFragment1.newInstance("special","");
                         loginFragment.setRegisterOrLoginListener(this);
@@ -252,7 +250,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     @Override
                     public void onResponse(JSONObject jsonObject) {
                         Log.i("SpecialSaleFragment---------->FetchData---",jsonObject.toString());
-//                        mDialog.dismiss();
+                        mDialog.dismiss();
                         JSONObject saleJson = jsonObject.optJSONObject("sale");
                         String end_date=saleJson.optString("end_time");
                         Message timerMsg = new Message();
@@ -284,8 +282,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 },new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-//                mDialog.dismiss();
-
+                mDialog.dismiss();
             }
         });
         requestQueue.add(request);
@@ -293,7 +290,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     public class ProductAdapter extends BaseListAdapter<Product> {
         public ProductAdapter(Context context, List<Product> list) {
             super(context, list);
-            imageLoader = new AsyncImageLoader1(context);
         }
         @Override
         public View bindView(int position, View convertView, ViewGroup parent) {
@@ -308,8 +304,9 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             LinearLayout ll_sale_out=ViewHolder.get(convertView,R.id.ll_sale_out);
             Product product = getList().get(position);
             tv_name.setText(product.getTitle());
-            imageLoader.LoadImage(product.getImage(),image);
-            tv_price.setText("￥"+product.getPrice()+"元");
+            ToolUtils.setImageCacheUrl(product.getImage(), image);
+            tv_price.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
+            tv_price.setText("￥"+product.getPrice());
             tv_count.setText("剩余 "+product.getRemaining());
             ll_sale_out.setVisibility(product.getRemaining()==0?View.VISIBLE:View.GONE);
             mHashMap.put(position,convertView);
@@ -345,7 +342,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.SPECIAL_SALE_BANNER_URL,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("getBanner---------------->",jsonObject.toString());
                 Message message=new Message();
                 message.obj=jsonObject;
                 message.what=UPDATE_BANNER;
@@ -354,6 +350,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         },new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
+                if (volleyError!=null)
                 Toast.makeText(getActivity(),"网络异常",Toast.LENGTH_SHORT).show();
             }
         });

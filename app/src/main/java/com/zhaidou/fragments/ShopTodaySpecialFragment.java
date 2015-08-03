@@ -2,7 +2,10 @@ package com.zhaidou.fragments;
 
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -12,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -72,11 +76,24 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private ListViewForScrollView mListView;
 
     private TextView myCartTips;
-    private RelativeLayout myCartBtn;
+    private ImageView myCartBtn;
 
     private List<ShopTodayItem> items=new ArrayList<ShopTodayItem>();
     private ShopTodaySpecialAdapter adapter;
     private ShopSpecialItem shopSpecialItem;
+
+    private BroadcastReceiver broadcastReceiver=new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            String action=intent.getAction();
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
+            {
+                initCartTips();
+            }
+        }
+    };
 
 
     private Handler handler = new Handler()
@@ -133,6 +150,11 @@ public class ShopTodaySpecialFragment extends BaseFragment {
             mScrollView.onRefreshComplete();
 
             items.removeAll(items);
+            if (mTimer!=null)
+            {
+                mTimer.cancel();
+                mTimer=null;
+            }
             initDate();
             adapter.notifyDataSetChanged();
         }
@@ -150,7 +172,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
         {
-            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(i).title, 0);
+            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(i).title, items.get(i).id);
             ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
         }
     };
@@ -201,13 +223,32 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mView=inflater.inflate(R.layout.shop_today_special_page, container, false);
+
         mContext=getActivity();
-
-        initView();
-        initDate();
-
+        initBroadcastReceiver();
+        if(mView==null)
+        {
+            mView=inflater.inflate(R.layout.shop_today_special_page, container, false);
+            initView();
+            initDate();
+        }
+        //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
+        ViewGroup parent = (ViewGroup) mView.getParent();
+        if (parent != null)
+        {
+            parent.removeView(mView);
+        }
         return mView;
+    }
+
+    /**
+     * 注册广播
+     */
+    private void initBroadcastReceiver()
+    {
+        IntentFilter intentFilter=new IntentFilter();
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+        mContext.registerReceiver(broadcastReceiver,intentFilter);
     }
 
     /**
@@ -215,16 +256,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
      */
     private void initDate()
     {
-        if (items.size()>0 )
-        {
-            adapter.notifyDataSetChanged();
-            mDialog.dismiss();
-        }
-        else
-        {
-            FetchData(id);
-        }
-
+        FetchData(id);
     }
 
     /**
@@ -255,11 +287,29 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         introduceTv=(TypeFaceTextView)mView.findViewById(R.id.adText);
 
         myCartTips=(TextView)mView.findViewById(R.id.myCartTipsTv);
-        myCartBtn=(RelativeLayout)mView.findViewById(R.id.myCartBtn);
+        myCartBtn=(ImageView)mView.findViewById(R.id.myCartBtn);
         myCartBtn.setOnClickListener(onClickListener);
 
         mRequestQueue= Volley.newRequestQueue(mContext);
 
+        initCartTips();
+
+    }
+
+    /**
+     * 红色标识提示显示数量
+     */
+    private void initCartTips()
+    {
+        if (MainActivity.num>0)
+        {
+            myCartTips.setVisibility(View.VISIBLE);
+            myCartTips.setText(""+MainActivity.num);
+        }
+        else
+        {
+            myCartTips.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -288,7 +338,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     String overTime=josnObject1.optString("over_day");
                     introduce=josnObject1.optString("quotation");
                     shopSpecialItem=new ShopSpecialItem(id,title,null,time,startTime,endTime,overTime,null);
-                    Log.i("zhaidou","endTime:"+endTime);
                     handler.obtainMessage(UPDATE_TIMER_START,endTime).sendToTarget();//开始倒计时
 
                     JSONArray jsonArray=josnObject1.optJSONArray("merchandises");
@@ -300,7 +349,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                         String designer=obj.optString("designer");
                         double price=obj.optDouble("price");
                         double cost_price=obj.optDouble("cost_price");
-                        String imageUrl=obj.optString("img");
+                        String imageUrl="http://"+obj.optString("img");
                         int num=obj.optInt("total_count");
                         ShopTodayItem shopTodayItem=new ShopTodayItem(Baseid,Listtitle,designer,imageUrl,price,cost_price,num);
                         items.add(shopTodayItem);
@@ -357,10 +406,12 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     @Override
     public void onDestroy()
     {
+        mContext.unregisterReceiver(broadcastReceiver);
         super.onDestroy();
         if (mTimer!=null)
         {
             mTimer.cancel();
+            mTimer=null;
         }
     }
 }

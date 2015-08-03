@@ -280,8 +280,7 @@ public class HomeFragment extends BaseFragment implements
                         ((BaseActivity) getActivity()).navigationToFragment(fragment);
                     }
                 });
-                ToolUtils.setImageCacheUrl(banners.get(i).getUrl(), img);
-                //ImageLoader.getInstance().displayImage(banners.get(i).getUrl(), img);
+                ToolUtils.setImageCacheUrl(banners.get(i).imageUrl, img);
                 adPics.add(img);
             }
             dots = new ImageView[adPics.size()];
@@ -807,7 +806,7 @@ public class HomeFragment extends BaseFragment implements
                             String name = banner.optString("name");
                             String url = banner.optJSONObject("avatar").optString("url");
 
-                            SwitchImage switchImage = new SwitchImage("http://" + url, id, name);
+                            SwitchImage switchImage = new SwitchImage("", id, name,"http://" + url);
                             banners.add(switchImage);
                         }
                     }
@@ -835,7 +834,7 @@ public class HomeFragment extends BaseFragment implements
     private void FetchShopData()
     {
         final String url;
-        url = ZhaiDou.shopSpecialListUrl+"&page="+1;
+        url = ZhaiDou.shopHomeSpecialUrl;
         JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
@@ -926,6 +925,9 @@ public class HomeFragment extends BaseFragment implements
         FetchData(++currentPage, mCategory);
     }
 
+    /**
+     * 广告轮播指示器
+     */
     private class MyPageChangeListener implements ViewPager.OnPageChangeListener
     {
         public void onPageSelected(int position)

@@ -111,15 +111,14 @@
     </com.pulltorefresh.PullToRefreshScrollView>
 
     <RelativeLayout
-        android:id="@+id/myCartBtn"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
-        android:clickable="true"
         android:layout_margin="20dp">
 
 
     <ImageView
+        android:id="@+id/myCartBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -132,7 +131,8 @@
             android:layout_height="wrap_content"
             android:textColor="@color/white"
             android:layout_alignParentRight="true"
-            android:text="19"
+            android:text=""
+            android:visibility="gone"
             android:gravity="center"
             android:background="@drawable/shop_goods_my_cart_tips_red_bg"
             android:textSize="12sp"/>

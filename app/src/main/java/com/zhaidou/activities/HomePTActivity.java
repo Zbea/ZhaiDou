@@ -116,7 +116,7 @@ public class HomePTActivity extends Activity
             }
         });
 
-        url=url+"?open=app";
+     //   url=url+"?open=app";
         webView.loadUrl(url);
         mTitleView.setText(title);
 

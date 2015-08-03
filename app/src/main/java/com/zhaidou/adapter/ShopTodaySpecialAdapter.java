@@ -9,7 +9,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.fragments.GoodsDetailsFragment;
 import com.zhaidou.model.ShopTodayItem;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
@@ -69,7 +71,7 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent)
+    public View getView(final int position, View convertView, ViewGroup parent)
     {
         if (convertView == null)
         {
@@ -94,7 +96,7 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
         viewHolder.itemFormerPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
 
         viewHolder.itemName.setText(todayShopItem.title);
-        viewHolder.itemIntorduce.setText("                         "+todayShopItem.designer);
+        viewHolder.itemIntorduce.setText("                           "+todayShopItem.designer);
         viewHolder.itemCurrentPrice.setText("￥ "+todayShopItem.currentPrice);
         viewHolder.itemFormerPrice.getPaint().setAntiAlias(true);//去锯齿
         viewHolder.itemFormerPrice.setText("￥ "+todayShopItem.formerPrice);
@@ -119,19 +121,30 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
         }
 
         ToolUtils.setImageCacheUrl(todayShopItem.imageUrl,viewHolder.itemImage);
+
+        viewHolder.itemBuy.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).title, items.get(position).id);
+                ((MainActivity) context).navigationToFragment(goodsDetailsFragment);
+            }
+        });
+
         if (todayShopItem.num>0)
         {
             viewHolder.itemNull.setVisibility(View.GONE);
             viewHolder.itemBuy.setBackgroundResource(R.drawable.btn_red_click_selector);
             viewHolder.itemBuy.setText("马上抢");
-            viewHolder.itemBuy.setFocusable(true);
+            viewHolder.itemBuy.setClickable(true);
         }
         else
         {
             viewHolder.itemNull.setVisibility(View.VISIBLE);
             viewHolder.itemBuy.setBackgroundResource(R.drawable.btn_no_click_selector);
             viewHolder.itemBuy.setText("抢光了");
-            viewHolder.itemBuy.setFocusable(false);
+            viewHolder.itemBuy.setClickable(false);
         }
         return convertView;
     }

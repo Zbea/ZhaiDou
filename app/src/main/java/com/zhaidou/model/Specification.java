@@ -6,6 +6,7 @@ package com.zhaidou.model;
 public class Specification {
     private int id;
     private String title;
+    public int num;
 
     public int getId() {
         return id;

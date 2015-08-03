@@ -336,7 +336,7 @@
             android:id="@+id/goodsMyCartBtn"
             android:layout_width="60dp"
             android:layout_height="match_parent"
-            android:layout_marginRight="@dimen/default_margin"
+            android:layout_marginRight="25dp"
             android:layout_weight="0.00001"
             android:background="@drawable/btn_green_click_bg"
             android:clickable="true"
@@ -355,8 +355,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_gravity="right"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="3dp">
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="1dp">
 
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_cart_count"
@@ -374,7 +374,7 @@
             android:id="@+id/goodsAddBuyBtn"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginRight="@dimen/default_margin"
+            android:layout_marginRight="5dp"
             android:layout_weight="1"
             android:background="@drawable/btn_green_click_bg"
             android:clickable="true"
@@ -411,6 +411,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:layout_marginLeft="5dp"
             android:background="@drawable/btn_red_click_selector"
             android:clickable="true"
             android:gravity="center">
