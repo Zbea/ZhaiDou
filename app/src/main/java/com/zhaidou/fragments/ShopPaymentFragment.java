@@ -185,7 +185,8 @@ public class ShopPaymentFragment extends BaseFragment {
     {
         paymentTv.setText("支付失效");
         paymentIcon.setImageResource(R.drawable.shop_order_payment_lose_icon);
-//        paymentBtn.setBackgroundResource(R.drawable.);
+        paymentBtn.setBackgroundResource(R.drawable.btn_gray_click_selector);
+        paymentBtn.setClickable(false);
 
     }
 
