@@ -4,12 +4,26 @@ package com.zhaidou.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,6 +41,7 @@ public class UnPayFragment extends BaseFragment {
     private String mParam1;
     private String mParam2;
 
+    private RequestQueue mRequestQueue;
 
     /**
      * Use this factory method to create a new instance of
@@ -62,8 +77,38 @@ public class UnPayFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_unpay, container, false);
+        View view=inflater.inflate(R.layout.fragment_unpay, container, false);
+        mRequestQueue= Volley.newRequestQueue(getActivity());
+        FetchData();
+        return view;
     }
 
+    private void FetchData(){
+        JsonObjectRequest request=new JsonObjectRequest("http://192.168.199.173/special_mall/api/orders",new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                Log.i("jsonObject----------->",jsonObject.toString());
+                if (jsonObject!=null){
+                    JSONArray orderArr=jsonObject.optJSONArray("orders");
+                    if (orderArr!=null&&orderArr.length()>0){
+
+                    }
+                }
+            }
+        },new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Toast.makeText(getActivity(),"网络异常",Toast.LENGTH_SHORT).show();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("SECAuthorization", "Yk77mfWaq_xYyeEibAxx");
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
+    }
 
 }

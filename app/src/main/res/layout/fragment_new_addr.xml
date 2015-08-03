@@ -3,13 +3,11 @@
     android:layout_height="match_parent"
     android:background="#f1f1f1"
     android:orientation="vertical">
-
     <RelativeLayout
         android:id="@+id/rl_actionbar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="#39495d">
-
         <LinearLayout
             android:id="@+id/ll_back"
             android:layout_width="wrap_content"
@@ -35,7 +33,6 @@
                 android:textColor="@color/white"
                 android:textSize="16sp" />
         </LinearLayout>
-
         <com.zhaidou.view.TypeFaceTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -80,10 +77,12 @@
 
         <com.zhaidou.view.TypeFaceEditText
             android:id="@+id/tv_addr_username"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingLeft="5dp"
             android:background="@color/white"
+            android:textColor="#666666"
             android:text="" />
     </LinearLayout>
 
@@ -110,11 +109,13 @@
 
         <com.zhaidou.view.TypeFaceEditText
             android:id="@+id/tv_addr_mobile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
             android:layout_marginLeft="20dp"
             android:background="@color/white"
             android:inputType="phone"
+            android:textColor="#666666"
             android:text="" />
     </LinearLayout>
 
@@ -141,12 +142,13 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content">
-            <com.zhaidou.view.TypeFaceEditText
+            <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/tv_addr_loc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="5dp"
                 android:background="@color/white"
+                android:textColor="#666666"
                 android:text="" />
             <ImageView
                 android:layout_alignParentRight="true"
@@ -180,10 +182,12 @@
 
         <com.zhaidou.view.TypeFaceEditText
             android:id="@+id/tv_addr_detail"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:background="@color/white"
+            android:textColor="#666666"
             android:text="" />
     </LinearLayout>
 
