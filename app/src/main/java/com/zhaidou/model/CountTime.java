@@ -1,5 +1,7 @@
 package com.zhaidou.model;
 
+import android.widget.TextView;
+
 /**
  * Created by wangclark on 15/7/2.
  */
@@ -8,6 +10,7 @@ public class CountTime {
     private long hour;
     private long minute;
     private long second;
+    private TextView mTimerView;
 
     public long getDay() {
         return day;
@@ -23,6 +26,14 @@ public class CountTime {
 
     public long getSecond() {
         return second;
+    }
+
+    public TextView getmTimerView() {
+        return mTimerView;
+    }
+
+    public void setmTimerView(TextView mTimerView) {
+        this.mTimerView = mTimerView;
     }
 
     public CountTime(long day, long hour, long minute, long second) {

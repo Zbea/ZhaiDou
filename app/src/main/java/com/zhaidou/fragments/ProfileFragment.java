@@ -71,7 +71,7 @@ import java.util.Map;
 
 
 public class ProfileFragment extends BaseFragment implements View.OnClickListener,PhotoMenuFragment.MenuSelectListener,
-        EditProfileFragment.RefreshDataListener,AddrManageFragment.AddressListener{
+        EditProfileFragment.RefreshDataListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -298,13 +298,11 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 String mobile=tv_addr_mobile.getText().toString();
                 String address=tv_addr.getText().toString();
                 AddrManageFragment addressFragment=AddrManageFragment.newInstance(name,mobile,address,profileId,0);
-                addressFragment.setAddressListener(this);
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container,addressFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
                 break;
             case R.id.tv_edit:
                 AddrManageFragment editFragment=AddrManageFragment.newInstance(tv_addr_username.getText().toString(),tv_addr_mobile.getText().toString(),tv_addr.getText().toString(),profileId,1);
-                editFragment.setAddressListener(this);
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container,editFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
                 break;
@@ -684,19 +682,19 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         }
     }
 
-    @Override
-    public void onAddressDataChange(String name, String mobile, String address) {
-        Log.i("onAddressDataChange--->",name+"----"+mobile+"----->"+address);
-        tv_addr.setText(address);
-        tv_addr_mobile.setText(mobile);
-        tv_addr_username.setText(name);
-        if (TextUtils.isEmpty(address)){
-            ll_addr_info.setVisibility(View.GONE);
-        }else {
-            ll_addr_info.setVisibility(View.VISIBLE);
-        }
-        getChildFragmentManager().popBackStack();
-    }
+//    @Override
+//    public void onAddressDataChange(String name, String mobile, String address) {
+//        Log.i("onAddressDataChange--->",name+"----"+mobile+"----->"+address);
+//        tv_addr.setText(address);
+//        tv_addr_mobile.setText(mobile);
+//        tv_addr_username.setText(name);
+//        if (TextUtils.isEmpty(address)){
+//            ll_addr_info.setVisibility(View.GONE);
+//        }else {
+//            ll_addr_info.setVisibility(View.VISIBLE);
+//        }
+//        getChildFragmentManager().popBackStack();
+//    }
 
     public void setProfileListener(ProfileListener profileListener) {
         this.profileListener = profileListener;

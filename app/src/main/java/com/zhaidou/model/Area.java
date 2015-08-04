@@ -13,4 +13,11 @@ public class Area extends Address {
     public void setPrice(int price) {
         this.price = price;
     }
+
+    @Override
+    public String toString() {
+        return "Area{" +
+                "price=" + price +
+                "} " + super.toString();
+    }
 }

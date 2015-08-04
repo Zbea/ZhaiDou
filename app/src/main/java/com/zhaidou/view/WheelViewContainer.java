@@ -12,6 +12,7 @@ import com.zhaidou.model.Address;
 import com.zhaidou.model.Area;
 import com.zhaidou.model.City;
 import com.zhaidou.model.Province;
+import com.zhaidou.utils.CollectionUtils;
 import com.zhaidou.utils.PixelUtil;
 
 import java.util.List;
@@ -106,9 +107,9 @@ public class WheelViewContainer extends LinearLayout{
             @Override
             public void onSelected(int selectedIndex, Address item) {
                 SELECTED_CITY_INDEX=selectedIndex;
-//                Log.i("selectedIndex------------>",selectedIndex+"");
-//                Log.i("Address------------->",item.toString());
+                SELECTED_AREA_INDEX=1;
                 notifyDataChange("city",selectedIndex);
+                notifyDataChange("area",1);
             }
         });
 //
@@ -134,4 +135,39 @@ public class WheelViewContainer extends LinearLayout{
         areaWheel.notifyDataSetChange(provinceList.get(SELECTED_PROVINCE_INCEX-1).getCityList().get(SELECTED_CITY_INDEX-1).getAreas(),selectedPosition);
     }
 
+    public Province getProvince(){
+        if (CollectionUtils.isNotNull(provinceList)){
+            Province province=provinceList.get(SELECTED_PROVINCE_INCEX-1);
+            Log.i("getProvince-------------------->",province.toString());
+            return province;
+        }
+        return null;
+    }
+    public City getCity(){
+        if (CollectionUtils.isNotNull(provinceList)){
+            Province province=provinceList.get(SELECTED_PROVINCE_INCEX-1);
+            if (CollectionUtils.isNotNull(province.getCityList())){
+                City city=province.getCityList().get(SELECTED_CITY_INDEX-1);
+                Log.i("city-------------->",city.toString());
+                return city;
+            }
+            return null;
+        }
+        return null;
+    }
+    public Area getArea(){
+        if (CollectionUtils.isNotNull(provinceList)){
+            Province province=provinceList.get(SELECTED_PROVINCE_INCEX-1);
+            if (CollectionUtils.isNotNull(province.getCityList())){
+                City city=province.getCityList().get(SELECTED_CITY_INDEX-1);
+                if (CollectionUtils.isNotNull(city.getAreas())){
+                    Area area=city.getAreas().get(SELECTED_AREA_INDEX-1);
+                    Log.i("area------------>",area.toString());
+                    return area;
+                }
+            }
+            return null;
+        }
+        return null;
+    }
 }

@@ -68,7 +68,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class GoodsDetailsFragment extends BaseFragment {
     private static final String PAGE = "page";
     private static final String INDEX = "index";

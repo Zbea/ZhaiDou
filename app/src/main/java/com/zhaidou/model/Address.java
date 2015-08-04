@@ -12,6 +12,12 @@ public class Address {
     private int user_id;
     private String address;
     private int provider_id;
+    private String updated_at;
+    private String created_at;
+
+    private String province;
+    private String city;
+    private String area;
 
     public int getId() {
         return id;
@@ -66,6 +72,59 @@ public class Address {
     }
 
     public void setProvider_id(int provider_id) {
+        this.provider_id = provider_id;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+    public String getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(String updated_at) {
+        this.updated_at = updated_at;
+    }
+
+    public String getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
+    }
+
+    public Address() {
+    }
+
+    public Address(int id, String name, boolean is_default, String phone, int user_id, String address, int provider_id) {
+        this.id = id;
+        this.name = name;
+        this.is_default = is_default;
+        this.phone = phone;
+        this.user_id = user_id;
+        this.address = address;
         this.provider_id = provider_id;
     }
 
