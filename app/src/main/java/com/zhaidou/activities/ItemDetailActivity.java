@@ -18,6 +18,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.alibaba.sdk.android.callback.CallbackContext;
@@ -61,6 +62,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     private String token;
     private String nickName;
     private boolean isShowHeader;
+    private RelativeLayout imageView;
 
 //    private String from;
     private LoginFragment loginFragment;
@@ -104,6 +106,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         mTitleView=(TextView)findViewById(R.id.tv_title);
         mHeaderView=(ImageView)findViewById(R.id.iv_header);
         mHeaderText=(TextView)findViewById(R.id.tv_msg);
+        imageView=(RelativeLayout)findViewById(R.id.imageView);
 
         if(!NetworkUtils.isNetworkAvailable(this))
         {
@@ -215,19 +218,18 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         }
         if (!TextUtils.isEmpty(coverUrl)){
             Log.i("cover_url---------------->", coverUrl);
-            mHeaderView.setVisibility(View.VISIBLE);
             ToolUtils.setImageCacheUrl(coverUrl, mHeaderView);
             mTitleView.setVisibility(View.GONE);
             mHeaderText.setText(title);
-            mHeaderText.setVisibility(View.VISIBLE);
+            imageView.setVisibility(View.VISIBLE);
         }
-        if ("lottery".equals(from)||"beauty".equals(from)||"competition".equalsIgnoreCase(from)){
+        if ("lottery".equals(from)||"beauty".equals(from)||"competition".equalsIgnoreCase(from))
+        {
             iv_share.setVisibility(View.GONE);
         }
         if ("beauty1".equalsIgnoreCase(from)){
             iv_share.setVisibility(View.VISIBLE);
-            mHeaderView.setVisibility(View.GONE);
-            mHeaderText.setVisibility(View.GONE);
+            imageView.setVisibility(View.GONE);
         }
 
         isShowHeader=getIntent().getBooleanExtra("show_header",false);

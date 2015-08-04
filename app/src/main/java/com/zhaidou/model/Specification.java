@@ -7,6 +7,7 @@ public class Specification {
     private int id;
     private String title;
     public int num;
+    public double price;
 
     public int getId() {
         return id;
@@ -24,9 +25,12 @@ public class Specification {
         this.title = title;
     }
 
-    public Specification(int id, String title) {
+    public Specification(int id, String title,int num,double price) {
         this.id = id;
         this.title = title;
+        this.num = num;
+        this.price = price;
+
     }
 
     @Override

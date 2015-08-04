@@ -283,7 +283,7 @@
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:id="@+id/jsPriceTotalTv"
-                        android:layout_width="60dp"
+                        android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.000001"
                         android:textSize="14sp"
@@ -319,7 +319,7 @@
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:id="@+id/jsPriceYfTv"
-                        android:layout_width="60dp"
+                        android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.000001"
                         android:textSize="14sp"

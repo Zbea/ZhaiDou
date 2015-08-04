@@ -48,15 +48,23 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
             <RelativeLayout
+                android:id="@+id/imageView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:visibility="gone">
             <ImageView
                 android:id="@+id/iv_header"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/home_item_dimen"
                 android:scaleType="fitXY"
-                android:visibility="gone"
                 android:background="@drawable/icon_loading_item"/>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:scaleType="fitXY"
+                    android:layout_alignParentBottom="true"
+                    android:src="@drawable/icon_item_details_shadow"/>
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_msg"
                     android:layout_width="match_parent"
@@ -66,8 +74,6 @@
                     android:paddingLeft="10dp"
                     android:gravity="bottom"
                     android:paddingBottom="10dp"
-                    android:visibility="gone"
-                    android:background="@drawable/shadow"
                     android:layout_alignParentBottom="true"/>
             </RelativeLayout>
     <com.zhaidou.view.CustomProgressWebview

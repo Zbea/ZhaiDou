@@ -15,14 +15,15 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="3"
+        android:layout_weight="4"
         android:gravity="center"
+        android:background="@drawable/shop_order_payment_success_bg"
         android:orientation="vertical">
 
         <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/icon_addr_checked"/>
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:src="@drawable/shop_order_payment_success_icon"/>
 
 
         <com.zhaidou.view.TypeFaceTextView
@@ -30,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:layout_marginBottom="40dp"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textColor="@color/text_gary_color"
             android:text="付款成功,您的包裹整装待发"
             android:singleLine="true"
@@ -43,21 +44,26 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="4"
+        android:layout_weight="5"
         android:background="@color/white"
         android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/jsAddressInfoLine"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="90dp"
             android:paddingLeft="@dimen/default_margin"
             android:paddingRight="@dimen/default_margin"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp"
             android:background="@color/actionbar_background_color"
             android:gravity="center_vertical"
             android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.00001"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="20dp"
+                android:src="@drawable/shop_settlement_address_icon"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -129,7 +135,7 @@
                     android:text="实付款："/>
 
                 <com.zhaidou.view.TypeFaceTextView
-                    android:id="@+id/jsTotalNum"
+                    android:id="@+id/successTotalNum"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/red"
@@ -159,7 +165,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="10dp"
                     android:gravity="center"
-                    android:background="@drawable/goods_buy_size_item_selector">
+                    android:background="@drawable/shop_cart_gg_selector">
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:layout_width="wrap_content"
@@ -181,7 +187,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="20dp"
                     android:gravity="center"
-                    android:background="@drawable/goods_buy_size_item_selector">
+                    android:background="@drawable/shop_cart_gg_selector">
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:layout_width="wrap_content"

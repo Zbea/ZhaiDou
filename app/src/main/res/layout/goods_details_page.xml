@@ -16,8 +16,7 @@
         android:layout_height="fill_parent"
         android:layout_below="@+id/headLine"
         android:fillViewport="true"
-        android:scrollbars="none"
-        android:visibility="visible">
+        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,19 +29,18 @@
                 android:background="@color/white"
                 android:orientation="vertical">
 
-                <android.support.v4.view.ViewPager
+                <com.zhaidou.view.CustomViewPager
                     android:id="@+id/goods_adv_pager"
-                    android:layout_width="fill_parent"
-                    android:layout_height="match_parent"></android.support.v4.view.ViewPager>
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/goods_height_dimen"/>
 
                 <LinearLayout
                     android:id="@+id/goods_viewGroup"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_above="@+id/timeLine"
-                    android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginBottom="30dp"
+                    android:layout_marginBottom="10dp"
                     android:orientation="horizontal"></LinearLayout>
 
                 <LinearLayout
@@ -66,6 +64,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingLeft="5dp"
+                        android:textSize="12sp"
                         android:textColor="@color/white" />
 
                 </LinearLayout>
@@ -108,6 +107,7 @@
                         android:paddingLeft="12dp"
                         android:paddingRight="12dp"
                         android:paddingTop="3dp"
+                        android:visibility="gone"
                         android:textColor="@color/white" />
 
                 </LinearLayout>
@@ -118,14 +118,14 @@
                     android:orientation="horizontal"
                     android:padding="@dimen/default_margin">
 
-                    <com.zhaidou.view.TypeFaceTextView
+                    <TextView
                         android:id="@+id/goodsCurrentPrice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/red"
                         android:textSize="16sp" />
 
-                    <com.zhaidou.view.TypeFaceTextView
+                    <TextView
                         android:id="@+id/goodsFormerPrice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -281,7 +281,7 @@
                 android:id="@+id/tab_goods_detail"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:background="@color/white" />
 
             <com.zhaidou.view.CustomViewPager
@@ -294,24 +294,7 @@
                 android:layout_height="1dp"
                 android:background="#EEEEEE" />
 
-            <com.zhaidou.view.TypeFaceTextView
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:background="@color/white"
-                android:gravity="center_vertical"
-                android:paddingLeft="20dp"
-                android:text="图文详情" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#EEEEEE" />
-
-            <LinearLayout
-                android:id="@+id/ll_img_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"></LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -321,7 +304,19 @@
 
     </ScrollView>
 
+    <ImageView
+        android:id="@+id/goodsTop"
+        android:clickable="true"
+        android:layout_above="@+id/goods_bottom_line"
+        android:layout_alignParentRight="true"
+        android:layout_margin="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:src="@drawable/goods_details_to_top_icon"/>
+
     <LinearLayout
+        android:id="@+id/goods_bottom_line"
         android:layout_width="fill_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"

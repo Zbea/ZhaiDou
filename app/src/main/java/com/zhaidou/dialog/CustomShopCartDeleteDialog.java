@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.adapter.ShopCartAdapter;
 import com.zhaidou.model.CartItem;
 import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;

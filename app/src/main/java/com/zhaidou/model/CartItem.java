@@ -31,6 +31,8 @@ public class CartItem implements Serializable
     public int sizeId;
     //是否下架
     public String isPublish;
+    //是否卖光
+    public String isOver;
     //是否选中
     public boolean isCheck;
     //生成时间
@@ -38,7 +40,7 @@ public class CartItem implements Serializable
 
     public CartItem(int id, long creatTime, String name, String imageUrl, double currentPrice,
                     double formalPrice,double saveMoney, double saveTotalMoney, double totalMoney,
-                    int num, String size, int sizeId, String isPublish, boolean isCheck)
+                    int num, String size, int sizeId, String isPublish, String isOver, boolean isCheck)
     {
         this.id = id;
         this.creatTime = creatTime;
@@ -53,6 +55,7 @@ public class CartItem implements Serializable
         this.size = size;
         this.sizeId = sizeId;
         this.isPublish = isPublish;
+        this.isOver = isOver;
         this.isCheck = isCheck;
     }
 
