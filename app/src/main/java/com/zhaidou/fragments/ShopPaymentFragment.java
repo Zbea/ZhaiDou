@@ -1,6 +1,4 @@
 package com.zhaidou.fragments;
-
-
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -21,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-
 
 /**
  * Created by roy on 15/7/31.

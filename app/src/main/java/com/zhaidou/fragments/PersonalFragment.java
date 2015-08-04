@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -26,13 +27,20 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.model.CartItem;
 import com.zhaidou.model.User;
+import com.zhaidou.sqlite.CreatCartDB;
+import com.zhaidou.sqlite.CreatCartTools;
 import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -66,9 +74,11 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     private Activity mActivity;
 
     private User user;
+    private int num;
 
-
-    private ImageView iv_header,mPrePayView, mPreReceivedView, mReturnView;
+    private CreatCartDB creatCartDB;
+    private List<CartItem> items = new ArrayList<CartItem>();
+    private ImageView iv_header, mPrePayView, mPreReceivedView, mReturnView;
     private TextView tv_nickname, tv_desc;
     private RelativeLayout mCouponsView, mSettingView, mAllOrderView;
     private FrameLayout mChildContainer;
@@ -155,6 +165,8 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         mRequestQueue = Volley.newRequestQueue(getActivity());
         getUserDetail();
         getUserInfo();
+        creatCartDB = new CreatCartDB(getActivity());
+        initCartTips();
         return view;
     }
 
@@ -164,6 +176,8 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         switch (view.getId()) {
             case R.id.tv_shopping_cart:
                 Toast.makeText(getActivity(), "购物车", Toast.LENGTH_SHORT).show();
+                ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
+                ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
                 break;
             case R.id.all_order:
                 AllOrdersFragment allOrdersFragment = AllOrdersFragment.newInstance("", "");
@@ -184,15 +198,15 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 ((MainActivity) getActivity()).navigationToFragment(returnFragment);
                 break;
             case R.id.rl_addr_manage:
-                AddrManageFragment addrManageFragment=AddrManageFragment.newInstance("","","","",0);
-                ((MainActivity)getActivity()).navigationToFragment(addrManageFragment);
+                AddrManageFragment addrManageFragment = AddrManageFragment.newInstance("", "", "", "", 0);
+                ((MainActivity) getActivity()).navigationToFragment(addrManageFragment);
                 break;
             case R.id.rl_setting:
                 ((MainActivity) getActivity()).navigationToFragment(mSettingFragment);
                 break;
             case R.id.rl_contact:
-                ContactUsFragment contactUsFragment=ContactUsFragment.newInstance("","");
-                ((MainActivity)getActivity()).navigationToFragment(contactUsFragment);
+                ContactUsFragment contactUsFragment = ContactUsFragment.newInstance("", "");
+                ((MainActivity) getActivity()).navigationToFragment(contactUsFragment);
                 break;
             case R.id.rl_competition:
                 Intent intent = new Intent(getActivity(), HomePTActivity.class);
@@ -313,5 +327,24 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void initCartTips() {
+        items = CreatCartTools.selectByAll(creatCartDB);
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).isPublish.equals("true")) {
+                items.remove(items.get(i));
+            }
+        }
+        if (items.size() > 0) {
+            num = 0;
+            for (int i = 0; i < items.size(); i++) {
+                num = num + items.get(i).num;
+            }
+            mCartCount.setVisibility(View.VISIBLE);
+            mCartCount.setText("" + num);
+        } else {
+            mCartCount.setVisibility(View.GONE);
+        }
     }
 }

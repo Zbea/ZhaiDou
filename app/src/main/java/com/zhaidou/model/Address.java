@@ -12,6 +12,8 @@ public class Address {
     private int user_id;
     private String address;
     private int provider_id;
+    private String updated_at;
+    private String created_at;
 
     private String province;
     private String city;
@@ -95,6 +97,22 @@ public class Address {
 
     public void setArea(String area) {
         this.area = area;
+    }
+
+    public String getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(String updated_at) {
+        this.updated_at = updated_at;
+    }
+
+    public String getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
     }
 
     public Address() {

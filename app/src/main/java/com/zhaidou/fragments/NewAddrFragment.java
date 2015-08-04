@@ -74,8 +74,6 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
     private String token;
     private SharedPreferences mSharedPreferences;
 
-    private AddressListener addressListener;
-
     private Dialog mDialog;
     private RequestQueue mRequestQueue;
     private EditText et_name, et_mobile, et_address_detail;
@@ -323,14 +321,6 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
                 }
             }
         }
-    }
-
-    public void setAddressListener(AddressListener addressListener) {
-        this.addressListener = addressListener;
-    }
-
-    public interface AddressListener {
-        public void onAddressDataChange(String name, String mobile, String address);
     }
 
     private void FetchCityData() {

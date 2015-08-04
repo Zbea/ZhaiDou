@@ -90,9 +90,10 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
 
     private int UPDATE_ADDRESS_INFO=1;
     private int CREATE_NEW_ADDRESS=2;
+    private int STATUS_FROM_ORDER=3;
+    private int STATUS_FROM_PERSONAL=4;
     private int mCheckedPosition = 0;
     private View rootView;
-
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -328,7 +329,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 JSONObject profile = json.optJSONObject("profile");
                 String mobile = profile.optString("mobile");
                 String address = profile.optString("address2");
-                addressListener.onAddressDataChange(mNickName, mMobile, address);
+//                addressListener.onAddressDataChange(mNickName, mMobile, address);
             } catch (Exception e) {
 
             }
@@ -397,7 +398,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     }
 
     public interface AddressListener {
-        public void onAddressDataChange(String name, String mobile, String address);
+        public void onDefalueAddressChange(Address address);
     }
 
     private void FetchData() {
@@ -418,7 +419,9 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                         String province=receiverObj.optString("parent_name");
                         String city=receiverObj.optString("city_name");
                         String area=receiverObj.optString("provider_name");
-
+                        boolean is_default=receiverObj.optBoolean("is_default");
+                        if (is_default)
+                            mCheckedPosition=i;
                         Address address = new Address();
                         address.setAddress(addr);
                         address.setName(name);
@@ -429,6 +432,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                         address.setProvince(province);
                         address.setCity(city);
                         address.setArea(area);
+                        address.setIs_default(is_default);
                         addressList.add(address);
                     }
                     handler.sendEmptyMessage(UPDATE_ADDRESS_LIST);
@@ -455,7 +459,6 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
         public AddressAdapter(Context context, List<Address> list) {
             super(context, list);
         }
-
         @Override
         public View bindView(int position, View convertView, ViewGroup parent) {
             if (convertView == null)
@@ -464,14 +467,72 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             TextView tv_mobile = ViewHolder.get(convertView, R.id.tv_addr_mobile);
             TextView tv_addr = ViewHolder.get(convertView, R.id.tv_addr);
             TextView tv_defalue = ViewHolder.get(convertView, R.id.tv_defalue_addr);
+            TextView tv_defalue_hint=ViewHolder.get(convertView,R.id.tv_defalue_hint);
             ImageView mDefalueIcon=ViewHolder.get(convertView,R.id.iv_addr_defalue);
             Address address = getList().get(position);
-            tv_name.setText(address.getName());
-            tv_mobile.setText(address.getPhone());
-            tv_addr.setText(address.getAddress());
+            tv_name.setText("收件人："+address.getName());
+            tv_mobile.setText("电话："+address.getPhone());
+            tv_addr.setText("地址："+address.getAddress());
             Log.i("mCheckedPosition --->", mCheckedPosition+"");
+            if (mStatus==STATUS_FROM_ORDER){
+                tv_defalue_hint.setVisibility(View.GONE);
+                if (address.isIs_default())
+                   tv_defalue_hint.setVisibility(View.VISIBLE);
+                tv_defalue.setText("选择地址");
+            }
             mDefalueIcon.setImageResource(mCheckedPosition==position?R.drawable.icon_address_checked:R.drawable.icon_address_normal);
             return convertView;
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.i("onDestroyView-------------->mCheckedPosition","onDestroyView---------"+mCheckedPosition+"----"+getActivity().toString());
+        if (addressAdapter.getCount()>mCheckedPosition){
+            Address address=addressAdapter.getItem(mCheckedPosition);
+            if (mStatus==STATUS_FROM_ORDER){
+                if (addressListener!=null)
+                    addressListener.onDefalueAddressChange(address);
+                return;
+            }
+            JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,"http://192.168.199.173/special_mall/api/receivers/"+address.getId()+"/set_default",new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject jsonObject) {
+                    Log.i("jsonObject-------->",jsonObject.toString());
+                    if (jsonObject!=null){
+                        JSONObject receiver=jsonObject.optJSONObject("receiver");
+                        int id=receiver.optInt("id");
+                        String phone=receiver.optString("phone");
+                        String updated_at=receiver.optString("updated_at");
+                        String addr=receiver.optString("address");
+                        int provider_id=receiver.optInt("provider_id");
+                        String name=receiver.optString("name");
+                        String created_at=receiver.optString("created_at");
+                        boolean is_default=receiver.optBoolean("is_default");
+                        int user_id=receiver.optInt("user_id");
+                        Address address1=new Address(id,name,is_default,phone,user_id,addr,provider_id);
+                        address1.setUpdated_at(updated_at);
+                        address1.setCreated_at(created_at);
+                        if (addressListener!=null)
+                        addressListener.onDefalueAddressChange(address1);
+                    }
+                }
+            },new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+
+                }
+            }){
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String,String> headers=new HashMap<String, String>();
+                    headers.put("SECAuthorization", "Yk77mfWaq_xYyeEibAxx");
+                    return headers;
+                }
+            };
+            mRequestQueue.add(request);
+        }
+//        super.onDestroyView();
     }
 }

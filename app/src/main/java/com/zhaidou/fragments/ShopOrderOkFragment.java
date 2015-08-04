@@ -5,8 +5,12 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,20 +21,33 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.dialog.CustomShopCartDeleteDialog;
+import com.zhaidou.model.Address;
 import com.zhaidou.model.CartItem;
 import com.zhaidou.sqlite.CreatCartTools;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceEditText;
 import com.zhaidou.view.TypeFaceTextView;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -53,6 +70,7 @@ public class ShopOrderOkFragment extends BaseFragment {
     private LinearLayout orderGoodsListLine;
     private TypeFaceEditText bzInfo;
     private TypeFaceTextView moneyTv,moneyYfTv,moneyTotalTv,moneyNumTv;
+    private TextView addressNameTv,addressPhoneTv,addressinfoTv;
     private ArrayList<CartItem> items;
 
     private int num = 0;
@@ -60,7 +78,23 @@ public class ShopOrderOkFragment extends BaseFragment {
     private double moneyYF=0;
     private double totalMoney = 0;
 
-
+    private RequestQueue mRequestQueue;
+    private int STATUS_FROM_ORDER=3;
+    private final int UPDATE_DEFALUE_ADDRESS_INFO=0;
+    private Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case UPDATE_DEFALUE_ADDRESS_INFO:
+                    List<Address> addressList=(List<Address>)msg.obj;
+                    Address address=addressList.get(0);
+                    addressPhoneTv.setText("收件人："+address.getPhone());
+                    addressNameTv.setText("电话："+address.getName());
+                    addressinfoTv.setText(address.getAddress());
+                    break;
+            }
+        }
+    };
 
     /**
      * 下拉刷新
@@ -120,6 +154,18 @@ public class ShopOrderOkFragment extends BaseFragment {
                     shopPaymentFragment.setArguments(bundle);
                     ((MainActivity)getActivity()).navigationToFragment(shopPaymentFragment);
                     break;
+                case R.id.jsEditAddressBtn:
+                    AddrManageFragment addrManageFragment=AddrManageFragment.newInstance("","","","",STATUS_FROM_ORDER);
+                    ((MainActivity)getActivity()).navigationToFragment(addrManageFragment);
+                    addrManageFragment.setAddressListener(new AddrManageFragment.AddressListener() {
+                        @Override
+                        public void onDefalueAddressChange(Address address) {
+                            addressPhoneTv.setText("收件人："+address.getPhone());
+                            addressNameTv.setText("电话："+address.getName());
+                            addressinfoTv.setText(address.getAddress());
+                        }
+                    });
+                    break;
             }
         }
     };
@@ -148,7 +194,6 @@ public class ShopOrderOkFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         if (mView == null)
         {
             mView=inflater.inflate(R.layout.shop_settlement_page, container, false);
@@ -165,7 +210,6 @@ public class ShopOrderOkFragment extends BaseFragment {
         return mView;
     }
 
-
     /**
      * 初始化数据
      */
@@ -173,6 +217,7 @@ public class ShopOrderOkFragment extends BaseFragment {
     {
         mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"loading");
 
+        mRequestQueue=Volley.newRequestQueue(getActivity());
         backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
@@ -186,16 +231,22 @@ public class ShopOrderOkFragment extends BaseFragment {
         moneyTotalTv=(TypeFaceTextView)mView.findViewById(R.id.jsTotalMoney);
         moneyNumTv=(TypeFaceTextView)mView.findViewById(R.id.jsTotalNum);
 
+        addressinfoTv=(TextView)mView.findViewById(R.id.jsAddressinfoTv);
+        addressNameTv=(TextView)mView.findViewById(R.id.jsAddressNameTv);
+        addressPhoneTv=(TextView)mView.findViewById(R.id.jsAddressPhoneTv);
+
         bzInfo=(TypeFaceEditText)mView.findViewById(R.id.jsEditBzInfo);
         bzInfo.addTextChangedListener(textWatcher);
 
         orderAddressInfoLine=(LinearLayout)mView.findViewById(R.id.jsAddressInfoLine);
         orderAddressNullLine=(LinearLayout)mView.findViewById(R.id.jsAddressNullLine);
         orderAddressEditLine=(LinearLayout)mView.findViewById(R.id.jsEditAddressBtn);
+        orderAddressEditLine.setOnClickListener(onClickListener);
 
         orderGoodsListLine=(LinearLayout)mView.findViewById(R.id.orderGoodsList);
 
         initData();
+        FetchAddressData();
     }
 
     private void initData()
@@ -271,5 +322,50 @@ public class ShopOrderOkFragment extends BaseFragment {
         }
     }
 
-
+    private void FetchAddressData(){
+        JsonObjectRequest request=new JsonObjectRequest("http://192.168.199.173/special_mall/api/receivers",new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (jsonObject!=null){
+                    JSONArray receivers=jsonObject.optJSONArray("receivers");
+                    List<Address> addressList=new ArrayList<Address>();
+                    if (receivers!=null&&receivers.length()>0){
+                        for (int i=0;i<receivers.length();i++){
+                            JSONObject receiver=receivers.optJSONObject(i);
+                            int id=receiver.optInt("id");
+                            int user_id=receiver.optInt("user_id");
+                            String name=receiver.optString("name");
+                            String phone=receiver.optString("phone");
+                            int provider_id=receiver.optInt("provider_id");
+                            String addr=receiver.optString("address");
+                            boolean is_default=receiver.optBoolean("is_default");
+                            Address address=new Address(id,name,is_default,phone,user_id,addr,provider_id);
+                            if (is_default){
+                                addressList.add(0,address);
+                            }else {
+                                addressList.add(address);
+                            }
+                        }
+                        Message message=new Message();
+                        message.what=UPDATE_DEFALUE_ADDRESS_INFO;
+                        message.obj=addressList;
+                        handler.sendMessage(message);
+                    }
+                }
+            }
+        },new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                ShowToast("网络异常");
+            }
+        }){
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                    headers.put("SECAuthorization", "Yk77mfWaq_xYyeEibAxx");
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
+    }
 }
