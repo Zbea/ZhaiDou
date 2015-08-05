@@ -1,5 +1,7 @@
 package com.zhaidou.model;
 
+import java.util.List;
+
 /**
  * Created by wangclark on 15/7/24.
  */
@@ -15,7 +17,12 @@ public class Order {
     private double price;
     private String img;
     private long over_at;
-
+    private Receiver receiver;
+    List<OrderItem> orderItems;
+    private String receiver_address;
+    private String receiver_phone;
+    private String deliver_number;
+    private String receiver_name;
 
     public long getOrderId() {
         return orderId;
@@ -105,6 +112,54 @@ public class Order {
         this.over_at = over_at;
     }
 
+    public Receiver getReceiver() {
+        return receiver;
+    }
+
+    public void setReceiver(Receiver receiver) {
+        this.receiver = receiver;
+    }
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
+
+    public String getReceiver_address() {
+        return receiver_address;
+    }
+
+    public void setReceiver_address(String receiver_address) {
+        this.receiver_address = receiver_address;
+    }
+
+    public String getReceiver_phone() {
+        return receiver_phone;
+    }
+
+    public void setReceiver_phone(String receiver_phone) {
+        this.receiver_phone = receiver_phone;
+    }
+
+    public String getDeliver_number() {
+        return deliver_number;
+    }
+
+    public void setDeliver_number(String deliver_number) {
+        this.deliver_number = deliver_number;
+    }
+
+    public String getReceiver_name() {
+        return receiver_name;
+    }
+
+    public void setReceiver_name(String receiver_name) {
+        this.receiver_name = receiver_name;
+    }
+
     public Order(long orderId, String number, int amount, String status, String status_ch, String created_at_for, String created_at, String time, double price) {
         this.orderId = orderId;
         this.number = number;
@@ -132,6 +187,31 @@ public class Order {
                 ", created_at='" + created_at + '\'' +
                 ", time='" + time + '\'' +
                 ", price=" + price +
+                ", img='" + img + '\'' +
+                ", over_at=" + over_at +
+                ", receiver=" + receiver +
+                ", orderItems=" + orderItems +
+                ", receiver_address='" + receiver_address + '\'' +
+                ", receiver_phone='" + receiver_phone + '\'' +
+                ", deliver_number='" + deliver_number + '\'' +
+                ", receiver_name='" + receiver_name + '\'' +
                 '}';
+    }
+
+    public Order(String time, long orderId, String number, int amount, String status, String status_ch, String created_at_for, String created_at, Receiver receiver, List<OrderItem> orderItems, String receiver_address, String receiver_phone, String deliver_number, String receiver_name) {
+        this.time = time;
+        this.orderId = orderId;
+        this.number = number;
+        this.amount = amount;
+        this.status = status;
+        this.status_ch = status_ch;
+        this.created_at_for = created_at_for;
+        this.created_at = created_at;
+        this.receiver = receiver;
+        this.orderItems = orderItems;
+        this.receiver_address = receiver_address;
+        this.receiver_phone = receiver_phone;
+        this.deliver_number = deliver_number;
+        this.receiver_name = receiver_name;
     }
 }

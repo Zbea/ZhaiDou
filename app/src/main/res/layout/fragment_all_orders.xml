@@ -40,6 +40,13 @@
             android:textColor="@color/white"
             android:text="所有订单"/>
     </RelativeLayout>
+
+
+    <ListView
+        android:id="@+id/lv_all_orderlist"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <LinearLayout
         android:layout_marginTop="20dp"
         android:layout_width="match_parent"

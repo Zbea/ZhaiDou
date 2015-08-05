@@ -50,6 +50,8 @@
 
     <!--timer-->
     <string name="timer">剩余%1$s天%2$s时%3$s分%4$s秒</string>
+    <string name="timer_finish">超时过期</string>
+    <string name="timer_start">支付 %1$s</string>
 
     <!--test-->
     <string name="index_json">
