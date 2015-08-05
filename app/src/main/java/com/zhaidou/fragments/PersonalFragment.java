@@ -394,4 +394,13 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         }
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        Integer userId= (Integer)SharedPreferencesUtil.getData(getActivity(), "userId", -1);
+        if (!hidden&&userId!=-1){
+            getUserDetail();
+            getUserInfo();
+        }
+        super.onHiddenChanged(hidden);
+    }
 }
