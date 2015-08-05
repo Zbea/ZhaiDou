@@ -28,10 +28,10 @@
             >
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:src="@drawable/icon_bbs_question"/>
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_margin="15dp"
+                android:src="@drawable/shop_order_payment_fail_icon"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -132,7 +132,7 @@
                     android:ellipsize="end"
                     android:marqueeRepeatLimit="marquee_forever"/>
 
-                <com.zhaidou.view.TypeFaceTextView
+                <TextView
                     android:id="@+id/failPriceTotalTv"
                     android:layout_width="60dp"
                     android:layout_height="wrap_content"
@@ -168,7 +168,7 @@
                     android:ellipsize="end"
                     android:marqueeRepeatLimit="marquee_forever"/>
 
-                <com.zhaidou.view.TypeFaceTextView
+                <TextView
                     android:id="@+id/failPriceYfTv"
                     android:layout_width="60dp"
                     android:layout_height="wrap_content"
@@ -210,7 +210,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:textColor="@color/gray"
+                        android:textColor="@color/text_gary_color"
                         android:textSize="16sp"
                         android:layout_marginLeft="2dp"
                         android:layout_marginRight="2dp"
@@ -237,7 +237,7 @@
                         android:textSize="16sp"
                         android:text="总计："/>
 
-                    <com.zhaidou.view.TypeFaceTextView
+                    <TextView
                         android:id="@+id/failTotalMoney"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -282,88 +282,123 @@
                 android:layout_height="1dp"
                 android:background="@color/line_color"/>
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="@dimen/default_margin">
+                android:paddingLeft="@dimen/default_margin"
+                android:paddingRight="@dimen/default_margin"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
 
 
                 <CheckBox
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/CustomCheckboxTheme"
                     android:checked="true"
-                    android:id="@+id/checkBox"/>
+                    android:layout_centerVertical="true"
+                    android:background="@color/transparent"
+                    android:id="@+id/cb_weixin"/>
 
-                <com.zhaidou.view.TypeFaceTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/default_margin"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_main_color"
-                    android:text="微信"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:marqueeRepeatLimit="marquee_forever"/>
-                <com.zhaidou.view.TypeFaceTextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/default_margin"
-                    android:textSize="12sp"
-                    android:layout_marginRight="10dp"
-                    android:textColor="@color/text_gary_color"
-                    android:text="单笔订单金额最高为8000"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:marqueeRepeatLimit="marquee_forever"/>
-            </LinearLayout>
+                    android:layout_marginLeft="22dp"
+                    android:layout_centerVertical="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="5dp"
+                        android:src="@drawable/shop_order_payment_weixin"/>
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_main_color"
+                        android:text="微信"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:marqueeRepeatLimit="marquee_forever"/>
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/default_margin"
+                        android:textSize="12sp"
+                        android:layout_marginRight="10dp"
+                        android:textColor="@color/text_gary_color"
+                        android:text="单笔订单金额最高为8000"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:marqueeRepeatLimit="marquee_forever"/>
+                </LinearLayout>
+            </RelativeLayout>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginLeft="20dp"
                 android:background="@color/line_color"/>
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="@dimen/default_margin">
+                android:paddingLeft="@dimen/default_margin"
+                android:paddingRight="@dimen/default_margin"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
 
                 <CheckBox
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/CustomCheckboxTheme"
-                    android:id="@+id/checkBox2"/>
-
-                <com.zhaidou.view.TypeFaceTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:layout_marginLeft="@dimen/default_margin"
-                    android:textColor="@color/text_main_color"
-                    android:text="支付宝"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:marqueeRepeatLimit="marquee_forever"/>
-
-                <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/default_margin"
-                    android:textSize="12sp"
-                    android:layout_marginRight="10dp"
-                    android:textColor="@color/text_gary_color"
-                    android:text="支持大额订单支付"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:marqueeRepeatLimit="marquee_forever"/>
+                    style="@style/CustomCheckboxTheme"
+                    android:layout_centerVertical="true"
+                    android:background="@color/transparent"
+                    android:id="@+id/cb_zhifubao"/>
 
-            </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="22dp"
+                    android:layout_centerVertical="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="5dp"
+                        android:src="@drawable/shop_order_payment_zhifubao"/>
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_main_color"
+                        android:text="支付宝"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:marqueeRepeatLimit="marquee_forever"/>
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/default_margin"
+                        android:textSize="12sp"
+                        android:layout_marginRight="10dp"
+                        android:textColor="@color/text_gary_color"
+                        android:text="支持大额订单支付"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:marqueeRepeatLimit="marquee_forever"/>
+                </LinearLayout>
+            </RelativeLayout>
+
+        </LinearLayout>
 
 
     </LinearLayout>

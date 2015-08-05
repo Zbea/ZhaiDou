@@ -22,6 +22,7 @@ import com.zhaidou.model.User;
 import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -175,7 +176,9 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         items=CreatCartTools.selectByAll(creatCartDB);
         for (int i = 0; i <items.size() ; i++)
         {
-            if (items.get(i).isPublish.equals("true"))
+            ToolUtils.setLog("items.get(i).isPublish:"+items.get(i).isPublish);
+            ToolUtils.setLog("items.get(i).isOver:"+items.get(i).isOver);
+            if (items.get(i).isPublish.equals("true")|items.get(i).isOver.equals("true"))
             {
                 items.remove(items.get(i));
             }

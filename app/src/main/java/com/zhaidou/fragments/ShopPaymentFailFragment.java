@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 
 import com.pulltorefresh.PullToRefreshBase;
 import com.zhaidou.MainActivity;
@@ -45,6 +47,9 @@ public class ShopPaymentFailFragment extends BaseFragment {
     private TypeFaceTextView backBtn,titleTv;
     private TypeFaceTextView timeInfoTv;
     private Timer mTimer;
+
+    private CheckBox cb_weixin;
+    private CheckBox cb_zhifubao;
 
     private ArrayList<CartItem> items;
     private int num = 0;
@@ -135,6 +140,31 @@ public class ShopPaymentFailFragment extends BaseFragment {
         titleTv.setText(R.string.shop_payment_fail_text);
 
         timeInfoTv = (TypeFaceTextView) mView.findViewById(R.id.failTimeInfo);
+
+        cb_weixin=(CheckBox)mView.findViewById(R.id.cb_weixin);
+        cb_weixin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b)
+            {
+                if (b)
+                {
+                    cb_zhifubao.setChecked(false);
+                }
+            }
+        });
+        cb_zhifubao=(CheckBox)mView.findViewById(R.id.cb_zhifubao);
+        cb_zhifubao.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b)
+            {
+                if (b)
+                {
+                    cb_weixin.setChecked(false);
+                }
+            }
+        });
 
         mTimer=new Timer();
         mTimer.schedule(new MyTimer(),1000,1000);

@@ -5,6 +5,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 
 import java.util.List;
 
@@ -32,14 +33,41 @@ public class GoodsImageAdapter extends PagerAdapter
     @Override
     public Object instantiateItem(ViewGroup container, int position)
     {
-        ((ViewPager)container).addView(items.get(position%items.size()),0);
-        return items.get(position%items.size());
+        View view = null;
+        if (items.size() > 0)
+        {
+            if (position % items.size() < 0)
+            {
+                view = items.get(items.size() + position);
+            } else
+            {
+                view = items.get(position % items.size());
+            }
+            ViewParent vp = view.getParent();
+            if (vp != null)
+            {
+                ViewGroup parent = (ViewGroup) vp;
+                parent.removeView(view);
+            }
+            ((ViewPager) container).addView(view);
+        }
+
+//        if((ViewGroup)items.get(position%items.size()).getParent()==null)
+//        {
+//            container.addView(items.get(position%items.size()),0);
+//        }
+//        else
+//        {
+//            ((ViewPager)items.get(position%items.size()).getParent()).removeView(items.get(position%items.size()));
+//            container.addView(items.get(position%items.size()));
+//        }
+        return view;
     }
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object)
     {
-        ((ViewPager)container).removeView(items.get(position%items.size()));
+//        ((ViewPager)container).removeView(items.get(position%items.size()));
     }
 
     @Override

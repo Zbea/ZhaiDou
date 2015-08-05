@@ -5,7 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.pulltorefresh.PullToRefreshBase;
 import com.zhaidou.MainActivity;
@@ -40,15 +43,18 @@ public class ShopPaymentFragment extends BaseFragment {
     private TypeFaceTextView timeInfoTv;
     private Timer mTimer;
 
-    private ImageView paymentIcon;
+    private LinearLayout paymentView;
+    private LinearLayout loseView;
     private Button paymentBtn;
-    private TypeFaceTextView paymentTv;
 
     private ArrayList<CartItem> items;
     private int num = 0;
     private double money = 0;
     private double moneyYF=0;
     private double totalMoney = 0;
+
+    private CheckBox cb_weixin;
+    private CheckBox cb_zhifubao;
 
     /**
      * 下拉刷新
@@ -82,6 +88,9 @@ public class ShopPaymentFragment extends BaseFragment {
                 case R.id.back_btn:
                     ((MainActivity)getActivity()).popToStack(ShopPaymentFragment.this);
                 break;
+                case R.id.paymentBtn:
+                    payment();
+                    break;
             }
         }
     };
@@ -142,10 +151,37 @@ public class ShopPaymentFragment extends BaseFragment {
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(R.string.shop_payment_text);
 
-        timeInfoTv = (TypeFaceTextView) mView.findViewById(R.id.failTimeInfo);
-        paymentTv = (TypeFaceTextView) mView.findViewById(R.id.paymentNameTv);
-        paymentIcon=(ImageView)mView.findViewById(R.id.paymentIcon);
+        timeInfoTv=(TypeFaceTextView)mView.findViewById(R.id.failTimeInfo);
         paymentBtn=(Button)mView.findViewById(R.id.paymentBtn);
+        paymentBtn.setOnClickListener(onClickListener);
+
+        paymentView=(LinearLayout)mView.findViewById(R.id.paymentView);
+        loseView=(LinearLayout)mView.findViewById(R.id.loseView);
+
+        cb_weixin=(CheckBox)mView.findViewById(R.id.cb_weixin);
+        cb_weixin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b)
+            {
+                if (b)
+                {
+                    cb_zhifubao.setChecked(false);
+                }
+            }
+        });
+        cb_zhifubao=(CheckBox)mView.findViewById(R.id.cb_zhifubao);
+        cb_zhifubao.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b)
+            {
+                if (b)
+                {
+                    cb_weixin.setChecked(false);
+                }
+            }
+        });
 
         mTimer=new Timer();
         mTimer.schedule(new MyTimer(),1000,1000);
@@ -178,13 +214,25 @@ public class ShopPaymentFragment extends BaseFragment {
         }
     }
 
+
+    /**
+     * 支付超时处理
+     */
     private void stopView()
     {
-        paymentTv.setText("支付失效");
-        paymentIcon.setImageResource(R.drawable.shop_order_payment_lose_icon);
-        paymentBtn.setBackgroundResource(R.drawable.btn_gray_click_selector);
+        paymentView.setVisibility(View.GONE);
+        loseView.setVisibility(View.VISIBLE);
         paymentBtn.setClickable(false);
+        paymentBtn.setBackgroundResource(R.drawable.btn_no_click_selector);
+    }
 
+    /**
+     * 付款
+     */
+    private void payment()
+    {
+        ShopPaymentSuccessFragment shopPaymentFragment=ShopPaymentSuccessFragment.newInstance("",0);
+        ((MainActivity)getActivity()).navigationToFragment(shopPaymentFragment);
     }
 
 

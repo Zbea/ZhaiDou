@@ -62,7 +62,7 @@ public class SaleServiceFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.fragment_sale, container, false);
+        View view=inflater.inflate(R.layout.goods_details_aftersale_page, container, false);
         view.findViewById(R.id.rl_qq_contact).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

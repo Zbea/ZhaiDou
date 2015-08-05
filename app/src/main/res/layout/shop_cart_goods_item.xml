@@ -17,16 +17,52 @@
             android:layout_width="22dp"
             android:layout_height="50dp"
             android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_weight="0.00001"
+
             style="@style/CustomCheckboxTheme"
             android:id="@+id/chatItemCB"/>
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/cartItemIsOver"
+            android:layout_width="34dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            android:gravity="center"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:layout_weight="0.00001"
+            android:visibility="gone"
+            android:background="@drawable/btn_green_click_bg"
+            android:text="已卖光"/>
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/cartItemIsLose"
+            android:layout_width="34dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            android:gravity="center"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:layout_weight="0.00001"
+            android:visibility="gone"
+            android:background="@drawable/btn_red_click_selector"
+            android:text="已下架"/>
 
         <ImageView
             android:id="@+id/cartImageItemTv"
             android:layout_weight="0.00001"
             android:layout_width="100dp"
             android:layout_height="96dp"
-            android:layout_margin="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
             android:scaleType="fitXY"
             android:src="@drawable/icon_loading_defalut"/>
 
@@ -79,13 +115,14 @@
                         android:ellipsize="marquee"
                         android:marqueeRepeatLimit="marquee_forever"
                         android:textColor="@color/text_gary_color"
-                        android:text="黄色/L"
+                        android:text=""
                         />
                 </LinearLayout>
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/cartNumView"
                 android:layout_marginTop="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="25dp"
@@ -114,6 +151,31 @@
                     android:background="@drawable/shop_cart_add_selector"/>
 
                 </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cartNumLoseView"
+                android:layout_marginTop="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:visibility="gone"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_gary_color"
+                    android:text="数量："/>
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/cartItemLoseNum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:gravity="center"
+                    android:textColor="@color/text_gary_color"
+                    android:text="1"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -151,7 +213,7 @@
             <ImageView
                 android:id="@+id/cartItemDelBtn"
                 android:layout_width="45dp"
-                android:layout_height="30dp"
+                android:layout_height="28dp"
                 android:layout_marginTop="15dp"
                 android:paddingLeft="20dp"
                 android:paddingTop="5dp"

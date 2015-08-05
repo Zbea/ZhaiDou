@@ -6,4 +6,5 @@
     <dimen name="image_width_dimen">104dp</dimen>
     <dimen name="goods_bottom_height_dimen">55dp</dimen>
     <dimen name="home_tips_dimen">45dp</dimen>
+    <dimen name="btn_height_dimen">40dp</dimen>
 </resources>

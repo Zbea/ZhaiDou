@@ -41,6 +41,7 @@ public class CreatCartTools
                 item.size = cursor.getString(cursor.getColumnIndex("size"));
                 item.sizeId = cursor.getInt(cursor.getColumnIndex("sizeId"));
                 item.isPublish = cursor.getString(cursor.getColumnIndex("isPublish"));
+                item.isOver = cursor.getString(cursor.getColumnIndex("isOver"));
                 item.isCheck = false;
                 item.creatTime = cursor.getLong(cursor.getColumnIndex("creatTime"));
                 items.add(item);
@@ -84,9 +85,9 @@ public class CreatCartTools
     }
 
     /**
-     * 修改数据
+     * 修改数量数据
      */
-    public static void editByData(CreatCartDB cartDB,CartItem itm)
+    public static void editNumByData(CreatCartDB cartDB,CartItem itm)
     {
         SQLiteDatabase sqLiteDatabase = cartDB.getReadableDatabase();
         sqLiteDatabase.beginTransaction();
@@ -115,7 +116,69 @@ public class CreatCartTools
     }
 
     /**
-     * 存储数据
+     * 修改数据为已卖完
+     */
+    public static void editIsOverByData(CreatCartDB cartDB,CartItem itm)
+    {
+        SQLiteDatabase sqLiteDatabase = cartDB.getReadableDatabase();
+        sqLiteDatabase.beginTransaction();
+        try
+        {
+            for (int i = 0; i < items.size(); i++)
+            {
+                if (items.get(i).sizeId == itm.sizeId)
+                {
+                    ContentValues values = new ContentValues();
+                    values.put("isOver", itm.isOver);
+                    String whereClause = "sizeId=?";
+                    String[] whereArgs = new String[]{String.valueOf(itm.sizeId)};
+                    sqLiteDatabase.update(CreatCartDB.SqlName, values, whereClause, whereArgs);
+                }
+            }
+            sqLiteDatabase.setTransactionSuccessful();
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        } finally
+        {
+            sqLiteDatabase.endTransaction();
+            sqLiteDatabase.close();
+        }
+    }
+
+    /**
+     * 修改数据为已下架
+     */
+    public static void editIsLoseByData(CreatCartDB cartDB,CartItem itm)
+    {
+        SQLiteDatabase sqLiteDatabase = cartDB.getReadableDatabase();
+        sqLiteDatabase.beginTransaction();
+        try
+        {
+            for (int i = 0; i < items.size(); i++)
+            {
+                if (items.get(i).sizeId == itm.sizeId)
+                {
+                    ContentValues values = new ContentValues();
+                    values.put("isPublish", itm.isPublish);
+                    String whereClause = "sizeId=?";
+                    String[] whereArgs = new String[]{String.valueOf(itm.sizeId)};
+                    sqLiteDatabase.update(CreatCartDB.SqlName, values, whereClause, whereArgs);
+                }
+            }
+            sqLiteDatabase.setTransactionSuccessful();
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        } finally
+        {
+            sqLiteDatabase.endTransaction();
+            sqLiteDatabase.close();
+        }
+    }
+
+    /**
+     * 加入数据
      */
     public static void insertByData(CreatCartDB cartDB,List<CartItem> cartItems,CartItem itm)
     {
@@ -139,6 +202,7 @@ public class CreatCartTools
                 values.put("size", itm.size);
                 values.put("sizeId", itm.sizeId);
                 values.put("isPublish", itm.isPublish);
+                values.put("isOver", itm.isOver);
 //                values.put("isCheck", itm.isCheck);
                 values.put("creatTime", itm.creatTime);
                 sqLiteDatabase.insert(CreatCartDB.SqlName, null, values);

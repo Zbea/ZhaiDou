@@ -41,7 +41,10 @@ public class ZhaiDou {
     public static String shopSpecialListUrl="http://192.168.199.173/special_mall/api/sales?sale_cate=0";
     //特卖详情
     public static String shopSpecialTadayUrl="http://192.168.199.173/special_mall/api/sales/";
-
+    //商品详情
+    public static String goodsDetailsUrlUrl="http://192.168.199.173/special_mall/api/merchandises/";
+    //购物车商品详情
+    public static String goodsCartGoodsUrl="http://192.168.199.173/special_mall/api/merchandises/cart_merchandises?ids=";
 
 
     //TAB分类

@@ -2,8 +2,10 @@ package com.zhaidou.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -76,7 +78,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     private ImageView iv_banner;
     private ProductAdapter mAdapter;
     private Map<Integer,View> mHashMap = new HashMap<Integer, View>();
-    private AsyncImageLoader1 imageLoader;
     private MyTimer mTimer;
     private RequestQueue requestQueue;
     private List<Product> products = new ArrayList<Product>();
@@ -89,8 +90,25 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 
     private Dialog mDialog;
 
+    private TextView cartTipsTv;
+    private ImageView myCartBtn;
+
     private Coupon mCoupon;
     private View rootView;
+
+    private BroadcastReceiver broadcastReceiver=new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            String action=intent.getAction();
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
+            {
+                initCartTips();
+            }
+        }
+    };
+
     private Handler mHandler=new Handler()
     {
         @Override
@@ -176,6 +194,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         if(rootView==null){
+            initBroadcastReceiver();
             rootView=inflater.inflate(R.layout.fragment_special_sale, container, false);
             mGridView=(GridView)rootView.findViewById(R.id.gv_sale);
             mGridView.setEmptyView(mEmptyView);
@@ -186,7 +205,13 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             rootView.findViewById(R.id.ll_back).setOnClickListener(this);
             rootView.findViewById(R.id.iv_coupon).setOnClickListener(this);
 
+            myCartBtn = (ImageView) rootView.findViewById(R.id.myCartBtn);
+            myCartBtn.setOnClickListener(this);
+            cartTipsTv=(TextView)rootView.findViewById(R.id.myCartTipsTv);
+
             mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
+
+            initCartTips();
 
             requestQueue= Volley.newRequestQueue(getActivity());
             FetchCouponData();
@@ -218,6 +243,32 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         return rootView;
     }
 
+    /**
+     * 注册广播
+     */
+    private void initBroadcastReceiver()
+    {
+        IntentFilter intentFilter=new IntentFilter();
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+        getActivity().registerReceiver(broadcastReceiver, intentFilter);
+    }
+
+    /**
+     * 红色标识提示显示数量
+     */
+    private void initCartTips()
+    {
+        if (MainActivity.num>0)
+        {
+            cartTipsTv.setVisibility(View.VISIBLE);
+            cartTipsTv.setText(""+MainActivity.num);
+        }
+        else
+        {
+            cartTipsTv.setVisibility(View.GONE);
+        }
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()){
@@ -241,6 +292,11 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     Toast.makeText(getActivity(),"特卖已结束",Toast.LENGTH_SHORT).show();
                 }
                 break;
+
+            case R.id.myCartBtn:
+                ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
+                ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
+                break;
         }
     }
 
@@ -249,15 +305,17 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
-                        Log.i("SpecialSaleFragment---------->FetchData---",jsonObject.toString());
                         mDialog.dismiss();
+                        if (jsonObject.equals(""))
+                        {
+                            ToolUtils.setToast(getActivity(),"加载失败"); return;
+                        }
                         JSONObject saleJson = jsonObject.optJSONObject("sale");
                         String end_date=saleJson.optString("end_time");
-                        Message timerMsg = new Message();
-                        timerMsg.what=UPDATE_TIMER_START;
-                        timerMsg.obj=end_date;
-                        mHandler.sendMessage(timerMsg);
-
+                            Message timerMsg = new Message();
+                            timerMsg.what=UPDATE_TIMER_START;
+                            timerMsg.obj=end_date;
+                            mHandler.sendMessage(timerMsg);
                         JSONArray items = saleJson.optJSONArray("merchandises");
                         if (items!=null&&items.length()>0){
                             for (int i=0;i<items.length();i++){
@@ -403,5 +461,12 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 //        if (fragment instanceof RegisterFragment){
 //            ((MainActivity)getActivity()).toHomeFragment();
 //        }
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        getActivity().unregisterReceiver(broadcastReceiver);
+        super.onDestroy();
     }
 }

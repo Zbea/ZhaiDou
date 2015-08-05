@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -45,6 +45,7 @@
 <ScrollView
     android:layout_width="match_parent"
     android:scrollbars="none"
+    android:layout_below="@+id/common_actionbar"
     android:layout_height="wrap_content">
     <LinearLayout
         android:layout_width="match_parent"
@@ -53,6 +54,7 @@
     <ImageView
         android:id="@+id/iv_special_banner"
         android:layout_width="match_parent"
+        android:scaleType="fitXY"
         android:layout_height="@dimen/home_item_dimen"/>
 
     <LinearLayout
@@ -63,7 +65,7 @@
             android:background="@color/white"
             android:layout_width="0dp"
             android:layout_height="40dp"
-            android:gravity="center_vertical"
+            android:gravity="center_vertical|left"
             android:layout_weight="1">
             <ImageView
                 android:layout_width="16dp"
@@ -81,7 +83,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
+            android:gravity="right|center_vertical"
+            android:paddingRight="10dp"
             android:background="@color/white">
             <ImageView
                 android:layout_width="16dp"
@@ -92,6 +95,7 @@
                 android:paddingLeft="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="计时中"
                 android:textColor="#666666"/>
         </LinearLayout>
     </LinearLayout>
@@ -119,4 +123,32 @@
         android:listSelector="@android:color/transparent"/>
     </LinearLayout>
 </ScrollView>
-</LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="20dp">
+
+
+        <ImageView
+            android:id="@+id/myCartBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:layout_centerInParent="true"
+            android:src="@drawable/shop_goods_my_cart_selector"/>
+
+        <TextView
+            android:id="@+id/myCartTipsTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:layout_alignParentRight="true"
+            android:text=""
+            android:visibility="gone"
+            android:gravity="center"
+            android:background="@drawable/shop_goods_my_cart_tips_red_bg"
+            android:textSize="12sp"/>
+    </RelativeLayout>
+</RelativeLayout>

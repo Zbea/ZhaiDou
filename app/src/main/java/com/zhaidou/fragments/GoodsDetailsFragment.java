@@ -17,6 +17,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -29,6 +30,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -83,7 +85,6 @@ public class GoodsDetailsFragment extends BaseFragment {
     private ViewPager viewPager;
     private LinearLayout viewGroupe;//指示器容器
     private LinearLayout ljBtn;
-    private LinearLayout mImageContainer;
     private RelativeLayout addCartBtn;
     private View myCartBtn;
 
@@ -105,11 +106,14 @@ public class GoodsDetailsFragment extends BaseFragment {
     private List<CartItem> items = new ArrayList<CartItem>();
 
     private int num;
+    private ScrollView scrollView;
+    private ImageView topBtn;
 
-    GoodDetail detail;
-    SpecificationAdapter specificationAdapter;
-    GoodsImageAdapter imageAdapter;
+    private GoodDetail detail;
+    private SpecificationAdapter specificationAdapter;
+    private GoodsImageAdapter imageAdapter;
     private Specification mSpecification;//选中规格
+    private List<Specification> specificationList;
     private ImageView mTipView;
     private FrameLayout animation_viewGroup;
     //动画时间
@@ -164,10 +168,10 @@ public class GoodsDetailsFragment extends BaseFragment {
                     mOldPrice.setText("￥" + detail.getCost_price() + "");
                     tv_comment.setText(detail.getDesigner());
                     mTitle.setText(detail.getTitle());
-                    mDiscount.setText(detail.getDiscount() + "折");
+                    setDiscount(detail.getPrice(), detail.getCost_price());
                     specificationAdapter.addAll(detail.getSpecifications());
 
-                    addImageToContainer(detail.getImgs());
+                    initData(detail.getImgs());
 
                     String end_date=detail.getEnd_time();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -193,6 +197,9 @@ public class GoodsDetailsFragment extends BaseFragment {
                     String timer = String.format(timerFormat,time.getDay(),hourStr,minStr,secondStr);
                     mTimerView.setText(timer);
                     break;
+                case UPDATE_UI_TIMER_FINISH:
+                    mTimerView.setText("已结束");
+                    break;
             }
         }
     };
@@ -202,7 +209,6 @@ public class GoodsDetailsFragment extends BaseFragment {
         @Override
         public void onPageScrolled(int i, float v, int i2) {
         }
-
         @Override
         public void onPageSelected(int i) {
             setImageBackground(i % adPics.size());
@@ -233,6 +239,9 @@ public class GoodsDetailsFragment extends BaseFragment {
                     break;
                 case R.id.goodsAddBuyBtn:
                     addGoods();
+                    break;
+                case R.id.goodsTop:
+                    scrollView.scrollTo(0,0);
                     break;
             }
         }
@@ -295,7 +304,6 @@ public class GoodsDetailsFragment extends BaseFragment {
         titleTv.setText("商品详情");
 
         viewGroupe = (LinearLayout) mView.findViewById(R.id.goods_viewGroup);
-        viewPager = (ViewPager) mView.findViewById(R.id.goods_adv_pager);
 
         mGridView = (ChildGridView) mView.findViewById(R.id.gv_specification);
 
@@ -317,11 +325,33 @@ public class GoodsDetailsFragment extends BaseFragment {
         mTipView=(ImageView)mView.findViewById(R.id.myCartTipsTv);
         mDiscount = (TextView) mView.findViewById(R.id.tv_discount);
         mTitle = (TextView) mView.findViewById(R.id.tv_title);
-        mImageContainer = (LinearLayout) mView.findViewById(R.id.ll_img_container);
         mTimerView=(TextView)mView.findViewById(R.id.tv_count_time);
         animation_viewGroup = createAnimLayout();
         mRequestQueue = Volley.newRequestQueue(getActivity());
 
+        scrollView=(ScrollView)mView.findViewById(R.id.sv_goods_detail);
+        scrollView.setOnTouchListener(new View.OnTouchListener()
+        {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent)
+            {
+                if (motionEvent.getAction()==MotionEvent.ACTION_MOVE)
+                {
+                    int scrollY=view.getScrollY();
+                    if(scrollY!=0)
+                    {
+                        topBtn.setVisibility(View.VISIBLE);
+                    }
+                    else
+                    {
+                        topBtn.setVisibility(View.GONE);
+                    }
+                }
+                return false;
+            }
+        });
+        topBtn=(ImageView)mView.findViewById(R.id.goodsTop);
+        topBtn.setOnClickListener(onClickListener);
 
         mTabPageIndicator = (TabPageIndicator) mView.findViewById(R.id.tab_goods_detail);
         mViewPager = (ViewPager) mView.findViewById(R.id.vp_goods_detail);
@@ -335,19 +365,59 @@ public class GoodsDetailsFragment extends BaseFragment {
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 specificationAdapter.setCheckPosition(mSpecificationSelectPosition = position);
                 specificationAdapter.notifyDataSetChanged();
-                if (detail != null)
-                {
-                    mSpecification = detail.getSpecifications().get(position);
-                }
+
+                sizeEvent(position);
+
             }
         });
 
         creatCartDB = new CreatCartDB(mContext);
         initCartTips();
 
-//        initData(null);
-        FetchDetailData();
+        FetchDetailData(mIndex);
 
+    }
+
+    /**
+     * 选择规格事件处理
+     */
+    private void sizeEvent(int position)
+    {
+        if (detail != null & specificationList.size()>0)
+        {
+            mSpecification = specificationList.get(position);
+            mCurrentPrice.setText("￥"+mSpecification.price);
+            setDiscount(mSpecification.price,detail.getCost_price());
+        }
+    }
+
+    /**
+     * 折扣处理事件
+     * @param current
+     * @param old
+     */
+    private void setDiscount(double current,double old)
+    {
+        mDiscount.setVisibility(View.VISIBLE);
+        if(current!=0&old!=0)
+        {
+            DecimalFormat df = new DecimalFormat("##.0");
+            String zk=df.format(current/old*10);
+            if (zk.contains(".0"))
+            {
+                int sales=(int)Double.parseDouble(zk);
+                mDiscount.setText(sales+"折");
+            }
+            else
+            {
+                Double sales=Double.parseDouble(zk);
+                mDiscount.setText(sales+"折");
+            }
+        }
+        else
+        {
+            mDiscount.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -368,7 +438,7 @@ public class GoodsDetailsFragment extends BaseFragment {
         items = CreatCartTools.selectByAll(creatCartDB);
         for (int i = 0; i < items.size(); i++)
         {
-            if (items.get(i).isPublish.equals("true"))
+            if (items.get(i).isPublish.equals("true")|items.get(i).isOver.equals("true"))
             {
                 items.remove(items.get(i));
             }
@@ -402,10 +472,10 @@ public class GoodsDetailsFragment extends BaseFragment {
                 cartItem.name = detail.getTitle();
                 cartItem.creatTime = System.currentTimeMillis();
                 cartItem.imageUrl = detail.getImgs().get(0);
-                cartItem.currentPrice = detail.getPrice();
+                cartItem.currentPrice = mSpecification.price;//规格的价格
                 cartItem.formalPrice = detail.getCost_price();
                 DecimalFormat df = new DecimalFormat("##.0");
-                double saveMoney = Double.parseDouble(df.format(detail.getCost_price() - detail.getPrice()));
+                double saveMoney = Double.parseDouble(df.format(detail.getCost_price() - mSpecification.price));
                 cartItem.saveMoney = saveMoney;
                 cartItem.saveTotalMoney = saveMoney;
                 cartItem.totalMoney = detail.getPrice();
@@ -449,10 +519,10 @@ public class GoodsDetailsFragment extends BaseFragment {
                 cartItem.name = detail.getTitle();
                 cartItem.creatTime = System.currentTimeMillis();
                 cartItem.imageUrl = detail.getImgs().get(0);
-                cartItem.currentPrice = detail.getPrice();
+                cartItem.currentPrice = mSpecification.price;//规格的价格
                 cartItem.formalPrice = detail.getCost_price();
                 DecimalFormat df = new DecimalFormat("##.0");
-                double saveMoney = Double.parseDouble(df.format(detail.getCost_price() - detail.getPrice()));
+                double saveMoney = Double.parseDouble(df.format(detail.getCost_price() - mSpecification.price));
                 cartItem.saveMoney = saveMoney;
                 cartItem.saveTotalMoney = saveMoney;
                 cartItem.totalMoney = detail.getPrice();
@@ -460,8 +530,12 @@ public class GoodsDetailsFragment extends BaseFragment {
                 cartItem.size = mSpecification.getTitle();
                 cartItem.sizeId = mSpecification.getId();
                 cartItem.isPublish = "false";
+                cartItem.isOver = "false";
 
                 CreatCartTools.insertByData(creatCartDB, items, cartItem);
+
+                Intent intent=new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
+                mContext.sendBroadcast(intent);
 //                List<Specification> itemsSp=detail.getSpecifications();
 //                for (int i = 0; i <itemsSp.size() ; i++)
 //                {
@@ -484,10 +558,13 @@ public class GoodsDetailsFragment extends BaseFragment {
      */
     private void initData(List<String> urls) {
         viewGroupe.removeAllViews();
-        if (CollectionUtils.isNotNull(urls)) {
-            Log.i("urls-------------->", urls.toString());
+        if (CollectionUtils.isNotNull(urls))
+        {
             for (String url : urls) {
                 ImageView imageView = new ImageView(mContext);
+                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                imageView.setLayoutParams(params);
                 ToolUtils.setImageCacheUrl(url, imageView);
                 adPics.add(imageView);
             }
@@ -495,6 +572,7 @@ public class GoodsDetailsFragment extends BaseFragment {
 
             for (int i = 0; i < adPics.size(); i++) {
                 ImageView dot_iv = new ImageView(mContext);
+                dot_iv.setScaleType(ImageView.ScaleType.FIT_XY);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 params.bottomMargin = 10;
                 if (i == 0) {
@@ -512,10 +590,10 @@ public class GoodsDetailsFragment extends BaseFragment {
                     dots[i].setBackgroundResource(R.drawable.home_tips_icon);
                 }
             }
+            viewPager = (ViewPager) mView.findViewById(R.id.goods_adv_pager);
             imageAdapter = new GoodsImageAdapter(mContext, adPics);
             viewPager.setAdapter(imageAdapter);
             viewPager.setOnPageChangeListener(onPageChangeListener);
-            viewPager.setCurrentItem(adPics.size() * 100);
         }
     }
 
@@ -532,8 +610,9 @@ public class GoodsDetailsFragment extends BaseFragment {
         }
     }
 
-    public void FetchDetailData() {
-        JsonObjectRequest request = new JsonObjectRequest("http://192.168.199.173/special_mall/api/merchandises/6", new Response.Listener<JSONObject>() {
+    public void FetchDetailData(int id) {
+        String url=ZhaiDou.goodsDetailsUrlUrl+id;
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
 
@@ -567,12 +646,15 @@ public class GoodsDetailsFragment extends BaseFragment {
 
                     JSONArray specifications = merchandise.optJSONArray("specifications");
                     if (specifications != null && specifications.length() > 0) {
-                        List<Specification> specificationList = new ArrayList<Specification>();
+                        specificationList = new ArrayList<Specification>();
                         for (int i = 0; i < specifications.length(); i++) {
                             JSONObject specificationObj = specifications.optJSONObject(i);
                             int specificationId = specificationObj.optInt("id");
                             String specificationTitle = specificationObj.optString("title");
-                            Specification specification = new Specification(specificationId, specificationTitle);
+                            int num = specificationObj.optInt("count");
+                            double sizePrice = specificationObj.optDouble("price");
+
+                            Specification specification = new Specification(specificationId, specificationTitle,num,sizePrice);
                             specificationList.add(specification);
                         }
                         detail.setSpecifications(specificationList);
@@ -608,7 +690,7 @@ public class GoodsDetailsFragment extends BaseFragment {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0: {
-                    return GoodsDetailsChildFragment.newInstance(mData, 0);
+                    return GoodsDetailsChildFragment.newInstance(mData, mIndex);
                 }
                 case 1: {
                     return SaleServiceFragment.newInstance("", "");
@@ -630,15 +712,7 @@ public class GoodsDetailsFragment extends BaseFragment {
         }
     }
 
-    private void addImageToContainer(List<String> urls) {
-        mImageContainer.removeAllViews();
-        for (String url : urls) {
-            ImageView imageView = new ImageView(getActivity());
-            ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            ToolUtils.setImageCacheUrl(url, imageView);
-            mImageContainer.addView(imageView);
-        }
-    }
+
 
 
 
@@ -660,8 +734,6 @@ public class GoodsDetailsFragment extends BaseFragment {
     }
 
     private void setAnim(Drawable drawable,int[] start_location){
-        Log.i("start_location------------>",start_location[0]+"------------------"+start_location[1]);
-
         Animation mScaleAnimation = new ScaleAnimation(1.5f,0.0f,1.5f,0.0f,Animation.RELATIVE_TO_SELF,0.1f,Animation.RELATIVE_TO_SELF,0.1f);
         mScaleAnimation.setDuration(AnimationDuration);
         mScaleAnimation.setFillAfter(true);
@@ -674,7 +746,6 @@ public class GoodsDetailsFragment extends BaseFragment {
 
         int[] end_location = new int[2];
         myCartBtn.getLocationInWindow(end_location);
-        Log.i("end_location----------->",end_location[0]+"-------------------"+end_location[1]);
         int endX =-start_location[0]+dip2px(getActivity(),30);
         int endY = end_location[1]-start_location[1];
 
@@ -693,29 +764,24 @@ public class GoodsDetailsFragment extends BaseFragment {
 
             @Override
             public void onAnimationStart(Animation animation) {
-                // TODO Auto-generated method stub
                 number++;
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                // TODO Auto-generated method stub
-
                 number--;
                 if(number==0){
                     isClean = true;
                     myHandler.sendEmptyMessage(0);
                 }
                 mTipView.setVisibility(View.GONE);
-                mCartCount.setText(++count+"");
-                mCartCount.setVisibility(count==0?View.GONE:View.VISIBLE);
+//                mCartCount.setText("" + num);
+//                mCartCount.setVisibility(count==0?View.GONE:View.VISIBLE);
+                initCartTips();
             }
-
             @Override
             public void onAnimationRepeat(Animation animation) {
-                // TODO Auto-generated method stub
             }
-
         });
         view.startAnimation(mAnimationSet);
 
