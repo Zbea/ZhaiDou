@@ -15,6 +15,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -56,6 +57,7 @@ import com.zhaidou.model.Specification;
 import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;
 import com.zhaidou.utils.CollectionUtils;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ChildGridView;
 import com.zhaidou.view.TypeFaceTextView;
@@ -75,6 +77,7 @@ public class GoodsDetailsFragment extends BaseFragment {
     private String mPage;
     private int mIndex;
     private View mView;
+    private int flags;
     private Context mContext;
     private Dialog mDialog;
 
@@ -85,7 +88,7 @@ public class GoodsDetailsFragment extends BaseFragment {
     private ViewPager viewPager;
     private LinearLayout viewGroupe;//指示器容器
     private LinearLayout ljBtn;
-    private RelativeLayout addCartBtn;
+    private LinearLayout addCartBtn;
     private View myCartBtn;
 
     private GridView mGridView;
@@ -125,6 +128,8 @@ public class GoodsDetailsFragment extends BaseFragment {
     private MyTimer mTimer;
     private TextView mTimerView;
 
+    private int userId;
+
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
         @Override
@@ -135,6 +140,15 @@ public class GoodsDetailsFragment extends BaseFragment {
             {
                 initCartTips();
             }
+            if (action.equals(ZhaiDou.IntentRefreshLoginTag))
+            {
+                initCartTips();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
+        {
+            initCartTips();
+        }
+
         }
     };
 
@@ -231,8 +245,15 @@ public class GoodsDetailsFragment extends BaseFragment {
                     ((MainActivity) getActivity()).popToStack(GoodsDetailsFragment.this);
                     break;
                 case R.id.goodsMyCartBtn:
-                    ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
-                    ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
+                    if (checkLogin())
+                    {
+                        ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
+                        ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
+                    }
+                    else
+                    {
+                        ToolUtils.setToast(mContext,"抱歉,尚未登录");
+                    }
                     break;
                 case R.id.goodsLjBuyBtn:
                     buyGoods();
@@ -265,6 +286,8 @@ public class GoodsDetailsFragment extends BaseFragment {
         if (getArguments() != null) {
             mPage = getArguments().getString(PAGE);
             mIndex = getArguments().getInt(INDEX);
+            flags=getArguments().getInt("flags");
+            ToolUtils.setLog("flags:"+flags);
         }
     }
 
@@ -311,7 +334,7 @@ public class GoodsDetailsFragment extends BaseFragment {
         myCartBtn.setOnClickListener(onClickListener);
         ljBtn = (LinearLayout) mView.findViewById(R.id.goodsLjBuyBtn);
         ljBtn.setOnClickListener(onClickListener);
-        addCartBtn = (RelativeLayout) mView.findViewById(R.id.goodsAddBuyBtn);
+        addCartBtn = (LinearLayout) mView.findViewById(R.id.goodsAddBuyBtn);
         addCartBtn.setOnClickListener(onClickListener);
 
         mView.findViewById(R.id.shopping_cart).setOnClickListener(onClickListener);
@@ -378,6 +401,14 @@ public class GoodsDetailsFragment extends BaseFragment {
 
     }
 
+    public boolean checkLogin()
+    {
+        String token=(String) SharedPreferencesUtil.getData(mContext, "token", "");
+        userId=(Integer)SharedPreferencesUtil.getData(mContext,"userId",-1);
+        boolean isLogin=!TextUtils.isEmpty(token)&&userId>-1;
+        return isLogin;
+    }
+
     /**
      * 选择规格事件处理
      */
@@ -387,7 +418,8 @@ public class GoodsDetailsFragment extends BaseFragment {
         {
             mSpecification = specificationList.get(position);
             mCurrentPrice.setText("￥"+mSpecification.price);
-            setDiscount(mSpecification.price,detail.getCost_price());
+            mOldPrice.setText("￥"+mSpecification.oldPrice);
+            setDiscount(mSpecification.price,mSpecification.oldPrice);
         }
     }
 
@@ -427,6 +459,8 @@ public class GoodsDetailsFragment extends BaseFragment {
     {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         mContext.registerReceiver(broadcastReceiver, intentFilter);
     }
 
@@ -435,47 +469,60 @@ public class GoodsDetailsFragment extends BaseFragment {
      */
     private void initCartTips()
     {
-        items = CreatCartTools.selectByAll(creatCartDB);
-        for (int i = 0; i < items.size(); i++)
-        {
-            if (items.get(i).isPublish.equals("true")|items.get(i).isOver.equals("true"))
-            {
-                items.remove(items.get(i));
-            }
-        }
-        if (items.size() > 0)
+        if (checkLogin())
         {
             num = 0;
+            getGoodsItems();
             for (int i = 0; i < items.size(); i++)
             {
-                num = num + items.get(i).num;
+                if (items.get(i).isPublish.equals("false")&&items.get(i).isOver.equals("false"))
+                {
+                    num=num+items.get(i).num;
+                }
             }
-            mCartCount.setVisibility(View.VISIBLE);
-            mCartCount.setText("" + num);
-        } else
+            if (num > 0)
+            {
+                mCartCount.setVisibility(View.VISIBLE);
+                mCartCount.setText("" + num);
+            } else
+            {
+                mCartCount.setVisibility(View.GONE);
+            }
+        }
+        else
         {
             mCartCount.setVisibility(View.GONE);
         }
     }
 
+    /**
+     * 获得当前userId的所有商品
+     */
+    private void getGoodsItems()
+    {
+        items=CreatCartTools.selectByAll(creatCartDB,userId);
+    }
 
     /**
      * 立即购买
      */
     private void buyGoods()
     {
+        if(checkLogin())
+        {
         if (detail != null)
             if (mSpecification != null)
             {
                 CartItem cartItem = new CartItem();
+                cartItem.userId=userId;
                 cartItem.id = detail.getId();
                 cartItem.name = detail.getTitle();
                 cartItem.creatTime = System.currentTimeMillis();
                 cartItem.imageUrl = detail.getImgs().get(0);
                 cartItem.currentPrice = mSpecification.price;//规格的价格
-                cartItem.formalPrice = detail.getCost_price();
+                cartItem.formalPrice = mSpecification.oldPrice;
                 DecimalFormat df = new DecimalFormat("##.0");
-                double saveMoney = Double.parseDouble(df.format(detail.getCost_price() - mSpecification.price));
+                double saveMoney = Double.parseDouble(df.format(mSpecification.oldPrice - mSpecification.price));
                 cartItem.saveMoney = saveMoney;
                 cartItem.saveTotalMoney = saveMoney;
                 cartItem.totalMoney = detail.getPrice();
@@ -483,6 +530,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                 cartItem.size = mSpecification.getTitle();
                 cartItem.sizeId = mSpecification.getId();
                 cartItem.isPublish = "false";
+                cartItem.isOSale = "true";
 
                 ArrayList<CartItem> itemsCheck = new ArrayList<CartItem>();
                 itemsCheck.add(cartItem);
@@ -497,6 +545,11 @@ public class GoodsDetailsFragment extends BaseFragment {
             {
                 Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
             }
+        }
+        else
+        {
+            ToolUtils.setToast(mContext,"抱歉，尚未登录");
+        }
     }
 
     /**
@@ -504,53 +557,64 @@ public class GoodsDetailsFragment extends BaseFragment {
      */
     private void addGoods()
     {
-        if (detail != null)
+        if(checkLogin())
         {
-            if (mSpecification != null)
+            if (detail != null)
             {
-                int[] location = new int[2];
-                mTipView.getLocationInWindow(location);
-                Drawable drawable =mTipView.getDrawable();
-                doAnim(drawable,location);
+                if (mSpecification != null)
+                {
+                    int[] location = new int[2];
+                    mTipView.getLocationInWindow(location);
+                    Drawable drawable =mTipView.getDrawable();
+                    doAnim(drawable,location);
 
-                items = CreatCartTools.selectByAll(creatCartDB);
-                CartItem cartItem = new CartItem();
-                cartItem.id = detail.getId();
-                cartItem.name = detail.getTitle();
-                cartItem.creatTime = System.currentTimeMillis();
-                cartItem.imageUrl = detail.getImgs().get(0);
-                cartItem.currentPrice = mSpecification.price;//规格的价格
-                cartItem.formalPrice = detail.getCost_price();
-                DecimalFormat df = new DecimalFormat("##.0");
-                double saveMoney = Double.parseDouble(df.format(detail.getCost_price() - mSpecification.price));
-                cartItem.saveMoney = saveMoney;
-                cartItem.saveTotalMoney = saveMoney;
-                cartItem.totalMoney = detail.getPrice();
-                cartItem.num = 1;
-                cartItem.size = mSpecification.getTitle();
-                cartItem.sizeId = mSpecification.getId();
-                cartItem.isPublish = "false";
-                cartItem.isOver = "false";
+                    getGoodsItems();
 
-                CreatCartTools.insertByData(creatCartDB, items, cartItem);
+                    CartItem cartItem = new CartItem();
+                    cartItem.userId=userId;
+                    cartItem.id = detail.getId();
+                    cartItem.name = detail.getTitle();
+                    cartItem.creatTime = System.currentTimeMillis();
+                    if (detail.getImgs()!=null)
+                    {
+                        cartItem.imageUrl = detail.getImgs().get(0);
+                    }
+                    cartItem.currentPrice = mSpecification.price;//规格的价格
+                    cartItem.formalPrice = mSpecification.oldPrice;
+                    DecimalFormat df = new DecimalFormat("##.0");
+                    double saveMoney = Double.parseDouble(df.format(mSpecification.oldPrice - mSpecification.price));
+                    cartItem.saveMoney = saveMoney;
+                    cartItem.saveTotalMoney = saveMoney;
+                    cartItem.totalMoney = detail.getPrice();
+                    cartItem.num = 1;
+                    cartItem.size = mSpecification.getTitle();
+                    cartItem.sizeId = mSpecification.getId();
+                    cartItem.isPublish = "false";
+                    cartItem.isOver = "false";
+                    if (flags==1)//是否零元特卖
+                    {
+                        cartItem.isOSale = "true";
+                    }
+                    else
+                    {
+                        cartItem.isOSale= "false";
+                    }
+                    CreatCartTools.insertByData(creatCartDB, items, cartItem);
 
-                Intent intent=new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
-                mContext.sendBroadcast(intent);
-//                List<Specification> itemsSp=detail.getSpecifications();
-//                for (int i = 0; i <itemsSp.size() ; i++)
-//                {
-//                    if (mSpecification.getId() == itemsSp.get(i).getId())
-//                    {
-//                        itemsSp.get(i).num=itemsSp.get(i).num-1;
-//                    }
-//                }
+                    Intent intent=new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
+                    mContext.sendBroadcast(intent);
+                } else
+                {
+                    Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
+                }
 
-            } else
-            {
-                Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
             }
-
         }
+        else
+        {
+            ToolUtils.setToast(mContext,"抱歉，尚未登录");
+        }
+
     }
 
     /**
@@ -562,8 +626,10 @@ public class GoodsDetailsFragment extends BaseFragment {
         {
             for (String url : urls) {
                 ImageView imageView = new ImageView(mContext);
+                imageView.setBackgroundResource(R.drawable.icon_loading_item);
                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                params.height=240;
                 imageView.setLayoutParams(params);
                 ToolUtils.setImageCacheUrl(url, imageView);
                 adPics.add(imageView);
@@ -572,7 +638,6 @@ public class GoodsDetailsFragment extends BaseFragment {
 
             for (int i = 0; i < adPics.size(); i++) {
                 ImageView dot_iv = new ImageView(mContext);
-                dot_iv.setScaleType(ImageView.ScaleType.FIT_XY);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 params.bottomMargin = 10;
                 if (i == 0) {
@@ -594,6 +659,7 @@ public class GoodsDetailsFragment extends BaseFragment {
             imageAdapter = new GoodsImageAdapter(mContext, adPics);
             viewPager.setAdapter(imageAdapter);
             viewPager.setOnPageChangeListener(onPageChangeListener);
+            viewPager.setCurrentItem(0);
         }
     }
 
@@ -612,6 +678,7 @@ public class GoodsDetailsFragment extends BaseFragment {
 
     public void FetchDetailData(int id) {
         String url=ZhaiDou.goodsDetailsUrlUrl+id;
+        Log.i("url---------------------->", url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -620,7 +687,6 @@ public class GoodsDetailsFragment extends BaseFragment {
                     mDialog.dismiss();
 
                 if (jsonObject != null) {
-                    Log.i("jsonObject!=null---------------------->", jsonObject.toString());
                     JSONObject merchandise = jsonObject.optJSONObject("merchandise");
                     int id = merchandise.optInt("id");
                     String title = merchandise.optString("title");
@@ -653,8 +719,9 @@ public class GoodsDetailsFragment extends BaseFragment {
                             String specificationTitle = specificationObj.optString("title");
                             int num = specificationObj.optInt("count");
                             double sizePrice = specificationObj.optDouble("price");
+                            double sizeOldPrice = specificationObj.optDouble("cost_price");
 
-                            Specification specification = new Specification(specificationId, specificationTitle,num,sizePrice);
+                            Specification specification = new Specification(specificationId, specificationTitle,num,sizePrice,sizeOldPrice);
                             specificationList.add(specification);
                         }
                         detail.setSpecifications(specificationList);

@@ -14,6 +14,7 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,6 +48,7 @@ import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.Specification;
 import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ListViewForScrollView;
 import com.zhaidou.view.TypeFaceTextView;
@@ -87,6 +89,8 @@ public class ShopCartFragment extends BaseFragment
 
     private RequestQueue mRequestQueue;
 
+    private int userId;
+    private int count;//单个商品的数量
     private CreatCartDB creatCartDB;
     private List<CartItem> items = new ArrayList<CartItem>();
     private List<CartItem> itemsServer = new ArrayList<CartItem>();
@@ -103,7 +107,7 @@ public class ShopCartFragment extends BaseFragment
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
             {
                 items.removeAll(items);
-                items=CreatCartTools.selectByAll(creatCartDB);
+                items=CreatCartTools.selectByAll(creatCartDB,userId);
                 if (items.size() > 0)
                 {
                     setGoodsCheckChange();
@@ -112,7 +116,6 @@ public class ShopCartFragment extends BaseFragment
                     nullView.setVisibility(View.VISIBLE);
                     contentView.setVisibility(View.GONE);
                 }
-
             }
         }
     };
@@ -125,6 +128,10 @@ public class ShopCartFragment extends BaseFragment
             switch (msg.what)
             {
                 case 1:
+                    initData();
+                    break;
+                case 2:
+                    mDialog.dismiss();
                     initData();
                     break;
             }
@@ -261,6 +268,7 @@ public class ShopCartFragment extends BaseFragment
      */
     private void initView()
     {
+        mRequestQueue= Volley.newRequestQueue(mContext);
         mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"loading");
 
         backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
@@ -285,25 +293,18 @@ public class ShopCartFragment extends BaseFragment
 
         cartGoodsLine=(LinearLayout)mView.findViewById(R.id.cartGoodsLine);
         creatCartDB = new CreatCartDB(mContext);
-        items = CreatCartTools.selectByAll(creatCartDB);
-
-        mRequestQueue= Volley.newRequestQueue(mContext);
+        checkLogin();
+        items=CreatCartTools.selectByAll(creatCartDB,userId);
 
         if (items.size() > 0)
         {
             nullView.setVisibility(View.GONE);
             contentView.setVisibility(View.VISIBLE);
-//            for (int i = 0; i < items.size(); i++)
-//            {
-//                if(items.get(i).isPublish.equals("true"))
-//                {
-//                    items.remove(i);
-//                }
-//            }
             FetchDetailData();
 
         } else
         {
+            mDialog.dismiss();
             nullView.setVisibility(View.VISIBLE);
             contentView.setVisibility(View.GONE);
         }
@@ -320,6 +321,14 @@ public class ShopCartFragment extends BaseFragment
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
         mContext.registerReceiver(broadcastReceiver, intentFilter);
+    }
+
+    public boolean checkLogin()
+    {
+        String token=(String) SharedPreferencesUtil.getData(mContext, "token", "");
+        userId=(Integer)SharedPreferencesUtil.getData(mContext,"userId",-1);
+        boolean isLogin=!TextUtils.isEmpty(token)&&userId>-1;
+        return isLogin;
     }
 
     /**
@@ -358,21 +367,22 @@ public class ShopCartFragment extends BaseFragment
      */
     private void addCartGoods()
     {
-        items = CreatCartTools.selectByAll(creatCartDB);
+        items=CreatCartTools.selectByAll(creatCartDB,userId);
         cartGoodsLine.removeAllViews();
         for (int position= 0; position<items.size() ; position++)
         {
             childeView = LayoutInflater.from(mContext).inflate(R.layout.shop_cart_goods_item, null);
             TypeFaceTextView itemName = (TypeFaceTextView) childeView.findViewById(R.id.cartItemNameTv);
             TypeFaceTextView itemSize = (TypeFaceTextView) childeView.findViewById(R.id.cartItemSizeTv);
+            TextView itemflags = (TextView) childeView.findViewById(R.id.cartItemIsFlags);
             TextView itemCurrentPrice = (TextView) childeView.findViewById(R.id.cartItemCurrentPrice);
             TextView itemFormalPrice = (TextView) childeView.findViewById(R.id.cartItemFormalPrice);
             TypeFaceTextView itemSubBtn = (TypeFaceTextView) childeView.findViewById(R.id.cartItemSubBtn);
             TypeFaceTextView itemAddBtn = (TypeFaceTextView) childeView.findViewById(R.id.cartItemAddBtn);
             final TypeFaceTextView itemNum = (TypeFaceTextView) childeView.findViewById(R.id.cartItemNum);
-            final TypeFaceTextView itemLoseNum = (TypeFaceTextView) childeView.findViewById(R.id.cartItemLoseNum);
+            TypeFaceTextView itemLoseNum = (TypeFaceTextView) childeView.findViewById(R.id.cartItemLoseNum);
             ImageView itemImage = (ImageView) childeView.findViewById(R.id.cartImageItemTv);
-            final CheckBox itemCheck = (CheckBox) childeView.findViewById(R.id.chatItemCB);
+            CheckBox itemCheck = (CheckBox) childeView.findViewById(R.id.chatItemCB);
             TextView isOver=(TextView)childeView.findViewById(R.id.cartItemIsOver);
             TextView islose=(TextView)childeView.findViewById(R.id.cartItemIsLose);
             ImageView itemDeleteBtn = (ImageView) childeView.findViewById(R.id.cartItemDelBtn);
@@ -402,12 +412,13 @@ public class ShopCartFragment extends BaseFragment
             {
                 itemCheck.setVisibility(View.GONE);
                 cartNumView.setVisibility(View.GONE);
+                itemflags.setVisibility(View.VISIBLE);
                 cartNumLoseView.setVisibility(View.VISIBLE);
                 itemName.setTextColor(ColorStateList.valueOf(R.color.text_gary_color));
             }
             else
             {
-                itemName.setTextColor(ColorStateList.valueOf(R.color.text_main_color));
+                itemflags.setVisibility(View.GONE);
                 cartNumView.setVisibility(View.VISIBLE);
                 cartNumLoseView.setVisibility(View.GONE);
                 itemCheck.setVisibility(View.VISIBLE);
@@ -530,15 +541,17 @@ public class ShopCartFragment extends BaseFragment
 
     }
 
-
+    /**
+     * 初始请求数据对比
+     */
     public void FetchDetailData()
     {
-        String url=ZhaiDou.goodsCartGoodsUrl+"[";
+        String url=ZhaiDou.goodsCartGoodsUrl;
         for (int i = 0; i < items.size(); i++)
         {
             if (i==items.size()-1)
             {
-                url=url+items.get(i).id+"]";
+                url=url+items.get(i).id;
             }
             else
             {
@@ -592,9 +605,7 @@ public class ShopCartFragment extends BaseFragment
                             }
                         }
                     }
-
                     mHandler.sendEmptyMessage(1) ;
-
                 } else {
                     ShowToast("加载出错");
                 }
@@ -602,8 +613,35 @@ public class ShopCartFragment extends BaseFragment
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                if (mDialog!=null)
-                    mDialog.dismiss();
+                mHandler.sendEmptyMessage(1) ;
+                Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
+            }
+        });
+        mRequestQueue.add(request);
+    }
+
+
+    private void FetchEditDate(int id ,int sizeId)
+    {
+        mDialog=CustomLoadingDialog.setLoadingDialog(mContext,"loading");
+        String url=ZhaiDou.goodsCartEditGoodsUrl+id+"/specification_"+sizeId;
+        ToolUtils.setLog("url:"+url);
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+
+                if (jsonObject != null)
+                {
+                    count=jsonObject.optInt("count");
+                    mHandler.sendEmptyMessage(2) ;
+                } else {
+                    ShowToast("加载出错");
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                mDialog.dismiss();
                 Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
             }
         });

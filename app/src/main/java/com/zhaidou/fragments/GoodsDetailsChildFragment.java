@@ -166,14 +166,19 @@ public class GoodsDetailsChildFragment extends BaseFragment
 
     private void addImageToContainer(List<String> urls) {
         mImageContainer.removeAllViews();
+    if (urls!=null)
+    {
         for (String url : urls) {
             ImageView imageView = new ImageView(getActivity());
+            imageView.setBackgroundResource(R.drawable.icon_loading_item);
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
             ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             imageView.setLayoutParams(layoutParams);
             ToolUtils.setImageCacheUrl(url, imageView);
             mImageContainer.addView(imageView);
         }
+    }
+
     }
 
 

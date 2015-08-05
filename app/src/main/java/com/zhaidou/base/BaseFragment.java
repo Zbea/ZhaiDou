@@ -61,6 +61,9 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     public static NetStateUtils netStateUtils;
     public static boolean isNetState;
 
+    public boolean isLogin;
+    public int userId;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

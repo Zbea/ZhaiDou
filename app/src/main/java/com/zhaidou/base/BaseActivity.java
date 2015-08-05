@@ -1,6 +1,7 @@
 package com.zhaidou.base;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -13,12 +14,14 @@ import android.widget.ImageButton;
 
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.PersonalFragment;
 import com.zhaidou.fragments.PersonalFragment1;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 
 /**
  * Created by wangclark on 15/7/3.
@@ -69,6 +72,12 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.popBackStack();
         SharedPreferencesUtil.saveUser(this, user);
+
+        ToolUtils.setLog("开始登录刷新啦————————————————》");
+        Intent intent=new Intent(ZhaiDou.IntentRefreshLoginTag);
+        sendBroadcast(intent);
+        ToolUtils.setLog("开始登录刷新啦1————————————————》");
+
         if (fragment instanceof RegisterFragment) {
             popToStack(fragment);
         }

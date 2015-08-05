@@ -106,6 +106,14 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             {
                 initCartTips();
             }
+            if (action.equals(ZhaiDou.IntentRefreshLoginTag))
+            {
+                initCartTips();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
+            {
+                initCartTips();
+            }
         }
     };
 
@@ -224,12 +232,11 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
                     Log.i("value--->",values.toString());
-//                WebViewFragment webViewFragment = WebViewFragment.newInstance(((Product)values).getUrl(),true);
-//                ((MainActivity)getActivity()).navigationToFragment(webViewFragment);
-                    Intent intent = new Intent(getActivity(), WebViewActivity.class);
-                    intent.putExtra("url",((Product)values).getUrl());
-                    intent.putExtra("from","product");
-                    startActivity(intent);
+                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(products.get(position).getTitle(), products.get(position).getId());
+                    Bundle bundle=new Bundle();
+                    bundle.putInt("flags",1);
+                    goodsDetailsFragment.setArguments(bundle);
+                    ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
                 }
             });
         }
@@ -250,7 +257,17 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     {
         IntentFilter intentFilter=new IntentFilter();
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
         getActivity().registerReceiver(broadcastReceiver, intentFilter);
+    }
+
+    public boolean checkLogin()
+    {
+        String token=(String)SharedPreferencesUtil.getData(getActivity(),"token","");
+        int id=(Integer)SharedPreferencesUtil.getData(getActivity(),"userId",-1);
+        boolean isLogin=!TextUtils.isEmpty(token)&&id>-1;
+        return isLogin;
     }
 
     /**
@@ -294,8 +311,15 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 break;
 
             case R.id.myCartBtn:
-                ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
-                ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
+                if (checkLogin())
+                {
+                    ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
+                    ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
+                }
+                else
+                {
+                    ToolUtils.setToast(getActivity(),"抱歉，尚未登录");
+                }
                 break;
         }
     }

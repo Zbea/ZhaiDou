@@ -4,6 +4,7 @@ package com.zhaidou.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -63,6 +64,10 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
             switch (msg.what){
                 case CLEAR_USER_DATA:
                     SharedPreferencesUtil.clearUser(getActivity());
+
+                    Intent intent=new Intent(ZhaiDou.IntentRefreshLoginExitTag);
+                    getActivity().sendBroadcast(intent);
+
                     ((MainActivity)getActivity()).logout(SettingFragment.this);
                     break;
             }

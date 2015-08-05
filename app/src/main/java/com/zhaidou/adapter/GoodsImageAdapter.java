@@ -27,31 +27,13 @@ public class GoodsImageAdapter extends PagerAdapter
     @Override
     public int getCount()
     {
-        return Integer.MAX_VALUE;
+        return items.size();
     }
 
     @Override
     public Object instantiateItem(ViewGroup container, int position)
     {
-        View view = null;
-        if (items.size() > 0)
-        {
-            if (position % items.size() < 0)
-            {
-                view = items.get(items.size() + position);
-            } else
-            {
-                view = items.get(position % items.size());
-            }
-            ViewParent vp = view.getParent();
-            if (vp != null)
-            {
-                ViewGroup parent = (ViewGroup) vp;
-                parent.removeView(view);
-            }
-            ((ViewPager) container).addView(view);
-        }
-
+        container.addView(items.get(position),0);
 //        if((ViewGroup)items.get(position%items.size()).getParent()==null)
 //        {
 //            container.addView(items.get(position%items.size()),0);
@@ -61,13 +43,14 @@ public class GoodsImageAdapter extends PagerAdapter
 //            ((ViewPager)items.get(position%items.size()).getParent()).removeView(items.get(position%items.size()));
 //            container.addView(items.get(position%items.size()));
 //        }
-        return view;
+        return items.get(position);
     }
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object)
     {
 //        ((ViewPager)container).removeView(items.get(position%items.size()));
+        container.removeView(items.get(position));
     }
 
     @Override

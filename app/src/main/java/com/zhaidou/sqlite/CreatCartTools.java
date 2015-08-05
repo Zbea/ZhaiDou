@@ -19,17 +19,19 @@ public class CreatCartTools
     /**
      * 全查
      */
-    public static List<CartItem> selectByAll(CreatCartDB cartDB)
+    public static List<CartItem> selectByAll(CreatCartDB cartDB,int userId)
     {
         items.removeAll(items);
+        List<CartItem> itemss=new ArrayList<CartItem>();
         SQLiteDatabase sqLiteDatabase=cartDB.getReadableDatabase();
         sqLiteDatabase.beginTransaction();
         try
         {
-            Cursor cursor=sqLiteDatabase.rawQuery("select * from cartItem",null);
+            Cursor cursor=sqLiteDatabase.rawQuery("select * from cartItem where userId="+userId,null);
             while (cursor.moveToNext())
             {
                 CartItem item = new CartItem();
+                item.userId = cursor.getInt(cursor.getColumnIndex("userId"));
                 item.id = cursor.getInt(cursor.getColumnIndex("baseId"));
                 item.name = cursor.getString(cursor.getColumnIndex("title"));
                 item.imageUrl = cursor.getString(cursor.getColumnIndex("img"));
@@ -42,9 +44,10 @@ public class CreatCartTools
                 item.sizeId = cursor.getInt(cursor.getColumnIndex("sizeId"));
                 item.isPublish = cursor.getString(cursor.getColumnIndex("isPublish"));
                 item.isOver = cursor.getString(cursor.getColumnIndex("isOver"));
+                item.isOSale = cursor.getString(cursor.getColumnIndex("isOSale"));
                 item.isCheck = false;
                 item.creatTime = cursor.getLong(cursor.getColumnIndex("creatTime"));
-                items.add(item);
+                itemss.add(item);
             }
             sqLiteDatabase.setTransactionSuccessful();
             cursor.close();
@@ -58,6 +61,11 @@ public class CreatCartTools
             sqLiteDatabase.endTransaction();
             sqLiteDatabase.close();
         }
+        //反序
+        for(int i=itemss.size()-1;i>=0;i--)
+        {
+            items.add(itemss.get(i));
+        }
         return items;
     }
 
@@ -70,8 +78,8 @@ public class CreatCartTools
         sqLiteDatabase.beginTransaction();
         try
         {
-            String whereClause = "sizeId=?";
-            String[] whereArgs = new String[]{String.valueOf(item.sizeId)};
+            String whereClause = "userId=? and sizeId=?";
+            String[] whereArgs = new String[]{String.valueOf(item.userId),String.valueOf(item.sizeId)};
             sqLiteDatabase.delete(CreatCartDB.SqlName, whereClause, whereArgs);
             sqLiteDatabase.setTransactionSuccessful();
         } catch (Exception e)
@@ -93,18 +101,13 @@ public class CreatCartTools
         sqLiteDatabase.beginTransaction();
         try
         {
-            for (int i = 0; i < items.size(); i++)
-            {
-                if (items.get(i).sizeId == itm.sizeId)
-                {
-                    ContentValues values = new ContentValues();
-                    values.put("num", itm.num);
-                    String whereClause = "sizeId=?";
-                    String[] whereArgs = new String[]{String.valueOf(itm.sizeId)};
-                    sqLiteDatabase.update(CreatCartDB.SqlName, values, whereClause, whereArgs);
-                }
-            }
+            ContentValues values = new ContentValues();
+            values.put("num", itm.num);
+            String whereClause = "userId=? and sizeId=?";
+            String[] whereArgs = new String[]{String.valueOf(itm.userId),String.valueOf(itm.sizeId)};
+            sqLiteDatabase.update(CreatCartDB.SqlName, values, whereClause, whereArgs);
             sqLiteDatabase.setTransactionSuccessful();
+
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -124,17 +127,11 @@ public class CreatCartTools
         sqLiteDatabase.beginTransaction();
         try
         {
-            for (int i = 0; i < items.size(); i++)
-            {
-                if (items.get(i).sizeId == itm.sizeId)
-                {
-                    ContentValues values = new ContentValues();
-                    values.put("isOver", itm.isOver);
-                    String whereClause = "sizeId=?";
-                    String[] whereArgs = new String[]{String.valueOf(itm.sizeId)};
-                    sqLiteDatabase.update(CreatCartDB.SqlName, values, whereClause, whereArgs);
-                }
-            }
+            ContentValues values = new ContentValues();
+            values.put("isOver", itm.isOver);
+            String whereClause = "userId=? and sizeId=?";
+            String[] whereArgs = new String[]{String.valueOf(itm.userId),String.valueOf(itm.sizeId)};
+            sqLiteDatabase.update(CreatCartDB.SqlName, values, whereClause, whereArgs);
             sqLiteDatabase.setTransactionSuccessful();
         } catch (Exception e)
         {
@@ -155,17 +152,11 @@ public class CreatCartTools
         sqLiteDatabase.beginTransaction();
         try
         {
-            for (int i = 0; i < items.size(); i++)
-            {
-                if (items.get(i).sizeId == itm.sizeId)
-                {
-                    ContentValues values = new ContentValues();
-                    values.put("isPublish", itm.isPublish);
-                    String whereClause = "sizeId=?";
-                    String[] whereArgs = new String[]{String.valueOf(itm.sizeId)};
-                    sqLiteDatabase.update(CreatCartDB.SqlName, values, whereClause, whereArgs);
-                }
-            }
+            ContentValues values = new ContentValues();
+            values.put("isPublish", itm.isPublish);
+            String whereClause = "userId=? and sizeId=?";
+            String[] whereArgs = new String[]{String.valueOf(itm.userId),String.valueOf(itm.sizeId)};
+            sqLiteDatabase.update(CreatCartDB.SqlName, values, whereClause, whereArgs);
             sqLiteDatabase.setTransactionSuccessful();
         } catch (Exception e)
         {
@@ -186,11 +177,11 @@ public class CreatCartTools
         sqLiteDatabase.beginTransaction();
         try
         {
-
-            Cursor cursor=sqLiteDatabase.rawQuery("select * from cartItem where baseId="+itm.id+" and sizeId="+itm.sizeId,null);
+            Cursor cursor=sqLiteDatabase.rawQuery("select * from cartItem where userId="+itm.userId+" and sizeId="+itm.sizeId,null);
             if (!cursor.moveToLast())
             {
                 ContentValues values = new ContentValues();
+                values.put("userId", itm.userId);
                 values.put("baseId", itm.id);
                 values.put("title", itm.name);
                 values.put("img", itm.imageUrl);
@@ -203,7 +194,7 @@ public class CreatCartTools
                 values.put("sizeId", itm.sizeId);
                 values.put("isPublish", itm.isPublish);
                 values.put("isOver", itm.isOver);
-//                values.put("isCheck", itm.isCheck);
+                values.put("isOSale", itm.isOSale);
                 values.put("creatTime", itm.creatTime);
                 sqLiteDatabase.insert(CreatCartDB.SqlName, null, values);
             }

@@ -7,6 +7,8 @@ import java.io.Serializable;
  */
 public class CartItem implements Serializable
 {
+    //用户id
+    public int userId;
     //商品id
     public int id;
     //名称
@@ -35,13 +37,16 @@ public class CartItem implements Serializable
     public String isOver;
     //是否选中
     public boolean isCheck;
+    //是否零元特卖
+    public String isOSale;
     //生成时间
     public long creatTime;
 
-    public CartItem(int id, long creatTime, String name, String imageUrl, double currentPrice,
+    public CartItem(int userId,int id, long creatTime, String name, String imageUrl, double currentPrice,
                     double formalPrice,double saveMoney, double saveTotalMoney, double totalMoney,
-                    int num, String size, int sizeId, String isPublish, String isOver, boolean isCheck)
+                    int num, String size, int sizeId, String isPublish, String isOver, boolean isCheck,String isOSale)
     {
+        this.userId=userId;
         this.id = id;
         this.creatTime = creatTime;
         this.name = name;
@@ -57,6 +62,7 @@ public class CartItem implements Serializable
         this.isPublish = isPublish;
         this.isOver = isOver;
         this.isCheck = isCheck;
+        this.isOSale=isOSale;
     }
 
     public CartItem()
