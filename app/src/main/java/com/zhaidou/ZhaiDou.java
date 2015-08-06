@@ -45,6 +45,10 @@ public class ZhaiDou {
     public static String goodsDetailsUrlUrl="http://192.168.199.173/special_mall/api/merchandises/";
     //购物车商品详情
     public static String goodsCartGoodsUrl="http://192.168.199.173/special_mall/api/merchandises/cart_merchandises?ids=";
+    //购物车商品数量修改接口
+    public static String goodsCartEditGoodsUrl="http://192.168.199.173/special_mall/api/merchandises/";
+    //地址管理接口
+    public static String addressManageUrl="http://192.168.199.173/special_mall/api/receivers";
 
 
     //TAB分类
@@ -101,6 +105,14 @@ public class ZhaiDou {
      * 购物车选中商品刷新
      */
     public static String IntentRefreshCartGoodsCheckTag="com.zhaidou.home.refesh.cart.goods.check";
+    /**
+     * 登录成功
+     */
+    public static String IntentRefreshLoginTag="com.zhaidou.home.refesh.login.success";
+    /**
+     * 登录退出
+     */
+    public static String IntentRefreshLoginExitTag="com.zhaidou.home.refesh.login.exit";
 
 }
 //http://192.168.1.45/article/api/article_categories?catetory_id=13

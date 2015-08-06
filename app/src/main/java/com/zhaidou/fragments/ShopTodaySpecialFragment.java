@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +37,8 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CountTime;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.ShopTodayItem;
+import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ListViewForScrollView;
 import com.zhaidou.view.TypeFaceTextView;
 
@@ -89,6 +92,14 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         {
             String action=intent.getAction();
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
+            {
+                initCartTips();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshLoginTag))
+            {
+                initCartTips();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
             {
                 initCartTips();
             }
@@ -191,8 +202,15 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     ((MainActivity)getActivity()).popToStack(ShopTodaySpecialFragment.this);
                 break;
                 case R.id.myCartBtn:
-                    ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
-                    ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
+                    if (checkLogin())
+                    {
+                        ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
+                        ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
+                    }
+                    else
+                    {
+                        ToolUtils.setToast(getActivity(), "抱歉，尚未登录");
+                    }
                     break;
             }
         }
@@ -248,6 +266,8 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     {
         IntentFilter intentFilter=new IntentFilter();
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
         mContext.registerReceiver(broadcastReceiver,intentFilter);
     }
 
@@ -294,6 +314,14 @@ public class ShopTodaySpecialFragment extends BaseFragment {
 
         initCartTips();
 
+    }
+
+    public boolean checkLogin()
+    {
+        String token=(String) SharedPreferencesUtil.getData(getActivity(), "token", "");
+        int id=(Integer)SharedPreferencesUtil.getData(getActivity(),"userId",-1);
+        boolean isLogin=!TextUtils.isEmpty(token)&&id>-1;
+        return isLogin;
     }
 
     /**

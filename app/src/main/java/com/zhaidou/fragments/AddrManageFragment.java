@@ -34,6 +34,8 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Address;
+import com.zhaidou.utils.ToolUtils;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -99,6 +101,8 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case UPDATE_ADDRESS_LIST:
+                    if (mDialog!=null)
+                    mDialog.dismiss();
                     addressAdapter.notifyDataSetChanged();
                     break;
             }
@@ -148,6 +152,8 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     }
 
     private void initView(View view) {
+
+        mDialog=CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
         mListview = (ListView) view.findViewById(R.id.lv_addresses);
         addressAdapter = new AddressAdapter(getActivity(), addressList);
         mListview.setAdapter(addressAdapter);
@@ -159,26 +165,29 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
         addressAdapter.setOnInViewClickListener(R.id.ll_defalue, new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
+
                 mCheckedPosition = position;
                 addressAdapter.notifyDataSetChanged();
+                if (mStatus==STATUS_FROM_ORDER)
+                {
+                    ((MainActivity) getActivity()).popToStack(AddrManageFragment.this);
+                }
             }
         });
         addressAdapter.setOnInViewClickListener(R.id.tv_delete, new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, final Integer position, Object values) {
-                Address address = (Address) values;
-                Log.i("address---------->", address.toString());
-                ShowToast("删除");
+                final Address address = (Address) values;
                 int id = address.getId();
                 String url = "http://192.168.199.173/special_mall/api/receivers/" + id;
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
-                        Log.i("删除---->", jsonObject.toString());
                         if (jsonObject!=null){
                             int status=jsonObject.optInt("status");
                             if (status==201){
-                                addressAdapter.remove(position);
+                                addressList.remove(address);
+                                addressAdapter.notifyDataSetChanged();
                             }
                             String message=jsonObject.optString("message");
                             ShowToast(message);
@@ -211,7 +220,6 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 String addr=address.getAddress();
                 String location=address.getProvince()+"-"+address.getCity()+"-"+address.getArea();
                 int provider_id=address.getProvider_id();
-                Log.i("values----------->",address.toString());
                 final NewAddrFragment newAddrFragment = NewAddrFragment.newInstance(id,name,phone,location,addr,provider_id,UPDATE_ADDRESS_INFO);
                 ((MainActivity)getActivity()).navigationToFragment(newAddrFragment);
 
@@ -259,7 +267,6 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 mNickName = name;
                 mMobile = mobile;
                 mAddress = address;
-                Log.i("hhh", "dada");
                 new MyTask().execute(name, mobile, address, mProfileId);
                 break;
             case R.id.tv_edit:
@@ -278,7 +285,6 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 newAddrFragment.setAddrSaveSuccessListener(new NewAddrFragment.AddrSaveSuccessListener() {
                     @Override
                     public void onSaveListener(JSONObject receiverObj,int status) {
-                        Log.i("AddrSaveSuccessListener------->",receiverObj.toString());
                         if (receiverObj != null&&CREATE_NEW_ADDRESS==status) {
                             int id = receiverObj.optInt("id");
                             int user_id = receiverObj.optInt("user_id");
@@ -295,7 +301,6 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 });
                 break;
             case R.id.rl_back:
-                Log.i("case R.id.rl_back:------------>","case R.id.rl_back:");
                 break;
         }
     }
@@ -322,7 +327,6 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
 
         @Override
         protected void onPostExecute(String s) {
-            Log.i("AddrManageFragment--onPostExecute-->", s);
             try {
                 mDialog.dismiss();
                 JSONObject json = new JSONObject(s);
@@ -379,7 +383,6 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             }
             in.close();
             String result = sb.toString();
-            Log.i("EditProfileFragment--------->", result);
             return result;
 
         } finally {
@@ -399,13 +402,14 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
 
     public interface AddressListener {
         public void onDefalueAddressChange(Address address);
+        public void onDeleteFinishAddress();
     }
 
     private void FetchData() {
         JsonObjectRequest request = new JsonObjectRequest("http://192.168.199.173/special_mall/api/receivers", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("AddrManageFragment------------>", jsonObject.toString());
+                mDialog.dismiss();
                 JSONArray receiversArr = jsonObject.optJSONArray("receivers");
                 if (receiversArr != null && receiversArr.length() > 0) {
                     for (int i = 0; i < receiversArr.length(); i++) {
@@ -441,6 +445,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
+                mDialog.dismiss();
                 Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
             }
         }) {
@@ -473,7 +478,6 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             tv_name.setText("收件人："+address.getName());
             tv_mobile.setText("电话："+address.getPhone());
             tv_addr.setText("地址："+address.getAddress());
-            Log.i("mCheckedPosition --->", mCheckedPosition+"");
             if (mStatus==STATUS_FROM_ORDER){
                 tv_defalue_hint.setVisibility(View.GONE);
                 if (address.isIs_default())
@@ -488,10 +492,11 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.i("onDestroyView-------------->mCheckedPosition","onDestroyView---------"+mCheckedPosition+"----"+getActivity().toString());
-        if (addressAdapter.getCount()>mCheckedPosition){
+        if (addressAdapter.getCount()>mCheckedPosition)
+        {
             Address address=addressAdapter.getItem(mCheckedPosition);
-            if (mStatus==STATUS_FROM_ORDER){
+            if (mStatus==STATUS_FROM_ORDER)
+            {
                 if (addressListener!=null)
                     addressListener.onDefalueAddressChange(address);
                 return;
@@ -499,7 +504,6 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,"http://192.168.199.173/special_mall/api/receivers/"+address.getId()+"/set_default",new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject jsonObject) {
-                    Log.i("jsonObject-------->",jsonObject.toString());
                     if (jsonObject!=null){
                         JSONObject receiver=jsonObject.optJSONObject("receiver");
                         int id=receiver.optInt("id");
@@ -533,6 +537,9 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             };
             mRequestQueue.add(request);
         }
-//        super.onDestroyView();
+        else
+        {
+            addressListener.onDeleteFinishAddress();
+        }
     }
 }

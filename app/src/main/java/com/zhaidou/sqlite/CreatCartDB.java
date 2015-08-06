@@ -29,6 +29,7 @@ public class CreatCartDB extends SQLiteOpenHelper
         StringBuffer stringBufferSql=new StringBuffer();
         stringBufferSql.append(" Create  TABLE cartItem( ");
         stringBufferSql.append(" [] integer PRIMARY KEY AUTOINCREMENT ");
+        stringBufferSql.append(" ,[userId] ntext ");
         stringBufferSql.append(" ,[baseId] ntext ");
         stringBufferSql.append(" ,[title] nvarchar(500) ");
         stringBufferSql.append(" ,[img] ntext ");
@@ -42,6 +43,7 @@ public class CreatCartDB extends SQLiteOpenHelper
         stringBufferSql.append(" ,[sizeId] ntext ");
         stringBufferSql.append(" ,[isPublish] ntext ");
         stringBufferSql.append(" ,[isOver] ntext ");
+        stringBufferSql.append(" ,[isOSale] ntext ");
         stringBufferSql.append(" ,[isCheck] ntext ");
         stringBufferSql.append(" ,[creatTime] ntext ");
         stringBufferSql.append(" ) " );

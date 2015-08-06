@@ -61,6 +61,9 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     public static NetStateUtils netStateUtils;
     public static boolean isNetState;
 
+    public boolean isLogin;
+    public int userId;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -133,7 +136,10 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
 
     public void ShowToast(String text) {
         if (mToast == null) {
-            mToast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
+            if(getActivity()!=null)
+            {
+                mToast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
+            }
         } else {
             mToast.setText(text);
         }
