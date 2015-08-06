@@ -11,7 +11,7 @@
         android:layout_height="50dp">
 
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/ll_category_view"
             android:layout_width="80dp"
             android:layout_height="50dp"
@@ -24,10 +24,17 @@
                 android:id="@+id/iv_category"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
                 android:layout_marginLeft="15dp"
                 android:src="@drawable/icon_category"/>
-        </LinearLayout>
+            <ImageView
+                android:id="@+id/iv_dot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="-8dp"
+                android:layout_marginTop="-4dp"
+                android:layout_toRightOf="@id/iv_category"
+                android:src="@drawable/icon_dot"/>
+        </RelativeLayout>
 
         <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/tv_title"

@@ -93,6 +93,7 @@
                     android:orientation="horizontal">
 
                     <LinearLayout
+                        android:id="@+id/ll_collect"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -100,9 +101,9 @@
                         android:orientation="vertical">
 
                         <com.zhaidou.view.TypeFaceTextView
+                            android:id="@+id/tv_collect"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="38"
                             android:textColor="@color/white" />
 
                         <com.zhaidou.view.TypeFaceTextView
@@ -120,6 +121,7 @@
                         android:background="@color/white" />
 
                     <LinearLayout
+                        android:id="@+id/ll_collocation"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -127,15 +129,15 @@
                         android:orientation="vertical">
 
                         <com.zhaidou.view.TypeFaceTextView
+                            android:id="@+id/tv_collocation"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="38"
                             android:textColor="@color/white" />
 
                         <com.zhaidou.view.TypeFaceTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="我的收藏"
+                            android:text="我的豆搭"
                             android:textColor="@color/white" />
                     </LinearLayout>
                 </LinearLayout>
