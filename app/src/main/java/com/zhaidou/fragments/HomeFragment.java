@@ -136,7 +136,7 @@ public class HomeFragment extends BaseFragment implements
     private static final int UPDATE_HOMELIST = 3;
     private static final int UPDATE_BANNER = 4;
 
-    private ImageView mSearchView, mCategoryView;
+    private ImageView mSearchView, mCategoryView,mDotView;
     private TextView mTitleView;
     private int screenWidth;
     private View view;
@@ -430,6 +430,7 @@ public class HomeFragment extends BaseFragment implements
         mCategoryView = (ImageView) view.findViewById(R.id.iv_category);
         mCategoryView.setOnClickListener(this);
         mTitleView = (TextView) view.findViewById(R.id.tv_title);
+        mDotView=(ImageView)view.findViewById(R.id.iv_dot);
         viewPager = (ViewPager) view.findViewById(R.id.home_adv_pager);
         tipsLine = (LinearLayout) view.findViewById(R.id.home_viewGroup);
 
@@ -773,6 +774,8 @@ public class HomeFragment extends BaseFragment implements
         articleList.removeAll(articleList);
         FetchData(currentPage = 1, mCategory = category);
         //mHomeAdapter.notifyDataSetChanged();
+        if (category!=null)
+            mDotView.setVisibility(View.GONE);
         toggleMenu();
     }
 

@@ -35,6 +35,7 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Collocation;
 import com.zhaidou.utils.AsyncImageLoader1;
+import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -234,6 +235,7 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
             Collocation collocation=getList().get(position);
             tv_title.setText(collocation.getTitle());
             imageLoader.LoadImage("http://"+collocation.getMedia_pic(),iv_thumb);
+//            ToolUtils.setImageCacheUrl("http://"+collocation.getMedia_pic(),iv_thumb);
             mHashMap.put(position,convertView);
             return convertView;
         }

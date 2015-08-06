@@ -144,7 +144,6 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
             public void onResponse(JSONObject response) {
 //                Log.i("FetchCatogoryData", response.toString());
                 JSONArray categoryArray = response.optJSONArray("article_categories");
-
                 for (int i=0;i<categoryArray.length();i++){
                     JSONObject categoryObj=categoryArray.optJSONObject(i);
                     int id = categoryObj.optInt("id");

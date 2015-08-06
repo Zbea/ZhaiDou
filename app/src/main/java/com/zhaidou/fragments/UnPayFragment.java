@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
@@ -176,7 +177,7 @@ public class UnPayFragment extends BaseFragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-//                Toast.makeText(getActivity(),"网络异常",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(),"网络异常", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override

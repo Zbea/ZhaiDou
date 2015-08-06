@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -27,7 +28,9 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CartItem;
+import com.zhaidou.model.Collocation;
 import com.zhaidou.model.User;
 import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;
@@ -65,6 +68,8 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     private RequestQueue mRequestQueue;
     private final int UPDATE_USER_INFO = 1;
     private final int UPDATE_USER_DESCRIPTION = 2;
+    private final int UPDATE_USER_COLLECT_COUNT=3;
+    private final int UPDATE_USER_COLLOCATION=4;
 
     private Map<String, String> cityMap = new HashMap<String, String>();
 
@@ -79,7 +84,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     private CreatCartDB creatCartDB;
     private List<CartItem> items = new ArrayList<CartItem>();
     private ImageView iv_header, mPrePayView, mPreReceivedView, mReturnView;
-    private TextView tv_nickname, tv_desc;
+    private TextView tv_nickname, tv_desc,tv_collect,tv_collocation;
     private RelativeLayout mCouponsView, mSettingView, mAllOrderView;
     private FrameLayout mChildContainer;
     private TextView mCartCount;
@@ -99,6 +104,12 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 case UPDATE_USER_DESCRIPTION:
                     User u = (User) msg.obj;
                     tv_desc.setText("null".equalsIgnoreCase(u.getDescription()) || u.getDescription() == null ? "" : u.getDescription());
+                    break;
+                case UPDATE_USER_COLLECT_COUNT:
+                    tv_collect.setText(msg.arg1+"");
+                    break;
+                case UPDATE_USER_COLLOCATION:
+                    tv_collocation.setText(msg.arg1+"");
                     break;
             }
         }
@@ -146,6 +157,8 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         iv_header = (ImageView) view.findViewById(R.id.iv_header);
         tv_desc = (TextView) view.findViewById(R.id.tv_desc);
         tv_nickname = (TextView) view.findViewById(R.id.tv_nickname);
+        tv_collect=(TextView)view.findViewById(R.id.tv_collect);
+        tv_collocation=(TextView)view.findViewById(R.id.tv_collocation);
         mCartCount = (TextView) view.findViewById(R.id.tv_cart_count);
 
         mPrePayView.setOnClickListener(this);
@@ -159,6 +172,8 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         view.findViewById(R.id.rl_competition).setOnClickListener(this);
         view.findViewById(R.id.rl_taobao_order).setOnClickListener(this);
         view.findViewById(R.id.rl_addr_manage).setOnClickListener(this);
+        view.findViewById(R.id.ll_collect).setOnClickListener(this);
+        view.findViewById(R.id.ll_collocation).setOnClickListener(this);
 
         mSettingFragment.setProfileListener(this);
 
@@ -167,6 +182,9 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         getUserInfo();
         creatCartDB = new CreatCartDB(getActivity());
         initCartTips();
+        FetchCollectData();
+        FetchCollocationData();
+        FetchUnPayCount();
         return view;
     }
 
@@ -215,10 +233,16 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 intent.putExtra("title", "拼贴大赛");
                 startActivity(intent);
                 break;
+            case R.id.ll_collect:
+                CollectFragment collectFragment=CollectFragment.newInstance("","");
+                ((MainActivity)getActivity()).navigationToFragment(collectFragment);
+                break;
+            case R.id.ll_collocation:
+                CollocationFragment collocationFragment=CollocationFragment.newInstance("","");
+                ((MainActivity)getActivity()).navigationToFragment(collocationFragment);
+                break;
         }
-
     }
-
     public void getUserInfo() {
 
         Object id = SharedPreferencesUtil.getData(getActivity(), "userId", 0);
@@ -252,11 +276,9 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 
     public void getUserDetail() {
         Object id = SharedPreferencesUtil.getData(getActivity(), "userId", 0);
-        Log.i("getUserDetail-----id---->", id + "");
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL + id + "/profile", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("getUserDetail----->", jsonObject.toString());
                 JSONObject userObj = jsonObject.optJSONObject("profile");
                 if (userObj != null) {
                     String nick_name = userObj.optString("nick_name");
@@ -302,7 +324,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 
     @Override
     public void onCountChange(int count, Fragment fragment) {
-        Log.i("onCountChange------->", count + "");
         if (fragment instanceof CollectFragment) {
             collect_count = count;
         } else if (fragment instanceof CollocationFragment) {
@@ -354,7 +375,84 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         if (!hidden&&userId!=-1){
             getUserDetail();
             getUserInfo();
+            FetchCollectData();
+            FetchCollocationData();
         }
         super.onHiddenChanged(hidden);
+    }
+    private void FetchCollectData(){
+        final String token=(String)SharedPreferencesUtil.getData(getActivity(),"token","");
+
+        JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_COLLECT_ITEM_URL+1,new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (jsonObject!=null){
+                    JSONObject meta = jsonObject.optJSONObject("meta");
+                    int count=meta==null?0:meta.optInt("count");
+                    Message message=new Message();
+                    message.what=UPDATE_USER_COLLECT_COUNT;
+                    message.arg1=count;
+                    mHandler.sendMessage(message);
+                }
+            }
+        },new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("SECAuthorization",token);
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
+    }
+    private void FetchCollocationData(){
+        final String token=(String)SharedPreferencesUtil.getData(getActivity(),"token","");
+        final int userId=(Integer)SharedPreferencesUtil.getData(getActivity(),"userId", -1);
+        JsonObjectRequest request =new JsonObjectRequest(ZhaiDou.USER_COLLOCATION_ITEM_URL+userId+"/bean_collocations?page="+1
+                ,new Response.Listener<JSONObject>(){
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (jsonObject!=null){
+                    JSONObject meta = jsonObject.optJSONObject("meta");
+                    int count=meta==null?0:meta.optInt("count");
+                    Message message=new Message();
+                    message.arg1=count;
+                    message.what=UPDATE_USER_COLLOCATION;
+                    mHandler.sendMessage(message);
+                }
+            }
+        },new Response.ErrorListener(){
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+            }
+        });
+        mRequestQueue.add(request);
+    }
+
+    private void FetchUnPayCount(){
+        JsonObjectRequest request=new JsonObjectRequest("http://192.168.199.173/special_mall/api/orders?count=1&status=1",new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                Log.i("FetchUnPayCount------------>",jsonObject.toString());
+            }
+        },new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("SECAuthorization", "o56MZD7xJY7JVNRT3C2R");
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
     }
 }
