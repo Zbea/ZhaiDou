@@ -47,6 +47,8 @@ public class ZhaiDou {
     public static String goodsCartGoodsUrl="http://192.168.199.173/special_mall/api/merchandises/cart_merchandises?ids=";
     //购物车商品数量修改接口
     public static String goodsCartEditGoodsUrl="http://192.168.199.173/special_mall/api/merchandises/";
+    //地址管理接口
+    public static String addressManageUrl="http://192.168.199.173/special_mall/api/receivers";
 
 
     //TAB分类

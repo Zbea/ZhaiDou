@@ -259,7 +259,9 @@ public class GoodsDetailsFragment extends BaseFragment {
                     buyGoods();
                     break;
                 case R.id.goodsAddBuyBtn:
+
                     addGoods();
+
                     break;
                 case R.id.goodsTop:
                     scrollView.scrollTo(0,0);
@@ -288,6 +290,7 @@ public class GoodsDetailsFragment extends BaseFragment {
             mIndex = getArguments().getInt(INDEX);
             flags=getArguments().getInt("flags");
             ToolUtils.setLog("flags:"+flags);
+            ToolUtils.setLog("mIndex:"+mIndex);
         }
     }
 
@@ -510,7 +513,7 @@ public class GoodsDetailsFragment extends BaseFragment {
     {
         if(checkLogin())
         {
-        if (detail != null)
+            if (detail != null)
             if (mSpecification != null)
             {
                 CartItem cartItem = new CartItem();
@@ -518,6 +521,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                 cartItem.id = detail.getId();
                 cartItem.name = detail.getTitle();
                 cartItem.creatTime = System.currentTimeMillis();
+                if (detail.getImgs()!=null)
                 cartItem.imageUrl = detail.getImgs().get(0);
                 cartItem.currentPrice = mSpecification.price;//规格的价格
                 cartItem.formalPrice = mSpecification.oldPrice;
@@ -559,6 +563,17 @@ public class GoodsDetailsFragment extends BaseFragment {
     {
         if(checkLogin())
         {
+            if(flags==1)
+            {
+                for (int i = 0; i < items.size(); i++)
+                {
+                    if (items.get(i).isOSale.equals("true"))
+                    {
+                        ToolUtils.setToast(mContext,"将替换掉原来的零元特卖商品");
+                        CreatCartTools.deleteByData(creatCartDB,items.get(i));
+                    }
+                }
+            }
             if (detail != null)
             {
                 if (mSpecification != null)

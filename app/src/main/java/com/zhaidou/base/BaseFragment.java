@@ -136,7 +136,10 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
 
     public void ShowToast(String text) {
         if (mToast == null) {
-            mToast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
+            if(getActivity()!=null)
+            {
+                mToast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
+            }
         } else {
             mToast.setText(text);
         }

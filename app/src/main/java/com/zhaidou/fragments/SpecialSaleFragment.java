@@ -139,7 +139,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     break;
                 case UPDATE_TIMER_START:
                     String date = (String)msg.obj;
-                    Log.i("zhaidou","开始刷新:"+date);
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
                     try{
@@ -160,7 +159,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     JSONObject jsonObject=(JSONObject)msg.obj;
                     if (jsonObject!=null){
                         String imgs=jsonObject.optJSONArray("sale_banners").optJSONObject(0).optString("imgs");
-                        Log.i("imgs--------------->",imgs.toString());
                         ToolUtils.setImageUrl(imgs,iv_banner);
                     }
                     break;
@@ -231,10 +229,11 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             mAdapter.setOnInViewClickListener(R.id.ll_single_layout,new BaseListAdapter.onInternalClickListener() {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                    Log.i("value--->",values.toString());
+                    ToolUtils.setLog(products.get(position).getTitle()+"id是："+products.get(position).getId());
                     GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(products.get(position).getTitle(), products.get(position).getId());
                     Bundle bundle=new Bundle();
                     bundle.putInt("flags",1);
+                    bundle.putInt("index",products.get(position).getId());
                     goodsDetailsFragment.setArguments(bundle);
                     ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
                 }
@@ -244,9 +243,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         if (parent != null) {
             parent.removeView(rootView);
         }
-//        View view=inflater.inflate(R.layout.fragment_special_sale, container, false);
-
-
         return rootView;
     }
 
@@ -396,11 +392,9 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         }
     }
     public void FetchCouponData(){
-        Log.i("FetchCouponData----------->","begin");
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.COUPON_DATA_URL,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("FetchCouponData----->",jsonObject.toString());
                 int id=jsonObject.optInt("id");
                 String created_at=jsonObject.optString("created_at");
                 String updated_at=jsonObject.optString("updated_at");
