@@ -32,7 +32,7 @@
                     android:id="@+id/goods_adv_pager"
                     android:layout_width="match_parent"
                     android:layout_centerInParent="true"
-                    android:background="@color/gray"
+                    android:background="@color/white"
                     android:layout_height="@dimen/goods_height_dimen"/>
 
                 <LinearLayout
@@ -80,11 +80,11 @@
 
                 <LinearLayout
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_height="42dp"
                     android:orientation="horizontal"
-                    android:paddingLeft="@dimen/default_margin"
-                    android:paddingRight="@dimen/default_margin"
-                    android:paddingTop="@dimen/default_margin">
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp">
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:id="@+id/tv_title"
@@ -418,4 +418,12 @@
 
 
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/loadingView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/headLine"
+        android:background="@color/white"
+        android:orientation="vertical"></LinearLayout>
 </RelativeLayout>

@@ -53,6 +53,9 @@ public class CustomShopCartDeleteDialog
         //发送广播
         Intent intent=new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
         mContext.sendBroadcast(intent);
+
+        Intent intent1=new Intent(ZhaiDou.IntentRefreshCartGoodsCheckTag);
+        mContext.sendBroadcast(intent1);
         mDialog.dismiss();
         parentView.removeView(childView);
     }

@@ -1,11 +1,13 @@
 package com.zhaidou.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by wangclark on 15/7/27.
  */
-public class GoodDetail {
+public class GoodDetail implements Serializable
+{
     private int id;
     private String title;
     private String designer;
@@ -15,6 +17,7 @@ public class GoodDetail {
     private double cost_price;
     private int discount;
     private List<Specification> specifications;
+    private List<GoodInfo> goodsInfo;
     private List<String> imgs;
 
     public int getId() {
@@ -95,6 +98,16 @@ public class GoodDetail {
 
     public void setEnd_time(String end_time) {
         this.end_time = end_time;
+    }
+
+    public List<GoodInfo> getGoodsInfo()
+    {
+        return goodsInfo;
+    }
+
+    public void setGoodsInfo(List<GoodInfo> goodsInfo)
+    {
+        this.goodsInfo = goodsInfo;
     }
 
     public GoodDetail(int id, String title, String designer, int total_count, double price, double cost_price, int discount) {

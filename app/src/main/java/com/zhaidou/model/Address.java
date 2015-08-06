@@ -19,6 +19,8 @@ public class Address {
     private String city;
     private String area;
 
+    private int price;
+
     public int getId() {
         return id;
     }
@@ -107,6 +109,16 @@ public class Address {
         this.updated_at = updated_at;
     }
 
+    public int getPrice()
+    {
+        return price;
+    }
+
+    public void setPrice(int price)
+    {
+        this.price = price;
+    }
+
     public String getCreated_at() {
         return created_at;
     }
@@ -118,7 +130,7 @@ public class Address {
     public Address() {
     }
 
-    public Address(int id, String name, boolean is_default, String phone, int user_id, String address, int provider_id) {
+    public Address(int id, String name, boolean is_default, String phone, int user_id, String address, int provider_id,int price) {
         this.id = id;
         this.name = name;
         this.is_default = is_default;
@@ -126,6 +138,7 @@ public class Address {
         this.user_id = user_id;
         this.address = address;
         this.provider_id = provider_id;
+        this.price=price;
     }
 
     @Override
@@ -138,6 +151,7 @@ public class Address {
                 ", user_id=" + user_id +
                 ", address='" + address + '\'' +
                 ", provider_id=" + provider_id +
+                ", price=" + price +
                 '}';
     }
 }

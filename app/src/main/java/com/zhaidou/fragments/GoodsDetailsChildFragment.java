@@ -2,6 +2,8 @@ package com.zhaidou.fragments;
 
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -34,6 +36,7 @@ import com.zhaidou.adapter.GoodsSizeAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.model.GoodDetail;
 import com.zhaidou.model.GoodInfo;
 import com.zhaidou.model.GoodsSizeItem;
 import com.zhaidou.utils.ToolUtils;
@@ -58,6 +61,7 @@ public class GoodsDetailsChildFragment extends BaseFragment
     private View mView;
 
     private String mPage;
+    private List<GoodInfo> datas=new ArrayList<GoodInfo>();
     private int mIndex;
     private Context mContext;
     private ListView mListView;
@@ -65,7 +69,7 @@ public class GoodsDetailsChildFragment extends BaseFragment
     private List<GoodInfo> goodInfos;
     private RequestQueue mRequestQueue;
     private static final int UPDATE_GOOD_INFO = 0;
-    private List<String> imgsList;
+    private GoodDetail detail;
     private LinearLayout mImageContainer;
 
 
@@ -78,18 +82,17 @@ public class GoodsDetailsChildFragment extends BaseFragment
             {
                 case UPDATE_GOOD_INFO:
                     mAdapter.notifyDataSetChanged();
-                    addImageToContainer(imgsList);
                     break;
             }
         }
     };
 
-    public static GoodsDetailsChildFragment newInstance(List<GoodInfo> infos, int index)
+    public static GoodsDetailsChildFragment newInstance(GoodDetail infos, ArrayList<GoodInfo> datas)
     {
         GoodsDetailsChildFragment fragment = new GoodsDetailsChildFragment();
         Bundle args = new Bundle();
-//        args.putString(PAGE, page);
-        args.putInt(INDEX, index);
+        args.putSerializable("datas",datas);
+        args.putSerializable("details", infos);
         fragment.setArguments(args);
         return fragment;
     }
@@ -104,8 +107,8 @@ public class GoodsDetailsChildFragment extends BaseFragment
         super.onCreate(savedInstanceState);
         if (getArguments() != null)
         {
-//            mPage = getArguments().getString(PAGE);
-            mIndex = getArguments().getInt(INDEX);
+            datas = (List<GoodInfo>)getArguments().getSerializable("datas");
+            detail = (GoodDetail)getArguments().getSerializable("details");
         }
     }
 
@@ -137,7 +140,13 @@ public class GoodsDetailsChildFragment extends BaseFragment
         goodInfos = new ArrayList<GoodInfo>();
         mAdapter = new GoodInfoAdapter(getActivity(), goodInfos);
         mListView.setAdapter(mAdapter);
-        FetchDetailData();
+        if (detail!=null)
+        {
+            if (detail.getImgs()!=null)
+            addImageToContainer(detail.getImgs());
+
+        }
+       // FetchDetailData();
     }
 
     /**
@@ -170,9 +179,10 @@ public class GoodsDetailsChildFragment extends BaseFragment
     {
         for (String url : urls) {
             ImageView imageView = new ImageView(getActivity());
-            imageView.setBackgroundResource(R.drawable.icon_loading_item);
-            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-            ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            imageView.setImageResource(R.drawable.icon_loading_item);
+            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            imageView.setBackgroundColor(Color.parseColor("#ffffff"));
+            ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             imageView.setLayoutParams(layoutParams);
             ToolUtils.setImageCacheUrl(url, imageView);
             mImageContainer.addView(imageView);
@@ -185,6 +195,7 @@ public class GoodsDetailsChildFragment extends BaseFragment
     public void FetchDetailData()
     {
         String url = ZhaiDou.goodsDetailsUrlUrl + mIndex;
+        ToolUtils.setLog("url:"+url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
@@ -205,21 +216,11 @@ public class GoodsDetailsChildFragment extends BaseFragment
                             GoodInfo goodInfo = new GoodInfo(id, title, value);
                             goodInfos.add(goodInfo);
                         }
-                        JSONArray imgsArray = merchandise.optJSONArray("imgs");
-                        if (imgsArray != null && imgsArray.length() > 0) {
-                            imgsList = new ArrayList<String>();
-                            for (int i = 0; i < imgsArray.length(); i++) {
-                                JSONObject imgObj = imgsArray.optJSONObject(i);
-                                String url = imgObj.optString("url");
-                                imgsList.add(url);
-                            }
-                        }
-
                         handler.sendEmptyMessage(UPDATE_GOOD_INFO);
                     }
                 } else
                 {
-                    Toast.makeText(getActivity(), "加载错误", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "商品信息加载失败", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -229,7 +230,7 @@ public class GoodsDetailsChildFragment extends BaseFragment
             public void onErrorResponse(VolleyError volleyError)
             {
                 if (volleyError != null)
-                    Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "商品信息加载失败", Toast.LENGTH_SHORT).show();
             }
         });
         mRequestQueue.add(request);

@@ -16,21 +16,17 @@
             android:layout_height="wrap_content">
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="160dp"
                 android:scaleType="fitXY"
                 android:id="@+id/iv_single_item"
                 android:background="@drawable/icon_loading_defalut"/>
             <LinearLayout
                 android:id="@+id/ll_sale_out"
                 android:layout_width="match_parent"
-                android:gravity="center"
                 android:visibility="gone"
-                android:background="#88aaaaaa"
-                android:layout_height="150dp">
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/icon_sale_out"/>
+                android:orientation="horizontal"
+                android:background="@drawable/icon_sale_out"
+                android:layout_height="160dp">
             </LinearLayout>
         </RelativeLayout>
 

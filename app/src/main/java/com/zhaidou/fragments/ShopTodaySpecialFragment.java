@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -77,6 +78,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private TypeFaceTextView backBtn,titleTv,introduceTv,timeTv;
     private PullToRefreshScrollView mScrollView;
     private ListViewForScrollView mListView;
+    private LinearLayout loadingView;
 
     private TextView myCartTips;
     private ImageView myCartBtn;
@@ -116,6 +118,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
             switch (msg.what)
             {
                 case 4:
+                    loadingView.setVisibility(View.GONE);
                     introduceTv.setText(introduce);
                     adapter.notifyDataSetChanged();
                     break;
@@ -285,6 +288,8 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private void initView()
     {
         mDialog= CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+
+        loadingView=(LinearLayout)mView.findViewById(R.id.loadingView);
 
         backBtn=(TypeFaceTextView)mView.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(onClickListener);

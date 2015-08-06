@@ -70,6 +70,7 @@ public class ShopSpecialFragment extends BaseFragment
     private int page = 1;
     private Dialog mDialog;
     private View contentView;
+    private LinearLayout loadingView;
 
     private RequestQueue mRequestQueue;
 
@@ -125,6 +126,7 @@ public class ShopSpecialFragment extends BaseFragment
             switch (msg.what)
             {
                 case 1001:
+                    loadingView.setVisibility(View.GONE);
                     adapter.notifyDataSetChanged();
                     break;
                 case 1002:
@@ -271,6 +273,9 @@ public class ShopSpecialFragment extends BaseFragment
     private void initView()
     {
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+
+        loadingView=(LinearLayout)mView.findViewById(R.id.loadingView);
+
         backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);

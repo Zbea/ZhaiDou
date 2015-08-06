@@ -138,4 +138,12 @@
             android:textSize="12sp"/>
     </RelativeLayout>
 
+    <LinearLayout
+        android:id="@+id/loadingView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/headLine"
+        android:background="@color/white"
+        android:orientation="vertical"></LinearLayout>
+
 </RelativeLayout>
