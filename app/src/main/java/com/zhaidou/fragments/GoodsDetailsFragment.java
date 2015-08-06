@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -95,7 +96,7 @@ public class GoodsDetailsFragment extends BaseFragment {
     private RequestQueue mRequestQueue;
     private TabPageIndicator mTabPageIndicator;
     private ViewPager mViewPager;
-    private List<GoodInfo> goodInfos = new ArrayList<GoodInfo>();
+    private ArrayList<GoodInfo> goodInfos = new ArrayList<GoodInfo>();
     private int mSpecificationSelectPosition = -1;
 
     private TextView tv_comment, mCurrentPrice, mOldPrice, mDiscount, mTitle;
@@ -111,9 +112,11 @@ public class GoodsDetailsFragment extends BaseFragment {
     private int num;
     private ScrollView scrollView;
     private ImageView topBtn;
+    private LinearLayout loadingView;
 
     private GoodDetail detail;
     private SpecificationAdapter specificationAdapter;
+    private GoodsDetailFragmentAdapter detailFragmentAdapter;
     private GoodsImageAdapter imageAdapter;
     private Specification mSpecification;//选中规格
     private List<Specification> specificationList;
@@ -177,12 +180,18 @@ public class GoodsDetailsFragment extends BaseFragment {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case UPDATE_GOOD_DETAIL:
-                    GoodDetail detail = (GoodDetail) msg.obj;
+                    loadingView.setVisibility(View.GONE);
+                    detail = (GoodDetail) msg.obj;
+
+                    detailFragmentAdapter.notifyDataSetChanged();
+
                     mCurrentPrice.setText("￥" + detail.getPrice() + "");
                     mOldPrice.setText("￥" + detail.getCost_price() + "");
                     tv_comment.setText(detail.getDesigner());
                     mTitle.setText(detail.getTitle());
                     setDiscount(detail.getPrice(), detail.getCost_price());
+
+                    if (detail.getSpecifications()!=null)
                     specificationAdapter.addAll(detail.getSpecifications());
 
                     initData(detail.getImgs());
@@ -322,6 +331,8 @@ public class GoodsDetailsFragment extends BaseFragment {
 
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
 
+        loadingView=(LinearLayout)mView.findViewById(R.id.loadingView);
+
         initBroadcastReceiver();
 
         backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
@@ -381,8 +392,10 @@ public class GoodsDetailsFragment extends BaseFragment {
 
         mTabPageIndicator = (TabPageIndicator) mView.findViewById(R.id.tab_goods_detail);
         mViewPager = (ViewPager) mView.findViewById(R.id.vp_goods_detail);
-        mViewPager.setAdapter(new GoodsDetailFragmentAdapter(getChildFragmentManager(), goodInfos));
+        detailFragmentAdapter=new GoodsDetailFragmentAdapter(getChildFragmentManager());
+        mViewPager.setAdapter(detailFragmentAdapter);
         mTabPageIndicator.setViewPager(mViewPager);
+
         specificationAdapter = new SpecificationAdapter(getActivity(), new ArrayList<Specification>(), mSpecificationSelectPosition);
         mGridView.setAdapter(specificationAdapter);
 
@@ -641,10 +654,10 @@ public class GoodsDetailsFragment extends BaseFragment {
         {
             for (String url : urls) {
                 ImageView imageView = new ImageView(mContext);
-                imageView.setBackgroundResource(R.drawable.icon_loading_item);
-                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                params.height=240;
+                imageView.setImageResource(R.drawable.icon_loading_item);
+                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                imageView.setBackgroundColor(Color.parseColor("#ffffff"));
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 imageView.setLayoutParams(params);
                 ToolUtils.setImageCacheUrl(url, imageView);
                 adPics.add(imageView);
@@ -741,6 +754,22 @@ public class GoodsDetailsFragment extends BaseFragment {
                         }
                         detail.setSpecifications(specificationList);
                     }
+
+                    JSONArray descriptions = merchandise.optJSONArray("descriptions");
+                    if (descriptions != null && descriptions.length() > 0)
+                    {
+                        for (int i = 0; i < descriptions.length(); i++)
+                        {
+                            JSONObject description = descriptions.optJSONObject(i);
+                            int descriptionsId = description.optInt("id");
+                            String descriptionsTitle = description.optString("title");
+                            String value = description.optString("value");
+                            GoodInfo goodInfo = new GoodInfo(descriptionsId, descriptionsTitle, value);
+                            goodInfos.add(goodInfo);
+                        }
+                        detail.setGoodsInfo(goodInfos);
+                    }
+
                     Message message = new Message();
                     message.what = UPDATE_GOOD_DETAIL;
                     message.obj = detail;
@@ -761,18 +790,18 @@ public class GoodsDetailsFragment extends BaseFragment {
     }
 
     private class GoodsDetailFragmentAdapter extends FragmentPagerAdapter {
-        private List<GoodInfo> mData;
 
-        public GoodsDetailFragmentAdapter(FragmentManager fragmentManager, List<GoodInfo> infos) {
+        public GoodsDetailFragmentAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
-            mData = infos;
         }
 
         @Override
         public Fragment getItem(int position) {
             switch (position) {
                 case 0: {
-                    return GoodsDetailsChildFragment.newInstance(mData, mIndex);
+                    ToolUtils.setLog("goodInfos:"+goodInfos);
+                    ToolUtils.setLog("detail:"+detail);
+                    return GoodsDetailsChildFragment.newInstance(detail, goodInfos);
                 }
                 case 1: {
                     return SaleServiceFragment.newInstance("", "");

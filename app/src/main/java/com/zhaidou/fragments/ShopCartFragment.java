@@ -85,7 +85,6 @@ public class ShopCartFragment extends BaseFragment
     private TextView totalMoneyTv, saveMoneyTv;
     private CheckBox allCb;
     private LinearLayout cartGoodsLine;//添加商品view
-    private View childeView;
     private TextView textNumView;
     private int tags;
 
@@ -119,6 +118,10 @@ public class ShopCartFragment extends BaseFragment
                     nullView.setVisibility(View.VISIBLE);
                     contentView.setVisibility(View.GONE);
                 }
+            }
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
+            {
+//                addCartGoods();
             }
         }
     };
@@ -324,8 +327,6 @@ public class ShopCartFragment extends BaseFragment
 
         if (items.size() > 0)
         {
-            nullView.setVisibility(View.GONE);
-            contentView.setVisibility(View.VISIBLE);
             FetchDetailData();
 
         } else
@@ -334,7 +335,6 @@ public class ShopCartFragment extends BaseFragment
             nullView.setVisibility(View.VISIBLE);
             contentView.setVisibility(View.GONE);
         }
-
 
     }
 
@@ -362,6 +362,9 @@ public class ShopCartFragment extends BaseFragment
      */
     private void initData()
     {
+        nullView.setVisibility(View.GONE);
+        contentView.setVisibility(View.VISIBLE);
+
         if (itemsServer.size() > 0)
         {
             for (int i = 0; i < itemsServer.size(); i++)
@@ -401,7 +404,7 @@ public class ShopCartFragment extends BaseFragment
         cartGoodsLine.removeAllViews();
         for (int position = 0; position < items.size(); position++)
         {
-            childeView = LayoutInflater.from(mContext).inflate(R.layout.shop_cart_goods_item, null);
+            final View childeView = LayoutInflater.from(mContext).inflate(R.layout.shop_cart_goods_item, null);
             TypeFaceTextView itemName = (TypeFaceTextView) childeView.findViewById(R.id.cartItemNameTv);
             TypeFaceTextView itemSize = (TypeFaceTextView) childeView.findViewById(R.id.cartItemSizeTv);
             TextView itemflags = (TextView) childeView.findViewById(R.id.cartItemIsFlags);
@@ -413,6 +416,7 @@ public class ShopCartFragment extends BaseFragment
             TypeFaceTextView itemLoseNum = (TypeFaceTextView) childeView.findViewById(R.id.cartItemLoseNum);
             ImageView itemImage = (ImageView) childeView.findViewById(R.id.cartImageItemTv);
             CheckBox itemCheck = (CheckBox) childeView.findViewById(R.id.chatItemCB);
+            itemCheck.setId(position);
             TextView isOver = (TextView) childeView.findViewById(R.id.cartItemIsOver);
             TextView islose = (TextView) childeView.findViewById(R.id.cartItemIsLose);
             ImageView itemDeleteBtn = (ImageView) childeView.findViewById(R.id.cartItemDelBtn);
@@ -627,6 +631,7 @@ public class ShopCartFragment extends BaseFragment
                     mHandler.sendEmptyMessage(1);
                 } else
                 {
+                    mHandler.sendEmptyMessage(1);
                     ShowToast("加载失败");
                 }
             }

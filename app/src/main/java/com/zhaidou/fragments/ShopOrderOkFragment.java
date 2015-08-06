@@ -79,7 +79,7 @@ public class ShopOrderOkFragment extends BaseFragment
 
     private int num = 0;
     private double money = 0;
-    private double moneyYF = 0;
+    private int moneyYF = 0;
     private double totalMoney = 0;
 
     private RequestQueue mRequestQueue;
@@ -104,8 +104,7 @@ public class ShopOrderOkFragment extends BaseFragment
 
                     List<Address> addressList = (List<Address>) msg.obj;
                     address = addressList.get(0);
-//                    Area area=(Area)address;
-//                    setYFMoney(area);
+                    setYFMoney(address);
                     addressPhoneTv.setText("收件人：" + address.getPhone());
                     addressNameTv.setText("电话：" + address.getName());
                     addressinfoTv.setText(address.getAddress());
@@ -198,8 +197,7 @@ public class ShopOrderOkFragment extends BaseFragment
                         public void onDefalueAddressChange(Address address)
                         {
                             address=address;
-//                            Area area=(Area)address;
-//                            setYFMoney(area);
+                            setYFMoney(address);
                             addressPhoneTv.setText("收件人：" + address.getPhone());
                             addressNameTv.setText("电话：" + address.getName());
                             addressinfoTv.setText(address.getAddress());
@@ -222,8 +220,7 @@ public class ShopOrderOkFragment extends BaseFragment
                         public void onDefalueAddressChange(Address address)
                         {
                             address=address;
-//                            Area area=(Area)address;
-//                            setYFMoney(area);
+                            setYFMoney(address);
                             orderAddressInfoLine.setVisibility(View.VISIBLE);
                             orderAddressNullLine.setVisibility(View.GONE);
                             orderAddressEditLine.setVisibility(View.VISIBLE);
@@ -336,7 +333,7 @@ public class ShopOrderOkFragment extends BaseFragment
     /**
      * 设置运费
      */
-    private void setYFMoney(Area area)
+    private void setYFMoney(Address area)
     {
         moneyYF=area.getPrice();
         moneyYfTv.setText("￥" + moneyYF);
@@ -445,7 +442,8 @@ public class ShopOrderOkFragment extends BaseFragment
                             int provider_id = receiver.optInt("provider_id");
                             String addr = receiver.optString("address");
                             boolean is_default = receiver.optBoolean("is_default");
-                            Address address = new Address(id, name, is_default, phone, user_id, addr, provider_id);
+                            int price=receiver.optInt("price");
+                            Address address = new Address(id, name, is_default, phone, user_id, addr, provider_id,price);
                             if (is_default)
                             {
                                 addressList.add(0, address);

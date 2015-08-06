@@ -95,6 +95,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 
     private Coupon mCoupon;
     private View rootView;
+    private LinearLayout loadingView;
 
     private BroadcastReceiver broadcastReceiver=new BroadcastReceiver()
     {
@@ -123,6 +124,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case UPDATE_ADAPTER:
+                    loadingView.setVisibility(View.GONE);
                     mAdapter.notifyDataSetChanged();
                     break;
                 case UPDATE_COUNT_DOWN_TIME:
@@ -202,6 +204,9 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         if(rootView==null){
             initBroadcastReceiver();
             rootView=inflater.inflate(R.layout.fragment_special_sale, container, false);
+
+            loadingView=(LinearLayout)rootView.findViewById(R.id.loadingView);
+
             mGridView=(GridView)rootView.findViewById(R.id.gv_sale);
             mGridView.setEmptyView(mEmptyView);
             mTimerView=(TextView)rootView.findViewById(R.id.tv_count_time);
@@ -406,7 +411,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 if (null==volleyError.networkResponse){
-                    Log.i("String---------------->","null");
                     mHandler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
                 }
             }

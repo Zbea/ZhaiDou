@@ -234,7 +234,8 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                             int user_id = receiverObj.optInt("user_id");
                             String name = receiverObj.optString("name");
                             boolean is_default=receiverObj.optBoolean("is_default");
-                            Address address1=new Address(id,name,is_default,phone,user_id,addr,provider_id);
+                            int price=receiverObj.optInt("price");
+                            Address address1=new Address(id,name,is_default,phone,user_id,addr,provider_id,price);
                             List<Address> addresses=addressAdapter.getList();
                             addressAdapter.remove(position);
                             addressAdapter.add(address1,position);
@@ -293,7 +294,8 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                             int provider_id = receiverObj.optInt("provider_id");
                             String address = receiverObj.optString("address");
                             boolean is_default = receiverObj.optBoolean("is_default");
-                            Address addr = new Address(id, name, is_default, phone, user_id, address, provider_id);
+                            int price=receiverObj.optInt("price");
+                            Address addr = new Address(id, name, is_default, phone, user_id, address, provider_id,price);
                             addressAdapter.add(addr);
                             ((MainActivity) getActivity()).popToStack(newAddrFragment);
                         }
@@ -515,7 +517,8 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                         String created_at=receiver.optString("created_at");
                         boolean is_default=receiver.optBoolean("is_default");
                         int user_id=receiver.optInt("user_id");
-                        Address address1=new Address(id,name,is_default,phone,user_id,addr,provider_id);
+                        int price=receiver.optInt("price");
+                        Address address1=new Address(id,name,is_default,phone,user_id,addr,provider_id,price);
                         address1.setUpdated_at(updated_at);
                         address1.setCreated_at(created_at);
                         if (addressListener!=null)
