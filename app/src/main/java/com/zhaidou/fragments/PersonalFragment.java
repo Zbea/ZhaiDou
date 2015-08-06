@@ -20,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -30,12 +31,10 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.dialog.CustomLoadingDialog;
+
 import com.zhaidou.model.CartItem;
-import com.zhaidou.model.Collocation;
 import com.zhaidou.model.User;
 import com.zhaidou.sqlite.CreatCartDB;
-import com.zhaidou.sqlite.CreatCartTools;
 import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -72,6 +71,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     private final int UPDATE_USER_DESCRIPTION = 2;
     private final int UPDATE_USER_COLLECT_COUNT=3;
     private final int UPDATE_USER_COLLOCATION=4;
+    private final int UPDATE_UNPAY_COUNT=5;
 
     private Map<String, String> cityMap = new HashMap<String, String>();
 
@@ -86,7 +86,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     private CreatCartDB creatCartDB;
     private List<CartItem> items = new ArrayList<CartItem>();
     private ImageView iv_header, mPrePayView, mPreReceivedView, mReturnView;
-    private TextView tv_nickname, tv_desc,tv_collect,tv_collocation;
+    private TextView tv_nickname, tv_desc,tv_collect,tv_collocation,tv_unpay_count;
     private RelativeLayout mCouponsView, mSettingView, mAllOrderView;
     private FrameLayout mChildContainer;
     private TextView mCartCount;
@@ -134,6 +134,12 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                     break;
                 case UPDATE_USER_COLLOCATION:
                     tv_collocation.setText(msg.arg1+"");
+                    break;
+                case UPDATE_UNPAY_COUNT:
+                    int count =msg.arg1;
+                    tv_unpay_count.setVisibility(View.VISIBLE);
+                    ((MainActivity)getActivity()).hideTip(View.VISIBLE);
+                    tv_unpay_count.setText(count+"");
                     break;
             }
         }
@@ -185,6 +191,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         tv_nickname = (TextView) view.findViewById(R.id.tv_nickname);
         tv_collect=(TextView)view.findViewById(R.id.tv_collect);
         tv_collocation=(TextView)view.findViewById(R.id.tv_collocation);
+        tv_unpay_count=(TextView)view.findViewById(R.id.tv_unpay_count);
         mCartCount = (TextView) view.findViewById(R.id.tv_cart_count);
 
         mPrePayView.setOnClickListener(this);
@@ -244,8 +251,10 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             case R.id.rl_taobao_order:
                 break;
             case R.id.tv_pre_pay:
+                tv_unpay_count.setVisibility(View.GONE);
                 UnPayFragment unPayFragment = UnPayFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragment(unPayFragment);
+                ((MainActivity)getActivity()).hideTip(View.GONE);
                 break;
             case R.id.tv_pre_received:
                 UnReceiveFragment unReceiveFragment = UnReceiveFragment.newInstance("", "");
@@ -481,10 +490,19 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     }
 
     private void FetchUnPayCount(){
-        JsonObjectRequest request=new JsonObjectRequest("http://192.168.199.173/special_mall/api/orders?count=1&status=1",new Response.Listener<JSONObject>() {
+        JsonObjectRequest request=new JsonObjectRequest("http://192.168.199.173/special_mall/api/orders?count=1&status=0",new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("FetchUnPayCount------------>",jsonObject.toString());
+                if (jsonObject!=null){
+                    int count =jsonObject.optInt("count");
+                    if (count>0){
+                        Message message=new Message();
+                        message.what=UPDATE_UNPAY_COUNT;
+                        message.arg1=count;
+                        mHandler.sendMessage(message);
+                    }
+                }
             }
         },new Response.ErrorListener() {
             @Override

@@ -13,6 +13,14 @@ public class OrderItem {
     private int merchandise_id;
     private String merch_img;
 
+    public int getCost_price() {
+        return cost_price;
+    }
+
+    public void setCost_price(int cost_price) {
+        this.cost_price = cost_price;
+    }
+
     public int getId() {
         return id;
     }

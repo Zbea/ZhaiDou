@@ -45,6 +45,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -79,6 +80,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private LinearLayout mTabContainer;
 //    private FrameLayout mChildContainer;
     private LoginFragment mLoginFragment;
+    private ImageView iv_dot;
 
     private String token;
     private int id;
@@ -140,6 +142,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main_layout);
+        iv_dot=(ImageView)findViewById(R.id.iv_dot);
         mContext=this;
         initBroadcastReceiver();
         init();
@@ -167,7 +170,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
-        mContext.registerReceiver(broadcastReceiver,intentFilter);
+        mContext.registerReceiver(broadcastReceiver, intentFilter);
     }
 
     public void init()
@@ -491,5 +494,8 @@ Log.i("selectFragment---->","selectFragment1");
         SettingFragment settingFragment=SettingFragment.newInstance("","");
         getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container,settingFragment).addToBackStack(null).show(settingFragment).commit();
         mChildContainer.setVisibility(View.VISIBLE);
+    }
+    public void hideTip(int v){
+        iv_dot.setVisibility(v);
     }
 }

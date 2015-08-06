@@ -72,40 +72,14 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#EEEEEE"/>
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:gravity="right"
-        android:paddingRight="10dp"
         android:background="@color/white">
         <com.zhaidou.view.TypeFaceTextView
-            android:id="@+id/bt_logistics"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:background="#00bbb9"
-            android:gravity="center"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:layout_marginRight="10dp"
-            android:text="查看物流"/>
-        <com.zhaidou.view.TypeFaceTextView
-            android:id="@+id/bt_return"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:background="#00bbb9"
-            android:gravity="center"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:layout_marginRight="10dp"
-            android:text="申请退货"/>
-        <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/bt_received"
+            android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
@@ -113,8 +87,25 @@
             android:gravity="center"
             android:paddingTop="5dp"
             android:paddingRight="10dp"
+            android:layout_centerVertical="true"
             android:paddingLeft="10dp"
             android:paddingBottom="5dp"
+            android:layout_marginRight="10dp"
             android:text="确认收货"/>
-    </LinearLayout>
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/bt_logistics"
+            android:layout_toLeftOf="@id/bt_received"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:background="#00bbb9"
+            android:gravity="center"
+            android:paddingTop="5dp"
+            android:layout_centerVertical="true"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_marginRight="10dp"
+            android:text="查看物流"/>
+    </RelativeLayout>
 </LinearLayout>
