@@ -114,8 +114,14 @@ public class UnReceiveFragment extends BaseFragment {
         unReceiveAdapter.setOnInViewClickListener(R.id.bt_logistics,new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
+                Order order=(Order)values;
+                if ("4".equalsIgnoreCase(order.getStatus())){
+                    LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "");
+                    ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
+                }else if ("1".equalsIgnoreCase(order.getStatus())){
+                    AfterSaleFragment afterSaleFragment =AfterSaleFragment.newInstance(order.getOrderId()+"","");
+                    ((MainActivity)getActivity()).navigationToFragment(afterSaleFragment);
+                }
             }
         });
         unReceiveAdapter.setOnInViewClickListener(R.id.bt_received,new BaseListAdapter.onInternalClickListener() {
@@ -205,13 +211,20 @@ public class UnReceiveFragment extends BaseFragment {
             TextView tv_order_amount = ViewHolder.get(convertView, R.id.tv_order_amount);
             TextView tv_order_status = ViewHolder.get(convertView, R.id.tv_order_status);
             TextView bt_received=ViewHolder.get(convertView,R.id.bt_received);
+            TextView bt_logistics=ViewHolder.get(convertView,R.id.bt_logistics);
             ImageView iv_order_img=ViewHolder.get(convertView,R.id.iv_order_img);
             Order item = getList().get(position);
             tv_order_time.setText("下单时间："+item.getCreated_at_for());
             tv_order_number.setText("订单编号："+item.getNumber());
-            tv_order_amount.setText("订单金额："+item.getAmount()+"");
+            tv_order_amount.setText("订单金额：￥"+item.getAmount()+"");
             tv_order_status.setText("订单状态："+item.getStatus_ch());
-            bt_received.setText("1".equalsIgnoreCase(item.getStatus())?"申请退款":"确认收货");
+            if ("1".equalsIgnoreCase(item.getStatus())){
+                bt_received.setVisibility(View.GONE);
+                bt_logistics.setText("申请退款");
+            }else if ("4".equalsIgnoreCase(item.getStatus())){
+                bt_received.setVisibility(View.VISIBLE);
+                bt_logistics.setText("查看物流");
+            }
             ToolUtils.setImageCacheUrl(item.getImg(), iv_order_img);
             return convertView;
         }

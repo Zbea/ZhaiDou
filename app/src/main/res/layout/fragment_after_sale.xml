@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#f1f1f1"
+    android:scrollbars="none"
     xmlns:android="http://schemas.android.com/apk/res/android">
 <LinearLayout
     android:orientation="vertical"
@@ -43,33 +44,36 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="申请售后"/>
+            android:text="申请退款/退货"/>
     </RelativeLayout>
     <LinearLayout
-        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:background="@color/white"
         android:layout_height="40dp"
         android:orientation="vertical">
         <com.zhaidou.view.TypeFaceTextView
-            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:paddingLeft="15dp"
             android:textColor="@color/gray_9"
             android:text="商品信息"/>
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#EEEEEE"/>
     </LinearLayout>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#D2D2D2"/>
+    <ListView
+        android:id="@+id/lv_aftersale"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="20dp"
         android:paddingBottom="20dp"
         android:paddingLeft="15dp"
+        android:visibility="gone"
         android:background="@color/white"
         android:orientation="horizontal">
         <ImageView
@@ -140,8 +144,8 @@
             android:text="服务类型"/>
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#EEEEEE"/>
+            android:layout_height="0.5dp"
+            android:background="#D2D2D2"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -155,23 +159,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="换货"
-            android:background="@drawable/shape_line_frame"
+            android:background="@drawable/goods_buy_size_item_selector"
             android:textColor="#999999"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"/>
+            android:clickable="true"
+            android:gravity="center"
+            android:layout_marginRight="15dp"/>
         <com.zhaidou.view.TypeFaceTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/shape_line_frame"
+            android:background="@drawable/goods_buy_size_item_selector"
             android:text="退货"
-            android:textColor="#999999"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:paddingTop="4dp"
-            android:layout_marginLeft="20dp"
-            android:paddingBottom="4dp"/>
+            android:gravity="center"
+            android:clickable="true"
+            android:textColor="#999999"/>
     </LinearLayout>
 
     <LinearLayout
@@ -191,16 +191,11 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#EEEEEE"/>
-        <!--<TextView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="换货"/>-->
         <com.zhaidou.view.TypeFaceEditText
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_margin="10dp"
             android:gravity="top"
-            android:text="换货"
             android:padding="5dp"
             android:textSize="14sp"
             android:textColor="@color/gray_9"
@@ -211,28 +206,33 @@
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:background="@color/white"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
         <com.zhaidou.view.TypeFaceTextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="40dp"
             android:gravity="center_vertical"
             android:paddingLeft="15dp"
             android:textColor="@color/gray_9"
             android:text="上传图片"/>
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#EEEEEE"/>
+            android:layout_height="0.5dp"
+            android:background="#D2D2D2"/>
+        <ImageView
+            android:layout_margin="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_add"/>
     </LinearLayout>
 
     <com.zhaidou.view.TypeFaceTextView
         android:layout_gravity="bottom"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:text="提交信息"
+        android:text="提交"
         android:textColor="@color/white"
-        android:background="#cdcdcd"
+        android:background="@color/red"
         android:gravity="center"
         android:layout_marginTop="10dp"
         android:layout_marginRight="20dp"
