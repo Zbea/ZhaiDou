@@ -424,7 +424,6 @@ public class ShopCartFragment extends BaseFragment
             LinearLayout cartNumView = (LinearLayout) childeView.findViewById(R.id.cartNumView);
             LinearLayout cartNumLoseView = (LinearLayout) childeView.findViewById(R.id.cartNumLoseView);
 
-
             if (items.size() > 1)
             {
                 if (position == items.size() - 1)
@@ -441,6 +440,8 @@ public class ShopCartFragment extends BaseFragment
             }
 
             final CartItem cartItem = items.get(position);
+
+            //判断商品是否下架或者卖光处理
             if (cartItem.isOver.equals("true") | cartItem.isPublish.equals("true"))
             {
                 itemCheck.setVisibility(View.GONE);
@@ -484,6 +485,14 @@ public class ShopCartFragment extends BaseFragment
                 isOver.setVisibility(View.GONE);
                 islose.setVisibility(View.VISIBLE);
             }
+
+            //零元特卖不给修改数量
+            if(cartItem.isOSale.equals("true"))
+            {
+                cartNumView.setVisibility(View.GONE);
+                cartNumLoseView.setVisibility(View.VISIBLE);
+            }
+
             itemName.setText(cartItem.name);
             itemSize.setText(cartItem.size);
             itemCurrentPrice.setText("￥ " + cartItem.currentPrice);
