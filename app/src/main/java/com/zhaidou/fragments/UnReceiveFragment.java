@@ -119,7 +119,7 @@ public class UnReceiveFragment extends BaseFragment {
                     LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "");
                     ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
                 }else if ("1".equalsIgnoreCase(order.getStatus())){
-                    AfterSaleFragment afterSaleFragment =AfterSaleFragment.newInstance(order.getOrderId()+"","");
+                    AfterSaleFragment afterSaleFragment =AfterSaleFragment.newInstance(order.getOrderId()+"",order.getStatus());
                     ((MainActivity)getActivity()).navigationToFragment(afterSaleFragment);
                 }
             }
@@ -149,6 +149,14 @@ public class UnReceiveFragment extends BaseFragment {
                 dialog.setCancelable(true);
                 dialog.addContentView(view1, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 dialog.show();
+            }
+        });
+        unReceiveAdapter.setOnInViewClickListener(R.id.ll_unreceive,new BaseListAdapter.onInternalClickListener() {
+            @Override
+            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                Order order=(Order)values;
+                OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(),order);
+                ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
             }
         });
         return view;
@@ -191,7 +199,7 @@ public class UnReceiveFragment extends BaseFragment {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", "o56MZD7xJY7JVNRT3C2R");
+                headers.put("SECAuthorization", "ysyFfLMqfYFfD_PSj7Nd");
                 return headers;
             }
         };

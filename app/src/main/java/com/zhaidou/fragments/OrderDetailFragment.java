@@ -3,6 +3,8 @@ package com.zhaidou.fragments;
 
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -16,11 +18,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
@@ -49,10 +53,11 @@ public class OrderDetailFragment extends BaseFragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_ID = "id";
     private static final String ARG_TIMESTMP = "timestmp";
-
+    private static final String ARG_ORDER = "order";
     // TODO: Rename and change types of parameters
     private String mOrderId;
     private long mParam2;
+    private Order mOrder;
 
 
     private RequestQueue requestQueue;
@@ -60,10 +65,12 @@ public class OrderDetailFragment extends BaseFragment {
                      mReceiverName,mReceiverPhone,mReceiverAddress,mReceiverTime,
                      mOrderAmount,mOrderEdit,mCancelOrder,mOrderTimer;
     private ListView mListView;
+    private TextView mSaleServiceTV;
     private OrderItemAdapter orderItemAdapter;
     private final int UPDATE_COUNT_DOWN_TIME = 2;
     private final int UPDATE_UI_TIMER_FINISH=3;
     private MyTimer timer;
+    private OrderListener orderListener;
 
     private List<OrderItem> orderItems=new ArrayList<OrderItem>();
     private Handler handler=new Handler(){
@@ -100,11 +107,12 @@ public class OrderDetailFragment extends BaseFragment {
      * @return A new instance of fragment OrderDetailFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static OrderDetailFragment newInstance(String id, long timestmp) {
+    public static OrderDetailFragment newInstance(String id, long timestmp,Order order) {
         OrderDetailFragment fragment = new OrderDetailFragment();
         Bundle args = new Bundle();
         args.putString(ARG_ID, id);
         args.putLong(ARG_TIMESTMP, timestmp);
+        args.putSerializable(ARG_ORDER,order);
         fragment.setArguments(args);
         return fragment;
     }
@@ -118,6 +126,7 @@ public class OrderDetailFragment extends BaseFragment {
         if (getArguments() != null) {
             mOrderId = getArguments().getString(ARG_ID);
             mParam2 = getArguments().getLong(ARG_TIMESTMP);
+            mOrder=(Order)getArguments().getSerializable(ARG_ORDER);
         }
     }
 
@@ -145,7 +154,71 @@ public class OrderDetailFragment extends BaseFragment {
         timer = new MyTimer(mParam2, 1000);
         timer.start();
         FetchOrderDetail(mOrderId);
+
+        mCancelOrder.setOnClickListener(this);
+        if ("678".contains(mOrder.getStatus())){
+            view.findViewById(R.id.tv_order_time_left).setVisibility(View.GONE);
+            ((TextView)view.findViewById(R.id.tv_cancel_order)).setText(getResources().getString(R.string.sale_service_personal));
+        }
         return view;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.tv_cancel_order:
+                Log.i("tv_cancel_order---->","tv_cancel_order");
+                if ("678".contains(mOrder.getStatus())){
+                    String url="mqqwpa://im/chat?chat_type=wpa&uin=11300";
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    return;
+                }
+                JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,"http://192.168.199.173/special_mall/api/orders/"+mOrderId+"/update_status?status="+9,new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject jsonObject) {
+                        Log.i("request---onClick----------->",jsonObject.toString());
+                        if (jsonObject!=null){
+                            JSONObject orderObj =jsonObject.optJSONObject("order");
+                            String message=jsonObject.optString("message");
+                            ShowToast(message);
+                            int count =orderObj.optInt("count");
+                            String status =orderObj.optString("status");
+                            String receiver_address=orderObj.optString("receiver_address");
+                            String number=orderObj.optString("number");
+                            String receiver_phone=orderObj.optString("receiver_phone");
+                            String receiver_name=orderObj.optString("receiver_name");
+                            int amount=orderObj.optInt("amount");
+                            int id=orderObj.optInt("id");
+                            String node=orderObj.optString("node");
+                            String updated_at=orderObj.optString("updated_at");
+                            String created_at=orderObj.optString("created_at");
+                            int user_id=orderObj.optInt("user_id");
+                            int receiver_provider_id=orderObj.optInt("receiver_provider_id");
+                            int payment_id=orderObj.optInt("payment_id");
+                            String deliver_number=orderObj.optString("deliver_number");
+                            int receiver_id=orderObj.optInt("receiver_id");
+                            Order order=new Order(id,number,amount,status,message,"","","",0);
+                            orderListener.onOrderStatusChange(order);
+                            ((MainActivity)getActivity()).popToStack(OrderDetailFragment.this);
+                        }
+                    }
+                },new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+
+                    }
+                }){
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        Map<String, String> headers = new HashMap<String, String>();
+                        headers.put("SECAuthorization", "ysyFfLMqfYFfD_PSj7Nd");
+                        return headers;
+                    }
+                };
+                requestQueue.add(request);
+                break;
+        }
+        super.onClick(view);
     }
 
     private void FetchOrderDetail(String id){
@@ -208,7 +281,7 @@ public class OrderDetailFragment extends BaseFragment {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", "o56MZD7xJY7JVNRT3C2R");
+                headers.put("SECAuthorization", "ysyFfLMqfYFfD_PSj7Nd");
                 return headers;
             }
         };
@@ -250,13 +323,11 @@ public class OrderDetailFragment extends BaseFragment {
             long day = 24 * 3600 * 1000;
             long hour = 3600 * 1000;
             long minute = 60 * 1000;
-            //??????????
             long dayCount = l / day;
             long hourCount = (l - (dayCount * day)) / hour;
             long minCount = (l - (dayCount * day) - (hour * hourCount)) / minute;
             long secondCount = (l - (dayCount * day) - (hour * hourCount) - (minCount * minute)) / 1000;
             Message message=new Message();
-//            String msg="?? "+minCount+":"+secondCount;
             String data = getResources().getString(R.string.timer_start);
             data = String.format(data,minCount+":"+secondCount);
             message.what=UPDATE_COUNT_DOWN_TIME;
@@ -269,5 +340,22 @@ public class OrderDetailFragment extends BaseFragment {
 //            Log.i("onFinish---------->", "onFinish");
             handler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (timer!=null){
+            timer.cancel();
+            timer=null;
+        }
+        super.onDestroyView();
+    }
+
+    public void setOrderListener(OrderListener orderListener) {
+        this.orderListener = orderListener;
+    }
+
+    public interface OrderListener{
+        public void onOrderStatusChange(Order order);
     }
 }

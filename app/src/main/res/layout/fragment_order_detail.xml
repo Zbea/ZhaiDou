@@ -199,6 +199,7 @@
                             android:text="收货人:" />
 
                         <com.zhaidou.view.TypeFaceTextView
+                            android:textColor="@color/gray_9"
                             android:id="@+id/tv_receiver_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
@@ -216,6 +217,7 @@
                             android:text="手机号码:" />
 
                         <com.zhaidou.view.TypeFaceTextView
+                            android:textColor="@color/gray_9"
                             android:id="@+id/tv_receiver_phone"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
@@ -233,6 +235,7 @@
                             android:text="收货地址:" />
 
                         <com.zhaidou.view.TypeFaceTextView
+                            android:textColor="@color/gray_9"
                             android:id="@+id/tv_receiver_address"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />

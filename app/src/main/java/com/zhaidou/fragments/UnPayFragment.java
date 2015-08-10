@@ -130,12 +130,19 @@ public class UnPayFragment extends BaseFragment {
             unPayAdapter.setOnInViewClickListener(R.id.ll_unpay, new BaseListAdapter.onInternalClickListener() {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                    Order order = (Order) values;
+                    final Order order = (Order) values;
                     Log.i("values--->", order.toString());
                     TextView textView=(TextView)v.findViewById(R.id.bt_order_timer);
                     Log.i("textView-------------->",textView.getText().toString());
-                    OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at());
+                    OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(),order);
                     ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
+                    orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
+                        @Override
+                        public void onOrderStatusChange(Order o) {
+                            order.setStatus(o.getStatus());
+                            order.setStatus_ch("已取消");
+                        }
+                    });
                 }
             });
         }
@@ -183,7 +190,7 @@ public class UnPayFragment extends BaseFragment {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", "o56MZD7xJY7JVNRT3C2R");
+                headers.put("SECAuthorization", "ysyFfLMqfYFfD_PSj7Nd");
                 return headers;
             }
         };

@@ -1,5 +1,6 @@
 package com.zhaidou.fragments;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.LinearLayout;
 import com.pulltorefresh.PullToRefreshBase;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.activities.PayActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.CartItem;
 import com.zhaidou.view.TypeFaceTextView;
@@ -231,8 +233,11 @@ public class ShopPaymentFragment extends BaseFragment {
      */
     private void payment()
     {
-        ShopPaymentSuccessFragment shopPaymentFragment=ShopPaymentSuccessFragment.newInstance("",0);
-        ((MainActivity)getActivity()).navigationToFragment(shopPaymentFragment);
+//        ShopPaymentSuccessFragment shopPaymentFragment=ShopPaymentSuccessFragment.newInstance("",0);
+//        ((MainActivity)getActivity()).navigationToFragment(shopPaymentFragment);
+        Intent intent=new Intent(getActivity(),PayActivity.class);
+
+        startAnimActivity(intent);
     }
 
 
