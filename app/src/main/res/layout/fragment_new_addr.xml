@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f1f1f1"
+    android:background="@color/page_bg"
     android:orientation="vertical">
     <RelativeLayout
         android:id="@+id/rl_actionbar"
@@ -53,19 +53,13 @@
             android:textSize="16sp" />
     </RelativeLayout>
 
-    <!--<LinearLayout-->
-    <!--android:id="@+id/ll_manage_address"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:orientation="vertical"-->
-    <!--android:visibility="gone">-->
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="@color/white"
+        android:layout_height="@dimen/btn_height_dimen"
+        android:background="@drawable/content_part_bg"
         android:orientation="horizontal"
-        android:paddingTop="10dp">
+        android:gravity="center_vertical">
 
         <com.zhaidou.view.TypeFaceTextView
             android:layout_width="wrap_content"
@@ -73,70 +67,66 @@
             android:gravity="center_vertical"
             android:paddingLeft="20dp"
             android:text="收货人:"
-            android:textColor="#666666" />
+            android:textSize="15sp"
+            android:textColor="@color/text_main_color"  />
 
         <com.zhaidou.view.TypeFaceEditText
             android:id="@+id/tv_addr_username"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:paddingLeft="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp"
+            android:singleLine="true"
+            android:textSize="14sp"
             android:background="@color/white"
-            android:textColor="#666666"
+            android:textColor="@color/text_main_color"
             android:text="" />
     </LinearLayout>
 
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/white"
-        android:src="#EEEEEE" />
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="@color/white"
+        android:layout_height="@dimen/btn_height_dimen"
+        android:background="@drawable/content_part_bg"
         android:orientation="horizontal"
-        android:paddingTop="10dp">
+        android:gravity="center_vertical">
 
         <com.zhaidou.view.TypeFaceTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="20dp"
+            android:textSize="15sp"
             android:text="联系方式:"
-            android:textColor="#666666" />
+            android:textColor="@color/text_main_color" />
 
         <com.zhaidou.view.TypeFaceEditText
             android:id="@+id/tv_addr_mobile"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp"
             android:background="@color/white"
             android:inputType="phone"
-            android:textColor="#666666"
+            android:maxLength="11"
+            android:textSize="14sp"
+            android:textColor="@color/text_main_color"
             android:text="" />
     </LinearLayout>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/white"
-        android:src="#EEEEEE" />
 
     <LinearLayout
         android:id="@+id/ll_address"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="@color/white"
+        android:layout_height="@dimen/btn_height_dimen"
+        android:background="@drawable/content_part_bg"
         android:orientation="horizontal"
-        android:paddingTop="10dp">
+        android:gravity="center_vertical">
         <com.zhaidou.view.TypeFaceTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="20dp"
             android:text="所在地区:"
+            android:textSize="15sp"
             android:textColor="#666666" />
         <RelativeLayout
             android:layout_width="0dp"
@@ -146,11 +136,16 @@
                 android:id="@+id/tv_addr_loc"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingLeft="5dp"
-                android:background="@color/white"
-                android:textColor="#666666"
+                android:textSize="14sp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="10dp"
+                android:singleLine="true"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/imageArrow"
+                android:textColor="@color/text_main_color"
                 android:text="" />
             <ImageView
+                android:id="@+id/imageArrow"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="5dp"
                 android:layout_width="wrap_content"
@@ -159,35 +154,32 @@
                 android:src="@drawable/icon_arrow_down"/>
         </RelativeLayout>
     </LinearLayout>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/white"
-        android:src="#EEEEEE" />
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="@color/white"
+        android:layout_height="@dimen/btn_height_dimen"
+        android:background="@drawable/content_part_bg"
         android:orientation="horizontal"
-        android:paddingTop="10dp">
+        android:gravity="center_vertical">>
 
         <com.zhaidou.view.TypeFaceTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="20dp"
             android:text="详细地址:"
-            android:textColor="#666666" />
+            android:textSize="15sp"
+            android:textColor="@color/text_main_color" />
 
         <com.zhaidou.view.TypeFaceEditText
             android:id="@+id/tv_addr_detail"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp"
+            android:singleLine="true"
+            android:textSize="14sp"
             android:background="@color/white"
-            android:textColor="#666666"
+            android:textColor="@color/text_main_color"
             android:text="" />
     </LinearLayout>
 

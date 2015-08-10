@@ -51,6 +51,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.sharesdk.framework.ShareSDK;
+import cn.sharesdk.onekeyshare.OnekeyShare;
+
 
 /**
  * Created by roy on 15/7/23.
@@ -59,6 +62,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private static final String PAGE = "page";
     private static final String INDEX = "index";
 
+    private String shareUrl=ZhaiDou.shopSpecialListShareUrl;
     private String mPage;
     private int mIndex;
     private View mView;
@@ -75,6 +79,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
 
     private RequestQueue mRequestQueue;
 
+    private ImageView shareBtn;
     private TypeFaceTextView backBtn,titleTv,introduceTv,timeTv;
     private PullToRefreshScrollView mScrollView;
     private ListViewForScrollView mListView;
@@ -215,9 +220,13 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                         ToolUtils.setToast(getActivity(), "抱歉，尚未登录");
                     }
                     break;
+                case R.id.share_iv:
+                    share();
+                    break;
             }
         }
     };
+
 
     public static ShopTodaySpecialFragment newInstance(String page, int index) {
         ShopTodaySpecialFragment fragment = new ShopTodaySpecialFragment();
@@ -287,9 +296,14 @@ public class ShopTodaySpecialFragment extends BaseFragment {
      */
     private void initView()
     {
+        shareUrl=shareUrl+mIndex;
+
         mDialog= CustomLoadingDialog.setLoadingDialog(mContext, "loading");
 
         loadingView=(LinearLayout)mView.findViewById(R.id.loadingView);
+
+        shareBtn=(ImageView)mView.findViewById(R.id.share_iv);
+        shareBtn.setOnClickListener(onClickListener);
 
         backBtn=(TypeFaceTextView)mView.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(onClickListener);
@@ -343,6 +357,35 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         {
             myCartTips.setVisibility(View.GONE);
         }
+    }
+
+    /**
+     * 分享
+     */
+    private void share()
+    {
+        ShareSDK.initSDK(mContext);
+        OnekeyShare oks = new OnekeyShare();
+        //关闭sso授权
+        oks.disableSSOWhenAuthorize();
+        // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
+        oks.setTitle(mTitle);
+        // titleUrl是标题的网络链接，仅在人人网和QQ空间使用
+        oks.setTitleUrl(shareUrl);
+        // text是分享文本，所有平台都需要这个字段
+        oks.setText(mTitle+"   "+shareUrl);
+        // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
+//        oks.setImageUrl(coverUrl);//确保SDcard下面存在此张图片
+        // url仅在微信（包括好友和朋友圈）中使用
+        oks.setUrl(shareUrl);
+        // comment是我对这条分享的评论，仅在人人网和QQ空间使用
+//            oks.setComment("我是测试评论文本");
+        // site是分享此内容的网站名称，仅在QQ空间使用
+        oks.setSite(getString(R.string.app_name));
+        // siteUrl是分享此内容的网站地址，仅在QQ空间使用
+        oks.setSiteUrl(shareUrl);
+
+        oks.show(mContext);
     }
 
     /**

@@ -1,6 +1,8 @@
 package com.zhaidou.adapter;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -29,15 +31,27 @@ public class SpecificationAdapter extends BaseListAdapter<Specification>{
         TextView tv_item = ViewHolder.get(convertView, R.id.sizeTitleTv);
         Specification specification=getList().get(position);
         tv_item.setText(specification.getTitle());
-        if (position == mCheckPosition)
+
+        if (specification.num<1)
         {
-            isCheck = true;
-            tv_item.setSelected(true);
+            tv_item.setBackgroundResource(R.drawable.btn_no_click_selector);
+            tv_item.setTextColor(Color.parseColor("#ffffff"));
+            tv_item.setClickable(false);
         }
         else
         {
-            tv_item.setSelected(false);
+            if (position == mCheckPosition)
+            {
+                isCheck = true;
+                tv_item.setSelected(true);
+            }
+            else
+            {
+                tv_item.setSelected(false);
+            }
         }
+
+
         return convertView;
     }
 

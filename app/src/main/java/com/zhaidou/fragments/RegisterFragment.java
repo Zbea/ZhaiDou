@@ -5,6 +5,7 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -239,6 +240,10 @@ public class RegisterFragment extends BaseFragment implements View.OnClickListen
                 String nickname=userObj.optString("nick_name");
                 Log.i("nickname--->","nickname");
                 User user=new User(id,email,token,nickname,avatar);
+
+                Intent intent=new Intent(ZhaiDou.IntentRefreshLoginTag);
+                getActivity().sendBroadcast(intent);
+
                 Log.i("user------------>",user.toString());
                 if (getActivity()!=null&&getActivity() instanceof ItemDetailActivity){
                     ((BaseActivity)getActivity()).onRegisterOrLoginSuccess(user,RegisterFragment.this);

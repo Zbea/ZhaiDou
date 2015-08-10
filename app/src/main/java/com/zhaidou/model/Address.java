@@ -1,9 +1,12 @@
 package com.zhaidou.model;
 
+import java.io.Serializable;
+
 /**
  * Created by wangclark on 15/7/29.
  */
-public class Address {
+public class Address implements Serializable
+{
 
     protected int id;
     protected String name;

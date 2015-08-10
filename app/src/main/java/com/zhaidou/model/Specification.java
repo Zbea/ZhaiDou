@@ -1,9 +1,12 @@
 package com.zhaidou.model;
 
+import java.io.Serializable;
+
 /**
  * Created by wangclark on 15/7/27.
  */
-public class Specification {
+public class Specification implements Serializable
+{
     private int id;
     private String title;
     public int num;

@@ -1,6 +1,7 @@
 package com.zhaidou.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,8 +18,8 @@ public class GoodDetail implements Serializable
     private double cost_price;
     private int discount;
     private List<Specification> specifications;
-    private List<GoodInfo> goodsInfo;
-    private List<String> imgs;
+    private ArrayList<GoodInfo> goodsInfo;
+    private ArrayList<String> imgs;
 
     public int getId() {
         return id;
@@ -84,11 +85,11 @@ public class GoodDetail implements Serializable
         this.specifications = specifications;
     }
 
-    public List<String> getImgs() {
+    public ArrayList<String> getImgs() {
         return imgs;
     }
 
-    public void setImgs(List<String> imgs) {
+    public void setImgs(ArrayList<String> imgs) {
         this.imgs = imgs;
     }
 
@@ -100,12 +101,12 @@ public class GoodDetail implements Serializable
         this.end_time = end_time;
     }
 
-    public List<GoodInfo> getGoodsInfo()
+    public ArrayList<GoodInfo> getGoodsInfo()
     {
         return goodsInfo;
     }
 
-    public void setGoodsInfo(List<GoodInfo> goodsInfo)
+    public void setGoodsInfo(ArrayList<GoodInfo> goodsInfo)
     {
         this.goodsInfo = goodsInfo;
     }

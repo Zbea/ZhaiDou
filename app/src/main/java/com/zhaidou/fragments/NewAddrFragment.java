@@ -14,6 +14,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -23,11 +25,13 @@ import com.android.volley.toolbox.Volley;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.model.Address;
 import com.zhaidou.model.Area;
 import com.zhaidou.model.City;
 import com.zhaidou.model.HttpPatch;
 import com.zhaidou.model.Province;
 import com.zhaidou.utils.CollectionUtils;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.WheelViewContainer;
 
 import org.apache.http.HttpResponse;
@@ -44,7 +48,9 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A simple {@link android.support.v4.app.Fragment} subclass.
@@ -86,13 +92,8 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
     private AddrSaveSuccessListener addrSaveSuccessListener;
     private int UPDATE_ADDRESS_INFO=1;
     private int CREATE_NEW_ADDRESS=2;
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment AddrManageFragment.
-     */
-    // TODO: Rename and change types and number of parameters
+    private List<Address> addressList=new ArrayList<Address>();
+
     public static NewAddrFragment newInstance(int id,String nickname, String mobile,String location,String address, int profileId, int status) {
         NewAddrFragment fragment = new NewAddrFragment();
         Bundle args = new Bundle();
@@ -127,7 +128,6 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_new_addr, container, false);
         et_name = (EditText) view.findViewById(R.id.tv_addr_username);
         et_address_detail = (EditText) view.findViewById(R.id.tv_addr_detail);
@@ -174,14 +174,7 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
                 mMobile = mobile;
                 mAddress = address;
                 mProviderId=selectedArea==null?mProviderId:selectedArea.getId();
-                Log.i("hhh", "dada");
                 new MyTask().execute();
-                break;
-            case R.id.tv_edit:
-
-                break;
-            case R.id.tv_delete:
-//                new MyTask().execute(tv_addr_username.getText().toString(),tv_addr_mobile.getText().toString(),"",mProfileId);
                 break;
             case R.id.ll_address:
                 final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
@@ -235,23 +228,25 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
             }
             return s;
         }
-
         @Override
         protected void onPostExecute(String s) {
-            Log.i("onPostExecute---------->", s.toString());
             try {
                 mDialog.dismiss();
                 JSONObject json = new JSONObject(s);
                 String message=json.optString("message");
                 int status=json.optInt("status");
-                if (status==201){
-                    Log.i("status==201---------->", "status==201--------------"+mStatus);
+                if (status==201)
+                {
                     JSONObject receiver=json.optJSONObject("receiver");
-                    if (addrSaveSuccessListener!=null){
-                        addrSaveSuccessListener.onSaveListener(receiver,mStatus);
+                    int  price=json.optInt("price");
+                    ToolUtils.setLog("receiver：" + receiver.toString());
+                    if (addrSaveSuccessListener!=null)
+                    {
+                        addrSaveSuccessListener.onSaveListener(receiver,mStatus,price);
                     }
-                }else {
-                    ShowToast("保存失败");
+                }else
+                {
+                    ShowToast("抱歉,保存失败");
                 }
             } catch (Exception e) {
 
@@ -372,15 +367,6 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
                     }
 
                 }
-//                for(Province province:provinceList){
-//                    Log.i("provinceList------>",province.getName());
-//                }
-//                for(City province:cityList){
-//                    Log.i("cityList------>",province.getName());
-//                }
-//                for(Area province:areaList){
-//                    Log.i("areaList------>",province.getName());
-//                }
             }
         }, new Response.ErrorListener() {
             @Override
@@ -396,6 +382,6 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
     }
 
     public interface AddrSaveSuccessListener{
-        public void onSaveListener(JSONObject receiver,int status);
+        public void onSaveListener(JSONObject receiver,int status,int yfPrice);
     }
 }

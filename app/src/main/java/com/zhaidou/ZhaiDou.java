@@ -37,10 +37,14 @@ public class ZhaiDou {
     public static String shopHomeSpecialUrl="http://192.168.199.173/special_mall/api/sales/new_sale";
     //特卖banner
     public static String shopSpecialBannerUrl="http://192.168.199.173/special_mall/api/sales/sale_banner?status=";
+    //特卖列表share
+    public static String shopSpecialListShareUrl="http://192.168.199.230:9000/mall/list.html?id=";
     //特卖列表
     public static String shopSpecialListUrl="http://192.168.199.173/special_mall/api/sales?sale_cate=0";
     //特卖详情
     public static String shopSpecialTadayUrl="http://192.168.199.173/special_mall/api/sales/";
+    //商品详情share
+    public static String goodsDetailsShareUrl="http://192.168.199.230:9000/mall/index.html?id=";
     //商品详情
     public static String goodsDetailsUrlUrl="http://192.168.199.173/special_mall/api/merchandises/";
     //购物车商品详情
@@ -49,6 +53,10 @@ public class ZhaiDou {
     public static String goodsCartEditGoodsUrl="http://192.168.199.173/special_mall/api/merchandises/";
     //地址管理接口
     public static String addressManageUrl="http://192.168.199.173/special_mall/api/receivers";
+    //提交订单接口
+    public static String orderCommitUrl="http://192.168.199.173/special_mall/api/orders";
+    //查看当天是否已经购买了0元特卖商品
+    public static String orderCheckOSaleUrl="http://192.168.199.173/special_mall/api/orders/order_items_0_status";
 
 
     //TAB分类
