@@ -1,6 +1,7 @@
 package com.zhaidou.utils;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.ImageView;
@@ -9,6 +10,8 @@ import android.widget.Toast;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.zhaidou.R;
+
+import java.net.URI;
 
 /**
  * Created by roy on 15/7/15.

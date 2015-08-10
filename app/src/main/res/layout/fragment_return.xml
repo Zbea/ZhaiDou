@@ -37,11 +37,13 @@
             android:layout_centerInParent="true"
             android:textSize="18sp"
             android:textColor="@color/white"
-            android:text="退货"/>
+            android:text="退货/退款"/>
     </RelativeLayout>
     <ListView
         android:id="@+id/lv_return"
         android:listSelector="@android:color/transparent"
+        android:dividerHeight="20dp"
+        android:divider="@android:color/transparent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 </LinearLayout>

@@ -95,9 +95,11 @@ public class PhotoMenuFragment extends BaseFragment implements View.OnClickListe
                 ((ProfileFragment)getParentFragment()).toggleMenu();
                 break;
             case R.id.ll_menu_close:
-                Log.i("fff","ll_menu_close");
-                Toast.makeText(getActivity(),"ll_menu_close",1).show();
-                ((ProfileFragment)getParentFragment()).toggleMenu();
+                if (getParentFragment()!=null&&getParentFragment() instanceof ProfileFragment){
+                    ((ProfileFragment)getParentFragment()).toggleMenu();
+                }else if (getParentFragment()!=null&&getParentFragment() instanceof AfterSaleFragment){
+                    ((AfterSaleFragment)getParentFragment()).toggleMenu();
+                }
                 break;
             default:
                 break;

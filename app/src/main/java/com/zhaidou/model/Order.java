@@ -1,11 +1,12 @@
 package com.zhaidou.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by wangclark on 15/7/24.
  */
-public class Order {
+public class Order implements Serializable{
     private long orderId;
     private String number;
     private int amount;

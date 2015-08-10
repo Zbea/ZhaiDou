@@ -247,6 +247,8 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             case R.id.all_order:
                 AllOrdersFragment allOrdersFragment = AllOrdersFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragment(allOrdersFragment);
+//                AfterSaleFragment afterSaleFragment=AfterSaleFragment.newInstance("","");
+//                ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
                 break;
             case R.id.rl_taobao_order:
                 break;

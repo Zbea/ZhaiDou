@@ -100,6 +100,33 @@ public class ZhaiDou {
         HOME,
         TAG,
     }
+
+    /** 未付款*/
+    public final static int STATUS_UNPAY=0;
+    /**已付款*/
+    public final static int STATUS_PAYED=1;
+    /** 超时过期*/
+    public final static int STATUS_OVER_TIME=2;
+    /**已取消（已付款）*/
+    public final static int STATUS_ORDER_CANCEL_PAYED=3;
+    /**已发货*/
+    public final static int STATUS_DELIVERY=4;
+    /**交易成功*/
+    public final static int STATUS_DEAL_SUCCESS=5;
+    /**申请退货*/
+    public final static int STATUS_APPLY_GOOD_RETURN=6;
+    /**退货中*/
+    public final static int STATUS_GOOD_RETURNING=7;
+    /**退货成功*/
+    public final static int STATUS_RETURN_GOOD_SUCCESS=8;
+    /**未付款取消*/
+    public final static int STATUS_UNPAY_CANCEL=9;
+    /**交易关闭*/
+    public final static int STATUS_DEAL_CLOSE=10;
+    /**退款成功*/
+    public final static int STATUS_RETURN_MONEY_SUCCESS=11;
+
+
     //广播标识集合
     /**
      * 首页点击标识刷新
@@ -121,6 +148,8 @@ public class ZhaiDou {
      * 登录退出
      */
     public static String IntentRefreshLoginExitTag="com.zhaidou.home.refesh.login.exit";
+
+
 
 }
 //http://192.168.1.45/article/api/article_categories?catetory_id=13

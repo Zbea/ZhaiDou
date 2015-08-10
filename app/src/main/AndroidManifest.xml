@@ -36,6 +36,13 @@
 
                 <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="wxce03c66622e5b243" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".activities.HomeActivity"
@@ -101,6 +108,18 @@
             android:name=".activities.RegisterActivity"
             android:theme="@style/StyledIndicators"
             android:label="@string/title_activity_search">
+        </activity>
+        <activity
+            android:name=".activities.PayActivity"
+            android:theme="@style/StyledIndicators"
+            android:label="@string/title_activity_search">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="wxce03c66622e5b243" />
+            </intent-filter>
         </activity>
         <activity android:name="com.alibaba.sdk.android.webview.BaseWebViewActivity"/>
         <activity android:name="com.alibaba.sdk.android.login.ui.LoginWebViewActivity"/>

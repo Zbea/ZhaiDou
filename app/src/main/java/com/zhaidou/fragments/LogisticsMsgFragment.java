@@ -5,6 +5,8 @@ package com.zhaidou.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,12 +39,12 @@ import java.util.List;
 public class LogisticsMsgFragment extends BaseFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_TYPE = "type";
+    private static final String ARG_NUMBER = "number";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String mType;
+    private String mNumber;
 
     private ExpandableListView mLogisticsView;
 
@@ -59,11 +61,11 @@ public class LogisticsMsgFragment extends BaseFragment {
      * @return A new instance of fragment LogisticsMsgFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static LogisticsMsgFragment newInstance(String param1, String param2) {
+    public static LogisticsMsgFragment newInstance(String type, String number) {
         LogisticsMsgFragment fragment = new LogisticsMsgFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_TYPE, type);
+        args.putString(ARG_NUMBER, number);
         fragment.setArguments(args);
         return fragment;
     }
@@ -75,8 +77,8 @@ public class LogisticsMsgFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mType = getArguments().getString(ARG_TYPE);
+            mNumber = getArguments().getString(ARG_NUMBER);
         }
     }
 
@@ -97,8 +99,10 @@ public class LogisticsMsgFragment extends BaseFragment {
 //        mWebView.setHorizontalScrollbarOverlay(false);
 //        mWebView.setHorizontalFadingEdgeEnabled(false);
 //        mWebView.setInitialScale(1);
-        mWebView.loadUrl("http://m.kuaidi100.com/index_all.html?type=huitongkuaidi&postid=50109307408462#result");
+        String url="http://m.kuaidi100.com/index_all.html?type="+(TextUtils.isEmpty(mType)?"huitongkuaidi":mType)+"&postid="+(TextUtils.isEmpty(mNumber)?"50109307408462":mNumber)+"#result";
+        mWebView.loadUrl(url);
 
+        Log.i("url------------>",url);
         mWebView.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageFinished(WebView view, String url) {

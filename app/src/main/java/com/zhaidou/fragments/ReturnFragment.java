@@ -56,13 +56,14 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
     private RequestQueue mRequestQueue;
     private ReturnAdapter returnAdapter;
     private List<Order> orders;
-    private String STATUS_RETURN_LIST="7,8";
+    private String STATUS_RETURN_LIST="678";
     private final int UPDATE_RETURN_LIST=1;
     private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case UPDATE_RETURN_LIST:
+                    Log.i("UPDATE_RETURN_LIST-------->",orders.size()+"");
                     returnAdapter.notifyDataSetChanged();
                     break;
             }
@@ -87,7 +88,6 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
         return fragment;
     }
     public ReturnFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -111,16 +111,24 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
         mListView.setAdapter(returnAdapter);
         mRequestQueue= Volley.newRequestQueue(getActivity());
         FetchReturnData();
+        returnAdapter.setOnInViewClickListener(R.id.orderlayout,new BaseListAdapter.onInternalClickListener() {
+            @Override
+            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                Order order=(Order)values;
+                OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(),order);
+                ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
+            }
+        });
         return view;
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.tv_apply_support:
-                AfterSaleFragment afterSaleFragment=AfterSaleFragment.newInstance("","");
-                ((MainActivity)getActivity()).navigationToFragment(afterSaleFragment);
-                break;
+//            case R.id.tv_apply_support:
+//                AfterSaleFragment afterSaleFragment=AfterSaleFragment.newInstance("","");
+//                ((MainActivity)getActivity()).navigationToFragment(afterSaleFragment);
+//                break;
         }
     }
     public class ReturnAdapter extends BaseListAdapter<Order> {
@@ -132,12 +140,13 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
         public View bindView(int position, View convertView, ViewGroup parent) {
             if (convertView==null)
                 convertView=mInflater.inflate(R.layout.item_order_return,null);
-            TextView tv_order_time = ViewHolder.get(convertView, R.id.tv_unreceive_order_time);
+            TextView tv_order_time = ViewHolder.get(convertView, R.id.tv_order_time);
             TextView tv_order_number = ViewHolder.get(convertView, R.id.tv_order_number);
             TextView tv_order_amount = ViewHolder.get(convertView, R.id.tv_order_amount);
             TextView tv_order_status = ViewHolder.get(convertView, R.id.tv_order_status);
             ImageView iv_order_img=ViewHolder.get(convertView,R.id.iv_order_img);
             Order item = getList().get(position);
+            Log.i("item----------->",item.toString());
             tv_order_time.setText("下单时间："+item.getCreated_at_for());
             tv_order_number.setText("订单编号："+item.getNumber());
             tv_order_amount.setText("订单金额："+item.getAmount()+"");
@@ -150,7 +159,7 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
         JsonObjectRequest request = new JsonObjectRequest("http://192.168.199.173/special_mall/api/orders", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("jsonObject----------->", jsonObject.toString());
+//                Log.i("jsonObject----------->", jsonObject.toString());
                 if (jsonObject != null) {
                     JSONArray orderArr = jsonObject.optJSONArray("orders");
                     if (orderArr != null && orderArr.length() > 0) {
@@ -168,8 +177,10 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
                             Order order = new Order(id, number, amount, status, status_ch, created_at_for, created_at, "", 0);
                             order.setImg(img);
                             order.setOver_at(over_at);
-                            if (STATUS_RETURN_LIST.contains(status))
+                            if (STATUS_RETURN_LIST.contains(status)){
                                 orders.add(order);
+                                Log.i("order---->",order.toString());
+                            }
                         }
                         handler.sendEmptyMessage(UPDATE_RETURN_LIST);
                     }
@@ -184,7 +195,7 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", "o56MZD7xJY7JVNRT3C2R");
+                headers.put("SECAuthorization", "ysyFfLMqfYFfD_PSj7Nd");
                 return headers;
             }
         };
