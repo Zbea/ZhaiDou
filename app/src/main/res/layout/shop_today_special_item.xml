@@ -39,8 +39,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingLeft="10dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp">
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -94,7 +94,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxLines="3"
-                    android:textSize="13sp"
+                    android:textSize="12sp"
                     android:layout_marginTop="2dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/text_gary_color"
@@ -106,20 +106,6 @@
             </RelativeLayout>
 
 
-
-            <!--<com.zhaidou.view.TypeFaceTextView-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_weight="1"-->
-                <!--android:layout_centerInParent="true"-->
-                <!--android:layout_below="@+id/shopNameItem"-->
-                <!--android:layout_above="@+id/lineBuyGoodsLine"-->
-                <!--android:maxLines="3"-->
-                <!--android:textSize="14sp"-->
-                <!--android:layout_marginTop="5dp"-->
-                <!--android:textColor="@color/text_gary_color"-->
-                <!--android:text="哈哈啊哈哈哈哈啊哈哈哈"-->
-                <!--android:id="@+id/shopIntroduceItem"/>-->
 
             <LinearLayout
                 android:id="@+id/lineBuyGoodsLine"
@@ -153,14 +139,14 @@
                     android:layout_height="wrap_content"
                     android:text="马上抢"
                     android:clickable="true"
-                    android:textSize="15sp"
+                    android:textSize="14sp"
                     android:layout_weight="0.0001"
                     android:textColor="@color/white"
                     android:background="@drawable/btn_red_click_selector"
                     android:paddingLeft="12dp"
                     android:paddingRight="12dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
                     android:id="@+id/buyGoodsBtn"/>
             </LinearLayout>
 

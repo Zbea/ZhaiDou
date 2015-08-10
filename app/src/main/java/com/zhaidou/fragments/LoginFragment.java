@@ -329,6 +329,8 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                     Log.i("token--->",token);
 
                     User user = new User(id,email,token,nick,null);
+                    Intent intent=new Intent(ZhaiDou.IntentRefreshLoginTag);
+                    getActivity().sendBroadcast(intent);
                     Log.i("LoginFragment----onRegisterOrLoginSuccess---->","onRegisterOrLoginSuccess");
                     mRegisterOrLoginListener.onRegisterOrLoginSuccess(user,LoginFragment.this);
                 }

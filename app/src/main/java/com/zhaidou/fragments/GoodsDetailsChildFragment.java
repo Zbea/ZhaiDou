@@ -107,7 +107,7 @@ public class GoodsDetailsChildFragment extends BaseFragment
         super.onCreate(savedInstanceState);
         if (getArguments() != null)
         {
-            datas = (List<GoodInfo>)getArguments().getSerializable("datas");
+            datas = (ArrayList<GoodInfo>)getArguments().getSerializable("datas");
             detail = (GoodDetail)getArguments().getSerializable("details");
         }
     }
@@ -137,8 +137,7 @@ public class GoodsDetailsChildFragment extends BaseFragment
         mListView = (ListView) mView.findViewById(R.id.lv_good_info);
         mImageContainer = (LinearLayout) mView.findViewById(R.id.ll_img_container);
         mRequestQueue = Volley.newRequestQueue(getActivity());
-        goodInfos = new ArrayList<GoodInfo>();
-        mAdapter = new GoodInfoAdapter(getActivity(), goodInfos);
+        mAdapter = new GoodInfoAdapter(getActivity(), datas);
         mListView.setAdapter(mAdapter);
         if (detail!=null)
         {
@@ -146,7 +145,6 @@ public class GoodsDetailsChildFragment extends BaseFragment
             addImageToContainer(detail.getImgs());
 
         }
-       // FetchDetailData();
     }
 
     /**

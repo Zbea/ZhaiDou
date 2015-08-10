@@ -92,6 +92,7 @@ public class ShopCartFragment extends BaseFragment
 
     private int userId;
     private int count;//单个商品的数量
+    private String Str_publish;
     private CreatCartDB creatCartDB;
     private List<CartItem> items = new ArrayList<CartItem>();
     private List<CartItem> itemsServer = new ArrayList<CartItem>();
@@ -138,29 +139,44 @@ public class ShopCartFragment extends BaseFragment
                     break;
                 case 2:
                     mDialog.dismiss();
-                    if (tags == 1)
+                    if (Str_publish.equals("true"))
                     {
-                        if (count > mCartItem.num)
+                        Toast.makeText(mContext,"抱歉,该商品已经下架,将刷新购物车",Toast.LENGTH_LONG).show();
+                        mCartItem.isPublish=Str_publish;
+                        CreatCartTools.editIsLoseByData(creatCartDB,mCartItem);
+                        addCartGoods();
+                    }
+                    else
+                    {
+                        if (tags == 1)
                         {
-                            mCartItem.num = mCartItem.num + 1;
+                            if (count > mCartItem.num)
+                            {
+                                mCartItem.num = mCartItem.num + 1;
+                                CreatCartTools.editNumByData(creatCartDB, mCartItem);
+                                sendBroadCastEditAll();
+                                textNumView.setText("" + mCartItem.num);
+                            } else
+                            {
+                                Toast.makeText(mContext,"库存不足,商品只剩"+count+"件",Toast.LENGTH_LONG).show();
+                            }
+
+                        } else
+                        {
+                            if (count <mCartItem.num)
+                            {
+                                Toast.makeText(mContext,"抱歉,该商品只剩"+count+"件,请及时更新购物车",Toast.LENGTH_LONG).show();
+//                            mCartItem.num = mCartItem.num - 1;
+                            }
+//                        else
+//                        {
+//                            mCartItem.num = mCartItem.num - 1;
+//                        }
+                            mCartItem.num = mCartItem.num - 1;
                             CreatCartTools.editNumByData(creatCartDB, mCartItem);
                             sendBroadCastEditAll();
                             textNumView.setText("" + mCartItem.num);
-                        } else
-                        {
-                            Toast.makeText(mContext,"库存不足,商品只剩"+count+"件",Toast.LENGTH_LONG).show();
                         }
-
-                    } else
-                    {
-                        if (count <mCartItem.num)
-                        {
-                            Toast.makeText(mContext,"抱歉,该商品只剩"+count+"件,请及时更新购物车",Toast.LENGTH_LONG).show();
-                        }
-                        mCartItem.num = mCartItem.num - 1;
-                        CreatCartTools.editNumByData(creatCartDB, mCartItem);
-                        sendBroadCastEditAll();
-                        textNumView.setText("" + mCartItem.num);
                     }
                     break;
             }
@@ -193,7 +209,6 @@ public class ShopCartFragment extends BaseFragment
         @Override
         public void onCheckedChanged(CompoundButton compoundButton, boolean b)
         {
-            ToolUtils.setLog("刷新了1");
             if (b)
             {
                 for (int i = 0; i < boxs.size(); i++)
@@ -398,8 +413,6 @@ public class ShopCartFragment extends BaseFragment
      */
     private void addCartGoods()
     {
-        ToolUtils.setLog("刷新了");
-        ToolUtils.setLog("刷新了:"+itemsCheck.size());
         items = CreatCartTools.selectByAll(creatCartDB, userId);
         cartGoodsLine.removeAllViews();
         for (int position = 0; position < items.size(); position++)
@@ -424,7 +437,6 @@ public class ShopCartFragment extends BaseFragment
             LinearLayout cartNumView = (LinearLayout) childeView.findViewById(R.id.cartNumView);
             LinearLayout cartNumLoseView = (LinearLayout) childeView.findViewById(R.id.cartNumLoseView);
 
-
             if (items.size() > 1)
             {
                 if (position == items.size() - 1)
@@ -441,6 +453,8 @@ public class ShopCartFragment extends BaseFragment
             }
 
             final CartItem cartItem = items.get(position);
+
+            //判断商品是否下架或者卖光处理
             if (cartItem.isOver.equals("true") | cartItem.isPublish.equals("true"))
             {
                 itemCheck.setVisibility(View.GONE);
@@ -484,6 +498,14 @@ public class ShopCartFragment extends BaseFragment
                 isOver.setVisibility(View.GONE);
                 islose.setVisibility(View.VISIBLE);
             }
+
+            //零元特卖不给修改数量
+            if(cartItem.isOSale.equals("true"))
+            {
+                cartNumView.setVisibility(View.GONE);
+                cartNumLoseView.setVisibility(View.VISIBLE);
+            }
+
             itemName.setText(cartItem.name);
             itemSize.setText(cartItem.size);
             itemCurrentPrice.setText("￥ " + cartItem.currentPrice);
@@ -667,11 +689,16 @@ public class ShopCartFragment extends BaseFragment
             @Override
             public void onResponse(JSONObject jsonObject)
             {
-
+                JSONObject obj;
                 if (jsonObject != null)
                 {
-                    count = jsonObject.optInt("count");
-                    mHandler.sendEmptyMessage(2);
+                    obj = jsonObject.optJSONObject("specification");
+                    if (obj!=null &&obj.length()>0)
+                    {
+                        count = obj.optInt("count");
+                        Str_publish = (obj.optInt("is_publish"))==0?"true":"false";
+                        mHandler.sendEmptyMessage(2);
+                    }
                 } else
                 {
                     ShowToast("加载失败");

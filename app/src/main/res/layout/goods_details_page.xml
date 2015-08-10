@@ -278,12 +278,18 @@
 
             </LinearLayout>
 
-            <com.viewpagerindicator.TabPageIndicator
-                android:id="@+id/tab_goods_detail"
+            <!--<com.viewpagerindicator.TabPageIndicator-->
+                <!--android:id="@+id/tab_goods_detail"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="40dp"-->
+                <!--android:layout_marginTop="10dp"-->
+                <!--android:background="@color/white" />-->
+
+            <include
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginTop="10dp"
-                android:background="@color/white" />
+                android:layout_height="wrap_content"
+                layout="@layout/goods_details_tip_style"
+                ></include>
 
             <com.zhaidou.view.CustomViewPager
                 android:id="@+id/vp_goods_detail"

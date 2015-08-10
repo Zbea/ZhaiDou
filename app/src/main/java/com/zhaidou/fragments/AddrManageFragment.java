@@ -225,7 +225,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
 
                 newAddrFragment.setAddrSaveSuccessListener(new NewAddrFragment.AddrSaveSuccessListener() {
                     @Override
-                    public void onSaveListener(JSONObject receiverObj, int status) {
+                    public void onSaveListener(JSONObject receiverObj, int status,int yfprice) {
                         if (status==UPDATE_ADDRESS_INFO){
                             int id = receiverObj.optInt("id");
                             String phone = receiverObj.optString("phone");
@@ -234,8 +234,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                             int user_id = receiverObj.optInt("user_id");
                             String name = receiverObj.optString("name");
                             boolean is_default=receiverObj.optBoolean("is_default");
-                            int price=receiverObj.optInt("price");
-                            Address address1=new Address(id,name,is_default,phone,user_id,addr,provider_id,price);
+                            Address address1=new Address(id,name,is_default,phone,user_id,addr,provider_id,yfprice);
                             List<Address> addresses=addressAdapter.getList();
                             addressAdapter.remove(position);
                             addressAdapter.add(address1,position);
@@ -285,7 +284,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 ((MainActivity) getActivity()).navigationToFragment(newAddrFragment);
                 newAddrFragment.setAddrSaveSuccessListener(new NewAddrFragment.AddrSaveSuccessListener() {
                     @Override
-                    public void onSaveListener(JSONObject receiverObj,int status) {
+                    public void onSaveListener(JSONObject receiverObj,int status,int yfprice) {
                         if (receiverObj != null&&CREATE_NEW_ADDRESS==status) {
                             int id = receiverObj.optInt("id");
                             int user_id = receiverObj.optInt("user_id");
@@ -294,11 +293,11 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                             int provider_id = receiverObj.optInt("provider_id");
                             String address = receiverObj.optString("address");
                             boolean is_default = receiverObj.optBoolean("is_default");
-                            int price=receiverObj.optInt("price");
-                            Address addr = new Address(id, name, is_default, phone, user_id, address, provider_id,price);
+                            Address addr = new Address(id, name, is_default, phone, user_id, address, provider_id,yfprice);
                             addressAdapter.add(addr);
                             ((MainActivity) getActivity()).popToStack(newAddrFragment);
                         }
+
                     }
                 });
                 break;
@@ -426,6 +425,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                         String city=receiverObj.optString("city_name");
                         String area=receiverObj.optString("provider_name");
                         boolean is_default=receiverObj.optBoolean("is_default");
+                        int price=receiverObj.optInt("price");
                         if (is_default)
                             mCheckedPosition=i;
                         Address address = new Address();
@@ -439,6 +439,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                         address.setCity(city);
                         address.setArea(area);
                         address.setIs_default(is_default);
+                        address.setPrice(price);
                         addressList.add(address);
                     }
                     handler.sendEmptyMessage(UPDATE_ADDRESS_LIST);
@@ -542,6 +543,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
         }
         else
         {
+            if (addressListener!=null)
             addressListener.onDeleteFinishAddress();
         }
     }
