@@ -59,6 +59,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -122,8 +123,8 @@ public class ShopOrderOkFragment extends BaseFragment
                     List<Address> addressList = (List<Address>) msg.obj;
                     address = addressList.get(0);
                     setYFMoney(address);
-                    addressPhoneTv.setText("收件人：" + address.getPhone());
-                    addressNameTv.setText("电话：" + address.getName());
+                    addressPhoneTv.setText("收件人：" + address.getName());
+                    addressNameTv.setText("电话：" + address.getPhone());
                     addressinfoTv.setText(address.getProvince()+address.getCity()+address.getArea()+address.getAddress());
                     break;
                 case 2:
@@ -268,8 +269,8 @@ public class ShopOrderOkFragment extends BaseFragment
                         {
                             address=maddress;
                             setYFMoney(address);
-                            addressPhoneTv.setText("收件人：" + address.getPhone());
-                            addressNameTv.setText("电话：" + address.getName());
+                            addressPhoneTv.setText("收件人：" + address.getName());
+                            addressNameTv.setText("电话：" + address.getPhone());
                             addressinfoTv.setText(address.getProvince()+address.getCity()+address.getArea()+address.getAddress());
                         }
                         @Override
@@ -304,8 +305,8 @@ public class ShopOrderOkFragment extends BaseFragment
                             orderAddressInfoLine.setVisibility(View.VISIBLE);
                             orderAddressNullLine.setVisibility(View.GONE);
                             orderAddressEditLine.setVisibility(View.VISIBLE);
-                            addressPhoneTv.setText("收件人：" + addr.getPhone());
-                            addressNameTv.setText("电话：" + addr.getName());
+                            addressPhoneTv.setText("收件人：" + addr.getName());
+                            addressNameTv.setText("电话：" + addr.getPhone());
                             addressinfoTv.setText(address.getProvince()+address.getCity()+address.getArea()+addr.getAddress());
                             ((MainActivity) getActivity()).popToStack(newAddrFragment);
                         }
@@ -528,18 +529,44 @@ public class ShopOrderOkFragment extends BaseFragment
 
     }
 
+    /*
+     * Function  :   封装请求体信息
+     * Param     :   params请求体内容，encode编码格式
+     * Author    :   博客园-依旧淡然
+     */
+    public static StringBuffer getRequestData(Map<String, Map<String,Integer>> params, String encode) {
+        StringBuffer stringBuffer = new StringBuffer();        //存储封装好的请求体信息
+        try {
+            for(Map.Entry<String, Map<String,Integer>> entry : params.entrySet())
+            {
+                stringBuffer.append(entry.getKey())
+                        .append("=")
+                        .append(URLEncoder.encode(entry.getValue().toString(), encode))
+                        .append("&");
+            }
+            stringBuffer.deleteCharAt(stringBuffer.length() - 1);    //删除最后的一个"&"
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return stringBuffer;
+    }
+
     private String FetchRequset()
     {
         String result=null;
         String url=ZhaiDou.orderCommitUrl;
+
+
+
         Map<String,Integer> order_add=new HashMap<String,Integer>();
-        order_add.put("id",address.getId());
-        Map<String,Map<String,Integer>> order_address=new HashMap<String,Map<String,Integer>>();
-        order_address.put("receiver_attributes",order_add);
+        order_add.put("receiver_id",address.getId());
 
-
+        Map<String,String> order_info=new HashMap<String,String>();
+        order_info.put("node",bzInfo_Str);
 
         Map<String,Map<String,Integer>> order_goods=new HashMap<String,Map<String,Integer>>();
+
+        String jj="{order_items_attributes={";
 
         for (int i = 0; i <items.size() ; i++)
         {
@@ -548,7 +575,22 @@ public class ShopOrderOkFragment extends BaseFragment
             order_good.put("specification_id",items.get(i).sizeId);
             order_good.put("count",items.get(i).num);
 
+            order_goods.put("order_items_attributes",order_good);
+
+            if (i==items.size()-1)
+            {
+                jj=jj+order_good+"}}";
+            }
+            else
+            {
+                jj=jj+order_good+",";
+            }
         }
+
+        ToolUtils.setLog(order_add.toString());
+        ToolUtils.setLog(order_goods.toString());
+        ToolUtils.setLog(jj);
+        ToolUtils.setLog(order_info.toString());
 
         // 第一步，创建HttpPost对象
         HttpPost httpPost = new HttpPost(url);
@@ -557,26 +599,31 @@ public class ShopOrderOkFragment extends BaseFragment
         // 设置HTTP POST请求参数必须用NameValuePair对象
         List<NameValuePair> params = new ArrayList<NameValuePair>();
 
-//        params.add(new BasicNameValuePair("sale_order", order_address.toString()));
+        params.add(new BasicNameValuePair("sale_order", order_add.toString()));
 //        params.add(new BasicNameValuePair("sale_order[order_items_attributes]", order_goods.toString()));
-        params.add(new BasicNameValuePair("sale_order[receiver_id[id]]", ""+address.getId()));
-        for (int i = 0; i <items.size() ; i++)
-        {
-            ToolUtils.setLog("i:"+i);
-
-            Map<String,Integer> order_good=new HashMap<String,Integer>();
-            order_good.put("merchandise_id",items.get(i).id);
-            order_good.put("specification_id",items.get(i).sizeId);
-            order_good.put("count",items.get(i).num);
-
-            params.add(new BasicNameValuePair("sale_order[order_items_attributes[]]", ""+order_good));
-//            params.add(new BasicNameValuePair("sale_order[order_items_attributes[merchandise_id]]", ""+items.get(i).id));
-//            params.add(new BasicNameValuePair("sale_order[order_items_attributes[specification_id]]", ""+items.get(i).sizeId));
-//            params.add(new BasicNameValuePair("sale_order[order_items_attributes[count]]", ""+items.get(i).num));
-            ToolUtils.setLog("ii:"+i);
-
-        }
-        params.add(new BasicNameValuePair("sale_order[node]", bzInfo_Str));
+//        params.add(new BasicNameValuePair("sale_order[receiver_id[id]]", ""+address.getId()));
+//        for (int i = 0; i <items.size() ; i++)
+//        {
+//            ToolUtils.setLog("i:"+i);
+//
+//            Map<String,Integer> order_good=new HashMap<String,Integer>();
+//            order_good.put("merchandise_id",items.get(i).id);
+//            order_good.put("specification_id",items.get(i).sizeId);
+//            order_good.put("count",items.get(i).num);
+//
+//
+//
+//            params.add(new BasicNameValuePair("sale_order[order_items_attributes[]]", getRequestData(order_good,"utf-8").toString()));
+////            params.add(new BasicNameValuePair("sale_order[order_items_attributes[merchandise_id]]", ""+items.get(i).id));
+////            params.add(new BasicNameValuePair("sale_order[order_items_attributes[specification_id]]", ""+items.get(i).sizeId));
+////            params.add(new BasicNameValuePair("sale_order[order_items_attributes[count]]", ""+items.get(i).num));
+//            ToolUtils.setLog("ii:"+i);
+//
+//        }
+        params.add(new BasicNameValuePair("sale_order", jj));
+//        params.add(new BasicNameValuePair("sale_order", getRequestData(order_goods,"utf-8").toString()));
+        params.add(new BasicNameValuePair("sale_order", order_info.toString()));
+//        params.add(new BasicNameValuePair("sale_order[node]", bzInfo_Str));
 
         HttpResponse httpResponse = null;
         try {

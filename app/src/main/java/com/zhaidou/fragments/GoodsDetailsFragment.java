@@ -65,6 +65,7 @@ import com.zhaidou.model.Specification;
 import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;
 import com.zhaidou.utils.CollectionUtils;
+import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ChildGridView;
@@ -133,7 +134,10 @@ public class GoodsDetailsFragment extends BaseFragment
     private int num;
     private ScrollView scrollView;
     private ImageView topBtn;
-    private LinearLayout loadingView;
+    private LinearLayout iconView,iconOSaleView;
+
+    private LinearLayout loadingView,nullNetView,nullView;
+    private TextView  reloadBtn,reloadNetBtn;
 
     private GoodDetail detail;
     private SpecificationAdapter specificationAdapter;
@@ -216,6 +220,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 case UPDATE_GOOD_DETAIL:
                     if (detail!=null)
                     loadingView.setVisibility(View.GONE);
+
                     detail = (GoodDetail) msg.obj;
                     setChildFargment(detail,goodInfos);
 
@@ -386,6 +391,12 @@ public class GoodsDetailsFragment extends BaseFragment
                 case R.id.share_iv:
                     share();
                     break;
+                case R.id.nullReload:
+                    initData();
+                    break;
+                case R.id.netReload:
+                    initData();
+                    break;
             }
         }
     };
@@ -441,12 +452,19 @@ public class GoodsDetailsFragment extends BaseFragment
     private void initView()
     {
         shareUrl=shareUrl+mIndex;
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
 
         shareBtn=(ImageView)mView.findViewById(R.id.share_iv);
         shareBtn.setOnClickListener(onClickListener);
 
         loadingView = (LinearLayout) mView.findViewById(R.id.loadingView);
+        nullNetView= (LinearLayout) mView.findViewById(R.id.nullNetline);
+        nullView= (LinearLayout) mView.findViewById(R.id.nullline);
+
+        reloadBtn = (TextView) mView.findViewById(R.id.nullReload);
+        reloadBtn.setOnClickListener(onClickListener);
+
+        reloadNetBtn = (TextView) mView.findViewById(R.id.netReload);
+        reloadNetBtn.setOnClickListener(onClickListener);
 
         initBroadcastReceiver();
 
@@ -465,6 +483,19 @@ public class GoodsDetailsFragment extends BaseFragment
         ljBtn.setOnClickListener(onClickListener);
         addCartBtn = (LinearLayout) mView.findViewById(R.id.goodsAddBuyBtn);
         addCartBtn.setOnClickListener(onClickListener);
+
+        iconView=(LinearLayout)mView.findViewById(R.id.iconView);
+        iconOSaleView=(LinearLayout)mView.findViewById(R.id.iconOSaleView);
+        if (flags==1)
+        {
+            iconView.setVisibility(View.GONE);
+            iconOSaleView.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            iconView.setVisibility(View.VISIBLE);
+            iconOSaleView.setVisibility(View.GONE);
+        }
 
         mView.findViewById(R.id.shopping_cart).setOnClickListener(onClickListener);
         tv_comment = (TextView) mView.findViewById(R.id.tv_comment);
@@ -507,8 +538,6 @@ public class GoodsDetailsFragment extends BaseFragment
         mViewPager = (ViewPager) mView.findViewById(R.id.vp_goods_detail);
         radioGroup=(RadioGroup)mView.findViewById(R.id.goodsRG);
         radioGroup.setOnCheckedChangeListener(onCheckedChangeListener);
-
-
 
         specificationAdapter = new SpecificationAdapter(getActivity(), new ArrayList<Specification>(), mSpecificationSelectPosition);
         mGridView.setAdapter(specificationAdapter);
@@ -561,13 +590,33 @@ public class GoodsDetailsFragment extends BaseFragment
         creatCartDB = new CreatCartDB(mContext);
         initCartTips();
 
-        FetchDetailData(mIndex);
-        if (checkLogin())
+        initData();
+
+    }
+
+    /**
+     * 数据加载
+     */
+    private void initData()
+    {
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        if (NetworkUtils.isNetworkAvailable(mContext))
         {
-            if (flags==1)
+            FetchDetailData(mIndex);
+            if (checkLogin())
             {
-                FetchOSaleData(0);
+                if (flags==1)
+                {
+                    FetchOSaleData(0);
+                }
             }
+        }
+        else
+        {
+            if (mDialog!=null)
+            mDialog.dismiss();
+            nullView.setVisibility(View.GONE);
+            nullNetView.setVisibility(View.VISIBLE);
         }
 
     }
@@ -778,22 +827,27 @@ public class GoodsDetailsFragment extends BaseFragment
         {
             if (flags == 1)
             {
-                if (isOSaleBuy)
+                if (mSpecification != null)
                 {
-                    ToolUtils.setToast(mContext, "抱歉,您已经购买了零元特卖商品不能添加该商品");
-                }
-                else
-                {
-                    for (int i = 0; i < items.size(); i++)
+                    if (isOSaleBuy)
                     {
-                        if (items.get(i).isOSale.equals("true"))
+                        ToolUtils.setToast(mContext, "抱歉,您已经购买了零元特卖商品不能添加该商品");
+                    } else
+                    {
+                        for (int i = 0; i < items.size(); i++)
                         {
-                            ToolUtils.setToast(mContext, "将替换掉原来的零元特卖商品");
-                            CreatCartTools.deleteByData(creatCartDB, items.get(i));
+                            if (items.get(i).isOSale.equals("true"))
+                            {
+                                ToolUtils.setToast(mContext, "将替换掉原来的零元特卖商品");
+                                CreatCartTools.deleteByData(creatCartDB, items.get(i));
+                            }
                         }
                     }
                 }
-
+                else
+                {
+                    Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
+                }
             }
             if (detail != null)
             {
@@ -1001,7 +1055,8 @@ public class GoodsDetailsFragment extends BaseFragment
                     handler.sendMessage(message);
                 } else
                 {
-                    ShowToast("加载出错");
+                    nullView.setVisibility(View.VISIBLE);
+                    nullNetView.setVisibility(View.GONE);
                 }
             }
         }, new Response.ErrorListener()
@@ -1011,6 +1066,8 @@ public class GoodsDetailsFragment extends BaseFragment
             {
                 if (mDialog != null)
                     mDialog.dismiss();
+                nullView.setVisibility(View.VISIBLE);
+                nullNetView.setVisibility(View.GONE);
                 Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
             }
         });

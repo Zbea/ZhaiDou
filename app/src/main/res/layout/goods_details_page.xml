@@ -218,6 +218,69 @@
             </LinearLayout>
 
             <LinearLayout
+            android:id="@+id/iconView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_margin"
+            android:background="@drawable/content_part_bg"
+            android:orientation="horizontal"
+            android:padding="@dimen/default_margin">
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_quality_goods" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="0.5dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:background="#EEEEEE" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_7_day_return" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="0.5dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:background="#EEEEEE" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_delivery" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/iconOSaleView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/default_margin"
@@ -238,31 +301,6 @@
                         android:src="@drawable/icon_quality_goods" />
                 </LinearLayout>
 
-                <TextView
-                    android:layout_width="0.5dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center_vertical"
-                    android:background="#EEEEEE" />
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/icon_7_day_return" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="0.5dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center_vertical"
-                    android:background="#EEEEEE" />
-
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -277,13 +315,6 @@
                 </LinearLayout>
 
             </LinearLayout>
-
-            <!--<com.viewpagerindicator.TabPageIndicator-->
-                <!--android:id="@+id/tab_goods_detail"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="40dp"-->
-                <!--android:layout_marginTop="10dp"-->
-                <!--android:background="@color/white" />-->
 
             <include
                 android:layout_width="match_parent"
@@ -430,6 +461,79 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/headLine"
-        android:background="@color/white"
-        android:orientation="vertical"></LinearLayout>
+        android:background="@color/page_bg"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/nullNetline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_null_net"/>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_main_color"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="30dp"
+                android:text="抱歉,网络连接失败"/>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/netReload"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:layout_marginBottom="30dp"
+                android:gravity="center"
+                android:clickable="true"
+                android:padding="7dp"
+                android:background="@drawable/btn_green_click_bg"
+                android:text="重新加载"/>
+
+            </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nullline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_null_goods_fail"/>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_main_color"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="30dp"
+                android:text="抱歉,加载失败"/>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/nullReload"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:layout_marginBottom="30dp"
+                android:gravity="center"
+                android:clickable="true"
+                android:padding="7dp"
+                android:background="@drawable/btn_green_click_bg"
+                android:text="重新加载"/>
+
+        </LinearLayout>
+
+        </LinearLayout>
 </RelativeLayout>

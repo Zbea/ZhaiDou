@@ -38,6 +38,7 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CountTime;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.ShopTodayItem;
+import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ListViewForScrollView;
@@ -83,7 +84,8 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private TypeFaceTextView backBtn,titleTv,introduceTv,timeTv;
     private PullToRefreshScrollView mScrollView;
     private ListViewForScrollView mListView;
-    private LinearLayout loadingView;
+    private LinearLayout loadingView,nullNetView,nullView;
+    private TextView  reloadBtn,reloadNetBtn;
 
     private TextView myCartTips;
     private ImageView myCartBtn;
@@ -174,8 +176,9 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                 mTimer.cancel();
                 mTimer=null;
             }
-            initDate();
+            FetchData(id);
             adapter.notifyDataSetChanged();
+            loadingView.setVisibility(View.GONE);
         }
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView)
@@ -223,6 +226,12 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                 case R.id.share_iv:
                     share();
                     break;
+                case R.id.nullReload:
+                    initData();
+                    break;
+                case R.id.netReload:
+                    initData();
+                    break;
             }
         }
     };
@@ -260,7 +269,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         {
             mView=inflater.inflate(R.layout.shop_today_special_page, container, false);
             initView();
-            initDate();
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
         ViewGroup parent = (ViewGroup) mView.getParent();
@@ -286,9 +294,20 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     /**
      * 初始化数据
      */
-    private void initDate()
+    private void initData()
     {
-        FetchData(id);
+        mDialog= CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        if (NetworkUtils.isNetworkAvailable(mContext))
+        {
+            FetchData(id);
+        }
+        else
+        {
+            if (mDialog!=null)
+                mDialog.dismiss();
+            nullView.setVisibility(View.GONE);
+            nullNetView.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -298,9 +317,13 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     {
         shareUrl=shareUrl+mIndex;
 
-        mDialog= CustomLoadingDialog.setLoadingDialog(mContext, "loading");
-
-        loadingView=(LinearLayout)mView.findViewById(R.id.loadingView);
+        loadingView = (LinearLayout) mView.findViewById(R.id.loadingView);
+        nullNetView= (LinearLayout) mView.findViewById(R.id.nullNetline);
+        nullView= (LinearLayout) mView.findViewById(R.id.nullline);
+        reloadBtn = (TextView) mView.findViewById(R.id.nullReload);
+        reloadBtn.setOnClickListener(onClickListener);
+        reloadNetBtn = (TextView) mView.findViewById(R.id.netReload);
+        reloadNetBtn.setOnClickListener(onClickListener);
 
         shareBtn=(ImageView)mView.findViewById(R.id.share_iv);
         shareBtn.setOnClickListener(onClickListener);
@@ -332,6 +355,10 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         mRequestQueue= Volley.newRequestQueue(mContext);
 
         initCartTips();
+
+
+        initData();
+
 
     }
 
@@ -400,6 +427,12 @@ public class ShopTodaySpecialFragment extends BaseFragment {
             @Override
             public void onResponse(JSONObject response)
             {
+                if (response==null)
+                {
+                    mDialog.dismiss();
+                    nullView.setVisibility(View.VISIBLE);
+                    nullNetView.setVisibility(View.GONE);
+                }
                 String result=response.toString();
                 JSONObject obj;
                 try
@@ -444,6 +477,8 @@ public class ShopTodaySpecialFragment extends BaseFragment {
             public void onErrorResponse(VolleyError error)
             {
                 mDialog.dismiss();
+                nullView.setVisibility(View.VISIBLE);
+                nullNetView.setVisibility(View.GONE);
                 Toast.makeText(mContext, "加载失败", Toast.LENGTH_SHORT).show();
                 mScrollView.onRefreshComplete();
             }

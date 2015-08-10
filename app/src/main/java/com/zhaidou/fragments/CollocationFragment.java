@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +36,7 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Collocation;
 import com.zhaidou.utils.AsyncImageLoader1;
+import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONArray;
@@ -72,12 +74,12 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
     private List<Collocation> collocations=new ArrayList<Collocation>();
     private RequestQueue mRequestQueue;
     private PullToRefreshGridView mGridView;
-    private AsyncImageLoader1 imageLoader;
     private CollocationAdapter mAdapter;
 
     private Activity mActivity;
-    private ImageView mEmptyView;
     private CollocationCountChangeListener collocationCountChangeListener;
+
+    private LinearLayout loadingView,nullLine;
 
     private Dialog mDialog;
     private Handler mHandler=new Handler(){
@@ -85,6 +87,7 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 0:
+                    loadingView.setVisibility(View.GONE);
                     if (mDialog!=null&&mDialog.isShowing())
                         mDialog.dismiss();
                     mAdapter.notifyDataSetChanged();
@@ -156,16 +159,24 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_collocation, container, false);
         mGridView=(PullToRefreshGridView)view.findViewById(R.id.gv_collocation);
-        mEmptyView=(ImageView)view.findViewById(R.id.iv_collocation_empty);
         mGridView.setMode(PullToRefreshBase.Mode.BOTH);
         mGridView.setOnRefreshListener(this);
         mRequestQueue = Volley.newRequestQueue(getActivity());
-        imageLoader=new AsyncImageLoader1(getActivity());
         mAdapter=new CollocationAdapter(getActivity(),collocations);
         mSharedPreferences=getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         mGridView.setAdapter(mAdapter);
-        FetchCollocationData(currentpage);
 
+        loadingView=(LinearLayout)view.findViewById(R.id.loadingView);
+        nullLine=(LinearLayout)view.findViewById(R.id.nullLine);
+
+        if (NetworkUtils.isNetworkAvailable(getActivity()))
+        {
+            FetchCollocationData(currentpage);
+        }
+        else
+        {
+            ToolUtils.setToast(getActivity(),"抱歉,网络连接失败");
+        }
         return view;
     }
 
@@ -187,9 +198,8 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
                 JSONObject meta = jsonObject.optJSONObject("meta");
                 count=meta==null?0:meta.optInt("count");
                 Collocation collocation=null;
-                mEmptyView.setVisibility(View.VISIBLE);
-                if (collocationsArr!=null&&collocationsArr.length()>0){
-                    mEmptyView.setVisibility(View.GONE);
+                if (collocationsArr!=null&&collocationsArr.length()>0)
+                {
                     for (int i=0;i<collocationsArr.length();i++){
                         JSONObject collocationObj=collocationsArr.optJSONObject(i);
                         int id=collocationObj.optInt("id");
@@ -203,10 +213,14 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
                         collocation.setMedia_pic(media_pic);
                         collocations.add(collocation);
                     }
+                    Message message=new Message();
+                    message.arg1=count;
+                    mHandler.sendMessage(message);
                 }
-                Message message=new Message();
-                message.arg1=count;
-                mHandler.sendMessage(message);
+                else
+                {
+                    nullLine.setVisibility(View.VISIBLE);
+                }
             }
         },new Response.ErrorListener(){
             @Override
@@ -215,6 +229,7 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
                 {
                     mDialog.dismiss();
                 }
+                nullLine.setVisibility(View.VISIBLE);
             }
         });
         mRequestQueue.add(request);
@@ -234,8 +249,7 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
             ImageView iv_thumb=ViewHolder.get(convertView,R.id.iv_collocation_thumb);
             Collocation collocation=getList().get(position);
             tv_title.setText(collocation.getTitle());
-            imageLoader.LoadImage("http://"+collocation.getMedia_pic(),iv_thumb);
-//            ToolUtils.setImageCacheUrl("http://"+collocation.getMedia_pic(),iv_thumb);
+            ToolUtils.setImageCacheUrl("http://"+collocation.getMedia_pic(),iv_thumb);
             mHashMap.put(position,convertView);
             return convertView;
         }

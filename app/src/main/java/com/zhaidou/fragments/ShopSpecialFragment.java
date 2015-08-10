@@ -42,6 +42,7 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.SwitchImage;
+import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ListViewForScrollView;
@@ -70,7 +71,8 @@ public class ShopSpecialFragment extends BaseFragment
     private int page = 1;
     private Dialog mDialog;
     private View contentView;
-    private LinearLayout loadingView;
+    private LinearLayout loadingView,nullNetView,nullView;
+    private TextView  reloadBtn,reloadNetBtn;
 
     private RequestQueue mRequestQueue;
 
@@ -205,6 +207,13 @@ public class ShopSpecialFragment extends BaseFragment
                         ToolUtils.setToast(getActivity(), "抱歉，尚未登录");
                     }
                     break;
+
+                case R.id.nullReload:
+                    initDate();
+                    break;
+                case R.id.netReload:
+                    initDate();
+                    break;
             }
         }
     };
@@ -272,9 +281,13 @@ public class ShopSpecialFragment extends BaseFragment
      */
     private void initView()
     {
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
-
-        loadingView=(LinearLayout)mView.findViewById(R.id.loadingView);
+        loadingView = (LinearLayout) mView.findViewById(R.id.loadingView);
+        nullNetView= (LinearLayout) mView.findViewById(R.id.nullNetline);
+        nullView= (LinearLayout) mView.findViewById(R.id.nullline);
+        reloadBtn = (TextView) mView.findViewById(R.id.nullReload);
+        reloadBtn.setOnClickListener(onClickListener);
+        reloadNetBtn = (TextView) mView.findViewById(R.id.netReload);
+        reloadNetBtn.setOnClickListener(onClickListener);
 
         backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(onClickListener);
@@ -471,16 +484,20 @@ public class ShopSpecialFragment extends BaseFragment
      */
     private void initDate()
     {
-        if (items.size() > 0)
-        {
-            adViewAdpater.notifyDataSetChanged();
-            adapter.notifyDataSetChanged();
-            mDialog.dismiss();
-        } else
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        if (NetworkUtils.isNetworkAvailable(mContext))
         {
             getBannerData(1);
             FetchData(page);
         }
+        else
+        {
+            if (mDialog!=null)
+                mDialog.dismiss();
+            nullView.setVisibility(View.GONE);
+            nullNetView.setVisibility(View.VISIBLE);
+        }
+
     }
 
     /**
@@ -537,6 +554,12 @@ public class ShopSpecialFragment extends BaseFragment
             @Override
             public void onResponse(JSONObject response)
             {
+                if (response==null)
+                {
+                    mDialog.dismiss();
+                    nullView.setVisibility(View.VISIBLE);
+                    nullNetView.setVisibility(View.GONE);
+                }
                 String result = response.toString();
                 JSONObject obj;
                 try
@@ -572,6 +595,8 @@ public class ShopSpecialFragment extends BaseFragment
             public void onErrorResponse(VolleyError error)
             {
                 mDialog.dismiss();
+                nullView.setVisibility(View.VISIBLE);
+                nullNetView.setVisibility(View.GONE);
                 Toast.makeText(mContext, "加载失败", Toast.LENGTH_SHORT).show();
                 mScrollView.onRefreshComplete();
                 mScrollView.setMode(PullToRefreshBase.Mode.BOTH);

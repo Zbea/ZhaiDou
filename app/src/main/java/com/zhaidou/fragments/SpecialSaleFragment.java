@@ -43,6 +43,7 @@ import com.zhaidou.model.Coupon;
 import com.zhaidou.model.Product;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.AsyncImageLoader1;
+import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
@@ -82,6 +83,9 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     private RequestQueue requestQueue;
     private List<Product> products = new ArrayList<Product>();
 
+    private LinearLayout loadingView,nullNetView,nullView;
+    private TextView  reloadBtn,reloadNetBtn;
+
     private final int UPDATE_ADAPTER=0;
     private final int UPDATE_COUNT_DOWN_TIME=1;
     private final int UPDATE_UI_TIMER_FINISH=2;
@@ -95,7 +99,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 
     private Coupon mCoupon;
     private View rootView;
-    private LinearLayout loadingView;
 
     private BroadcastReceiver broadcastReceiver=new BroadcastReceiver()
     {
@@ -167,6 +170,25 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             }
         }
     };
+
+    private View.OnClickListener onClickListener=new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View view)
+        {
+      switch (view.getId())
+      {
+          case R.id.nullReload:
+              initData();
+              break;
+          case R.id.netReload:
+              initData();
+              break;
+      }
+        }
+    };
+
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -200,8 +222,9 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        if(rootView==null){
+
+        if (rootView == null)
+        {
             initBroadcastReceiver();
             rootView=inflater.inflate(R.layout.fragment_special_sale, container, false);
 
@@ -216,20 +239,22 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             rootView.findViewById(R.id.ll_back).setOnClickListener(this);
             rootView.findViewById(R.id.iv_coupon).setOnClickListener(this);
 
+            loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
+            nullNetView= (LinearLayout) rootView.findViewById(R.id.nullNetline);
+            nullView= (LinearLayout) rootView.findViewById(R.id.nullline);
+            reloadBtn = (TextView) rootView.findViewById(R.id.nullReload);
+            reloadBtn.setOnClickListener(onClickListener);
+            reloadNetBtn = (TextView) rootView.findViewById(R.id.netReload);
+            reloadNetBtn.setOnClickListener(onClickListener);
+
+            requestQueue= Volley.newRequestQueue(getActivity());
             myCartBtn = (ImageView) rootView.findViewById(R.id.myCartBtn);
             myCartBtn.setOnClickListener(this);
             cartTipsTv=(TextView)rootView.findViewById(R.id.myCartTipsTv);
 
-            mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
-
             initCartTips();
 
-            requestQueue= Volley.newRequestQueue(getActivity());
-            FetchCouponData();
-            getBanner();
-            if (products!=null&&products.size()==0)
-                FetchData();
-
+            initData();
 
             mAdapter.setOnInViewClickListener(R.id.ll_single_layout,new BaseListAdapter.onInternalClickListener() {
                 @Override
@@ -244,8 +269,10 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 }
             });
         }
+        //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
         ViewGroup parent = (ViewGroup) rootView.getParent();
-        if (parent != null) {
+        if (parent != null)
+        {
             parent.removeView(rootView);
         }
         return rootView;
@@ -269,6 +296,26 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         int id=(Integer)SharedPreferencesUtil.getData(getActivity(),"userId",-1);
         boolean isLogin=!TextUtils.isEmpty(token)&&id>-1;
         return isLogin;
+    }
+
+    /**
+     * 初始化收据
+     */
+    private void initData()
+    {
+        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
+        if (NetworkUtils.isNetworkAvailable(getActivity()))
+        {
+            getBanner();
+                FetchData();
+        }
+        else
+        {
+            if (mDialog!=null)
+                mDialog.dismiss();
+            nullView.setVisibility(View.GONE);
+            nullNetView.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -333,6 +380,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                         mDialog.dismiss();
                         if (jsonObject.equals(""))
                         {
+                            nullView.setVisibility(View.VISIBLE);
+                            nullNetView.setVisibility(View.GONE);
                             ToolUtils.setToast(getActivity(),"加载失败"); return;
                         }
                         JSONObject saleJson = jsonObject.optJSONObject("sale");
@@ -366,6 +415,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 mDialog.dismiss();
+                nullView.setVisibility(View.VISIBLE);
+                nullNetView.setVisibility(View.GONE);
             }
         });
         requestQueue.add(request);

@@ -287,7 +287,7 @@ public abstract class LoadingLayout extends FrameLayout implements ILoadingLayou
 
 	public final void setLoadingDrawable(Drawable imageDrawable) {
 		// Set Drawable
-		mHeaderImage.setImageDrawable(imageDrawable);
+        mHeaderImage.setImageResource(R.drawable.dialog_loading_icon);
 		mUseIntrinsicAnimation = (imageDrawable instanceof AnimationDrawable);
 
 		// Now call the callback
