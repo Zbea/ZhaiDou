@@ -25,10 +25,12 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Order;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONArray;
@@ -58,6 +60,7 @@ public class UnReceiveFragment extends BaseFragment {
     private ListView mListView;
     private List<Order> orders;
     private final int STATUS_UNRECEIVE_LIST=14;
+    private String token;
     private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -106,6 +109,7 @@ public class UnReceiveFragment extends BaseFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_un_receive, container, false);
         mListView=(ListView)view.findViewById(R.id.lv_unreceivelist);
+        token=(String) SharedPreferencesUtil.getData(getActivity(),"token","");
         orders=new ArrayList<Order>();
         unReceiveAdapter=new UnReceiveAdapter(getActivity(),orders);
         mListView.setAdapter(unReceiveAdapter);
@@ -162,7 +166,7 @@ public class UnReceiveFragment extends BaseFragment {
         return view;
     }
     private void FetchReceiveData(){
-        JsonObjectRequest request = new JsonObjectRequest("http://192.168.199.173/special_mall/api/orders", new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("jsonObject----------->", jsonObject.toString());
@@ -199,7 +203,7 @@ public class UnReceiveFragment extends BaseFragment {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", "ysyFfLMqfYFfD_PSj7Nd");
+                headers.put("SECAuthorization", token);
                 return headers;
             }
         };

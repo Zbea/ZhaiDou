@@ -30,6 +30,8 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomePTActivity;
+import com.zhaidou.activities.ItemDetailActivity;
+import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.base.BaseFragment;
 
 import com.zhaidou.model.CartItem;
@@ -260,6 +262,9 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 //                ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
                 break;
             case R.id.rl_taobao_order:
+                Intent intent1=new Intent(getActivity(),WebViewActivity.class);
+                intent1.putExtra("url","https://h5.m.taobao.com/mlapp/olist.html");
+                startAnimActivity(intent1);
                 break;
             case R.id.tv_pre_pay:
                 tv_unpay_count.setVisibility(View.GONE);

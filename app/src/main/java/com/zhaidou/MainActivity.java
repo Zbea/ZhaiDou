@@ -12,10 +12,10 @@ import com.zhaidou.fragments.ElementListFragment;
 import com.zhaidou.fragments.HomeFragment;
 import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.PersonalFragment;
-import com.zhaidou.fragments.PersonalFragment1;
 import com.zhaidou.fragments.PersonalMainFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.fragments.SettingFragment;
+import com.zhaidou.fragments.ShopPaymentFragment;
 import com.zhaidou.fragments.StrategyFragment;
 import com.zhaidou.fragments.WebViewFragment;
 import com.zhaidou.model.CartItem;
@@ -27,13 +27,11 @@ import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -63,9 +61,9 @@ import java.util.concurrent.Callable;
  */
 public class MainActivity extends BaseActivity implements DiyFragment.OnFragmentInteractionListener,
         StrategyFragment.OnFragmentInteractionListener,
-        ElementListFragment.OnFragmentInteractionListener,WebViewFragment.OnFragmentInteractionListener,
-        HomeFragment.OnFragmentInteractionListener,CategoryFragment1.OnFragmentInteractionListener,
-        PersonalMainFragment.OnFragmentInteractionListener,RegisterFragment.RegisterOrLoginListener{
+        ElementListFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
+        HomeFragment.OnFragmentInteractionListener, CategoryFragment1.OnFragmentInteractionListener,
+        PersonalMainFragment.OnFragmentInteractionListener, RegisterFragment.RegisterOrLoginListener {
 
     private Fragment utilityFragment;
     private Fragment beautyHomeFragment;
@@ -122,6 +120,11 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
             {
                 initCartTips();
+            }
+            if (action.equalsIgnoreCase(ZhaiDou.BROADCAST_WXAPI_FILTER)) {
+                List<Fragment> fragments = getSupportFragmentManager().getFragments();
+                ShopPaymentFragment shopPaymentFragment=(ShopPaymentFragment)fragments.get(fragments.size()-1);
+                shopPaymentFragment.handleWXPayResult(intent.getIntExtra("code", -1));
             }
         }
     };
@@ -210,6 +213,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+        intentFilter.addAction(ZhaiDou.BROADCAST_WXAPI_FILTER);
         mContext.registerReceiver(broadcastReceiver, intentFilter);
     }
 
@@ -301,6 +305,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 //                titleView.setText("全类别");
 
                 if (categoryFragment == null) {
+//                    categoryFragment = CategoryFragment.newInstance("haha", "haha");
                     categoryFragment= CategoryFragment1.newInstance("","");
                 }
 

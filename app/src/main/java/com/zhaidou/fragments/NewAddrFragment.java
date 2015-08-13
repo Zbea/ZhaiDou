@@ -23,6 +23,7 @@ import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Address;
@@ -272,8 +273,8 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
 
             if (mStatus==CREATE_NEW_ADDRESS){
                 // 实例化HTTP方法
-                HttpPost request = new HttpPost("http://192.168.199.173/special_mall/api/receivers");
-                request.addHeader("SECAuthorization", "Yk77mfWaq_xYyeEibAxx");
+                HttpPost request = new HttpPost(ZhaiDou.ORDER_RECEIVER_URL);
+                request.addHeader("SECAuthorization",token);
 
                 // 创建UrlEncodedFormEntity对象
                 UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
@@ -284,8 +285,8 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
             }else if (mStatus==UPDATE_ADDRESS_INFO){
                 Log.i("mStatus==UPDATE_ADDRESS_INFO------------>","mStatus==UPDATE_ADDRESS_INFO");
                 // 实例化HTTP方法
-                HttpPatch request = new HttpPatch("http://192.168.199.173/special_mall/api/receivers/"+mId);
-                request.addHeader("SECAuthorization", "Yk77mfWaq_xYyeEibAxx");
+                HttpPatch request = new HttpPatch(ZhaiDou.ORDER_RECEIVER_URL+"/"+mId);
+                request.addHeader("SECAuthorization",token);
 
                 // 创建UrlEncodedFormEntity对象
                 UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
@@ -319,7 +320,7 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
     }
 
     private void FetchCityData() {
-        JsonObjectRequest request = new JsonObjectRequest("http://192.168.199.173/special_mall/api/sales/provider", new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_ADDRESS_URL, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("FetchCityData---->", jsonObject.toString());

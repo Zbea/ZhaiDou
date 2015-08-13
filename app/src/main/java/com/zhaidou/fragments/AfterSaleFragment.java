@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -41,12 +43,23 @@ import com.zhaidou.model.Order;
 import com.zhaidou.model.OrderItem;
 import com.zhaidou.model.Receiver;
 import com.zhaidou.utils.PhotoUtil;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -78,7 +91,7 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
     private ImageAdapter imageAdapter;
     private final int UPDATE_RETURN_LIST = 1;
     private AfterSaleAdapter afterSaleAdapter;
-    private TextView tv_return, tv_exchange, lastSelected;
+    private TextView tv_return, tv_exchange, lastSelected,tv_commit;
     List<OrderItem> orderItems = new ArrayList<OrderItem>();
     private PhotoMenuFragment menuFragment;
     private FrameLayout mMenuContainer;
@@ -90,6 +103,7 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
     private final int UPDATE_UPLOAD_IMG_GRID=2;
 
     public String filePath = "";
+    private String token;
     private List<String> imagePath = new ArrayList<String>();
     private Handler handler = new Handler() {
         @Override
@@ -158,6 +172,9 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
     }
 
     private void initView(View view) {
+        token=(String)SharedPreferencesUtil.getData(getActivity(),"token","");
+        tv_commit=(TextView)view.findViewById(R.id.tv_commit);
+        tv_commit.setOnClickListener(this);
         tv_return = (TextView) view.findViewById(R.id.tv_return);
         tv_exchange = (TextView) view.findViewById(R.id.tv_exchange);
         mOldPrice = (TextView) view.findViewById(R.id.tv_outdated);
@@ -266,11 +283,14 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
                 mMenuContainer.setVisibility(View.VISIBLE);
                 toggleMenu();
                 break;
+            case R.id.tv_commit:
+                new CommitTask().execute();
+                break;
         }
     }
 
     private void FetchOrderDetail(String id) {
-        JsonObjectRequest request = new JsonObjectRequest("http://192.168.199.173/special_mall/api/orders/" + id, new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST+"/" + id, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("FetchOrderDetail-------------->", jsonObject.toString());
@@ -329,11 +349,11 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", "ysyFfLMqfYFfD_PSj7Nd");
+                headers.put("SECAuthorization",token);
                 return headers;
             }
         };
-//        requestQueue.add(request);
+        requestQueue.add(request);
     }
 
     public class AfterSaleAdapter extends BaseListAdapter<OrderItem> {
@@ -501,5 +521,83 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
             mHashMap.put(position,convertView);
             return convertView;
         }
+    }
+
+    private class CommitTask extends AsyncTask<Void,Void,String>{
+        @Override
+        protected String doInBackground(Void... voids) {
+            String result=applyReturn();
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Log.i("result------------->",s.toString());
+        }
+    }
+    private String applyReturn() {
+
+        String result=null;
+        BufferedReader in = null;
+        try {
+            // 定义HttpClient
+            HttpClient client = new DefaultHttpClient();
+
+
+            // 实例化HTTP方法
+            HttpPost request = new HttpPost(ZhaiDou.URL_ORDER_LIST+"/"+mOrderId+"/return_items");
+            request.addHeader("SECAuthorization",token);
+
+            // 创建名/值组列表
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("sale_return_item[return_category_id]", "" + mOrderId));
+            params.add(new BasicNameValuePair("sale_return_item[node]", "海底世界噶"));
+            for (int i = 0; i < imagePath.size(); i++) {
+                Log.i("imagePath---------->",imagePath.get(i).toString());
+                String path=imagePath.get(i);
+                if (!TextUtils.isEmpty(path)){
+                    Bitmap bitmap=BitmapFactory.decodeFile(path);
+                    String base64Str =PhotoUtil.bitmapToBase64(bitmap);
+                    Log.i("base64Str---------->",base64Str);
+                    params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][picture]]","data:image/png;base64,"+base64Str));
+                }
+            }
+
+            for (int k=0;k<orderItems.size();k++){
+                params.add(new BasicNameValuePair("sale_return_item[order_item_ids["+k+"]]",orderItems.get(k).getId()+""));
+            }
+
+            // 创建UrlEncodedFormEntity对象
+            UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
+                    params, HTTP.UTF_8);
+            request.setEntity(formEntiry);
+            // 执行请求
+            HttpResponse response = client.execute(request);
+
+            in = new BufferedReader(new InputStreamReader(response.getEntity()
+                    .getContent()));
+            StringBuffer sb = new StringBuffer("");
+            String line = "";
+            String NL = System.getProperty("line.separator");
+            while ((line = in.readLine()) != null) {
+                sb.append(line + NL);
+            }
+            in.close();
+            result = sb.toString();
+            Log.i("result------------>",result.toString());
+            return result;
+
+        } catch (Exception e) {
+
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return result;
     }
 }

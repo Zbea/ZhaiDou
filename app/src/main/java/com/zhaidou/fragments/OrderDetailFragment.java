@@ -26,12 +26,15 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
+import com.zhaidou.alipay.PayDemoActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Order;
 import com.zhaidou.model.OrderItem;
 import com.zhaidou.model.Receiver;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONArray;
@@ -42,13 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link OrderDetailFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
- */
-public class OrderDetailFragment extends BaseFragment {
+public class OrderDetailFragment extends BaseFragment{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_ID = "id";
@@ -72,7 +69,11 @@ public class OrderDetailFragment extends BaseFragment {
     private MyTimer timer;
     private OrderListener orderListener;
 
+    private long timeLeft;
+    int amount;
+    private View rootView;
     private List<OrderItem> orderItems=new ArrayList<OrderItem>();
+    private String token;
     private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -135,7 +136,19 @@ public class OrderDetailFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         Log.i("OrderDetailFragment--------->","onCreateView");
-        View view=inflater.inflate(R.layout.fragment_order_detail, container, false);
+        if (null != rootView) {
+            ViewGroup parent = (ViewGroup) rootView.getParent();
+            if (null != parent) {
+                parent.removeView(rootView);
+            }
+        } else {
+            rootView = inflater.inflate(R.layout.fragment_order_detail, container, false);
+            initView(rootView);// ?????
+        }
+        return rootView;
+    }
+
+    private void initView(View view){
         mOrderNumber=(TextView)view.findViewById(R.id.tv_order_number);
         mOrderTime=(TextView)view.findViewById(R.id.tv_order_time);
         mOrderStatus=(TextView)view.findViewById(R.id.tv_order_status);
@@ -147,6 +160,7 @@ public class OrderDetailFragment extends BaseFragment {
         mOrderEdit=(TextView)view.findViewById(R.id.tv_order_edit);
         mCancelOrder=(TextView)view.findViewById(R.id.tv_cancel_order);
         mOrderTimer=(TextView)view.findViewById(R.id.tv_order_time_left);
+        mOrderTimer.setOnClickListener(this);
         mListView=(ListView)view.findViewById(R.id.lv_order_list);
         orderItemAdapter=new OrderItemAdapter(getActivity(),orderItems);
         mListView.setAdapter(orderItemAdapter);
@@ -156,11 +170,11 @@ public class OrderDetailFragment extends BaseFragment {
         FetchOrderDetail(mOrderId);
 
         mCancelOrder.setOnClickListener(this);
-        if ("678".contains(mOrder.getStatus())){
+        if (mOrder!=null&&"678".contains(mOrder.getStatus())){
             view.findViewById(R.id.tv_order_time_left).setVisibility(View.GONE);
             ((TextView)view.findViewById(R.id.tv_cancel_order)).setText(getResources().getString(R.string.sale_service_personal));
         }
-        return view;
+        token=(String) SharedPreferencesUtil.getData(getActivity(),"token","");
     }
 
     @Override
@@ -168,12 +182,12 @@ public class OrderDetailFragment extends BaseFragment {
         switch (view.getId()){
             case R.id.tv_cancel_order:
                 Log.i("tv_cancel_order---->","tv_cancel_order");
-                if ("678".contains(mOrder.getStatus())){
+                if (mOrder!=null&&"678".contains(mOrder.getStatus())){
                     String url="mqqwpa://im/chat?chat_type=wpa&uin=11300";
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                     return;
                 }
-                JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,"http://192.168.199.173/special_mall/api/orders/"+mOrderId+"/update_status?status="+9,new Response.Listener<JSONObject>() {
+                JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,ZhaiDou.URL_ORDER_LIST+"/"+mOrderId+"/update_status?status="+9,new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
                         Log.i("request---onClick----------->",jsonObject.toString());
@@ -211,24 +225,36 @@ public class OrderDetailFragment extends BaseFragment {
                     @Override
                     public Map<String, String> getHeaders() throws AuthFailureError {
                         Map<String, String> headers = new HashMap<String, String>();
-                        headers.put("SECAuthorization", "ysyFfLMqfYFfD_PSj7Nd");
+                        headers.put("SECAuthorization", token);
                         return headers;
                     }
                 };
                 requestQueue.add(request);
+                break;
+            case R.id.tv_order_time_left:
+                Log.i("mOrderId------------->",mOrderId+"");
+                Log.i("mOrder.getOrderId()------------->",mOrder.getOrderId()+"");
+                Intent intent1=new Intent(getActivity(), PayDemoActivity.class);
+                intent1.putExtra("id",Integer.parseInt(mOrderId+""));
+                intent1.putExtra("amount",mOrder.getAmount());
+//                if (timeLeft>0)
+//                intent1.putExtra("time",timeLeft);
+//                startAnimActivity(intent1);
+                ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(Integer.parseInt(mOrderId), amount,10);
+                ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
                 break;
         }
         super.onClick(view);
     }
 
     private void FetchOrderDetail(String id){
-        JsonObjectRequest request=new JsonObjectRequest("http://192.168.199.173/special_mall/api/orders/"+id,new Response.Listener<JSONObject>() {
+        JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST+"/"+id,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("jsonObject--------->",jsonObject.toString());
                 if (jsonObject!=null){
                     JSONObject orderObj=jsonObject.optJSONObject("order");
-                    int amount=orderObj.optInt("amount");
+                    amount=orderObj.optInt("amount");
                     int id=orderObj.optInt("id");
                     String status=orderObj.optString("status");
                     String created_at_for=orderObj.optString("created_at_for");
@@ -281,7 +307,7 @@ public class OrderDetailFragment extends BaseFragment {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", "ysyFfLMqfYFfD_PSj7Nd");
+                headers.put("SECAuthorization",token);
                 return headers;
             }
         };
@@ -320,6 +346,7 @@ public class OrderDetailFragment extends BaseFragment {
         @Override
         public void onTick(long l) {
 //            Log.i("onTick------------>", l + "");
+            timeLeft=l;
             long day = 24 * 3600 * 1000;
             long hour = 3600 * 1000;
             long minute = 60 * 1000;

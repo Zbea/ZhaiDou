@@ -141,7 +141,7 @@
                     android:textColor="@color/red"
                     android:textSize="16sp"
                     android:layout_marginLeft="2dp"
-                    android:text="￥ 834"/>
+                    android:text="￥834"/>
 
             </LinearLayout>
 
@@ -168,6 +168,7 @@
                     android:background="@drawable/shop_cart_gg_selector">
 
                     <com.zhaidou.view.TypeFaceTextView
+                        android:id="@+id/tv_mall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/text_main_color"
@@ -190,6 +191,7 @@
                     android:background="@drawable/shop_cart_gg_selector">
 
                     <com.zhaidou.view.TypeFaceTextView
+                        android:id="@+id/tv_order_detail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/text_main_color"

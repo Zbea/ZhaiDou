@@ -34,6 +34,7 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Address;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import org.apache.http.HttpResponse;
@@ -163,8 +164,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
         mListview.setAdapter(addressAdapter);
         view.findViewById(R.id.bt_new_address).setOnClickListener(this);
         mRequestQueue = Volley.newRequestQueue(getActivity());
-        mSharedPreferences = getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
-        token = mSharedPreferences.getString("token", null);
+        token = (String) SharedPreferencesUtil.getData(getActivity(),"token","");
         FetchData();
         addressAdapter.setOnInViewClickListener(R.id.ll_defalue, new BaseListAdapter.onInternalClickListener() {
             @Override
@@ -183,7 +183,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             public void OnClickListener(View parentV, View v, final Integer position, Object values) {
                 final Address address = (Address) values;
                 int id = address.getId();
-                String url = "http://192.168.199.173/special_mall/api/receivers/" + id;
+                String url =ZhaiDou.ORDER_RECEIVER_URL + id;
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
@@ -206,7 +206,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                     @Override
                     public Map<String, String> getHeaders() throws AuthFailureError {
                         Map<String, String> headers = new HashMap<String, String>();
-                        headers.put("SECAuthorization", "Yk77mfWaq_xYyeEibAxx");
+                        headers.put("SECAuthorization",token);
                         return headers;
                     }
                 };
@@ -411,7 +411,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     }
 
     private void FetchData() {
-        JsonObjectRequest request = new JsonObjectRequest("http://192.168.199.173/special_mall/api/receivers", new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_RECEIVER_URL, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 mDialog.dismiss();
@@ -460,7 +460,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
                 if (!TextUtils.isEmpty(token))
-                    headers.put("SECAuthorization", "Yk77mfWaq_xYyeEibAxx");
+                    headers.put("SECAuthorization",token);
                 return headers;
             }
         };
@@ -517,7 +517,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                     addressListener.onDefalueAddressChange(address);
                 return;
             }
-            JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,"http://192.168.199.173/special_mall/api/receivers/"+address.getId()+"/set_default",new Response.Listener<JSONObject>() {
+            JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,ZhaiDou.ORDER_RECEIVER_URL+"/"+address.getId()+"/set_default",new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject jsonObject) {
                     if (jsonObject!=null){
@@ -548,7 +548,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String,String> headers=new HashMap<String, String>();
-                    headers.put("SECAuthorization", "Yk77mfWaq_xYyeEibAxx");
+                    headers.put("SECAuthorization",token);
                     return headers;
                 }
             };

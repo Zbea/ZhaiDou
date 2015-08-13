@@ -33,6 +33,7 @@ import com.pulltorefresh.PullToRefreshBase;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.alipay.PayDemoActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.dialog.CustomShopCartDeleteDialog;
@@ -49,6 +50,7 @@ import com.zhaidou.view.TypeFaceTextView;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -58,7 +60,9 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -105,6 +109,7 @@ public class ShopOrderOkFragment extends BaseFragment
 
     private Address address;
     private CreatCartDB creatCartDB;
+    private String token;
 
     private Handler handler = new Handler()
     {
@@ -123,8 +128,8 @@ public class ShopOrderOkFragment extends BaseFragment
                     List<Address> addressList = (List<Address>) msg.obj;
                     address = addressList.get(0);
                     setYFMoney(address);
-                    addressPhoneTv.setText("收件人：" + address.getName());
-                    addressNameTv.setText("电话：" + address.getPhone());
+                    addressPhoneTv.setText("收件人：" + address.getPhone());
+                    addressNameTv.setText("电话：" + address.getName());
                     addressinfoTv.setText(address.getProvince()+address.getCity()+address.getArea()+address.getAddress());
                     break;
                 case 2:
@@ -149,14 +154,22 @@ public class ShopOrderOkFragment extends BaseFragment
                     Intent intent=new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
                     mContext.sendBroadcast(intent);
 
-                    ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance("", 0);
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("goodsList", items);
-                    bundle.putInt("moneyNum", num);
-                    bundle.putDouble("money", money);
-                    bundle.putDouble("moneyYF", moneyYF);
-                    shopPaymentFragment.setArguments(bundle);
-                    ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
+                    String result =(String)msg.obj;
+                    try {
+                        JSONObject jsonObject=new JSONObject(result);
+                        JSONObject orderObj = jsonObject.optJSONObject("order");
+                        int orderId = orderObj.optInt("id");
+                        int amount =orderObj.optInt("amount");
+                        int fare=moneyYF;
+                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId, amount,fare);
+                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
+//                        Intent intent1=new Intent(getActivity(), PayDemoActivity.class);
+//                        intent1.putExtra("id",orderId);
+//                        intent1.putExtra("amount",amount);
+//                        startAnimActivity(intent1);
+                    }catch (Exception e){
+
+                    }
                     break;
                 case 5:
                     if (isOSaleBuy)
@@ -270,8 +283,8 @@ public class ShopOrderOkFragment extends BaseFragment
                             ToolUtils.setLog(maddress.toString());
                             address=maddress;
                             setYFMoney(address);
-                            addressPhoneTv.setText("收件人：" + address.getName());
-                            addressNameTv.setText("电话：" + address.getPhone());
+                            addressPhoneTv.setText("收件人：" + address.getPhone());
+                            addressNameTv.setText("电话：" + address.getName());
                             addressinfoTv.setText(address.getProvince()+address.getCity()+address.getArea()+address.getAddress());
                         }
                         @Override
@@ -306,8 +319,8 @@ public class ShopOrderOkFragment extends BaseFragment
                             orderAddressInfoLine.setVisibility(View.VISIBLE);
                             orderAddressNullLine.setVisibility(View.GONE);
                             orderAddressEditLine.setVisibility(View.VISIBLE);
-                            addressPhoneTv.setText("收件人：" + addr.getName());
-                            addressNameTv.setText("电话：" + addr.getPhone());
+                            addressPhoneTv.setText("收件人：" + addr.getPhone());
+                            addressNameTv.setText("电话：" + addr.getName());
                             addressinfoTv.setText(address.getProvince()+address.getCity()+address.getArea()+addr.getAddress());
                             ((MainActivity) getActivity()).popToStack(newAddrFragment);
                         }
@@ -400,7 +413,7 @@ public class ShopOrderOkFragment extends BaseFragment
 
         orderGoodsListLine = (LinearLayout) mView.findViewById(R.id.orderGoodsList);
 
-        Str_token=(String)SharedPreferencesUtil.getData(mContext, "token", "");
+        token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
 
         creatCartDB=new CreatCartDB(mContext);
 
@@ -505,24 +518,34 @@ public class ShopOrderOkFragment extends BaseFragment
     private void commit()
     {
         new Thread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                String result=FetchRequset();
-                if (result!=null)
-                {
-                    if(result.length()>10)
-                    {
-                        handler.obtainMessage(4,result).sendToTarget();
+        {   @Override
+            public void run() {
+                String result = FetchRequset();
+                if (result != null) {
+                    try {
+                        JSONObject jsonObject=new JSONObject(result);
+                        int status=jsonObject.optInt("status");
+                        if (status==201){
+                            JSONObject orderObj=jsonObject.optJSONObject("order");
+                            int id=orderObj.optInt("id");
+                            String number=orderObj.optString("number");
+                            int amount=orderObj.optInt("amount");
+                            int count =orderObj.optInt("count");
+                        }
+
+                    }catch (Exception e){
+
                     }
-                    else
-                    {
+
+                    if (result.length() > 10) {
+                        Message message=new Message();
+                        message.what=4;
+                        message.obj=result;
+                        handler.sendMessage(message);
+                    } else {
                         handler.sendEmptyMessage(3);
                     }
-                }
-                else
-                {
+                } else {
                     handler.sendEmptyMessage(3);
                 }
             }
@@ -530,122 +553,60 @@ public class ShopOrderOkFragment extends BaseFragment
 
     }
 
-    /*
-     * Function  :   封装请求体信息
-     * Param     :   params请求体内容，encode编码格式
-     * Author    :   博客园-依旧淡然
-     */
-    public static StringBuffer getRequestData(Map<String, Map<String,Integer>> params, String encode) {
-        StringBuffer stringBuffer = new StringBuffer();        //存储封装好的请求体信息
-        try {
-            for(Map.Entry<String, Map<String,Integer>> entry : params.entrySet())
-            {
-                stringBuffer.append(entry.getKey())
-                        .append("=")
-                        .append(URLEncoder.encode(entry.getValue().toString(), encode))
-                        .append("&");
-            }
-            stringBuffer.deleteCharAt(stringBuffer.length() - 1);    //删除最后的一个"&"
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return stringBuffer;
-    }
-
-    private String FetchRequset()
-    {
+    private String FetchRequset() {
         String result=null;
-        String url=ZhaiDou.orderCommitUrl;
-
-
-
-        Map<String,Integer> order_add=new HashMap<String,Integer>();
-        order_add.put("receiver_id",address.getId());
-
-        Map<String,String> order_info=new HashMap<String,String>();
-        order_info.put("node",bzInfo_Str);
-
-        Map<String,Map<String,Integer>> order_goods=new HashMap<String,Map<String,Integer>>();
-
-        String jj="{order_items_attributes={";
-
-        for (int i = 0; i <items.size() ; i++)
-        {
-            Map<String,Integer> order_good=new HashMap<String,Integer>();
-            order_good.put("merchandise_id",items.get(i).id);
-            order_good.put("specification_id",items.get(i).sizeId);
-            order_good.put("count",items.get(i).num);
-
-            order_goods.put("order_items_attributes",order_good);
-
-            if (i==items.size()-1)
-            {
-                jj=jj+order_good+"}}";
-            }
-            else
-            {
-                jj=jj+order_good+",";
-            }
-        }
-
-        ToolUtils.setLog(order_add.toString());
-        ToolUtils.setLog(order_goods.toString());
-        ToolUtils.setLog(jj);
-        ToolUtils.setLog(order_info.toString());
-
-        // 第一步，创建HttpPost对象
-        HttpPost httpPost = new HttpPost(url);
-        httpPost.addHeader("SECAuthorization", "Yk77mfWaq_xYyeEibAxx");
-
-        // 设置HTTP POST请求参数必须用NameValuePair对象
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
-
-        params.add(new BasicNameValuePair("sale_order", order_add.toString()));
-//        params.add(new BasicNameValuePair("sale_order[order_items_attributes]", order_goods.toString()));
-//        params.add(new BasicNameValuePair("sale_order[receiver_id[id]]", ""+address.getId()));
-//        for (int i = 0; i <items.size() ; i++)
-//        {
-//            ToolUtils.setLog("i:"+i);
-//
-//            Map<String,Integer> order_good=new HashMap<String,Integer>();
-//            order_good.put("merchandise_id",items.get(i).id);
-//            order_good.put("specification_id",items.get(i).sizeId);
-//            order_good.put("count",items.get(i).num);
-//
-//
-//
-//            params.add(new BasicNameValuePair("sale_order[order_items_attributes[]]", getRequestData(order_good,"utf-8").toString()));
-////            params.add(new BasicNameValuePair("sale_order[order_items_attributes[merchandise_id]]", ""+items.get(i).id));
-////            params.add(new BasicNameValuePair("sale_order[order_items_attributes[specification_id]]", ""+items.get(i).sizeId));
-////            params.add(new BasicNameValuePair("sale_order[order_items_attributes[count]]", ""+items.get(i).num));
-//            ToolUtils.setLog("ii:"+i);
-//
-//        }
-        params.add(new BasicNameValuePair("sale_order", jj));
-//        params.add(new BasicNameValuePair("sale_order", getRequestData(order_goods,"utf-8").toString()));
-        params.add(new BasicNameValuePair("sale_order", order_info.toString()));
-//        params.add(new BasicNameValuePair("sale_order[node]", bzInfo_Str));
-
-        HttpResponse httpResponse = null;
+        BufferedReader in = null;
         try {
-            // 设置httpPost请求参数
-            httpPost.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
-            httpResponse = new DefaultHttpClient().execute(httpPost);
-            if (httpResponse.getStatusLine().getStatusCode() == 200)
-            {
-                // 第三步，使用getEntity方法活得返回结果
-                result = EntityUtils.toString(httpResponse.getEntity());
-                ToolUtils.setLog("result:"+result);
+            // 定义HttpClient
+            HttpClient client = new DefaultHttpClient();
+
+
+            // 实例化HTTP方法
+            HttpPost request = new HttpPost(ZhaiDou.orderCommitUrl);
+            request.addHeader("SECAuthorization",token);
+
+            // 创建名/值组列表
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("sale_order[receiver_id]", "" + address.getId()));
+
+            params.add(new BasicNameValuePair("sale_order[node]", bzInfo_Str));
+            for (int i = 0; i < items.size(); i++) {
+                params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][merchandise_id]]", items.get(i).id + ""));
+                params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][specification_id]]", items.get(i).sizeId + ""));
+                params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][count]]", items.get(i).num + ""));
             }
-            else
-            {
-                result=null;
-                ToolUtils.setLog("result1:"+result);
+
+
+            // 创建UrlEncodedFormEntity对象
+            UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
+                    params, HTTP.UTF_8);
+            request.setEntity(formEntiry);
+            // 执行请求
+            HttpResponse response = client.execute(request);
+
+            in = new BufferedReader(new InputStreamReader(response.getEntity()
+                    .getContent()));
+            StringBuffer sb = new StringBuffer("");
+            String line = "";
+            String NL = System.getProperty("line.separator");
+            while ((line = in.readLine()) != null) {
+                sb.append(line + NL);
             }
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            in.close();
+            result = sb.toString();
+            Log.i("result------------>",result.toString());
+            return result;
+
+        } catch (Exception e) {
+
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return result;
     }
@@ -653,10 +614,8 @@ public class ShopOrderOkFragment extends BaseFragment
     /**
      * 请求收货地址信息
      */
-    private void FetchAddressData()
-    {
-        JsonObjectRequest request = new JsonObjectRequest("http://192.168.199.173/special_mall/api/receivers", new Response.Listener<JSONObject>()
-        {
+    private void FetchAddressData() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_RECEIVER_URL, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject)
             {
@@ -718,7 +677,7 @@ public class ShopOrderOkFragment extends BaseFragment
             public Map<String, String> getHeaders() throws AuthFailureError
             {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", "Yk77mfWaq_xYyeEibAxx");
+                headers.put("SECAuthorization",token);
                 return headers;
             }
         };
@@ -763,7 +722,7 @@ public class ShopOrderOkFragment extends BaseFragment
             public Map<String, String> getHeaders() throws AuthFailureError
             {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", "Yk77mfWaq_xYyeEibAxx");
+                headers.put("SECAuthorization", token);
                 return headers;
             }
         };

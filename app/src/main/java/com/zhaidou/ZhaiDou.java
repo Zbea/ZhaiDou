@@ -25,9 +25,9 @@ public class ZhaiDou {
     public static String PRIZE_SCRAPING_URL=HOME_BASE_URL+"lotteries";
     //获取0元特卖数据
 //    public static String SPECIAL_SALE_URL=HOME_BASE_URL+"api/v1/events/current";
-    public static String SPECIAL_SALE_URL="http://192.168.199.173/special_mall/api/sales/zero_sale";
+    public static String SPECIAL_SALE_URL=HOME_BASE_URL+"special_mall/api/sales/zero_sale";
     //0元特卖banner
-    public static String SPECIAL_SALE_BANNER_URL="http://192.168.199.173/special_mall/api/sales/sale_banner?status=0";
+    public static String SPECIAL_SALE_BANNER_URL=HOME_BASE_URL+"special_mall/api/sales/sale_banner?status=0";
 
     //首页分类文章
     public static String HOME_CATEGORY_URL=HOME_BASE_URL+"article/api/articles?page=";
@@ -38,29 +38,29 @@ public class ZhaiDou {
     public static String ARTICLE_DETAIL_URL=HOME_BASE_URL+"article/articles/";
 
     //特卖首页
-    public static String shopHomeSpecialUrl="http://192.168.199.173/special_mall/api/sales/new_sale";
+    public static String shopHomeSpecialUrl=HOME_BASE_URL+"special_mall/api/sales/new_sale";
     //特卖banner
-    public static String shopSpecialBannerUrl="http://192.168.199.173/special_mall/api/sales/sale_banner?status=";
+    public static String shopSpecialBannerUrl=HOME_BASE_URL+"special_mall/api/sales/sale_banner?status=";
     //特卖列表share
     public static String shopSpecialListShareUrl="http://192.168.199.230:9000/mall/list.html?id=";
     //特卖列表
-    public static String shopSpecialListUrl="http://192.168.199.173/special_mall/api/sales?sale_cate=0";
+    public static String shopSpecialListUrl=HOME_BASE_URL+"special_mall/api/sales?sale_cate=0";
     //特卖详情
-    public static String shopSpecialTadayUrl="http://192.168.199.173/special_mall/api/sales/";
+    public static String shopSpecialTadayUrl=HOME_BASE_URL+"special_mall/api/sales/";
     //商品详情share
     public static String goodsDetailsShareUrl="http://192.168.199.230:9000/mall/index.html?id=";
     //商品详情
-    public static String goodsDetailsUrlUrl="http://192.168.199.173/special_mall/api/merchandises/";
+    public static String goodsDetailsUrlUrl=HOME_BASE_URL+"special_mall/api/merchandises/";
     //购物车商品详情
-    public static String goodsCartGoodsUrl="http://192.168.199.173/special_mall/api/merchandises/cart_merchandises?ids=";
+    public static String goodsCartGoodsUrl=HOME_BASE_URL+"special_mall/api/merchandises/cart_merchandises?ids=";
     //购物车商品数量修改接口
-    public static String goodsCartEditGoodsUrl="http://192.168.199.173/special_mall/api/merchandises/";
+    public static String goodsCartEditGoodsUrl=HOME_BASE_URL+"special_mall/api/merchandises/";
     //地址管理接口
-    public static String addressManageUrl="http://192.168.199.173/special_mall/api/receivers";
+    public static String addressManageUrl=HOME_BASE_URL+"special_mall/api/receivers";
     //提交订单接口
-    public static String orderCommitUrl="http://192.168.199.173/special_mall/api/orders";
+    public static String orderCommitUrl=HOME_BASE_URL+"special_mall/api/orders";
     //查看当天是否已经购买了0元特卖商品
-    public static String orderCheckOSaleUrl="http://192.168.199.173/special_mall/api/orders/order_items_0_status";
+    public static String orderCheckOSaleUrl=HOME_BASE_URL+"special_mall/api/orders/order_items_0_status";
 
 
     //TAB分类
@@ -131,6 +131,18 @@ public class ZhaiDou {
     public final static int STATUS_RETURN_MONEY_SUCCESS=11;
 
 
+    //订单列表
+    public static String URL_ORDER_LIST=HOME_BASE_URL+"special_mall/api/orders";
+    //收货地址
+    public static String ORDER_RECEIVER_URL=HOME_BASE_URL+"special_mall/api/receivers";
+    //省市区
+    public static String ORDER_ADDRESS_URL=HOME_BASE_URL+"pecial_mall/api/sales/provider";
+
+
+    public static String BROADCAST_WXAPI_FILTER="com.zhaidou.wxapi.pay";
+
+
+
     //广播标识集合
     /**
      * 首页点击标识刷新
@@ -152,8 +164,6 @@ public class ZhaiDou {
      * 登录退出
      */
     public static String IntentRefreshLoginExitTag="com.zhaidou.home.refesh.login.exit";
-
-
 
 }
 //http://192.168.1.45/article/api/article_categories?catetory_id=13

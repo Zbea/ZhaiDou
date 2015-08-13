@@ -6,18 +6,24 @@ import com.tencent.mm.sdk.modelbase.BaseResp;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.PayActivity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Toast;
 
-public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
+import java.util.List;
 
-	private static final String TAG = "MicroMsg.SDKSample.WXPayEntryActivity";
+public class WXPayEntryActivity extends FragmentActivity implements IWXAPIEventHandler {
+
+	private static final String TAG = "com.zhaidou.WXPayEntryActivity";
 
 	private IWXAPI api;
 
@@ -44,13 +50,15 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
 
 	@Override
 	public void onResp(BaseResp resp) {
-		Log.d(TAG, "onPayFinish, errCode = " + resp.errCode);
+		Log.d(TAG, "onPayFinish, errCode = " + resp.errCode+"----->"+resp.errStr);
 
 		if (resp.getType() == ConstantsAPI.COMMAND_PAY_BY_WX) {
 			
 			Toast.makeText(WXPayEntryActivity.this, resp.errStr, Toast.LENGTH_SHORT).show();
-			
-			PayActivity.handler.sendEmptyMessage(resp.errCode);
+//			MainActivity.handler.sendEmptyMessage(resp.errCode);
+            Intent intent=new Intent(ZhaiDou.BROADCAST_WXAPI_FILTER);
+            intent.putExtra("code",resp.errCode);
+            sendBroadcast(intent);
 			finish();
 			// AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			// builder.setTitle(R.string.app_tip);
