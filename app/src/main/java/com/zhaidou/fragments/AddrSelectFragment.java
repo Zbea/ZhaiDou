@@ -91,18 +91,13 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                 case UPDATE_ADDRESS_LIST:
                     if (mDialog!=null)
                     mDialog.dismiss();
-
+                    ToolUtils.setLog("addressList：" + addressList.size());
                     if (mAddress!=null)
-
-                    ToolUtils.setLog("mAddress：" + mAddress.toString());
-
                         for (int i = 0; i < addressList.size(); i++)
                         {
                             if (addressList.get(i).getId()==mAddress.getId())
                             {
-                                ToolUtils.setLog("addressList：" + addressList.get(i).toString());
                                 mCheckedPosition=i;
-                                ToolUtils.setLog("i：" + i);
                             }
                         }
                     loadingView.setVisibility(View.GONE);
@@ -196,7 +191,11 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                             addr.setCity(city);
                             addr.setArea(area);
                             addressAdapter.add(addr);
+                            ToolUtils.setLog(addr.toString());
                             ((MainActivity) getActivity()).popToStack(newAddrFragment);
+                            ((MainActivity) getActivity()).popToStack(AddrSelectFragment.this);
+                            addressListener.onDefalueAddressChange(addr);
+                            mCheckedPosition=addressAdapter.getCount()-1;
                         }
                     }
                 });
@@ -370,6 +369,16 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
             TextView tv_addr = ViewHolder.get(convertView, R.id.tv_addr);
             TextView tv_defalue_hint=ViewHolder.get(convertView,R.id.tv_defalue_hint);
             ImageView mDefalueIcon=ViewHolder.get(convertView,R.id.iv_addr_defalue);
+            View view=ViewHolder.get(convertView,R.id.lineBg);
+            if (position==0)
+            {
+                view.setVisibility(View.GONE);
+            }
+            else
+            {
+                view.setVisibility(View.VISIBLE);
+            }
+
             Address address = getList().get(position);
             tv_name.setText("收件人："+address.getName());
             tv_mobile.setText("电话："+address.getPhone());

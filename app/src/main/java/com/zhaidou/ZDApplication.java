@@ -1,6 +1,7 @@
 package com.zhaidou;
 
 import android.app.Application;
+import android.content.pm.PackageInfo;
 import android.graphics.Typeface;
 import android.os.Environment;
 
@@ -17,12 +18,27 @@ import java.io.File;
  * Created by wangclark on 15/7/2.
  */
 public class ZDApplication extends Application{
+
+    public static int localVersionCode;
+    public static String localVersionName;
+
     private Typeface mTypeFace;
     @Override
     public void onCreate() {
 
         super.onCreate();
         initTypeFace();
+
+        try
+        {
+            PackageInfo packageInfo=getApplicationContext().getPackageManager().getPackageInfo(getPackageName(),0);
+            localVersionCode=packageInfo.versionCode;
+            localVersionName=packageInfo.versionName;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
 
         creatFile();
         setImageLoad();

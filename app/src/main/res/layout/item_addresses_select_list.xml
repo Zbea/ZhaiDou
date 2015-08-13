@@ -2,11 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/content_part_bg"
+    android:background="@color/white"
     android:orientation="vertical">
 
 
-
+<View
+    android:id="@+id/lineBg"
+    android:layout_width="match_parent"
+    android:layout_height="8dp"
+    android:visibility="gone"
+    android:background="@color/page_bg"></View>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,7 +49,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.00001"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:text="sddsdsdsds"
                     android:textColor="@color/text_main_color" />
 
@@ -53,7 +58,7 @@
                     android:layout_weight="1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:text="ssdsdsd"
                     android:singleLine="true"
                     android:ellipsize="end"
@@ -154,4 +159,8 @@
         </LinearLayout>
 
     </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#EEEEEE"></View>
 </LinearLayout>

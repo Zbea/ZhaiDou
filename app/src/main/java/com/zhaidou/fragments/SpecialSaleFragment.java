@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -234,6 +235,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             mGridView.setEmptyView(mEmptyView);
             mTimerView=(TextView)rootView.findViewById(R.id.tv_count_time);
             iv_banner=(ImageView)rootView.findViewById(R.id.iv_special_banner);
+            iv_banner.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth*400/750));
+
             mAdapter=new ProductAdapter(getActivity(),products);
             mGridView.setAdapter(mAdapter);
             rootView.findViewById(R.id.ll_back).setOnClickListener(this);
@@ -259,7 +262,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             mAdapter.setOnInViewClickListener(R.id.ll_single_layout,new BaseListAdapter.onInternalClickListener() {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                    ToolUtils.setLog(products.get(position).getTitle()+"id是："+products.get(position).getId());
                     GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(products.get(position).getTitle(), products.get(position).getId());
                     Bundle bundle=new Bundle();
                     bundle.putInt("flags",1);
@@ -441,7 +443,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             ToolUtils.setImageCacheUrl(product.getImage(), image);
             tv_price.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
             tv_price.setText("￥"+product.getPrice());
-            tv_count.setText("剩余 "+product.getRemaining());
+            tv_count.setText("剩余 "+product.getRemaining()+"%");
+
             ll_sale_out.setVisibility(product.getRemaining()==0?View.VISIBLE:View.GONE);
             mHashMap.put(position,convertView);
             return convertView;

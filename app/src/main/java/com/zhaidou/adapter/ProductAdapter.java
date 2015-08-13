@@ -21,9 +21,15 @@ import java.util.WeakHashMap;
  * Created by wangclark on 15/7/10.
  */
 public class ProductAdapter extends BaseListAdapter<Product>{
+
+    private int mCheckPosition=-1;
+    private int pos;
+    private int flags;
+
     private WeakHashMap<Integer,View> mHashMap = new WeakHashMap<Integer, View>();
-    public ProductAdapter(Context context, List<Product> list) {
+    public ProductAdapter(Context context, List<Product> list,int flags) {
         super(context, list);
+        this.flags=flags;
     }
 
     @Override
@@ -42,15 +48,38 @@ public class ProductAdapter extends BaseListAdapter<Product>{
         tv_money.setText("￥"+product.getPrice());
         tv_count.setText(product.getBean_like_count()+"");
         ToolUtils.setImageCacheUrl("http://"+product.getImage(),image);
+
         iv_heart.setImageResource(R.drawable.heart_normal);
+        if (pos==position)
+        {
+            if (mCheckPosition==position)
+            {
+                iv_heart.setImageResource(R.drawable.heart_pressed);
+            }
+            else
+            {
+                iv_heart.setImageResource(R.drawable.heart_normal);
+            }
+        }
+        if (flags==1)
+        {
+            iv_heart.setVisibility(View.GONE);
+        }
         tv_count.setVisibility(View.GONE);
-        if (product.isCollect()){
-//            iv_heart.setImageResource(R.drawable.heart_pressed);
+        if (product.isCollect())
+        {
+            iv_heart.setImageResource(R.drawable.heart_pressed);
             iv_heart.setPressed(true);
             iv_heart.setSelected(true);
             tv_count.setVisibility(View.GONE);
         }
         mHashMap.put(position,convertView);
         return convertView;
+    }
+
+    public void setmCheckPosition(int pos,int mCheckPosition)
+    {
+        this.pos=pos;
+        this.mCheckPosition=mCheckPosition;
     }
 }

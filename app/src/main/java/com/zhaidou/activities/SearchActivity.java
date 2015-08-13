@@ -240,14 +240,11 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
                 onSearch();
                 break;
             case R.id.tv_delete:
-//                historyCancel();
                 mSearchLayout.setVisibility(View.GONE);
                 autoGridView.clear();
                 SharedPreferencesUtil.clearSearchHistory(this);
                 break;
             case R.id.tv_cancel:
-                Log.i("tv_cancel------------>","tv_cancel");
-//                finish();
                 if (!TextUtils.isEmpty(mEditText.getText().toString().trim())){
                     if (inputMethodManager.isActive())
                         inputMethodManager.hideSoftInputFromWindow(getWindow().peekDecorView().getApplicationWindowToken(),0);

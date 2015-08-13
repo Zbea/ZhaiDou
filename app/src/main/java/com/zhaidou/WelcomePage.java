@@ -1,7 +1,9 @@
 package com.zhaidou;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Window;
@@ -34,12 +36,36 @@ public class WelcomePage extends Activity
         {
             public void run()
             {
-                Intent intent=new Intent(WelcomePage.this,MainActivity.class);
-                startActivity(intent);
+//                if (isFirstEnter())
+//                {
+                    Intent intent=new Intent(WelcomePage.this,WelcomeGuidancePage.class);
+                    startActivity(intent);
+//                }
+//                else
+//                {
+//                    Intent intent=new Intent(WelcomePage.this,MainActivity.class);
+//                    startActivity(intent);
+//                }
                 overridePendingTransition(R.anim.enter_into_the, R.anim.enter_out_the);
                 finish();
             }
         },  2000);
+    }
+
+    public boolean isFirstEnter()
+    {
+        SharedPreferences preferences = getSharedPreferences("phone", Context.MODE_PRIVATE);
+        if (preferences.getBoolean("firststart", true))
+        {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean("firststart", false);
+            editor.commit();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /**

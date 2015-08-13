@@ -63,6 +63,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private View view;
 
 
     private SettingFragment mSettingFragment;
@@ -176,53 +177,62 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.personal, container, false);
+        if(view==null)
+        {
+            view = inflater.inflate(R.layout.personal, container, false);
 
-        initBroadcastReceiver();
+            initBroadcastReceiver();
 
-        mPrePayView = (ImageView) view.findViewById(R.id.tv_pre_pay);
-        mPreReceivedView = (ImageView) view.findViewById(R.id.tv_pre_received);
-        mReturnView = (ImageView) view.findViewById(R.id.tv_return);
-        mAllOrderView = (RelativeLayout) view.findViewById(R.id.all_order);
-        mChildContainer = (FrameLayout) view.findViewById(R.id.fl_child_container);
+            mPrePayView = (ImageView) view.findViewById(R.id.tv_pre_pay);
+            mPreReceivedView = (ImageView) view.findViewById(R.id.tv_pre_received);
+            mReturnView = (ImageView) view.findViewById(R.id.tv_return);
+            mAllOrderView = (RelativeLayout) view.findViewById(R.id.all_order);
+            mChildContainer = (FrameLayout) view.findViewById(R.id.fl_child_container);
 
-        mSettingView = (RelativeLayout) view.findViewById(R.id.rl_setting);
-        iv_header = (ImageView) view.findViewById(R.id.iv_header);
-        tv_desc = (TextView) view.findViewById(R.id.tv_desc);
-        tv_nickname = (TextView) view.findViewById(R.id.tv_nickname);
-        tv_collect=(TextView)view.findViewById(R.id.tv_collect);
-        tv_collocation=(TextView)view.findViewById(R.id.tv_collocation);
-        tv_unpay_count=(TextView)view.findViewById(R.id.tv_unpay_count);
-        mCartCount = (TextView) view.findViewById(R.id.tv_cart_count);
+            mSettingView = (RelativeLayout) view.findViewById(R.id.rl_setting);
+            iv_header = (ImageView) view.findViewById(R.id.iv_header);
+            tv_desc = (TextView) view.findViewById(R.id.tv_desc);
+            tv_nickname = (TextView) view.findViewById(R.id.tv_nickname);
+            tv_collect=(TextView)view.findViewById(R.id.tv_collect);
+            tv_collocation=(TextView)view.findViewById(R.id.tv_collocation);
+            tv_unpay_count=(TextView)view.findViewById(R.id.tv_unpay_count);
+            mCartCount = (TextView) view.findViewById(R.id.tv_cart_count);
 
-        mPrePayView.setOnClickListener(this);
-        mPreReceivedView.setOnClickListener(this);
-        mReturnView.setOnClickListener(this);
-        mAllOrderView.setOnClickListener(this);
-        mSettingView.setOnClickListener(this);
-        mSettingFragment = SettingFragment.newInstance("", "");
-        view.findViewById(R.id.tv_shopping_cart).setOnClickListener(this);
-        view.findViewById(R.id.rl_contact).setOnClickListener(this);
-        view.findViewById(R.id.rl_competition).setOnClickListener(this);
-        view.findViewById(R.id.rl_taobao_order).setOnClickListener(this);
-        view.findViewById(R.id.rl_addr_manage).setOnClickListener(this);
-        view.findViewById(R.id.ll_collect).setOnClickListener(this);
-        view.findViewById(R.id.ll_collocation).setOnClickListener(this);
+            mPrePayView.setOnClickListener(this);
+            mPreReceivedView.setOnClickListener(this);
+            mReturnView.setOnClickListener(this);
+            mAllOrderView.setOnClickListener(this);
+            mSettingView.setOnClickListener(this);
+            mSettingFragment = SettingFragment.newInstance("", "");
+            view.findViewById(R.id.tv_shopping_cart).setOnClickListener(this);
+            view.findViewById(R.id.rl_contact).setOnClickListener(this);
+            view.findViewById(R.id.rl_competition).setOnClickListener(this);
+            view.findViewById(R.id.rl_taobao_order).setOnClickListener(this);
+            view.findViewById(R.id.rl_addr_manage).setOnClickListener(this);
+            view.findViewById(R.id.ll_collect).setOnClickListener(this);
+            view.findViewById(R.id.ll_collocation).setOnClickListener(this);
 
-        mSettingFragment.setProfileListener(this);
+            mSettingFragment.setProfileListener(this);
 
-        mRequestQueue = Volley.newRequestQueue(getActivity());
-        getUserDetail();
-        getUserInfo();
-        userId=(Integer)SharedPreferencesUtil.getData(getActivity(),"userId",-1);
-        creatCartDB = new CreatCartDB(getActivity());
+            mRequestQueue = Volley.newRequestQueue(getActivity());
+            getUserDetail();
+            getUserInfo();
+            userId=(Integer)SharedPreferencesUtil.getData(getActivity(),"userId",-1);
+            creatCartDB = new CreatCartDB(getActivity());
 
-        initCartTips();
+            initCartTips();
 
-        FetchCollectData();
-        FetchCollocationData();
-        FetchUnPayCount();
+            FetchCollectData();
+            FetchCollocationData();
+            FetchUnPayCount();
+
+        }
+        //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
+        ViewGroup parent = (ViewGroup) view.getParent();
+        if (parent != null)
+        {
+            parent.removeView(view);
+        }
         return view;
     }
 
@@ -242,7 +252,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tv_shopping_cart:
-                Toast.makeText(getActivity(), "购物车", Toast.LENGTH_SHORT).show();
                 ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
                 ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
                 break;

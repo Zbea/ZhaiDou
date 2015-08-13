@@ -23,7 +23,7 @@
         <shape
             android:shape="rectangle">
             <!-- 填充颜色 -->
-            <solid android:color="@color/line_color"></solid>
+            <solid android:color="@color/click_gray"></solid>
 
             <!-- 矩形的圆角半径 -->
             <corners android:radius="3dp" />

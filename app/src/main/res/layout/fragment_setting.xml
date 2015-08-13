@@ -50,16 +50,21 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white">
         <LinearLayout
             android:id="@+id/ll_profile"
-            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
-            android:background="@color/white"
+            android:background="@drawable/item_click_selector"
             android:layout_height="40dp">
             <ImageView
-                android:layout_marginLeft="10dp"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:scaleType="fitXY"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/icon_profile"/>
@@ -69,16 +74,17 @@
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
-                android:textColor="#666666"
+                android:textColor="@color/text_main_color"
                 android:text="资料修改"/>
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:scaleType="fitXY"
+                android:scaleType="center"
                 android:layout_gravity="center_vertical"
-                android:paddingRight="10dp"
+                android:paddingRight="15dp"
                 android:src="@drawable/icon_arrow_right"/>
         </LinearLayout>
+            </LinearLayout>
 
         <LinearLayout
             android:id="@+id/ll_competition"
@@ -87,8 +93,8 @@
             android:visibility="gone"
             android:layout_height="40dp">
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:scaleType="fitXY"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="10dp"
@@ -99,7 +105,7 @@
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:text="拼贴大赛"
-                android:textColor="#666666"
+                android:textColor="@color/text_main_color"
                 android:gravity="center_vertical"/>
             <ImageView
                 android:layout_width="wrap_content"
@@ -112,14 +118,14 @@
         <LinearLayout
             android:id="@+id/ll_bbs_question"
             android:visibility="gone"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="18dp"
             android:layout_marginBottom="10dp"
             android:layout_width="match_parent"
             android:background="@color/white"
             android:layout_height="40dp">
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:scaleType="fitXY"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/icon_bbs_question"
@@ -130,7 +136,7 @@
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:text="问答社区"
-                android:textColor="#666666"
+                android:textColor="@color/text_main_color"
                 android:gravity="center_vertical"/>
             <ImageView
                 android:layout_width="wrap_content"
@@ -140,66 +146,74 @@
                 android:src="@drawable/icon_arrow_right"
                 android:paddingRight="10dp"/>
         </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:background="@color/white">
         <LinearLayout
-            android:layout_marginTop="10dp"
             android:id="@+id/ll_collocation"
             android:layout_width="match_parent"
-            android:background="@color/white"
+            android:background="@drawable/item_click_selector"
             android:layout_height="40dp">
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/icon_course"
-                android:layout_marginLeft="10dp"/>
+                android:layout_marginLeft="20dp"/>
             <com.zhaidou.view.TypeFaceTextView
                 android:paddingLeft="10dp"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:text="豆搭教程"
-                android:textColor="#666666"
+                android:textColor="@color/text_main_color"
                 android:gravity="center_vertical"/>
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/icon_arrow_right"
-                android:paddingRight="10dp"/>
+                android:scaleType="center"
+                android:paddingRight="15dp"/>
         </LinearLayout>
             <View
                 android:layout_width="match_parent"
-                android:layout_marginLeft="40dp"
+                android:layout_marginLeft="48dp"
                 android:layout_height="1dp"
-                android:background="#eeeeee"/>
+                android:background="@color/page_bg"/>
         <LinearLayout
             android:id="@+id/ll_add_v"
             android:layout_width="match_parent"
-            android:background="@color/white"
+            android:background="@drawable/item_click_selector"
             android:layout_height="40dp">
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:scaleType="fitXY"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/icon_add_v"
-                android:layout_marginLeft="10dp"/>
+                android:layout_marginLeft="20dp"/>
             <com.zhaidou.view.TypeFaceTextView
                 android:paddingLeft="10dp"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:text="如何加V"
-                android:textColor="#666666"
+                android:textColor="@color/text_main_color"
                 android:gravity="center_vertical"/>
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/icon_arrow_right"
-                android:paddingRight="10dp"
+                android:paddingRight="15dp"
                 android:scaleType="fitXY"/>
         </LinearLayout>
+</LinearLayout>
         <LinearLayout
             android:id="@+id/ll_award_history"
             android:layout_marginTop="10dp"
@@ -208,8 +222,8 @@
             android:visibility="gone"
             android:layout_height="40dp">
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:scaleType="fitXY"
                 android:layout_marginLeft="10dp"
                 android:layout_gravity="center_vertical"
@@ -220,7 +234,7 @@
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:text="获奖记录"
-                android:textColor="#666666"
+                android:textColor="@color/text_main_color"
                 android:gravity="center_vertical"/>
             <ImageView
                 android:layout_width="wrap_content"
@@ -238,8 +252,8 @@
             android:background="@color/white"
             android:layout_height="40dp">
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:layout_marginLeft="10dp"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/icon_score"/>
@@ -249,7 +263,7 @@
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:text="安卓打分"
-                android:textColor="#666666"
+                android:textColor="@color/text_main_color"
                 android:gravity="center_vertical"/>
             <ImageView
                 android:layout_width="wrap_content"
@@ -264,35 +278,78 @@
                 android:layout_marginLeft="40dp"
                 android:layout_height="1dp"
                 android:src="#eeeeee"/>
-        <LinearLayout
-            android:layout_marginTop="10dp"
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="10dp"
+                android:background="@color/white">
+
+            <LinearLayout
+                android:id="@+id/ll_version"
+                android:layout_width="match_parent"
+                android:background="@drawable/item_click_selector"
+                android:layout_height="40dp">
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:scaleType="fitXY"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/icon_setting_update"
+                    android:layout_marginLeft="20dp"/>
+                <com.zhaidou.view.TypeFaceTextView
+                    android:paddingLeft="10dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:text="版本更新"
+                    android:textColor="@color/text_main_color"
+                    android:gravity="center_vertical"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/icon_arrow_right"
+                    android:paddingRight="15dp"
+                    android:scaleType="fitXY"/>
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/page_bg"
+                android:layout_marginLeft="48dp"
+                ></View>
+
+            <LinearLayout
             android:id="@+id/ll_about"
             android:layout_width="match_parent"
-            android:background="@color/white"
+            android:background="@drawable/item_click_selector"
             android:layout_height="40dp">
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:scaleType="fitXY"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/icon_about"
-                android:layout_marginLeft="10dp"/>
+                android:layout_marginLeft="20dp"/>
             <com.zhaidou.view.TypeFaceTextView
                 android:paddingLeft="10dp"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:text="关于"
-                android:textColor="#666666"
+                android:textColor="@color/text_main_color"
                 android:gravity="center_vertical"/>
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/icon_arrow_right"
-                android:paddingRight="10dp"
+                android:paddingRight="15dp"
                 android:scaleType="fitXY"/>
         </LinearLayout>
+            </LinearLayout>
 
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/bt_logout"
@@ -303,7 +360,7 @@
                 android:gravity="center"
                 android:text="退出登录"
                 android:textColor="@color/white"
-                android:background="@color/red"
+                android:background="@drawable/btn_red_click_selector"
                 android:layout_marginRight="10dp"/>
         </LinearLayout>
     </ScrollView>

@@ -11,6 +11,7 @@
         android:layout_height="50dp"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
+        android:paddingTop="2dp"
         android:background="@drawable/tab_background">
 
         <RelativeLayout

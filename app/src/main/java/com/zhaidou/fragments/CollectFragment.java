@@ -172,7 +172,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
 
         mRequestQueue= Volley.newRequestQueue(getActivity());
         mSharedPreferences=getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
-        productAdapter=new ProductAdapter(getActivity(),products);
+        productAdapter=new ProductAdapter(getActivity(),products,2);
         mGridView.setAdapter(productAdapter);
 
         productAdapter.setOnInViewClickListener(R.id.ll_single_layout,new BaseListAdapter.onInternalClickListener() {

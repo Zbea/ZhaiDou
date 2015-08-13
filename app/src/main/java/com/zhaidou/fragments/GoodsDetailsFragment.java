@@ -244,6 +244,10 @@ public class GoodsDetailsFragment extends BaseFragment
                         long minute = 60 * 1000;
                         millionSeconds = millionSeconds + hour * 23 + minute * 59 + 59 * 1000;
                         long temp = millionSeconds - System.currentTimeMillis();
+                        if (temp==0)
+                        {
+                            ToolUtils.setToast(mContext,"特卖活动已结束");
+                        }
                         mTimer = new MyTimer(temp, 1000);
                         mTimer.start();
                     } catch (Exception e)
@@ -454,6 +458,10 @@ public class GoodsDetailsFragment extends BaseFragment
 
         shareBtn=(ImageView)mView.findViewById(R.id.share_iv);
         shareBtn.setOnClickListener(onClickListener);
+        if (flags==1)//零元特卖不能分享
+        {
+            shareBtn.setVisibility(View.GONE);
+        }
 
         loadingView = (LinearLayout) mView.findViewById(R.id.loadingView);
         nullNetView= (LinearLayout) mView.findViewById(R.id.nullNetline);
@@ -482,6 +490,9 @@ public class GoodsDetailsFragment extends BaseFragment
         ljBtn.setOnClickListener(onClickListener);
         addCartBtn = (LinearLayout) mView.findViewById(R.id.goodsAddBuyBtn);
         addCartBtn.setOnClickListener(onClickListener);
+
+        RelativeLayout relativeLayout=(RelativeLayout)mView.findViewById(R.id.imageRl);
+        relativeLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth*630/720));
 
         iconView=(LinearLayout)mView.findViewById(R.id.iconView);
         iconOSaleView=(LinearLayout)mView.findViewById(R.id.iconOSaleView);
@@ -535,6 +546,7 @@ public class GoodsDetailsFragment extends BaseFragment
         topBtn.setOnClickListener(onClickListener);
 
         mViewPager = (ViewPager) mView.findViewById(R.id.vp_goods_detail);
+
         radioGroup=(RadioGroup)mView.findViewById(R.id.goodsRG);
         radioGroup.setOnCheckedChangeListener(onCheckedChangeListener);
 
@@ -625,6 +637,7 @@ public class GoodsDetailsFragment extends BaseFragment
         token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
         boolean isLogin = !TextUtils.isEmpty(token) && userId > -1;
+        ToolUtils.setLog(""+isLogin);
         return isLogin;
     }
 
@@ -677,9 +690,6 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     private void setChildFargment(GoodDetail detail, ArrayList<GoodInfo> goodInfos)
     {
-        ToolUtils.setLog("detail:"+detail.toString());
-        ToolUtils.setLog("goodInfos:" + goodInfos.toString());
-
         fragments.removeAll(fragments);
         goodsDetailsChildFragment=GoodsDetailsChildFragment.newInstance(detail,goodInfos);
         saleServiceFragment=SaleServiceFragment.newInstance("","");
@@ -813,6 +823,7 @@ public class GoodsDetailsFragment extends BaseFragment
 
             } else
             {
+                scrollView.scrollTo(0, 0);
                 Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
             }
     }
@@ -845,6 +856,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 }
                 else
                 {
+                    scrollView.scrollTo(0, 0);
                     Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -893,6 +905,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     mContext.sendBroadcast(intent);
                 } else
                 {
+                    scrollView.scrollTo(0, 0);
                     Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
                 }
 
@@ -912,11 +925,24 @@ public class GoodsDetailsFragment extends BaseFragment
         viewGroupe.removeAllViews();
         if (CollectionUtils.isNotNull(urls))
         {
+            ToolUtils.setLog(""+urls.size());
+            if (urls.size()>4)
+            {
+                List<String> urlss=new ArrayList<String>();
+                urlss.addAll(urls);
+                urls.removeAll(urls);
+                urls.add(urlss.get(0));
+                urls.add(urlss.get(1));
+                urls.add(urlss.get(2));
+                urls.add(urlss.get(3));
+            }
+            ToolUtils.setLog(""+urls.size());
+
             for (String url : urls)
             {
                 ImageView imageView = new ImageView(mContext);
                 imageView.setImageResource(R.drawable.icon_loading_item);
-                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                imageView.setScaleType(ImageView.ScaleType.CENTER);
                 imageView.setBackgroundColor(Color.parseColor("#ffffff"));
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 imageView.setLayoutParams(params);
@@ -950,6 +976,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 }
             }
             viewPager = (ViewPager) mView.findViewById(R.id.goods_adv_pager);
+            viewPager.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth*630/720));
             imageAdapter = new GoodsImageAdapter(mContext, adPics);
             viewPager.setAdapter(imageAdapter);
             viewPager.setOnPageChangeListener(onPageChangeListener);
