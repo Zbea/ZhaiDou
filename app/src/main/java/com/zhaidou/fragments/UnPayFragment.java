@@ -163,6 +163,7 @@ public class UnPayFragment extends BaseFragment {
                 if (jsonObject != null) {
                     JSONArray orderArr = jsonObject.optJSONArray("orders");
                     if (orderArr != null && orderArr.length() > 0) {
+                        orders.clear();
                         for (int i = 0; i < orderArr.length(); i++) {
                             JSONObject orderObj = orderArr.optJSONObject(i);
                             int id = orderObj.optInt("id");
@@ -276,6 +277,12 @@ public class UnPayFragment extends BaseFragment {
 
     public interface TimerListener {
         public void onTick(TextView mTimerView, CountTime countTime, long l);
+    }
+
+    @Override
+    public void onStart() {
+        FetchData();
+        super.onStart();
     }
 
     @Override

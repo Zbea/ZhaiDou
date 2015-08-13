@@ -163,8 +163,9 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     break;
                 case UPDATE_BANNER:
                     JSONObject jsonObject=(JSONObject)msg.obj;
-                    if (jsonObject!=null){
-                        String imgs=jsonObject.optJSONArray("sale_banners").optJSONObject(0).optString("imgs");
+                    JSONArray bannerArr =jsonObject.optJSONArray("sale_banners");
+                    if (bannerArr!=null&&bannerArr.length()>0){
+                        String imgs=bannerArr.optJSONObject(0).optString("imgs");
                         ToolUtils.setImageUrl(imgs,iv_banner);
                     }
                     break;
@@ -380,13 +381,12 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     @Override
                     public void onResponse(JSONObject jsonObject) {
                         mDialog.dismiss();
-                        if (jsonObject.equals(""))
-                        {
+                        JSONObject saleJson = jsonObject.optJSONObject("sale");
+                        if (saleJson==null){
                             nullView.setVisibility(View.VISIBLE);
                             nullNetView.setVisibility(View.GONE);
                             ToolUtils.setToast(getActivity(),"加载失败"); return;
                         }
-                        JSONObject saleJson = jsonObject.optJSONObject("sale");
                         String end_date=saleJson.optString("end_time");
                             Message timerMsg = new Message();
                             timerMsg.what=UPDATE_TIMER_START;
@@ -476,6 +476,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.SPECIAL_SALE_BANNER_URL,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+                Log.i("jsonObject------------->",jsonObject.toString());
                 Message message=new Message();
                 message.obj=jsonObject;
                 message.what=UPDATE_BANNER;

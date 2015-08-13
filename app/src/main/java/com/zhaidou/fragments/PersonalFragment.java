@@ -94,6 +94,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     private FrameLayout mChildContainer;
     private TextView mCartCount;
     private int userId;
+    private String token;
 
     private BroadcastReceiver broadcastReceiver=new BroadcastReceiver()
     {
@@ -218,6 +219,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             getUserDetail();
             getUserInfo();
             userId=(Integer)SharedPreferencesUtil.getData(getActivity(),"userId",-1);
+            token=(String)SharedPreferencesUtil.getData(getActivity(),"token","");
             creatCartDB = new CreatCartDB(getActivity());
 
             initCartTips();
@@ -452,11 +454,10 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         super.onHiddenChanged(hidden);
     }
     private void FetchCollectData(){
-        final String token=(String)SharedPreferencesUtil.getData(getActivity(),"token","");
-
         JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_COLLECT_ITEM_URL+1,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+                Log.i("FetchCollectData-------->",jsonObject.toString());
                 if (jsonObject!=null){
                     JSONObject meta = jsonObject.optJSONObject("meta");
                     int count=meta==null?0:meta.optInt("count");
@@ -507,7 +508,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     }
 
     private void FetchUnPayCount(){
-        JsonObjectRequest request=new JsonObjectRequest("http://192.168.199.173/special_mall/api/orders?count=1&status=0",new Response.Listener<JSONObject>() {
+        JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST+"?count=1&status=0",new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("FetchUnPayCount------------>",jsonObject.toString());
@@ -530,7 +531,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", "o56MZD7xJY7JVNRT3C2R");
+                headers.put("SECAuthorization",token);
                 return headers;
             }
         };
