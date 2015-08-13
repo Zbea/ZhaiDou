@@ -131,7 +131,7 @@
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/tv_addr_loc"
                 android:layout_width="match_parent"

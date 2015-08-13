@@ -60,6 +60,8 @@
             android:layout_alignLeft="@id/xlistview_header_text"
             android:layout_centerVertical="true"
             android:layout_marginLeft="-40dp"
+            android:indeterminateDuration="800"
+            android:indeterminateDrawable="@anim/dialog_rotate_anim"
             android:visibility="invisible" />
     </RelativeLayout>
 

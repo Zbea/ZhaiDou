@@ -12,6 +12,7 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Product;
 import com.zhaidou.utils.AsyncImageLoader1;
+import com.zhaidou.utils.ToolUtils;
 
 import java.util.List;
 import java.util.WeakHashMap;
@@ -20,11 +21,9 @@ import java.util.WeakHashMap;
  * Created by wangclark on 15/7/10.
  */
 public class ProductAdapter extends BaseListAdapter<Product>{
-    private AsyncImageLoader1 imageLoader;
     private WeakHashMap<Integer,View> mHashMap = new WeakHashMap<Integer, View>();
     public ProductAdapter(Context context, List<Product> list) {
         super(context, list);
-        imageLoader = new AsyncImageLoader1(context);
     }
 
     @Override
@@ -42,7 +41,7 @@ public class ProductAdapter extends BaseListAdapter<Product>{
         tv_name.setText(product.getTitle());
         tv_money.setText("￥"+product.getPrice());
         tv_count.setText(product.getBean_like_count()+"");
-        imageLoader.LoadImage("http://"+product.getImage(),image);
+        ToolUtils.setImageCacheUrl("http://"+product.getImage(),image);
         iv_heart.setImageResource(R.drawable.heart_normal);
         tv_count.setVisibility(View.GONE);
         if (product.isCollect()){

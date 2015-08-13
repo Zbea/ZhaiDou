@@ -148,7 +148,6 @@
                     android:orientation="horizontal"
                     android:padding="@dimen/default_margin"
                     android:clickable="true"
-                    android:visibility="gone"
                     android:background="@drawable/item_click_selector"
                     android:gravity="center_vertical">
 

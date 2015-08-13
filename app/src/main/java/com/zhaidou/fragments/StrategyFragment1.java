@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -80,6 +81,8 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
     private int sort;
     private int count;
 
+    private LinearLayout nullLine;
+
     private List<Article> articleList = new ArrayList<Article>();
     private StrategyAdapter strategyAdapter;
     private WeakHashMap<Integer,View> mHashMap = new WeakHashMap<Integer, View>();
@@ -90,6 +93,10 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case UPDATE_Adapter:
+                    if (articleList.size()<1)
+                    {
+                        nullLine.setVisibility(View.VISIBLE);
+                    }
                     strategyAdapter.setList(articleList);
                     listView.onRefreshComplete();
                     break;
@@ -127,6 +134,8 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_strategy1, container, false);
+
+        nullLine=(LinearLayout)view.findViewById(R.id.nullline);
 
         listView=(PullToRefreshListView)view.findViewById(R.id.listview);
         listView.setMode(PullToRefreshBase.Mode.BOTH);
@@ -186,7 +195,8 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
                 Log.i("FetchData--------------->",json.toString());
                 listView.onRefreshComplete();
                 JSONArray articles = json.optJSONArray("articles");
-                if (articles!=null&&articles.length()>0){
+                if (articles!=null&&articles.length()>0)
+                {
                     JSONObject meta = json.optJSONObject("meta");
                     int size = meta.optInt("size");
                     count=meta==null?0:meta.optInt("count");
@@ -207,10 +217,9 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
                 handler.sendEmptyMessage(UPDATE_Adapter);
             }
         }, new Response.ErrorListener() {
-
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.i("onErrorResponse",error.toString());
+                ToolUtils.setToast(getActivity(),"抱歉,加载失败");
             }
         });
         if (mRequestQueue==null) mRequestQueue=Volley.newRequestQueue(getActivity());
@@ -248,7 +257,6 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
         JsonObjectRequest fetchCategoryTask = new JsonObjectRequest(url,new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("FetchCategoryData->onResponse",jsonObject.toString());
                 JSONArray articles = jsonObject.optJSONArray("articles");
                 if (articles==null) return;
                 for (int i=0;i<articles.length();i++){

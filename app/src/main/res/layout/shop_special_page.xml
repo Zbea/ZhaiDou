@@ -121,7 +121,80 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/headLine"
-        android:background="@color/white"
-        android:orientation="vertical"></LinearLayout>
+        android:background="@color/page_bg"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/nullNetline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_null_net"/>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_main_color"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="30dp"
+                android:text="抱歉,网络连接失败"/>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/netReload"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:layout_marginBottom="30dp"
+                android:gravity="center"
+                android:clickable="true"
+                android:padding="7dp"
+                android:background="@drawable/btn_green_click_bg"
+                android:text="重新加载"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nullline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_null_goods_fail"/>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_main_color"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="30dp"
+                android:text="抱歉,加载失败"/>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/nullReload"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:layout_marginBottom="30dp"
+                android:gravity="center"
+                android:clickable="true"
+                android:padding="7dp"
+                android:background="@drawable/btn_green_click_bg"
+                android:text="重新加载"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>

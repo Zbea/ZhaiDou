@@ -22,20 +22,31 @@
         android:id="@+id/tv_name"
         android:singleLine="true"
         android:ellipsize="end"
-        android:textColor="#333333"
-        android:paddingLeft="15dp"/>
+        android:marqueeRepeatLimit="marquee_forever"
+        android:textColor="@color/text_main_color"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp"/>
     <LinearLayout
         android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:paddingBottom="10dp">
         <TextView
-            android:paddingLeft="15dp"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:paddingLeft="5dp"
+            android:layout_width="wrap_content"
+            android:layout_weight="0.00001"
             android:textColor="#ff6262"
             android:id="@+id/tv_money"
             android:layout_height="wrap_content" />
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="0.00001"
+            android:src="@drawable/icon_search_taobao"/>
+
         <LinearLayout
             android:id="@+id/ll_collect_heart"
             android:paddingRight="10dp"

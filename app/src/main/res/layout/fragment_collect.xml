@@ -39,6 +39,44 @@
             android:textColor="@color/white"
             android:text="我的收藏"/>
     </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/loadingView"
+        android:layout_below="@+id/rl_back"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@color/page_bg"
+        >
+
+        <LinearLayout
+            android:id="@+id/nullLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:visibility="gone"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/nullIv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_null_collect"/>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/nullTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_main_color"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="80dp"
+                android:text="抱歉,暂无收藏"/>
+        </LinearLayout>
+
+
+
+    </LinearLayout>
     <com.pulltorefresh.PullToRefreshGridView
         android:layout_below="@id/rl_back"
         xmlns:ptr="http://schemas.android.com/apk/res-auto"
@@ -51,12 +89,4 @@
         android:numColumns="2"
         ptr:ptrHeaderTextColor="@color/gray_9"/>
 
-    <ImageView
-        android:layout_below="@id/rl_back"
-        android:id="@+id/iv_collect_empty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone"
-        android:src="@drawable/iv_collect_empty"/>
 </RelativeLayout>

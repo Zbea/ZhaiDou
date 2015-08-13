@@ -104,7 +104,8 @@ public class RotateLoadingLayout extends LoadingLayout {
 
 	@Override
 	protected int getDefaultDrawableResId() {
-		return R.drawable.default_ptr_rotate;
+//		return R.drawable.default_ptr_rotate;
+        return R.drawable.dialog_loading_icon;
 	}
 
 }
