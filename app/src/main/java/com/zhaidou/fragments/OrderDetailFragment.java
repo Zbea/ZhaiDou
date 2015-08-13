@@ -71,6 +71,7 @@ public class OrderDetailFragment extends BaseFragment{
 
     private long timeLeft;
     int amount;
+    private View rootView;
     private List<OrderItem> orderItems=new ArrayList<OrderItem>();
     private String token;
     private Handler handler=new Handler(){
@@ -135,7 +136,19 @@ public class OrderDetailFragment extends BaseFragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         Log.i("OrderDetailFragment--------->","onCreateView");
-        View view=inflater.inflate(R.layout.fragment_order_detail, container, false);
+        if (null != rootView) {
+            ViewGroup parent = (ViewGroup) rootView.getParent();
+            if (null != parent) {
+                parent.removeView(rootView);
+            }
+        } else {
+            rootView = inflater.inflate(R.layout.fragment_order_detail, container, false);
+            initView(rootView);// ?????
+        }
+        return rootView;
+    }
+
+    private void initView(View view){
         mOrderNumber=(TextView)view.findViewById(R.id.tv_order_number);
         mOrderTime=(TextView)view.findViewById(R.id.tv_order_time);
         mOrderStatus=(TextView)view.findViewById(R.id.tv_order_status);
@@ -162,7 +175,6 @@ public class OrderDetailFragment extends BaseFragment{
             ((TextView)view.findViewById(R.id.tv_cancel_order)).setText(getResources().getString(R.string.sale_service_personal));
         }
         token=(String) SharedPreferencesUtil.getData(getActivity(),"token","");
-        return view;
     }
 
     @Override
