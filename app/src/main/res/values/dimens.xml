@@ -12,6 +12,7 @@
     <dimen name="goods_bottom_height_dimen">60dp</dimen>
     <dimen name="home_tips_dimen">50dp</dimen>
     <dimen name="btn_height_dimen">42dp</dimen>
+    <dimen name="dialog_width_dimen">250dp</dimen>
 
     <!--actionbar-->
     <dimen name="base_action_bar_height">50.0dip</dimen>

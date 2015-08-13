@@ -309,7 +309,10 @@ public class ShopSpecialFragment extends BaseFragment
 
 
         viewPager = (ViewPager) mView.findViewById(R.id.home_adv_pager);
+        viewPager.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth*300/750));
 
+        ImageView imageView=(ImageView)mView.findViewById(R.id.shopBanner);
+        imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth*300/750));
 
         mRequestQueue = Volley.newRequestQueue(mContext);
         initCartTips();
@@ -350,7 +353,6 @@ public class ShopSpecialFragment extends BaseFragment
         tipsLine.removeAllViews();
         if (banners.size() > 1)
         {
-            Log.i("zhaidou", "滑动");
             for (int i = 0; i < banners.size(); i++)
             {
                 final int tag = i;
@@ -442,7 +444,6 @@ public class ShopSpecialFragment extends BaseFragment
         } else if (banners.size() == 1)
         {
             isStop = false;
-            Log.i("zhaidou", "不滑动");
             for (int i = 0; i < banners.size(); i++)
             {
                 final int tag = i;

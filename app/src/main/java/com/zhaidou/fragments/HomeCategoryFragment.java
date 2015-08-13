@@ -100,8 +100,6 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        Log.i("HomeCategoryFragment--------->","onCreateView");
         View view=inflater.inflate(R.layout.item_popupwindows, container, false);
         mRelativeLayout = (RelativeLayout)view.findViewById(R.id.ll_category_close);
         mAllCategory=(TextView)view.findViewById(R.id.tv_category_all);
@@ -126,7 +124,6 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
         mCategoryAdapter.setOnInViewClickListener(R.id.tv_category_item,new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                Log.i("position--------->",position+"");
 
                 Category category = mCategoryList.get(position);
                 Log.i("category------------->",category.toString());

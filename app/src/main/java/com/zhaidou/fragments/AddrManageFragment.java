@@ -96,6 +96,8 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     private int STATUS_FROM_PERSONAL=4;
     private int mCheckedPosition = 0;
     private View rootView;
+    private LinearLayout loadingView;
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -103,6 +105,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 case UPDATE_ADDRESS_LIST:
                     if (mDialog!=null)
                     mDialog.dismiss();
+                    loadingView.setVisibility(View.GONE);
                     addressAdapter.notifyDataSetChanged();
                     break;
             }
@@ -154,6 +157,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     private void initView(View view) {
 
         mDialog=CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
+        loadingView=(LinearLayout)view.findViewById(R.id.loadingView);
         mListview = (ListView) view.findViewById(R.id.lv_addresses);
         addressAdapter = new AddressAdapter(getActivity(), addressList);
         mListview.setAdapter(addressAdapter);
@@ -477,10 +481,19 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             TextView tv_defalue = ViewHolder.get(convertView, R.id.tv_defalue_addr);
             TextView tv_defalue_hint=ViewHolder.get(convertView,R.id.tv_defalue_hint);
             ImageView mDefalueIcon=ViewHolder.get(convertView,R.id.iv_addr_defalue);
+            View view=ViewHolder.get(convertView,R.id.lineBg);
+            if (position==0)
+            {
+                view.setVisibility(View.GONE);
+            }
+            else
+            {
+                view.setVisibility(View.VISIBLE);
+            }
             Address address = getList().get(position);
             tv_name.setText("收件人："+address.getName());
             tv_mobile.setText("电话："+address.getPhone());
-            tv_addr.setText("地址："+address.getAddress());
+            tv_addr.setText("地址："+address.getProvince()+address.getCity()+address.getArea()+address.getAddress());
             if (mStatus==STATUS_FROM_ORDER){
                 tv_defalue_hint.setVisibility(View.GONE);
                 if (address.isIs_default())

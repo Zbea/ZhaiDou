@@ -1,6 +1,7 @@
 
 package com.zhaidou.activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,6 +13,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -58,6 +61,8 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     private String is_new;
     private String is_id;
 
+    private int screenWidth;
+
     private int userId;
     private String token;
     private String nickName;
@@ -76,6 +81,9 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_detail);
+
+        WindowManager wm =getWindowManager();
+        screenWidth = wm.getDefaultDisplay().getWidth();
 
         from=getIntent().getStringExtra("from");
         article=(Article)getIntent().getSerializableExtra("article");
@@ -104,7 +112,10 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         iv_share=(ImageView)findViewById(R.id.iv_share);
         mChildContainer=(FrameLayout)findViewById(R.id.fl_child_container);
         mTitleView=(TextView)findViewById(R.id.tv_title);
+
         mHeaderView=(ImageView)findViewById(R.id.iv_header);
+        mHeaderView.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth*300/750));
+
         mHeaderText=(TextView)findViewById(R.id.tv_msg);
         imageView=(RelativeLayout)findViewById(R.id.imageView);
 

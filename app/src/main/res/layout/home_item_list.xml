@@ -5,16 +5,16 @@
     android:layout_height="@dimen/home_item_dimen"
     android:clipChildren="true"
     android:clipToPadding="true"
-    android:paddingLeft="@dimen/default_margin"
-    android:paddingRight="@dimen/default_margin"
-    android:paddingTop="@dimen/default_margin"
+    android:paddingLeft="7dp"
+    android:paddingRight="7dp"
+    android:paddingTop="7dp"
     >
 
     <ImageView
         android:id="@+id/cover"
         android:layout_width="match_parent"
         android:layout_height="@dimen/home_item_dimen"
-        android:background="@drawable/icon_loading_item"
+        android:src="@drawable/icon_loading_item"
         android:scaleType="fitXY" />
 
     <LinearLayout

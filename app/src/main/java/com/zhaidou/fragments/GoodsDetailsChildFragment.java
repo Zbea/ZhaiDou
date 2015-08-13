@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -178,10 +179,9 @@ public class GoodsDetailsChildFragment extends BaseFragment
         for (String url : urls) {
             ImageView imageView = new ImageView(getActivity());
             imageView.setImageResource(R.drawable.icon_loading_item);
-            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            imageView.setScaleType(ImageView.ScaleType.CENTER);
             imageView.setBackgroundColor(Color.parseColor("#ffffff"));
-            ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            imageView.setLayoutParams(layoutParams);
+            imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
             ToolUtils.setImageCacheUrl(url, imageView);
             mImageContainer.addView(imageView);
         }

@@ -140,7 +140,7 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="10dp"
                 android:singleLine="true"
-                android:layout_centerVertical="true"
+                android:gravity="center_vertical"
                 android:layout_toLeftOf="@+id/imageArrow"
                 android:textColor="@color/text_main_color"
                 android:text="" />

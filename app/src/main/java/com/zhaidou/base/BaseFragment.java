@@ -61,8 +61,6 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     public static NetStateUtils netStateUtils;
     public static boolean isNetState;
 
-    public boolean isLogin;
-    public int userId;
 
 
     @Override
@@ -91,8 +89,6 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
             mBackView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.i("WebViewFragment--233-->","R.id.rl_back:");
-//                    Log.i("currentFragment.getParentFragment()",currentFragment.getParentFragment().toString());
                     if (inputMethodManager.isActive())
                         inputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().peekDecorView().getApplicationWindowToken(),0);
                     if (currentFragment.getParentFragment()!=null){
@@ -135,14 +131,18 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     Toast mToast;
 
     public void ShowToast(String text) {
-        if (mToast == null) {
+        if (mToast == null)
+        {
             if(getActivity()!=null)
             {
                 mToast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
             }
-        } else {
+        }
+        else
+        {
             mToast.setText(text);
         }
+        if (mToast!=null)
         mToast.show();
     }
 
@@ -166,8 +166,6 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     }
 
     public View findViewById(int paramInt) {
-        ShowLog("------------------------->"+paramInt);
-        ShowLog("------------------------->"+getView().toString());
         return getView().findViewById(paramInt);
     }
 

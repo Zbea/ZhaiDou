@@ -267,6 +267,7 @@ public class ShopOrderOkFragment extends BaseFragment
                         @Override
                         public void onDefalueAddressChange(Address maddress)
                         {
+                            ToolUtils.setLog(maddress.toString());
                             address=maddress;
                             setYFMoney(address);
                             addressPhoneTv.setText("收件人：" + address.getName());

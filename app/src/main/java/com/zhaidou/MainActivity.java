@@ -5,6 +5,7 @@ import com.alibaba.sdk.android.callback.CallbackContext;
 import com.alibaba.sdk.android.callback.InitResultCallback;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.base.BaseActivity;
+import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.fragments.CategoryFragment1;
 import com.zhaidou.fragments.DiyFragment;
 import com.zhaidou.fragments.ElementListFragment;
@@ -21,10 +22,12 @@ import com.zhaidou.model.CartItem;
 import com.zhaidou.model.User;
 import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;
+import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -50,8 +53,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  */
@@ -92,6 +98,10 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private long mTime;
     private Activity mContext;
     private CreatCartDB creatCartDB;
+    private String serverName;
+    private String serverInfo;
+    private int serverCode;
+
     public static int num=0;
     private List<CartItem> items=new ArrayList<CartItem>();
 
@@ -128,11 +138,18 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     }else {
 //                        persoanlFragment.refreshData(MainActivity.this);
                     }
-                    Log.i("currentFragment----------->",currentFragment.toString());
-                    Log.i("persoanlFragment----------->",persoanlFragment.toString());
-
                     selectFragment(currentFragment, persoanlFragment);
                     setButton(personalButton);
+                    break;
+
+                case 1:
+                    serverCode=parseJosn(msg.obj.toString());
+                    if (serverCode>ZDApplication.localVersionCode)
+                    {
+                       CustomVersionUpdateDialog customVersionUpdateDialog=new CustomVersionUpdateDialog(mContext,serverName);
+                       customVersionUpdateDialog.checkUpdateInfo();
+                    }
+
                     break;
             }
         }
@@ -145,6 +162,10 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         iv_dot=(ImageView)findViewById(R.id.iv_dot);
         mContext=this;
         initBroadcastReceiver();
+
+        getVersionServer();
+
+
         init();
         AlibabaSDK.asyncInit(this,new InitResultCallback() {
             @Override
@@ -161,6 +182,25 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         initComponents();
     }
 
+    /**
+     * 获取版本信息
+     */
+    private void getVersionServer()
+    {
+        new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                String url=ZhaiDou.apkUpdateUrl;
+                String result= NetService.getHttpService(url);
+                if (result!=null)
+                {
+                    mHandler.obtainMessage(1,result).sendToTarget();
+                }
+            }
+        }).start();
+    }
     /**
      * 注册广播
      */
@@ -261,7 +301,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 //                titleView.setText("全类别");
 
                 if (categoryFragment == null) {
-//                    categoryFragment = CategoryFragment.newInstance("haha", "haha");
                     categoryFragment= CategoryFragment1.newInstance("","");
                 }
 
@@ -444,6 +483,30 @@ Log.i("selectFragment---->","selectFragment1");
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    /**
+     * 版本信息解析
+     * @param json
+     * @return
+     */
+    private int parseJosn(String json)
+    {
+        try
+        {
+            JSONObject jsonObject=new JSONObject(json);
+            serverName=jsonObject.optString("name");
+            serverCode=jsonObject.optInt("code");
+            serverInfo=jsonObject.optString("info");
+            ToolUtils.setLog(serverName);
+            ToolUtils.setLog(""+serverCode);
+            ToolUtils.setLog(serverInfo);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return serverCode;
     }
 
     @Override

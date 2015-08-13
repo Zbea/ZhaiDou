@@ -86,8 +86,8 @@
                 android:layout_marginTop="5dp">
 
                 <ImageView
-                    android:layout_width="88dp"
-                    android:layout_height="17dp"
+                    android:layout_width="87dp"
+                    android:layout_height="16dp"
                     android:src="@drawable/shop_special_subclass_dester_icon"/>
 
                 <com.zhaidou.view.TypeFaceTextView

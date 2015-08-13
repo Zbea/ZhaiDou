@@ -41,6 +41,7 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.dialog.CustomLoadingResultDialog;
 import com.zhaidou.model.Product;
 import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.HtmlFetcher;
@@ -74,20 +75,19 @@ import java.util.WeakHashMap;
  *
  */
 public class SingleFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<GridView>{
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "categoryId";
     private static final String ARG_FROM = "from";
     private static final String ID = "id";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private int id=-1;
+    private View mView;
+    private Context mContext;
 
     private String token;
     private int userid;
-    private boolean isLogin;
+    private boolean isLogin=false;
 
     private int currentpage=1;
     private int count=-1;
@@ -101,12 +101,10 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
 
     private List<Product> products = new ArrayList<Product>();
     private RequestQueue mRequestQueue;
-    private AsyncImageLoader1 imageLoader;
     private ProductAdapter productAdapter;
 
     private WeakHashMap<Integer,View> mHashMap = new WeakHashMap<Integer, View>();
     private Dialog mDialog;
-//    private SingleAdapter mSingleAdapter;
 
     private Handler handler = new Handler(){
         @Override
@@ -144,22 +142,29 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view=inflater.inflate(R.layout.fragment_single, container, false);
-        initView(view);
-//        FetchData(mParam1,sort,currentpage=1);
-        return view;
+        mContext=getActivity();
+        if (mView == null)
+        {
+            mView = inflater.inflate(R.layout.fragment_single, container, false);
+            initView(mView);
+        }
+        //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
+        ViewGroup parent = (ViewGroup) mView.getParent();
+        if (parent != null)
+        {
+            parent.removeView(mView);
+        }
+        return mView;
     }
 
-    private void initView(View view){
-
+    private void initView(View view)
+    {
         isLogin=checkLogin();
         tv_count=(TextView)view.findViewById(R.id.tv_count);
-//        tv_detail=(TextView)view.findViewById(R.id.tv_detail);
         tv_money=(TextView)view.findViewById(R.id.tv_money);
         gv_single=(PullToRefreshGridView)view.findViewById(R.id.gv_single);
         nullLine=(LinearLayout)view.findViewById(R.id.nullline);
-        productAdapter = new ProductAdapter(getActivity(),products);
+        productAdapter = new ProductAdapter(getActivity(),products,1);
         gv_single.setAdapter(productAdapter);
         mRequestQueue= Volley.newRequestQueue(getActivity());
         if ("category".equalsIgnoreCase(mParam2)){
@@ -203,7 +208,19 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
     {
         token=(String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         userid=(Integer)SharedPreferencesUtil.getData(getActivity(),"userId",-1);
-        boolean isLogin=!TextUtils.isEmpty(token)&&id>-1;
+
+        if (token!=null)
+        {
+            isLogin=false;
+            if (token.length()>0&&userid>0)
+            {
+                isLogin=true;
+            }
+        }
+        else
+        {
+            isLogin=false;
+        }
         return isLogin;
     }
 
@@ -229,7 +246,6 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
     public void FetchData(String msg,int sort,int page){
         mParam1=msg;
         setStartLoading();
-        Log.i("FetchData------>","FetchData");
         this.sort=sort;
         currentpage=page;
         if (page==1) products.clear();
@@ -268,7 +284,6 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
                     int id=item.optInt("id");
                     String title =item.optString("title");
                     double price=item.optDouble("price");
-                    Log.i("zhaidou-------->","价格：￥"+price);
                     String url=item.optString("url");
                     int bean_like_count=item.optInt("bean_likes_count");
                     JSONArray array = item.optJSONArray("asset_imgs");
@@ -311,7 +326,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
                 if (items==null)
                 {
                     gv_single.onRefreshComplete();
-                    Toast.makeText(getActivity(),"抱歉，未找到商品",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),"抱歉,未找到商品",Toast.LENGTH_SHORT).show();
                     return;
                 }
                 for (int i=0;i<items.length();i++){
@@ -376,10 +391,23 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
                     ToolUtils.setLog(jsonObject.toString());
                     String like_state=jsonObject.optString("like_state");
                     String likes=jsonObject.optString("likes");
+
+                    if(like_state.equals("true"))
+                    {
+                        productAdapter.setmCheckPosition(Integer.valueOf(position),Integer.valueOf(position));
+                        productAdapter.notifyDataSetChanged();
+                        CustomLoadingResultDialog.setLoadingDialog(mContext,true,"收藏成功");
+                    }
+                    else
+                    {
+                        productAdapter.setmCheckPosition(Integer.valueOf(position),-1);
+                        productAdapter.notifyDataSetChanged();
+                        CustomLoadingResultDialog.setLoadingDialog(mContext,true,"取消收藏");
+                    }
                 }
                 else
                 {
-                    ToolUtils.setToast(getActivity(),"抱歉,取消失败");
+                    CustomLoadingResultDialog.setLoadingDialog(mContext,false,"收藏失败");
                 }
             }catch (Exception e){
             }
@@ -446,7 +474,6 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
         String label = DateUtils.formatDateTime(getActivity(), System.currentTimeMillis(),
                 DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
         refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
-//        FetchData(mParam1,sort,currentpage=1);
         products.clear();
         if ("category".equalsIgnoreCase(mParam2)){
             FetchCategoryData(mParam1, sort, currentpage=1);
@@ -458,7 +485,6 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
 
     @Override
     public void onPullUpToRefresh(PullToRefreshBase<GridView> refreshView) {
-//        FetchData(mParam1,sort,++currentpage);
         if (count!=-1&&productAdapter.getCount()==count){
             Toast.makeText(getActivity(),"已经加载完毕",Toast.LENGTH_SHORT).show();
             gv_single.onRefreshComplete();
