@@ -405,7 +405,7 @@ public class ShopPaymentFragment extends BaseFragment {
                 break;
             case 0://支付成功
                 Log.i("----->", "支付成功");
-                ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, 0);
+                ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, mAmount+mFare);
                 ((MainActivity)getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                 break;
             case -1://支付失败
