@@ -46,7 +46,7 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
             mChildContainer.setVisibility(View.VISIBLE);
         }
         getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, fragment, fragment.getClass().getSimpleName())
-                .addToBackStack(null).commit();
+                .addToBackStack(null).commitAllowingStateLoss();
     }
 
     public void popToStack(Fragment fragment) {

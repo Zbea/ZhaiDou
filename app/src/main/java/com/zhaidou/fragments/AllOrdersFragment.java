@@ -27,6 +27,7 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Order;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONArray;
@@ -55,6 +56,7 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
     private final int UPDATE_UI_TIMER_FINISH = 3;
     private MyTimer timer;
     private View rootView;
+    private String token;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -110,6 +112,7 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
             mRequestQueue = Volley.newRequestQueue(getActivity());
             allOrderAdapter = new AllOrderAdapter(getActivity(), orders);
             mListView.setAdapter(allOrderAdapter);
+            token=(String) SharedPreferencesUtil.getData(getActivity(),"token","");
             FetchAllOrder();
 
             allOrderAdapter.setOnInViewClickListener(R.id.orderlayout, new BaseListAdapter.onInternalClickListener() {
@@ -155,6 +158,7 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
                     ShowToast("删除");
                 }
             });
+
         }
 
         return rootView;
@@ -171,7 +175,8 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
     }
 
     private void FetchAllOrder() {
-        JsonObjectRequest request = new JsonObjectRequest("http://192.168.199.173/special_mall/api/orders", new Response.Listener<JSONObject>() {
+        Log.i("token-------------->",token);
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("FetchAllOrder----------->", jsonObject.toString());
@@ -207,7 +212,7 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", "ysyFfLMqfYFfD_PSj7Nd");
+                headers.put("SECAuthorization",token);
                 return headers;
             }
         };
@@ -261,7 +266,7 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
                     } else {
                         btn2.setText("超时过期");
                     }
-
+                    btn2.setBackgroundColor(getResources().getColor(R.color.red));
                     btn2.setTag(Long.parseLong(btn2.getTag() + "") - 1000);
                     order.setOver_at(Long.parseLong(btn2.getTag() + "") - 1000);
                     break;
@@ -271,6 +276,7 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
                     tv_order_status.setText("订单状态：已付款");
                     btn2.setVisibility(View.GONE);
                     btn1.setText("申请退款");
+                    btn1.setBackgroundColor(getResources().getColor(R.color.c00bbb9));
                     break;
                 case ZhaiDou.STATUS_OVER_TIME:
                     iv_delete.setVisibility(View.VISIBLE);
@@ -288,6 +294,8 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
                     ll_btn.setVisibility(View.VISIBLE);
                     btn2.setText("确认收货");
                     btn1.setText("查看物流");
+                    btn1.setBackgroundColor(getResources().getColor(R.color.c00bbb9));
+                    btn2.setBackgroundColor(getResources().getColor(R.color.red));
                     break;
                 case ZhaiDou.STATUS_DEAL_SUCCESS:
                     iv_delete.setVisibility(View.VISIBLE);
@@ -298,6 +306,7 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
                     btn2.setText("申请退货");
                     btn2.setBackgroundColor(getResources().getColor(R.color.c00bbb9));
                     btn1.setText("查看物流");
+                    btn1.setBackgroundColor(getResources().getColor(R.color.c00bbb9));
                     break;
                 case ZhaiDou.STATUS_APPLY_GOOD_RETURN:
                     iv_delete.setVisibility(View.GONE);
@@ -348,13 +357,11 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
 
     @Override
     public void onStart() {
-        Log.i("AllOrdersFragment----------->", "onStart");
         super.onStart();
     }
 
     @Override
     public void onStop() {
-        Log.i("AllOrdersFragment----------->", "onStop");
         super.onStop();
     }
 

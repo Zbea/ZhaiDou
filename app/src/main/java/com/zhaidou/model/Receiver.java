@@ -6,6 +6,9 @@ package com.zhaidou.model;
 public class Receiver {
     private int id;
     private String address;
+    private String province;
+    private String city;
+    private String area;
     private String phone;
     private String name;
 
@@ -41,9 +44,43 @@ public class Receiver {
         this.name = name;
     }
 
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
     public Receiver(int id, String address, String phone, String name) {
         this.id = id;
         this.address = address;
+        this.phone = phone;
+        this.name = name;
+    }
+
+    public Receiver(int id, String address, String province, String city, String area, String phone, String name) {
+        this.id = id;
+        this.address = address;
+        this.province = province;
+        this.city = city;
+        this.area = area;
         this.phone = phone;
         this.name = name;
     }

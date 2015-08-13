@@ -8,9 +8,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.zhaidou.R;
 import com.zhaidou.wxapi.MD5;
@@ -31,16 +33,16 @@ public class PayActivity extends Activity {
 			
 			switch (msg.what) {
 			case 800://商户订单号重复或生成错误
-				
+                Log.i("----->","商户订单号重复或生成错误");
 				break;
 			case 0://支付成功
-				
+                Log.i("----->","支付成功");
 				break;
 			case -1://支付失败
-				
+                Log.i("----->","支付失败");
 				break;
 			case -2://取消支付
-				
+                Log.i("----->","取消支付");
 				break;
 			default:
 				break;

@@ -24,11 +24,13 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.CountTime;
 import com.zhaidou.model.Order;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONArray;
@@ -67,6 +69,7 @@ public class UnPayFragment extends BaseFragment {
     private Map<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private View rootView;
     private MyTimer timer;
+    private String token;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -125,6 +128,7 @@ public class UnPayFragment extends BaseFragment {
             mListView = (ListView) rootView.findViewById(R.id.lv_unpaylist);
             unPayAdapter = new UnPayAdapter(getActivity(), orders);
             mListView.setAdapter(unPayAdapter);
+            token=(String) SharedPreferencesUtil.getData(getActivity(),"token","");
             mRequestQueue = Volley.newRequestQueue(getActivity());
 
             unPayAdapter.setOnInViewClickListener(R.id.ll_unpay, new BaseListAdapter.onInternalClickListener() {
@@ -146,14 +150,13 @@ public class UnPayFragment extends BaseFragment {
                 }
             });
         }
-//        View view = inflater.inflate(R.layout.fragment_unpay, container, false);
         FetchData();
         return rootView;
     }
 
     private void FetchData() {
         orders.clear();
-        JsonObjectRequest request = new JsonObjectRequest("http://192.168.199.173/special_mall/api/orders", new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("jsonObject----------->", jsonObject.toString());
@@ -190,7 +193,7 @@ public class UnPayFragment extends BaseFragment {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", "ysyFfLMqfYFfD_PSj7Nd");
+                headers.put("SECAuthorization",token);
                 return headers;
             }
         };
