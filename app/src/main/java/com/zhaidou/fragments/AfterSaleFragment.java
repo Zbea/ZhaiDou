@@ -285,6 +285,15 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
                 break;
             case R.id.tv_commit:
                 new CommitTask().execute();
+//                for (int i = 0; i < imagePath.size(); i++) {
+//                    String path=imagePath.get(i);
+//                    if (!TextUtils.isEmpty(path)){
+//                        File file=new File(path);
+//                        Log.i("file----->",file.length()+"");
+//                        Bitmap bitmap=BitmapFactory.decodeFile(path);
+//                        String base64Str =PhotoUtil.bitmapToBase64(bitmap);
+//                    }
+//                }
                 break;
         }
     }
@@ -559,13 +568,16 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
                     Bitmap bitmap=BitmapFactory.decodeFile(path);
                     String base64Str =PhotoUtil.bitmapToBase64(bitmap);
                     Log.i("base64Str---------->",base64Str);
-                    params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][picture]]","data:image/png;base64,"+base64Str));
+                    params.add(new BasicNameValuePair("sale_return_item[attachments_attributes][][picture]","data:image/png;base64,"+base64Str));
                 }
             }
 
+            String arr="[";
             for (int k=0;k<orderItems.size();k++){
-                params.add(new BasicNameValuePair("sale_return_item[order_item_ids["+k+"]]",orderItems.get(k).getId()+""));
+                arr=arr+orderItems.get(k).getId()+",";
             }
+            arr=arr.substring(0,arr.length()-2)+"]";
+            params.add(new BasicNameValuePair("sale_return_item[order_item_ids][]",orderItems.get(0).getId()+""));
 
             // 创建UrlEncodedFormEntity对象
             UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(

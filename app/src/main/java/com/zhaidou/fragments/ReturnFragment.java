@@ -22,11 +22,13 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONArray;
@@ -52,6 +54,9 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
     private List<Order> orders;
     private String STATUS_RETURN_LIST="678";
     private final int UPDATE_RETURN_LIST=1;
+    private String token;
+    private View rootView;
+    private Context mContext;
     private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -86,16 +91,30 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.fragment_return, container, false);
+        // Inflate the layout for this fragment
+        if (null != rootView) {
+            ViewGroup parent = (ViewGroup) rootView.getParent();
+            if (null != parent) {
+                parent.removeView(rootView);
+            }
+        } else {
+            rootView = inflater.inflate(R.layout.fragment_return,container, false);
+            initView(rootView);// 控件初始化
+        }
+        return rootView;
+    }
+
+    private void initView(View view){
 
         mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
         loadingView=(LinearLayout)view.findViewById(R.id.loadingView);
-//        view.findViewById(R.id.tv_apply_support).setOnClickListener(this);
+        mContext=getActivity();
         orders=new ArrayList<Order>();
         mListView=(ListView)view.findViewById(R.id.lv_return);
         returnAdapter=new ReturnAdapter(getActivity(),orders);
         mListView.setAdapter(returnAdapter);
         mRequestQueue= Volley.newRequestQueue(getActivity());
+        token=(String) SharedPreferencesUtil.getData(getActivity(),"token","");
         FetchReturnData();
         returnAdapter.setOnInViewClickListener(R.id.orderlayout,new BaseListAdapter.onInternalClickListener() {
             @Override
@@ -104,8 +123,7 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
                 OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(),order);
                 ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
             }
-        });
-        return view;
+        }) ;  
     }
 
     @Override
@@ -142,7 +160,7 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
         }
     }
     private void FetchReturnData(){
-        JsonObjectRequest request = new JsonObjectRequest("http://192.168.199.173/special_mall/api/orders", new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog!=null) mDialog.dismiss();
@@ -150,6 +168,7 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
                 if (jsonObject != null) {
                     JSONArray orderArr = jsonObject.optJSONArray("orders");
                     if (orderArr != null && orderArr.length() > 0) {
+                        orders.clear();
                         for (int i = 0; i < orderArr.length(); i++) {
                             JSONObject orderObj = orderArr.optJSONObject(i);
                             int id = orderObj.optInt("id");
@@ -183,15 +202,23 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
             public void onErrorResponse(VolleyError volleyError) {
                 if (mDialog!=null) mDialog.dismiss();
                 Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
+                if (getActivity()!=null)
+                Toast.makeText(mContext, "网络异常", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", "ysyFfLMqfYFfD_PSj7Nd");
+                headers.put("SECAuthorization",token);
                 return headers;
             }
         };
         mRequestQueue.add(request);
+    }
+
+    @Override
+    public void onStart() {
+        FetchReturnData();
+        super.onStart();
     }
 }

@@ -405,11 +405,11 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
         public void onDefalueAddressChange(Address address);
         public void onDeleteFinishAddress();
     }
-
     private void FetchData() {
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_RECEIVER_URL, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+                Log.i("FetchData------------>",jsonObject.toString());
                 mDialog.dismiss();
                 JSONArray receiversArr = jsonObject.optJSONArray("receivers");
                 ToolUtils.setLog(jsonObject.toString());
@@ -446,6 +446,8 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                         addressList.add(address);
                     }
                     handler.sendEmptyMessage(UPDATE_ADDRESS_LIST);
+                }else {
+                    loadingView.setVisibility(View.GONE);
                 }
                 else
                 {

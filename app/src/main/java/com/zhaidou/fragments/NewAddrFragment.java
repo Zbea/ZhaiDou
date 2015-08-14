@@ -89,7 +89,6 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
     private AddrSaveSuccessListener addrSaveSuccessListener;
     private int UPDATE_ADDRESS_INFO=1;
     private int CREATE_NEW_ADDRESS=2;
-    private List<Address> addressList=new ArrayList<Address>();
 
     public static NewAddrFragment newInstance(int id,String nickname, String mobile,String location,String address, int profileId, int status) {
         NewAddrFragment fragment = new NewAddrFragment();
@@ -161,10 +160,10 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
                     Toast.makeText(getActivity(), "联系方式不能为空", Toast.LENGTH_SHORT).show();
                     return;
                 } else if (TextUtils.isEmpty(address)) {
-                    Toast.makeText(getActivity(), "收货地址不能为空", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "详细地址不能为空", Toast.LENGTH_SHORT).show();
                     return;
                 } else if (TextUtils.isEmpty(location)) {
-                    Toast.makeText(getActivity(), "详细地址不能为空", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "省市区不能为空", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 mNickName = name;

@@ -9,15 +9,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -33,12 +30,9 @@ import com.pulltorefresh.PullToRefreshBase;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.alipay.PayDemoActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.dialog.CustomShopCartDeleteDialog;
 import com.zhaidou.model.Address;
-import com.zhaidou.model.Area;
 import com.zhaidou.model.CartItem;
 import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;
@@ -49,21 +43,17 @@ import com.zhaidou.view.TypeFaceTextView;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,8 +64,7 @@ import java.util.Map;
 /**
  * Created by roy on 15/7/24.
  */
-public class ShopOrderOkFragment extends BaseFragment
-{
+public class ShopOrderOkFragment extends BaseFragment {
     private static final String PAGE = "page";
     private static final String INDEX = "index";
 
@@ -112,13 +101,10 @@ public class ShopOrderOkFragment extends BaseFragment
     private CreatCartDB creatCartDB;
     private String token;
 
-    private Handler handler = new Handler()
-    {
+    private Handler handler = new Handler() {
         @Override
-        public void handleMessage(Message msg)
-        {
-            switch (msg.what)
-            {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
                 case UPDATE_DEFALUE_ADDRESS_INFO:
                     mDialog.dismiss();
 
@@ -131,7 +117,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     setYFMoney(address);
                     addressPhoneTv.setText("收件人：" + address.getPhone());
                     addressNameTv.setText("电话：" + address.getName());
-                    addressinfoTv.setText(address.getProvince()+address.getCity()+address.getArea()+address.getAddress());
+                    addressinfoTv.setText(address.getProvince() + address.getCity() + address.getArea() + address.getAddress());
                     break;
                 case 2:
                     mDialog.dismiss();
@@ -203,15 +189,17 @@ public class ShopOrderOkFragment extends BaseFragment
     /**
      * 下拉刷新
      */
-    private PullToRefreshBase.OnRefreshListener2 refreshListener = new PullToRefreshBase.OnRefreshListener2()
-    {
+    private PullToRefreshBase.OnRefreshListener2 refreshListener = new PullToRefreshBase.OnRefreshListener2() {
         @Override
         public void onPullDownToRefresh(PullToRefreshBase refreshView)
         {
+
         }
+
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView)
         {
+
         }
     };
 
@@ -523,10 +511,7 @@ public class ShopOrderOkFragment extends BaseFragment
         {   @Override
             public void run() {
                 String result = FetchRequset();
-                if (result != null)
-                {
-                    if (result.length() > 10)
-                    {
+                if (result != null) {
                     try {
                         JSONObject jsonObject=new JSONObject(result);
                         int status=jsonObject.optInt("status");
@@ -561,9 +546,6 @@ public class ShopOrderOkFragment extends BaseFragment
                     {
                         handler.sendEmptyMessage(3);
                     }
-                } else {
-                    handler.sendEmptyMessage(3);
-                }
             }
         }).start();
 
@@ -586,8 +568,7 @@ public class ShopOrderOkFragment extends BaseFragment
             params.add(new BasicNameValuePair("sale_order[receiver_id]", "" + address.getId()));
 
             params.add(new BasicNameValuePair("sale_order[node]", bzInfo_Str));
-            for (int i = 0; i < items.size(); i++)
-            {
+            for (int i = 0; i < items.size(); i++) {
                 params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][merchandise_id]]", items.get(i).id + ""));
                 params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][specification_id]]", items.get(i).sizeId + ""));
                 params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][count]]", items.get(i).num + ""));
