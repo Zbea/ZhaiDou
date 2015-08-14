@@ -60,15 +60,12 @@ import java.util.Map;
  * create an instance of this fragment.
  */
 public class AddrManageFragment extends BaseFragment implements View.OnClickListener {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_NickName = "param1";
     private static final String ARG_MOBILE = "param2";
     private static final String ARG_ADDRESS = "param3";
     private static final String ARG_PROFILE_ID = "param4";
     private static final String ARG_STATUS = "param5";
 
-    // TODO: Rename and change types of parameters
     private String mNickName;
     private String mMobile;
     private String mAddress;
@@ -216,7 +213,6 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
         addressAdapter.setOnInViewClickListener(R.id.tv_edit, new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, final Integer position, Object values) {
-                ShowToast("编辑");
                 Address address=(Address)values;
                 int id=address.getId();
                 String name=address.getName();
@@ -416,8 +412,11 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             public void onResponse(JSONObject jsonObject) {
                 mDialog.dismiss();
                 JSONArray receiversArr = jsonObject.optJSONArray("receivers");
-                if (receiversArr != null && receiversArr.length() > 0) {
-                    for (int i = 0; i < receiversArr.length(); i++) {
+                ToolUtils.setLog(jsonObject.toString());
+                if (receiversArr != null && receiversArr.length() > 0)
+                {
+                    for (int i = 0; i < receiversArr.length(); i++)
+                    {
                         JSONObject receiverObj = receiversArr.optJSONObject(i);
                         String phone = receiverObj.optString("phone");
                         int user_id = receiverObj.optInt("user_id");
@@ -447,6 +446,10 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                         addressList.add(address);
                     }
                     handler.sendEmptyMessage(UPDATE_ADDRESS_LIST);
+                }
+                else
+                {
+                    loadingView.setVisibility(View.GONE);
                 }
             }
         }, new Response.ErrorListener() {
@@ -493,7 +496,14 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             Address address = getList().get(position);
             tv_name.setText("收件人："+address.getName());
             tv_mobile.setText("电话："+address.getPhone());
-            tv_addr.setText("地址："+address.getProvince()+address.getCity()+address.getArea()+address.getAddress());
+            if (address.getProvince()==null)
+            {
+                tv_addr.setText("地址："+address.getAddress());
+            }
+            else
+            {
+                tv_addr.setText("地址："+address.getProvince()+address.getCity()+address.getArea()+address.getAddress());
+            }
             if (mStatus==STATUS_FROM_ORDER){
                 tv_defalue_hint.setVisibility(View.GONE);
                 if (address.isIs_default())

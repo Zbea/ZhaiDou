@@ -35,6 +35,7 @@ import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.NativeHttpUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -91,8 +92,12 @@ import cn.sharesdk.wechat.friends.Wechat;
                         mDialog.dismiss();
                     }
                     User u=(User)msg.obj;//id,email,token,nick,null
-                    Log.i("handleMessage------------>",u.toString());
                     SharedPreferencesUtil.saveUser(getApplicationContext(), u);
+
+                    ToolUtils.setLog("要刷新登录了");
+                    Intent intent1=new Intent(ZhaiDou.IntentRefreshLoginTag);
+                    sendBroadcast(intent1);
+
                     Intent intent=new Intent();
                     intent.putExtra("id",u.getId());
                     intent.putExtra("email",u.getEmail());
@@ -282,28 +287,23 @@ import cn.sharesdk.wechat.friends.Wechat;
                 JSONObject json = new JSONObject(s);
                 String msg = json.optString("message");
                 if (!TextUtils.isEmpty(msg)){
-//                    JSONArray errMsg =  json.optJSONArray("message");
                     Toast.makeText(LoginActivity.this,msg,Toast.LENGTH_LONG).show();
                     return;
                 }
-
-                Log.i("before--->","before");
                 JSONArray userArr = json.optJSONArray("users");
                 for (int i=0;i<userArr.length();i++){
                     JSONObject userObj = userArr.optJSONObject(i);
                     int id = userObj.optInt("id");
-                    Log.i("id--->",id+"");
                     String email=userObj.optString("email");
-                    Log.i("email--->",email);
                     String nick = userObj.optString("nick_name");
-                    Log.i("nickname--->",nick);
                     String token=json.optJSONObject("user_tokens").optString("token");
-                    Log.i("token--->",token);
+
+                    ToolUtils.setLog("要刷新登录了");
+                    Intent intent=new Intent(ZhaiDou.IntentRefreshLoginTag);
+                    sendBroadcast(intent);
 
                     User user = new User(id,email,token,nick,null);
-                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user,null);
-                    Log.i("LoginFragment----onRegisterOrLoginSuccess---->","onRegisterOrLoginSuccess");
-//                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user,LoginFragment.this);
+                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
                 }
 
             }catch (Exception e){

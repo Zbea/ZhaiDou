@@ -1,5 +1,6 @@
 package com.zhaidou.fragments;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +30,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CountTime;
 import com.zhaidou.model.Order;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -48,12 +51,9 @@ import java.util.WeakHashMap;
  * create an instance of this fragment.
  */
 public class UnPayFragment extends BaseFragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
@@ -65,6 +65,9 @@ public class UnPayFragment extends BaseFragment {
     private final int UPDATE_COUNT_DOWN_TIME = 2;
     private final int UPDATE_UI_TIMER_FINISH=3;
     private final String STATUS_UNPAY_LIST = "0";
+
+    private Dialog mDialog;
+    private LinearLayout loadingView;
 
     private Map<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private View rootView;
@@ -80,6 +83,7 @@ public class UnPayFragment extends BaseFragment {
                     timer.start();
                     break;
                 case UPDATE_COUNT_DOWN_TIME:
+                    loadingView.setVisibility(View.GONE);
                     unPayAdapter.notifyDataSetChanged();
                     break;
                 case UPDATE_UI_TIMER_FINISH:
@@ -89,7 +93,6 @@ public class UnPayFragment extends BaseFragment {
         }
     };
 
-    // TODO: Rename and change types and number of parameters
     public static UnPayFragment newInstance(String param1, String param2) {
         UnPayFragment fragment = new UnPayFragment();
         Bundle args = new Bundle();
@@ -100,7 +103,6 @@ public class UnPayFragment extends BaseFragment {
     }
 
     public UnPayFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -115,8 +117,6 @@ public class UnPayFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        Log.i("UnPayFragment-------------->", "onCreateView");
         if (null != rootView) {
             ViewGroup parent = (ViewGroup) rootView.getParent();
             if (null != parent) {
@@ -125,6 +125,9 @@ public class UnPayFragment extends BaseFragment {
         } else {
             rootView = inflater.inflate(R.layout.fragment_unpay, container, false);
 //            initView(rootView);
+
+            mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
+            loadingView=(LinearLayout)rootView.findViewById(R.id.loadingView);
             mListView = (ListView) rootView.findViewById(R.id.lv_unpaylist);
             unPayAdapter = new UnPayAdapter(getActivity(), orders);
             mListView.setAdapter(unPayAdapter);
@@ -135,9 +138,7 @@ public class UnPayFragment extends BaseFragment {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
                     final Order order = (Order) values;
-                    Log.i("values--->", order.toString());
                     TextView textView=(TextView)v.findViewById(R.id.bt_order_timer);
-                    Log.i("textView-------------->",textView.getText().toString());
                     OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(),order);
                     ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
                     orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
@@ -158,12 +159,17 @@ public class UnPayFragment extends BaseFragment {
         orders.clear();
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(JSONObject jsonObject) {
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (mDialog!=null) mDialog.dismiss();
                 Log.i("jsonObject----------->", jsonObject.toString());
-                if (jsonObject != null) {
+                if (jsonObject != null)
+                {
                     JSONArray orderArr = jsonObject.optJSONArray("orders");
-                    if (orderArr != null && orderArr.length() > 0) {
-                        for (int i = 0; i < orderArr.length(); i++) {
+                    if (orderArr != null && orderArr.length() > 0)
+                    {
+                        for (int i = 0; i < orderArr.length(); i++)
+                        {
                             JSONObject orderObj = orderArr.optJSONObject(i);
                             int id = orderObj.optInt("id");
                             String number = orderObj.optString("number");
@@ -182,11 +188,17 @@ public class UnPayFragment extends BaseFragment {
                         }
                         handler.sendEmptyMessage(UPDATE_UNPAY_LIST);
                     }
+                    else
+                    {
+                        mListView.setVisibility(View.GONE);
+                        loadingView.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
+                if (mDialog!=null) mDialog.dismiss();
                 Toast.makeText(getActivity(),"网络异常", Toast.LENGTH_SHORT).show();
             }
         }) {

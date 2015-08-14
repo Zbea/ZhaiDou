@@ -27,18 +27,11 @@ public class TypeFaceTextView extends TextView {
         initTypeFace(context);
     }
     public void initTypeFace(Context context){
-//        if(!isInEditMode())
-//        {
             ZDApplication application =(ZDApplication)context.getApplicationContext();
             Typeface mTypeFace = application.getTypeFace();
             if (mTypeFace!=null){
                 setTypeface(mTypeFace);
             }
-//        }
-//        else
-//        {
-//            return;
-//        }
     }
 
     @Override

@@ -37,7 +37,7 @@
             android:layout_centerInParent="true"
             android:textSize="18sp"
             android:textColor="@color/white"
-            android:text="待支付订单"/>
+            android:text="待付款订单"/>
     </RelativeLayout>
 
     <ListView
@@ -47,5 +47,38 @@
         android:dividerHeight="10dp"
         android:scrollbars="none"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_marginBottom="10dp"/>
+
+    <LinearLayout
+        android:id="@+id/loadingView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/page_bg"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/nullline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_null_order_recver"/>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_gary_color"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="80dp"
+                android:text="抱歉,暂无待收货订单"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
 </LinearLayout>

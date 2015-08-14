@@ -1,4 +1,5 @@
 package com.zhaidou.fragments;
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +25,7 @@ import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
 import com.zhaidou.utils.ToolUtils;
 
@@ -34,25 +37,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ReturnFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ReturnFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
- */
 public class ReturnFragment extends BaseFragment implements View.OnClickListener{
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private ListView mListView;
+    private Dialog mDialog;
+    private LinearLayout loadingView;
+
     private RequestQueue mRequestQueue;
     private ReturnAdapter returnAdapter;
     private List<Order> orders;
@@ -63,22 +57,12 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case UPDATE_RETURN_LIST:
-                    Log.i("UPDATE_RETURN_LIST-------->",orders.size()+"");
+                    loadingView.setVisibility(View.GONE);
                     returnAdapter.notifyDataSetChanged();
                     break;
             }
         }
     };
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ReturnFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static ReturnFragment newInstance(String param1, String param2) {
         ReturnFragment fragment = new ReturnFragment();
         Bundle args = new Bundle();
@@ -102,8 +86,10 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_return, container, false);
+
+        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
+        loadingView=(LinearLayout)view.findViewById(R.id.loadingView);
 //        view.findViewById(R.id.tv_apply_support).setOnClickListener(this);
         orders=new ArrayList<Order>();
         mListView=(ListView)view.findViewById(R.id.lv_return);
@@ -159,7 +145,8 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
         JsonObjectRequest request = new JsonObjectRequest("http://192.168.199.173/special_mall/api/orders", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-//                Log.i("jsonObject----------->", jsonObject.toString());
+                if (mDialog!=null) mDialog.dismiss();
+                Log.i("jsonObject----------->", jsonObject.toString());
                 if (jsonObject != null) {
                     JSONArray orderArr = jsonObject.optJSONArray("orders");
                     if (orderArr != null && orderArr.length() > 0) {
@@ -184,11 +171,17 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
                         }
                         handler.sendEmptyMessage(UPDATE_RETURN_LIST);
                     }
+                    else
+                    {
+                        mListView.setVisibility(View.GONE);
+                        loadingView.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
+                if (mDialog!=null) mDialog.dismiss();
                 Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
             }
         }) {

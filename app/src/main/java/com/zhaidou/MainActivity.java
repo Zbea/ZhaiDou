@@ -135,11 +135,10 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             switch (msg.what){
                 case 0:
                     User user=(User)msg.obj;
-                    Log.i("persoanlFragment---------------->",persoanlFragment==null?"null":"no null");
                     if (persoanlFragment==null){
                         persoanlFragment= PersonalFragment.newInstance("", "");
-                    }else {
-//                        persoanlFragment.refreshData(MainActivity.this);
+                    }
+                    else {
                     }
                     selectFragment(currentFragment, persoanlFragment);
                     setButton(personalButton);
@@ -338,7 +337,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         personalButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("---personalButton-->",checkLogin()+"");
                 if (!checkLogin()){
 //                    mLoginFragment=LoginFragment.newInstance("","");
 //                    mLoginFragment.setRegisterOrLoginListener(MainActivity.this);
@@ -376,7 +374,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     }
 
     public void selectFragment(Fragment from, Fragment to) {
-Log.i("selectFragment---->","selectFragment1");
         if (currentFragment != to) {
             currentFragment = to;
             FragmentManager manager = getSupportFragmentManager();
@@ -468,22 +465,17 @@ Log.i("selectFragment---->","selectFragment1");
         CallbackContext.onActivityResult(requestCode, resultCode, data);
         switch (resultCode){
             case 2000:
-//                User user =(User)(data.getBundleExtra("user").getSerializable("user"));
-                //id,email,token,nick,null
                 int id=data.getIntExtra("id",-1);
                 String email=data.getStringExtra("email");
                 String token=data.getStringExtra("token");
                 String nick=data.getStringExtra("nick");
                 User user=new User(id,email,token,nick,null);
-                Log.i("onActivityResult---user---------->",user.toString());
                 Message message=new Message();
                 message.obj=user;
                 message.what=0;
                 mHandler.sendMessage(message);
                 break;
             case 1000:
-
-                Log.i("onActivityResult---user----1000------>","sadadadada");
                 break;
         }
 
@@ -534,7 +526,6 @@ Log.i("selectFragment---->","selectFragment1");
     {
         FragmentManager manager=getSupportFragmentManager();
         int num=manager.getBackStackEntryCount();
-        Log.i("zhaidou", "返回栈大小:" + num);
         if (num==0)
         {
             if (keyCode == KeyEvent.KEYCODE_BACK)

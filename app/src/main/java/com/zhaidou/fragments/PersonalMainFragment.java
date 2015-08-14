@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,7 +21,9 @@ import android.widget.Toast;
 
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.model.User;
+import com.zhaidou.utils.ToolUtils;
 
 public class PersonalMainFragment extends Fragment implements View.OnClickListener,RegisterFragment.RegisterOrLoginListener{
     // TODO: Rename parameter arguments, choose names that match
@@ -163,8 +166,12 @@ public class PersonalMainFragment extends Fragment implements View.OnClickListen
 
     @Override
     public void onRegisterOrLoginSuccess(User user,Fragment fragment) {
-        Log.i("onRegisterOrLoginSuccess--->user-------->",user.toString());
         saveUserToSP(user);
+
+        ToolUtils.setLog("要刷新登录了");
+        Intent intent=new Intent(ZhaiDou.IntentRefreshLoginTag);
+        getActivity().sendBroadcast(intent);
+
         FragmentManager manager = getChildFragmentManager();
         if (manager.findFragmentByTag(RegisterFragment.class.getSimpleName())!=null)
             manager.popBackStack();

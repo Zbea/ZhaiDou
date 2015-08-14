@@ -29,6 +29,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -41,19 +42,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link UnReceiveFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class UnReceiveFragment extends BaseFragment {
-    // TODO: Rename parameter arguments, choose names that match
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private Dialog mDialog;
+    private LinearLayout loadingView;
 
     private RequestQueue mRequestQueue;
     private UnReceiveAdapter unReceiveAdapter;
@@ -66,21 +63,13 @@ public class UnReceiveFragment extends BaseFragment {
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case STATUS_UNRECEIVE_LIST:
+                    loadingView.setVisibility(View.GONE);
                     unReceiveAdapter.notifyDataSetChanged();
                     break;
             }
         }
     };
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment UnReceiveFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static UnReceiveFragment newInstance(String param1, String param2) {
         UnReceiveFragment fragment = new UnReceiveFragment();
         Bundle args = new Bundle();
@@ -91,7 +80,6 @@ public class UnReceiveFragment extends BaseFragment {
     }
 
     public UnReceiveFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -106,8 +94,9 @@ public class UnReceiveFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_un_receive, container, false);
+        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
+        loadingView=(LinearLayout)view.findViewById(R.id.loadingView);
         mListView=(ListView)view.findViewById(R.id.lv_unreceivelist);
         token=(String) SharedPreferencesUtil.getData(getActivity(),"token","");
         orders=new ArrayList<Order>();
@@ -169,6 +158,7 @@ public class UnReceiveFragment extends BaseFragment {
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+                if (mDialog!=null) mDialog.dismiss();
                 Log.i("jsonObject----------->", jsonObject.toString());
                 if (jsonObject != null) {
                     JSONArray orderArr = jsonObject.optJSONArray("orders");
@@ -192,11 +182,17 @@ public class UnReceiveFragment extends BaseFragment {
                         }
                         handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
                     }
+                    else
+                    {
+                        mListView.setVisibility(View.GONE);
+                        loadingView.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
+                if (mDialog!=null) mDialog.dismiss();
                 Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
             }
         }) {

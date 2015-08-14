@@ -7,9 +7,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -53,14 +57,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A simple {@link android.support.v4.app.Fragment} subclass.
- * Use the {@link com.zhaidou.fragments.NewAddrFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class NewAddrFragment extends BaseFragment implements View.OnClickListener {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_ID="id";
     private static final String ARG_NickName = "param1";
     private static final String ARG_MOBILE = "param2";
@@ -69,7 +66,6 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
     private static final String ARG_LOCATION="location";
     private static final String ARG_STATUS = "param5";
 
-    // TODO: Rename and change types of parameters
     private int mId;
     private String mNickName;
     private String mMobile;
@@ -180,6 +176,10 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
             case R.id.ll_address:
                 final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
 
+                Window dialogWindow = dialog.getWindow();
+                dialogWindow.setGravity(Gravity.BOTTOM);
+                dialogWindow.setWindowAnimations(R.style.pop_anim_style);
+
                 View mDialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_adddress, null, false);
                 final WheelViewContainer wheelView = (WheelViewContainer) mDialogView.findViewById(R.id.wheel_view_wv);
                 if (CollectionUtils.isNotNull(provinceList))
@@ -195,7 +195,9 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
                 TextView okTv = (TextView) mDialogView.findViewById(R.id.bt_confirm);
                 okTv.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View view) {
+                    public void onClick(View view)
+                    {
+                        if (wheelView!=null)
                         selectedProvince = wheelView.getProvince();
                         selectedCity = wheelView.getCity();
                         selectedArea = wheelView.getArea();
@@ -205,7 +207,7 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
                 });
                 dialog.setCanceledOnTouchOutside(true);
                 dialog.setCancelable(true);
-                dialog.addContentView(mDialogView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                dialog.addContentView(mDialogView, new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.MATCH_PARENT));
                 dialog.show();
                 break;
         }
@@ -372,7 +374,7 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
+                Log.i("FetchCityData---->", "地址加载失败");
             }
         });
         mRequestQueue.add(request);

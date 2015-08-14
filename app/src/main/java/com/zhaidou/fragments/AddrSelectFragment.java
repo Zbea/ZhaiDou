@@ -298,12 +298,14 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
     }
 
     private void FetchData() {
-        JsonObjectRequest request = new JsonObjectRequest("http://192.168.199.173/special_mall/api/receivers", new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_RECEIVER_URL, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 mDialog.dismiss();
                 JSONArray receiversArr = jsonObject.optJSONArray("receivers");
-                if (receiversArr != null && receiversArr.length() > 0) {
+                ToolUtils.setLog(jsonObject.toString());
+                if (receiversArr != null && receiversArr.length() > 0)
+                {
                     for (int i = 0; i < receiversArr.length(); i++) {
                         JSONObject receiverObj = receiversArr.optJSONObject(i);
                         String phone = receiverObj.optString("phone");
@@ -336,6 +338,10 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                         addressList.add(address);
                     }
                     handler.sendEmptyMessage(UPDATE_ADDRESS_LIST);
+                }
+                else
+                {
+                    loadingView.setVisibility(View.GONE);
                 }
             }
         }, new Response.ErrorListener() {
@@ -382,7 +388,14 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
             Address address = getList().get(position);
             tv_name.setText("收件人："+address.getName());
             tv_mobile.setText("电话："+address.getPhone());
-            tv_addr.setText("地址："+address.getProvince()+address.getCity()+address.getArea()+address.getAddress());
+            if (address.getProvince()==null)
+            {
+                tv_addr.setText("地址："+address.getAddress());
+            }
+            else
+            {
+                tv_addr.setText("地址："+address.getProvince()+address.getCity()+address.getArea()+address.getAddress());
+            }
             if (address.isIs_default())
             {
                 tv_defalue_hint.setVisibility(View.VISIBLE);

@@ -36,16 +36,16 @@ public class WelcomePage extends Activity
         {
             public void run()
             {
-//                if (isFirstEnter())
-//                {
+                if (isFirstEnter())
+                {
                     Intent intent=new Intent(WelcomePage.this,WelcomeGuidancePage.class);
                     startActivity(intent);
-//                }
-//                else
-//                {
-//                    Intent intent=new Intent(WelcomePage.this,MainActivity.class);
-//                    startActivity(intent);
-//                }
+                }
+                else
+                {
+                    Intent intent=new Intent(WelcomePage.this,MainActivity.class);
+                    startActivity(intent);
+                }
                 overridePendingTransition(R.anim.enter_into_the, R.anim.enter_out_the);
                 finish();
             }

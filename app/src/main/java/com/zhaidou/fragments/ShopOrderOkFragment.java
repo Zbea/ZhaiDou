@@ -94,6 +94,7 @@ public class ShopOrderOkFragment extends BaseFragment
     private TypeFaceTextView moneyTv, moneyYfTv, moneyTotalTv, moneyNumTv;
     private TextView addressNameTv, addressPhoneTv, addressinfoTv;
     private ArrayList<CartItem> items;
+    private List<CartItem> erroritems=new ArrayList<CartItem>();
     private String Str_token;
 
     private int num = 0;
@@ -181,6 +182,20 @@ public class ShopOrderOkFragment extends BaseFragment
                        commit();
                     }
                     break;
+                case 6:
+                    mDialog.dismiss();
+                    String json=msg.obj.toString();
+                    String[] arrayStr =new String[]{};
+                    arrayStr=json.split(",");
+
+                    for (int i = 0; i <items.size() ; i++)
+                    {
+                        if (items.get(i).sizeId==Integer.valueOf(arrayStr[1]))
+                        {
+                            ToolUtils.setToast(mContext,items.get(i).name+"的"+items.get(i).size+"规格库存不足");
+                        }
+                    }
+                    break;
             }
         }
     };
@@ -193,13 +208,10 @@ public class ShopOrderOkFragment extends BaseFragment
         @Override
         public void onPullDownToRefresh(PullToRefreshBase refreshView)
         {
-
         }
-
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView)
         {
-
         }
     };
 
@@ -239,16 +251,6 @@ public class ShopOrderOkFragment extends BaseFragment
                 case R.id.jsOkBtn:
                     if (address!=null)
                     {
-
-//                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance("", 0);
-//                        Bundle bundle = new Bundle();
-//                        bundle.putSerializable("goodsList", items);
-//                        bundle.putInt("moneyNum", num);
-//                        bundle.putDouble("money", money);
-//                        bundle.putDouble("moneyYF", moneyYF);
-//                        shopPaymentFragment.setArguments(bundle);
-//                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
-
                         mDialog=CustomLoadingDialog.setLoadingDialog(mContext,"提交中");
                         for (int i = 0; i <items.size(); i++)
                         {
@@ -521,28 +523,42 @@ public class ShopOrderOkFragment extends BaseFragment
         {   @Override
             public void run() {
                 String result = FetchRequset();
-                if (result != null) {
+                if (result != null)
+                {
+                    if (result.length() > 10)
+                    {
                     try {
                         JSONObject jsonObject=new JSONObject(result);
                         int status=jsonObject.optInt("status");
-                        if (status==201){
+                        if (status==201)
+                        {
                             JSONObject orderObj=jsonObject.optJSONObject("order");
                             int id=orderObj.optInt("id");
                             String number=orderObj.optString("number");
                             int amount=orderObj.optInt("amount");
                             int count =orderObj.optInt("count");
+
+                            Message message=new Message();
+                            message.what=4;
+                            message.obj=result;
+                            handler.sendMessage(message);
+                        }
+                        if (status==400)
+                        {
+                            String errorArr=jsonObject.optString("order_items.count");
+                            Message message=new Message();
+                            message.what=6;
+                            message.obj=errorArr;
+                            handler.sendMessage(message);
+
                         }
 
                     }catch (Exception e){
-
                     }
 
-                    if (result.length() > 10) {
-                        Message message=new Message();
-                        message.what=4;
-                        message.obj=result;
-                        handler.sendMessage(message);
-                    } else {
+
+                    } else
+                    {
                         handler.sendEmptyMessage(3);
                     }
                 } else {
@@ -570,7 +586,8 @@ public class ShopOrderOkFragment extends BaseFragment
             params.add(new BasicNameValuePair("sale_order[receiver_id]", "" + address.getId()));
 
             params.add(new BasicNameValuePair("sale_order[node]", bzInfo_Str));
-            for (int i = 0; i < items.size(); i++) {
+            for (int i = 0; i < items.size(); i++)
+            {
                 params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][merchandise_id]]", items.get(i).id + ""));
                 params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][specification_id]]", items.get(i).sizeId + ""));
                 params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][count]]", items.get(i).num + ""));

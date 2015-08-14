@@ -1,5 +1,6 @@
 package com.zhaidou.fragments;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -10,9 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
@@ -26,6 +29,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -40,13 +44,16 @@ import java.util.Map;
 
 
 public class AllOrdersFragment extends BaseFragment implements View.OnClickListener {
-    // TODO: Rename parameter arguments, choose names that match
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
 
     private String mParam1;
     private String mParam2;
+
+    private Dialog mDialog;
+    private LinearLayout loadingView;
+
     private RequestQueue mRequestQueue;
     private ListView mListView;
     private List<Order> orders = new ArrayList<Order>();
@@ -67,6 +74,7 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
                     timer.start();
                     break;
                 case UPDATE_COUNT_DOWN_TIME:
+                    loadingView.setVisibility(View.GONE);
                     allOrderAdapter.notifyDataSetChanged();
                     break;
             }
@@ -108,6 +116,9 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
             }
         } else {
             rootView = inflater.inflate(R.layout.fragment_all_orders, container, false);
+
+            mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
+            loadingView=(LinearLayout)rootView.findViewById(R.id.loadingView);
             mListView = (ListView) rootView.findViewById(R.id.lv_all_orderlist);
             mRequestQueue = Volley.newRequestQueue(getActivity());
             allOrderAdapter = new AllOrderAdapter(getActivity(), orders);
@@ -179,6 +190,7 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+                if (mDialog!=null) mDialog.dismiss();
                 Log.i("FetchAllOrder----------->", jsonObject.toString());
                 if (jsonObject != null) {
                     JSONArray orderArr = jsonObject.optJSONArray("orders");
@@ -201,12 +213,18 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
                         }
                         handler.sendEmptyMessage(UPDATE_ORDER_LIST);
                     }
+                    else
+                    {
+                        mListView.setVisibility(View.GONE);
+                        loadingView.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-//                Toast.makeText(getActivity(),"网络异常",Toast.LENGTH_SHORT).show();
+                if (mDialog!=null) mDialog.dismiss();
+                Toast.makeText(getActivity(),"网络异常", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override

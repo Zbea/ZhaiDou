@@ -42,7 +42,6 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
             registerFragment.setRegisterOrLoginListener(this);
         }
         if ("MainActivity".equalsIgnoreCase(this.getClass().getSimpleName())) {
-            Log.i("MainActivity---->","this.getClass().getSimpleName()------------"+fragment.getClass().getSimpleName());
             mChildContainer.setVisibility(View.VISIBLE);
         }
         getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, fragment, fragment.getClass().getSimpleName())

@@ -9,8 +9,8 @@ public class ZhaiDou {
     public static String apkUpdateUrl = "http://192.168.199.173/versionmanage.json";
 
     public static String HOME_PAGE_URL = "http://buy.zhaidou.com/?json=get_category_posts&slug=%E5%AE%B6%E9%A5%B0%E4%BC%98%E9%80%89&status=publish";
-    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
-//    public static String HOME_BASE_URL = "http://192.168.199.173/";
+//    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
+    public static String HOME_BASE_URL = "http://192.168.199.173/";
     public static String TAG_BASE_URL = "http://buy.zhaidou.com/?tag=%s&json=1";
 
     public static String HOT_SEARCH_URL=HOME_BASE_URL+"article/api/articles/hot_search";
@@ -136,7 +136,7 @@ public class ZhaiDou {
     //收货地址
     public static String ORDER_RECEIVER_URL=HOME_BASE_URL+"special_mall/api/receivers";
     //省市区
-    public static String ORDER_ADDRESS_URL=HOME_BASE_URL+"pecial_mall/api/sales/provider";
+    public static String ORDER_ADDRESS_URL=HOME_BASE_URL+"special_mall/api/sales/provider";
 
 
     public static String BROADCAST_WXAPI_FILTER="com.zhaidou.wxapi.pay";

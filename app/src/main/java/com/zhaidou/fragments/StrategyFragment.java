@@ -34,41 +34,7 @@ import java.util.List;
 
 public class StrategyFragment extends BaseFragment {
 
-    public class CustomWebView extends WebView {
 
-        Context context;
-        GestureDetector gd;
-
-        public CustomWebView(Context context) {
-            super(context);
-
-            this.context = context;
-            this.gd = new GestureDetector(context, sogl);
-        }
-
-        @Override
-        public boolean onTouchEvent(MotionEvent event) {
-            return gd.onTouchEvent(event);
-        }
-
-        GestureDetector.SimpleOnGestureListener sogl = new GestureDetector.SimpleOnGestureListener() {
-            public boolean onDown(MotionEvent event) {
-                return true;
-            }
-
-            public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
-                if (event1.getRawX() > event2.getRawX()) {
-                    onClick_Event(livingRoomButton);
-                } else {
-                    onClick_Event(entirePartButton);
-                }
-                return true;
-            }
-        };
-    }
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -92,7 +58,6 @@ public class StrategyFragment extends BaseFragment {
     private OnFragmentInteractionListener mListener;
 
     public StrategyFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -136,11 +101,6 @@ public class StrategyFragment extends BaseFragment {
                 lastButton.setSelected(true);
             }
         });
-//        View defaultView = views.get(0);
-
-//        beautyHomeFragment = ElementListFragment.newInstance("http://buy.zhaidou.com/?zdclient=ios&tag=006&count=10", ZhaiDou.ListType.TAG.toString());
-
-//        getChildFragmentManager().beginTransaction().add(R.id.beauty_home_content, beautyHomeFragment).commit();
 
         viewPager.setCurrentItem(0);
 
@@ -163,61 +123,6 @@ public class StrategyFragment extends BaseFragment {
             }
         });
         return view;
-
-        // Inflate the layout for this fragment
-        /*
-        View view = inflater.inflate(R.layout.fragment_strategy, container, false);
-
-        webView = (WebView) view.findViewById(R.id.strategyView);
-        webView.setWebViewClient(new WebViewClient() {
-
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                Intent intent = new Intent();
-                intent.putExtra("url", url);
-                intent.setClass(getActivity(), WebViewActivity.class);
-                getActivity().startActivity(intent);
-                return true;
-            }
-
-            public void onPageFinished(WebView view, String url) {
-                loading.hide();
-            }
-
-        });
-
-        WebSettings webSettings = webView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setLoadWithOverviewMode(true);
-        webSettings.setUseWideViewPort(true);
-
-        webView.loadUrl(LIVING_ROOM_URL);
-
-        livingRoomButton = (Button) view.findViewById(R.id.living_room);
-        entirePartButton = (Button) view.findViewById(R.id.entire_part);
-
-        livingRoomButton.setTag("1");
-        entirePartButton.setTag("2");
-
-        livingRoomButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onClick_Event(view);
-            }
-        });
-
-        entirePartButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onClick_Event(view);
-            }
-        });
-
-        livingRoomButton.setSelected(true);
-        lastButton = livingRoomButton;
-        loading = ProgressDialog.show(getActivity(), "", "正在努力加载中...", true);
-        return view;
-        */
     }
 
     @Override
