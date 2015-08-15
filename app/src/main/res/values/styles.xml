@@ -117,4 +117,10 @@
         <item name="android:button">@drawable/custom_checkbox_selector</item>
     </style>
 
+    <style name="pop_anim_style">
+        <item name="android:windowEnterAnimation">@anim/bottom_up</item>
+        <item name="android:windowExitAnimation">@anim/bottom_down</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
 </resources>

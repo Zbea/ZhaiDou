@@ -33,6 +33,7 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.NativeHttpUtil;
+import com.zhaidou.utils.ToolUtils;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -312,7 +313,10 @@ public class LoginFragment1 extends BaseFragment implements View.OnClickListener
                     Log.i("token--->",token);
 
                     User user = new User(id,email,token,nick,null);
-                    Log.i("LoginFragment----onRegisterOrLoginSuccess---->","onRegisterOrLoginSuccess");
+                    ToolUtils.setLog("要刷新登录了");
+                    Intent intent=new Intent(ZhaiDou.IntentRefreshLoginTag);
+                    getActivity().sendBroadcast(intent);
+
                     mRegisterOrLoginListener.onRegisterOrLoginSuccess(user,LoginFragment1.this);
                 }
 

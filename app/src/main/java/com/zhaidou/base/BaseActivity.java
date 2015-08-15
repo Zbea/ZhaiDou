@@ -43,7 +43,7 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
             registerFragment.setRegisterOrLoginListener(this);
         }
         if ("MainActivity".equalsIgnoreCase(this.getClass().getSimpleName())) {
-            Log.i("MainActivity---->", "this.getClass().getSimpleName()------------" + fragment.getClass().getSimpleName());
+            Log.i("MainActivity---->","this.getClass().getSimpleName()------------"+fragment.getClass().getSimpleName());
             mChildContainer.setVisibility(View.VISIBLE);
         }
         getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, fragment, fragment.getClass().getSimpleName())
@@ -96,7 +96,7 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
             mainActivity.setButton(personalButton);
         } else if ("ItemDetailActivity".equalsIgnoreCase(this.getClass().getSimpleName())) {
             Log.i("ItemDetailActivity-------------->", this.getClass().getSimpleName());
-            this.user = user;
+            this.user=user;
             Log.i("from-------------->", from);
             if ("lottery".equalsIgnoreCase(from)) {
                 return;
@@ -109,7 +109,6 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
             fragmentManager.beginTransaction().hide(fragment).commit();
         }
     }
-
     public String getDeviceId() {
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         return tm.getDeviceId();

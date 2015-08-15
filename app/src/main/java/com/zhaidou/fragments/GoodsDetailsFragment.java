@@ -390,6 +390,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     break;
                 case R.id.goodsTop:
                     scrollView.scrollTo(0, 0);
+                    topBtn.setVisibility(View.GONE);
                     break;
                 case R.id.share_iv:
                     share();
@@ -823,7 +824,7 @@ public class GoodsDetailsFragment extends BaseFragment
 
             } else
             {
-                scrollView.scrollTo(0, 0);
+                scrollView.scrollTo(0, 600);
                 Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
             }
     }
@@ -905,7 +906,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     mContext.sendBroadcast(intent);
                 } else
                 {
-                    scrollView.scrollTo(0, 0);
+                    scrollView.scrollTo(0, 600);
                     Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
                 }
 

@@ -60,15 +60,12 @@ import java.util.Map;
  * create an instance of this fragment.
  */
 public class AddrManageFragment extends BaseFragment implements View.OnClickListener {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_NickName = "param1";
     private static final String ARG_MOBILE = "param2";
     private static final String ARG_ADDRESS = "param3";
     private static final String ARG_PROFILE_ID = "param4";
     private static final String ARG_STATUS = "param5";
 
-    // TODO: Rename and change types of parameters
     private String mNickName;
     private String mMobile;
     private String mAddress;
@@ -183,10 +180,13 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             public void OnClickListener(View parentV, View v, final Integer position, Object values) {
                 final Address address = (Address) values;
                 int id = address.getId();
+                mDialog=CustomLoadingDialog.setLoadingDialog(getActivity(),"删除中");
                 String url =ZhaiDou.ORDER_RECEIVER_URL + id;
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
+                        if (mDialog!=null)
+                            mDialog.dismiss();
                         if (jsonObject!=null){
                             int status=jsonObject.optInt("status");
                             if (status==201){
@@ -200,6 +200,8 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
+                        if (mDialog!=null)
+                            mDialog.dismiss();
                         ShowToast("网络异常");
                     }
                 }) {
@@ -216,7 +218,6 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
         addressAdapter.setOnInViewClickListener(R.id.tv_edit, new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, final Integer position, Object values) {
-                ShowToast("编辑");
                 Address address=(Address)values;
                 int id=address.getId();
                 String name=address.getName();
@@ -229,7 +230,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
 
                 newAddrFragment.setAddrSaveSuccessListener(new NewAddrFragment.AddrSaveSuccessListener() {
                     @Override
-                    public void onSaveListener(JSONObject receiverObj, int status,int yfprice) {
+                    public void onSaveListener(JSONObject receiverObj, int status,int yfprice, String province, String city, String area) {
                         if (status==UPDATE_ADDRESS_INFO){
                             int id = receiverObj.optInt("id");
                             String phone = receiverObj.optString("phone");
@@ -239,7 +240,9 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                             String name = receiverObj.optString("name");
                             boolean is_default=receiverObj.optBoolean("is_default");
                             Address address1=new Address(id,name,is_default,phone,user_id,addr,provider_id,yfprice);
-                            List<Address> addresses=addressAdapter.getList();
+                            address1.setProvince(province);
+                            address1.setCity(city);
+                            address1.setArea(area);
                             addressAdapter.remove(position);
                             addressAdapter.add(address1,position);
                             ((MainActivity)getActivity()).popToStack(newAddrFragment);
@@ -288,7 +291,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 ((MainActivity) getActivity()).navigationToFragment(newAddrFragment);
                 newAddrFragment.setAddrSaveSuccessListener(new NewAddrFragment.AddrSaveSuccessListener() {
                     @Override
-                    public void onSaveListener(JSONObject receiverObj,int status,int yfprice) {
+                    public void onSaveListener(JSONObject receiverObj,int status,int yfprice, String province, String city, String area) {
                         if (receiverObj != null&&CREATE_NEW_ADDRESS==status) {
                             int id = receiverObj.optInt("id");
                             int user_id = receiverObj.optInt("user_id");
@@ -298,6 +301,9 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                             String address = receiverObj.optString("address");
                             boolean is_default = receiverObj.optBoolean("is_default");
                             Address addr = new Address(id, name, is_default, phone, user_id, address, provider_id,yfprice);
+                            addr.setProvince(province);
+                            addr.setCity(city);
+                            addr.setArea(area);
                             addressAdapter.add(addr);
                             ((MainActivity) getActivity()).popToStack(newAddrFragment);
                         }
@@ -416,8 +422,11 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 Log.i("FetchData------------>",jsonObject.toString());
                 mDialog.dismiss();
                 JSONArray receiversArr = jsonObject.optJSONArray("receivers");
-                if (receiversArr != null && receiversArr.length() > 0) {
-                    for (int i = 0; i < receiversArr.length(); i++) {
+                ToolUtils.setLog(jsonObject.toString());
+                if (receiversArr != null && receiversArr.length() > 0)
+                {
+                    for (int i = 0; i < receiversArr.length(); i++)
+                    {
                         JSONObject receiverObj = receiversArr.optJSONObject(i);
                         String phone = receiverObj.optString("phone");
                         int user_id = receiverObj.optInt("user_id");
@@ -495,7 +504,14 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             Address address = getList().get(position);
             tv_name.setText("收件人："+address.getName());
             tv_mobile.setText("电话："+address.getPhone());
-            tv_addr.setText("地址："+address.getProvince()+address.getCity()+address.getArea()+address.getAddress());
+            if (address.getProvince()==null)
+            {
+                tv_addr.setText("地址："+address.getAddress());
+            }
+            else
+            {
+                tv_addr.setText("地址："+address.getProvince()+address.getCity()+address.getArea()+address.getAddress());
+            }
             if (mStatus==STATUS_FROM_ORDER){
                 tv_defalue_hint.setVisibility(View.GONE);
                 if (address.isIs_default())
@@ -513,12 +529,6 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
         if (addressAdapter.getCount()>mCheckedPosition)
         {
             Address address=addressAdapter.getItem(mCheckedPosition);
-            if (mStatus==STATUS_FROM_ORDER)
-            {
-                if (addressListener!=null)
-                    addressListener.onDefalueAddressChange(address);
-                return;
-            }
             JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,ZhaiDou.ORDER_RECEIVER_URL+"/"+address.getId()+"/set_default",new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject jsonObject) {
@@ -537,8 +547,6 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                         Address address1=new Address(id,name,is_default,phone,user_id,addr,provider_id,price);
                         address1.setUpdated_at(updated_at);
                         address1.setCreated_at(created_at);
-                        if (addressListener!=null)
-                        addressListener.onDefalueAddressChange(address1);
                     }
                 }
             },new Response.ErrorListener() {
@@ -555,11 +563,6 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 }
             };
             mRequestQueue.add(request);
-        }
-        else
-        {
-            if (addressListener!=null)
-            addressListener.onDeleteFinishAddress();
         }
     }
 }

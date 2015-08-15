@@ -113,6 +113,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
             {
                 initCartTips();
+                exitLoginEvent();
             }
         }
     };
@@ -126,8 +127,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                     ToolUtils.setImageCacheUrl("http://" + user.getAvatar(), iv_header);
                     if (!TextUtils.isEmpty(user.getNickName()))
                         tv_nickname.setText(user.getNickName());
-//                    tv_province.setText(cityMap.get(user.getProvince()));
-//                    tv_city.setText(cityMap.get(user.getCity()));
                     break;
                 case UPDATE_USER_DESCRIPTION:
                     User u = (User) msg.obj;
@@ -149,7 +148,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         }
     };
 
-    // TODO: Rename and change types and number of parameters
     public static PersonalFragment personalFragment;
 
     public static PersonalFragment newInstance(String param1, String context) {
@@ -250,6 +248,20 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         getActivity().registerReceiver(broadcastReceiver,intentFilter);
     }
 
+    /**
+     * 退出登录事件处理
+     */
+    private void exitLoginEvent()
+    {
+        tv_collect.setText("0");
+        tv_collocation.setText("0");
+        tv_unpay_count.setVisibility(View.GONE);
+        ((MainActivity)getActivity()).hideTip(View.GONE);
+        tv_nickname.setText("");
+        tv_desc.setText("");
+
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -337,7 +349,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                Log.i("volleyError---------->", volleyError.toString());
             }
         });
         mRequestQueue.add(request);
@@ -511,7 +522,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST+"?count=1&status=0",new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("FetchUnPayCount------------>",jsonObject.toString());
                 if (jsonObject!=null){
                     int count =jsonObject.optInt("count");
                     if (count>0){
@@ -525,7 +535,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         },new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
             }
         }){
             @Override

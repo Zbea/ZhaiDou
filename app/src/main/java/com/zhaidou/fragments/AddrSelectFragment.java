@@ -174,7 +174,7 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                 ((MainActivity) getActivity()).navigationToFragment(newAddrFragment);
                 newAddrFragment.setAddrSaveSuccessListener(new NewAddrFragment.AddrSaveSuccessListener() {
                     @Override
-                    public void onSaveListener(JSONObject receiverObj,int status,int yfprice) {
+                    public void onSaveListener(JSONObject receiverObj,int status,int yfprice,String province, String city, String area) {
                         if (receiverObj != null) {
                             int id = receiverObj.optInt("id");
                             int user_id = receiverObj.optInt("user_id");
@@ -183,9 +183,6 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                             int provider_id = receiverObj.optInt("provider_id");
                             String address = receiverObj.optString("address");
                             boolean is_default = receiverObj.optBoolean("is_default");
-                            String province=receiverObj.optString("parent_name");
-                            String city=receiverObj.optString("city_name");
-                            String area=receiverObj.optString("provider_name");
                             Address addr = new Address(id, name, is_default, phone, user_id, address, provider_id,yfprice);
                             addr.setProvince(province);
                             addr.setCity(city);
@@ -211,10 +208,13 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
             public void OnClickListener(View parentV, View v, final Integer position, Object values) {
                 final Address address = (Address) values;
                 int id = address.getId();
+                mDialog=CustomLoadingDialog.setLoadingDialog(getActivity(),"删除中");
                 String url = "http://192.168.199.173/special_mall/api/receivers/" + id;
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
+                        if (mDialog!=null)
+                        mDialog.dismiss();
                         if (jsonObject!=null){
                             int status=jsonObject.optInt("status");
                             if (status==201)
@@ -233,13 +233,15 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
+                        if (mDialog!=null)
+                            mDialog.dismiss();
                         ShowToast("网络异常");
                     }
                 }) {
                     @Override
                     public Map<String, String> getHeaders() throws AuthFailureError {
                         Map<String, String> headers = new HashMap<String, String>();
-                        headers.put("SECAuthorization", "Yk77mfWaq_xYyeEibAxx");
+                        headers.put("SECAuthorization", token);
                         return headers;
                     }
                 };
@@ -260,21 +262,19 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                 ((MainActivity)getActivity()).navigationToFragment(newAddrFragment);
 
                 newAddrFragment.setAddrSaveSuccessListener(new NewAddrFragment.AddrSaveSuccessListener() {
+
                     @Override
-                    public void onSaveListener(JSONObject receiverObj, int status,int yfprice)
+                    public void onSaveListener(JSONObject receiver, int status, int yfPrice, String province, String city, String area)
                     {
                         if (status==UPDATE_ADDRESS_INFO){
-                            int id = receiverObj.optInt("id");
-                            String phone = receiverObj.optString("phone");
-                            String addr = receiverObj.optString("address");
-                            int provider_id=receiverObj.optInt("provider_id");
-                            int user_id = receiverObj.optInt("user_id");
-                            String name = receiverObj.optString("name");
-                            String province=receiverObj.optString("parent_name");
-                            String city=receiverObj.optString("city_name");
-                            String area=receiverObj.optString("provider_name");
-                            boolean is_default=receiverObj.optBoolean("is_default");
-                            Address address1=new Address(id,name,is_default,phone,user_id,addr,provider_id,yfprice);
+                            int id = receiver.optInt("id");
+                            String phone = receiver.optString("phone");
+                            String addr = receiver.optString("address");
+                            int provider_id=receiver.optInt("provider_id");
+                            int user_id = receiver.optInt("user_id");
+                            String name = receiver.optString("name");
+                            boolean is_default=receiver.optBoolean("is_default");
+                            Address address1=new Address(id,name,is_default,phone,user_id,addr,provider_id,yfPrice);
                             address1.setProvince(province);
                             address1.setCity(city);
                             address1.setArea(area);
@@ -298,12 +298,14 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
     }
 
     private void FetchData() {
-        JsonObjectRequest request = new JsonObjectRequest("http://192.168.199.173/special_mall/api/receivers", new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_RECEIVER_URL, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 mDialog.dismiss();
                 JSONArray receiversArr = jsonObject.optJSONArray("receivers");
-                if (receiversArr != null && receiversArr.length() > 0) {
+                ToolUtils.setLog(jsonObject.toString());
+                if (receiversArr != null && receiversArr.length() > 0)
+                {
                     for (int i = 0; i < receiversArr.length(); i++) {
                         JSONObject receiverObj = receiversArr.optJSONObject(i);
                         String phone = receiverObj.optString("phone");
@@ -336,6 +338,10 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                         addressList.add(address);
                     }
                     handler.sendEmptyMessage(UPDATE_ADDRESS_LIST);
+                }
+                else
+                {
+                    loadingView.setVisibility(View.GONE);
                 }
             }
         }, new Response.ErrorListener() {
@@ -382,7 +388,14 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
             Address address = getList().get(position);
             tv_name.setText("收件人："+address.getName());
             tv_mobile.setText("电话："+address.getPhone());
-            tv_addr.setText("地址："+address.getProvince()+address.getCity()+address.getArea()+address.getAddress());
+            if (address.getProvince()==null)
+            {
+                tv_addr.setText("地址："+address.getAddress());
+            }
+            else
+            {
+                tv_addr.setText("地址："+address.getProvince()+address.getCity()+address.getArea()+address.getAddress());
+            }
             if (address.isIs_default())
             {
                 tv_defalue_hint.setVisibility(View.VISIBLE);

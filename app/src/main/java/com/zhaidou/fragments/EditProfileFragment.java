@@ -28,6 +28,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
@@ -52,21 +53,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link EditProfileFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
- */
+
 public class EditProfileFragment extends BaseFragment implements View.OnClickListener{
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String PROFILE_ID="profileId";
     private static final String ARG_TITLE="title";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private String mProfileId;
@@ -108,7 +101,6 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
         return fragment;
     }
     public EditProfileFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -125,7 +117,6 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_edit_profile, container, false);
         rl_description=(RelativeLayout)view.findViewById(R.id.rl_description);
         ll_input_msg=(LinearLayout)view.findViewById(R.id.ll_input_msg);
@@ -164,8 +155,6 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
                 Log.i("afterTextChanged--->","afterTextChanged");
             }
         });
-        Log.i("mParam1",mParam1);
-        Log.i("mParam2",mParam2);
         if ("description".equalsIgnoreCase(mParam1)){
             ll_input_msg.setVisibility(View.GONE);
             rl_description.setVisibility(View.VISIBLE);
@@ -223,14 +212,15 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
         @Override
         protected void onPostExecute(String s) {
             mDialog.dismiss();
-            Log.i("EditProfileFragment---->onPostExecute---->",s);
             if (s!=null&&s.contains("message")){
                 Toast.makeText(getActivity(),"昵称已经被使用",Toast.LENGTH_SHORT).show();
                 return;
             }
-            if ("description".equalsIgnoreCase(mParam1)){
+            if ("description".equalsIgnoreCase(mParam1))
+            {
                 refreshDataListener.onRefreshData(mParam1,tv_description.getText().toString(),s);
-            }else {
+            }else
+            {
                 refreshDataListener.onRefreshData(mParam1,tv_edit_msg.getText().toString(),s);
             }
         }

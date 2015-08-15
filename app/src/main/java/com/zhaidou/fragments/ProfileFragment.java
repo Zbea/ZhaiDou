@@ -76,6 +76,8 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
     private String mParam1;
     private String mParam2;
+    private View view;
+    private Context mContext;
 
     private ImageView iv_header;
     private TextView tv_nick;
@@ -130,8 +132,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 case UPDATE_PROFILE_INFO:
                     User user = (User) msg.obj;
                     tv_intro.setText(TextUtils.isEmpty(user.getDescription()) ? "" : user.getDescription());
-                    Log.i("tv_mobile------->", user.getMobile());
-                    Log.i("TextUtils.isEmpty(user.getMobile())--", TextUtils.isEmpty(user.getMobile()) + "");
                     tv_mobile.setText(TextUtils.isEmpty(user.getMobile()) ? "" : user.getMobile());
                     tv_job.setText(user.isVerified() ? "宅豆认证设计师" : "未认证设计师");
                     tv_addr_mobile.setText(TextUtils.isEmpty(user.getMobile()) ? "" : user.getMobile());
@@ -182,8 +182,24 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
+
+        if (view == null) {
+            view = inflater.inflate(R.layout.fragment_profile, container, false);
+            mContext = getActivity();
+            initView();
+        }
+        //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
+        ViewGroup parent = (ViewGroup) view.getParent();
+        if (parent != null) {
+            parent.removeView(view);
+        }
+
+        return view;
+    }
+
+    private void initView()
+    {
         setStartLoading();
 
         mMenuContainer = (FrameLayout) view.findViewById(R.id.rl_header_menu);
@@ -233,14 +249,11 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             getChildFragmentManager().beginTransaction().replace(R.id.rl_header_menu, menuFragment).addToBackStack("").hide(menuFragment).commit();
         menuFragment.setMenuSelectListener(this);
 
-        Log.i("id--------------->", id + "");
         if (id != -1) {
             getUserData();
             getUserInfo();
         }
         token = mSharedPreferences.getString("token", null);
-        Log.i("view--------------->", token);
-        return view;
     }
 
     @Override
@@ -289,11 +302,10 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 break;
             case R.id.tv_edit:
                 AddrManageFragment editFragment = AddrManageFragment.newInstance(tv_addr_username.getText().toString(), tv_addr_mobile.getText().toString(), tv_addr.getText().toString(), profileId, 1);
-                getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container, editFragment).addToBackStack(null).commit();
+               getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container, editFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
                 break;
             case R.id.tv_delete:
-                Log.i("R.id.tv_delete:", "R.id.tv_delete:");
                 new DeleteAddressTask().execute();
                 break;
             case R.id.rl_into:

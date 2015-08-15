@@ -1,5 +1,6 @@
 package com.zhaidou.fragments;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -7,11 +8,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +31,8 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.model.Address;
 import com.zhaidou.model.CountTime;
 import com.zhaidou.model.Order;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -47,13 +52,11 @@ import java.util.WeakHashMap;
  * Use the {@link UnPayFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class UnPayFragment extends BaseFragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+public class UnPayFragment extends BaseFragment
+{
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
@@ -65,6 +68,9 @@ public class UnPayFragment extends BaseFragment {
     private final int UPDATE_COUNT_DOWN_TIME = 2;
     private final int UPDATE_UI_TIMER_FINISH=3;
     private final String STATUS_UNPAY_LIST = "0";
+
+    private Dialog mDialog;
+    private LinearLayout loadingView;
 
     private Map<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private View rootView;
@@ -79,6 +85,7 @@ public class UnPayFragment extends BaseFragment {
 
                     break;
                 case UPDATE_COUNT_DOWN_TIME:
+                    loadingView.setVisibility(View.GONE);
                     unPayAdapter.notifyDataSetChanged();
                     break;
                 case UPDATE_UI_TIMER_FINISH:
@@ -98,8 +105,8 @@ public class UnPayFragment extends BaseFragment {
         return fragment;
     }
 
-    public UnPayFragment() {
-        // Required empty public constructor
+    public UnPayFragment()
+    {
     }
 
     @Override
@@ -123,7 +130,9 @@ public class UnPayFragment extends BaseFragment {
             }
         } else {
             rootView = inflater.inflate(R.layout.fragment_unpay, container, false);
-//            initView(rootView);
+
+            mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
+            loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
             mListView = (ListView) rootView.findViewById(R.id.lv_unpaylist);
             unPayAdapter = new UnPayAdapter(getActivity(), orders);
             mListView.setAdapter(unPayAdapter);
@@ -134,10 +143,8 @@ public class UnPayFragment extends BaseFragment {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
                     final Order order = (Order) values;
-                    Log.i("values--->", order.toString());
-                    TextView textView=(TextView)v.findViewById(R.id.bt_order_timer);
-                    Log.i("textView-------------->",textView.getText().toString());
-                    OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(),order);
+                    TextView textView = (TextView) v.findViewById(R.id.bt_order_timer);
+                    OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(), order);
                     ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
                     orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
                         @Override
@@ -148,7 +155,6 @@ public class UnPayFragment extends BaseFragment {
                     });
                 }
             });
-
         }
         timer = new MyTimer(15 * 60 * 1000, 1000);
         timer.start();
@@ -164,33 +170,42 @@ public class UnPayFragment extends BaseFragment {
                 Log.i("jsonObject----------->", jsonObject.toString());
                 if (jsonObject != null) {
                     JSONArray orderArr = jsonObject.optJSONArray("orders");
-                    if (orderArr != null && orderArr.length() > 0) {
-                        orders.clear();
-                        for (int i = 0; i < orderArr.length(); i++) {
-                            JSONObject orderObj = orderArr.optJSONObject(i);
-                            int id = orderObj.optInt("id");
-                            String number = orderObj.optString("number");
-                            int amount = orderObj.optInt("amount");
-                            String status = orderObj.optString("status");
-                            String status_ch = orderObj.optString("status_ch");
-                            String created_at = orderObj.optString("created_at");
-                            String created_at_for = orderObj.optString("created_at_for");
-                            String img = orderObj.optString("merch_img");
-                            long over_at = orderObj.optLong("over_at");
-                            Order order = new Order(id, number, amount, status, status_ch, created_at_for, created_at, "", 0);
-                            order.setImg(img);
-                            order.setOver_at(over_at);
-                            if (STATUS_UNPAY_LIST.equalsIgnoreCase(status))
-                                orders.add(order);
-                        }
-                        handler.sendEmptyMessage(UPDATE_UNPAY_LIST);
-                    }
+                            if (orderArr != null && orderArr.length() > 0)
+                            {
+                                orders.clear();
+                                for (int i = 0; i < orderArr.length(); i++)
+                                {
+                                    JSONObject orderObj = orderArr.optJSONObject(i);
+                                    int id = orderObj.optInt("id");
+                                    String number = orderObj.optString("number");
+                                    int amount = orderObj.optInt("amount");
+                                    String status = orderObj.optString("status");
+                                    String status_ch = orderObj.optString("status_ch");
+                                    String created_at = orderObj.optString("created_at");
+                                    String created_at_for = orderObj.optString("created_at_for");
+                                    String img = orderObj.optString("merch_img");
+                                    long over_at = orderObj.optLong("over_at");
+                                    Order order = new Order(id, number, amount, status, status_ch, created_at_for, created_at, "", 0);
+                                    order.setImg(img);
+                                    order.setOver_at(over_at);
+                                    if (STATUS_UNPAY_LIST.equalsIgnoreCase(status))
+                                        orders.add(order);
+                                }
+                                handler.sendEmptyMessage(UPDATE_UNPAY_LIST);
+                            } else
+                            {
+                                mListView.setVisibility(View.GONE);
+                                loadingView.setVisibility(View.VISIBLE);
+                            }
                 }
             }
         }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                Toast.makeText(getActivity(),"网络异常", Toast.LENGTH_SHORT).show();
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                mDialog.dismiss();
+                if (getActivity()!=null)
+                Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -203,61 +218,68 @@ public class UnPayFragment extends BaseFragment {
         mRequestQueue.add(request);
     }
 
-    private class UnPayAdapter extends BaseListAdapter<Order> {
 
-        public UnPayAdapter(Context context, List<Order> list) {
-            super(context, list);
-        }
+        private class UnPayAdapter extends BaseListAdapter<Order>
+        {
 
-        @Override
-        public View bindView(int position, View convertView, ViewGroup parent) {
-            convertView = mHashMap.get(position);
-            if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_pre_pay, null);
-            TextView mOrderTime = ViewHolder.get(convertView, R.id.tv_order_time);
-            TextView mOrderNum = ViewHolder.get(convertView, R.id.tv_order_number);
-            TextView mOrderAmount = ViewHolder.get(convertView, R.id.tv_order_amount);
-            TextView mOrderStatus = ViewHolder.get(convertView, R.id.order_status);
-            TextView mTimerBtn = ViewHolder.get(convertView, R.id.bt_order_timer);
-            ImageView mOrderImg = ViewHolder.get(convertView, R.id.iv_order_img);
-            Order item = orders.get(position);
-            mOrderTime.setText("订单时间 " + item.getCreated_at_for());
-            mOrderNum.setText("订单编号 " + item.getNumber());
-            mOrderAmount.setText("订单金额 " + item.getAmount());
-            mOrderStatus.setText("订单状态 " + item.getStatus_ch());
-            ToolUtils.setImageCacheUrl(item.getImg(), mOrderImg);
+            public UnPayAdapter(Context context, List<Order> list)
+            {
+                super(context, list);
+            }
+
+            @Override
+            public View bindView(int position, View convertView, ViewGroup parent)
+            {
+                convertView = mHashMap.get(position);
+                if (convertView == null)
+                    convertView = mInflater.inflate(R.layout.item_pre_pay, null);
+                TextView mOrderTime = ViewHolder.get(convertView, R.id.tv_order_time);
+                TextView mOrderNum = ViewHolder.get(convertView, R.id.tv_order_number);
+                TextView mOrderAmount = ViewHolder.get(convertView, R.id.tv_order_amount);
+                TextView mOrderStatus = ViewHolder.get(convertView, R.id.tv_order_status);
+                TextView mTimerBtn = ViewHolder.get(convertView, R.id.bt_order_timer);
+                ImageView mOrderImg = ViewHolder.get(convertView, R.id.iv_order_img);
+                Order item = orders.get(position);
+                mOrderTime.setText(item.getCreated_at_for());
+                mOrderNum.setText(item.getNumber());
+                mOrderAmount.setText("￥"+item.getAmount());
+                mOrderStatus.setText(item.getStatus_ch());
+                ToolUtils.setImageCacheUrl(item.getImg(), mOrderImg);
 
 
-            if (mTimerBtn.getTag() == null) {
-                mTimerBtn.setTag(item.getOver_at());
+                if (mTimerBtn.getTag() == null)
+                {
+                    mTimerBtn.setTag(item.getOver_at());
 //                mOrderTime.setTag(System.currentTimeMillis());
-            }
+                }
 
-            long l = Long.parseLong(mTimerBtn.getTag() + "");
-            long day = 24 * 3600 * 1000;
-            long hour = 3600 * 1000;
-            long minute = 60 * 1000;
-            //两个日期想减得到天数
-            long dayCount = l / day;
-            long hourCount = (l - (dayCount * day)) / hour;
-            long minCount = (l - (dayCount * day) - (hour * hourCount)) / minute;
-            long secondCount = (l - (dayCount * day) - (hour * hourCount) - (minCount * minute)) / 1000;
+                long l = Long.parseLong(mTimerBtn.getTag() + "");
+                long day = 24 * 3600 * 1000;
+                long hour = 3600 * 1000;
+                long minute = 60 * 1000;
+                //两个日期想减得到天数
+                long dayCount = l / day;
+                long hourCount = (l - (dayCount * day)) / hour;
+                long minCount = (l - (dayCount * day) - (hour * hourCount)) / minute;
+                long secondCount = (l - (dayCount * day) - (hour * hourCount) - (minCount * minute)) / 1000;
 //            if ((System.currentTimeMillis()-Long.parseLong(mOrderTime.getTag()+""))>=1000){
-            if (minCount>0||secondCount>0){
-                mTimerBtn.setText("支付" + minCount + ":" + secondCount + "");
-            }else {
-                mTimerBtn.setText("超时过期");
-            }
+                if (minCount > 0 || secondCount > 0)
+                {
+                    mTimerBtn.setText("支付" + minCount + ":" + secondCount + "");
+                } else
+                {
+                    mTimerBtn.setText("超时过期");
+                }
 
-            mTimerBtn.setTag(Long.parseLong(mTimerBtn.getTag() + "") - 1000);
-            item.setOver_at(Long.parseLong(mTimerBtn.getTag() + "") - 1000);
+                mTimerBtn.setTag(Long.parseLong(mTimerBtn.getTag() + "") - 1000);
+                item.setOver_at(Long.parseLong(mTimerBtn.getTag() + "") - 1000);
 //                mOrderTime.setTag(System.currentTimeMillis());
 //            }
 
-            mHashMap.put(position, convertView);
-            return convertView;
+                mHashMap.put(position, convertView);
+                return convertView;
+            }
         }
-    }
 
     private class MyTimer extends CountDownTimer {
         private MyTimer(long millisInFuture, long countDownInterval) {
@@ -276,6 +298,8 @@ public class UnPayFragment extends BaseFragment {
 //            mHandler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
         }
     }
+
+
     @Override
     public void onDestroyView() {
         if (timer!=null){

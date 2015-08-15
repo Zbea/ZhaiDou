@@ -1,4 +1,5 @@
 package com.zhaidou.fragments;
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +26,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -36,25 +39,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ReturnFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ReturnFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
- */
 public class ReturnFragment extends BaseFragment implements View.OnClickListener{
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private ListView mListView;
+    private Dialog mDialog;
+    private LinearLayout loadingView;
+
     private RequestQueue mRequestQueue;
     private ReturnAdapter returnAdapter;
     private List<Order> orders;
@@ -69,22 +63,12 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case UPDATE_RETURN_LIST:
-                    Log.i("UPDATE_RETURN_LIST-------->",orders.size()+"");
+                    loadingView.setVisibility(View.GONE);
                     returnAdapter.notifyDataSetChanged();
                     break;
             }
         }
     };
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ReturnFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static ReturnFragment newInstance(String param1, String param2) {
         ReturnFragment fragment = new ReturnFragment();
         Bundle args = new Bundle();
@@ -122,6 +106,9 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
     }
 
     private void initView(View view){
+
+        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
+        loadingView=(LinearLayout)view.findViewById(R.id.loadingView);
         mContext=getActivity();
         orders=new ArrayList<Order>();
         mListView=(ListView)view.findViewById(R.id.lv_return);
@@ -137,7 +124,7 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
                 OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(),order);
                 ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
             }
-        });
+        }) ;  
     }
 
     @Override
@@ -164,11 +151,10 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
             TextView tv_order_status = ViewHolder.get(convertView, R.id.tv_order_status);
             ImageView iv_order_img=ViewHolder.get(convertView,R.id.iv_order_img);
             Order item = getList().get(position);
-            Log.i("item----------->",item.toString());
-            tv_order_time.setText("下单时间："+item.getCreated_at_for());
-            tv_order_number.setText("订单编号："+item.getNumber());
-            tv_order_amount.setText("订单金额："+item.getAmount()+"");
-            tv_order_status.setText("订单状态："+item.getStatus_ch());
+            tv_order_time.setText(item.getCreated_at_for());
+            tv_order_number.setText(item.getNumber());
+            tv_order_amount.setText("￥"+item.getAmount()+"");
+            tv_order_status.setText(item.getStatus_ch());
             ToolUtils.setImageCacheUrl(item.getImg(), iv_order_img);
             return convertView;
         }
@@ -177,6 +163,8 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST+"?status=8,11", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+                if (mDialog!=null) mDialog.dismiss();
+                Log.i("jsonObject----------->", jsonObject.toString());
                 if (jsonObject != null) {
                     JSONArray orderArr = jsonObject.optJSONArray("orders");
                     if (orderArr != null && orderArr.length() > 0) {
@@ -199,11 +187,18 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
                         }
                         handler.sendEmptyMessage(UPDATE_RETURN_LIST);
                     }
+                    else
+                    {
+                        mListView.setVisibility(View.GONE);
+                        loadingView.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
+                if (mDialog!=null) mDialog.dismiss();
+                Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
                 if (getActivity()!=null)
                 Toast.makeText(mContext, "网络异常", Toast.LENGTH_SHORT).show();
             }

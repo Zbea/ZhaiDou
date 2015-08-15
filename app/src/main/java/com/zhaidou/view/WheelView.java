@@ -1,5 +1,6 @@
 package com.zhaidou.view;
 
+import java.security.cert.TrustAnchor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -11,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -186,15 +188,16 @@ public class WheelView extends ScrollView {
         TypeFaceTextView tv = new TypeFaceTextView(context);
         tv.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         tv.setSingleLine(true);
-        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        tv.setMarqueeRepeatLimit(-1);
+        tv.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         tv.setText(item.getName());
         tv.setGravity(Gravity.CENTER);
-        int padding = dip2px(context, 15);
+        int padding = dip2px(context, 10);
         tv.setPadding(padding, padding, padding, padding);
         if (0 == itemHeight) {
             itemHeight = ABViewUtil.getViewMeasuredHeight(tv);
             views.setLayoutParams(new LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, itemHeight * displayItemCount));
-            Log.i("this.getLayoutParams();---->",this.getLayoutParams().toString());
             ViewGroup.LayoutParams lp =this.getLayoutParams();
 //            this.setLayoutParams(new ViewGroup.LayoutParams(lp.width, itemHeight * displayItemCount));
             this.setLayoutParams(new LinearLayout.LayoutParams(this.getLayoutParams().width, itemHeight * displayItemCount));
@@ -265,10 +268,11 @@ public class WheelView extends ScrollView {
             if (null == itemView) {
                 return;
             }
-            if (position == i) {
-                itemView.setTextColor(Color.parseColor("#0288ce"));
+            if (position == i)
+            {
+                itemView.setTextColor(Color.parseColor("#222222"));
             } else {
-                itemView.setTextColor(Color.parseColor("#bbbbbb"));
+                itemView.setTextColor(Color.parseColor("#999999"));
             }
         }
     }
@@ -298,21 +302,27 @@ public class WheelView extends ScrollView {
     @Override
     public void setBackgroundDrawable(Drawable background) {
 
-        if (viewWidth == 0) {
+        if (viewWidth == 0)
+        {
             viewWidth = ((Activity) context).getWindowManager().getDefaultDisplay().getWidth();
         }
 
         if (null == paint) {
             paint = new Paint();
-            paint.setColor(Color.parseColor("#83cde6"));
-            paint.setStrokeWidth(ABTextUtil.dip2px(context, 1f));
+            paint.setColor(Color.parseColor("#999999"));
+            paint.setStrokeWidth(ABTextUtil.dip2px(context, 0.5f));
         }
 
         background = new Drawable() {
             @Override
             public void draw(Canvas canvas) {
-                canvas.drawLine(viewWidth * 1 / 6, obtainSelectedAreaBorder()[0], viewWidth * 5 / 6, obtainSelectedAreaBorder()[0], paint);
-                canvas.drawLine(viewWidth * 1 / 6, obtainSelectedAreaBorder()[1], viewWidth * 5 / 6, obtainSelectedAreaBorder()[1], paint);
+                if (items!=null&&items.size()>0)
+                {
+                    canvas.drawLine(0, obtainSelectedAreaBorder()[0], viewWidth, obtainSelectedAreaBorder()[0], paint);
+                    canvas.drawLine(0, obtainSelectedAreaBorder()[1], viewWidth, obtainSelectedAreaBorder()[1], paint);
+                }
+//                canvas.drawLine(viewWidth * 1 / 6, obtainSelectedAreaBorder()[0], viewWidth * 5 / 6, obtainSelectedAreaBorder()[0], paint);
+//                canvas.drawLine(viewWidth * 1 / 6, obtainSelectedAreaBorder()[1], viewWidth * 5 / 6, obtainSelectedAreaBorder()[1], paint);
             }
 
             @Override

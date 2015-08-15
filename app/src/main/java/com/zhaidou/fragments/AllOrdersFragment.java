@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -29,6 +30,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -43,13 +45,16 @@ import java.util.Map;
 
 
 public class AllOrdersFragment extends BaseFragment implements View.OnClickListener {
-    // TODO: Rename parameter arguments, choose names that match
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
 
     private String mParam1;
     private String mParam2;
+
+    private Dialog mDialog;
+    private LinearLayout loadingView;
+
     private RequestQueue mRequestQueue;
     private ListView mListView;
     private List<Order> orders = new ArrayList<Order>();
@@ -71,6 +76,7 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
                     timer.start();
                     break;
                 case UPDATE_COUNT_DOWN_TIME:
+                    loadingView.setVisibility(View.GONE);
                     allOrderAdapter.notifyDataSetChanged();
                     break;
             }
@@ -111,6 +117,9 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
             }
         } else {
             rootView = inflater.inflate(R.layout.fragment_all_orders, container, false);
+
+            mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
+            loadingView=(LinearLayout)rootView.findViewById(R.id.loadingView);
             mListView = (ListView) rootView.findViewById(R.id.lv_all_orderlist);
             mRequestQueue = Volley.newRequestQueue(getActivity());
             allOrderAdapter = new AllOrderAdapter(getActivity(), orders);
@@ -269,6 +278,7 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+                if (mDialog!=null) mDialog.dismiss();
                 Log.i("FetchAllOrder----------->", jsonObject.toString());
                 if (jsonObject != null) {
                     JSONArray orderArr = jsonObject.optJSONArray("orders");
@@ -291,12 +301,18 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
                         }
                         handler.sendEmptyMessage(UPDATE_ORDER_LIST);
                     }
+                    else
+                    {
+                        mListView.setVisibility(View.GONE);
+                        loadingView.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-//                Toast.makeText(getActivity(),"网络异常",Toast.LENGTH_SHORT).show();
+                if (mDialog!=null) mDialog.dismiss();
+                Toast.makeText(getActivity(),"网络异常", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -328,15 +344,15 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
             ImageView iv_delete = ViewHolder.get(convertView, R.id.iv_delete);
             RelativeLayout ll_btn = ViewHolder.get(convertView, R.id.rl_btn);
             Order order = getList().get(position);
-            tv_order_time.setText("下单时间：" + order.getCreated_at_for());
-            tv_order_number.setText("订单编号：" + order.getNumber());
-            tv_order_amount.setText("订单金额：" + order.getAmount());
-            tv_order_status.setText("订单状态：" + order.getStatus_ch());
+            tv_order_time.setText(order.getCreated_at_for());
+            tv_order_number.setText(order.getNumber());
+            tv_order_amount.setText("￥"+order.getAmount());
+            tv_order_status.setText(order.getStatus_ch());
             ToolUtils.setImageCacheUrl(order.getImg(), iv_order_img);
             switch (Integer.parseInt(order.getStatus())) {
                 case ZhaiDou.STATUS_UNPAY:
                     iv_delete.setVisibility(View.GONE);
-                    tv_order_status.setText("订单状态：未付款");
+                    tv_order_status.setText("未付款");
                     ll_btn.setVisibility(View.VISIBLE);
                     btn1.setVisibility(View.GONE);
                     if (btn2.getTag() == null)
@@ -355,76 +371,76 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
                     } else {
                         btn2.setText("超时过期");
                     }
-                    btn2.setBackgroundColor(getResources().getColor(R.color.red));
+                    btn2.setBackgroundResource(R.drawable.btn_red_click_selector);
                     btn2.setTag(Long.parseLong(btn2.getTag() + "") - 1000);
                     order.setOver_at(Long.parseLong(btn2.getTag() + "") - 1000);
                     break;
                 case ZhaiDou.STATUS_PAYED:
                     ll_btn.setVisibility(View.VISIBLE);
                     iv_delete.setVisibility(View.GONE);
-                    tv_order_status.setText("订单状态：已付款");
+                    tv_order_status.setText("已付款");
                     btn2.setVisibility(View.GONE);
                     btn1.setText("申请退款");
-                    btn1.setBackgroundColor(getResources().getColor(R.color.c00bbb9));
+                    btn1.setBackgroundResource(R.drawable.btn_green_click_bg);
                     break;
                 case ZhaiDou.STATUS_OVER_TIME:
                     iv_delete.setVisibility(View.VISIBLE);
-                    tv_order_status.setText("订单状态：交易关闭");
+                    tv_order_status.setText("交易关闭");
                     ll_btn.setVisibility(View.GONE);
                     break;
                 case ZhaiDou.STATUS_ORDER_CANCEL_PAYED:
                     iv_delete.setVisibility(View.GONE);
-                    tv_order_status.setText("订单状态：申请退款");
+                    tv_order_status.setText("申请退款");
                     ll_btn.setVisibility(View.GONE);
                     break;
                 case ZhaiDou.STATUS_DELIVERY:
                     iv_delete.setVisibility(View.GONE);
-                    tv_order_status.setText("订单状态：已发货");
+                    tv_order_status.setText("已发货");
                     ll_btn.setVisibility(View.VISIBLE);
                     btn2.setText("确认收货");
                     btn1.setText("查看物流");
-                    btn1.setBackgroundColor(getResources().getColor(R.color.c00bbb9));
-                    btn2.setBackgroundColor(getResources().getColor(R.color.red));
+                    btn1.setBackgroundResource(R.drawable.btn_green_click_bg);
+                    btn2.setBackgroundResource(R.drawable.btn_red_click_selector);
                     break;
                 case ZhaiDou.STATUS_DEAL_SUCCESS:
                     iv_delete.setVisibility(View.VISIBLE);
-                    tv_order_status.setText("订单状态：交易完成");
+                    tv_order_status.setText("交易完成");
                     ll_btn.setVisibility(View.VISIBLE);
                     btn1.setVisibility(View.VISIBLE);
                     btn2.setVisibility(View.VISIBLE);
                     btn2.setText("申请退货");
-                    btn2.setBackgroundColor(getResources().getColor(R.color.c00bbb9));
+                    btn2.setBackgroundResource(R.drawable.btn_green_click_bg);
                     btn1.setText("查看物流");
-                    btn1.setBackgroundColor(getResources().getColor(R.color.c00bbb9));
+                    btn1.setBackgroundResource(R.drawable.btn_green_click_bg);
                     break;
                 case ZhaiDou.STATUS_APPLY_GOOD_RETURN:
                     iv_delete.setVisibility(View.GONE);
-                    tv_order_status.setText("订单状态：申请退货");
+                    tv_order_status.setText("申请退货");
                     ll_btn.setVisibility(View.GONE);
                     break;
                 case ZhaiDou.STATUS_GOOD_RETURNING:
                     iv_delete.setVisibility(View.GONE);
-                    tv_order_status.setText("订单状态：退货中");
+                    tv_order_status.setText("退货中");
                     ll_btn.setVisibility(View.GONE);
                     break;
                 case ZhaiDou.STATUS_RETURN_GOOD_SUCCESS:
                     iv_delete.setVisibility(View.VISIBLE);
-                    tv_order_status.setText("订单状态：退货成功");
+                    tv_order_status.setText("退货成功");
                     ll_btn.setVisibility(View.GONE);
                     break;
                 case ZhaiDou.STATUS_UNPAY_CANCEL:
                     iv_delete.setVisibility(View.VISIBLE);
-                    tv_order_status.setText("订单状态：交易关闭");
+                    tv_order_status.setText("交易关闭");
                     ll_btn.setVisibility(View.GONE);
                     break;
                 case ZhaiDou.STATUS_DEAL_CLOSE:
                     iv_delete.setVisibility(View.VISIBLE);
-                    tv_order_status.setText("订单状态：交易关闭");
+                    tv_order_status.setText("交易关闭");
                     ll_btn.setVisibility(View.GONE);
                     break;
                 case ZhaiDou.STATUS_RETURN_MONEY_SUCCESS:
                     iv_delete.setVisibility(View.VISIBLE);
-                    tv_order_status.setText("订单状态：退款成功");
+                    tv_order_status.setText("退款成功");
                     ll_btn.setVisibility(View.GONE);
                     break;
             }

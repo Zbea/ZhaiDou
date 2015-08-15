@@ -159,7 +159,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:paddingRight="10dp"
+                    android:paddingRight="15dp"
                     android:src="@drawable/icon_arrow_right"/>
             </RelativeLayout>
 
@@ -169,8 +169,6 @@
                 android:background="#EEEEEE"/>
 
             <LinearLayout
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
@@ -179,7 +177,7 @@
 
                 <RelativeLayout
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1">
 
                     <ImageView
@@ -195,11 +193,12 @@
                         android:layout_width="15dp"
                         android:layout_height="15dp"
                         android:gravity="center"
-                        android:visibility="gone"
                         android:textColor="@color/white"
                         android:layout_alignParentRight="true"
-                        android:layout_marginRight="40dp"
-                        android:layout_marginBottom="40dp"
+                        android:layout_marginRight="35dp"
+                        android:layout_marginTop="2dp"
+                        android:textSize="10sp"
+                        android:visibility="gone"
                         android:background="@drawable/shop_goods_my_cart_tips_red_bg"
                         android:paddingBottom="1dp"
                         android:text="1"/>
@@ -213,6 +212,8 @@
                 <ImageView
                     android:id="@+id/tv_pre_received"
                     android:layout_width="0dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
@@ -394,7 +395,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"></LinearLayout>
+                android:layout_height="10dp"></LinearLayout>
 
         </LinearLayout>
 </ScrollView>

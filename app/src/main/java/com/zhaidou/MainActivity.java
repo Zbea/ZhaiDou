@@ -3,6 +3,12 @@ package com.zhaidou;
 import com.alibaba.sdk.android.AlibabaSDK;
 import com.alibaba.sdk.android.callback.CallbackContext;
 import com.alibaba.sdk.android.callback.InitResultCallback;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpClientStack;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
@@ -19,7 +25,10 @@ import com.zhaidou.fragments.ShopPaymentFailFragment;
 import com.zhaidou.fragments.ShopPaymentFragment;
 import com.zhaidou.fragments.StrategyFragment;
 import com.zhaidou.fragments.WebViewFragment;
+import com.zhaidou.model.Area;
 import com.zhaidou.model.CartItem;
+import com.zhaidou.model.City;
+import com.zhaidou.model.Province;
 import com.zhaidou.model.User;
 import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;
@@ -52,6 +61,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -83,7 +94,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     private TextView titleView;
     private LinearLayout mTabContainer;
-    //    private FrameLayout mChildContainer;
+//    private FrameLayout mChildContainer;
     private LoginFragment mLoginFragment;
     private ImageView iv_dot;
 
@@ -100,21 +111,28 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private String serverName;
     private String serverInfo;
     private int serverCode;
+    private RequestQueue mRequestQueue;
+    public static List<Province> provinceList = new ArrayList<Province>();
 
-    public static int num = 0;
-    private List<CartItem> items = new ArrayList<CartItem>();
+    public static int num=0;
+    private List<CartItem> items=new ArrayList<CartItem>();
 
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver broadcastReceiver=new BroadcastReceiver()
+    {
         @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag)) {
+        public void onReceive(Context context, Intent intent)
+        {
+            String action=intent.getAction();
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
+            {
                 initCartTips();
             }
-            if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
+            if (action.equals(ZhaiDou.IntentRefreshLoginTag))
+            {
                 initCartTips();
             }
-            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag)) {
+            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
+            {
                 initCartTips();
             }
             if (action.equalsIgnoreCase(ZhaiDou.BROADCAST_WXAPI_FILTER)) {
@@ -140,16 +158,16 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         }
     };
 
-    private Handler mHandler = new Handler() {
+    private Handler mHandler =new Handler(){
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what) {
+            switch (msg.what){
                 case 0:
-                    User user = (User) msg.obj;
-                    Log.i("persoanlFragment---------------->", persoanlFragment == null ? "null" : "no null");
-                    if (persoanlFragment == null) {
-                        persoanlFragment = PersonalFragment.newInstance("", "");
-                    } else {
+                    User user=(User)msg.obj;
+                    Log.i("persoanlFragment---------------->",persoanlFragment==null?"null":"no null");
+                    if (persoanlFragment==null){
+                        persoanlFragment= PersonalFragment.newInstance("", "");
+                    }else {
 //                        persoanlFragment.refreshData(MainActivity.this);
                     }
                     selectFragment(currentFragment, persoanlFragment);
@@ -157,14 +175,13 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     break;
 
                 case 1:
-                    serverCode = parseJosn(msg.obj.toString());
-                    if (serverCode > ZDApplication.localVersionCode) {
-                        CustomVersionUpdateDialog customVersionUpdateDialog = new CustomVersionUpdateDialog(mContext, serverName);
-                        customVersionUpdateDialog.checkUpdateInfo();
+                    serverCode=parseJosn(msg.obj.toString());
+                    if (serverCode>ZDApplication.localVersionCode)
+                    {
+                       CustomVersionUpdateDialog customVersionUpdateDialog=new CustomVersionUpdateDialog(mContext,serverName);
+                       customVersionUpdateDialog.checkUpdateInfo();
                     }
 
-                    break;
-                case 2:
                     break;
             }
         }
@@ -174,23 +191,23 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main_layout);
-        iv_dot = (ImageView) findViewById(R.id.iv_dot);
-        mContext = this;
+        iv_dot=(ImageView)findViewById(R.id.iv_dot);
+        mContext=this;
         initBroadcastReceiver();
 
         getVersionServer();
 
 
         init();
-        AlibabaSDK.asyncInit(this, new InitResultCallback() {
+        AlibabaSDK.asyncInit(this,new InitResultCallback() {
             @Override
             public void onSuccess() {
-                Log.i("onSuccess---->", "初始化成功");
+                Log.i("onSuccess---->","初始化成功");
             }
 
             @Override
             public void onFailure(int i, String s) {
-                Log.i("onFailure---->", "初始化异常--" + s);
+                Log.i("onFailure---->","初始化异常--"+s);
             }
         });
 
@@ -200,24 +217,28 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     /**
      * 获取版本信息
      */
-    private void getVersionServer() {
-        new Thread(new Runnable() {
+    private void getVersionServer()
+    {
+        new Thread(new Runnable()
+        {
             @Override
-            public void run() {
-                String url = ZhaiDou.apkUpdateUrl;
-                String result = NetService.getHttpService(url);
-                if (result != null) {
-                    mHandler.obtainMessage(1, result).sendToTarget();
+            public void run()
+            {
+                String url=ZhaiDou.apkUpdateUrl;
+                String result= NetService.getHttpService(url);
+                if (result!=null)
+                {
+                    mHandler.obtainMessage(1,result).sendToTarget();
                 }
             }
         }).start();
     }
-
     /**
      * 注册广播
      */
-    private void initBroadcastReceiver() {
-        IntentFilter intentFilter = new IntentFilter();
+    private void initBroadcastReceiver()
+    {
+        IntentFilter intentFilter=new IntentFilter();
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
@@ -225,21 +246,28 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         mContext.registerReceiver(broadcastReceiver, intentFilter);
     }
 
-    public void init() {
-        creatCartDB = new CreatCartDB(mContext);
+    public void init()
+    {
+        creatCartDB=new CreatCartDB(mContext);
         initCartTips();
+        mRequestQueue = Volley.newRequestQueue(this, new HttpClientStack(new DefaultHttpClient()));
+        FetchCityData();
     }
 
     /**
      * 红色标识提示显示数量
      */
-    private void initCartTips() {
-        num = 0;
-        if (checkLogin()) {
+    private void initCartTips()
+    {
+        num=0;
+        if (checkLogin())
+        {
             getGoodsItems();
-            for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).isPublish.equals("false") && items.get(i).isOver.equals("false")) {
-                    num = num + items.get(i).num;
+            for (int i = 0; i <items.size() ; i++)
+            {
+                if (items.get(i).isPublish.equals("false")&&items.get(i).isOver.equals("false"))
+                {
+                    num=num+items.get(i).num;
                 }
             }
         }
@@ -249,17 +277,18 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     /**
      * 获得当前userId的所有商品
      */
-    private void getGoodsItems() {
+    private void getGoodsItems()
+    {
         items.removeAll(items);
         //遍历获得这个当前uesrId的所有商品
-        items = CreatCartTools.selectByAll(creatCartDB, id);
+        items = CreatCartTools.selectByAll(creatCartDB,id);
 
     }
 
     public void initComponents() {
 
-        mTabContainer = (LinearLayout) findViewById(R.id.tab_container);
-        mChildContainer = (FrameLayout) findViewById(R.id.fl_child_container);
+        mTabContainer=(LinearLayout)findViewById(R.id.tab_container);
+        mChildContainer=(FrameLayout)findViewById(R.id.fl_child_container);
         homeButton = (ImageButton) findViewById(R.id.tab_home);
 
         lastButton = homeButton;
@@ -308,7 +337,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
                 if (categoryFragment == null) {
 //                    categoryFragment = CategoryFragment.newInstance("haha", "haha");
-                    categoryFragment = CategoryFragment1.newInstance("", "");
+                    categoryFragment= CategoryFragment1.newInstance("","");
                 }
 
 
@@ -336,24 +365,24 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         });
 
-        personalButton = (ImageButton) findViewById(R.id.tab_personal);
+        personalButton=(ImageButton)findViewById(R.id.tab_personal);
         personalButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("---personalButton-->", checkLogin() + "");
-                if (!checkLogin()) {
+                Log.i("---personalButton-->",checkLogin()+"");
+                if (!checkLogin()){
 //                    mLoginFragment=LoginFragment.newInstance("","");
 //                    mLoginFragment.setRegisterOrLoginListener(MainActivity.this);
 //                    navigationToFragment(mLoginFragment);
 //                    mChildContainer.setVisibility(View.VISIBLE);
-                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    Intent intent=new Intent(MainActivity.this, LoginActivity.class);
                     MainActivity.this.startActivityForResult(intent, 10000);
-                } else {
-                    if (persoanlFragment == null) {
+                }else {
+                    if (persoanlFragment==null){
 //                        persoanlFragment= PersonalFragment.newInstance("", "");
-                        persoanlFragment = PersonalFragment.newInstance("", "");
+                        persoanlFragment= PersonalFragment.newInstance("","");
                     }
-                    selectFragment(currentFragment, persoanlFragment);
+                    selectFragment(currentFragment,persoanlFragment);
                     setButton(view);
                 }
 
@@ -378,7 +407,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     }
 
     public void selectFragment(Fragment from, Fragment to) {
-        Log.i("selectFragment---->", "selectFragment1");
         if (currentFragment != to) {
             currentFragment = to;
             FragmentManager manager = getSupportFragmentManager();
@@ -390,24 +418,23 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         }
     }
-
     public void onFragmentInteraction(Uri uri) {
 
     }
 
 
-    public void toggleTabContainer() {
-        mTabContainer.setVisibility(mTabContainer.isShown() ? View.GONE : View.VISIBLE);
+    public void toggleTabContainer(){
+        mTabContainer.setVisibility(mTabContainer.isShown()?View.GONE:View.VISIBLE);
     }
 
-    public void toggleTabContainer(int visible) {
+    public void toggleTabContainer(int visible){
         mTabContainer.setVisibility(visible);
     }
 
-    public boolean checkLogin() {
-        token = (String) SharedPreferencesUtil.getData(this, "token", "");
-        id = (Integer) SharedPreferencesUtil.getData(this, "userId", -1);
-        boolean isLogin = !TextUtils.isEmpty(token) && id > -1;
+    public boolean checkLogin(){
+        token=(String)SharedPreferencesUtil.getData(this,"token","");
+        id=(Integer)SharedPreferencesUtil.getData(this,"userId",-1);
+        boolean isLogin=!TextUtils.isEmpty(token)&&id>-1;
         return isLogin;
     }
 //
@@ -462,31 +489,28 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 //        fragmentManager.popBackStack();
 //    }
 
-    public interface PhotoSelectListener {
+    public interface PhotoSelectListener{
         public void onPhotoSelect();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         CallbackContext.onActivityResult(requestCode, resultCode, data);
-        switch (resultCode) {
+        switch (resultCode){
             case 2000:
-//                User user =(User)(data.getBundleExtra("user").getSerializable("user"));
-                //id,email,token,nick,null
-                int id = data.getIntExtra("id", -1);
-                String email = data.getStringExtra("email");
-                String token = data.getStringExtra("token");
-                String nick = data.getStringExtra("nick");
-                User user = new User(id, email, token, nick, null);
-                Log.i("onActivityResult---user---------->", user.toString());
-                Message message = new Message();
-                message.obj = user;
-                message.what = 0;
+                int id=data.getIntExtra("id",-1);
+                String email=data.getStringExtra("email");
+                String token=data.getStringExtra("token");
+                String nick=data.getStringExtra("nick");
+                User user=new User(id,email,token,nick,null);
+                Message message=new Message();
+                message.obj=user;
+                message.what=0;
                 mHandler.sendMessage(message);
                 break;
             case 1000:
 
-                Log.i("onActivityResult---user----1000------>", "sadadadada");
+                Log.i("onActivityResult---user----1000------>","sadadadada");
                 break;
         }
 
@@ -495,20 +519,23 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     /**
      * 版本信息解析
-     *
      * @param json
      * @return
      */
-    private int parseJosn(String json) {
-        try {
-            JSONObject jsonObject = new JSONObject(json);
-            serverName = jsonObject.optString("name");
-            serverCode = jsonObject.optInt("code");
-            serverInfo = jsonObject.optString("info");
+    private int parseJosn(String json)
+    {
+        try
+        {
+            JSONObject jsonObject=new JSONObject(json);
+            serverName=jsonObject.optString("name");
+            serverCode=jsonObject.optInt("code");
+            serverInfo=jsonObject.optString("info");
             ToolUtils.setLog(serverName);
-            ToolUtils.setLog("" + serverCode);
+            ToolUtils.setLog(""+serverCode);
             ToolUtils.setLog(serverInfo);
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
         }
         return serverCode;
@@ -520,26 +547,31 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         super.onDestroy();
     }
 
-    public void logout(Fragment fragment) {
+    public void logout(Fragment fragment){
         popToStack(fragment);
-        if (utilityFragment == null) {
-            utilityFragment = HomeFragment.newInstance(ZhaiDou.HOME_PAGE_URL, ZhaiDou.ListType.HOME.toString());
+        if (utilityFragment==null){
+            utilityFragment= HomeFragment.newInstance(ZhaiDou.HOME_PAGE_URL, ZhaiDou.ListType.HOME.toString());
         }
-        selectFragment(currentFragment, utilityFragment);
+        selectFragment(currentFragment,utilityFragment);
         setButton(homeButton);
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        FragmentManager manager = getSupportFragmentManager();
-        int num = manager.getBackStackEntryCount();
-        Log.i("zhaidou", "返回栈大小:" + num);
-        if (num == 0) {
-            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                if ((System.currentTimeMillis() - mTime) > 2000) {
-                    Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
-                    mTime = System.currentTimeMillis();
-                } else {
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        FragmentManager manager=getSupportFragmentManager();
+        int num=manager.getBackStackEntryCount();
+        if (num==0)
+        {
+            if (keyCode == KeyEvent.KEYCODE_BACK)
+            {
+                if ((System.currentTimeMillis()-mTime)>2000)
+                {
+                    Toast.makeText(this,"再按一次退出",Toast.LENGTH_SHORT).show();
+                    mTime=System.currentTimeMillis();
+                }
+                else
+                {
                     finish();
                 }
                 return true;
@@ -547,19 +579,80 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         }
         return super.onKeyDown(keyCode, event);
     }
-
-    public void toHomeFragment() {
+    public void toHomeFragment(){
         selectFragment(currentFragment, utilityFragment);
         setButton(homeButton);
     }
 
-    public void replaceFragment(Fragment fragment) {
-        SettingFragment settingFragment = SettingFragment.newInstance("", "");
-        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, settingFragment).addToBackStack(null).show(settingFragment).commit();
+    public void replaceFragment(Fragment fragment){
+        SettingFragment settingFragment=SettingFragment.newInstance("","");
+        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container,settingFragment).addToBackStack(null).show(settingFragment).commit();
         mChildContainer.setVisibility(View.VISIBLE);
     }
-
-    public void hideTip(int v) {
+    public void hideTip(int v){
         iv_dot.setVisibility(v);
+    }
+
+    private void FetchCityData() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_ADDRESS_URL, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (jsonObject != null)
+                {
+                    JSONArray providerArr = jsonObject.optJSONArray("providers");
+                    for (int i = 0; i < providerArr.length(); i++)
+                    {
+                        JSONObject provinceObj = providerArr.optJSONObject(i);
+                        int provinceId = provinceObj.optInt("id");
+                        String provinceName = provinceObj.optString("name");
+                        Province province = new Province();
+                        province.setId(provinceId);
+                        province.setName(provinceName);
+                        List<City> cityList = new ArrayList<City>();
+                        JSONArray cityArr = provinceObj.optJSONArray("cities");
+                        if (cityArr != null && cityArr.length() > 0)
+                        {
+                            for (int k = 0; k < cityArr.length(); k++)
+                            {
+                                JSONObject cityObj = cityArr.optJSONObject(k);
+                                int cityId = cityObj.optInt("id");
+                                String cityName = cityObj.optString("name");
+                                JSONArray areaArr = cityObj.optJSONArray("children");
+                                City city = new City();
+                                city.setId(cityId);
+                                city.setName(cityName);
+                                List<Area> areaList = new ArrayList<Area>();
+                                if (areaArr != null && areaArr.length() > 0)
+                                {
+                                    for (int j = 0; j < areaArr.length(); j++)
+                                    {
+                                        JSONObject areaObj = areaArr.optJSONObject(j);
+                                        int areaId = areaObj.optInt("id");
+                                        String areaName = areaObj.optString("name");
+                                        int areaPrice = areaObj.optInt("price");
+                                        Area area = new Area();
+                                        area.setId(areaId);
+                                        area.setName(areaName);
+                                        area.setPrice(areaPrice);
+                                        areaList.add(area);
+                                    }
+                                    city.setAreas(areaList);
+                                    cityList.add(city);
+                                }
+
+                            }
+                        }
+                        province.setCityList(cityList);
+                        provinceList.add(province);
+                    }
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+            }
+        });
+        mRequestQueue.add(request);
     }
 }

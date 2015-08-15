@@ -78,6 +78,7 @@ import com.alibaba.sdk.android.AlibabaSDK;
 import com.alibaba.sdk.android.login.LoginService;
 import com.alibaba.sdk.android.login.callback.LoginCallback;
 import com.zhaidou.utils.NativeHttpUtil;
+import com.zhaidou.utils.ToolUtils;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -112,15 +113,8 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     private static final String KEY_ENV_INDEX = "envIndex";
 
     private static final String FORMAT_STRING = "{\"version\":\"1.0.0.daily\",\"target\":\"thirdpartlogin\",\"params\":{\"loginInfo\":{\"loginId\":\"%s\",\"password\":\"%s\"}}}";
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment LoginFragment.
-     */
-    // TODO: Rename and change types and number of parameters
+
+
     public static LoginFragment newInstance(String param1, String param2) {
         LoginFragment fragment = new LoginFragment();
         Bundle args = new Bundle();
@@ -145,7 +139,6 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_login, container, false);
         mEmailView=(TextView)view.findViewById(R.id.tv_email);
         mPswView=(TextView)view.findViewById(R.id.tv_password);
@@ -286,52 +279,41 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
             mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), "登陆中");
             super.onPreExecute();
         }
-
         @Override
         protected String doInBackground(Void... voids) {
             String str=null;
             try {
                 String email = mEmailView.getText().toString();
                 String password =mPswView.getText().toString();
-
                 str = executeHttpPost(email,password);
             }catch (Exception e){
-
             }
             return str;
         }
-
         @Override
         protected void onPostExecute(String s) {
-            Log.i("login---->onPostExecute------------>", s);
             if (mDialog!=null)
                 mDialog.dismiss();
             try {
                 JSONObject json = new JSONObject(s);
                 String msg = json.optString("message");
                 if (!TextUtils.isEmpty(msg)){
-//                    JSONArray errMsg =  json.optJSONArray("message");
                     Toast.makeText(getActivity(),msg,Toast.LENGTH_LONG).show();
                     return;
                 }
-
-                Log.i("before--->","before");
                 JSONArray userArr = json.optJSONArray("users");
                 for (int i=0;i<userArr.length();i++){
                     JSONObject userObj = userArr.optJSONObject(i);
                     int id = userObj.optInt("id");
-                    Log.i("id--->",id+"");
                     String email=userObj.optString("email");
-                    Log.i("email--->",email);
                     String nick = userObj.optString("nick_name");
-                    Log.i("nickname--->",nick);
                     String token=json.optJSONObject("user_tokens").optString("token");
-                    Log.i("token--->",token);
-
                     User user = new User(id,email,token,nick,null);
+
+                    ToolUtils.setLog("要刷新登录了");
                     Intent intent=new Intent(ZhaiDou.IntentRefreshLoginTag);
                     getActivity().sendBroadcast(intent);
-                    Log.i("LoginFragment----onRegisterOrLoginSuccess---->","onRegisterOrLoginSuccess");
+
                     mRegisterOrLoginListener.onRegisterOrLoginSuccess(user,LoginFragment.this);
                 }
 
@@ -357,7 +339,6 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
 
             parameters.add(new BasicNameValuePair("user_token[email]",email));
             parameters.add(new BasicNameValuePair("user_token[password]",psw));
-//            parameters.add(new BasicNameValuePair("user[nick_name]",nick));
 
             // 创建UrlEncodedFormEntity对象
             UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
@@ -389,7 +370,6 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         }
     }
     private void authorize(Platform plat) {
-        Log.i("Platform----->",plat.getName());
         if (plat == null) {
             return;
         }
@@ -414,8 +394,6 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
 
     @Override
     public void onComplete(final Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
-        Log.i("onComplete----->",platform.getName()+"---"+i);
-//        Log.i("stringObjectHashMap",stringObjectHashMap.toString());
         String plat =platform.getName();
         final String provider=plat.equals("QQ")?"tqq":plat.equals("SinaWeibo")?"weibo":"weixin";
         Log.i("getUserId", platform.getDb().getUserId());
@@ -429,14 +407,12 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         Set<String> keys =stringObjectHashMap.keySet();
         Log.i("stringObjectHashMap--------->",stringObjectHashMap.toString());
         for(String key:keys){
-            Log.i("key------------->"+key,"   value-------------"+stringObjectHashMap.get(key));
         }
 
 
         JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,ZhaiDou.USER_LOGIN_THIRD_VERIFY_URL,new JSONObject(params),new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-//                Log.i("jsonObject--->",jsonObject.toString());
                 int flag=jsonObject.optInt("flag");
 
                 if (0==flag){
@@ -507,7 +483,6 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     private class RegisterTask extends AsyncTask<Map<String,String>,Void,String>{
         @Override
         protected String doInBackground(Map<String, String>... maps) {
-            Log.i("doInBackground--------------->",maps[0].toString());
             String s=null;
             try {
                 s=NativeHttpUtil.post(ZhaiDou.USER_REGISTER_URL,null,maps[0]);
@@ -519,7 +494,6 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
 
         @Override
         protected void onPostExecute(String s) {
-            Log.i("RegisterTask-->onPostExecute-->s--->",s);
             try{
                 JSONObject json = new JSONObject(s);
                 JSONObject userJson = json.optJSONObject("user");
@@ -528,11 +502,9 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                 String token =userJson.optString("authentication_token");
                 String avatar =userJson.optJSONObject("avatar").optString("url");
                 String nick=userJson.optString("nick_name");
-                Log.i("LoginFragment----onRegisterOrLoginSuccess---->","onRegisterOrLoginSuccess");
                 User user=new User(id,email,token,nick,avatar);
                 mRegisterOrLoginListener.onRegisterOrLoginSuccess(user,LoginFragment.this);
             }catch (Exception e){
-//                Log.i("e--------->",e.getMessage());
             }
         }
     }

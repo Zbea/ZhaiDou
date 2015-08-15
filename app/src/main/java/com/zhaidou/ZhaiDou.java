@@ -134,9 +134,9 @@ public class ZhaiDou {
     //订单列表
     public static String URL_ORDER_LIST=HOME_BASE_URL+"special_mall/api/orders";
     //收货地址
-    public static String ORDER_RECEIVER_URL=HOME_BASE_URL+"special_mall/api/receivers";
+    public static String ORDER_RECEIVER_URL=HOME_BASE_URL+"special_mall/api/receivers/";
     //省市区
-    public static String ORDER_ADDRESS_URL=HOME_BASE_URL+"pecial_mall/api/sales/provider";
+    public static String ORDER_ADDRESS_URL=HOME_BASE_URL+"special_mall/api/sales/provider";
 
 
     public static String BROADCAST_WXAPI_FILTER="com.zhaidou.wxapi.pay";

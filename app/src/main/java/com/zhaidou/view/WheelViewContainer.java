@@ -3,7 +3,8 @@ package com.zhaidou.view;
 import android.content.Context;
  import android.util.AttributeSet;
  import android.util.Log;
- import android.view.ViewGroup;
+import android.view.Gravity;
+import android.view.ViewGroup;
  import android.widget.LinearLayout;
  import android.widget.ScrollView;
 
@@ -38,6 +39,7 @@ import android.content.Context;
          mContext = context;
          initWheelView();
          setOrientation(LinearLayout.HORIZONTAL);
+         setGravity(Gravity.CENTER_HORIZONTAL);
      }
 
      public WheelViewContainer(Context context, AttributeSet attrs) {
@@ -46,6 +48,7 @@ import android.content.Context;
          mContext = context;
          initWheelView();
          setOrientation(LinearLayout.HORIZONTAL);
+         setGravity(Gravity.CENTER_HORIZONTAL);
      }
 
      public WheelViewContainer(Context context, AttributeSet attrs, int defStyle) {
@@ -54,21 +57,22 @@ import android.content.Context;
          mContext = context;
          initWheelView();
          setOrientation(LinearLayout.HORIZONTAL);
+         setGravity(Gravity.CENTER_HORIZONTAL);
      }
 
      private void initWheelView() {
-         Log.i("mContext----------------->", mContext.toString());
          provinceWheel = new WheelView(mContext);
          provinceWheel.setBackgroundColor(getResources().getColor(R.color.gray_9));
-         ScrollView.LayoutParams provinceParams = new ScrollView.LayoutParams(PixelUtil.dp2px(100, mContext), PixelUtil.dp2px(100, mContext));
+         ScrollView.LayoutParams provinceParams = new ScrollView.LayoutParams(PixelUtil.dp2px(120, mContext), PixelUtil.dp2px(80, mContext));
          provinceWheel.setLayoutParams(provinceParams);
 
          cityWheel = new WheelView(mContext);
-         ViewGroup.LayoutParams cityParams = new ViewGroup.LayoutParams(PixelUtil.dp2px(100, mContext), PixelUtil.dp2px(100, mContext));
+         ViewGroup.LayoutParams cityParams = new ViewGroup.LayoutParams(PixelUtil.dp2px(120, mContext), PixelUtil.dp2px(80, mContext));
          cityWheel.setLayoutParams(cityParams);
          //
          areaWheel = new WheelView(mContext);
-         ViewGroup.LayoutParams areaParams = new ViewGroup.LayoutParams(PixelUtil.dp2px(100, mContext), PixelUtil.dp2px(100, mContext));
+//         ViewGroup.LayoutParams areaParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT ,PixelUtil.dp2px(80, mContext));
+         ViewGroup.LayoutParams areaParams = new ViewGroup.LayoutParams(PixelUtil.dp2px(120, mContext), PixelUtil.dp2px(80, mContext));
          areaWheel.setLayoutParams(areaParams);
          addView(provinceWheel);
          addView(cityWheel);

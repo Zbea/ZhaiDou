@@ -2,7 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#f1f1f1">
+    android:background="@color/page_bg">
 
     <RelativeLayout
         android:id="@+id/rl_back"
@@ -44,8 +44,44 @@
     <ListView
         android:id="@+id/lv_unreceivelist"
         android:listSelector="@android:color/transparent"
+        android:divider="@null"
+        android:scrollbars="none"
+        android:dividerHeight="10dp"
+        android:layout_marginBottom="10dp"
         android:layout_width="match_parent"
         android:scrollbars="none"
         android:layout_height="match_parent"/>
+
+    <LinearLayout
+        android:id="@+id/loadingView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/page_bg"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/nullline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_null_order_payment"/>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_gary_color"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="80dp"
+                android:text="抱歉,暂无待付款订单"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

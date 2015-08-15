@@ -417,7 +417,18 @@ public class ShopCartFragment extends BaseFragment
         cartGoodsLine.removeAllViews();
         for (int position = 0; position < items.size(); position++)
         {
+            final int tag=position;
             final View childeView = LayoutInflater.from(mContext).inflate(R.layout.shop_cart_goods_item, null);
+            LinearLayout lineView=(LinearLayout)childeView.findViewById(R.id.lineView);
+            lineView.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View view)
+                {
+                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(tag).name, items.get(tag).id);
+                    ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
+                }
+            });
             TypeFaceTextView itemName = (TypeFaceTextView) childeView.findViewById(R.id.cartItemNameTv);
             TypeFaceTextView itemSize = (TypeFaceTextView) childeView.findViewById(R.id.cartItemSizeTv);
             TextView itemflags = (TextView) childeView.findViewById(R.id.cartItemIsFlags);
