@@ -150,11 +150,10 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
             TextView tv_order_status = ViewHolder.get(convertView, R.id.tv_order_status);
             ImageView iv_order_img=ViewHolder.get(convertView,R.id.iv_order_img);
             Order item = getList().get(position);
-            Log.i("item----------->",item.toString());
-            tv_order_time.setText("下单时间："+item.getCreated_at_for());
-            tv_order_number.setText("订单编号："+item.getNumber());
-            tv_order_amount.setText("订单金额："+item.getAmount()+"");
-            tv_order_status.setText("订单状态："+item.getStatus_ch());
+            tv_order_time.setText(item.getCreated_at_for());
+            tv_order_number.setText(item.getNumber());
+            tv_order_amount.setText("￥"+item.getAmount()+"");
+            tv_order_status.setText(item.getStatus_ch());
             ToolUtils.setImageCacheUrl(item.getImg(), iv_order_img);
             return convertView;
         }

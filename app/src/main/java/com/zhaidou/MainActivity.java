@@ -3,6 +3,12 @@ package com.zhaidou;
 import com.alibaba.sdk.android.AlibabaSDK;
 import com.alibaba.sdk.android.callback.CallbackContext;
 import com.alibaba.sdk.android.callback.InitResultCallback;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpClientStack;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
@@ -18,7 +24,10 @@ import com.zhaidou.fragments.SettingFragment;
 import com.zhaidou.fragments.ShopPaymentFragment;
 import com.zhaidou.fragments.StrategyFragment;
 import com.zhaidou.fragments.WebViewFragment;
+import com.zhaidou.model.Area;
 import com.zhaidou.model.CartItem;
+import com.zhaidou.model.City;
+import com.zhaidou.model.Province;
 import com.zhaidou.model.User;
 import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;
@@ -51,6 +60,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -99,6 +110,9 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private String serverName;
     private String serverInfo;
     private int serverCode;
+    private RequestQueue mRequestQueue;
+    public static List<Province> provinceList = new ArrayList<Province>();
+
 
     public static int num=0;
     private List<CartItem> items=new ArrayList<CartItem>();
@@ -220,6 +234,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     {
         creatCartDB=new CreatCartDB(mContext);
         initCartTips();
+        mRequestQueue = Volley.newRequestQueue(this, new HttpClientStack(new DefaultHttpClient()));
+        FetchCityData();
     }
 
     /**
@@ -556,5 +572,68 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     }
     public void hideTip(int v){
         iv_dot.setVisibility(v);
+    }
+
+    private void FetchCityData() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_ADDRESS_URL, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (jsonObject != null)
+                {
+                    JSONArray providerArr = jsonObject.optJSONArray("providers");
+                    for (int i = 0; i < providerArr.length(); i++)
+                    {
+                        JSONObject provinceObj = providerArr.optJSONObject(i);
+                        int provinceId = provinceObj.optInt("id");
+                        String provinceName = provinceObj.optString("name");
+                        Province province = new Province();
+                        province.setId(provinceId);
+                        province.setName(provinceName);
+                        List<City> cityList = new ArrayList<City>();
+                        JSONArray cityArr = provinceObj.optJSONArray("cities");
+                        if (cityArr != null && cityArr.length() > 0)
+                        {
+                            for (int k = 0; k < cityArr.length(); k++)
+                            {
+                                JSONObject cityObj = cityArr.optJSONObject(k);
+                                int cityId = cityObj.optInt("id");
+                                String cityName = cityObj.optString("name");
+                                JSONArray areaArr = cityObj.optJSONArray("children");
+                                City city = new City();
+                                city.setId(cityId);
+                                city.setName(cityName);
+                                List<Area> areaList = new ArrayList<Area>();
+                                if (areaArr != null && areaArr.length() > 0)
+                                {
+                                    for (int j = 0; j < areaArr.length(); j++)
+                                    {
+                                        JSONObject areaObj = areaArr.optJSONObject(j);
+                                        int areaId = areaObj.optInt("id");
+                                        String areaName = areaObj.optString("name");
+                                        int areaPrice = areaObj.optInt("price");
+                                        Area area = new Area();
+                                        area.setId(areaId);
+                                        area.setName(areaName);
+                                        area.setPrice(areaPrice);
+                                        areaList.add(area);
+                                    }
+                                    city.setAreas(areaList);
+                                    cityList.add(city);
+                                }
+
+                            }
+                        }
+                        province.setCityList(cityList);
+                        provinceList.add(province);
+                    }
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+            }
+        });
+        mRequestQueue.add(request);
     }
 }

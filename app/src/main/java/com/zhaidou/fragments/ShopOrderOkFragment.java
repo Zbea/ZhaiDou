@@ -84,6 +84,7 @@ public class ShopOrderOkFragment extends BaseFragment {
     private TextView addressNameTv, addressPhoneTv, addressinfoTv;
     private ArrayList<CartItem> items;
     private List<CartItem> erroritems=new ArrayList<CartItem>();
+    private List<Address> addressList = new ArrayList<Address>();
     private String Str_token;
 
     private int num = 0;
@@ -112,7 +113,6 @@ public class ShopOrderOkFragment extends BaseFragment {
                     orderAddressEditLine.setVisibility(View.VISIBLE);
                     orderAddressNullLine.setVisibility(View.GONE);
 
-                    List<Address> addressList = (List<Address>) msg.obj;
                     address = addressList.get(0);
                     setYFMoney(address);
                     addressPhoneTv.setText("收件人：" + address.getPhone());
@@ -293,7 +293,7 @@ public class ShopOrderOkFragment extends BaseFragment {
                     newAddrFragment.setAddrSaveSuccessListener(new NewAddrFragment.AddrSaveSuccessListener()
                     {
                         @Override
-                        public void onSaveListener(JSONObject receiver, int status,int yfprice)
+                        public void onSaveListener(JSONObject receiver, int status,int yfprice,String province, String city, String area)
                         {
                             int id = receiver.optInt("id");
                             int user_id = receiver.optInt("user_id");
@@ -303,7 +303,9 @@ public class ShopOrderOkFragment extends BaseFragment {
                             String addresss = receiver.optString("address");
                             boolean is_default = receiver.optBoolean("is_default");
                             Address addr = new Address(id, name, is_default, phone, user_id, addresss, provider_id,yfprice);
-
+                            addr.setProvince(province);
+                            addr.setCity(city);
+                            addr.setArea(area);
                             address=addr;
                             setYFMoney(addr);
                             orderAddressInfoLine.setVisibility(View.VISIBLE);
@@ -621,7 +623,6 @@ public class ShopOrderOkFragment extends BaseFragment {
                 if (jsonObject != null)
                 {
                     JSONArray receivers = jsonObject.optJSONArray("receivers");
-                    List<Address> addressList = new ArrayList<Address>();
                     if (receivers != null && receivers.length() > 0)
                     {
                         for (int i = 0; i < receivers.length(); i++)
@@ -642,13 +643,7 @@ public class ShopOrderOkFragment extends BaseFragment {
                             address.setProvince(province);
                             address.setCity(city);
                             address.setArea(area);
-                            if (is_default)
-                            {
-                                addressList.add(0, address);
-                            } else
-                            {
-                                addressList.add(address);
-                            }
+                            addressList.add(address);
                         }
                         Message message = new Message();
                         message.what = UPDATE_DEFALUE_ADDRESS_INFO;
@@ -688,7 +683,6 @@ public class ShopOrderOkFragment extends BaseFragment {
     public void FetchOSaleData(final int i)
     {
         String url = ZhaiDou.orderCheckOSaleUrl;
-        Log.i("url---------------------->", url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override

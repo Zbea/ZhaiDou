@@ -26,6 +26,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
@@ -83,9 +84,9 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
     private TextView et_location;
 
     private List<Province> provinceList = new ArrayList<Province>();
-    private Province selectedProvince;
-    private City selectedCity;
-    private Area selectedArea;
+    private Province selectedProvince=new Province();
+    private City selectedCity=new City();
+    private Area selectedArea=new Area();
     private AddrSaveSuccessListener addrSaveSuccessListener;
     private int UPDATE_ADDRESS_INFO=1;
     private int CREATE_NEW_ADDRESS=2;
@@ -133,6 +134,15 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
         et_name.setText(mNickName);
         et_mobile.setText(mMobile);
         et_location.setText(mLocation);
+
+        if (mLocation!=null&&mLocation.length()>8)
+        {
+            String[] city=mLocation.split("-");
+            selectedProvince.setName(city[0]);
+            selectedCity.setName(city[1]) ;
+            selectedArea.setName(city[2]);
+        }
+
         et_address_detail.setText(mAddress);
 
         view.findViewById(R.id.tv_save).setOnClickListener(this);
@@ -140,7 +150,17 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
         mRequestQueue = Volley.newRequestQueue(getActivity(), new HttpClientStack(new DefaultHttpClient()));
         mSharedPreferences = getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         token = mSharedPreferences.getString("token", null);
-        FetchCityData();
+
+        if (MainActivity.provinceList!=null&&MainActivity.provinceList.size()>10)
+        {
+            ToolUtils.setLog("加载已经添加的");
+            provinceList=MainActivity.provinceList;
+        }
+        else
+        {
+            ToolUtils.setLog("重新加载地址");
+            FetchCityData();
+        }
         return view;
     }
 
@@ -180,9 +200,16 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
                 dialogWindow.setWindowAnimations(R.style.pop_anim_style);
 
                 View mDialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_adddress, null, false);
-                final WheelViewContainer wheelView = (WheelViewContainer) mDialogView.findViewById(R.id.wheel_view_wv);
-                if (CollectionUtils.isNotNull(provinceList))
+                final WheelViewContainer wheelView= (WheelViewContainer) mDialogView.findViewById(R.id.wheel_view_wv);
+                LinearLayout cityView= (LinearLayout) mDialogView.findViewById(R.id.cityView);
+                if(provinceList != null && provinceList.size() > 10)
+                {
                     wheelView.setData(provinceList);
+                }
+                else
+                {
+                    wheelView.setVisibility(View.GONE);
+                }
                 TextView cancelTv = (TextView) mDialogView.findViewById(R.id.bt_cancel);
                 cancelTv.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -190,17 +217,18 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
                         dialog.dismiss();
                     }
                 });
-//
                 TextView okTv = (TextView) mDialogView.findViewById(R.id.bt_confirm);
                 okTv.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view)
                     {
-                        if (wheelView!=null)
-                        selectedProvince = wheelView.getProvince();
-                        selectedCity = wheelView.getCity();
-                        selectedArea = wheelView.getArea();
-                        et_location.setText(selectedProvince.getName() + "-" + selectedCity.getName() + "-" + selectedArea.getName());
+                        if(provinceList != null && provinceList.size() > 10)
+                        {
+                            selectedProvince = wheelView.getProvince();
+                            selectedCity = wheelView.getCity();
+                            selectedArea = wheelView.getArea();
+                            et_location.setText(selectedProvince.getName() + "-" + selectedCity.getName() + "-" + selectedArea.getName());
+                        }
                         dialog.dismiss();
                     }
                 });
@@ -244,7 +272,7 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
                     ToolUtils.setLog("receiver：" + receiver.toString());
                     if (addrSaveSuccessListener!=null)
                     {
-                        addrSaveSuccessListener.onSaveListener(receiver,mStatus,price);
+                        addrSaveSuccessListener.onSaveListener(receiver,mStatus,price,selectedProvince.getName(), selectedCity.getName(), selectedArea.getName());
                     }
                 }else
                 {
@@ -373,7 +401,7 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                Log.i("FetchCityData---->", "地址加载失败");
+                ToolUtils.setToast(getActivity(),"抱歉,加载城市失败");
             }
         });
         mRequestQueue.add(request);
@@ -384,6 +412,6 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
     }
 
     public interface AddrSaveSuccessListener{
-        public void onSaveListener(JSONObject receiver,int status,int yfPrice);
+        public void onSaveListener(JSONObject receiver,int status,int yfPrice,String province,String city,String area);
     }
 }

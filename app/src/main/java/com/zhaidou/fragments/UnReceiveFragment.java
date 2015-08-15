@@ -223,10 +223,10 @@ public class UnReceiveFragment extends BaseFragment {
             TextView bt_logistics=ViewHolder.get(convertView,R.id.bt_logistics);
             ImageView iv_order_img=ViewHolder.get(convertView,R.id.iv_order_img);
             Order item = getList().get(position);
-            tv_order_time.setText("下单时间："+item.getCreated_at_for());
-            tv_order_number.setText("订单编号："+item.getNumber());
-            tv_order_amount.setText("订单金额：￥"+item.getAmount()+"");
-            tv_order_status.setText("订单状态："+item.getStatus_ch());
+            tv_order_time.setText(item.getCreated_at_for());
+            tv_order_number.setText(item.getNumber());
+            tv_order_amount.setText("￥"+item.getAmount()+"");
+            tv_order_status.setText(item.getStatus_ch());
             if ("1".equalsIgnoreCase(item.getStatus())){
                 bt_received.setVisibility(View.GONE);
                 bt_logistics.setText("申请退款");
