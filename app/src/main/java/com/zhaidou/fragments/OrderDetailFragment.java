@@ -352,7 +352,6 @@ public class OrderDetailFragment extends BaseFragment {
                     dialog.show();
                     return;
                 }
-                Log.i("mOrderId------------->", mOrderId + "");
                 Log.i("mOrder.getOrderId()------------->", mOrder.getOrderId() + "");
                 Intent intent1 = new Intent(getActivity(), PayDemoActivity.class);
                 intent1.putExtra("id", Integer.parseInt(mOrderId + ""));
