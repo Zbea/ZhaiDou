@@ -19,6 +19,7 @@ import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.PersonalFragment;
 import com.zhaidou.fragments.PersonalFragment1;
 import com.zhaidou.fragments.RegisterFragment;
+import com.zhaidou.fragments.ShopPaymentFailFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -42,6 +43,7 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
             registerFragment.setRegisterOrLoginListener(this);
         }
         if ("MainActivity".equalsIgnoreCase(this.getClass().getSimpleName())) {
+            Log.i("MainActivity---->","this.getClass().getSimpleName()------------"+fragment.getClass().getSimpleName());
             mChildContainer.setVisibility(View.VISIBLE);
         }
         getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, fragment, fragment.getClass().getSimpleName())
@@ -52,9 +54,11 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         Log.i("childFragmentManager--->", fragmentManager.getBackStackEntryCount() + "");
-        fragmentManager.beginTransaction().remove(fragment).commit();
+        fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
         fragmentManager.popBackStack();
-        fragmentManager.beginTransaction().remove(fragment).commit();
+        if (fragment instanceof ShopPaymentFailFragment)
+        fragmentManager.popBackStack();
+        fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
 
         Log.i("fragment---->", fragment.getClass().getSimpleName());
         if (fragment != null && fragment instanceof LoginFragment) {
@@ -73,7 +77,7 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
         SharedPreferencesUtil.saveUser(this, user);
 
         ToolUtils.setLog("开始登录刷新啦————————————————》");
-        Intent intent=new Intent(ZhaiDou.IntentRefreshLoginTag);
+        Intent intent = new Intent(ZhaiDou.IntentRefreshLoginTag);
         sendBroadcast(intent);
         ToolUtils.setLog("开始登录刷新啦1————————————————》");
 

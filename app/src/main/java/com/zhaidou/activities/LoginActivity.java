@@ -92,6 +92,7 @@ import cn.sharesdk.wechat.friends.Wechat;
                         mDialog.dismiss();
                     }
                     User u=(User)msg.obj;//id,email,token,nick,null
+                    Log.i("handleMessage------------>",u.toString());
                     SharedPreferencesUtil.saveUser(getApplicationContext(), u);
 
                     ToolUtils.setLog("要刷新登录了");
@@ -290,6 +291,8 @@ import cn.sharesdk.wechat.friends.Wechat;
                     Toast.makeText(LoginActivity.this,msg,Toast.LENGTH_LONG).show();
                     return;
                 }
+
+                Log.i("before--->","before");
                 JSONArray userArr = json.optJSONArray("users");
                 for (int i=0;i<userArr.length();i++){
                     JSONObject userObj = userArr.optJSONObject(i);

@@ -21,6 +21,7 @@ import com.zhaidou.fragments.PersonalFragment;
 import com.zhaidou.fragments.PersonalMainFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.fragments.SettingFragment;
+import com.zhaidou.fragments.ShopPaymentFailFragment;
 import com.zhaidou.fragments.ShopPaymentFragment;
 import com.zhaidou.fragments.StrategyFragment;
 import com.zhaidou.fragments.WebViewFragment;
@@ -113,7 +114,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private RequestQueue mRequestQueue;
     public static List<Province> provinceList = new ArrayList<Province>();
 
-
     public static int num=0;
     private List<CartItem> items=new ArrayList<CartItem>();
 
@@ -137,8 +137,23 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
             if (action.equalsIgnoreCase(ZhaiDou.BROADCAST_WXAPI_FILTER)) {
                 List<Fragment> fragments = getSupportFragmentManager().getFragments();
-                ShopPaymentFragment shopPaymentFragment=(ShopPaymentFragment)fragments.get(fragments.size()-1);
-                shopPaymentFragment.handleWXPayResult(intent.getIntExtra("code", -1));
+                Log.i("fragments--------------->", fragments.size() + "");
+                for (Fragment fragment : fragments) {
+//                    Log.i("fragment----------------->",fragment.getClass().getSimpleName());
+                }
+                int result = intent.getIntExtra("code", -2);
+                if (fragments.size() > 1) {
+                    Fragment fragment = fragments.get(fragments.size() - 1);
+                    if (fragment instanceof ShopPaymentFragment) {
+                        if (result < 0) {
+                            mHandler.sendEmptyMessage(2);
+                        }
+//                        ((ShopPaymentFragment) fragment).handleWXPayResult(result);
+                    }
+                    if (fragment instanceof ShopPaymentFailFragment) {
+                        ((ShopPaymentFailFragment) fragment).handleWXPayResult(intent.getIntExtra("code", -1));
+                    }
+                }
             }
         }
     };
@@ -149,10 +164,11 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             switch (msg.what){
                 case 0:
                     User user=(User)msg.obj;
+                    Log.i("persoanlFragment---------------->",persoanlFragment==null?"null":"no null");
                     if (persoanlFragment==null){
                         persoanlFragment= PersonalFragment.newInstance("", "");
-                    }
-                    else {
+                    }else {
+//                        persoanlFragment.refreshData(MainActivity.this);
                     }
                     selectFragment(currentFragment, persoanlFragment);
                     setButton(personalButton);
@@ -353,6 +369,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         personalButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.i("---personalButton-->",checkLogin()+"");
                 if (!checkLogin()){
 //                    mLoginFragment=LoginFragment.newInstance("","");
 //                    mLoginFragment.setRegisterOrLoginListener(MainActivity.this);
@@ -492,6 +509,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 mHandler.sendMessage(message);
                 break;
             case 1000:
+
+                Log.i("onActivityResult---user----1000------>","sadadadada");
                 break;
         }
 

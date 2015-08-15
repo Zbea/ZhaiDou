@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -18,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -42,6 +42,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the {@link UnReceiveFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
 public class UnReceiveFragment extends BaseFragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -58,7 +63,8 @@ public class UnReceiveFragment extends BaseFragment {
     private List<Order> orders;
     private final int STATUS_UNRECEIVE_LIST=14;
     private String token;
-    private Handler handler=new Handler(){
+    private View rootView;
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
@@ -90,40 +96,55 @@ public class UnReceiveFragment extends BaseFragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_un_receive, container, false);
+        // Inflate the layout for this fragment
+        if (null != rootView) {
+            ViewGroup parent = (ViewGroup) rootView.getParent();
+            if (null != parent) {
+                parent.removeView(rootView);
+            }
+        } else {
+            rootView = inflater.inflate(R.layout.fragment_un_receive, container, false);
+            initView(rootView);
+        }
+        return rootView;
+    }
+
+    private void initView(View view) {
         mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
         loadingView=(LinearLayout)view.findViewById(R.id.loadingView);
-        mListView=(ListView)view.findViewById(R.id.lv_unreceivelist);
-        token=(String) SharedPreferencesUtil.getData(getActivity(),"token","");
-        orders=new ArrayList<Order>();
-        unReceiveAdapter=new UnReceiveAdapter(getActivity(),orders);
+        mListView = (ListView) view.findViewById(R.id.lv_unreceivelist);
+        token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
+        orders = new ArrayList<Order>();
+        unReceiveAdapter = new UnReceiveAdapter(getActivity(), orders);
         mListView.setAdapter(unReceiveAdapter);
-        mRequestQueue= Volley.newRequestQueue(getActivity());
+        mRequestQueue = Volley.newRequestQueue(getActivity());
         FetchReceiveData();
-        unReceiveAdapter.setOnInViewClickListener(R.id.bt_logistics,new BaseListAdapter.onInternalClickListener() {
+        unReceiveAdapter.setOnInViewClickListener(R.id.bt_logistics, new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                Order order=(Order)values;
-                if ("4".equalsIgnoreCase(order.getStatus())){
+                Order order = (Order) values;
+                if ("4".equalsIgnoreCase(order.getStatus())) {
                     LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "");
                     ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
-                }else if ("1".equalsIgnoreCase(order.getStatus())){
-                    AfterSaleFragment afterSaleFragment =AfterSaleFragment.newInstance(order.getOrderId()+"",order.getStatus());
-                    ((MainActivity)getActivity()).navigationToFragment(afterSaleFragment);
+                } else if ("1".equalsIgnoreCase(order.getStatus())) {
+                    AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(order.getOrderId() + "", order.getStatus());
+                    ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
                 }
             }
         });
-        unReceiveAdapter.setOnInViewClickListener(R.id.bt_received,new BaseListAdapter.onInternalClickListener() {
+        unReceiveAdapter.setOnInViewClickListener(R.id.bt_received, new BaseListAdapter.onInternalClickListener() {
             @Override
-            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+            public void OnClickListener(View parentV, View v, final Integer position, Object values) {
+                final Order order = (Order) values;
                 final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
 
-                View view1 = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_receiced, null);
-                TextView cancelTv = (TextView) view1.findViewById(R.id.cancelTv);
+                View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
+                TextView textView = (TextView) view.findViewById(R.id.tv_msg);
+                textView.setText("是否确认收货?");
+                TextView cancelTv = (TextView) view.findViewById(R.id.cancelTv);
                 cancelTv.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -131,35 +152,70 @@ public class UnReceiveFragment extends BaseFragment {
                     }
                 });
 
-                TextView okTv = (TextView) view1.findViewById(R.id.okTv);
+                TextView okTv = (TextView) view.findViewById(R.id.okTv);
                 okTv.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + order.getOrderId() + "/update_status?status=5", new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject jsonObject) {
+                                JSONObject orderObj = jsonObject.optJSONObject("order");
+                                if (orderObj != null) {
+                                    String status = orderObj.optString("status");
+                                    if ("5".equalsIgnoreCase(status)) {
+                                        orders.remove(order);
+                                    }
+                                    handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError volleyError) {
+
+                            }
+                        }) {
+                            @Override
+                            public Map<String, String> getHeaders() throws AuthFailureError {
+                                Map<String, String> headers = new HashMap<String, String>();
+                                headers.put("SECAuthorization", token);
+                                return headers;
+                            }
+                        };
+                        mRequestQueue.add(request);
                         dialog.dismiss();
                     }
                 });
                 dialog.setCanceledOnTouchOutside(true);
                 dialog.setCancelable(true);
-                dialog.addContentView(view1, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                dialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 dialog.show();
             }
         });
-        unReceiveAdapter.setOnInViewClickListener(R.id.ll_unreceive,new BaseListAdapter.onInternalClickListener() {
+        unReceiveAdapter.setOnInViewClickListener(R.id.ll_unreceive, new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                Order order=(Order)values;
-                OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(),order);
+                final Order order = (Order) values;
+                OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(), order);
                 ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
+                orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
+                    @Override
+                    public void onOrderStatusChange(Order o) {
+                        Log.i("o-------------->",o.toString());
+                        if (!order.getStatus().equalsIgnoreCase(o.getStatus())){
+                            orders.remove(order);
+                            unReceiveAdapter.notifyDataSetChanged();
+                        }
+                    }
+                });
             }
         });
-        return view;
     }
-    private void FetchReceiveData(){
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST, new Response.Listener<JSONObject>() {
+
+    private void FetchReceiveData() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?status=1,4", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                if (mDialog!=null) mDialog.dismiss();
-                Log.i("jsonObject----------->", jsonObject.toString());
+                Log.i("FetchReceiveData----------->", jsonObject.toString());
                 if (jsonObject != null) {
                     JSONArray orderArr = jsonObject.optJSONArray("orders");
                     if (orderArr != null && orderArr.length() > 0) {
@@ -193,7 +249,6 @@ public class UnReceiveFragment extends BaseFragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                if (mDialog!=null) mDialog.dismiss();
                 Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
             }
         }) {
@@ -237,11 +292,5 @@ public class UnReceiveFragment extends BaseFragment {
             ToolUtils.setImageCacheUrl(item.getImg(), iv_order_img);
             return convertView;
         }
-    }
-
-    @Override
-    public void onStart() {
-        FetchReceiveData();
-        super.onStart();
     }
 }
