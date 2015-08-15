@@ -69,8 +69,7 @@
                         android:textSize="14sp"
                         android:textColor="@color/red"
                         android:layout_marginLeft="2dp"
-                        android:layout_marginRight="2dp"
-                        android:text="15:00"/>
+                        android:layout_marginRight="2dp"/>
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:layout_width="wrap_content"

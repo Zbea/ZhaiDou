@@ -24,6 +24,14 @@
     <string name="shop_payment_text">收银台</string>
     <string name="shop_payment_fail_text">支付失败</string>
     <string name="shop_payment_success_text">支付成功</string>
+    
+    
+    <!--订单-->
+    <string name="order_logistics">查看物流</string>
+    <string name="order_return_good">申请退货</string>
+    <string name="order_return_money">申请退款</string>
+    <string name="order_received">确认收货</string>
+    <string name="order_confirm">是否确认收货</string>
 
     <!-- Tab -->
     <string name="tab_utility_title">最实用</string>

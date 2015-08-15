@@ -1,11 +1,9 @@
 package com.zhaidou.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -25,37 +22,24 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.pulltorefresh.PullToRefreshBase;
 import com.tencent.mm.sdk.modelpay.PayReq;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.alipay.ExternalPartner;
-import com.zhaidou.alipay.Keys;
-import com.zhaidou.alipay.PayDemoActivity;
 import com.zhaidou.alipay.PayResult;
-import com.zhaidou.alipay.SignUtils;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.CartItem;
-import com.zhaidou.utils.MD5Util;
+import com.zhaidou.model.Order;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.view.TypeFaceTextView;
-import com.zhaidou.wxapi.MD5;
-
 import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -66,14 +50,18 @@ public class ShopPaymentFragment extends BaseFragment {
     private static final String ARG_ORDERID = "orderId";
     private static final String ARG_AMOUNT = "amount";
     private static final String ARG_FARE="fare";
+    private static final String ARG_TIME="timeLeft";
+    private static final String ARG_ORDER="order";
 
     private int mOrderId;
     private int mAmount;
     private int mFare;
+    private long mTimeLeft;
+    private Order mOrder;
     private View mView;
     private Context mContext;
 
-    private int initTime = 15 * 60 * 1000;
+    private long initTime = 15 * 60 * 1000;
 
     private final int UPDATE_COUNT_DOWN_TIME = 1001, UPDATE_UI_TIMER_FINISH = 1002, UPDATE_TIMER_START = 1003;
 
@@ -95,6 +83,7 @@ public class ShopPaymentFragment extends BaseFragment {
     private CheckBox cb_zhifubao;
     private int mCheckPosition = 0;
     RequestQueue mRequestQueue;
+    private Order.OrderListener orderListener;
 
     private static final int SDK_PAY_FLAG = 1;
 
@@ -158,21 +147,6 @@ public class ShopPaymentFragment extends BaseFragment {
             }
         }
     };
-    /**
-     * 下拉刷新
-     */
-    private PullToRefreshBase.OnRefreshListener2 refreshListener = new PullToRefreshBase.OnRefreshListener2() {
-        @Override
-        public void onPullDownToRefresh(PullToRefreshBase refreshView) {
-
-        }
-
-        @Override
-        public void onPullUpToRefresh(PullToRefreshBase refreshView) {
-
-        }
-    };
-
 
     /**
      * 点击事件
@@ -191,12 +165,14 @@ public class ShopPaymentFragment extends BaseFragment {
         }
     };
 
-    public static ShopPaymentFragment newInstance(int orderId, int amount,int fare) {
+    public static ShopPaymentFragment newInstance(int orderId, int amount,int fare,long timeLeft,Order order) {
         ShopPaymentFragment fragment = new ShopPaymentFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_ORDERID, orderId);
         args.putInt(ARG_AMOUNT, amount);
         args.putInt(ARG_FARE,fare);
+        args.putLong(ARG_TIME,timeLeft);
+        args.putSerializable(ARG_ORDER,order);
         fragment.setArguments(args);
         return fragment;
     }
@@ -211,10 +187,8 @@ public class ShopPaymentFragment extends BaseFragment {
             mOrderId = getArguments().getInt(ARG_ORDERID);
             mAmount = getArguments().getInt(ARG_AMOUNT);
             mFare=getArguments().getInt(ARG_FARE);
-            items = (ArrayList<CartItem>) getArguments().getSerializable("goodsList");
-            num = getArguments().getInt("moneyNum");
-            money = getArguments().getDouble("money");
-            moneyYF = getArguments().getDouble("moneyYF");
+            mTimeLeft=getArguments().getLong(ARG_TIME);
+            mOrder=(Order)getArguments().getSerializable(ARG_ORDER);
         }
     }
 
@@ -278,10 +252,9 @@ public class ShopPaymentFragment extends BaseFragment {
                 }
             }
         });
+        initTime=mTimeLeft;
 
         mTimer = new Timer();
-        mTimer.schedule(new MyTimer(), 1000, 1000);
-
     }
 
     class MyTimer extends TimerTask {
@@ -292,7 +265,7 @@ public class ShopPaymentFragment extends BaseFragment {
                 public void run() {
                     initTime = initTime - 1000;
                     timeInfoTv.setText(new SimpleDateFormat("mm:ss").format(new Date(initTime)));
-                    if (initTime == 0) {
+                    if (initTime <= 0) {
                         if (mTimer != null) {
                             mTimer.cancel();
                             timeInfoTv.setText("00:00");
@@ -308,6 +281,7 @@ public class ShopPaymentFragment extends BaseFragment {
      * 支付超时处理
      */
     private void stopView() {
+        initTime=0;
         paymentView.setVisibility(View.GONE);
         loseView.setVisibility(View.VISIBLE);
         paymentBtn.setClickable(false);
@@ -421,5 +395,23 @@ public class ShopPaymentFragment extends BaseFragment {
             default:
                 break;
         }
+    }
+    @Override
+    public void onResume() {
+        mTimer.schedule(new MyTimer(), 1000, 1000);
+        super.onResume();
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (orderListener!=null){
+            mOrder.setOver_at(initTime);
+            orderListener.onOrderStatusChange(mOrder);
+        }
+        super.onDestroyView();
+    }
+
+    public void setOrderListener(Order.OrderListener orderListener) {
+        this.orderListener = orderListener;
     }
 }

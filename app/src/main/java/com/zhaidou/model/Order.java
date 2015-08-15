@@ -9,7 +9,7 @@ import java.util.List;
 public class Order implements Serializable{
     private long orderId;
     private String number;
-    private int amount;
+    private double amount;
     private String status;
     private String status_ch;
     private String created_at_for;
@@ -24,6 +24,7 @@ public class Order implements Serializable{
     private String receiver_phone;
     private String deliver_number;
     private String receiver_name;
+
 
     public long getOrderId() {
         return orderId;
@@ -41,11 +42,11 @@ public class Order implements Serializable{
         this.number = number;
     }
 
-    public int getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 
@@ -161,7 +162,7 @@ public class Order implements Serializable{
         this.receiver_name = receiver_name;
     }
 
-    public Order(long orderId, String number, int amount, String status, String status_ch, String created_at_for, String created_at, String time, double price) {
+    public Order(long orderId, String number, double amount, String status, String status_ch, String created_at_for, String created_at, String time, double price) {
         this.orderId = orderId;
         this.number = number;
         this.amount = amount;
@@ -214,5 +215,9 @@ public class Order implements Serializable{
         this.receiver_phone = receiver_phone;
         this.deliver_number = deliver_number;
         this.receiver_name = receiver_name;
+    }
+
+    public interface OrderListener{
+        public void onOrderStatusChange(Order order);
     }
 }

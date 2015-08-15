@@ -59,8 +59,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
     private int mOrderId;
     private int mAmount;
     private int mFare;
-    private int mTimeStamp;
-    private View mView;
+    private long mTimeStamp;
     private Context mContext;
 
     private final int UPDATE_COUNT_DOWN_TIME = 1001, UPDATE_UI_TIMER_FINISH = 1002, UPDATE_TIMER_START = 1003;
@@ -83,6 +82,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
     private String token;
     private IWXAPI api;
     private RequestQueue mRequestQueue;
+    private View rootView;
     private static final int SDK_PAY_FLAG = 1;
 
     private static final int SDK_CHECK_FLAG = 2;
@@ -167,13 +167,13 @@ public class ShopPaymentFailFragment extends BaseFragment {
         }
     };
 
-    public static ShopPaymentFailFragment newInstance(int orderId, int amount, int fare,int timer) {
+    public static ShopPaymentFailFragment newInstance(int orderId, int amount, int fare,long timer) {
         ShopPaymentFailFragment fragment = new ShopPaymentFailFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_FARE, fare);
         args.putInt(ARG_ORDERID, orderId);
         args.putInt(ARG_AMOUNT, amount);
-        args.putInt(ARG_TIMER,timer);
+        args.putLong(ARG_TIMER, timer);
         fragment.setArguments(args);
         return fragment;
     }
@@ -188,26 +188,32 @@ public class ShopPaymentFailFragment extends BaseFragment {
             mOrderId = getArguments().getInt(ARG_ORDERID);
             mAmount = getArguments().getInt(ARG_AMOUNT);
             mFare = getArguments().getInt(ARG_FARE);
-            mTimeStamp=getArguments().getInt(ARG_TIMER);
+            mTimeStamp=getArguments().getLong(ARG_TIMER);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mView = inflater.inflate(R.layout.shop_payment_fail_page, container, false);
-        mContext = getActivity();
-
-        initView();
-
-        return mView;
+        Log.i("ShopPaymentFailFragment-------------------->","onCreateView");
+        if (null != rootView) {
+            ViewGroup parent = (ViewGroup) rootView.getParent();
+            if (null != parent) {
+                parent.removeView(rootView);
+            }
+        } else {
+            rootView = inflater.inflate(R.layout.shop_payment_fail_page, container, false);
+            mContext=getActivity();
+            initView(rootView);// 控件初始化
+        }
+        return rootView;
     }
 
 
     /**
      * 初始化数据
      */
-    private void initView() {
+    private void initView(View mView) {
         api = WXAPIFactory.createWXAPI(mContext, null);
         api.registerApp("wxce03c66622e5b243");
         mRequestQueue= Volley.newRequestQueue(getActivity());
@@ -265,11 +271,20 @@ public class ShopPaymentFailFragment extends BaseFragment {
                         if (mTimer != null) {
                             mTimer.cancel();
                             timeInfoTv.setText("00:00");
+                            stopView();
                         }
                     }
                 }
             });
         }
+    }
+
+    private void stopView() {
+        mTimeStamp=0;
+//        paymentView.setVisibility(View.GONE);
+//        loseView.setVisibility(View.VISIBLE);
+        bt_pay.setClickable(false);
+        bt_pay.setBackgroundResource(R.drawable.btn_no_click_selector);
     }
     /**
      * 付款
@@ -347,5 +362,27 @@ public class ShopPaymentFailFragment extends BaseFragment {
         // 必须异步调用
         Thread payThread = new Thread(payRunnable);
         payThread.start();
+    }
+    public void handleWXPayResult(int result){
+        switch (result) {
+            case 800://商户订单号重复或生成错误
+                Log.i("----->", "商户订单号重复或生成错误");
+                break;
+            case 0://支付成功
+                Log.i("----->", "支付成功");
+                ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, mAmount+mFare);
+                ((MainActivity)getActivity()).navigationToFragment(shopPaymentSuccessFragment);
+                break;
+            case -1://支付失败
+                Log.i("----->", "支付失败");
+                Toast.makeText(getActivity(),"支付失败",Toast.LENGTH_SHORT).show();
+                break;
+            case -2://取消支付
+                Log.i("----->", "取消支付");
+                Toast.makeText(getActivity(),"取消支付",Toast.LENGTH_SHORT).show();
+                break;
+            default:
+                break;
+        }
     }
 }

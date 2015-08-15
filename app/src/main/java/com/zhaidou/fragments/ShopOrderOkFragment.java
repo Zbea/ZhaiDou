@@ -146,7 +146,7 @@ public class ShopOrderOkFragment extends BaseFragment {
                         int orderId = orderObj.optInt("id");
                         int amount = orderObj.optInt("amount");
                         int fare = moneyYF;
-                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId, amount, fare);
+                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId, amount, fare,15*60*1000,null);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
 //                        Intent intent1=new Intent(getActivity(), PayDemoActivity.class);
 //                        intent1.putExtra("id",orderId);
@@ -168,20 +168,6 @@ public class ShopOrderOkFragment extends BaseFragment {
         }
     };
 
-    /**
-     * 下拉刷新
-     */
-    private PullToRefreshBase.OnRefreshListener2 refreshListener = new PullToRefreshBase.OnRefreshListener2() {
-        @Override
-        public void onPullDownToRefresh(PullToRefreshBase refreshView) {
-
-        }
-
-        @Override
-        public void onPullUpToRefresh(PullToRefreshBase refreshView) {
-
-        }
-    };
 
     private TextWatcher textWatcher = new TextWatcher() {
         @Override

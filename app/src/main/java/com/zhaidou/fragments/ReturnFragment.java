@@ -58,7 +58,8 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
     private RequestQueue mRequestQueue;
     private ReturnAdapter returnAdapter;
     private List<Order> orders;
-    private String STATUS_RETURN_LIST="678";
+//    private String STATUS_RETURN_GOOD_LIST="8";
+//    private String STATUS_RETURN_MONEY_LIST="11";
     private final int UPDATE_RETURN_LIST=1;
     private String token;
     private View rootView;
@@ -173,7 +174,7 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
         }
     }
     private void FetchReturnData(){
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST, new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST+"?status=8,11", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (jsonObject != null) {
@@ -194,10 +195,7 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
                             Order order = new Order(id, number, amount, status, status_ch, created_at_for, created_at, "", 0);
                             order.setImg(img);
                             order.setOver_at(over_at);
-                            if (STATUS_RETURN_LIST.contains(status)){
-                                orders.add(order);
-                                Log.i("order---->",order.toString());
-                            }
+                            orders.add(order);
                         }
                         handler.sendEmptyMessage(UPDATE_RETURN_LIST);
                     }

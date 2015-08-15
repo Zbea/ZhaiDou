@@ -76,8 +76,7 @@ public class UnPayFragment extends BaseFragment {
             switch (msg.what) {
                 case UPDATE_UNPAY_LIST:
                     unPayAdapter.notifyDataSetChanged();
-                    timer = new MyTimer(15 * 60 * 1000, 1000);
-                    timer.start();
+
                     break;
                 case UPDATE_COUNT_DOWN_TIME:
                     unPayAdapter.notifyDataSetChanged();
@@ -149,7 +148,10 @@ public class UnPayFragment extends BaseFragment {
                     });
                 }
             });
+
         }
+        timer = new MyTimer(15 * 60 * 1000, 1000);
+        timer.start();
         FetchData();
         return rootView;
     }
@@ -274,17 +276,6 @@ public class UnPayFragment extends BaseFragment {
 //            mHandler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
         }
     }
-
-    public interface TimerListener {
-        public void onTick(TextView mTimerView, CountTime countTime, long l);
-    }
-
-    @Override
-    public void onStart() {
-        FetchData();
-        super.onStart();
-    }
-
     @Override
     public void onDestroyView() {
         if (timer!=null){
