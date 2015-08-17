@@ -411,7 +411,7 @@ public class OrderDetailFragment extends BaseFragment {
                             String specification = item.optString("specification");
                             int merchandise_id = item.optInt("merchandise_id");
                             String merch_img = item.optString("merch_img");
-                            int sale_cate=item.optInt("sale_cate");
+                            int sale_cate = item.optInt("sale_cate");
                             OrderItem orderItem = new OrderItem(itemId, itemPrice, count, cost_price, merchandise, specification, merchandise_id, merch_img);
                             orderItem.setSale_cate(sale_cate);
                             orderItems.add(orderItem);
@@ -454,17 +454,10 @@ public class OrderDetailFragment extends BaseFragment {
             TextView tv_specification = ViewHolder.get(convertView, R.id.tv_specification);
             TextView tv_count = ViewHolder.get(convertView, R.id.tv_count);
             ImageView iv_order_img = ViewHolder.get(convertView, R.id.iv_order_img);
-            LinearLayout ll_count=ViewHolder.get(convertView,R.id.ll_count);
-            TextView tv_zero_msg=ViewHolder.get(convertView,R.id.tv_zero_msg);
+            LinearLayout ll_count = ViewHolder.get(convertView, R.id.ll_count);
+            TextView tv_zero_msg = ViewHolder.get(convertView, R.id.tv_zero_msg);
 
             OrderItem item = getList().get(position);
-            if (item.getSale_cate()==0){
-                ll_count.setVisibility(View.VISIBLE);
-                tv_zero_msg.setVisibility(View.GONE);
-            }else {
-                ll_count.setVisibility(View.GONE);
-                tv_zero_msg.setVisibility(View.VISIBLE);
-            }
             tv_name.setText(item.getMerchandise());
             tv_specification.setText(item.getSpecification());
             tv_count.setText(item.getCount() + "");

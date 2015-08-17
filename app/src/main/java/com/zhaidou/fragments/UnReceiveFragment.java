@@ -57,13 +57,13 @@ public class UnReceiveFragment extends BaseFragment {
     private UnReceiveAdapter unReceiveAdapter;
     private ListView mListView;
     private List<Order> orders;
-    private final int STATUS_UNRECEIVE_LIST=14;
+    private final int STATUS_UNRECEIVE_LIST = 14;
     private String token;
     private View rootView;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
+            switch (msg.what) {
                 case STATUS_UNRECEIVE_LIST:
                     loadingView.setVisibility(View.GONE);
                     unReceiveAdapter.notifyDataSetChanged();
@@ -92,6 +92,7 @@ public class UnReceiveFragment extends BaseFragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -109,8 +110,8 @@ public class UnReceiveFragment extends BaseFragment {
     }
 
     private void initView(View view) {
-        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
-        loadingView=(LinearLayout)view.findViewById(R.id.loadingView);
+        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
+        loadingView = (LinearLayout) view.findViewById(R.id.loadingView);
         mListView = (ListView) view.findViewById(R.id.lv_unreceivelist);
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         orders = new ArrayList<Order>();
@@ -196,10 +197,11 @@ public class UnReceiveFragment extends BaseFragment {
                 orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
                     @Override
                     public void onOrderStatusChange(Order o) {
-                        Log.i("o-------------->",o.toString());
-                        if (!order.getStatus().equalsIgnoreCase(o.getStatus())){
+                        Log.i("o-------------->", o.getStatus());
+                        Log.i("order.getStatus()---------->", order.getStatus());
+                        if ("5".equalsIgnoreCase(o.getStatus())) {
                             orders.remove(order);
-                            unReceiveAdapter.notifyDataSetChanged();
+                            handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
                         }
                     }
                 });
@@ -211,7 +213,7 @@ public class UnReceiveFragment extends BaseFragment {
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?status=1,4", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                if (mDialog!=null)
+                if (mDialog != null)
                     mDialog.dismiss();
                 Log.i("FetchReceiveData----------->", jsonObject.toString());
                 if (jsonObject != null) {
@@ -232,13 +234,11 @@ public class UnReceiveFragment extends BaseFragment {
                             Order order = new Order(id, number, amount, status, status_ch, created_at_for, created_at, "", 0);
                             order.setImg(img);
                             order.setOver_at(over_at);
-                            if ((STATUS_UNRECEIVE_LIST+"").contains(status))
+                            if ((STATUS_UNRECEIVE_LIST + "").contains(status))
                                 orders.add(order);
                         }
                         handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
-                    }
-                    else
-                    {
+                    } else {
                         mListView.setVisibility(View.GONE);
                         loadingView.setVisibility(View.VISIBLE);
                     }
@@ -259,6 +259,7 @@ public class UnReceiveFragment extends BaseFragment {
         };
         mRequestQueue.add(request);
     }
+
     public class UnReceiveAdapter extends BaseListAdapter<Order> {
         public UnReceiveAdapter(Context context, List<Order> list) {
             super(context, list);
@@ -266,24 +267,24 @@ public class UnReceiveFragment extends BaseFragment {
 
         @Override
         public View bindView(int position, View convertView, ViewGroup parent) {
-            if (convertView==null)
-                convertView=mInflater.inflate(R.layout.item_order_unreceive,null);
+            if (convertView == null)
+                convertView = mInflater.inflate(R.layout.item_order_unreceive, null);
             TextView tv_order_time = ViewHolder.get(convertView, R.id.tv_unreceive_order_time);
             TextView tv_order_number = ViewHolder.get(convertView, R.id.tv_order_number);
             TextView tv_order_amount = ViewHolder.get(convertView, R.id.tv_order_amount);
             TextView tv_order_status = ViewHolder.get(convertView, R.id.tv_order_status);
-            TextView bt_received=ViewHolder.get(convertView,R.id.bt_received);
-            TextView bt_logistics=ViewHolder.get(convertView,R.id.bt_logistics);
-            ImageView iv_order_img=ViewHolder.get(convertView,R.id.iv_order_img);
+            TextView bt_received = ViewHolder.get(convertView, R.id.bt_received);
+            TextView bt_logistics = ViewHolder.get(convertView, R.id.bt_logistics);
+            ImageView iv_order_img = ViewHolder.get(convertView, R.id.iv_order_img);
             Order item = getList().get(position);
             tv_order_time.setText(item.getCreated_at_for());
             tv_order_number.setText(item.getNumber());
-            tv_order_amount.setText("￥"+item.getAmount()+"");
+            tv_order_amount.setText("￥" + item.getAmount() + "");
             tv_order_status.setText(item.getStatus_ch());
-            if ("1".equalsIgnoreCase(item.getStatus())){
+            if ("1".equalsIgnoreCase(item.getStatus())) {
                 bt_received.setVisibility(View.GONE);
                 bt_logistics.setText("申请退款");
-            }else if ("4".equalsIgnoreCase(item.getStatus())){
+            } else if ("4".equalsIgnoreCase(item.getStatus())) {
                 bt_received.setVisibility(View.VISIBLE);
                 bt_logistics.setText("查看物流");
             }
