@@ -7,89 +7,124 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="10dp"
-        android:background="@color/white"
-        android:orientation="vertical">
-
-        <com.zhaidou.view.TypeFaceTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:gravity="center_vertical"
-            android:paddingLeft="15dp"
-            android:text="商品信息"
-            android:textColor="@color/gray_9" />
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#EEEEEE" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:orientation="horizontal"
-        android:paddingBottom="20dp"
-        android:paddingLeft="15dp"
-        android:paddingTop="20dp">
+        android:paddingLeft="15dp">
 
         <ImageView
             android:id="@+id/iv_order_img"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@color/gray" />
+            android:layout_weight="0.00001"
+            android:layout_width="100dp"
+            android:layout_height="96dp"
+            android:layout_margin="10dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/icon_loading_defalut"/>
 
         <RelativeLayout
             android:layout_width="0dp"
-            android:layout_height="80dp"
+            android:layout_height="match_parent"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_marginRight="5dp"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:paddingLeft="15dp">
+            android:orientation="vertical">
 
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/tv_name"
                 android:layout_alignParentTop="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/gray_9"
+                android:textSize="15sp"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/text_main_color"
                 android:text="女款连衣裙" />
 
-            <com.zhaidou.view.TypeFaceTextView
-                android:id="@+id/tv_specification"
-                android:layout_below="@id/tv_name"
-                android:layout_width="wrap_content"
-                android:textColor="@color/gray_9"
-                android:layout_height="wrap_content"
-                android:text="颜色:蓝色  尺寸:L" />
-
             <LinearLayout
-                android:layout_alignParentBottom="true"
+                android:id="@+id/line_specification"
+                android:layout_below="@id/tv_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
+                    android:textColor="@color/text_gary_color"
+                    android:layout_marginTop="5dp"
+                    android:textSize="13sp"
+                    android:layout_marginRight="5dp"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/gray_9"
+                    android:text="规格:" />
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/tv_specification"
+                android:layout_below="@id/tv_name"
+                android:layout_width="wrap_content"
+                android:textColor="@color/text_gary_color"
+                android:layout_marginTop="5dp"
+                android:textSize="13sp"
+                android:layout_height="wrap_content"
+                android:text="L" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_below="@+id/line_specification"
+                android:orientation="horizontal">
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:layout_marginRight="5dp"
+                    android:textColor="@color/text_gary_color"
                     android:text="数量:"/>
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_count"
-                    android:textColor="@color/gray_9"
+                    android:textSize="13sp"
+                    android:textColor="@color/text_gary_color"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
 
         </RelativeLayout>
 
-        <ImageView
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:paddingRight="10dp"
-            android:visibility="gone"
-            android:src="@drawable/icon_arrow_right" />
+            android:layout_weight="0.00001"
+            android:layout_marginRight="10dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="right"
+            >
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/orderItemCurrentPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:textSize="14sp"
+                android:textColor="@color/red"
+                android:text="￥123.5"
+                />
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/orderItemFormalPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:textSize="12sp"
+                android:textColor="@color/text_gary_color"
+                android:text="￥123.5"
+                />
+
+        </LinearLayout>
+
     </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/page_bg"/>
 </LinearLayout>

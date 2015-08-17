@@ -5,6 +5,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -97,6 +100,22 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
                 case R.id.tv_mall:
                     ShopSpecialFragment shopSpecialFragment = ShopSpecialFragment.newInstance("", 0);
                     ((MainActivity) getActivity()).navigationToFragment(shopSpecialFragment);
+                    colseFragment(ShopPaymentSuccessFragment.this);
+
+                    FragmentManager fragmentManager=getFragmentManager();
+                    Fragment fragment=fragmentManager.findFragmentByTag((GoodsDetailsFragment.class).getClass().getSimpleName());
+                    Fragment fragment1=fragmentManager.findFragmentByTag((ShopCartFragment.class).getClass().getSimpleName());
+                    Fragment fragment2=fragmentManager.findFragmentByTag((ShopTodaySpecialFragment.class).getClass().getSimpleName());
+                    Fragment fragment3=fragmentManager.findFragmentByTag((OrderDetailFragment.class).getClass().getSimpleName());
+                    FragmentTransaction transaction=fragmentManager.beginTransaction();
+                    transaction.remove(fragment);
+                    transaction.remove(fragment1);
+                    transaction.remove(fragment2);
+                    transaction.remove(fragment3);
+                    transaction.commitAllowingStateLoss();
+                    fragmentManager.popBackStack();
+
+
                     break;
                 case R.id.tv_order_detail:
                     OrderDetailFragment orderDetailFragment=OrderDetailFragment.newInstance(mOrderId+"",0,null);

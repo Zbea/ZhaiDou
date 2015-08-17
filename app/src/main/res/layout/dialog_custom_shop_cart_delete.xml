@@ -23,10 +23,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="是否确认删除?"
-            android:layout_margin="14dp"
+            android:layout_margin="18dp"
             android:textColor="@color/text_gary_color"
             android:gravity="center"
-            android:textSize="20sp"/>
+            android:textSize="16sp"/>
         </LinearLayout>
 
         <LinearLayout

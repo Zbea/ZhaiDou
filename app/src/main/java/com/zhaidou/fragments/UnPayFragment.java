@@ -167,7 +167,8 @@ public class UnPayFragment extends BaseFragment
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("jsonObject----------->", jsonObject.toString());
+                if (mDialog!=null)
+                mDialog.dismiss();
                 if (jsonObject != null) {
                     JSONArray orderArr = jsonObject.optJSONArray("orders");
                             if (orderArr != null && orderArr.length() > 0)

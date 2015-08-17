@@ -23,9 +23,9 @@
             style="@style/CustomCheckboxTheme"/>
         <ImageView
             android:id="@+id/iv_order_img"
-            android:layout_width="80dp"
+            android:layout_width="85dp"
             android:layout_height="80dp"
-            android:src="@color/gray" />
+            android:src="@drawable/icon_loading_defalut" />
 
         <RelativeLayout
             android:layout_width="0dp"

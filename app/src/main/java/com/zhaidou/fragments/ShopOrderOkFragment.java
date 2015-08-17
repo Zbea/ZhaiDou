@@ -95,12 +95,14 @@ public class ShopOrderOkFragment extends BaseFragment {
     private RequestQueue mRequestQueue;
     private int STATUS_FROM_ORDER = 3;
     private final int UPDATE_DEFALUE_ADDRESS_INFO = 0;
-    private boolean isOSaleBuy;
-    private boolean isOSale;
+    private boolean isOSaleBuy;//是否已经购买过零元特卖
+    private boolean isOSale;//是否含有零元特卖
+    private boolean isljOsale;//是否是来自立即购买的零元特卖
 
     private Address address;
     private CreatCartDB creatCartDB;
     private String token;
+    private int userId;
 
     private Handler handler = new Handler() {
         @Override
@@ -136,9 +138,24 @@ public class ShopOrderOkFragment extends BaseFragment {
                         CreatCartTools.deleteByData(creatCartDB, items.get(i));
                     }
 
+                    if(isljOsale)//清除购物车中的零元特卖
+                    {
+                        Toast.makeText(mContext, "即将清除购物车中的零元特卖", Toast.LENGTH_LONG).show();
+                        List<CartItem> itemsAll=CreatCartTools.selectByAll(creatCartDB,userId);
+                        for (int i = 0; i < itemsAll.size(); i++)
+                        {
+                            if (itemsAll.get(i).isOSale.equals("true"))
+                            {
+                                CreatCartTools.deleteByData(creatCartDB, itemsAll.get(i));
+                            }
+                        }
+                    }
+
                     //发送刷新购物车广播
                     Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
                     mContext.sendBroadcast(intent);
+                    //关闭本页面
+                    ((MainActivity) getActivity()).popToStack(ShopOrderOkFragment.this);
 
                     String result = (String) msg.obj;
                     try {
@@ -160,7 +177,7 @@ public class ShopOrderOkFragment extends BaseFragment {
                 case 5:
                     if (isOSaleBuy) {
                         mDialog.dismiss();
-                        Toast.makeText(mContext, "抱歉,您已经购买了零元特卖商品,今天已经不能购买", Toast.LENGTH_LONG).show();
+                        Toast.makeText(mContext, "抱歉,您已经购买过零元特卖商品,今天已经不能购买", Toast.LENGTH_LONG).show();
                     } else {
                         commit();
                     }
@@ -222,7 +239,11 @@ public class ShopOrderOkFragment extends BaseFragment {
                             }
                         }
                         if (isOSale) {
-                            FetchOSaleData(5);
+                            FetchOSaleData(5);//判断零元特卖是否已经当天购买过
+                            if (items.size()==1)//判断是否来自立即购买的零元特卖
+                            {
+                                isljOsale=true;
+                            }
                         } else {
                             commit();
                         }
@@ -363,6 +384,7 @@ public class ShopOrderOkFragment extends BaseFragment {
         orderGoodsListLine = (LinearLayout) mView.findViewById(R.id.orderGoodsList);
 
         token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
+        userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
 
         creatCartDB = new CreatCartDB(mContext);
 
@@ -566,7 +588,6 @@ public class ShopOrderOkFragment extends BaseFragment {
                 ToolUtils.setLog(jsonObject.toString());
                 if (jsonObject != null) {
                     JSONArray receivers = jsonObject.optJSONArray("receivers");
-                    List<Address> addressList = new ArrayList<Address>();
                     if (receivers != null && receivers.length() > 0) {
                         for (int i = 0; i < receivers.length(); i++) {
                             JSONObject receiver = receivers.optJSONObject(i);

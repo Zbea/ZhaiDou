@@ -266,6 +266,10 @@ public class GoodsDetailsFragment extends BaseFragment
                     break;
                 case UPDATE_UI_TIMER_FINISH:
                     mTimerView.setText("已结束");
+//                    ljBtn.setClickable(false);
+//                    addCartBtn.setClickable(false);
+//                    ljBtn.setBackgroundResource(R.drawable.btn_no_click_selector);
+//                    addCartBtn.setBackgroundResource(R.drawable.btn_no_click_selector);
                     break;
                 case 5:
                     if (mDialog != null)
@@ -942,7 +946,7 @@ public class GoodsDetailsFragment extends BaseFragment
             for (String url : urls)
             {
                 ImageView imageView = new ImageView(mContext);
-                imageView.setImageResource(R.drawable.icon_loading_item);
+                imageView.setImageResource(R.drawable.icon_loading_goods);
                 imageView.setScaleType(ImageView.ScaleType.CENTER);
                 imageView.setBackgroundColor(Color.parseColor("#ffffff"));
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -1026,6 +1030,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     double cost_price = merchandise.optDouble("cost_price");
                     int discount = merchandise.optInt("discount");
                     String end_time = merchandise.optString("end_time");
+                    ToolUtils.setLog(end_time);
                     detail = new GoodDetail(id, title, designer, total_count, price, cost_price, discount);
                     detail.setEnd_time(end_time);
 
@@ -1333,5 +1338,4 @@ public class GoodsDetailsFragment extends BaseFragment
             return fragments.get(i);
         }
     }
-
 }

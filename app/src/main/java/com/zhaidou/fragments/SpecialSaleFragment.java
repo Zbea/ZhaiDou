@@ -407,7 +407,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                                         String title = item.optString("title");
                                         double price = item.optDouble("price");
                                         String image = item.optString("img");
-                                        int remaining = item.optInt("total_count");
+//                                        int remaining = item.optInt("total_count");
+                                        int remaining = item.optInt("percentum");
                                         Product product = new Product();
                                         product.setId(id);
                                         product.setPrice(price);
