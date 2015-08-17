@@ -440,6 +440,7 @@ public class OrderDetailFragment extends BaseFragment {
         requestQueue.add(request);
     }
 
+
     public class OrderItemAdapter extends BaseListAdapter<OrderItem> {
         public OrderItemAdapter(Context context, List<OrderItem> list) {
             super(context, list);
