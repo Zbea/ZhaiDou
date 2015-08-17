@@ -56,8 +56,8 @@ public class ShopPaymentFailFragment extends BaseFragment {
     private static final String ARG_FARE = "fare";
     private static final String ARG_TIMER="timer";
 
-    private int mOrderId;
-    private int mAmount;
+    private long mOrderId;
+    private double mAmount;
     private int mFare;
     private long mTimeStamp;
     private Context mContext;
@@ -167,12 +167,12 @@ public class ShopPaymentFailFragment extends BaseFragment {
         }
     };
 
-    public static ShopPaymentFailFragment newInstance(int orderId, int amount, int fare,long timer) {
+    public static ShopPaymentFailFragment newInstance(long orderId, double amount, int fare,long timer) {
         ShopPaymentFailFragment fragment = new ShopPaymentFailFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_FARE, fare);
-        args.putInt(ARG_ORDERID, orderId);
-        args.putInt(ARG_AMOUNT, amount);
+        args.putLong(ARG_ORDERID, orderId);
+        args.putDouble(ARG_AMOUNT, amount);
         args.putLong(ARG_TIMER, timer);
         fragment.setArguments(args);
         return fragment;
@@ -185,8 +185,8 @@ public class ShopPaymentFailFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mOrderId = getArguments().getInt(ARG_ORDERID);
-            mAmount = getArguments().getInt(ARG_AMOUNT);
+            mOrderId = getArguments().getLong(ARG_ORDERID);
+            mAmount = getArguments().getDouble(ARG_AMOUNT);
             mFare = getArguments().getInt(ARG_FARE);
             mTimeStamp=getArguments().getLong(ARG_TIMER);
         }

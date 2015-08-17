@@ -100,7 +100,7 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
             }
         } else {
             rootView = inflater.inflate(R.layout.fragment_return,container, false);
-            initView(rootView);// 控件初始化
+            initView(rootView);
         }
         return rootView;
     }
@@ -160,7 +160,7 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
         }
     }
     private void FetchReturnData(){
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST+"?status=8,11", new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST+"?status=6,7,8,11", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog!=null) mDialog.dismiss();

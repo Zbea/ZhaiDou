@@ -84,7 +84,7 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
     private String mStatus;
 
     private View rootView;
-    private TextView mOldPrice;
+    private TextView mOldPrice,mTitleView;
     private RequestQueue requestQueue;
     private ListView mListView;
     private GridView mImgGrid;
@@ -104,6 +104,7 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
 
     public String filePath = "";
     private String token;
+    private Context mContext;
     private List<String> imagePath = new ArrayList<String>();
     private Handler handler = new Handler() {
         @Override
@@ -166,15 +167,15 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
             rootView = inflater.inflate(R.layout.fragment_after_sale, container, false);
             initView(rootView);// 控件初始化
         }
-//        View view = inflater.inflate(R.layout.fragment_after_sale, container, false);
-
         return rootView;
     }
 
     private void initView(View view) {
+        mContext=getActivity();
         token=(String)SharedPreferencesUtil.getData(getActivity(),"token","");
         tv_commit=(TextView)view.findViewById(R.id.tv_commit);
         tv_commit.setOnClickListener(this);
+        mTitleView=(TextView)view.findViewById(R.id.tv_title);
         tv_return = (TextView) view.findViewById(R.id.tv_return);
         tv_exchange = (TextView) view.findViewById(R.id.tv_exchange);
         mOldPrice = (TextView) view.findViewById(R.id.tv_outdated);
@@ -201,7 +202,13 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
         imagePath.add("");
         imageAdapter = new ImageAdapter(getActivity(), imagePath);
         mImgGrid.setAdapter(imageAdapter);
-
+        if ((""+ZhaiDou.STATUS_PAYED).equalsIgnoreCase(mStatus)){
+            mTitleView.setText(mContext.getResources().getString(R.string.order_return_money));
+            tv_exchange.setText("退款");
+        }else {
+            mTitleView.setText(mContext.getResources().getString(R.string.order_return_good));
+            tv_exchange.setText("退货");
+        }
         menuFragment.setMenuSelectListener(new PhotoMenuFragment.MenuSelectListener() {
             @Override
             public void onMenuSelect(int position, String tag) {

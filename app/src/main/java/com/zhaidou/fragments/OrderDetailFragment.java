@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -30,6 +31,7 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.alipay.PayDemoActivity;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -178,10 +180,10 @@ public class OrderDetailFragment extends BaseFragment {
         FetchOrderDetail(mOrderId);
 
         mCancelOrder.setOnClickListener(this);
-        if (mOrder != null && "678".contains(mOrder.getStatus())) {
-            view.findViewById(R.id.tv_order_time_left).setVisibility(View.GONE);
-            ((TextView) view.findViewById(R.id.tv_cancel_order)).setText(getResources().getString(R.string.sale_service_personal));
-        }
+//        if (mOrder != null && "678".contains(mOrder.getStatus())) {
+//            view.findViewById(R.id.tv_order_time_left).setVisibility(View.GONE);
+//            ((TextView) view.findViewById(R.id.tv_cancel_order)).setText(getResources().getString(R.string.sale_service_personal));
+//        }
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
 
         Log.i("mOrder.getStatus()------------>", mOrder.getStatus());
@@ -192,7 +194,7 @@ public class OrderDetailFragment extends BaseFragment {
             case ZhaiDou.STATUS_PAYED:
                 mCancelOrder.setText(mContext.getResources().getString(R.string.order_return_money));
                 mOrderTimer.setVisibility(View.GONE);
-                mCancelOrder.setBackgroundColor(mContext.getResources().getColor(R.color.c00bbb9));
+                mCancelOrder.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_green_click_bg));
                 break;
             case ZhaiDou.STATUS_OVER_TIME:
                 mBottomLayout.setVisibility(View.GONE);
@@ -203,33 +205,36 @@ public class OrderDetailFragment extends BaseFragment {
             case ZhaiDou.STATUS_DELIVERY:
                 mCancelOrder.setText(mContext.getResources().getString(R.string.order_logistics));
                 mOrderTimer.setText(mContext.getResources().getString(R.string.order_received));
-                mCancelOrder.setBackgroundColor(mContext.getResources().getColor(R.color.c00bbb9));
-                mOrderTimer.setBackgroundColor(mContext.getResources().getColor(R.color.red));
+                mCancelOrder.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_green_click_bg));
+                mOrderTimer.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_red_click_selector));
                 break;
             case ZhaiDou.STATUS_DEAL_SUCCESS:
                 Log.i("STATUS_DELIVERY----------------->", "STATUS_DELIVERY");
                 mCancelOrder.setText(mContext.getResources().getString(R.string.order_logistics));
                 mOrderTimer.setText(mContext.getResources().getString(R.string.order_return_good));
-                mCancelOrder.setBackgroundColor(mContext.getResources().getColor(R.color.c00bbb9));
-                mOrderTimer.setBackgroundColor(mContext.getResources().getColor(R.color.c00bbb9));
+                mCancelOrder.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_green_click_bg));
+                mOrderTimer.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_green_click_bg));
                 break;
             case ZhaiDou.STATUS_APPLY_GOOD_RETURN:
-
+                mOrderTimer.setVisibility(View.GONE);
+                mCancelOrder.setText(getResources().getString(R.string.sale_service_personal));
                 break;
             case ZhaiDou.STATUS_GOOD_RETURNING:
-
+                mOrderTimer.setVisibility(View.GONE);
+                mCancelOrder.setText(getResources().getString(R.string.sale_service_personal));
                 break;
             case ZhaiDou.STATUS_RETURN_GOOD_SUCCESS:
-
+                mOrderTimer.setVisibility(View.GONE);
+                mCancelOrder.setText(getResources().getString(R.string.sale_service_personal));
                 break;
             case ZhaiDou.STATUS_UNPAY_CANCEL:
-
+                mBottomLayout.setVisibility(View.GONE);
                 break;
             case ZhaiDou.STATUS_DEAL_CLOSE:
-
+                mBottomLayout.setVisibility(View.GONE);
                 break;
             case ZhaiDou.STATUS_RETURN_MONEY_SUCCESS:
-
+                mBottomLayout.setVisibility(View.GONE);
                 break;
         }
     }
@@ -325,8 +330,9 @@ public class OrderDetailFragment extends BaseFragment {
                                     if (orderObj != null) {
                                         String status = orderObj.optString("status");
                                         mOrder.setStatus(status);
-                                        if (orderListener!=null)
+                                        if (orderListener != null)
                                             orderListener.onOrderStatusChange(mOrder);
+                                        ((BaseActivity) getActivity()).popToStack(OrderDetailFragment.this);
                                     }
                                 }
                             }, new Response.ErrorListener() {
@@ -350,6 +356,9 @@ public class OrderDetailFragment extends BaseFragment {
                     dialog.setCancelable(true);
                     dialog.addContentView(dialogView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                     dialog.show();
+                    return;
+                } else if (mContext.getResources().getString(R.string.timer_finish).equalsIgnoreCase(mOrderTimer.getText().toString())) {
+                    Toast.makeText(mContext, mContext.getResources().getString(R.string.order_had_order_time), Toast.LENGTH_SHORT).show();
                     return;
                 }
                 Log.i("mOrder.getOrderId()------------->", mOrder.getOrderId() + "");
@@ -410,7 +419,9 @@ public class OrderDetailFragment extends BaseFragment {
                             String specification = item.optString("specification");
                             int merchandise_id = item.optInt("merchandise_id");
                             String merch_img = item.optString("merch_img");
+                            int sale_cate=item.optInt("sale_cate");
                             OrderItem orderItem = new OrderItem(itemId, itemPrice, count, cost_price, merchandise, specification, merchandise_id, merch_img);
+                            orderItem.setSale_cate(sale_cate);
                             orderItems.add(orderItem);
                         }
                     }
@@ -450,8 +461,17 @@ public class OrderDetailFragment extends BaseFragment {
             TextView tv_specification = ViewHolder.get(convertView, R.id.tv_specification);
             TextView tv_count = ViewHolder.get(convertView, R.id.tv_count);
             ImageView iv_order_img = ViewHolder.get(convertView, R.id.iv_order_img);
+            LinearLayout ll_count=ViewHolder.get(convertView,R.id.ll_count);
+            TextView tv_zero_msg=ViewHolder.get(convertView,R.id.tv_zero_msg);
 
             OrderItem item = getList().get(position);
+            if (item.getSale_cate()==0){
+                ll_count.setVisibility(View.VISIBLE);
+                tv_zero_msg.setVisibility(View.GONE);
+            }else {
+                ll_count.setVisibility(View.GONE);
+                tv_zero_msg.setVisibility(View.VISIBLE);
+            }
             tv_name.setText(item.getMerchandise());
             tv_specification.setText(item.getSpecification());
             tv_count.setText(item.getCount() + "");

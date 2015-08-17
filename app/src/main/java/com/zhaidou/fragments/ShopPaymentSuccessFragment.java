@@ -42,8 +42,8 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
     private static final String ARG_ORDERID = "orderId";
     private static final String INDEX = "index";
 
-    private int mOrderId;
-    private int mIndex;
+    private long mOrderId;
+    private double mIndex;
     private View mView;
     private Context mContext;
 
@@ -106,11 +106,11 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
         }
     };
 
-    public static ShopPaymentSuccessFragment newInstance(int orderId, int index) {
+    public static ShopPaymentSuccessFragment newInstance(long orderId, double index) {
         ShopPaymentSuccessFragment fragment = new ShopPaymentSuccessFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_ORDERID, orderId);
-        args.putInt(INDEX, index);
+        args.putLong(ARG_ORDERID, orderId);
+        args.putDouble(INDEX, index);
         fragment.setArguments(args);
         return fragment;
     }
@@ -122,8 +122,8 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mOrderId = getArguments().getInt(ARG_ORDERID);
-            mIndex = getArguments().getInt(INDEX);
+            mOrderId = getArguments().getLong(ARG_ORDERID);
+            mIndex = getArguments().getDouble(INDEX);
         }
     }
 
@@ -166,7 +166,7 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
         FetchData(mOrderId);
     }
 
-    private void FetchData(int orderId) {
+    private void FetchData(long orderId) {
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "/" + orderId, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {

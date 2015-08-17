@@ -12,6 +12,7 @@ public class OrderItem {
     private String specification;
     private int merchandise_id;
     private String merch_img;
+    private int sale_cate;
 
     public int getCost_price() {
         return cost_price;
@@ -75,6 +76,14 @@ public class OrderItem {
 
     public void setMerch_img(String merch_img) {
         this.merch_img = merch_img;
+    }
+
+    public int getSale_cate() {
+        return sale_cate;
+    }
+
+    public void setSale_cate(int sale_cate) {
+        this.sale_cate = sale_cate;
     }
 
     public OrderItem() {

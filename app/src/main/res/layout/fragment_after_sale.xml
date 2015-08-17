@@ -186,7 +186,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="15dp"
-                    android:background="@drawable/goods_buy_size_item_selector"
+                    android:background="@drawable/icon_pecification_selected"
                     android:clickable="true"
                     android:gravity="center"
                     android:text="换货"

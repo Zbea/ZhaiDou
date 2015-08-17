@@ -53,8 +53,8 @@ public class ShopPaymentFragment extends BaseFragment {
     private static final String ARG_TIME="timeLeft";
     private static final String ARG_ORDER="order";
 
-    private int mOrderId;
-    private int mAmount;
+    private long mOrderId;
+    private double mAmount;
     private int mFare;
     private long mTimeLeft;
     private Order mOrder;
@@ -165,11 +165,11 @@ public class ShopPaymentFragment extends BaseFragment {
         }
     };
 
-    public static ShopPaymentFragment newInstance(int orderId, int amount,int fare,long timeLeft,Order order) {
+    public static ShopPaymentFragment newInstance(long orderId, double amount,int fare,long timeLeft,Order order) {
         ShopPaymentFragment fragment = new ShopPaymentFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_ORDERID, orderId);
-        args.putInt(ARG_AMOUNT, amount);
+        args.putLong(ARG_ORDERID, orderId);
+        args.putDouble(ARG_AMOUNT, amount);
         args.putInt(ARG_FARE,fare);
         args.putLong(ARG_TIME,timeLeft);
         args.putSerializable(ARG_ORDER,order);
@@ -184,8 +184,8 @@ public class ShopPaymentFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mOrderId = getArguments().getInt(ARG_ORDERID);
-            mAmount = getArguments().getInt(ARG_AMOUNT);
+            mOrderId = getArguments().getLong(ARG_ORDERID);
+            mAmount = getArguments().getDouble(ARG_AMOUNT);
             mFare=getArguments().getInt(ARG_FARE);
             mTimeLeft=getArguments().getLong(ARG_TIME);
             mOrder=(Order)getArguments().getSerializable(ARG_ORDER);

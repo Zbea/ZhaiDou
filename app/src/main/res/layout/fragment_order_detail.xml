@@ -300,30 +300,31 @@
             android:gravity="right"
             android:orientation="horizontal"
             android:paddingBottom="15dp"
+            android:paddingRight="10dp"
             android:paddingTop="15dp">
 
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/tv_cancel_order"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/gray"
+                android:background="@drawable/btn_green_click_bg"
                 android:paddingBottom="5dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:paddingTop="5dp"
                 android:text="取消订单"
-                android:layout_marginRight="10dp"
                 android:textColor="@color/white" />
 
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/tv_order_time_left"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/red"
+                android:background="@drawable/btn_red_click_selector"
                 android:paddingBottom="5dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:paddingTop="5dp"
+                android:layout_marginLeft="10dp"
                 android:textColor="@color/white"
                 android:text="支付15:00" />
         </LinearLayout>

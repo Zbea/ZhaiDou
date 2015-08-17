@@ -70,16 +70,32 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
-                <com.zhaidou.view.TypeFaceTextView
+                <LinearLayout
+                    android:id="@+id/ll_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="数量:"
+                        android:textColor="@color/gray_9" />
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:id="@+id/tv_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/gray_9" />
+                    </LinearLayout>
+                <TextView
+                    android:id="@+id/tv_zero_msg"
+                    android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/gray_9"
-                    android:text="数量:"/>
-                <com.zhaidou.view.TypeFaceTextView
-                    android:id="@+id/tv_count"
-                    android:textColor="@color/gray_9"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:background="@color/c00bbb9"
+                    android:text="@string/order_zero_return_msg"
+                    android:padding="5dp"
+                    android:textColor="@color/white"/>
             </LinearLayout>
 
         </RelativeLayout>

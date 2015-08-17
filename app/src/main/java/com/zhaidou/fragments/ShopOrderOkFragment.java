@@ -566,7 +566,6 @@ public class ShopOrderOkFragment extends BaseFragment {
                 ToolUtils.setLog(jsonObject.toString());
                 if (jsonObject != null) {
                     JSONArray receivers = jsonObject.optJSONArray("receivers");
-                    List<Address> addressList = new ArrayList<Address>();
                     if (receivers != null && receivers.length() > 0) {
                         for (int i = 0; i < receivers.length(); i++) {
                             JSONObject receiver = receivers.optJSONObject(i);

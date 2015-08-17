@@ -24,6 +24,7 @@ public class Order implements Serializable{
     private String receiver_phone;
     private String deliver_number;
     private String receiver_name;
+    private boolean zero;
 
 
     public long getOrderId() {
@@ -136,6 +137,14 @@ public class Order implements Serializable{
 
     public void setReceiver_address(String receiver_address) {
         this.receiver_address = receiver_address;
+    }
+
+    public boolean isZero() {
+        return zero;
+    }
+
+    public void setZero(boolean zero) {
+        this.zero = zero;
     }
 
     public String getReceiver_phone() {
