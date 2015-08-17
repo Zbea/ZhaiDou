@@ -91,7 +91,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private String mPage;
     private int mIndex;
     private View mView;
-    private int flags;
+    private int flags;//1代表零元特卖；2代表已下架商品
     private Context mContext;
     private Dialog mDialog;
 
@@ -105,6 +105,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private LinearLayout viewGroupe;//指示器容器
     private LinearLayout ljBtn;
     private LinearLayout addCartBtn;
+    private TextView publishBtn;
     private View myCartBtn;
 
     private GridView mGridView;
@@ -232,6 +233,32 @@ public class GoodsDetailsFragment extends BaseFragment
                     if (detail.getSpecifications() != null)
                         specificationAdapter.addAll(detail.getSpecifications());
 
+                    boolean isOver=true;
+
+                    for (int i = 0; i <detail.getSpecifications().size() ; i++)
+                    {
+                        if(detail.getSpecifications().get(i).num>0)
+                        {
+                            isOver=false;
+                            return;
+                        }
+                    }
+                    if (isOver)
+                    {
+                        publishBtn.setVisibility(View.VISIBLE);
+                        ljBtn.setVisibility(View.GONE);
+                        addCartBtn.setVisibility(View.GONE);
+                        if (flags==2)
+                        {
+                            publishBtn.setText("此商品已下架");
+                        }
+                        else
+                        {
+                            publishBtn.setText("已卖光");
+                        }
+
+                    }
+
                     initData(detail.getImgs());
 
                     String end_date = detail.getEnd_time();
@@ -266,10 +293,11 @@ public class GoodsDetailsFragment extends BaseFragment
                     break;
                 case UPDATE_UI_TIMER_FINISH:
                     mTimerView.setText("已结束");
-//                    ljBtn.setClickable(false);
-//                    addCartBtn.setClickable(false);
-//                    ljBtn.setBackgroundResource(R.drawable.btn_no_click_selector);
-//                    addCartBtn.setBackgroundResource(R.drawable.btn_no_click_selector);
+
+                    publishBtn.setVisibility(View.VISIBLE);
+                    publishBtn.setText("活动已结束");
+                    ljBtn.setVisibility(View.GONE);
+                    addCartBtn.setVisibility(View.GONE);
                     break;
                 case 5:
                     if (mDialog != null)
@@ -496,6 +524,8 @@ public class GoodsDetailsFragment extends BaseFragment
         addCartBtn = (LinearLayout) mView.findViewById(R.id.goodsAddBuyBtn);
         addCartBtn.setOnClickListener(onClickListener);
 
+        publishBtn = (TextView) mView.findViewById(R.id.goodsPublish);
+
         RelativeLayout relativeLayout=(RelativeLayout)mView.findViewById(R.id.imageRl);
         relativeLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth*630/720));
 
@@ -510,6 +540,13 @@ public class GoodsDetailsFragment extends BaseFragment
         {
             iconView.setVisibility(View.VISIBLE);
             iconOSaleView.setVisibility(View.GONE);
+        }
+
+        if (flags==2)
+        {
+            publishBtn.setVisibility(View.VISIBLE);
+            ljBtn.setVisibility(View.GONE);
+            addCartBtn.setVisibility(View.GONE);
         }
 
         mView.findViewById(R.id.shopping_cart).setOnClickListener(onClickListener);

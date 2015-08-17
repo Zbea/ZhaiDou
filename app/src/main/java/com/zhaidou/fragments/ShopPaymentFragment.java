@@ -1,6 +1,7 @@
 package com.zhaidou.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -108,6 +109,7 @@ public class ShopPaymentFragment extends BaseFragment {
                     if (TextUtils.equals(resultStatus, "9000")) {
                         Toast.makeText(getActivity(), "支付成功",
                                 Toast.LENGTH_SHORT).show();
+                        setUnPayDesCount();
                         ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, 0);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                         colseFragment(ShopPaymentFragment.this);
@@ -218,6 +220,7 @@ public class ShopPaymentFragment extends BaseFragment {
      * 初始化数据
      */
     private void initView() {
+        setUnPayAddCount();
         api = WXAPIFactory.createWXAPI(mContext, null);
         api.registerApp("wxce03c66622e5b243");
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
@@ -257,6 +260,24 @@ public class ShopPaymentFragment extends BaseFragment {
         initTime=mTimeLeft;
 
         mTimer = new Timer();
+    }
+
+    /**
+     * 发送刷新代付加一
+     */
+    private void setUnPayAddCount()
+    {
+        Intent intent=new Intent(ZhaiDou.IntentRefreshUnPayAddTag);
+        mContext.sendBroadcast(intent);
+    }
+
+    /**
+     * 发送刷新代付减一
+     */
+    private void setUnPayDesCount()
+    {
+        Intent intent=new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
+        mContext.sendBroadcast(intent);
     }
 
     class MyTimer extends TimerTask {
@@ -381,6 +402,7 @@ public class ShopPaymentFragment extends BaseFragment {
                 break;
             case 0://支付成功
                 Log.i("----->", "支付成功");
+                setUnPayDesCount();
                 ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, mAmount+mFare);
                 ((MainActivity)getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                 colseFragment(ShopPaymentFragment.this);
@@ -390,6 +412,7 @@ public class ShopPaymentFragment extends BaseFragment {
                 ShopPaymentFailFragment shopPaymentFailFragment=ShopPaymentFailFragment.newInstance(mOrderId,mAmount,mFare,initTime);
                 ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
                 colseFragment(ShopPaymentFragment.this);
+
                 break;
             case -2://取消支付
                 Log.i("----->", "取消支付");
