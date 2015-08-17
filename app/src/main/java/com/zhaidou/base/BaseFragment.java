@@ -19,6 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.fragments.LoginFragment1;
@@ -65,7 +66,6 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
 //        setRetainInstance(true);
         mInflater = LayoutInflater.from(getActivity());
@@ -279,5 +279,13 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     public void onDestroy() {
 //        getActivity().unregisterReceiver(netStateUtils);
         super.onDestroy();
+    }
+
+    /**
+     * 关闭当前页面
+     */
+    public void colseFragment(Fragment fragment)
+    {
+        ((MainActivity) getActivity()).popToStack(fragment);
     }
 }

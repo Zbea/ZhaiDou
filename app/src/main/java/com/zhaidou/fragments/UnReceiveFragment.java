@@ -42,11 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link UnReceiveFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class UnReceiveFragment extends BaseFragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -215,6 +211,8 @@ public class UnReceiveFragment extends BaseFragment {
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?status=1,4", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+                if (mDialog!=null)
+                    mDialog.dismiss();
                 Log.i("FetchReceiveData----------->", jsonObject.toString());
                 if (jsonObject != null) {
                     JSONArray orderArr = jsonObject.optJSONArray("orders");

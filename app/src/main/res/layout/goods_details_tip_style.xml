@@ -12,7 +12,7 @@
         android:background="@color/white"
         android:orientation="horizontal">
 
-        <RadioButton
+        <com.zhaidou.view.TypeFaceRadioButton
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -25,7 +25,7 @@
             android:background="@drawable/goods_options_selector"
             android:id="@+id/infoRb"/>
 
-        <RadioButton
+        <com.zhaidou.view.TypeFaceRadioButton
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"

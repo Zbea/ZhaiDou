@@ -53,7 +53,8 @@ import java.util.WeakHashMap;
  * Use the {@link UnPayFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class UnPayFragment extends BaseFragment {
+public class UnPayFragment extends BaseFragment
+{
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -66,7 +67,7 @@ public class UnPayFragment extends BaseFragment {
     private ListView mListView;
     private UnPayAdapter unPayAdapter;
     private final int UPDATE_COUNT_DOWN_TIME = 2;
-    private final int UPDATE_UI_TIMER_FINISH = 3;
+    private final int UPDATE_UI_TIMER_FINISH=3;
     private final String STATUS_UNPAY_LIST = "0";
 
     private Dialog mDialog;
@@ -106,7 +107,8 @@ public class UnPayFragment extends BaseFragment {
         return fragment;
     }
 
-    public UnPayFragment() {
+    public UnPayFragment()
+    {
     }
 
     @Override
@@ -136,7 +138,7 @@ public class UnPayFragment extends BaseFragment {
             mListView = (ListView) rootView.findViewById(R.id.lv_unpaylist);
             unPayAdapter = new UnPayAdapter(getActivity(), orders);
             mListView.setAdapter(unPayAdapter);
-            token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
+            token=(String) SharedPreferencesUtil.getData(getActivity(),"token","");
             mRequestQueue = Volley.newRequestQueue(getActivity());
 
             unPayAdapter.setOnInViewClickListener(R.id.ll_unpay, new BaseListAdapter.onInternalClickListener() {
@@ -213,16 +215,17 @@ public class UnPayFragment extends BaseFragment {
             }
         }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
+            public void onErrorResponse(VolleyError volleyError)
+            {
                 mDialog.dismiss();
-                if (getActivity() != null)
-                    Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
+                if (getActivity()!=null)
+                Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
+                headers.put("SECAuthorization",token);
                 return headers;
             }
         };
@@ -230,11 +233,13 @@ public class UnPayFragment extends BaseFragment {
     }
 
 
-    private class UnPayAdapter extends BaseListAdapter<Order> {
+        private class UnPayAdapter extends BaseListAdapter<Order>
+        {
 
-        public UnPayAdapter(Context context, List<Order> list) {
-            super(context, list);
-        }
+            public UnPayAdapter(Context context, List<Order> list)
+            {
+                super(context, list);
+            }
 
         @Override
         public View bindView(int position, View convertView, ViewGroup parent) {

@@ -14,7 +14,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="35dp"
             android:gravity="center_vertical"
             android:paddingLeft="10dp"
             android:orientation="horizontal">
@@ -22,7 +22,7 @@
                 android:textColor="@color/text_main_color"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:text="订单时间:"/>
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/tv_order_time"
@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:layout_marginLeft="5dp"
-                android:textSize="16dp"
+                android:textSize="15dp"
                 android:textColor="@color/text_main_color"
                 android:text="2015-07-03"/>
         </LinearLayout>
@@ -52,8 +52,8 @@
 
         <ImageView
             android:id="@+id/iv_order_img"
-            android:layout_width="80dp"
-            android:layout_height="75dp"
+            android:layout_width="85dp"
+            android:layout_height="80dp"
             android:src="@drawable/icon_loading_defalut"/>
         <LinearLayout
             android:layout_width="0dp"
@@ -71,13 +71,14 @@
                     android:textColor="@color/text_main_color"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="15sp"
+                    android:textSize="13sp"
                     android:text="订单编号:"/>
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_order_number"
                     android:textColor="@color/text_gary_color"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textSize="13sp"
                     android:layout_marginLeft="5dp"
                     android:text="12345678"/>
             </LinearLayout>
@@ -91,13 +92,14 @@
                     android:textColor="@color/text_main_color"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="15sp"
+                    android:textSize="13sp"
                     android:text="订单金额:"/>
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_order_amount"
                     android:textColor="@color/red"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textSize="13sp"
                     android:layout_marginLeft="5dp"
                     android:text="￥432"/>
             </LinearLayout>
@@ -111,7 +113,7 @@
                     android:textColor="@color/text_main_color"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="15sp"
+                    android:textSize="13sp"
                     android:text="订单状态:"/>
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_order_status"
@@ -119,6 +121,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
+                    android:textSize="13sp"
                     android:text="订单已取消"/>
             </LinearLayout>
 
@@ -139,22 +142,21 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="45dp"
+        android:layout_height="40dp"
         android:gravity="right">
 
         <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/bt_order_timer"
-            android:layout_width="100dp"
+            android:layout_width="90dp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginTop="2dp"
             android:layout_marginRight="10dp"
             android:background="@drawable/btn_red_click_selector"
             android:gravity="center"
-            android:paddingBottom="6dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:paddingTop="6dp"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:textSize="13sp"
             android:text="支付15：00"
             android:textColor="@color/white" />
     </RelativeLayout>

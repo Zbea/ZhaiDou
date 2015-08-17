@@ -110,6 +110,7 @@ public class ShopPaymentFragment extends BaseFragment {
                                 Toast.LENGTH_SHORT).show();
                         ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, 0);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
+                        colseFragment(ShopPaymentFragment.this);
                         // 判断resultStatus 为非“9000”则代表可能支付失败
                         // “8000”代表支付结果因为支付渠道原因或者系统原因还在等待支付结果确认，最终交易是否成功以服务端异步通知为准（小概率状态）
                     } else if (TextUtils.equals(resultStatus, "8000")) {
@@ -122,6 +123,7 @@ public class ShopPaymentFragment extends BaseFragment {
                                 Toast.LENGTH_SHORT).show();
                         ShopPaymentFailFragment shopPaymentFailFragment=ShopPaymentFailFragment.newInstance(mOrderId,mAmount,mFare,initTime);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
+                        colseFragment(ShopPaymentFragment.this);
 
                     } else if (TextUtils.equals(resultStatus, "6002")) {
                         // 其他值就可以判断为支付失败，包括用户主动取消支付，或者系统返回的错误
@@ -133,8 +135,8 @@ public class ShopPaymentFragment extends BaseFragment {
                         Toast.makeText(getActivity(), "支付取消",
                                 Toast.LENGTH_SHORT).show();
                         Log.i("支付取消----------->","支付取消");
-                        ShopPaymentFailFragment shopPaymentFailFragment=ShopPaymentFailFragment.newInstance(mOrderId,mAmount,mFare,initTime);
-                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
+//                        ShopPaymentFailFragment shopPaymentFailFragment=ShopPaymentFailFragment.newInstance(mOrderId,mAmount,mFare,initTime);
+//                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
                     }
                     break;
                 case SDK_CHECK_FLAG: {
@@ -381,16 +383,18 @@ public class ShopPaymentFragment extends BaseFragment {
                 Log.i("----->", "支付成功");
                 ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, mAmount+mFare);
                 ((MainActivity)getActivity()).navigationToFragment(shopPaymentSuccessFragment);
+                colseFragment(ShopPaymentFragment.this);
                 break;
             case -1://支付失败
                 Log.i("----->", "支付失败");
                 ShopPaymentFailFragment shopPaymentFailFragment=ShopPaymentFailFragment.newInstance(mOrderId,mAmount,mFare,initTime);
                 ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
+                colseFragment(ShopPaymentFragment.this);
                 break;
             case -2://取消支付
                 Log.i("----->", "取消支付");
-                ShopPaymentFailFragment shopPaymentFailFragment1=ShopPaymentFailFragment.newInstance(mOrderId,mAmount,mFare,initTime);
-                ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment1);
+//                ShopPaymentFailFragment shopPaymentFailFragment1=ShopPaymentFailFragment.newInstance(mOrderId,mAmount,mFare,initTime);
+//                ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment1);
                 break;
             default:
                 break;
