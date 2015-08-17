@@ -49,8 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class OrderDetailFragment extends BaseFragment
-{
+public class OrderDetailFragment extends BaseFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_ID = "id";
@@ -81,13 +80,10 @@ public class OrderDetailFragment extends BaseFragment
     private List<OrderItem> orderItems = new ArrayList<OrderItem>();
     private String token;
     private FrameLayout mBottomLayout;
-    private Handler handler = new Handler()
-    {
+    private Handler handler = new Handler() {
         @Override
-        public void handleMessage(Message msg)
-        {
-            switch (msg.what)
-            {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
                 case 1:
                     Order order = (Order) msg.obj;
                     mOrderNumber.setText(order.getNumber());
@@ -111,8 +107,7 @@ public class OrderDetailFragment extends BaseFragment
     };
 
 
-    public static OrderDetailFragment newInstance(String id, long timestmp, Order order)
-    {
+    public static OrderDetailFragment newInstance(String id, long timestmp, Order order) {
         OrderDetailFragment fragment = new OrderDetailFragment();
         Bundle args = new Bundle();
         args.putString(ARG_ID, id);
@@ -122,17 +117,14 @@ public class OrderDetailFragment extends BaseFragment
         return fragment;
     }
 
-    public OrderDetailFragment()
-    {
+    public OrderDetailFragment() {
         // Required empty public constructor
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null)
-        {
+        if (getArguments() != null) {
             mOrderId = getArguments().getString(ARG_ID);
             mParam2 = getArguments().getLong(ARG_TIMESTMP);
             mOrder = (Order) getArguments().getSerializable(ARG_ORDER);
@@ -141,27 +133,22 @@ public class OrderDetailFragment extends BaseFragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState)
-    {
+                             Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         Log.i("OrderDetailFragment--------->", "onCreateView");
-        if (null != rootView)
-        {
+        if (null != rootView) {
             ViewGroup parent = (ViewGroup) rootView.getParent();
-            if (null != parent)
-            {
+            if (null != parent) {
                 parent.removeView(rootView);
             }
-        } else
-        {
+        } else {
             rootView = inflater.inflate(R.layout.fragment_order_detail, container, false);
             initView(rootView);
         }
         return rootView;
     }
 
-    private void initView(View view)
-    {
+    private void initView(View view) {
         mContext = getActivity();
         mOrderNumber = (TextView) view.findViewById(R.id.tv_order_number);
         mOrderTime = (TextView) view.findViewById(R.id.tv_order_time);
@@ -192,8 +179,7 @@ public class OrderDetailFragment extends BaseFragment
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
 
         Log.i("mOrder.getStatus()------------>", mOrder.getStatus());
-        switch (Integer.parseInt(mOrder.getStatus()))
-        {
+        switch (Integer.parseInt(mOrder.getStatus())) {
             case ZhaiDou.STATUS_UNPAY:
 
                 break;
@@ -246,29 +232,23 @@ public class OrderDetailFragment extends BaseFragment
     }
 
     @Override
-    public void onClick(View view)
-    {
-        switch (view.getId())
-        {
+    public void onClick(View view) {
+        switch (view.getId()) {
             case R.id.tv_cancel_order:
-                if (("" + ZhaiDou.STATUS_DEAL_SUCCESS).equalsIgnoreCase(mOrder.getStatus()))
-                {
+                if (("" + ZhaiDou.STATUS_DEAL_SUCCESS).equalsIgnoreCase(mOrder.getStatus())) {
                     LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "");
                     ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
                     return;
-                } else if (mContext.getResources().getString(R.string.order_return_money).equalsIgnoreCase(mCancelOrder.getText().toString()))
-                {
+                } else if (mContext.getResources().getString(R.string.order_return_money).equalsIgnoreCase(mCancelOrder.getText().toString())) {
                     AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(mOrderId, mOrder.getStatus());
                     ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
                     return;
-                } else if (mContext.getResources().getString(R.string.order_logistics).equalsIgnoreCase(mCancelOrder.getText().toString()))
-                {
+                } else if (mContext.getResources().getString(R.string.order_logistics).equalsIgnoreCase(mCancelOrder.getText().toString())) {
                     LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "");
                     ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
                     return;
                 }
-                if (mOrder != null && "678".contains(mOrder.getStatus()))
-                {
+                if (mOrder != null && "678".contains(mOrder.getStatus())) {
                     String url = "mqqwpa://im/chat?chat_type=wpa&uin=11300";
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                     return;
@@ -276,17 +256,14 @@ public class OrderDetailFragment extends BaseFragment
                 cancalOrderDialog();
                 break;
             case R.id.tv_order_time_left:
-                if (("" + ZhaiDou.STATUS_DEAL_SUCCESS).equalsIgnoreCase(mOrder.getStatus()))
-                {
+                if (("" + ZhaiDou.STATUS_DEAL_SUCCESS).equalsIgnoreCase(mOrder.getStatus())) {
                     AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(mOrderId, mOrder.getStatus() + "");
                     ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
                     return;
-                } else if (mContext.getResources().getString(R.string.order_received).equalsIgnoreCase(mOrderTimer.getText().toString()))
-                {
+                } else if (mContext.getResources().getString(R.string.order_received).equalsIgnoreCase(mOrderTimer.getText().toString())) {
                     orderOkReciver();
                     return;
-                } else if (mContext.getResources().getString(R.string.timer_finish).equalsIgnoreCase(mOrderTimer.getText().toString()))
-                {
+                } else if (mContext.getResources().getString(R.string.timer_finish).equalsIgnoreCase(mOrderTimer.getText().toString())) {
                     Toast.makeText(mContext, mContext.getResources().getString(R.string.order_had_order_time), Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -296,11 +273,9 @@ public class OrderDetailFragment extends BaseFragment
                 intent1.putExtra("amount", mOrder.getAmount());
                 ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(Integer.parseInt(mOrderId), amount, 10, timeLeft, mOrder);
                 ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
-                shopPaymentFragment.setOrderListener(new Order.OrderListener()
-                {
+                shopPaymentFragment.setOrderListener(new Order.OrderListener() {
                     @Override
-                    public void onOrderStatusChange(Order order)
-                    {
+                    public void onOrderStatusChange(Order order) {
                         Log.i("onOrderStatusChange---------->", order.toString());
                         mParam2 = order.getOver_at();
                     }
@@ -310,16 +285,12 @@ public class OrderDetailFragment extends BaseFragment
         super.onClick(view);
     }
 
-    private void FetchOrderDetail(String id)
-    {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "/" + id, new Response.Listener<JSONObject>()
-        {
+    private void FetchOrderDetail(String id) {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "/" + id, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(JSONObject jsonObject)
-            {
+            public void onResponse(JSONObject jsonObject) {
                 Log.i("jsonObject--------->", jsonObject.toString());
-                if (jsonObject != null)
-                {
+                if (jsonObject != null) {
                     JSONObject orderObj = jsonObject.optJSONObject("order");
                     amount = orderObj.optInt("amount");
                     int id = orderObj.optInt("id");
@@ -343,10 +314,8 @@ public class OrderDetailFragment extends BaseFragment
 
                     JSONArray order_items = orderObj.optJSONArray("order_items");
 //                    List<OrderItem> orderItems=new ArrayList<OrderItem>();
-                    if (order_items != null && order_items.length() > 0)
-                    {
-                        for (int i = 0; i < order_items.length(); i++)
-                        {
+                    if (order_items != null && order_items.length() > 0) {
+                        for (int i = 0; i < order_items.length(); i++) {
                             JSONObject item = order_items.optJSONObject(i);
                             int itemId = item.optInt("id");
                             int itemPrice = item.optInt("price");
@@ -369,18 +338,14 @@ public class OrderDetailFragment extends BaseFragment
                     handler.sendMessage(message);
                 }
             }
-        }, new Response.ErrorListener()
-        {
+        }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
+            public void onErrorResponse(VolleyError volleyError) {
 
             }
-        })
-        {
+        }) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
+            public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("SECAuthorization", token);
                 return headers;
@@ -392,40 +357,31 @@ public class OrderDetailFragment extends BaseFragment
     /**
      * ????dialog
      */
-    private void cancalOrderDialog()
-    {
+    private void cancalOrderDialog() {
         final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
 
         View dialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
         TextView textView = (TextView) dialogView.findViewById(R.id.tv_msg);
         textView.setText("?????????");
         TextView cancelTv = (TextView) dialogView.findViewById(R.id.cancelTv);
-        cancelTv.setOnClickListener(new View.OnClickListener()
-        {
+        cancelTv.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 dialog.dismiss();
             }
         });
 
         TextView okTv = (TextView) dialogView.findViewById(R.id.okTv);
-        okTv.setOnClickListener(new View.OnClickListener()
-        {
+        okTv.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
-                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + mOrder.getOrderId() + "/update_status?status=" + ("0".equalsIgnoreCase(mOrder.getStatus()) ? "9" : "3"), new Response.Listener<JSONObject>()
-                {
+            public void onClick(View view) {
+                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + mOrder.getOrderId() + "/update_status?status=" + ("0".equalsIgnoreCase(mOrder.getStatus()) ? "9" : "3"), new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(JSONObject jsonObject)
-                    {
+                    public void onResponse(JSONObject jsonObject) {
                         int status = jsonObject.optInt("status");
-                        if (201 == status)
-                        {
+                        if (201 == status) {
                             JSONObject orderObj = jsonObject.optJSONObject("order");
-                            if (orderObj != null)
-                            {
+                            if (orderObj != null) {
                                 double amount = orderObj.optDouble("amount");
                                 int id = orderObj.optInt("id");
                                 long over_at = orderObj.optLong("over_at");
@@ -439,25 +395,21 @@ public class OrderDetailFragment extends BaseFragment
                                     orderListener.onOrderStatusChange(order);
                                 ((MainActivity) getActivity()).popToStack(OrderDetailFragment.this);
                                 //?????????
-                                Intent intent=new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
+                                Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
                                 mContext.sendBroadcast(intent);
                             }
                         }
                         dialog.dismiss();
                     }
-                }, new Response.ErrorListener()
-                {
+                }, new Response.ErrorListener() {
                     @Override
-                    public void onErrorResponse(VolleyError volleyError)
-                    {
+                    public void onErrorResponse(VolleyError volleyError) {
                         dialog.dismiss();
                         ToolUtils.setToast(mContext, "????");
                     }
-                })
-                {
+                }) {
                     @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError
-                    {
+                    public Map<String, String> getHeaders() throws AuthFailureError {
                         Map<String, String> headers = new HashMap<String, String>();
                         headers.put("SECAuthorization", token);
                         return headers;
@@ -476,37 +428,29 @@ public class OrderDetailFragment extends BaseFragment
     /**
      * ??????
      */
-    private void orderOkReciver()
-    {
+    private void orderOkReciver() {
         final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
 
         View dialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
         TextView textView = (TextView) dialogView.findViewById(R.id.tv_msg);
         textView.setText(mContext.getResources().getString(R.string.order_confirm));
         TextView cancelTv = (TextView) dialogView.findViewById(R.id.cancelTv);
-        cancelTv.setOnClickListener(new View.OnClickListener()
-        {
+        cancelTv.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 dialog.dismiss();
             }
         });
 
         TextView okTv = (TextView) dialogView.findViewById(R.id.okTv);
-        okTv.setOnClickListener(new View.OnClickListener()
-        {
+        okTv.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
-                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + mOrder.getOrderId() + "/update_status?status=5", new Response.Listener<JSONObject>()
-                {
+            public void onClick(View view) {
+                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + mOrder.getOrderId() + "/update_status?status=5", new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(JSONObject jsonObject)
-                    {
+                    public void onResponse(JSONObject jsonObject) {
                         JSONObject orderObj = jsonObject.optJSONObject("order");
-                        if (orderObj != null)
-                        {
+                        if (orderObj != null) {
                             String status = orderObj.optString("status");
                             mOrder.setStatus(status);
                             if (orderListener != null)
@@ -514,18 +458,14 @@ public class OrderDetailFragment extends BaseFragment
                             ((BaseActivity) getActivity()).popToStack(OrderDetailFragment.this);
                         }
                     }
-                }, new Response.ErrorListener()
-                {
+                }, new Response.ErrorListener() {
                     @Override
-                    public void onErrorResponse(VolleyError volleyError)
-                    {
+                    public void onErrorResponse(VolleyError volleyError) {
                         ToolUtils.setToast(mContext, "????");
                     }
-                })
-                {
+                }) {
                     @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError
-                    {
+                    public Map<String, String> getHeaders() throws AuthFailureError {
                         Map<String, String> headers = new HashMap<String, String>();
                         headers.put("SECAuthorization", token);
                         return headers;
@@ -542,16 +482,13 @@ public class OrderDetailFragment extends BaseFragment
     }
 
 
-    public class OrderItemAdapter extends BaseListAdapter<OrderItem>
-    {
-        public OrderItemAdapter(Context context, List<OrderItem> list)
-        {
+    public class OrderItemAdapter extends BaseListAdapter<OrderItem> {
+        public OrderItemAdapter(Context context, List<OrderItem> list) {
             super(context, list);
         }
 
         @Override
-        public View bindView(int position, View convertView, ViewGroup parent)
-        {
+        public View bindView(int position, View convertView, ViewGroup parent) {
             if (convertView == null)
                 convertView = mInflater.inflate(R.layout.item_order_detail, null);
             TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
@@ -562,12 +499,10 @@ public class OrderDetailFragment extends BaseFragment
             TextView tv_zero_msg = ViewHolder.get(convertView, R.id.tv_zero_msg);
 
             OrderItem item = getList().get(position);
-            if (item.getSale_cate() == 0)
-            {
+            if (item.getSale_cate() == 0) {
                 ll_count.setVisibility(View.VISIBLE);
                 tv_zero_msg.setVisibility(View.GONE);
-            } else
-            {
+            } else {
                 ll_count.setVisibility(View.GONE);
                 tv_zero_msg.setVisibility(View.VISIBLE);
             }
@@ -580,16 +515,13 @@ public class OrderDetailFragment extends BaseFragment
     }
 
 
-    private class MyTimer extends CountDownTimer
-    {
-        private MyTimer(long millisInFuture, long countDownInterval)
-        {
+    private class MyTimer extends CountDownTimer {
+        private MyTimer(long millisInFuture, long countDownInterval) {
             super(millisInFuture, countDownInterval);
         }
 
         @Override
-        public void onTick(long l)
-        {
+        public void onTick(long l) {
 //            Log.i("onTick------------>", l + "");
             timeLeft = l;
             long day = 24 * 3600 * 1000;
@@ -608,19 +540,16 @@ public class OrderDetailFragment extends BaseFragment
         }
 
         @Override
-        public void onFinish()
-        {
+        public void onFinish() {
 //            Log.i("onFinish---------->", "onFinish");
             handler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
         }
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         Log.i("onResume------------->", "onResume");
-        if ((ZhaiDou.STATUS_UNPAY + "").equalsIgnoreCase(mOrder.getStatus()))
-        {
+        if ((ZhaiDou.STATUS_UNPAY + "").equalsIgnoreCase(mOrder.getStatus())) {
             if (timer == null)
                 timer = new MyTimer(mParam2, 1000);
             timer.start();
@@ -629,10 +558,8 @@ public class OrderDetailFragment extends BaseFragment
     }
 
     @Override
-    public void onDestroyView()
-    {
-        if (timer != null)
-        {
+    public void onDestroyView() {
+        if (timer != null) {
             timer.cancel();
             timer = null;
         }
@@ -642,13 +569,11 @@ public class OrderDetailFragment extends BaseFragment
         super.onDestroyView();
     }
 
-    public void setOrderListener(OrderListener orderListener)
-    {
+    public void setOrderListener(OrderListener orderListener) {
         this.orderListener = orderListener;
     }
 
-    public interface OrderListener
-    {
+    public interface OrderListener {
         public void onOrderStatusChange(Order order);
     }
 }
