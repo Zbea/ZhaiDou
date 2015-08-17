@@ -1,5 +1,6 @@
 package com.zhaidou.fragments;
 
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -30,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -38,9 +40,11 @@ import com.android.volley.toolbox.Volley;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
 import com.zhaidou.model.OrderItem;
 import com.zhaidou.model.Receiver;
@@ -104,11 +108,14 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
     private final int MENU_CAMERA_SELECTED = 0;
     private final int MENU_PHOTO_SELECTED = 1;
     private final int UPDATE_UPLOAD_IMG_GRID = 2;
+    private final int ORDER_RETURN_SUCCESS = 3;
 
     public String filePath = "";
     private String token;
     private Context mContext;
     private List<String> imagePath = new ArrayList<String>();
+    private Order.OrderListener orderListener;
+    private Dialog mDialog;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -120,6 +127,12 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
                     if (imagePath.size() >= 4)
                         imagePath.remove("");
                     imageAdapter.notifyDataSetChanged();
+                    break;
+                case ORDER_RETURN_SUCCESS:
+                    Order order = (Order) msg.obj;
+                    if (orderListener != null)
+                        orderListener.onOrderStatusChange(order);
+                    ((BaseActivity) getActivity()).popToStack(AfterSaleFragment.this);
                     break;
             }
         }
@@ -175,6 +188,7 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
 
     private void initView(View view) {
         mContext = getActivity();
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         tv_commit = (TextView) view.findViewById(R.id.tv_commit);
         tv_commit.setOnClickListener(this);
@@ -314,6 +328,7 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("FetchOrderDetail-------------->", jsonObject.toString());
+                if (mDialog != null) mDialog.dismiss();
                 if (jsonObject != null) {
                     JSONObject orderObj = jsonObject.optJSONObject("order");
                     int amount = orderObj.optInt("amount");
@@ -365,7 +380,8 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
+                if (mDialog != null) mDialog.dismiss();
+                Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -397,13 +413,13 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
             TextView tv_zero_msg = ViewHolder.get(convertView, R.id.tv_zero_msg);
 
             OrderItem item = getList().get(position);
-            if (item.getSale_cate() == 0) {
-                ll_count.setVisibility(View.VISIBLE);
-                tv_zero_msg.setVisibility(View.GONE);
-            } else {
-                ll_count.setVisibility(View.GONE);
-                tv_zero_msg.setVisibility(View.VISIBLE);
-            }
+//            if (item.getSale_cate() == 0) {
+//                ll_count.setVisibility(View.VISIBLE);
+//                tv_zero_msg.setVisibility(View.GONE);
+//            } else {
+//                ll_count.setVisibility(View.GONE);
+//                tv_zero_msg.setVisibility(View.VISIBLE);
+//            }
             tv_name.setText(item.getMerchandise());
             tv_specification.setText(item.getSpecification());
             tv_count.setText(item.getCount() + "");
@@ -557,6 +573,13 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
 
     private class CommitTask extends AsyncTask<Void, Void, String> {
         @Override
+        protected void onPreExecute() {
+            if (mDialog != null)
+                mDialog.show();
+            super.onPreExecute();
+        }
+
+        @Override
         protected String doInBackground(Void... voids) {
             String result = applyReturn();
             return result;
@@ -564,7 +587,33 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
 
         @Override
         protected void onPostExecute(String s) {
-            Log.i("result------------->", s.toString());
+            if (mDialog != null)
+                mDialog.hide();
+            try {
+                JSONObject jsonObject = new JSONObject(s);
+                int status = jsonObject.optInt("status");
+                JSONObject orderObj = jsonObject.optJSONObject("order");
+                int id = orderObj.optInt("id");
+                String number = orderObj.optString("number");
+                double amount = orderObj.optDouble("amount");
+                String orderStatus = orderObj.optString("status");
+                String merch_img = orderObj.optString("merch_img");
+                String status_ch = orderObj.optString("status_ch");
+                String created_at = orderObj.optString("created_at");
+                String over_at = orderObj.optString("over_at");
+                String created_at_for = orderObj.optString("created_at_for");
+                String deliver_number = orderObj.optString("deliver_number");
+                Order order = new Order(id, number, amount, orderStatus, status_ch, created_at_for, created_at, over_at, 0);
+                if (201 == status) {
+                    Log.i("201==status----------------->", "201==status");
+                    Message message = new Message();
+                    message.what = ORDER_RETURN_SUCCESS;
+                    message.obj = order;
+                    handler.sendMessage(message);
+                }
+            } catch (Exception e) {
+
+            }
         }
     }
 
@@ -632,5 +681,9 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
             }
         }
         return result;
+    }
+
+    public void setOrderListener(Order.OrderListener orderListener) {
+        this.orderListener = orderListener;
     }
 }

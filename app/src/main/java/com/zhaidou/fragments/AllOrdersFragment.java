@@ -196,8 +196,16 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
                             ShowToast(mContext.getResources().getString(R.string.order_zero_unreturn_msg));
                             return;
                         }
-                        AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(order.getOrderId() + "", order.getStatus() + "");
+                        final AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(order.getOrderId() + "", order.getStatus() + "");
                         ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
+                        afterSaleFragment.setOrderListener(new Order.OrderListener() {
+                            @Override
+                            public void onOrderStatusChange(Order o) {
+                                Log.i("AllOrdersFragment---------o-->", o.toString());
+                                order.setStatus(o.getStatus());
+                                order.setStatus_ch(o.getStatus_ch());
+                            }
+                        });
                         return;
                     } else if (("" + ZhaiDou.STATUS_UNPAY).equalsIgnoreCase(order.getStatus())) {
                         Log.i("textview---------------->", btn2.getText().toString() + "----" + btn2.getTag().toString());
@@ -405,6 +413,7 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
                         btn2.setText("支付" + minCount + ":" + secondCount + "");
                     } else {
                         btn2.setText("超时过期");
+                        order.setStatus(ZhaiDou.STATUS_DEAL_CLOSE+"");
                     }
                     btn2.setBackgroundResource(R.drawable.btn_red_click_selector);
                     if (timeStmp > 0 && position < getCount()) {

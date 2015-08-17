@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -38,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 public class ReturnFragment extends BaseFragment implements View.OnClickListener{
     private static final String ARG_PARAM1 = "param1";
@@ -58,6 +60,7 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
     private String token;
     private View rootView;
     private Context mContext;
+    private WeakHashMap<Integer,View> mHashMap=new WeakHashMap<Integer, View>();
     private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -124,7 +127,67 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
                 OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(),order);
                 ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
             }
-        }) ;  
+        }) ;
+        returnAdapter.setOnInViewClickListener(R.id.iv_delete, new BaseListAdapter.onInternalClickListener() {
+            @Override
+            public void OnClickListener(View parentV, View v, final Integer position, Object values) {
+                Log.i("position--------->", position + "");
+                final Order order = (Order) values;
+
+                final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
+
+                View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
+                TextView textView = (TextView) view.findViewById(R.id.tv_msg);
+                textView.setText("是否删除订单?");
+                TextView cancelTv = (TextView) view.findViewById(R.id.cancelTv);
+                cancelTv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+
+                TextView okTv = (TextView) view.findViewById(R.id.okTv);
+                okTv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + order.getOrderId() + "/delete_order", new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject jsonObject) {
+                                Log.i("jsonObject---iv_delete->", jsonObject.toString());
+                                if (jsonObject != null) {
+                                    int status = jsonObject.optInt("status");
+                                    if (201 == status) {
+                                        orders.remove(order);
+                                        returnAdapter.notifyDataSetChanged();
+                                    } else if (400 == status) {
+                                        ShowToast("删除失败");
+                                    }
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError volleyError) {
+                            }
+                        }) {
+                            @Override
+                            public Map<String, String> getHeaders() throws AuthFailureError {
+                                Map<String, String> headers = new HashMap<String, String>();
+                                headers.put("SECAuthorization", token);
+                                return headers;
+                            }
+                        };
+                        mRequestQueue.add(request);
+                        dialog.dismiss();
+                    }
+                });
+                dialog.setCanceledOnTouchOutside(true);
+                dialog.setCancelable(true);
+                dialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                dialog.show();
+
+            }
+        });
     }
 
     @Override
@@ -143,6 +206,7 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
 
         @Override
         public View bindView(int position, View convertView, ViewGroup parent) {
+            convertView=mHashMap.get(position);
             if (convertView==null)
                 convertView=mInflater.inflate(R.layout.item_order_return,null);
             TextView tv_order_time = ViewHolder.get(convertView, R.id.tv_order_time);
@@ -150,12 +214,19 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
             TextView tv_order_amount = ViewHolder.get(convertView, R.id.tv_order_amount);
             TextView tv_order_status = ViewHolder.get(convertView, R.id.tv_order_status);
             ImageView iv_order_img=ViewHolder.get(convertView,R.id.iv_order_img);
+            ImageView iv_delete=ViewHolder.get(convertView,R.id.iv_delete);
             Order item = getList().get(position);
             tv_order_time.setText(item.getCreated_at_for());
             tv_order_number.setText(item.getNumber());
             tv_order_amount.setText("￥"+item.getAmount()+"");
             tv_order_status.setText(item.getStatus_ch());
             ToolUtils.setImageCacheUrl(item.getImg(), iv_order_img);
+            if ((""+ZhaiDou.STATUS_RETURN_GOOD_SUCCESS).equalsIgnoreCase(item.getStatus())|(""+ZhaiDou.STATUS_RETURN_MONEY_SUCCESS).equalsIgnoreCase(item.getStatus())){
+                iv_delete.setVisibility(View.VISIBLE);
+            }else {
+                iv_delete.setVisibility(View.GONE);
+            }
+            mHashMap.put(position,convertView);
             return convertView;
         }
     }

@@ -53,8 +53,7 @@ import java.util.WeakHashMap;
  * Use the {@link UnPayFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class UnPayFragment extends BaseFragment
-{
+public class UnPayFragment extends BaseFragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -67,7 +66,7 @@ public class UnPayFragment extends BaseFragment
     private ListView mListView;
     private UnPayAdapter unPayAdapter;
     private final int UPDATE_COUNT_DOWN_TIME = 2;
-    private final int UPDATE_UI_TIMER_FINISH=3;
+    private final int UPDATE_UI_TIMER_FINISH = 3;
     private final String STATUS_UNPAY_LIST = "0";
 
     private Dialog mDialog;
@@ -83,8 +82,15 @@ public class UnPayFragment extends BaseFragment
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case UPDATE_UNPAY_LIST:
-                    unPayAdapter.notifyDataSetChanged();
-
+                    Log.i("orders.size()-----------.",orders.size()+"");
+                    if (orders.size()>0){
+                        mListView.setVisibility(View.VISIBLE);
+                        loadingView.setVisibility(View.GONE);
+                        unPayAdapter.notifyDataSetChanged();
+                    }else {
+                        mListView.setVisibility(View.GONE);
+                        loadingView.setVisibility(View.VISIBLE);
+                    }
                     break;
                 case UPDATE_COUNT_DOWN_TIME:
                     loadingView.setVisibility(View.GONE);
@@ -107,8 +113,7 @@ public class UnPayFragment extends BaseFragment
         return fragment;
     }
 
-    public UnPayFragment()
-    {
+    public UnPayFragment() {
     }
 
     @Override
@@ -132,13 +137,13 @@ public class UnPayFragment extends BaseFragment
             }
         } else {
             rootView = inflater.inflate(R.layout.fragment_unpay, container, false);
-            mContext=getActivity();
+            mContext = getActivity();
             mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
             mListView = (ListView) rootView.findViewById(R.id.lv_unpaylist);
             unPayAdapter = new UnPayAdapter(getActivity(), orders);
             mListView.setAdapter(unPayAdapter);
-            token=(String) SharedPreferencesUtil.getData(getActivity(),"token","");
+            token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
             mRequestQueue = Volley.newRequestQueue(getActivity());
 
             unPayAdapter.setOnInViewClickListener(R.id.ll_unpay, new BaseListAdapter.onInternalClickListener() {
@@ -157,12 +162,12 @@ public class UnPayFragment extends BaseFragment
                     });
                 }
             });
-            unPayAdapter.setOnInViewClickListener(R.id.bt_order_timer,new BaseListAdapter.onInternalClickListener() {
+            unPayAdapter.setOnInViewClickListener(R.id.bt_order_timer, new BaseListAdapter.onInternalClickListener() {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                    Order order=(Order)values;
-                    TextView textView=(TextView)v;
-                    if (mContext.getResources().getString(R.string.timer_finish).equalsIgnoreCase(textView.getText().toString())){
+                    Order order = (Order) values;
+                    TextView textView = (TextView) v;
+                    if (mContext.getResources().getString(R.string.timer_finish).equalsIgnoreCase(textView.getText().toString())) {
                         ShowToast(mContext.getResources().getString(R.string.order_had_order_time));
                         return;
                     }
@@ -179,7 +184,7 @@ public class UnPayFragment extends BaseFragment
 
     private void FetchData() {
         orders.clear();
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST, new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?status=0", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("jsonObject----------->", jsonObject.toString());
@@ -203,7 +208,7 @@ public class UnPayFragment extends BaseFragment
                             Order order = new Order(id, number, amount, status, status_ch, created_at_for, created_at, "", 0);
                             order.setImg(img);
                             order.setOver_at(over_at);
-                            if (STATUS_UNPAY_LIST.equalsIgnoreCase(status))
+                            if (over_at > 0)
                                 orders.add(order);
                         }
                         handler.sendEmptyMessage(UPDATE_UNPAY_LIST);
@@ -215,17 +220,16 @@ public class UnPayFragment extends BaseFragment
             }
         }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
+            public void onErrorResponse(VolleyError volleyError) {
                 mDialog.dismiss();
-                if (getActivity()!=null)
-                Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
+                if (getActivity() != null)
+                    Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization",token);
+                headers.put("SECAuthorization", token);
                 return headers;
             }
         };
@@ -233,13 +237,11 @@ public class UnPayFragment extends BaseFragment
     }
 
 
-        private class UnPayAdapter extends BaseListAdapter<Order>
-        {
+    private class UnPayAdapter extends BaseListAdapter<Order> {
 
-            public UnPayAdapter(Context context, List<Order> list)
-            {
-                super(context, list);
-            }
+        public UnPayAdapter(Context context, List<Order> list) {
+            super(context, list);
+        }
 
         @Override
         public View bindView(int position, View convertView, ViewGroup parent) {
@@ -279,6 +281,7 @@ public class UnPayFragment extends BaseFragment
                 mTimerBtn.setText("支付" + minCount + ":" + secondCount + "");
             } else {
                 mTimerBtn.setText("超时过期");
+                orders.remove(item);
             }
 
             mTimerBtn.setTag(Long.parseLong(mTimerBtn.getTag() + "") - 1000);
