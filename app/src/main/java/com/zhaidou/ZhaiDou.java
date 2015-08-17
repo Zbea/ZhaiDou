@@ -9,8 +9,8 @@ public class ZhaiDou {
     public static String apkUpdateUrl = "http://192.168.199.173/versionmanage.json";
 
     public static String HOME_PAGE_URL = "http://buy.zhaidou.com/?json=get_category_posts&slug=%E5%AE%B6%E9%A5%B0%E4%BC%98%E9%80%89&status=publish";
-    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
-//    public static String HOME_BASE_URL = "http://192.168.199.173/";
+//    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
+    public static String HOME_BASE_URL = "http://192.168.199.173/";
     public static String TAG_BASE_URL = "http://buy.zhaidou.com/?tag=%s&json=1";
 
     public static String HOT_SEARCH_URL=HOME_BASE_URL+"article/api/articles/hot_search";
@@ -164,6 +164,14 @@ public class ZhaiDou {
      * 登录退出
      */
     public static String IntentRefreshLoginExitTag="com.zhaidou.home.refesh.login.exit";
+    /**
+     * 代付款加一
+     */
+    public static String IntentRefreshUnPayAddTag="com.zhaidou.home.refesh.unpay.add";
+    /**
+     * 代付款减一
+     */
+    public static String IntentRefreshUnPayDesTag="com.zhaidou.home.refesh.unpay.des";
 
 }
 //http://192.168.1.45/article/api/article_categories?catetory_id=13

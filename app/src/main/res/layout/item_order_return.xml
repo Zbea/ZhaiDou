@@ -148,10 +148,9 @@
 
     <RelativeLayout
         android:id="@+id/rl_btn"
-        android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:gravity="right">
+        android:visibility="gone"
+        android:layout_height="40dp">
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="1px"

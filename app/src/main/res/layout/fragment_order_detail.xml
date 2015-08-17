@@ -345,7 +345,7 @@
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="#bbffffff">
+        android:background="#ffffff">
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"

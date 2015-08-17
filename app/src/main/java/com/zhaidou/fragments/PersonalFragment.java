@@ -49,11 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link PersonalFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class PersonalFragment extends BaseFragment implements View.OnClickListener, CollectFragment.CollectCountChangeListener,
         CollocationFragment.CollocationCountChangeListener, SettingFragment.ProfileListener {
 
@@ -94,6 +90,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     private TextView mCartCount;
     private int userId;
     private String token;
+    private int count;
 
     private BroadcastReceiver broadcastReceiver=new BroadcastReceiver()
     {
@@ -113,6 +110,26 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             {
                 initCartTips();
                 exitLoginEvent();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshUnPayAddTag))
+            {
+                count=count+1;
+                tv_unpay_count.setText(count+"");
+                tv_unpay_count.setVisibility(View.VISIBLE);
+                ((MainActivity)getActivity()).hideTip(View.VISIBLE);
+            }
+            if (action.equals(ZhaiDou.IntentRefreshUnPayDesTag))
+            {
+                count=count-1;
+                if (count==0)
+                {
+                    tv_unpay_count.setVisibility(View.GONE);
+                    ((MainActivity)getActivity()).hideTip(View.GONE);
+                }
+                else
+                {
+                    tv_unpay_count.setText(count+"");
+                }
             }
         }
     };
@@ -138,7 +155,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                     tv_collocation.setText(msg.arg1+"");
                     break;
                 case UPDATE_UNPAY_COUNT:
-                    int count =msg.arg1;
+                    count =msg.arg1;
                     tv_unpay_count.setVisibility(View.VISIBLE);
                     ((MainActivity)getActivity()).hideTip(View.VISIBLE);
                     tv_unpay_count.setText(count+"");
@@ -244,6 +261,8 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshUnPayAddTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshUnPayDesTag);
         getActivity().registerReceiver(broadcastReceiver,intentFilter);
     }
 
@@ -271,8 +290,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             case R.id.all_order:
                 AllOrdersFragment allOrdersFragment = AllOrdersFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragment(allOrdersFragment);
-//                AfterSaleFragment afterSaleFragment=AfterSaleFragment.newInstance("","");
-//                ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
                 break;
             case R.id.rl_taobao_order:
                 Intent intent1=new Intent(getActivity(),WebViewActivity.class);
@@ -280,7 +297,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 startAnimActivity(intent1);
                 break;
             case R.id.tv_pre_pay:
-                tv_unpay_count.setVisibility(View.GONE);
                 UnPayFragment unPayFragment = UnPayFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragment(unPayFragment);
                 ((MainActivity)getActivity()).hideTip(View.GONE);

@@ -419,6 +419,19 @@
             </FrameLayout>
         </FrameLayout>
 
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/goodsPublish"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/btn_no_click_selector"
+            android:clickable="true"
+            android:layout_gravity="center"
+            android:textColor="@color/white"
+            android:text="此商品已下架"
+            android:visibility="gone"
+            android:gravity="center"/>
+
         <LinearLayout
             android:id="@+id/goodsAddBuyBtn"
             android:layout_width="match_parent"
