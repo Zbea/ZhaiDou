@@ -4,6 +4,7 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -526,8 +527,9 @@ public class OrderDetailFragment extends BaseFragment {
             tv_specification.setText(item.getSpecification());
             tv_count.setText(item.getCount() + "");
             ToolUtils.setImageCacheUrl(item.getMerch_img(), iv_order_img);
-            mPrice.setText("?" + item.getPrice());
-            mOldPrice.setText("?" + item.getCost_price());
+            mPrice.setText("￥" + item.getPrice());
+            mOldPrice.setText("￥" + item.getCost_price());
+            mOldPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
             return convertView;
         }
     }
