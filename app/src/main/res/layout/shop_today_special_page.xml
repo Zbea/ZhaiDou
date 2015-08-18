@@ -41,7 +41,7 @@
                 android:textSize="14sp"
                 android:gravity="center"
                 android:layout_centerInParent="true"
-                android:textColor="#a8a8a8"
+                android:textColor="#666666"
                 android:background="@color/white"
                 android:text=""/>
 

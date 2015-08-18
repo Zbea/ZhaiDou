@@ -51,8 +51,6 @@ import java.util.Map;
 
 public class OrderDetailFragment extends BaseFragment
 {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_ID = "id";
     private static final String ARG_TIMESTMP = "timestmp";
     private static final String ARG_ORDER = "order";
@@ -143,8 +141,6 @@ public class OrderDetailFragment extends BaseFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        // Inflate the layout for this fragment
-        Log.i("OrderDetailFragment--------->", "onCreateView");
         if (null != rootView)
         {
             ViewGroup parent = (ViewGroup) rootView.getParent();
@@ -191,11 +187,14 @@ public class OrderDetailFragment extends BaseFragment
 //        }
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
 
-        Log.i("mOrder.getStatus()------------>", mOrder.getStatus());
         switch (Integer.parseInt(mOrder.getStatus()))
         {
             case ZhaiDou.STATUS_UNPAY:
-
+                if (mParam2<1)
+                {
+                    mBottomLayout.setVisibility(View.GONE);
+                    mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
+                }
                 break;
             case ZhaiDou.STATUS_PAYED:
                 mCancelOrder.setText(mContext.getResources().getString(R.string.order_return_money));
@@ -395,10 +394,9 @@ public class OrderDetailFragment extends BaseFragment
     private void cancalOrderDialog()
     {
         final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
-
         View dialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
         TextView textView = (TextView) dialogView.findViewById(R.id.tv_msg);
-        textView.setText("?????????");
+        textView.setText(mContext.getResources().getString(R.string.order_cancel_ok));
         TextView cancelTv = (TextView) dialogView.findViewById(R.id.cancelTv);
         cancelTv.setOnClickListener(new View.OnClickListener()
         {
@@ -435,10 +433,11 @@ public class OrderDetailFragment extends BaseFragment
                                 String status_ch = orderObj.optString("status_ch");
                                 String number = orderObj.optString("number");
                                 Order order = new Order(id, number, amount, status1, status_ch, created_at_for, created_at, "", 0);
+                                ToolUtils.setLog(order.toString());
                                 if (orderListener != null)
                                     orderListener.onOrderStatusChange(order);
                                 ((MainActivity) getActivity()).popToStack(OrderDetailFragment.this);
-                                //?????????
+
                                 Intent intent=new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
                                 mContext.sendBroadcast(intent);
                             }

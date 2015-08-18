@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -67,7 +68,7 @@ public class UnPayFragment extends BaseFragment
     private ListView mListView;
     private UnPayAdapter unPayAdapter;
     private final int UPDATE_COUNT_DOWN_TIME = 2;
-    private final int UPDATE_UI_TIMER_FINISH=3;
+    private final int UPDATE_UI_TIMER_FINISH = 3;
     private final String STATUS_UNPAY_LIST = "0";
 
     private Dialog mDialog;
@@ -78,16 +79,25 @@ public class UnPayFragment extends BaseFragment
     private MyTimer timer;
     private String token;
     private Context mContext;
-    private Handler handler = new Handler() {
+    private Handler handler = new Handler()
+    {
         @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
+        public void handleMessage(Message msg)
+        {
+            switch (msg.what)
+            {
                 case UPDATE_UNPAY_LIST:
-                    unPayAdapter.notifyDataSetChanged();
-
+                    if (orders != null && orders.size() > 0)
+                    {
+                        loadingView.setVisibility(View.GONE);
+                        unPayAdapter.notifyDataSetChanged();
+                    } else
+                    {
+                        mListView.setVisibility(View.GONE);
+                        loadingView.setVisibility(View.VISIBLE);
+                    }
                     break;
                 case UPDATE_COUNT_DOWN_TIME:
-                    loadingView.setVisibility(View.GONE);
                     unPayAdapter.notifyDataSetChanged();
                     break;
                 case UPDATE_UI_TIMER_FINISH:
@@ -97,8 +107,8 @@ public class UnPayFragment extends BaseFragment
         }
     };
 
-    // TODO: Rename and change types and number of parameters
-    public static UnPayFragment newInstance(String param1, String param2) {
+    public static UnPayFragment newInstance(String param1, String param2)
+    {
         UnPayFragment fragment = new UnPayFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
@@ -112,9 +122,11 @@ public class UnPayFragment extends BaseFragment
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        if (getArguments() != null)
+        {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
@@ -122,47 +134,56 @@ public class UnPayFragment extends BaseFragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        Log.i("UnPayFragment-------------->", "onCreateView");
-        if (null != rootView) {
+                             Bundle savedInstanceState)
+    {
+        if (null != rootView)
+        {
             ViewGroup parent = (ViewGroup) rootView.getParent();
-            if (null != parent) {
+            if (null != parent)
+            {
                 parent.removeView(rootView);
             }
-        } else {
+        } else
+        {
             rootView = inflater.inflate(R.layout.fragment_unpay, container, false);
-            mContext=getActivity();
+            mContext = getActivity();
             mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
             mListView = (ListView) rootView.findViewById(R.id.lv_unpaylist);
             unPayAdapter = new UnPayAdapter(getActivity(), orders);
             mListView.setAdapter(unPayAdapter);
-            token=(String) SharedPreferencesUtil.getData(getActivity(),"token","");
+            token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
             mRequestQueue = Volley.newRequestQueue(getActivity());
 
-            unPayAdapter.setOnInViewClickListener(R.id.ll_unpay, new BaseListAdapter.onInternalClickListener() {
+            unPayAdapter.setOnInViewClickListener(R.id.ll_unpay, new BaseListAdapter.onInternalClickListener()
+            {
                 @Override
-                public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                public void OnClickListener(View parentV, View v, Integer position, Object values)
+                {
                     final Order order = (Order) values;
                     TextView textView = (TextView) v.findViewById(R.id.bt_order_timer);
                     OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(), order);
                     ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
-                    orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
+                    orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener()
+                    {
                         @Override
-                        public void onOrderStatusChange(Order o) {
+                        public void onOrderStatusChange(Order o)
+                        {
                             order.setStatus(o.getStatus());
                             order.setStatus_ch("已取消");
                         }
                     });
                 }
             });
-            unPayAdapter.setOnInViewClickListener(R.id.bt_order_timer,new BaseListAdapter.onInternalClickListener() {
+            unPayAdapter.setOnInViewClickListener(R.id.bt_order_timer, new BaseListAdapter.onInternalClickListener()
+            {
                 @Override
-                public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                    Order order=(Order)values;
-                    TextView textView=(TextView)v;
-                    if (mContext.getResources().getString(R.string.timer_finish).equalsIgnoreCase(textView.getText().toString())){
+                public void OnClickListener(View parentV, View v, Integer position, Object values)
+                {
+                    Order order = (Order) values;
+                    TextView textView = (TextView) v;
+                    if (mContext.getResources().getString(R.string.timer_finish).equalsIgnoreCase(textView.getText().toString()))
+                    {
                         ShowToast(mContext.getResources().getString(R.string.order_had_order_time));
                         return;
                     }
@@ -177,19 +198,25 @@ public class UnPayFragment extends BaseFragment
         return rootView;
     }
 
-    private void FetchData() {
+    private void FetchData()
+    {
         orders.clear();
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST, new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST, new Response.Listener<JSONObject>()
+        {
             @Override
-            public void onResponse(JSONObject jsonObject) {
+            public void onResponse(JSONObject jsonObject)
+            {
                 Log.i("jsonObject----------->", jsonObject.toString());
                 if (mDialog != null)
                     mDialog.dismiss();
-                if (jsonObject != null) {
+                if (jsonObject != null)
+                {
                     JSONArray orderArr = jsonObject.optJSONArray("orders");
-                    if (orderArr != null && orderArr.length() > 0) {
+                    if (orderArr != null && orderArr.length() > 0)
+                    {
                         orders.clear();
-                        for (int i = 0; i < orderArr.length(); i++) {
+                        for (int i = 0; i < orderArr.length(); i++)
+                        {
                             JSONObject orderObj = orderArr.optJSONObject(i);
                             int id = orderObj.optInt("id");
                             String number = orderObj.optString("number");
@@ -205,27 +232,35 @@ public class UnPayFragment extends BaseFragment
                             order.setOver_at(over_at);
                             if (STATUS_UNPAY_LIST.equalsIgnoreCase(status))
                                 orders.add(order);
+//                                if (over_at > 0)
+//                                {
+//                                    orders.add(order);
+//                                }
                         }
                         handler.sendEmptyMessage(UPDATE_UNPAY_LIST);
-                    } else {
+                    } else
+                    {
                         mListView.setVisibility(View.GONE);
                         loadingView.setVisibility(View.VISIBLE);
                     }
                 }
             }
-        }, new Response.ErrorListener() {
+        }, new Response.ErrorListener()
+        {
             @Override
             public void onErrorResponse(VolleyError volleyError)
             {
                 mDialog.dismiss();
-                if (getActivity()!=null)
-                Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
+                if (getActivity() != null)
+                    Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
             }
-        }) {
+        })
+        {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization",token);
+                headers.put("SECAuthorization", token);
                 return headers;
             }
         };
@@ -233,16 +268,17 @@ public class UnPayFragment extends BaseFragment
     }
 
 
-        private class UnPayAdapter extends BaseListAdapter<Order>
-        {
+    private class UnPayAdapter extends BaseListAdapter<Order>
+    {
 
-            public UnPayAdapter(Context context, List<Order> list)
-            {
-                super(context, list);
-            }
+        public UnPayAdapter(Context context, List<Order> list)
+        {
+            super(context, list);
+        }
 
         @Override
-        public View bindView(int position, View convertView, ViewGroup parent) {
+        public View bindView(int position, View convertView, ViewGroup parent)
+        {
             convertView = mHashMap.get(position);
             if (convertView == null)
                 convertView = mInflater.inflate(R.layout.item_pre_pay, null);
@@ -260,7 +296,8 @@ public class UnPayFragment extends BaseFragment
             ToolUtils.setImageCacheUrl(item.getImg(), mOrderImg);
 
 
-            if (mTimerBtn.getTag() == null) {
+            if (mTimerBtn.getTag() == null)
+            {
                 mTimerBtn.setTag(item.getOver_at());
 //                mOrderTime.setTag(System.currentTimeMillis());
             }
@@ -275,10 +312,18 @@ public class UnPayFragment extends BaseFragment
             long minCount = (l - (dayCount * day) - (hour * hourCount)) / minute;
             long secondCount = (l - (dayCount * day) - (hour * hourCount) - (minCount * minute)) / 1000;
 //            if ((System.currentTimeMillis()-Long.parseLong(mOrderTime.getTag()+""))>=1000){
-            if (minCount > 0 || secondCount > 0) {
+            if (minCount > 0 || secondCount > 0)
+            {
                 mTimerBtn.setText("支付" + minCount + ":" + secondCount + "");
-            } else {
+            } else
+            {
+                item.setOver_at(0);
                 mTimerBtn.setText("超时过期");
+                mTimerBtn.setBackgroundResource(R.drawable.btn_no_click_selector);
+                mOrderStatus.setText("交易关闭");
+                //刷新代付款数量显示
+                Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
+                mContext.sendBroadcast(intent);
             }
 
             mTimerBtn.setTag(Long.parseLong(mTimerBtn.getTag() + "") - 1000);
@@ -291,28 +336,29 @@ public class UnPayFragment extends BaseFragment
         }
     }
 
-    private class MyTimer extends CountDownTimer {
-        private MyTimer(long millisInFuture, long countDownInterval) {
+    private class MyTimer extends CountDownTimer
+    {
+        private MyTimer(long millisInFuture, long countDownInterval)
+        {
             super(millisInFuture, countDownInterval);
         }
-
         @Override
-        public void onTick(long l) {
-//            Log.i("onTick------------>", l + "");
+        public void onTick(long l)
+        {
             handler.sendEmptyMessage(UPDATE_COUNT_DOWN_TIME);
         }
-
         @Override
-        public void onFinish() {
-//            Log.i("onFinish---------->", "onFinish");
-//            mHandler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
+        public void onFinish()
+        {
         }
     }
 
 
     @Override
-    public void onDestroyView() {
-        if (timer != null) {
+    public void onDestroyView()
+    {
+        if (timer != null)
+        {
             timer.cancel();
             timer = null;
         }

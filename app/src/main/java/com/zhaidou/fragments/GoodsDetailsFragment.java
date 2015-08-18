@@ -859,6 +859,7 @@ public class GoodsDetailsFragment extends BaseFragment
 
                 ShopOrderOkFragment shopOrderOkFragment = ShopOrderOkFragment.newInstance("", 0);
                 Bundle bundle = new Bundle();
+                bundle.putSerializable("flags", 1);
                 bundle.putSerializable("goodsList", itemsCheck);
                 shopOrderOkFragment.setArguments(bundle);
                 ((MainActivity) getActivity()).navigationToFragment(shopOrderOkFragment);

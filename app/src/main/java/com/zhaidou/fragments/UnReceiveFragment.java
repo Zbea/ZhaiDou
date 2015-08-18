@@ -65,8 +65,17 @@ public class UnReceiveFragment extends BaseFragment {
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case STATUS_UNRECEIVE_LIST:
-                    loadingView.setVisibility(View.GONE);
-                    unReceiveAdapter.notifyDataSetChanged();
+                    if (orders!=null&&orders.size()>0)
+                    {
+                        loadingView.setVisibility(View.GONE);
+                        unReceiveAdapter.notifyDataSetChanged();
+                    }
+                    else
+                    {
+                        mListView.setVisibility(View.GONE);
+                        loadingView.setVisibility(View.VISIBLE);
+                    }
+
                     break;
             }
         }
@@ -136,7 +145,6 @@ public class UnReceiveFragment extends BaseFragment {
             public void OnClickListener(View parentV, View v, final Integer position, Object values) {
                 final Order order = (Order) values;
                 final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
-
                 View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
                 TextView textView = (TextView) view.findViewById(R.id.tv_msg);
                 textView.setText("是否确认收货?");
@@ -147,27 +155,36 @@ public class UnReceiveFragment extends BaseFragment {
                         dialog.dismiss();
                     }
                 });
-
                 TextView okTv = (TextView) view.findViewById(R.id.okTv);
                 okTv.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        dialog.dismiss();
+                        mDialog=CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
                         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + order.getOrderId() + "/update_status?status=5", new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject jsonObject) {
                                 JSONObject orderObj = jsonObject.optJSONObject("order");
-                                if (orderObj != null) {
+                                if (orderObj != null)
+                                {
                                     String status = orderObj.optString("status");
-                                    if ("5".equalsIgnoreCase(status)) {
+                                    if ("5".equalsIgnoreCase(status))
+                                    {
                                         orders.remove(order);
-                                    }
+                                    } else
+                                {
+                                    ToolUtils.setToast(getActivity(),"抱歉,确认收货失败");
+                                }
                                     handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
+                                    mDialog.dismiss();
+
                                 }
                             }
                         }, new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError volleyError) {
-
+                                mDialog.dismiss();
+                                ToolUtils.setToast(getActivity(),"抱歉,确认收货失败");
                             }
                         }) {
                             @Override
@@ -178,7 +195,6 @@ public class UnReceiveFragment extends BaseFragment {
                             }
                         };
                         mRequestQueue.add(request);
-                        dialog.dismiss();
                     }
                 });
                 dialog.setCanceledOnTouchOutside(true);
@@ -196,10 +212,9 @@ public class UnReceiveFragment extends BaseFragment {
                 orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
                     @Override
                     public void onOrderStatusChange(Order o) {
-                        Log.i("o-------------->",o.toString());
                         if (!order.getStatus().equalsIgnoreCase(o.getStatus())){
                             orders.remove(order);
-                            unReceiveAdapter.notifyDataSetChanged();
+                            handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
                         }
                     }
                 });

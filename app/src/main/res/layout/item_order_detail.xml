@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:orientation="horizontal"
-        android:paddingLeft="15dp">
+        android:paddingLeft="5dp">
 
         <ImageView
             android:id="@+id/iv_order_img"

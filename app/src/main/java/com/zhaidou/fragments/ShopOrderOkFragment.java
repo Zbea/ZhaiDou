@@ -103,6 +103,7 @@ public class ShopOrderOkFragment extends BaseFragment {
     private CreatCartDB creatCartDB;
     private String token;
     private int userId;
+    private int flags=0;//1代表零元特卖的立即购买
 
     private Handler handler = new Handler() {
         @Override
@@ -238,13 +239,12 @@ public class ShopOrderOkFragment extends BaseFragment {
                                 isOSale=true;
                             }
                         }
-                        if (isOSale) {
+                        if (isOSale)
+                        {
                             FetchOSaleData(5);//判断零元特卖是否已经当天购买过
-                            if (items.size()==1)//判断是否来自立即购买的零元特卖
-                            {
-                                isljOsale=true;
-                            }
-                        } else {
+                        }
+                        else
+                        {
                             commit();
                         }
                     } else {
@@ -328,6 +328,7 @@ public class ShopOrderOkFragment extends BaseFragment {
         if (getArguments() != null) {
             mPage = getArguments().getString(PAGE);
             mIndex = getArguments().getInt(INDEX);
+            flags = getArguments().getInt("flags");
             items = (ArrayList<CartItem>) getArguments().getSerializable("goodsList");
         }
     }
@@ -363,6 +364,10 @@ public class ShopOrderOkFragment extends BaseFragment {
         okBtn = (Button) mView.findViewById(R.id.jsOkBtn);
         okBtn.setOnClickListener(onClickListener);
 
+        if (flags==1)
+        {
+            isljOsale=true;
+        }
         moneyTv = (TypeFaceTextView) mView.findViewById(R.id.jsPriceTotalTv);
         moneyYfTv = (TypeFaceTextView) mView.findViewById(R.id.jsPriceYfTv);
         moneyTotalTv = (TypeFaceTextView) mView.findViewById(R.id.jsTotalMoney);
