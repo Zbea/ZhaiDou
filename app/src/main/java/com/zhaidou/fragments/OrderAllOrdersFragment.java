@@ -160,15 +160,16 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                             order.setStatus(o.getStatus());
                             order.setStatus_ch(o.getStatus_ch());
                             long time = o.getOver_at();
-                            Log.i("isViewDestroy---------->", isViewDestroy + "");
-                            if (isViewDestroy) {
+                            if (!isTimerStart) {
                                 timeStmp = preTime - time;
+                                Log.i("timeStmp----------->", timeStmp + "");
                                 isViewDestroy = false;
+                                timerMap.clear();
                             } else {
                                 btn2.setTag(o.getOver_at());
+                                order.setOver_at(o.getOver_at());
+                                order.setStatus(o.getStatus());
                             }
-//                            if (preTime=afterTime)
-//                            btn2.setTag(o.getOver_at());
                         }
                     });
                 }
@@ -193,13 +194,13 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
                     final Order order = (Order) values;
                     final TextView btn2 = (TextView) v;
+                    if (btn2.getTag() != null)
+                        preTime = Long.parseLong(btn2.getTag().toString());
                     if (("" + ZhaiDou.STATUS_DEAL_SUCCESS).equalsIgnoreCase(order.getStatus())) {
                         if (order.isZero()) {
                             ShowToast(mContext.getResources().getString(R.string.order_zero_unreturn_msg));
                             return;
                         }
-                        if (btn2.getTag() != null)
-                            preTime = Long.parseLong(btn2.getTag().toString());
                         final AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(order.getOrderId() + "", order.getStatus() + "");
                         ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
                         afterSaleFragment.setOrderListener(new Order.OrderListener() {
@@ -223,15 +224,13 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         shopPaymentFragment.setOrderListener(new Order.OrderListener() {
                             @Override
                             public void onOrderStatusChange(Order o) {
-                                Log.i("shopPaymentFragment---o---->",o.toString());
+                                Log.i("shopPaymentFragment---o---->", o.toString());
                                 long time = o.getOver_at();
-                                Log.i("isTimerStart--------->",isTimerStart+"");
                                 if (!isTimerStart) {
-                                    Log.i("isTimerStart--------->","isTimerStart----");
                                     timeStmp = preTime - time;
-                                    Log.i("timeStmp----------->",timeStmp+"");
+                                    Log.i("timeStmp----------->", timeStmp + "");
                                     isViewDestroy = false;
-                                    timerMap = new WeakHashMap<Integer, Boolean>();
+                                    timerMap.clear();
                                 } else {
                                     btn2.setTag(o.getOver_at());
                                     order.setOver_at(o.getOver_at());
@@ -258,9 +257,12 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     okTv.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            dialog.dismiss();
+                            mDialog.show();
                             JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + order.getOrderId() + "/update_status?status=5", new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject jsonObject) {
+                                    mDialog.dismiss();
                                     JSONObject orderObj = jsonObject.optJSONObject("order");
                                     if (orderObj != null) {
                                         String status = orderObj.optString("status");
@@ -270,7 +272,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                             }, new Response.ErrorListener() {
                                 @Override
                                 public void onErrorResponse(VolleyError volleyError) {
-
+                                    mDialog.dismiss();
                                 }
                             }) {
                                 @Override
@@ -281,7 +283,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                                 }
                             };
                             mRequestQueue.add(request);
-                            dialog.dismiss();
+
                         }
                     });
                     dialog.setCanceledOnTouchOutside(true);
@@ -312,9 +314,12 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     okTv.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            dialog.dismiss();
+                            mDialog.show();
                             JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + order.getOrderId() + "/delete_order", new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject jsonObject) {
+                                    mDialog.dismiss();
                                     Log.i("jsonObject---iv_delete->", jsonObject.toString());
                                     if (jsonObject != null) {
                                         int status = jsonObject.optInt("status");
@@ -338,7 +343,6 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                                 }
                             };
                             mRequestQueue.add(request);
-                            dialog.dismiss();
                         }
                     });
                     dialog.setCanceledOnTouchOutside(true);
@@ -453,7 +457,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
                     if (l > 0) {
                         if (timeStmp > 0 && timerMap != null && (timerMap.get(position) == null || !timerMap.get(position))) {
-                            Log.i("hhhhhhhh---->","dasfafaf");
+                            Log.i("hhhhhhhh---->", "dasfafaf");
                             l = l - timeStmp;
                             btn2.setTag(l);
                             order.setOver_at(l);

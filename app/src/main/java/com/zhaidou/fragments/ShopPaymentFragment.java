@@ -84,6 +84,7 @@ public class ShopPaymentFragment extends BaseFragment {
     private CheckBox cb_zhifubao;
     private int mCheckPosition = 0;
     RequestQueue mRequestQueue;
+    private boolean isTimerStart = false;
     private Order.OrderListener orderListener;
 
     private static final int SDK_PAY_FLAG = 1;
@@ -288,7 +289,7 @@ public class ShopPaymentFragment extends BaseFragment {
                 public void run() {
                     initTime = initTime - 1;
                     Log.i("initTime----------------------------->",initTime+"");
-                    timeInfoTv.setText(new SimpleDateFormat("mm:ss").format(new Date(initTime*1000)));
+                    timeInfoTv.setText(new SimpleDateFormat("mm:ss").format(new Date(initTime * 1000)));
                     if (initTime <= 0) {
                         if (mTimer != null) {
                             mTimer.cancel();
@@ -426,8 +427,21 @@ public class ShopPaymentFragment extends BaseFragment {
     }
     @Override
     public void onResume() {
-        mTimer.schedule(new MyTimer(), 1000, 1000);
+        if (!isTimerStart) {
+            isTimerStart = true;
+            mTimer.schedule(new MyTimer(), 1000, 1000);
+        }
         super.onResume();
+    }
+
+    @Override
+    public void onStop() {
+        if (mTimer!=null){
+            mTimer.cancel();
+            mTimer=null;
+            isTimerStart = false;
+        }
+        super.onStop();
     }
 
     @Override
