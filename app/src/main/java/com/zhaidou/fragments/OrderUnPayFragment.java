@@ -6,10 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,8 +32,6 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.model.Address;
-import com.zhaidou.model.CountTime;
 import com.zhaidou.model.Order;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -51,10 +47,10 @@ import java.util.WeakHashMap;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link UnPayFragment#newInstance} factory method to
+ * Use the {@link OrderUnPayFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class UnPayFragment extends BaseFragment {
+public class OrderUnPayFragment extends BaseFragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -104,8 +100,8 @@ public class UnPayFragment extends BaseFragment {
     };
 
     // TODO: Rename and change types and number of parameters
-    public static UnPayFragment newInstance(String param1, String param2) {
-        UnPayFragment fragment = new UnPayFragment();
+    public static OrderUnPayFragment newInstance(String param1, String param2) {
+        OrderUnPayFragment fragment = new OrderUnPayFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -113,7 +109,7 @@ public class UnPayFragment extends BaseFragment {
         return fragment;
     }
 
-    public UnPayFragment() {
+    public OrderUnPayFragment() {
     }
 
     @Override

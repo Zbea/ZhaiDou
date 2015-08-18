@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-public class ReturnFragment extends BaseFragment implements View.OnClickListener{
+public class OrderReturnFragment extends BaseFragment implements View.OnClickListener{
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -72,15 +72,15 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
             }
         }
     };
-    public static ReturnFragment newInstance(String param1, String param2) {
-        ReturnFragment fragment = new ReturnFragment();
+    public static OrderReturnFragment newInstance(String param1, String param2) {
+        OrderReturnFragment fragment = new OrderReturnFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
-    public ReturnFragment() {
+    public OrderReturnFragment() {
     }
 
     @Override
@@ -269,9 +269,8 @@ public class ReturnFragment extends BaseFragment implements View.OnClickListener
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 if (mDialog!=null) mDialog.dismiss();
-                Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
                 if (getActivity()!=null)
-                Toast.makeText(mContext, "网络异常", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "加载失败", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
