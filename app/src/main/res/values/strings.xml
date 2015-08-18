@@ -3,6 +3,7 @@
 
     <string name="app_name">宅豆</string>
     <string name="app_versionName">2.2.1</string>
+    <string name="app_version">宅豆家居 V%1$s</string>
     <string name="action_settings">宅豆</string>
     <string name="title_activity_gl">攻略</string>
     <string name="title_activity_categories">分类</string>
@@ -37,6 +38,7 @@
     <string name="order_had_order_time">订单已超时,请重新购买</string>
     <string name="order_zero_unreturn_msg">0元特卖的商品不能退哦!</string>
     <string name="order_zero_return_msg">0元特卖商品不允许退款/退货</string>
+    <string name="order_price">￥ %1$s</string>
 
     <!--售后客服-->
     <string name="QQ_Number">2637059378</string>
@@ -72,10 +74,13 @@
     <string name="timer_finish">超时过期</string>
     <string name="timer_start">支付 %1$s</string>
 
+    <!--网络-->
+    <string name="network_load_error">加载失败</string>
 
     <!--微信支付-->
     <string name="app_tip">提示</string>
     <string name="getting_prepayid">正在获取预支付订单...</string>
+
     <!--test-->
     <string name="index_json">
         {

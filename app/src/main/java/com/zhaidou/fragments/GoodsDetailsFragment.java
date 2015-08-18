@@ -95,7 +95,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private Context mContext;
     private int count = 0;
     private ImageView shareBtn;
-    private String shareUrl = ZhaiDou.goodsDetailsShareUrl;
+    private String shareUrl=ZhaiDou.goodsDetailsShareUrl;
     private TextView backBtn, titleTv, mCartCount;
     private ImageView[] dots;
     private List<View> adPics = new ArrayList<View>();
@@ -110,7 +110,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private GridView mGridView;
     private RequestQueue mRequestQueue;
     private ViewPager mViewPager;
-    private List<Fragment> fragments = new ArrayList<Fragment>();
+    private List<Fragment> fragments=new ArrayList<Fragment>();
     private GoodsDetailsChildFragment goodsDetailsChildFragment;
     private SaleServiceFragment saleServiceFragment;
     private GoodsChildFragmentAdapter goodsChildFragmentAdapter;
@@ -134,10 +134,10 @@ public class GoodsDetailsFragment extends BaseFragment
     private int num;
     private ScrollView scrollView;
     private ImageView topBtn;
-    private LinearLayout iconView, iconOSaleView;
+    private LinearLayout iconView,iconOSaleView;
 
-    private LinearLayout loadingView, nullNetView, nullView;
-    private TextView reloadBtn, reloadNetBtn;
+    private LinearLayout loadingView,nullNetView,nullView;
+    private TextView  reloadBtn,reloadNetBtn;
 
     private GoodDetail detail;
     private SpecificationAdapter specificationAdapter;
@@ -158,7 +158,7 @@ public class GoodsDetailsFragment extends BaseFragment
 
     private boolean isOSaleBuy;
     private boolean isClick;
-    private int mClick = -1;
+    private int mClick=-1;
 
     private int userId;
     private String token;
@@ -218,11 +218,11 @@ public class GoodsDetailsFragment extends BaseFragment
             switch (msg.what)
             {
                 case UPDATE_GOOD_DETAIL:
-                    if (detail != null)
-                        loadingView.setVisibility(View.GONE);
+                    if (detail!=null)
+                    loadingView.setVisibility(View.GONE);
 
                     detail = (GoodDetail) msg.obj;
-                    setChildFargment(detail, goodInfos);
+                    setChildFargment(detail,goodInfos);
 
                     mCurrentPrice.setText("￥" + detail.getPrice() + "");
                     mOldPrice.setText("￥" + detail.getCost_price() + "");
@@ -233,13 +233,13 @@ public class GoodsDetailsFragment extends BaseFragment
                     if (detail.getSpecifications() != null)
                         specificationAdapter.addAll(detail.getSpecifications());
 
-                    boolean isOver = true;
+                    boolean isOver=true;
 
-                    for (int i = 0; i < detail.getSpecifications().size(); i++)
+                    for (int i = 0; i <detail.getSpecifications().size() ; i++)
                     {
-                        if (detail.getSpecifications().get(i).num > 0)
+                        if(detail.getSpecifications().get(i).num>0)
                         {
-                            isOver = false;
+                            isOver=false;
                             break;
                         }
                     }
@@ -291,7 +291,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     mTimerView.setText("已结束");
                     setAddOrBuyShow("活动已结束");
                     break;
-                case UPDATE_LJBUY_ISOSALEBUY:
+                case 5:
                     if (mDialog != null)
                         mDialog.dismiss();
                     if (isOSaleBuy)
@@ -353,11 +353,11 @@ public class GoodsDetailsFragment extends BaseFragment
         @Override
         public void onPageSelected(int i)
         {
-            if (i == 0)
+            if (i==0)
             {
                 radioGroup.check(R.id.infoRb);
             }
-            if (i == 1)
+            if (i==1)
             {
                 radioGroup.check(R.id.afterSaleRb);
             }
@@ -372,16 +372,16 @@ public class GoodsDetailsFragment extends BaseFragment
     /**
      * radiobutton选择改变事件
      */
-    private RadioGroup.OnCheckedChangeListener onCheckedChangeListener = new RadioGroup.OnCheckedChangeListener()
+    private RadioGroup.OnCheckedChangeListener onCheckedChangeListener=new RadioGroup.OnCheckedChangeListener()
     {
         @Override
         public void onCheckedChanged(RadioGroup radioGroup, int i)
         {
-            if (i == R.id.infoRb)
+            if (i==R.id.infoRb)
             {
                 mViewPager.setCurrentItem(0);
             }
-            if (i == R.id.afterSaleRb)
+            if (i==R.id.afterSaleRb)
             {
                 mViewPager.setCurrentItem(1);
             }
@@ -505,18 +505,18 @@ public class GoodsDetailsFragment extends BaseFragment
 
     private void initView()
     {
-        shareUrl = shareUrl + mIndex;
+        shareUrl=shareUrl+mIndex;
 
-        shareBtn = (ImageView) mView.findViewById(R.id.share_iv);
+        shareBtn=(ImageView)mView.findViewById(R.id.share_iv);
         shareBtn.setOnClickListener(onClickListener);
-        if (flags == 1)//零元特卖不能分享
+        if (flags==1)//零元特卖不能分享
         {
             shareBtn.setVisibility(View.GONE);
         }
 
         loadingView = (LinearLayout) mView.findViewById(R.id.loadingView);
-        nullNetView = (LinearLayout) mView.findViewById(R.id.nullNetline);
-        nullView = (LinearLayout) mView.findViewById(R.id.nullline);
+        nullNetView= (LinearLayout) mView.findViewById(R.id.nullNetline);
+        nullView= (LinearLayout) mView.findViewById(R.id.nullline);
 
         reloadBtn = (TextView) mView.findViewById(R.id.nullReload);
         reloadBtn.setOnClickListener(onClickListener);
@@ -544,16 +544,17 @@ public class GoodsDetailsFragment extends BaseFragment
 
         publishBtn = (TextView) mView.findViewById(R.id.goodsPublish);
 
-        RelativeLayout relativeLayout = (RelativeLayout) mView.findViewById(R.id.imageRl);
-        relativeLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 630 / 720));
+        RelativeLayout relativeLayout=(RelativeLayout)mView.findViewById(R.id.imageRl);
+        relativeLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth*630/720));
 
-        iconView = (LinearLayout) mView.findViewById(R.id.iconView);
-        iconOSaleView = (LinearLayout) mView.findViewById(R.id.iconOSaleView);
-        if (flags == 1)
+        iconView=(LinearLayout)mView.findViewById(R.id.iconView);
+        iconOSaleView=(LinearLayout)mView.findViewById(R.id.iconOSaleView);
+        if (flags==1)
         {
             iconView.setVisibility(View.GONE);
             iconOSaleView.setVisibility(View.VISIBLE);
-        } else
+        }
+        else
         {
             iconView.setVisibility(View.VISIBLE);
             iconOSaleView.setVisibility(View.GONE);
@@ -604,7 +605,7 @@ public class GoodsDetailsFragment extends BaseFragment
 
         mViewPager = (ViewPager) mView.findViewById(R.id.vp_goods_detail);
 
-        radioGroup = (RadioGroup) mView.findViewById(R.id.goodsRG);
+        radioGroup=(RadioGroup)mView.findViewById(R.id.goodsRG);
         radioGroup.setOnCheckedChangeListener(onCheckedChangeListener);
 
         specificationAdapter = new SpecificationAdapter(getActivity(), new ArrayList<Specification>(), mSpecificationSelectPosition);
@@ -616,37 +617,38 @@ public class GoodsDetailsFragment extends BaseFragment
             public void OnClickListener(View parentV, View v, Integer position, Object values)
             {
 
-                if (((Specification) values).num > 0)
+                if (((Specification)values).num>0 )
                 {
-                    if (mClick == position)
+                    if (mClick==position)
                     {
-                        if (isClick == false)
+                        if (isClick==false)
                         {
-                            mClick = position;
+                            mClick=position;
                             specificationAdapter.setCheckPosition(mSpecificationSelectPosition = position);
                             specificationAdapter.notifyDataSetChanged();
                             sizeEvent(position);
-                            isClick = true;
+                            isClick=true;
 
                         } else
                         {
-                            mClick = -1;
-                            isClick = false;
-                            specificationAdapter.setCheckPosition(mSpecificationSelectPosition = -1);
+                            mClick=-1;
+                            isClick=false;
+                            specificationAdapter.setCheckPosition(mSpecificationSelectPosition=-1);
                             specificationAdapter.notifyDataSetChanged();
-                            mSpecification = null;
+                            mSpecification=null;
 
                             mCurrentPrice.setText("￥" + detail.getPrice() + "");
                             mOldPrice.setText("￥" + detail.getCost_price() + "");
                             setDiscount(detail.getPrice(), detail.getCost_price());
                         }
-                    } else
+                    }
+                    else
                     {
-                        mClick = position;
+                        mClick=position;
                         specificationAdapter.setCheckPosition(mSpecificationSelectPosition = position);
                         specificationAdapter.notifyDataSetChanged();
                         sizeEvent(position);
-                        isClick = true;
+                        isClick=true;
                     }
 
 
@@ -670,14 +672,18 @@ public class GoodsDetailsFragment extends BaseFragment
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
             FetchDetailData(mIndex);
-            if (flags == 1)
+            if (checkLogin())
             {
-                FetchOSaleData(UPDATE_ISOSALEBUY);
+                if (flags==1)
+                {
+                    FetchOSaleData(0);
+                }
             }
-        } else
+        }
+        else
         {
-            if (mDialog != null)
-                mDialog.dismiss();
+            if (mDialog!=null)
+            mDialog.dismiss();
             nullView.setVisibility(View.GONE);
             nullNetView.setVisibility(View.VISIBLE);
         }
@@ -701,7 +707,7 @@ public class GoodsDetailsFragment extends BaseFragment
         token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
         boolean isLogin = !TextUtils.isEmpty(token) && userId > -1;
-        ToolUtils.setLog("" + isLogin);
+        ToolUtils.setLog(""+isLogin);
         return isLogin;
     }
 
@@ -749,18 +755,17 @@ public class GoodsDetailsFragment extends BaseFragment
 
     /**
      * 加载子fargment信息
-     *
      * @param detail
      * @param goodInfos
      */
     private void setChildFargment(GoodDetail detail, ArrayList<GoodInfo> goodInfos)
     {
         fragments.removeAll(fragments);
-        goodsDetailsChildFragment = GoodsDetailsChildFragment.newInstance(detail, goodInfos);
-        saleServiceFragment = SaleServiceFragment.newInstance("", "");
+        goodsDetailsChildFragment=GoodsDetailsChildFragment.newInstance(detail,goodInfos);
+        saleServiceFragment=SaleServiceFragment.newInstance("","");
         fragments.add(goodsDetailsChildFragment);
         fragments.add(saleServiceFragment);
-        goodsChildFragmentAdapter = new GoodsChildFragmentAdapter(getChildFragmentManager());
+        goodsChildFragmentAdapter=new GoodsChildFragmentAdapter(getChildFragmentManager());
         mViewPager.setOnPageChangeListener(onPageChange);
         mViewPager.setAdapter(goodsChildFragmentAdapter);
         mViewPager.setCurrentItem(0);
@@ -781,9 +786,9 @@ public class GoodsDetailsFragment extends BaseFragment
         // titleUrl是标题的网络链接，仅在人人网和QQ空间使用
         oks.setTitleUrl(shareUrl);
         // text是分享文本，所有平台都需要这个字段
-        oks.setText(mPage + "   " + shareUrl);
+        oks.setText(mPage+"   "+shareUrl);
         // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
-        if (detail != null)
+        if (detail!=null)
         {
             oks.setImageUrl(detail.getImgs().get(0));//确保SDcard下面存在此张图片
         }
@@ -990,10 +995,10 @@ public class GoodsDetailsFragment extends BaseFragment
         viewGroupe.removeAllViews();
         if (CollectionUtils.isNotNull(urls))
         {
-            ToolUtils.setLog("" + urls.size());
-            if (urls.size() > 4)
+            ToolUtils.setLog(""+urls.size());
+            if (urls.size()>4)
             {
-                List<String> urlss = new ArrayList<String>();
+                List<String> urlss=new ArrayList<String>();
                 urlss.addAll(urls);
                 urls.removeAll(urls);
                 urls.add(urlss.get(0));
@@ -1001,7 +1006,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 urls.add(urlss.get(2));
                 urls.add(urlss.get(3));
             }
-            ToolUtils.setLog("" + urls.size());
+            ToolUtils.setLog(""+urls.size());
 
             for (String url : urls)
             {
@@ -1041,7 +1046,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 }
             }
             viewPager = (ViewPager) mView.findViewById(R.id.goods_adv_pager);
-            viewPager.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 630 / 720));
+            viewPager.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth*630/720));
             imageAdapter = new GoodsImageAdapter(mContext, adPics);
             viewPager.setAdapter(imageAdapter);
             viewPager.setOnPageChangeListener(onPageChangeListener);
@@ -1177,6 +1182,7 @@ public class GoodsDetailsFragment extends BaseFragment
             @Override
             public void onResponse(JSONObject jsonObject)
             {
+
                 if (jsonObject != null)
                 {
                     isOSaleBuy = jsonObject.optBoolean("flag");
@@ -1406,7 +1412,6 @@ public class GoodsDetailsFragment extends BaseFragment
         {
             super(millisInFuture, countDownInterval);
         }
-
         @Override
         public void onTick(long l)
         {

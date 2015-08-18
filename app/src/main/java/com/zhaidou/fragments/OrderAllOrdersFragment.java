@@ -48,8 +48,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 
-public class OrderAllOrdersFragment extends BaseFragment implements View.OnClickListener
-{
+public class OrderAllOrdersFragment extends BaseFragment implements View.OnClickListener {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -76,13 +75,10 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     private boolean isViewDestroy = false;
     private Map<Integer, Boolean> timerMap = new HashMap<Integer, Boolean>();
     private boolean isTimerStart = false;
-    private Handler handler = new Handler()
-    {
+    private Handler handler = new Handler() {
         @Override
-        public void handleMessage(Message msg)
-        {
-            switch (msg.what)
-            {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
                 case UPDATE_ORDER_LIST:
                     loadingView.setVisibility(View.GONE);
                     mListView.setVisibility(View.VISIBLE);
@@ -107,8 +103,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         }
     };
 
-    public static OrderAllOrdersFragment newInstance(String param1, String param2)
-    {
+    public static OrderAllOrdersFragment newInstance(String param1, String param2) {
         OrderAllOrdersFragment fragment = new OrderAllOrdersFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
@@ -117,17 +112,14 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         return fragment;
     }
 
-    public OrderAllOrdersFragment()
-    {
+    public OrderAllOrdersFragment() {
         // Required empty public constructor
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null)
-        {
+        if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
@@ -135,19 +127,15 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState)
-    {
+                             Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         Log.i("AllOrdersFragment------------>", "onCreateView");
-        if (null != rootView)
-        {
+        if (null != rootView) {
             ViewGroup parent = (ViewGroup) rootView.getParent();
-            if (null != parent)
-            {
+            if (null != parent) {
                 parent.removeView(rootView);
             }
-        } else
-        {
+        } else {
             rootView = inflater.inflate(R.layout.fragment_all_orders, container, false);
             mContext = getActivity();
             mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
@@ -159,11 +147,9 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
             FetchAllOrder();
 
-            allOrderAdapter.setOnInViewClickListener(R.id.orderlayout, new BaseListAdapter.onInternalClickListener()
-            {
+            allOrderAdapter.setOnInViewClickListener(R.id.orderlayout, new BaseListAdapter.onInternalClickListener() {
                 @Override
-                public void OnClickListener(View parentV, View v, Integer position, Object values)
-                {
+                public void OnClickListener(View parentV, View v, Integer position, Object values) {
                     final Order order = (Order) values;
                     Log.i("order--------->", order.toString());
                     final TextView btn2 = (TextView) parentV.findViewById(R.id.bt_received);
@@ -176,23 +162,19 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         preTime = Long.parseLong(btn2.getTag().toString());
                     OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(), order);
                     ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
-                    orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener()
-                    {
+                    orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
                         @Override
-                        public void onOrderStatusChange(Order o)
-                        {
+                        public void onOrderStatusChange(Order o) {
                             Log.i("AllOrdersFragment---------o-->", o.toString());
                             order.setStatus(o.getStatus());
                             order.setStatus_ch(o.getStatus_ch());
                             long time = o.getOver_at();
-                            if (!isTimerStart)
-                            {
+                            if (!isTimerStart) {
                                 timeStmp = preTime - time;
                                 Log.i("timeStmp----------->", timeStmp + "");
                                 isViewDestroy = false;
                                 timerMap.clear();
-                            } else
-                            {
+                            } else {
                                 btn2.setTag(o.getOver_at());
                                 order.setOver_at(o.getOver_at());
                                 order.setStatus(o.getStatus());
@@ -201,48 +183,38 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     });
                 }
             });
-            allOrderAdapter.setOnInViewClickListener(R.id.bt_logistics, new BaseListAdapter.onInternalClickListener()
-            {
+            allOrderAdapter.setOnInViewClickListener(R.id.bt_logistics, new BaseListAdapter.onInternalClickListener() {
                 @Override
-                public void OnClickListener(View parentV, View v, Integer position, Object values)
-                {
+                public void OnClickListener(View parentV, View v, Integer position, Object values) {
                     Order order = (Order) values;
                     Log.i("v---------->", v.toString());
                     TextView textView = (TextView) v;
-                    if (mContext.getResources().getString(R.string.order_logistics).equalsIgnoreCase(textView.getText().toString()))
-                    {
+                    if (mContext.getResources().getString(R.string.order_logistics).equalsIgnoreCase(textView.getText().toString())) {
                         LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "");
                         ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
-                    } else if (mContext.getResources().getString(R.string.order_return_money).equalsIgnoreCase(textView.getText().toString()))
-                    {
+                    } else if (mContext.getResources().getString(R.string.order_return_money).equalsIgnoreCase(textView.getText().toString())) {
                         AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(order.getOrderId() + "", "return_money");
                         ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
                     }
                 }
             });
-            allOrderAdapter.setOnInViewClickListener(R.id.bt_received, new BaseListAdapter.onInternalClickListener()
-            {
+            allOrderAdapter.setOnInViewClickListener(R.id.bt_received, new BaseListAdapter.onInternalClickListener() {
                 @Override
-                public void OnClickListener(View parentV, View v, Integer position, Object values)
-                {
+                public void OnClickListener(View parentV, View v, Integer position, Object values) {
                     final Order order = (Order) values;
                     final TextView btn2 = (TextView) v;
                     if (btn2.getTag() != null)
                         preTime = Long.parseLong(btn2.getTag().toString());
-                    if (("" + ZhaiDou.STATUS_DEAL_SUCCESS).equalsIgnoreCase(order.getStatus()))
-                    {
-                        if (order.isZero())
-                        {
+                    if (("" + ZhaiDou.STATUS_DEAL_SUCCESS).equalsIgnoreCase(order.getStatus())) {
+                        if (order.isZero()) {
                             ShowToast(mContext.getResources().getString(R.string.order_zero_unreturn_msg));
                             return;
                         }
                         final AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(order.getOrderId() + "", order.getStatus() + "");
                         ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
-                        afterSaleFragment.setOrderListener(new Order.OrderListener()
-                        {
+                        afterSaleFragment.setOrderListener(new Order.OrderListener() {
                             @Override
-                            public void onOrderStatusChange(Order o)
-                            {
+                            public void onOrderStatusChange(Order o) {
                                 Log.i("AllOrdersFragment---------o-->", o.toString());
 
                                 order.setStatus(o.getStatus());
@@ -250,31 +222,25 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                             }
                         });
                         return;
-                    } else if (("" + ZhaiDou.STATUS_UNPAY).equalsIgnoreCase(order.getStatus()))
-                    {
+                    } else if (("" + ZhaiDou.STATUS_UNPAY).equalsIgnoreCase(order.getStatus())) {
                         Log.i("textview---------------->", btn2.getText().toString() + "----" + btn2.getTag().toString());
-                        if (mContext.getResources().getString(R.string.timer_finish).equalsIgnoreCase(btn2.getText().toString()))
-                        {
+                        if (mContext.getResources().getString(R.string.timer_finish).equalsIgnoreCase(btn2.getText().toString())) {
                             ShowToast(mContext.getResources().getString(R.string.order_had_order_time));
                             return;
                         }
                         ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.getOrderId(), order.getAmount(), 0, order.getOver_at(), order);
                         ((BaseActivity) getActivity()).navigationToFragment(shopPaymentFragment);
-                        shopPaymentFragment.setOrderListener(new Order.OrderListener()
-                        {
+                        shopPaymentFragment.setOrderListener(new Order.OrderListener() {
                             @Override
-                            public void onOrderStatusChange(Order o)
-                            {
+                            public void onOrderStatusChange(Order o) {
                                 Log.i("shopPaymentFragment---o---->", o.toString());
                                 long time = o.getOver_at();
-                                if (!isTimerStart)
-                                {
+                                if (!isTimerStart) {
                                     timeStmp = preTime - time;
                                     Log.i("timeStmp----------->", timeStmp + "");
                                     isViewDestroy = false;
                                     timerMap.clear();
-                                } else
-                                {
+                                } else {
                                     btn2.setTag(o.getOver_at());
                                     order.setOver_at(o.getOver_at());
                                     order.setStatus(o.getStatus());
@@ -289,48 +255,37 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     TextView textView = (TextView) view.findViewById(R.id.tv_msg);
                     textView.setText("是否确认收货?");
                     TextView cancelTv = (TextView) view.findViewById(R.id.cancelTv);
-                    cancelTv.setOnClickListener(new View.OnClickListener()
-                    {
+                    cancelTv.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onClick(View view)
-                        {
+                        public void onClick(View view) {
                             dialog.dismiss();
                         }
                     });
 
                     TextView okTv = (TextView) view.findViewById(R.id.okTv);
-                    okTv.setOnClickListener(new View.OnClickListener()
-                    {
+                    okTv.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onClick(View view)
-                        {
+                        public void onClick(View view) {
                             dialog.dismiss();
                             mDialog.show();
-                            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + order.getOrderId() + "/update_status?status=5", new Response.Listener<JSONObject>()
-                            {
+                            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + order.getOrderId() + "/update_status?status=5", new Response.Listener<JSONObject>() {
                                 @Override
-                                public void onResponse(JSONObject jsonObject)
-                                {
+                                public void onResponse(JSONObject jsonObject) {
                                     mDialog.dismiss();
                                     JSONObject orderObj = jsonObject.optJSONObject("order");
-                                    if (orderObj != null)
-                                    {
+                                    if (orderObj != null) {
                                         String status = orderObj.optString("status");
                                         order.setStatus(status);
                                     }
                                 }
-                            }, new Response.ErrorListener()
-                            {
+                            }, new Response.ErrorListener() {
                                 @Override
-                                public void onErrorResponse(VolleyError volleyError)
-                                {
+                                public void onErrorResponse(VolleyError volleyError) {
                                     mDialog.dismiss();
                                 }
-                            })
-                            {
+                            }) {
                                 @Override
-                                public Map<String, String> getHeaders() throws AuthFailureError
-                                {
+                                public Map<String, String> getHeaders() throws AuthFailureError {
                                     Map<String, String> headers = new HashMap<String, String>();
                                     headers.put("SECAuthorization", token);
                                     return headers;
@@ -346,11 +301,9 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     dialog.show();
                 }
             });
-            allOrderAdapter.setOnInViewClickListener(R.id.iv_delete, new BaseListAdapter.onInternalClickListener()
-            {
+            allOrderAdapter.setOnInViewClickListener(R.id.iv_delete, new BaseListAdapter.onInternalClickListener() {
                 @Override
-                public void OnClickListener(View parentV, View v, final Integer position, Object values)
-                {
+                public void OnClickListener(View parentV, View v, final Integer position, Object values) {
                     Log.i("position--------->", position + "");
                     final Order order = (Order) values;
                     final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
@@ -359,54 +312,40 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     TextView textView = (TextView) view.findViewById(R.id.tv_msg);
                     textView.setText("是否删除订单?");
                     TextView cancelTv = (TextView) view.findViewById(R.id.cancelTv);
-                    cancelTv.setOnClickListener(new View.OnClickListener()
-                    {
+                    cancelTv.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onClick(View view)
-                        {
+                        public void onClick(View view) {
                             dialog.dismiss();
                         }
                     });
 
                     TextView okTv = (TextView) view.findViewById(R.id.okTv);
-                    okTv.setOnClickListener(new View.OnClickListener()
-                    {
+                    okTv.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onClick(View view)
-                        {
+                        public void onClick(View view) {
                             dialog.dismiss();
                             mDialog.show();
-                            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + order.getOrderId() + "/delete_order", new Response.Listener<JSONObject>()
-                            {
+                            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + order.getOrderId() + "/delete_order", new Response.Listener<JSONObject>() {
                                 @Override
-                                public void onResponse(JSONObject jsonObject)
-                                {
+                                public void onResponse(JSONObject jsonObject) {
                                     mDialog.dismiss();
                                     Log.i("jsonObject---iv_delete->", jsonObject.toString());
-                                    if (jsonObject != null)
-                                    {
+                                    if (jsonObject != null) {
                                         int status = jsonObject.optInt("status");
-                                        if (201 == status)
-                                        {
+                                        if (201 == status) {
                                             orders.remove(order);
-                                        } else if (400 == status)
-                                        {
+                                        } else if (400 == status) {
                                             ShowToast("删除失败");
                                         }
                                     }
                                 }
-                            }, new Response.ErrorListener()
-                            {
+                            }, new Response.ErrorListener() {
                                 @Override
-                                public void onErrorResponse(VolleyError volleyError)
-                                {
-                                    mDialog.dismiss();
+                                public void onErrorResponse(VolleyError volleyError) {
                                 }
-                            })
-                            {
+                            }) {
                                 @Override
-                                public Map<String, String> getHeaders() throws AuthFailureError
-                                {
+                                public Map<String, String> getHeaders() throws AuthFailureError {
                                     Map<String, String> headers = new HashMap<String, String>();
                                     headers.put("SECAuthorization", token);
                                     return headers;
@@ -429,10 +368,8 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     }
 
     @Override
-    public void onClick(View view)
-    {
-        switch (view.getId())
-        {
+    public void onClick(View view) {
+        switch (view.getId()) {
 //            case R.id.ll_order_detail:
 //                OrderDetailFragment orderDetailFragment=OrderDetailFragment.newInstance("",0);
 //                ((MainActivity)getActivity()).navigationToFragment(orderDetailFragment);
@@ -445,17 +382,13 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST, new Response.Listener<JSONObject>()
         {
             @Override
-            public void onResponse(JSONObject jsonObject)
-            {
+            public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null) mDialog.dismiss();
                 Log.i("FetchAllOrder----------->", jsonObject.toString());
-                if (jsonObject != null)
-                {
+                if (jsonObject != null) {
                     JSONArray orderArr = jsonObject.optJSONArray("orders");
-                    if (orderArr != null && orderArr.length() > 0)
-                    {
-                        for (int i = 0; i < orderArr.length(); i++)
-                        {
+                    if (orderArr != null && orderArr.length() > 0) {
+                        for (int i = 0; i < orderArr.length(); i++) {
                             JSONObject orderObj = orderArr.optJSONObject(i);
                             int id = orderObj.optInt("id");
                             String number = orderObj.optString("number");
@@ -474,26 +407,21 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                             orders.add(order);
                         }
                         handler.sendEmptyMessage(UPDATE_ORDER_LIST);
-                    } else
-                    {
+                    } else {
                         mListView.setVisibility(View.GONE);
                         loadingView.setVisibility(View.VISIBLE);
                     }
                 }
             }
-        }, new Response.ErrorListener()
-        {
+        }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
+            public void onErrorResponse(VolleyError volleyError) {
                 if (mDialog != null) mDialog.dismiss();
                 Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
             }
-        })
-        {
+        }) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
+            public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("SECAuthorization", token);
                 return headers;
@@ -502,16 +430,13 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         mRequestQueue.add(request);
     }
 
-    public class AllOrderAdapter extends BaseListAdapter<Order>
-    {
-        public AllOrderAdapter(Context context, List<Order> list)
-        {
+    public class AllOrderAdapter extends BaseListAdapter<Order> {
+        public AllOrderAdapter(Context context, List<Order> list) {
             super(context, list);
         }
 
         @Override
-        public View bindView(int position, View convertView, ViewGroup parent)
-        {
+        public View bindView(int position, View convertView, ViewGroup parent) {
             if (convertView == null)
                 convertView = mInflater.inflate(R.layout.item_order_return, null);
             TextView tv_order_time = ViewHolder.get(convertView, R.id.tv_order_time);
@@ -529,8 +454,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             tv_order_amount.setText("￥" + order.getAmount());
             tv_order_status.setText(order.getStatus_ch());
             ToolUtils.setImageCacheUrl(order.getImg(), iv_order_img);
-            switch (Integer.parseInt(order.getStatus()))
-            {
+            switch (Integer.parseInt(order.getStatus())) {
                 case ZhaiDou.STATUS_UNPAY:
                     iv_delete.setVisibility(View.GONE);
                     tv_order_status.setText("未付款");
@@ -541,30 +465,22 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         btn2.setTag(order.getOver_at());
                     long l = Long.parseLong(btn2.getTag() + "");
 
-                    if (l > 0)
-                    {
-                        if (timeStmp > 0 && timerMap != null && (timerMap.get(position) == null || !timerMap.get(position)))
-                        {
-                            Log.i("hhhhhhhh---->", "dasfafaf");
+                    if (l > 0) {
+                        if (timeStmp > 0 && timerMap != null && (timerMap.get(position) == null || !timerMap.get(position))) {
                             l = l - timeStmp;
                             btn2.setTag(l);
                             order.setOver_at(l);
                             timerMap.put(position, true);
-                        } else
-                        {
+                        } else {
                             btn2.setTag(Long.parseLong(btn2.getTag() + "") - 1);
                             order.setOver_at(Long.parseLong(btn2.getTag() + "") - 1);
                         }
                         btn2.setText("支付" + new SimpleDateFormat("mm:ss").format(new Date(l * 1000)));
-                    } else
-                    {
+                    } else {
                         btn2.setText("超时过期");
                         order.setStatus(ZhaiDou.STATUS_DEAL_CLOSE + "");
                     }
                     btn2.setBackgroundResource(R.drawable.btn_red_click_selector);
-
-//                    btn2.setTag(Long.parseLong(btn2.getTag() + "") - timeStmp>0?timeStmp:1000);
-//                    order.setOver_at(Long.parseLong(btn2.getTag() + "") - 1000);
                     break;
                 case ZhaiDou.STATUS_PAYED:
                     ll_btn.setVisibility(View.VISIBLE);
@@ -643,11 +559,9 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     }
 
     @Override
-    public void onDestroyView()
-    {
+    public void onDestroyView() {
         Log.i("AllOrdersFragment----------->", "onDestroyView");
-        if (timer != null)
-        {
+        if (timer != null) {
             timer.cancel();
             timer = null;
         }
@@ -657,13 +571,11 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         Log.i("AllOrdersFragment----------->", "onResume");
         if (timer == null)
             timer = new MyTimer(15 * 60 * 1000, 1000);
-        if (!isTimerStart)
-        {
+        if (!isTimerStart) {
             isTimerStart = true;
             timer.start();
         }
@@ -671,39 +583,32 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     }
 
     @Override
-    public void onStart()
-    {
+    public void onStart() {
         super.onStart();
     }
 
     @Override
-    public void onStop()
-    {
-        if (timer != null)
-        {
+    public void onStop() {
+        if (timer != null) {
             timer.cancel();
             isTimerStart = false;
         }
         super.onStop();
     }
 
-    private class MyTimer extends CountDownTimer
-    {
-        private MyTimer(long millisInFuture, long countDownInterval)
-        {
+    private class MyTimer extends CountDownTimer {
+        private MyTimer(long millisInFuture, long countDownInterval) {
             super(millisInFuture, countDownInterval);
         }
 
         @Override
-        public void onTick(long l)
-        {
+        public void onTick(long l) {
 //            Log.i("onTick----------->", l + "");
             handler.sendEmptyMessage(UPDATE_COUNT_DOWN_TIME);
         }
 
         @Override
-        public void onFinish()
-        {
+        public void onFinish() {
             handler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
         }
     }

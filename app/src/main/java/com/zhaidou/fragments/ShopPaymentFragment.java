@@ -334,20 +334,26 @@ public class ShopPaymentFragment extends BaseFragment {
                         int order_id = jsonObject.optInt("order_id");
                         final String paySign = jsonObject.optString("paySign");
                         if (mCheckPosition == 0) {
-                            mHandler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    PayReq request = new PayReq();
-                                    request.appId = appId;
-                                    request.partnerId = "1254327401";
-                                    request.prepayId = prepayId;
-                                    request.packageValue = mpackage;
-                                    request.nonceStr = nonceStr;
-                                    request.timeStamp = timeStamp;
-                                    request.sign = paySign;
-                                    api.sendReq(request);
-                                }
-                            }, 0);
+                            Log.i("isWXAppInstalled-------------->",api.isWXAppInstalled()+"");
+                            if (api.isWXAppInstalled()){
+//                                mHandler.postDelayed(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+                                        PayReq request = new PayReq();
+                                        request.appId = appId;
+                                        request.partnerId = "1254327401";
+                                        request.prepayId = prepayId;
+                                        request.packageValue = mpackage;
+                                        request.nonceStr = nonceStr;
+                                        request.timeStamp = timeStamp;
+                                        request.sign = paySign;
+                                        api.sendReq(request);
+//                                    }
+//                                }, 0);
+                            }else {
+                                ShowToast("没有安装微信客户端哦");
+                            }
+
                         } else if (mCheckPosition == 1) {
                             final String url = jsonObject.optString("url");
                             mHandler.postDelayed(new Runnable() {
@@ -430,6 +436,8 @@ public class ShopPaymentFragment extends BaseFragment {
     public void onResume() {
         if (!isTimerStart) {
             isTimerStart = true;
+            if (mTimer==null)
+                mTimer=new Timer();
             mTimer.schedule(new MyTimer(), 1000, 1000);
         }
         super.onResume();
