@@ -361,7 +361,7 @@ public class OrderDetailFragment extends BaseFragment {
             public void onErrorResponse(VolleyError volleyError) {
                 mDialog.dismiss();
                 if (getActivity() != null)
-                    Toast.makeText(mContext, "????", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "加载失败", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -426,7 +426,7 @@ public class OrderDetailFragment extends BaseFragment {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
                         dialog.dismiss();
-                        ToolUtils.setToast(mContext, "????");
+                        ToolUtils.setToast(mContext, "加载失败");
                     }
                 }) {
                     @Override
@@ -482,7 +482,7 @@ public class OrderDetailFragment extends BaseFragment {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
-                        ToolUtils.setToast(mContext, "????");
+                        ToolUtils.setToast(mContext, "加载失败");
                     }
                 }) {
                     @Override
@@ -526,8 +526,8 @@ public class OrderDetailFragment extends BaseFragment {
             tv_specification.setText(item.getSpecification());
             tv_count.setText(item.getCount() + "");
             ToolUtils.setImageCacheUrl(item.getMerch_img(), iv_order_img);
-            mPrice.setText("?" + item.getPrice());
-            mOldPrice.setText("?" + item.getCost_price());
+            mPrice.setText("￥" + item.getPrice());
+            mOldPrice.setText("￥" + item.getCost_price());
             return convertView;
         }
     }

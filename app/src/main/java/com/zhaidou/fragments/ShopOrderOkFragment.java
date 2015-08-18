@@ -141,7 +141,6 @@ public class ShopOrderOkFragment extends BaseFragment {
 
                     if(isljOsale)//清除购物车中的零元特卖
                     {
-                        Toast.makeText(mContext, "即将清除购物车中的零元特卖", Toast.LENGTH_LONG).show();
                         List<CartItem> itemsAll=CreatCartTools.selectByAll(creatCartDB,userId);
                         for (int i = 0; i < itemsAll.size(); i++)
                         {
@@ -176,10 +175,12 @@ public class ShopOrderOkFragment extends BaseFragment {
                     }
                     break;
                 case 5:
-                    if (isOSaleBuy) {
+                    if (isOSaleBuy)
+                    {
                         mDialog.dismiss();
                         Toast.makeText(mContext, "抱歉,您已经购买过零元特卖商品,今天已经不能购买", Toast.LENGTH_LONG).show();
-                    } else {
+                    }
+                    else {
                         commit();
                     }
                     break;

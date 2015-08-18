@@ -146,6 +146,9 @@
                     android:textSize="12sp"
                     android:layout_marginTop="1dp"
                     android:layout_marginLeft="5dp"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
                     android:textColor="@color/text_gary_color"
                     android:text="$ 3000"
                     android:id="@+id/shopFormerPrice"/>

@@ -425,19 +425,22 @@ public class ShopCartFragment extends BaseFragment
                 @Override
                 public void onClick(View view)
                 {
-                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(tag).name, items.get(tag).id);
-                    Bundle bundle = new Bundle();
-                    if (items.get(tag).isOSale.equals("true"))
+                    if(items!=null&&items.size()>0)
                     {
-                        bundle.putInt("flags", 1);
+                        GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(tag).name, items.get(tag).id);
+                        Bundle bundle = new Bundle();
+                        if (items.get(tag).isOSale.equals("true"))
+                        {
+                            bundle.putInt("flags", 1);
+                        }
+                        if (items.get(tag).isPublish.equals("true"))
+                        {
+                            bundle.putInt("flags", 2);
+                        }
+                        bundle.putInt("index", items.get(tag).id);
+                        goodsDetailsFragment.setArguments(bundle);
+                        ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
                     }
-                    if (items.get(tag).isPublish.equals("true"))
-                    {
-                        bundle.putInt("flags", 2);
-                    }
-                    bundle.putInt("index", items.get(tag).id);
-                    goodsDetailsFragment.setArguments(bundle);
-                    ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
                 }
             });
             TypeFaceTextView itemName = (TypeFaceTextView) childeView.findViewById(R.id.cartItemNameTv);
@@ -642,7 +645,7 @@ public class ShopCartFragment extends BaseFragment
                             obj = jsonArray.optJSONObject(i);
                             int id = obj.optInt("id");
                             String name = obj.optString("title");
-                            String isPublish = obj.optInt("is_publish") == 0 ? "true" : "false";
+                            String isPublish = obj.optBoolean("is_publish") ==false? "true" : "false";
 
                             JSONArray array = obj.optJSONArray("specifications");
                             for (int j = 0; j < array.length(); j++)
@@ -718,7 +721,7 @@ public class ShopCartFragment extends BaseFragment
                     if (obj!=null &&obj.length()>0)
                     {
                         count = obj.optInt("count");
-                        Str_publish = (obj.optInt("is_publish"))==0?"true":"false";
+                        Str_publish = (obj.optBoolean("is_publish"))==false?"true":"false";
                         mHandler.sendEmptyMessage(2);
                     }
                 } else
