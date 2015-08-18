@@ -48,7 +48,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 
-public class AllOrdersFragment extends BaseFragment implements View.OnClickListener {
+public class OrderAllOrdersFragment extends BaseFragment implements View.OnClickListener {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -94,8 +94,8 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
         }
     };
 
-    public static AllOrdersFragment newInstance(String param1, String param2) {
-        AllOrdersFragment fragment = new AllOrdersFragment();
+    public static OrderAllOrdersFragment newInstance(String param1, String param2) {
+        OrderAllOrdersFragment fragment = new OrderAllOrdersFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -103,7 +103,7 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
         return fragment;
     }
 
-    public AllOrdersFragment() {
+    public OrderAllOrdersFragment() {
         // Required empty public constructor
     }
 

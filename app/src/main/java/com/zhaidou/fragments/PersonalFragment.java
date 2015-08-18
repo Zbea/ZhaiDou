@@ -18,7 +18,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
@@ -30,7 +29,6 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomePTActivity;
-import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.base.BaseFragment;
 
@@ -288,7 +286,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
                 break;
             case R.id.all_order:
-                AllOrdersFragment allOrdersFragment = AllOrdersFragment.newInstance("", "");
+                OrderAllOrdersFragment allOrdersFragment = OrderAllOrdersFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragment(allOrdersFragment);
                 break;
             case R.id.rl_taobao_order:
@@ -297,16 +295,16 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 startAnimActivity(intent1);
                 break;
             case R.id.tv_pre_pay:
-                UnPayFragment unPayFragment = UnPayFragment.newInstance("", "");
+                OrderUnPayFragment unPayFragment = OrderUnPayFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragment(unPayFragment);
                 ((MainActivity)getActivity()).hideTip(View.GONE);
                 break;
             case R.id.tv_pre_received:
-                UnReceiveFragment unReceiveFragment = UnReceiveFragment.newInstance("", "");
+                OrderUnReceiveFragment unReceiveFragment = OrderUnReceiveFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragment(unReceiveFragment);
                 break;
             case R.id.tv_return:
-                ReturnFragment returnFragment = ReturnFragment.newInstance("", "");
+                OrderReturnFragment returnFragment = OrderReturnFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragment(returnFragment);
                 break;
             case R.id.rl_addr_manage:

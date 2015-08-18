@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class UnReceiveFragment extends BaseFragment {
+public class OrderUnReceiveFragment extends BaseFragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -81,8 +81,8 @@ public class UnReceiveFragment extends BaseFragment {
         }
     };
 
-    public static UnReceiveFragment newInstance(String param1, String param2) {
-        UnReceiveFragment fragment = new UnReceiveFragment();
+    public static OrderUnReceiveFragment newInstance(String param1, String param2) {
+        OrderUnReceiveFragment fragment = new OrderUnReceiveFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -90,7 +90,7 @@ public class UnReceiveFragment extends BaseFragment {
         return fragment;
     }
 
-    public UnReceiveFragment() {
+    public OrderUnReceiveFragment() {
     }
 
     @Override
@@ -315,7 +315,9 @@ public class UnReceiveFragment extends BaseFragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
+                if (mDialog!=null)
+                    mDialog.dismiss();
+                Toast.makeText(getActivity(), "加载失败", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
