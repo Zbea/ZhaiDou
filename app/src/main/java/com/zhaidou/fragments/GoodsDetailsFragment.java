@@ -239,7 +239,7 @@ public class GoodsDetailsFragment extends BaseFragment
                         if(detail.getSpecifications().get(i).num>0)
                         {
                             isOver=false;
-                            return;
+                            break;
                         }
                     }
                     if (isOver)
@@ -270,10 +270,10 @@ public class GoodsDetailsFragment extends BaseFragment
                         long minute = 60 * 1000;
                         millionSeconds = millionSeconds + hour * 23 + minute * 59 + 59 * 1000;
                         long temp = millionSeconds - System.currentTimeMillis();
-                        if (temp==0)
-                        {
-                            ToolUtils.setToast(mContext,"特卖活动已结束");
-                        }
+//                        if (temp==0)
+//                        {
+//                            ToolUtils.setToast(mContext,"特卖活动已结束");
+//                        }
                         mTimer = new MyTimer(temp, 1000);
                         mTimer.start();
                     } catch (Exception e)
@@ -1067,7 +1067,6 @@ public class GoodsDetailsFragment extends BaseFragment
                     double cost_price = merchandise.optDouble("cost_price");
                     int discount = merchandise.optInt("discount");
                     String end_time = merchandise.optString("end_time");
-                    ToolUtils.setLog(end_time);
                     detail = new GoodDetail(id, title, designer, total_count, price, cost_price, discount);
                     detail.setEnd_time(end_time);
 

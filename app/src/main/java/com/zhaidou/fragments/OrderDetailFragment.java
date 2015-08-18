@@ -83,15 +83,20 @@ public class OrderDetailFragment extends BaseFragment {
     private List<OrderItem> orderItems = new ArrayList<OrderItem>();
     private String token;
     private FrameLayout mBottomLayout;
+    private Order order;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
-                    Order order = (Order) msg.obj;
+                    order = (Order) msg.obj;
                     mOrderNumber.setText(order.getNumber());
                     mOrderTime.setText(order.getCreated_at_for());
                     mOrderStatus.setText(order.getStatus_ch());
+                    if (mParam2<1)
+                    {
+                        mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
+                    }
                     mReceiverName.setText(order.getReceiver().getName());
                     mReceiverPhone.setText(order.getReceiver().getPhone());
                     mReceiverAddress.setText(order.getReceiver().getProvince()+order.getReceiver().getCity()+order.getReceiver().getArea()+order.getReceiver().getAddress());
@@ -104,6 +109,10 @@ public class OrderDetailFragment extends BaseFragment {
                     break;
                 case UPDATE_UI_TIMER_FINISH:
                     mOrderTimer.setText(getResources().getString(R.string.timer_finish));
+                    mOrderTimer.setBackgroundResource(R.drawable.btn_no_click_selector);
+                    mOrderTimer.setClickable(true);
+                    mOrder.setStatus(""+ZhaiDou.STATUS_DEAL_CLOSE);
+                    mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
                     break;
             }
         }
@@ -186,7 +195,6 @@ public class OrderDetailFragment extends BaseFragment {
             case ZhaiDou.STATUS_UNPAY:
                 if (mParam2 < 1) {
                     mBottomLayout.setVisibility(View.GONE);
-                    mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
                 }
                 break;
             case ZhaiDou.STATUS_PAYED:
