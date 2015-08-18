@@ -93,8 +93,6 @@ public class GoodsDetailsFragment extends BaseFragment
     private View mView;
     private int flags;//1代表零元特卖；2代表已下架商品
     private Context mContext;
-    private Dialog mDialog;
-
     private int count = 0;
     private ImageView shareBtn;
     private String shareUrl=ZhaiDou.goodsDetailsShareUrl;
@@ -108,6 +106,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private TextView publishBtn;
     private View myCartBtn;
 
+    private Dialog mDialog;
     private GridView mGridView;
     private RequestQueue mRequestQueue;
     private ViewPager mViewPager;

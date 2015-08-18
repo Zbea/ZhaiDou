@@ -35,6 +35,7 @@ import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
 import com.zhaidou.model.OrderItem;
 import com.zhaidou.model.Receiver;
@@ -67,6 +68,7 @@ public class OrderDetailFragment extends BaseFragment {
             mOrderAmount, mOrderEdit, mCancelOrder, mOrderTimer;
     private ListView mListView;
     private TextView mSaleServiceTV;
+    private Dialog mDialog;
     private OrderItemAdapter orderItemAdapter;
     private final int UPDATE_COUNT_DOWN_TIME = 2;
     private final int UPDATE_UI_TIMER_FINISH = 3;
@@ -150,6 +152,7 @@ public class OrderDetailFragment extends BaseFragment {
 
     private void initView(View view) {
         mContext = getActivity();
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
         mOrderNumber = (TextView) view.findViewById(R.id.tv_order_number);
         mOrderTime = (TextView) view.findViewById(R.id.tv_order_time);
         mOrderStatus = (TextView) view.findViewById(R.id.tv_order_status);
@@ -290,6 +293,8 @@ public class OrderDetailFragment extends BaseFragment {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("jsonObject--------->", jsonObject.toString());
+                if (mDialog != null)
+                    mDialog.dismiss();
                 if (jsonObject != null) {
                     JSONObject orderObj = jsonObject.optJSONObject("order");
                     amount = orderObj.optInt("amount");
@@ -341,7 +346,9 @@ public class OrderDetailFragment extends BaseFragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
+                mDialog.dismiss();
+                if (getActivity() != null)
+                    Toast.makeText(mContext, "????", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override

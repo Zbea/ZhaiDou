@@ -39,7 +39,9 @@ import com.zhaidou.utils.ToolUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +73,8 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
     private long timeStmp = 0;
     private Context mContext;
     private boolean isViewDestroy = false;
-    private WeakHashMap<Integer, Boolean> timerMap = null;
+    private Map<Integer, Boolean> timerMap = new HashMap<Integer, Boolean>();
+    private boolean isTimerStart = false;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -125,7 +128,7 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
             }
         } else {
             rootView = inflater.inflate(R.layout.fragment_all_orders, container, false);
-            mContext=getActivity();
+            mContext = getActivity();
             mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
             mListView = (ListView) rootView.findViewById(R.id.lv_all_orderlist);
@@ -161,7 +164,6 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
                             if (isViewDestroy) {
                                 timeStmp = preTime - time;
                                 isViewDestroy = false;
-                                timerMap = new WeakHashMap<Integer, Boolean>();
                             } else {
                                 btn2.setTag(o.getOver_at());
                             }
@@ -190,18 +192,21 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
                     final Order order = (Order) values;
-                    TextView btn2 = (TextView) v;
+                    final TextView btn2 = (TextView) v;
                     if (("" + ZhaiDou.STATUS_DEAL_SUCCESS).equalsIgnoreCase(order.getStatus())) {
-                        if (order.isZero()){
+                        if (order.isZero()) {
                             ShowToast(mContext.getResources().getString(R.string.order_zero_unreturn_msg));
                             return;
                         }
+                        if (btn2.getTag() != null)
+                            preTime = Long.parseLong(btn2.getTag().toString());
                         final AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(order.getOrderId() + "", order.getStatus() + "");
                         ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
                         afterSaleFragment.setOrderListener(new Order.OrderListener() {
                             @Override
                             public void onOrderStatusChange(Order o) {
                                 Log.i("AllOrdersFragment---------o-->", o.toString());
+
                                 order.setStatus(o.getStatus());
                                 order.setStatus_ch(o.getStatus_ch());
                             }
@@ -209,12 +214,31 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
                         return;
                     } else if (("" + ZhaiDou.STATUS_UNPAY).equalsIgnoreCase(order.getStatus())) {
                         Log.i("textview---------------->", btn2.getText().toString() + "----" + btn2.getTag().toString());
-                        if (mContext.getResources().getString(R.string.timer_finish).equalsIgnoreCase(btn2.getText().toString())){
+                        if (mContext.getResources().getString(R.string.timer_finish).equalsIgnoreCase(btn2.getText().toString())) {
                             ShowToast(mContext.getResources().getString(R.string.order_had_order_time));
                             return;
                         }
                         ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.getOrderId(), order.getAmount(), 0, order.getOver_at(), order);
                         ((BaseActivity) getActivity()).navigationToFragment(shopPaymentFragment);
+                        shopPaymentFragment.setOrderListener(new Order.OrderListener() {
+                            @Override
+                            public void onOrderStatusChange(Order o) {
+                                Log.i("shopPaymentFragment---o---->",o.toString());
+                                long time = o.getOver_at();
+                                Log.i("isTimerStart--------->",isTimerStart+"");
+                                if (!isTimerStart) {
+                                    Log.i("isTimerStart--------->","isTimerStart----");
+                                    timeStmp = preTime - time;
+                                    Log.i("timeStmp----------->",timeStmp+"");
+                                    isViewDestroy = false;
+                                    timerMap = new WeakHashMap<Integer, Boolean>();
+                                } else {
+                                    btn2.setTag(o.getOver_at());
+                                    order.setOver_at(o.getOver_at());
+                                    order.setStatus(o.getStatus());
+                                }
+                            }
+                        });
                         return;
                     }
                     final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
@@ -271,32 +295,57 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
                 public void OnClickListener(View parentV, View v, final Integer position, Object values) {
                     Log.i("position--------->", position + "");
                     final Order order = (Order) values;
-                    JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + order.getOrderId() + "/delete_order", new Response.Listener<JSONObject>() {
+                    final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
+
+                    View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
+                    TextView textView = (TextView) view.findViewById(R.id.tv_msg);
+                    textView.setText("是否删除订单?");
+                    TextView cancelTv = (TextView) view.findViewById(R.id.cancelTv);
+                    cancelTv.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onResponse(JSONObject jsonObject) {
-                            Log.i("jsonObject---iv_delete->", jsonObject.toString());
-                            if (jsonObject != null) {
-                                int status = jsonObject.optInt("status");
-                                if (201 == status) {
-                                    orders.remove(order);
-                                } else if (400 == status) {
-                                    ShowToast("删除失败");
+                        public void onClick(View view) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    TextView okTv = (TextView) view.findViewById(R.id.okTv);
+                    okTv.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + order.getOrderId() + "/delete_order", new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject jsonObject) {
+                                    Log.i("jsonObject---iv_delete->", jsonObject.toString());
+                                    if (jsonObject != null) {
+                                        int status = jsonObject.optInt("status");
+                                        if (201 == status) {
+                                            orders.remove(order);
+                                        } else if (400 == status) {
+                                            ShowToast("删除失败");
+                                        }
+                                    }
                                 }
-                            }
+                            }, new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError volleyError) {
+                                }
+                            }) {
+                                @Override
+                                public Map<String, String> getHeaders() throws AuthFailureError {
+                                    Map<String, String> headers = new HashMap<String, String>();
+                                    headers.put("SECAuthorization", token);
+                                    return headers;
+                                }
+                            };
+                            mRequestQueue.add(request);
+                            dialog.dismiss();
                         }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError volleyError) {
-                        }
-                    }) {
-                        @Override
-                        public Map<String, String> getHeaders() throws AuthFailureError {
-                            Map<String, String> headers = new HashMap<String, String>();
-                            headers.put("SECAuthorization", token);
-                            return headers;
-                        }
-                    };
-                    mRequestQueue.add(request);
+                    });
+                    dialog.setCanceledOnTouchOutside(true);
+                    dialog.setCancelable(true);
+                    dialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                    dialog.show();
+
                 }
             });
 
@@ -336,7 +385,7 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
                             String created_at_for = orderObj.optString("created_at_for");
                             String img = orderObj.optString("merch_img");
                             long over_at = orderObj.optLong("over_at");
-                            boolean is_zero=orderObj.optBoolean("is_zero");
+                            boolean is_zero = orderObj.optBoolean("is_zero");
                             Order order = new Order(id, number, amount, status, status_ch, created_at_for, created_at, "", 0);
                             order.setImg(img);
                             order.setOver_at(over_at);
@@ -401,33 +450,24 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
                     if (btn2.getTag() == null)
                         btn2.setTag(order.getOver_at());
                     long l = Long.parseLong(btn2.getTag() + "");
-                    long day = 24 * 3600 * 1000;
-                    long hour = 3600 * 1000;
-                    long minute = 60 * 1000;
-                    //两个日期想减得到天数
-                    long dayCount = l / day;
-                    long hourCount = (l - (dayCount * day)) / hour;
-                    long minCount = (l - (dayCount * day) - (hour * hourCount)) / minute;
-                    long secondCount = (l - (dayCount * day) - (hour * hourCount) - (minCount * minute)) / 1000;
-                    if (minCount > 0 || secondCount > 0) {
-                        btn2.setText("支付" + minCount + ":" + secondCount + "");
+                    if (l > 0) {
+                        if (timeStmp > 0 && timerMap != null && (timerMap.get(position) == null || !timerMap.get(position))) {
+                            Log.i("hhhhhhhh---->","dasfafaf");
+                            l = l - timeStmp;
+                            btn2.setTag(l);
+                            order.setOver_at(l);
+                            timerMap.put(position, true);
+                        } else {
+                            btn2.setTag(Long.parseLong(btn2.getTag() + "") - 1);
+                            order.setOver_at(Long.parseLong(btn2.getTag() + "") - 1);
+                        }
+                        btn2.setText("支付" + new SimpleDateFormat("mm:ss").format(new Date(l * 1000)));
                     } else {
                         btn2.setText("超时过期");
-                        order.setStatus(ZhaiDou.STATUS_DEAL_CLOSE+"");
+                        order.setStatus(ZhaiDou.STATUS_DEAL_CLOSE + "");
                     }
                     btn2.setBackgroundResource(R.drawable.btn_red_click_selector);
-                    if (timeStmp > 0 && position < getCount()) {
-                        if (timerMap != null && (timerMap.get(position) == null || !timerMap.get(position))) {
-                            btn2.setTag(Long.parseLong(btn2.getTag() + "") - timeStmp);
-                            order.setOver_at(Long.parseLong(btn2.getTag() + "") - timeStmp);
-                            timerMap.put(position, true);
-                            if (position == getCount() - 1)
-                                timeStmp = 0;
-                        }
-                    } else {
-                        btn2.setTag(Long.parseLong(btn2.getTag() + "") - 1000);
-                        order.setOver_at(Long.parseLong(btn2.getTag() + "") - 1000);
-                    }
+
 //                    btn2.setTag(Long.parseLong(btn2.getTag() + "") - timeStmp>0?timeStmp:1000);
 //                    order.setOver_at(Long.parseLong(btn2.getTag() + "") - 1000);
                     break;
@@ -518,12 +558,16 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
         super.onDestroyView();
     }
 
+
     @Override
     public void onResume() {
         Log.i("AllOrdersFragment----------->", "onResume");
         if (timer == null)
             timer = new MyTimer(15 * 60 * 1000, 1000);
-        timer.start();
+        if (!isTimerStart) {
+            isTimerStart = true;
+            timer.start();
+        }
         super.onResume();
     }
 
@@ -534,6 +578,10 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
 
     @Override
     public void onStop() {
+        if (timer != null) {
+            timer.cancel();
+            isTimerStart = false;
+        }
         super.onStop();
     }
 
@@ -544,7 +592,7 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
 
         @Override
         public void onTick(long l) {
-            Log.i("onTick----------->", l + "");
+//            Log.i("onTick----------->", l + "");
             handler.sendEmptyMessage(UPDATE_COUNT_DOWN_TIME);
         }
 

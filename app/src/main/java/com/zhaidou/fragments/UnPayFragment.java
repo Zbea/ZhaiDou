@@ -82,12 +82,12 @@ public class UnPayFragment extends BaseFragment {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case UPDATE_UNPAY_LIST:
-                    Log.i("orders.size()-----------.",orders.size()+"");
-                    if (orders.size()>0){
+                    Log.i("orders.size()-----------.", orders.size() + "");
+                    if (orders.size() > 0) {
                         mListView.setVisibility(View.VISIBLE);
                         loadingView.setVisibility(View.GONE);
                         unPayAdapter.notifyDataSetChanged();
-                    }else {
+                    } else {
                         mListView.setVisibility(View.GONE);
                         loadingView.setVisibility(View.VISIBLE);
                     }

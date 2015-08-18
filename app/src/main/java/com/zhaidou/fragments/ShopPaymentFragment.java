@@ -62,7 +62,7 @@ public class ShopPaymentFragment extends BaseFragment {
     private View mView;
     private Context mContext;
 
-    private long initTime = 15 * 60 * 1000;
+    private long initTime = 15 * 60;
 
     private final int UPDATE_COUNT_DOWN_TIME = 1001, UPDATE_UI_TIMER_FINISH = 1002, UPDATE_TIMER_START = 1003;
 
@@ -286,8 +286,9 @@ public class ShopPaymentFragment extends BaseFragment {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    initTime = initTime - 1000;
-                    timeInfoTv.setText(new SimpleDateFormat("mm:ss").format(new Date(initTime)));
+                    initTime = initTime - 1;
+                    Log.i("initTime----------------------------->",initTime+"");
+                    timeInfoTv.setText(new SimpleDateFormat("mm:ss").format(new Date(initTime*1000)));
                     if (initTime <= 0) {
                         if (mTimer != null) {
                             mTimer.cancel();
@@ -434,6 +435,10 @@ public class ShopPaymentFragment extends BaseFragment {
         if (orderListener!=null){
             mOrder.setOver_at(initTime);
             orderListener.onOrderStatusChange(mOrder);
+        }
+        if (mTimer!=null){
+            mTimer.cancel();
+            mTimer=null;
         }
         super.onDestroyView();
     }
