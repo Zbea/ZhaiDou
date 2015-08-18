@@ -149,7 +149,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableLeft="@drawable/icon_all_order"
-                    android:drawablePadding="5dp"
+                    android:drawablePadding="10dp"
                     android:paddingLeft="15dp"
                     android:text="全部订单"
                     android:gravity="center"
@@ -183,8 +183,9 @@
                     <ImageView
                         android:id="@+id/tv_pre_pay"
                         android:layout_centerInParent="true"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:scaleType="center"
                         android:src="@drawable/icon_pre_pay"
                         android:textColor="@color/text_main_color"/>
 
@@ -253,7 +254,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/icon_taobao_order"
-                        android:drawablePadding="5dp"
+                        android:drawablePadding="10dp"
                         android:paddingLeft="15dp"
                         android:text="淘宝订单"
                         android:gravity="center_vertical"
@@ -284,7 +285,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/icon_pintie"
-                        android:drawablePadding="5dp"
+                        android:drawablePadding="10dp"
                         android:paddingLeft="15dp"
                         android:text="拼贴大赛"
                         android:gravity="center_vertical"
@@ -317,7 +318,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/icon_addr"
-                        android:drawablePadding="5dp"
+                        android:drawablePadding="10dp"
                         android:paddingLeft="15dp"
                         android:text="地址管理"
                         android:gravity="center_vertical"
@@ -348,7 +349,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/icon_contact"
-                        android:drawablePadding="5dp"
+                        android:drawablePadding="10dp"
                         android:paddingLeft="15dp"
                         android:text="联系我们"
                         android:gravity="center_vertical"
@@ -363,9 +364,6 @@
                 </RelativeLayout>
             </LinearLayout>
 
-
-
-
                 <RelativeLayout
                     android:id="@+id/rl_setting"
                     android:layout_width="match_parent"
@@ -378,7 +376,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/icon_setting"
-                        android:drawablePadding="5dp"
+                        android:drawablePadding="10dp"
                         android:paddingLeft="15dp"
                         android:text="设置"
                         android:gravity="center"

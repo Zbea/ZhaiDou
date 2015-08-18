@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -82,18 +83,17 @@ public class UnPayFragment extends BaseFragment {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case UPDATE_UNPAY_LIST:
-                    Log.i("orders.size()-----------.", orders.size() + "");
-                    if (orders.size() > 0) {
+                    if (orders != null && orders.size() > 0)
+                    {
                         mListView.setVisibility(View.VISIBLE);
                         loadingView.setVisibility(View.GONE);
                         unPayAdapter.notifyDataSetChanged();
-                    } else {
+                    }else {
                         mListView.setVisibility(View.GONE);
                         loadingView.setVisibility(View.VISIBLE);
                     }
                     break;
                 case UPDATE_COUNT_DOWN_TIME:
-                    loadingView.setVisibility(View.GONE);
                     unPayAdapter.notifyDataSetChanged();
                     break;
                 case UPDATE_UI_TIMER_FINISH:
@@ -127,17 +127,17 @@ public class UnPayFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        Log.i("UnPayFragment-------------->", "onCreateView");
-        if (null != rootView) {
+                             Bundle savedInstanceState)
+    {
+        if (null != rootView)
+        {
             ViewGroup parent = (ViewGroup) rootView.getParent();
             if (null != parent) {
                 parent.removeView(rootView);
             }
         } else {
             rootView = inflater.inflate(R.layout.fragment_unpay, container, false);
-            mContext = getActivity();
+            mContext=getActivity();
             mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
             mListView = (ListView) rootView.findViewById(R.id.lv_unpaylist);
@@ -208,8 +208,11 @@ public class UnPayFragment extends BaseFragment {
                             Order order = new Order(id, number, amount, status, status_ch, created_at_for, created_at, "", 0);
                             order.setImg(img);
                             order.setOver_at(over_at);
-                            if (over_at > 0)
-                                orders.add(order);
+                            orders.add(order);
+//                            if (over_at > 0)
+//                                {
+//                                    orders.add(order);
+//                                }
                         }
                         handler.sendEmptyMessage(UPDATE_UNPAY_LIST);
                     } else {
@@ -280,8 +283,13 @@ public class UnPayFragment extends BaseFragment {
             if (minCount > 0 || secondCount > 0) {
                 mTimerBtn.setText("支付" + minCount + ":" + secondCount + "");
             } else {
+                item.setOver_at(0);
                 mTimerBtn.setText("超时过期");
-                orders.remove(item);
+                mTimerBtn.setBackgroundResource(R.drawable.btn_no_click_selector);
+                mOrderStatus.setText("交易关闭");
+                //刷新代付款数量显示
+                Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
+                mContext.sendBroadcast(intent);
             }
 
             mTimerBtn.setTag(Long.parseLong(mTimerBtn.getTag() + "") - 1000);
@@ -301,13 +309,11 @@ public class UnPayFragment extends BaseFragment {
 
         @Override
         public void onTick(long l) {
-//            Log.i("onTick------------>", l + "");
             handler.sendEmptyMessage(UPDATE_COUNT_DOWN_TIME);
         }
 
         @Override
         public void onFinish() {
-//            Log.i("onFinish---------->", "onFinish");
 //            mHandler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
         }
     }

@@ -27,11 +27,13 @@
     
     
     <!--订单-->
+    <string name="order_colse">交易关闭</string>
     <string name="order_logistics">查看物流</string>
     <string name="order_return_good">申请退货</string>
     <string name="order_return_money">申请退款</string>
     <string name="order_received">确认收货</string>
-    <string name="order_confirm">是否确认收货</string>
+    <string name="order_confirm">是否确认收货?</string>
+    <string name="order_cancel_ok">是否确认取消订单？</string>
     <string name="order_had_order_time">订单已超时,请重新购买</string>
     <string name="order_zero_unreturn_msg">0元特卖的商品不能退哦!</string>
     <string name="order_zero_return_msg">0元特卖商品不允许退款/退货</string>
