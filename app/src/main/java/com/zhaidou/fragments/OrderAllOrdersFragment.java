@@ -457,7 +457,6 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
                     if (l > 0) {
                         if (timeStmp > 0 && timerMap != null && (timerMap.get(position) == null || !timerMap.get(position))) {
-                            Log.i("hhhhhhhh---->", "dasfafaf");
                             l = l - timeStmp;
                             btn2.setTag(l);
                             order.setOver_at(l);
@@ -472,9 +471,6 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         order.setStatus(ZhaiDou.STATUS_DEAL_CLOSE + "");
                     }
                     btn2.setBackgroundResource(R.drawable.btn_red_click_selector);
-
-//                    btn2.setTag(Long.parseLong(btn2.getTag() + "") - timeStmp>0?timeStmp:1000);
-//                    order.setOver_at(Long.parseLong(btn2.getTag() + "") - 1000);
                     break;
                 case ZhaiDou.STATUS_PAYED:
                     ll_btn.setVisibility(View.VISIBLE);

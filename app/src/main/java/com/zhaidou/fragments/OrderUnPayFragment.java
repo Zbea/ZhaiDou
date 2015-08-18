@@ -197,7 +197,6 @@ public class OrderUnPayFragment extends BaseFragment {
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?status=0", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("jsonObject----------->", jsonObject.toString());
                 if (mDialog != null)
                     mDialog.dismiss();
                 if (jsonObject != null) {
@@ -232,7 +231,7 @@ public class OrderUnPayFragment extends BaseFragment {
             public void onErrorResponse(VolleyError volleyError) {
                 mDialog.dismiss();
                 if (getActivity() != null)
-                    Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), mContext.getResources().getString(R.string.network_load_error), Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -276,17 +275,6 @@ public class OrderUnPayFragment extends BaseFragment {
             }
 
             long l = Long.parseLong(mTimerBtn.getTag() + "");
-//            if (l > 0) {
-//                mTimerBtn.setText("支付" + new SimpleDateFormat("mm:ss").format(new Date(l * 1000)));
-//            } else {
-//                item.setOver_at(0);
-//                mTimerBtn.setText("超时过期");
-//                mTimerBtn.setBackgroundResource(R.drawable.btn_no_click_selector);
-//                mOrderStatus.setText("交易关闭");
-//                //刷新代付款数量显示
-//                Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
-//                mContext.sendBroadcast(intent);
-//            }
             if (l > 0) {
                 if (timeStmp > 0 && timerMap != null && (timerMap.get(position) == null || !timerMap.get(position))) {
                     Log.i("hhhhhhhh---->", "dasfafaf");
@@ -298,22 +286,17 @@ public class OrderUnPayFragment extends BaseFragment {
                     mTimerBtn.setTag(Long.parseLong(mTimerBtn.getTag() + "") - 1);
                     item.setOver_at(Long.parseLong(mTimerBtn.getTag() + "") - 1);
                 }
-                mTimerBtn.setText("支付" + new SimpleDateFormat("mm:ss").format(new Date(l * 1000)));
+
+                mTimerBtn.setText(String.format(getResources().getString(R.string.timer_start),new SimpleDateFormat("mm:ss").format(new Date(l * 1000))));
             } else {
-                mTimerBtn.setText("超时过期");
-//                mOrderStatus.setText("交易关闭");
+                mTimerBtn.setText(mContext.getResources().getString(R.string.timer_finish));
+                mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
                 mTimerBtn.setBackgroundResource(R.drawable.btn_no_click_selector);
                 item.setStatus(ZhaiDou.STATUS_DEAL_CLOSE + "");
                 //刷新代付款数量显示
                 Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
                 mContext.sendBroadcast(intent);
             }
-
-            mTimerBtn.setTag(Long.parseLong(mTimerBtn.getTag() + "") - 1);
-            item.setOver_at(Long.parseLong(mTimerBtn.getTag() + "") - 1);
-//                mOrderTime.setTag(System.currentTimeMillis());
-//            }
-
             mHashMap.put(position, convertView);
             return convertView;
         }
@@ -338,11 +321,13 @@ public class OrderUnPayFragment extends BaseFragment {
     @Override
     public void onResume() {
         Log.i("AllOrdersFragment----------->", "onResume");
-        if (timer == null)
-            timer = new MyTimer(15 * 60 * 1000, 1000);
+
         if (!isTimerStart) {
+            if (timer == null)
+                timer = new MyTimer(15 * 60 * 1000, 1000);
             isTimerStart = true;
             timer.start();
+            Log.i("onResume--->timer.start();----------->","timer.start()---------->");
         }
         super.onResume();
     }
