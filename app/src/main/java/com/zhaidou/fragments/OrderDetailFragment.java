@@ -45,13 +45,14 @@ import com.zhaidou.utils.ToolUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class OrderDetailFragment extends BaseFragment
-{
+public class OrderDetailFragment extends BaseFragment {
     private static final String ARG_ID = "id";
     private static final String ARG_TIMESTMP = "timestmp";
     private static final String ARG_ORDER = "order";
@@ -72,6 +73,7 @@ public class OrderDetailFragment extends BaseFragment
     private final int UPDATE_COUNT_DOWN_TIME = 2;
     private final int UPDATE_UI_TIMER_FINISH = 3;
     private MyTimer timer;
+    private boolean isTimerStart = false;
     private OrderListener orderListener;
 
     private long timeLeft;
@@ -92,7 +94,7 @@ public class OrderDetailFragment extends BaseFragment
                     mOrderStatus.setText(order.getStatus_ch());
                     mReceiverName.setText(order.getReceiver().getName());
                     mReceiverPhone.setText(order.getReceiver().getPhone());
-                    mReceiverAddress.setText(order.getReceiver().getAddress());
+                    mReceiverAddress.setText(order.getReceiver().getProvince()+order.getReceiver().getCity()+order.getReceiver().getArea()+order.getReceiver().getAddress());
 //                    mReceiverTime.setText(order.getReceiver().get);
                     orderItemAdapter.notifyDataSetChanged();
                     break;
@@ -137,6 +139,7 @@ public class OrderDetailFragment extends BaseFragment
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         Log.i("OrderDetailFragment--------->", "onCreateView");
+        Log.i("OrderDetailFragment---mParam2------>", mParam2 + "");
         if (null != rootView) {
             ViewGroup parent = (ViewGroup) rootView.getParent();
             if (null != parent) {
@@ -169,8 +172,6 @@ public class OrderDetailFragment extends BaseFragment
         orderItemAdapter = new OrderItemAdapter(getActivity(), orderItems);
         mListView.setAdapter(orderItemAdapter);
         requestQueue = Volley.newRequestQueue(getActivity());
-        timer = new MyTimer(mParam2, 1000);
-//        timer.start();
         FetchOrderDetail(mOrderId);
 
         mCancelOrder.setOnClickListener(this);
@@ -183,8 +184,7 @@ public class OrderDetailFragment extends BaseFragment
         Log.i("mOrder.getStatus()------------>", mOrder.getStatus());
         switch (Integer.parseInt(mOrder.getStatus())) {
             case ZhaiDou.STATUS_UNPAY:
-                if (mParam2<1)
-                {
+                if (mParam2 < 1) {
                     mBottomLayout.setVisibility(View.GONE);
                     mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
                 }
@@ -255,7 +255,7 @@ public class OrderDetailFragment extends BaseFragment
                     return;
                 }
                 if (mOrder != null && "678".contains(mOrder.getStatus())) {
-                    String url = "mqqwpa://im/chat?chat_type=wpa&uin="+mContext.getResources().getString(R.string.QQ_Number);
+                    String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_Number);
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                     return;
                 }
@@ -277,7 +277,7 @@ public class OrderDetailFragment extends BaseFragment
                 Intent intent1 = new Intent(getActivity(), PayDemoActivity.class);
                 intent1.putExtra("id", Integer.parseInt(mOrderId + ""));
                 intent1.putExtra("amount", mOrder.getAmount());
-                ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(Integer.parseInt(mOrderId), amount, 10, timeLeft, mOrder);
+                ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(Integer.parseInt(mOrderId), amount, 10, mOrder.getOver_at(), mOrder);
                 ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
                 shopPaymentFragment.setOrderListener(new Order.OrderListener() {
                     @Override
@@ -317,11 +317,13 @@ public class OrderDetailFragment extends BaseFragment
                     String address = receiverObj.optString("address");
                     String phone = receiverObj.optString("phone");
                     String name = receiverObj.optString("name");
-                    Receiver receiver = new Receiver(receiverId, address, phone, name);
+                    String city_name = receiverObj.optString("city_name");
+                    String parent_name = receiverObj.optString("parent_name");
+                    String provider_name = receiverObj.optString("provider_name");
+                    Receiver receiver = new Receiver(receiverId, address, parent_name, city_name, provider_name, phone, name);
 
 
                     JSONArray order_items = orderObj.optJSONArray("order_items");
-//                    List<OrderItem> orderItems=new ArrayList<OrderItem>();
                     if (order_items != null && order_items.length() > 0) {
                         for (int i = 0; i < order_items.length(); i++) {
                             JSONObject item = order_items.optJSONObject(i);
@@ -384,9 +386,11 @@ public class OrderDetailFragment extends BaseFragment
         okTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mDialog.show();
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + mOrder.getOrderId() + "/update_status?status=" + ("0".equalsIgnoreCase(mOrder.getStatus()) ? "9" : "3"), new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
+                        mDialog.dismiss();
                         int status = jsonObject.optInt("status");
                         if (201 == status) {
                             JSONObject orderObj = jsonObject.optJSONObject("order");
@@ -506,19 +510,16 @@ public class OrderDetailFragment extends BaseFragment
             ImageView iv_order_img = ViewHolder.get(convertView, R.id.iv_order_img);
             LinearLayout ll_count = ViewHolder.get(convertView, R.id.ll_count);
             TextView tv_zero_msg = ViewHolder.get(convertView, R.id.tv_zero_msg);
+            TextView mPrice = ViewHolder.get(convertView, R.id.orderItemCurrentPrice);
+            TextView mOldPrice = ViewHolder.get(convertView, R.id.orderItemFormalPrice);
 
             OrderItem item = getList().get(position);
-//            if (item.getSale_cate() == 0) {
-//                ll_count.setVisibility(View.VISIBLE);
-//                tv_zero_msg.setVisibility(View.GONE);
-//            } else {
-//                ll_count.setVisibility(View.GONE);
-//                tv_zero_msg.setVisibility(View.VISIBLE);
-//            }
             tv_name.setText(item.getMerchandise());
             tv_specification.setText(item.getSpecification());
             tv_count.setText(item.getCount() + "");
             ToolUtils.setImageCacheUrl(item.getMerch_img(), iv_order_img);
+            mPrice.setText("?" + item.getPrice());
+            mOldPrice.setText("?" + item.getCost_price());
             return convertView;
         }
     }
@@ -531,18 +532,12 @@ public class OrderDetailFragment extends BaseFragment
 
         @Override
         public void onTick(long l) {
-//            Log.i("onTick------------>", l + "");
             timeLeft = l;
-            long day = 24 * 3600 * 1000;
-            long hour = 3600 * 1000;
-            long minute = 60 * 1000;
-            long dayCount = l / day;
-            long hourCount = (l - (dayCount * day)) / hour;
-            long minCount = (l - (dayCount * day) - (hour * hourCount)) / minute;
-            long secondCount = (l - (dayCount * day) - (hour * hourCount) - (minCount * minute)) / 1000;
+            mOrder.setOver_at(l / 1000);
             Message message = new Message();
             String data = getResources().getString(R.string.timer_start);
-            data = String.format(data, minCount + ":" + secondCount);
+            data = String.format(data, new SimpleDateFormat("mm:ss").format(new Date(l)));
+            Log.i("data-------->", data + " l----------->" + l + "    -----" + l / 1000 + "      ---------" + l % 1000 + "    l/1000+l%1000*1000--->" + (l / 1000 + l % 1000 * 1000));
             message.what = UPDATE_COUNT_DOWN_TIME;
             message.obj = data;
             handler.sendMessage(message);
@@ -550,7 +545,7 @@ public class OrderDetailFragment extends BaseFragment
 
         @Override
         public void onFinish() {
-//            Log.i("onFinish---------->", "onFinish");
+            Log.i("onFinish---------->", "onFinish");
             handler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
         }
     }
@@ -560,8 +555,11 @@ public class OrderDetailFragment extends BaseFragment
         Log.i("onResume------------->", "onResume");
         if ((ZhaiDou.STATUS_UNPAY + "").equalsIgnoreCase(mOrder.getStatus())) {
             if (timer == null)
-                timer = new MyTimer(mParam2, 1000);
-            timer.start();
+                timer = new MyTimer(mParam2 * 1000, 1000);
+            if (!isTimerStart) {
+                isTimerStart = true;
+                timer.start();
+            }
         }
         super.onResume();
     }
@@ -572,10 +570,18 @@ public class OrderDetailFragment extends BaseFragment
             timer.cancel();
             timer = null;
         }
-        mOrder.setOver_at(timeLeft);
         if (orderListener != null)
             orderListener.onOrderStatusChange(mOrder);
         super.onDestroyView();
+    }
+
+    @Override
+    public void onStop() {
+        if (timer != null) {
+            timer.cancel();
+            isTimerStart = false;
+        }
+        super.onStop();
     }
 
     public void setOrderListener(OrderListener orderListener) {
