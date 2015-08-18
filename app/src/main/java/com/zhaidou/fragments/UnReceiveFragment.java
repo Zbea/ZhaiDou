@@ -101,6 +101,7 @@ public class UnReceiveFragment extends BaseFragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -130,13 +131,63 @@ public class UnReceiveFragment extends BaseFragment {
         unReceiveAdapter.setOnInViewClickListener(R.id.bt_logistics, new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                Order order = (Order) values;
+                final Order order = (Order) values;
                 if ("4".equalsIgnoreCase(order.getStatus())) {
                     LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "");
                     ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
                 } else if ("1".equalsIgnoreCase(order.getStatus())) {
-                    AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(order.getOrderId() + "", order.getStatus());
-                    ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
+//                    AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(order.getOrderId() + "", order.getStatus());
+//                    ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
+                    final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
+
+                    View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
+                    TextView textView = (TextView) view.findViewById(R.id.tv_msg);
+                    textView.setText("是否申请退款?");
+                    TextView cancelTv = (TextView) view.findViewById(R.id.cancelTv);
+                    cancelTv.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    TextView okTv = (TextView) view.findViewById(R.id.okTv);
+                    okTv.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + order.getOrderId() + "/update_status?status=3", new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject jsonObject) {
+                                    JSONObject orderObj = jsonObject.optJSONObject("order");
+                                    if (orderObj != null) {
+                                        String status = orderObj.optString("status");
+                                        if ("3".equalsIgnoreCase(status)) {
+                                            orders.remove(order);
+                                        }
+                                        handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
+                                    }
+                                }
+                            }, new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError volleyError) {
+
+                                }
+                            }) {
+                                @Override
+                                public Map<String, String> getHeaders() throws AuthFailureError {
+                                    Map<String, String> headers = new HashMap<String, String>();
+                                    headers.put("SECAuthorization", token);
+                                    return headers;
+                                }
+                            };
+                            mRequestQueue.add(request);
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog.setCanceledOnTouchOutside(true);
+                    dialog.setCancelable(true);
+                    dialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                    dialog.show();
                 }
             }
         });
@@ -211,8 +262,10 @@ public class UnReceiveFragment extends BaseFragment {
                 ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
                 orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
                     @Override
-                    public void onOrderStatusChange(Order o) {
-                        if (!order.getStatus().equalsIgnoreCase(o.getStatus())){
+                    public void onOrderStatusChange(Order o)
+                    {
+                        if ("5".equalsIgnoreCase(o.getStatus())) 
+                        {
                             orders.remove(order);
                             handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
                         }

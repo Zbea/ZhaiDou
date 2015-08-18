@@ -268,7 +268,7 @@ public class OrderDetailFragment extends BaseFragment
                 }
                 if (mOrder != null && "678".contains(mOrder.getStatus()))
                 {
-                    String url = "mqqwpa://im/chat?chat_type=wpa&uin=11300";
+                    String url = "mqqwpa://im/chat?chat_type=wpa&uin="+mContext.getResources().getString(R.string.QQ_Number);
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                     return;
                 }
@@ -433,7 +433,6 @@ public class OrderDetailFragment extends BaseFragment
                                 String status_ch = orderObj.optString("status_ch");
                                 String number = orderObj.optString("number");
                                 Order order = new Order(id, number, amount, status1, status_ch, created_at_for, created_at, "", 0);
-                                ToolUtils.setLog(order.toString());
                                 if (orderListener != null)
                                     orderListener.onOrderStatusChange(order);
                                 ((MainActivity) getActivity()).popToStack(OrderDetailFragment.this);
@@ -561,15 +560,13 @@ public class OrderDetailFragment extends BaseFragment
             TextView tv_zero_msg = ViewHolder.get(convertView, R.id.tv_zero_msg);
 
             OrderItem item = getList().get(position);
-            if (item.getSale_cate() == 0)
-            {
-                ll_count.setVisibility(View.VISIBLE);
-                tv_zero_msg.setVisibility(View.GONE);
-            } else
-            {
-                ll_count.setVisibility(View.GONE);
-                tv_zero_msg.setVisibility(View.VISIBLE);
-            }
+//            if (item.getSale_cate() == 0) {
+//                ll_count.setVisibility(View.VISIBLE);
+//                tv_zero_msg.setVisibility(View.GONE);
+//            } else {
+//                ll_count.setVisibility(View.GONE);
+//                tv_zero_msg.setVisibility(View.VISIBLE);
+//            }
             tv_name.setText(item.getMerchandise());
             tv_specification.setText(item.getSpecification());
             tv_count.setText(item.getCount() + "");

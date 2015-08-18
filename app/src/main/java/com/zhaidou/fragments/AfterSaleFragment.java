@@ -1,5 +1,6 @@
 package com.zhaidou.fragments;
 
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,14 +21,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -36,9 +40,11 @@ import com.android.volley.toolbox.Volley;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
 import com.zhaidou.model.OrderItem;
 import com.zhaidou.model.Receiver;
@@ -84,14 +90,15 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
     private String mStatus;
 
     private View rootView;
-    private TextView mOldPrice,mTitleView;
+    private TextView mOldPrice, mTitleView;
+    private EditText mEditText;
     private RequestQueue requestQueue;
     private ListView mListView;
     private GridView mImgGrid;
     private ImageAdapter imageAdapter;
     private final int UPDATE_RETURN_LIST = 1;
     private AfterSaleAdapter afterSaleAdapter;
-    private TextView tv_return, tv_exchange, lastSelected,tv_commit;
+    private TextView tv_return, tv_exchange, lastSelected, tv_commit;
     List<OrderItem> orderItems = new ArrayList<OrderItem>();
     private PhotoMenuFragment menuFragment;
     private FrameLayout mMenuContainer;
@@ -100,12 +107,15 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
     private ImageView iv_return_img;
     private final int MENU_CAMERA_SELECTED = 0;
     private final int MENU_PHOTO_SELECTED = 1;
-    private final int UPDATE_UPLOAD_IMG_GRID=2;
+    private final int UPDATE_UPLOAD_IMG_GRID = 2;
+    private final int ORDER_RETURN_SUCCESS = 3;
 
     public String filePath = "";
     private String token;
     private Context mContext;
     private List<String> imagePath = new ArrayList<String>();
+    private Order.OrderListener orderListener;
+    private Dialog mDialog;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -114,9 +124,15 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
                     afterSaleAdapter.notifyDataSetChanged();
                     break;
                 case UPDATE_UPLOAD_IMG_GRID:
-                    if (imagePath.size()>=4)
+                    if (imagePath.size() >= 4)
                         imagePath.remove("");
                     imageAdapter.notifyDataSetChanged();
+                    break;
+                case ORDER_RETURN_SUCCESS:
+                    Order order = (Order) msg.obj;
+                    if (orderListener != null)
+                        orderListener.onOrderStatusChange(order);
+                    ((BaseActivity) getActivity()).popToStack(AfterSaleFragment.this);
                     break;
             }
         }
@@ -157,7 +173,7 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        Log.i("AfterSaleFragment--------------->","onCreateView");
+        Log.i("AfterSaleFragment--------------->", "onCreateView");
         if (null != rootView) {
             ViewGroup parent = (ViewGroup) rootView.getParent();
             if (null != parent) {
@@ -171,11 +187,13 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
     }
 
     private void initView(View view) {
-        mContext=getActivity();
-        token=(String)SharedPreferencesUtil.getData(getActivity(),"token","");
-        tv_commit=(TextView)view.findViewById(R.id.tv_commit);
+        mContext = getActivity();
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
+        tv_commit = (TextView) view.findViewById(R.id.tv_commit);
         tv_commit.setOnClickListener(this);
-        mTitleView=(TextView)view.findViewById(R.id.tv_title);
+        mTitleView = (TextView) view.findViewById(R.id.tv_title);
+        mEditText = (EditText) view.findViewById(R.id.et_msg);
         tv_return = (TextView) view.findViewById(R.id.tv_return);
         tv_exchange = (TextView) view.findViewById(R.id.tv_exchange);
         mOldPrice = (TextView) view.findViewById(R.id.tv_outdated);
@@ -202,10 +220,10 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
         imagePath.add("");
         imageAdapter = new ImageAdapter(getActivity(), imagePath);
         mImgGrid.setAdapter(imageAdapter);
-        if ((""+ZhaiDou.STATUS_PAYED).equalsIgnoreCase(mStatus)){
+        if (("" + ZhaiDou.STATUS_PAYED).equalsIgnoreCase(mStatus)) {
             mTitleView.setText(mContext.getResources().getString(R.string.order_return_money));
             tv_exchange.setText("退款");
-        }else {
+        } else {
             mTitleView.setText(mContext.getResources().getString(R.string.order_return_good));
             tv_exchange.setText("退货");
         }
@@ -253,14 +271,14 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
                     mMenuContainer.setVisibility(View.VISIBLE);
                     toggleMenu();
                 } else {
-                    PhotoViewFragment photoViewFragment=PhotoViewFragment.newInstance(position,imgPath);
-                    ((MainActivity)getActivity()).navigationToFragment(photoViewFragment);
+                    PhotoViewFragment photoViewFragment = PhotoViewFragment.newInstance(position, imgPath);
+                    ((MainActivity) getActivity()).navigationToFragment(photoViewFragment);
                     photoViewFragment.setPhotoListener(new PhotoViewFragment.PhotoListener() {
                         @Override
                         public void onPhotoDelete(int position, String url) {
-                            if (!TextUtils.isEmpty(url)){
+                            if (!TextUtils.isEmpty(url)) {
                                 imagePath.remove(position);
-                                if (imagePath.size()<3&&!imagePath.contains(""))
+                                if (imagePath.size() < 3 && !imagePath.contains(""))
                                     imagePath.add("");
                                 imageAdapter.notifyDataSetChanged();
                             }
@@ -306,10 +324,11 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
     }
 
     private void FetchOrderDetail(String id) {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST+"/" + id, new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "/" + id, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("FetchOrderDetail-------------->", jsonObject.toString());
+                if (mDialog != null) mDialog.dismiss();
                 if (jsonObject != null) {
                     JSONObject orderObj = jsonObject.optJSONObject("order");
                     int amount = orderObj.optInt("amount");
@@ -345,7 +364,9 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
                             String specification = item.optString("specification");
                             int merchandise_id = item.optInt("merchandise_id");
                             String merch_img = item.optString("merch_img");
+                            int sale_cate = item.optInt("sale_cate");
                             OrderItem orderItem = new OrderItem(itemId, itemPrice, count, cost_price, merchandise, specification, merchandise_id, merch_img);
+                            orderItem.setSale_cate(sale_cate);
                             orderItems.add(orderItem);
                         }
                     }
@@ -359,13 +380,14 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
+                if (mDialog != null) mDialog.dismiss();
+                Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization",token);
+                headers.put("SECAuthorization", token);
                 return headers;
             }
         };
@@ -385,10 +407,19 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
             TextView tv_specification = ViewHolder.get(convertView, R.id.tv_specification);
             TextView tv_count = ViewHolder.get(convertView, R.id.tv_count);
             ImageView iv_order_img = ViewHolder.get(convertView, R.id.iv_order_img);
-            TextView tv_old_price = ViewHolder.get(convertView, R.id.tv_old_price);
-            TextView tv_price = ViewHolder.get(convertView, R.id.tv_price);
+            TextView tv_old_price = ViewHolder.get(convertView, R.id.orderItemFormalPrice);
+            TextView tv_price = ViewHolder.get(convertView, R.id.orderItemCurrentPrice);
+            LinearLayout ll_count = ViewHolder.get(convertView, R.id.ll_count);
+            TextView tv_zero_msg = ViewHolder.get(convertView, R.id.tv_zero_msg);
 
             OrderItem item = getList().get(position);
+//            if (item.getSale_cate() == 0) {
+//                ll_count.setVisibility(View.VISIBLE);
+//                tv_zero_msg.setVisibility(View.GONE);
+//            } else {
+//                ll_count.setVisibility(View.GONE);
+//                tv_zero_msg.setVisibility(View.VISIBLE);
+//            }
             tv_name.setText(item.getMerchandise());
             tv_specification.setText(item.getSpecification());
             tv_count.setText(item.getCount() + "");
@@ -416,10 +447,10 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
                     Log.i("拍照修改头像------------>", "拍照修改头像");
                     isFromCamera = true;
                     File file = new File(filePath);
-                    Log.i("MENU_CAMERA_SELECTED-------------->", filePath+"------->"+imagePath.size());
+                    Log.i("MENU_CAMERA_SELECTED-------------->", filePath + "------->" + imagePath.size());
                     degree = PhotoUtil.readPictureDegree(file.getAbsolutePath());
 //                    ToolUtils.setImageCacheUrl("file://" + filePath, iv_return_img);
-                    if (imagePath!=null&&imagePath.size()<3){
+                    if (imagePath != null && imagePath.size() < 3) {
                         imagePath.add(filePath);
                         imagePath.add("");
                         handler.sendEmptyMessage(UPDATE_UPLOAD_IMG_GRID);
@@ -455,9 +486,9 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
                         cursor.moveToFirst();
                         //最后根据索引值获取图片路径
                         String path = cursor.getString(column_index);
-                        Log.i("MENU_PHOTO_SELECTED------------>path", path+"---------------->"+imagePath.size());
+                        Log.i("MENU_PHOTO_SELECTED------------>path", path + "---------------->" + imagePath.size());
                         ToolUtils.setImageCacheUrl("file://" + path, iv_return_img);
-                        if (imagePath != null && imagePath.size() < 3){
+                        if (imagePath != null && imagePath.size() < 3) {
                             imagePath.add(path);
                             imagePath.add("");
                             handler.sendEmptyMessage(UPDATE_UPLOAD_IMG_GRID);
@@ -517,43 +548,78 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
     }
 
     public class ImageAdapter extends BaseListAdapter<String> {
-        private WeakHashMap<Integer,View> mHashMap = new WeakHashMap<Integer, View>();
+        private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
+
         public ImageAdapter(Context context, List<String> list) {
             super(context, list);
         }
 
         @Override
         public View bindView(int position, View convertView, ViewGroup parent) {
-            convertView=mHashMap.get(position);
+            convertView = mHashMap.get(position);
             if (convertView == null)
                 convertView = mInflater.inflate(R.layout.item_img_grid, null);
             ImageView iv_img = ViewHolder.get(convertView, R.id.iv_img);
             String img = getList().get(position);
-            if (TextUtils.isEmpty(img)){
+            if (TextUtils.isEmpty(img)) {
                 iv_img.setBackgroundDrawable(getResources().getDrawable(R.drawable.icon_add));
-            }else {
+            } else {
                 ToolUtils.setImageCacheUrl("file://" + img, iv_img);
             }
-            mHashMap.put(position,convertView);
+            mHashMap.put(position, convertView);
             return convertView;
         }
     }
 
-    private class CommitTask extends AsyncTask<Void,Void,String>{
+    private class CommitTask extends AsyncTask<Void, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            if (mDialog != null)
+                mDialog.show();
+            super.onPreExecute();
+        }
+
         @Override
         protected String doInBackground(Void... voids) {
-            String result=applyReturn();
+            String result = applyReturn();
             return result;
         }
 
         @Override
         protected void onPostExecute(String s) {
-            Log.i("result------------->",s.toString());
+            if (mDialog != null)
+                mDialog.hide();
+            try {
+                JSONObject jsonObject = new JSONObject(s);
+                int status = jsonObject.optInt("status");
+                JSONObject orderObj = jsonObject.optJSONObject("order");
+                int id = orderObj.optInt("id");
+                String number = orderObj.optString("number");
+                double amount = orderObj.optDouble("amount");
+                String orderStatus = orderObj.optString("status");
+                String merch_img = orderObj.optString("merch_img");
+                String status_ch = orderObj.optString("status_ch");
+                String created_at = orderObj.optString("created_at");
+                String over_at = orderObj.optString("over_at");
+                String created_at_for = orderObj.optString("created_at_for");
+                String deliver_number = orderObj.optString("deliver_number");
+                Order order = new Order(id, number, amount, orderStatus, status_ch, created_at_for, created_at, over_at, 0);
+                if (201 == status) {
+                    Log.i("201==status----------------->", "201==status");
+                    Message message = new Message();
+                    message.what = ORDER_RETURN_SUCCESS;
+                    message.obj = order;
+                    handler.sendMessage(message);
+                }
+            } catch (Exception e) {
+
+            }
         }
     }
+
     private String applyReturn() {
 
-        String result=null;
+        String result = null;
         BufferedReader in = null;
         try {
             // 定义HttpClient
@@ -561,30 +627,27 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
 
 
             // 实例化HTTP方法
-            HttpPost request = new HttpPost(ZhaiDou.URL_ORDER_LIST+"/"+mOrderId+"/return_items");
-            request.addHeader("SECAuthorization",token);
+            HttpPost request = new HttpPost(ZhaiDou.URL_ORDER_LIST + "/" + mOrderId + "/return_items");
+            request.addHeader("SECAuthorization", token);
 
             // 创建名/值组列表
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("sale_return_item[return_category_id]", "" + mOrderId));
-            params.add(new BasicNameValuePair("sale_return_item[node]", "海底世界噶"));
+            params.add(new BasicNameValuePair("sale_return_item[node]", mEditText.getText().toString()));
             for (int i = 0; i < imagePath.size(); i++) {
-                Log.i("imagePath---------->",imagePath.get(i).toString());
-                String path=imagePath.get(i);
-                if (!TextUtils.isEmpty(path)){
-                    Bitmap bitmap=BitmapFactory.decodeFile(path);
-                    String base64Str =PhotoUtil.bitmapToBase64(bitmap);
-                    Log.i("base64Str---------->",base64Str);
-                    params.add(new BasicNameValuePair("sale_return_item[attachments_attributes][][picture]","data:image/png;base64,"+base64Str));
+                Log.i("imagePath---------->", imagePath.get(i).toString());
+                String path = imagePath.get(i);
+                if (!TextUtils.isEmpty(path)) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(path);
+                    String base64Str = PhotoUtil.bitmapToBase64(bitmap);
+                    Log.i("base64Str---------->", base64Str);
+                    params.add(new BasicNameValuePair("sale_return_item[attachments_attributes][][picture]", "data:image/png;base64," + base64Str));
                 }
             }
 
-            String arr="[";
-            for (int k=0;k<orderItems.size();k++){
-                arr=arr+orderItems.get(k).getId()+",";
+            for (int k = 0; k < orderItems.size(); k++) {
+                params.add(new BasicNameValuePair("sale_return_item[order_item_ids][]", orderItems.get(k).getId() + ""));
             }
-            arr=arr.substring(0,arr.length()-2)+"]";
-            params.add(new BasicNameValuePair("sale_return_item[order_item_ids][]",orderItems.get(0).getId()+""));
 
             // 创建UrlEncodedFormEntity对象
             UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
@@ -603,7 +666,7 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
             }
             in.close();
             result = sb.toString();
-            Log.i("result------------>",result.toString());
+            Log.i("result------------>", result.toString());
             return result;
 
         } catch (Exception e) {
@@ -618,5 +681,9 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
             }
         }
         return result;
+    }
+
+    public void setOrderListener(Order.OrderListener orderListener) {
+        this.orderListener = orderListener;
     }
 }

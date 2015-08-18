@@ -75,8 +75,10 @@
                 android:layout_height="0.5dp"
                 android:background="#D2D2D2" />
 
-            <ListView
+            <com.zhaidou.view.ListViewForScrollView
                 android:id="@+id/lv_aftersale"
+                android:dividerHeight="0.5dp"
+                android:divider="@color/black"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -225,6 +227,7 @@
                     android:background="#EEEEEE" />
 
                 <com.zhaidou.view.TypeFaceEditText
+                    android:id="@+id/et_msg"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_margin="10dp"

@@ -38,6 +38,9 @@
     <string name="order_zero_unreturn_msg">0元特卖的商品不能退哦!</string>
     <string name="order_zero_return_msg">0元特卖商品不允许退款/退货</string>
 
+    <!--售后客服-->
+    <string name="QQ_Number">2637059378</string>
+
     <!-- Tab -->
     <string name="tab_utility_title">最实用</string>
     <string name="tab_beauty_home_title">美丽家</string>
