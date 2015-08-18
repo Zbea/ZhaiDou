@@ -547,7 +547,6 @@ public class OrderDetailFragment extends BaseFragment {
             Message message = new Message();
             String data = getResources().getString(R.string.timer_start);
             data = String.format(data, new SimpleDateFormat("mm:ss").format(new Date(l)));
-            Log.i("data-------->", data + " l----------->" + l + "    -----" + l / 1000 + "      ---------" + l % 1000 + "    l/1000+l%1000*1000--->" + (l / 1000 + l % 1000 * 1000));
             message.what = UPDATE_COUNT_DOWN_TIME;
             message.obj = data;
             handler.sendMessage(message);
@@ -555,14 +554,12 @@ public class OrderDetailFragment extends BaseFragment {
 
         @Override
         public void onFinish() {
-            Log.i("onFinish---------->", "onFinish");
             handler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
         }
     }
 
     @Override
     public void onResume() {
-        Log.i("onResume------------->", "onResume");
         if ((ZhaiDou.STATUS_UNPAY + "").equalsIgnoreCase(mOrder.getStatus())) {
             if (timer == null)
                 timer = new MyTimer(mParam2 * 1000, 1000);

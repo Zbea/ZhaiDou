@@ -851,7 +851,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 cartItem.size = mSpecification.getTitle();
                 cartItem.sizeId = mSpecification.getId();
                 cartItem.isPublish = "false";
-                cartItem.isOSale = "true";
+                cartItem.isOSale = flags==1?"true":"false";
 
                 ArrayList<CartItem> itemsCheck = new ArrayList<CartItem>();
                 itemsCheck.add(cartItem);

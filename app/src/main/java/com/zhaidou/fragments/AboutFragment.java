@@ -106,7 +106,7 @@ public class AboutFragment extends BaseFragment implements View.OnClickListener{
             PackageManager manager = getActivity().getPackageManager();
             PackageInfo info = manager.getPackageInfo(getActivity().getPackageName(), 0);
             String version = info.versionName;
-            return "宅豆家居 V" + version;
+            return String.format(getResources().getString(R.string.app_version),version);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

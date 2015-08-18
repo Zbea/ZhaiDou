@@ -39,7 +39,9 @@ import com.zhaidou.utils.ToolUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,17 +76,20 @@ public class OrderUnPayFragment extends BaseFragment {
     private MyTimer timer;
     private String token;
     private Context mContext;
+    private boolean isTimerStart = false;
+    private long preTime = 0;
+    private long timeStmp = 0;
+    private Map<Integer, Boolean> timerMap = new HashMap<Integer, Boolean>();
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case UPDATE_UNPAY_LIST:
-                    if (orders != null && orders.size() > 0)
-                    {
+                    if (orders != null && orders.size() > 0) {
                         mListView.setVisibility(View.VISIBLE);
                         loadingView.setVisibility(View.GONE);
                         unPayAdapter.notifyDataSetChanged();
-                    }else {
+                    } else {
                         mListView.setVisibility(View.GONE);
                         loadingView.setVisibility(View.VISIBLE);
                     }
@@ -123,17 +128,15 @@ public class OrderUnPayFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState)
-    {
-        if (null != rootView)
-        {
+                             Bundle savedInstanceState) {
+        if (null != rootView) {
             ViewGroup parent = (ViewGroup) rootView.getParent();
             if (null != parent) {
                 parent.removeView(rootView);
             }
         } else {
             rootView = inflater.inflate(R.layout.fragment_unpay, container, false);
-            mContext=getActivity();
+            mContext = getActivity();
             mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
             mListView = (ListView) rootView.findViewById(R.id.lv_unpaylist);
@@ -146,14 +149,24 @@ public class OrderUnPayFragment extends BaseFragment {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
                     final Order order = (Order) values;
-                    TextView textView = (TextView) v.findViewById(R.id.bt_order_timer);
+                    final TextView btn2 = (TextView) v.findViewById(R.id.bt_order_timer);
+                    if (btn2.getTag() != null)
+                        preTime = Long.parseLong(btn2.getTag().toString());
                     OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(), order);
                     ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
                     orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
                         @Override
                         public void onOrderStatusChange(Order o) {
-                            order.setStatus(o.getStatus());
-                            order.setStatus_ch("已取消");
+                            long time = o.getOver_at();
+                            if (!isTimerStart) {
+                                timeStmp = preTime - time;
+                                Log.i("timeStmp----------->", timeStmp + "");
+                                timerMap.clear();
+                            } else {
+                                btn2.setTag(o.getOver_at());
+                                order.setOver_at(o.getOver_at());
+                                order.setStatus(o.getStatus());
+                            }
                         }
                     });
                 }
@@ -171,10 +184,11 @@ public class OrderUnPayFragment extends BaseFragment {
                     ((BaseActivity) getActivity()).navigationToFragment(shopPaymentFragment);
                 }
             });
+            FetchData();
         }
-        timer = new MyTimer(15 * 60 * 1000, 1000);
-        timer.start();
-        FetchData();
+//        timer = new MyTimer(15 * 60 * 1000, 1000);
+//        timer.start();
+//        FetchData();
         return rootView;
     }
 
@@ -205,10 +219,6 @@ public class OrderUnPayFragment extends BaseFragment {
                             order.setImg(img);
                             order.setOver_at(over_at);
                             orders.add(order);
-//                            if (over_at > 0)
-//                                {
-//                                    orders.add(order);
-//                                }
                         }
                         handler.sendEmptyMessage(UPDATE_UNPAY_LIST);
                     } else {
@@ -263,33 +273,44 @@ public class OrderUnPayFragment extends BaseFragment {
 
             if (mTimerBtn.getTag() == null) {
                 mTimerBtn.setTag(item.getOver_at());
-//                mOrderTime.setTag(System.currentTimeMillis());
             }
 
             long l = Long.parseLong(mTimerBtn.getTag() + "");
-            long day = 24 * 3600 * 1000;
-            long hour = 3600 * 1000;
-            long minute = 60 * 1000;
-            //两个日期想减得到天数
-            long dayCount = l / day;
-            long hourCount = (l - (dayCount * day)) / hour;
-            long minCount = (l - (dayCount * day) - (hour * hourCount)) / minute;
-            long secondCount = (l - (dayCount * day) - (hour * hourCount) - (minCount * minute)) / 1000;
-//            if ((System.currentTimeMillis()-Long.parseLong(mOrderTime.getTag()+""))>=1000){
-            if (minCount > 0 || secondCount > 0) {
-                mTimerBtn.setText("支付" + minCount + ":" + secondCount + "");
+//            if (l > 0) {
+//                mTimerBtn.setText("支付" + new SimpleDateFormat("mm:ss").format(new Date(l * 1000)));
+//            } else {
+//                item.setOver_at(0);
+//                mTimerBtn.setText("超时过期");
+//                mTimerBtn.setBackgroundResource(R.drawable.btn_no_click_selector);
+//                mOrderStatus.setText("交易关闭");
+//                //刷新代付款数量显示
+//                Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
+//                mContext.sendBroadcast(intent);
+//            }
+            if (l > 0) {
+                if (timeStmp > 0 && timerMap != null && (timerMap.get(position) == null || !timerMap.get(position))) {
+                    Log.i("hhhhhhhh---->", "dasfafaf");
+                    l = l - timeStmp;
+                    mTimerBtn.setTag(l);
+                    item.setOver_at(l);
+                    timerMap.put(position, true);
+                } else {
+                    mTimerBtn.setTag(Long.parseLong(mTimerBtn.getTag() + "") - 1);
+                    item.setOver_at(Long.parseLong(mTimerBtn.getTag() + "") - 1);
+                }
+                mTimerBtn.setText("支付" + new SimpleDateFormat("mm:ss").format(new Date(l * 1000)));
             } else {
-                item.setOver_at(0);
                 mTimerBtn.setText("超时过期");
+//                mOrderStatus.setText("交易关闭");
                 mTimerBtn.setBackgroundResource(R.drawable.btn_no_click_selector);
-                mOrderStatus.setText("交易关闭");
+                item.setStatus(ZhaiDou.STATUS_DEAL_CLOSE + "");
                 //刷新代付款数量显示
                 Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
                 mContext.sendBroadcast(intent);
             }
 
-            mTimerBtn.setTag(Long.parseLong(mTimerBtn.getTag() + "") - 1000);
-            item.setOver_at(Long.parseLong(mTimerBtn.getTag() + "") - 1000);
+            mTimerBtn.setTag(Long.parseLong(mTimerBtn.getTag() + "") - 1);
+            item.setOver_at(Long.parseLong(mTimerBtn.getTag() + "") - 1);
 //                mOrderTime.setTag(System.currentTimeMillis());
 //            }
 
@@ -314,6 +335,26 @@ public class OrderUnPayFragment extends BaseFragment {
         }
     }
 
+    @Override
+    public void onResume() {
+        Log.i("AllOrdersFragment----------->", "onResume");
+        if (timer == null)
+            timer = new MyTimer(15 * 60 * 1000, 1000);
+        if (!isTimerStart) {
+            isTimerStart = true;
+            timer.start();
+        }
+        super.onResume();
+    }
+
+    @Override
+    public void onStop() {
+        if (timer != null) {
+            timer.cancel();
+            isTimerStart = false;
+        }
+        super.onStop();
+    }
 
     @Override
     public void onDestroyView() {
