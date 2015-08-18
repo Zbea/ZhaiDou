@@ -14,14 +14,48 @@
             android:layout_height="wrap_content"
             android:textColor="#666666"
             android:layout_marginLeft="20dp"
-            android:text="退货说明"/>
+            android:text="0元特卖，不支持退货、退款。"/>
         <com.zhaidou.view.TypeFaceTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#666666"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="20dp"
-            android:text="该商品支持7天无理由退货,请放心购买"/>
+            android:text="普通特卖，可退货或退款。"/>
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_gary_color"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="10dp"
+            android:text="1. 商品没有质量问题，支持7天无理由退货，但需要用户承担运费。"/>
+        <com.zhaidou.view.TypeFaceTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_gary_color"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="10dp"
+        android:text="2. 物流问题造成货品损伤的，可以申请退货或退款，运费由宅豆承担。"/>
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#666666"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            android:text="退款流程："/>
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_gary_color"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="10dp"
+            android:text="普通特卖退货、退款，在订单管理中申请售后，确定是退款还是退货，联系客服确认商品有无损伤，说明退货原因，用户用快递退回商品，没有质量问题的退货需用户承担运费，有质量问题或者物流造成货品损伤的运费有宅豆承担。"/>
+
+
 
         <TextView
             android:layout_marginTop="15dp"
@@ -38,7 +72,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:textColor="#999999"
+                android:textColor="@color/text_main_color"
                 android:text="在线联系客服"/>
             <ImageView
                 android:layout_width="wrap_content"

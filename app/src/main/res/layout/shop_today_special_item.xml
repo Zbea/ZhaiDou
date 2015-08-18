@@ -85,18 +85,34 @@
                 android:layout_weight="1"
                 android:layout_marginTop="5dp">
 
-                <ImageView
-                    android:layout_width="87dp"
-                    android:layout_height="16dp"
-                    android:src="@drawable/shop_special_subclass_dester_icon"/>
+                <LinearLayout
+                    android:layout_width="80dp"
+                    android:layout_height="17dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:scaleType="centerInside"
+                        android:layout_marginTop="1dp"
+                        android:src="@drawable/shop_special_subclass_dester_icon"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="豆豆点评:"
+                    android:layout_marginLeft="4dp"
+                    android:textColor="@color/green_color"/>
+                </LinearLayout>
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxLines="3"
                     android:textSize="12sp"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginTop="4dp"
                     android:gravity="center_vertical"
+                    android:ellipsize="end"
                     android:textColor="@color/text_gary_color"
                     android:text=""
                     android:id="@+id/shopIntroduceItem"/>

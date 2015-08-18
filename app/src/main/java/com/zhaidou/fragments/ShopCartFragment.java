@@ -427,7 +427,14 @@ public class ShopCartFragment extends BaseFragment
                 {
                     GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(tag).name, items.get(tag).id);
                     Bundle bundle = new Bundle();
-                    bundle.putInt("flags", 2);
+                    if (items.get(tag).isOSale.equals("true"))
+                    {
+                        bundle.putInt("flags", 1);
+                    }
+                    if (items.get(tag).isPublish.equals("true"))
+                    {
+                        bundle.putInt("flags", 2);
+                    }
                     bundle.putInt("index", items.get(tag).id);
                     goodsDetailsFragment.setArguments(bundle);
                     ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);

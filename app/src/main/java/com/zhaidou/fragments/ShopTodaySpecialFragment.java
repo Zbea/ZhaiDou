@@ -458,7 +458,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                         String designer=obj.optString("designer");
                         double price=obj.optDouble("price");
                         double cost_price=obj.optDouble("cost_price");
-                        String imageUrl="http://"+obj.optString("img");
+                        String imageUrl=obj.optString("img");
                         int num=obj.optInt("total_count");
                         ShopTodayItem shopTodayItem=new ShopTodayItem(Baseid,Listtitle,designer,imageUrl,price,cost_price,num);
                         items.add(shopTodayItem);

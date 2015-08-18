@@ -129,7 +129,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/red"
-                        android:textSize="16sp" />
+                        android:textSize="18sp" />
 
                     <TextView
                         android:id="@+id/goodsFormerPrice"
@@ -137,7 +137,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/default_margin"
                         android:textColor="@color/text_gary_color"
-                        android:textSize="12sp" />
+                        android:textSize="14sp" />
 
                 </LinearLayout>
             </LinearLayout>
