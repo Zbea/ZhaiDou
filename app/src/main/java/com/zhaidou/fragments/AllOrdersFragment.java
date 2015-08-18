@@ -450,6 +450,7 @@ public class AllOrdersFragment extends BaseFragment implements View.OnClickListe
                     if (btn2.getTag() == null)
                         btn2.setTag(order.getOver_at());
                     long l = Long.parseLong(btn2.getTag() + "");
+
                     if (l > 0) {
                         if (timeStmp > 0 && timerMap != null && (timerMap.get(position) == null || !timerMap.get(position))) {
                             Log.i("hhhhhhhh---->","dasfafaf");
