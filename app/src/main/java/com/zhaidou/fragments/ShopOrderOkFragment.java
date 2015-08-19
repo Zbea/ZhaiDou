@@ -198,6 +198,11 @@ public class ShopOrderOkFragment extends BaseFragment {
                         }
                     }
                     break;
+                case 7:
+                    mDialog.dismiss();
+                    String goodsbuy=msg.obj.toString();
+                    ToolUtils.setToast(mContext,goodsbuy);
+                    break;
             }
         }
     };
@@ -507,15 +512,30 @@ public class ShopOrderOkFragment extends BaseFragment {
                         if (status==400)
                         {
                             String errorArr=jsonObject.optString("order_items.count");
-                            Message message=new Message();
-                            message.what=6;
-                            message.obj=errorArr;
-                            handler.sendMessage(message);
+                            if (errorArr.length()>3)
+                            {
+                                Message message=new Message();
+                                message.what=6;
+                                message.obj=errorArr;
+                                handler.sendMessage(message);
+                            }
 
+                            String errorTimeArr=jsonObject.optString("order_items.time");
+                            if (errorTimeArr.length()>3)
+                            {
+                                Message message=new Message();
+                                message.what=8;
+                                message.obj=errorTimeArr;
+                                handler.sendMessage(message);
+                            }
                         }
                         if (status==401)
                         {
-
+                            String errorArr=jsonObject.optString("message");
+                            Message message=new Message();
+                            message.what=7;
+                            message.obj=errorArr;
+                            handler.sendMessage(message);
                         }
 
                     }catch (Exception e){
