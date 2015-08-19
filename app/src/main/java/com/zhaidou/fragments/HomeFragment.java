@@ -265,7 +265,7 @@ public class HomeFragment extends BaseFragment implements
                 final int tag = i;
                 final ImageView img = new ImageView(mContext);
                 img.setBackgroundResource(R.drawable.icon_loading_item);
-                img.setScaleType(ImageView.ScaleType.CENTER);
+                img.setScaleType(ImageView.ScaleType.FIT_XY);
                 img.setLayoutParams(new ViewGroup.LayoutParams(screenWidth, screenWidth * 300 / 750));
                 img.setOnClickListener(new View.OnClickListener()
                 {

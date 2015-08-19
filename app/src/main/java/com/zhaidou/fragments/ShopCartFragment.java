@@ -158,14 +158,14 @@ public class ShopCartFragment extends BaseFragment
                                 textNumView.setText("" + mCartItem.num);
                             } else
                             {
-                                Toast.makeText(mContext,"库存不足,商品只剩"+count+"件",Toast.LENGTH_LONG).show();
+                                Toast.makeText(mContext,"库存不足,商品只剩"+count+"件",Toast.LENGTH_SHORT).show();
                             }
 
                         } else
                         {
                             if (count <mCartItem.num)
                             {
-                                Toast.makeText(mContext,"抱歉,该商品只剩"+count+"件,请及时更新购物车",Toast.LENGTH_LONG).show();
+                                Toast.makeText(mContext,"抱歉,该商品只剩"+count+"件,请及时更新购物车",Toast.LENGTH_SHORT).show();
                             }
                             mCartItem.num = mCartItem.num - 1;
                             CreatCartTools.editNumByData(creatCartDB, mCartItem);
@@ -599,7 +599,7 @@ public class ShopCartFragment extends BaseFragment
             saveMoney = saveMoney + ((cartItem.formalPrice - cartItem.currentPrice) * cartItem.num);
         }
         numTv.setText("" + num);
-        DecimalFormat df = new DecimalFormat("##.0");
+        DecimalFormat df = new DecimalFormat("###.00");
         saveMoney = Double.parseDouble(df.format(saveMoney));
         totalMoney = Double.parseDouble(df.format(totalMoney));
 
