@@ -162,6 +162,8 @@ public class OrderUnPayFragment extends BaseFragment {
                                 timeStmp = preTime - time;
                                 Log.i("timeStmp----------->", timeStmp + "");
                                 timerMap.clear();
+                                order.setStatus(o.getStatus());
+                                order.setOver_at(o.getOver_at());
                             } else {
                                 btn2.setTag(o.getOver_at());
                                 order.setOver_at(o.getOver_at());
