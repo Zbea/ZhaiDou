@@ -110,6 +110,7 @@ public class AutoGridView extends LinearLayout implements View.OnClickListener{
                 if (item.length()>TEXT_LENGTH)
                     item=item.substring(0,TEXT_LENGTH)+"...";
                 Log.i("item----------------->",item);
+                textView.setTextSize(13);
                 textView.setText(item);
                 float length =paint.measureText(item);
 //                textView.setTextColor(getResources().getColor(R.color.gray_9));
