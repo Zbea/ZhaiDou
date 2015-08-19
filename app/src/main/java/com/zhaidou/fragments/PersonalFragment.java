@@ -119,7 +119,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             if (action.equals(ZhaiDou.IntentRefreshUnPayDesTag))
             {
                 count=count-1;
-                if (count==0)
+                if (count<1)
                 {
                     tv_unpay_count.setVisibility(View.GONE);
                     ((MainActivity)getActivity()).hideTip(View.GONE);

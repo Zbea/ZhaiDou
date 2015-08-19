@@ -166,12 +166,7 @@ public class ShopCartFragment extends BaseFragment
                             if (count <mCartItem.num)
                             {
                                 Toast.makeText(mContext,"抱歉,该商品只剩"+count+"件,请及时更新购物车",Toast.LENGTH_LONG).show();
-//                            mCartItem.num = mCartItem.num - 1;
                             }
-//                        else
-//                        {
-//                            mCartItem.num = mCartItem.num - 1;
-//                        }
                             mCartItem.num = mCartItem.num - 1;
                             CreatCartTools.editNumByData(creatCartDB, mCartItem);
                             sendBroadCastEditAll();
@@ -302,7 +297,6 @@ public class ShopCartFragment extends BaseFragment
         {
             parent.removeView(mView);
         }
-        ToolUtils.setLog("刷新了:"+itemsCheck.size());
         return mView;
     }
 
@@ -379,7 +373,6 @@ public class ShopCartFragment extends BaseFragment
     {
         nullView.setVisibility(View.GONE);
         contentView.setVisibility(View.VISIBLE);
-
         if (itemsServer.size() > 0)
         {
             for (int i = 0; i < itemsServer.size(); i++)
@@ -390,13 +383,17 @@ public class ShopCartFragment extends BaseFragment
                     CartItem itemLocal = items.get(j);
                     if (itemServer.sizeId == itemLocal.sizeId)
                     {
+                        items.get(j).isPublish=itemServer.isPublish;
+                        items.get(j).isOver=itemServer.isOver;
                         if (itemServer.isPublish.equals("true"))
                         {
+                            ToolUtils.setLog("修改是否下架");
                             CreatCartTools.editIsLoseByData(creatCartDB, itemServer);//修改本地数据
                             sendBroadCastEditAll();
                         }
                         if (itemServer.isOver.equals("true"))
                         {
+                            ToolUtils.setLog("修改是否卖光");
                             CreatCartTools.editIsOverByData(creatCartDB, itemServer);//修改本地数据
                             sendBroadCastEditAll();
                         }
@@ -636,17 +633,18 @@ public class ShopCartFragment extends BaseFragment
 
                 if (jsonObject != null)
                 {
-                    JSONArray jsonArray = jsonObject.optJSONArray("merchandise");
+                    JSONArray jsonArray = jsonObject.optJSONArray("merchandises");
                     JSONObject obj = null;
                     if (jsonArray != null)
                     {
                         for (int i = 0; i < jsonArray.length(); i++)
                         {
+
                             obj = jsonArray.optJSONObject(i);
                             int id = obj.optInt("id");
                             String name = obj.optString("title");
                             String isPublish = obj.optBoolean("is_publish") ==false? "true" : "false";
-
+//                            String isPublish ="true";
                             JSONArray array = obj.optJSONArray("specifications");
                             for (int j = 0; j < array.length(); j++)
                             {
@@ -655,7 +653,6 @@ public class ShopCartFragment extends BaseFragment
                                 String size = object.optString("title");
                                 int count = object.optInt("count");
                                 String isOver;
-
                                 if (count > 0)
                                 {
                                     isOver = "false";

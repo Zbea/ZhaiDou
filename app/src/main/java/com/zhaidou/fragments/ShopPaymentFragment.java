@@ -57,6 +57,7 @@ public class ShopPaymentFragment extends BaseFragment {
     private long mOrderId;
     private double mAmount;
     private int mFare;
+    private int flags;
     private long mTimeLeft;
     private Order mOrder;
     private View mView;
@@ -111,7 +112,6 @@ public class ShopPaymentFragment extends BaseFragment {
                         Toast.makeText(getActivity(), "支付成功",
                                 Toast.LENGTH_SHORT).show();
                         setUnPayDesCount();
-                        colseFragment(ShopPaymentFragment.this);
                         ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, 0);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
 //                        ((MainActivity) getActivity()).popToStack(ShopPaymentFragment.this);
@@ -127,7 +127,6 @@ public class ShopPaymentFragment extends BaseFragment {
                                 Toast.LENGTH_SHORT).show();
                         ShopPaymentFailFragment shopPaymentFailFragment=ShopPaymentFailFragment.newInstance(mOrderId,mAmount,mFare,initTime);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
-                        colseFragment(ShopPaymentFragment.this);
 
                     } else if (TextUtils.equals(resultStatus, "6002")) {
                         // 其他值就可以判断为支付失败，包括用户主动取消支付，或者系统返回的错误
@@ -171,7 +170,7 @@ public class ShopPaymentFragment extends BaseFragment {
         }
     };
 
-    public static ShopPaymentFragment newInstance(long orderId, double amount,int fare,long timeLeft,Order order) {
+    public static ShopPaymentFragment newInstance(long orderId, double amount,int fare,long timeLeft,Order order,int flags) {
         ShopPaymentFragment fragment = new ShopPaymentFragment();
         Bundle args = new Bundle();
         args.putLong(ARG_ORDERID, orderId);
@@ -179,6 +178,7 @@ public class ShopPaymentFragment extends BaseFragment {
         args.putInt(ARG_FARE,fare);
         args.putLong(ARG_TIME,timeLeft);
         args.putSerializable(ARG_ORDER,order);
+        args.putInt("flags",flags);
         fragment.setArguments(args);
         return fragment;
     }
@@ -195,6 +195,7 @@ public class ShopPaymentFragment extends BaseFragment {
             mFare=getArguments().getInt(ARG_FARE);
             mTimeLeft=getArguments().getLong(ARG_TIME);
             mOrder=(Order)getArguments().getSerializable(ARG_ORDER);
+            flags=getArguments().getInt("flags");
         }
     }
 
@@ -222,7 +223,10 @@ public class ShopPaymentFragment extends BaseFragment {
      * 初始化数据
      */
     private void initView() {
-        setUnPayAddCount();
+        if (flags==1)
+        {
+            setUnPayAddCount();
+        }
         api = WXAPIFactory.createWXAPI(mContext, null);
         api.registerApp("wxce03c66622e5b243");
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
@@ -414,13 +418,11 @@ public class ShopPaymentFragment extends BaseFragment {
                 setUnPayDesCount();
                 ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, mAmount+mFare);
                 ((MainActivity)getActivity()).navigationToFragment(shopPaymentSuccessFragment);
-                colseFragment(ShopPaymentFragment.this);
                 break;
             case -1://支付失败
                 Log.i("----->", "支付失败");
                 ShopPaymentFailFragment shopPaymentFailFragment=ShopPaymentFailFragment.newInstance(mOrderId,mAmount,mFare,initTime);
                 ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
-                colseFragment(ShopPaymentFragment.this);
 
                 break;
             case -2://取消支付

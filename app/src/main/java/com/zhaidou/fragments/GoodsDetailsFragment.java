@@ -920,8 +920,10 @@ public class GoodsDetailsFragment extends BaseFragment
                             if (items.get(i).isOSale.equals("true"))
                             {
                                 addCartOkDialog(items.get(i));
+                                return;
                             }
                         }
+                        addCartGoods();
                     }
                 }
                 else
@@ -930,61 +932,69 @@ public class GoodsDetailsFragment extends BaseFragment
                     Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
                 }
             }
-            if (detail != null)
+            else
             {
-                if (mSpecification != null)
-                {
-                    int[] location = new int[2];
-                    mTipView.getLocationInWindow(location);
-                    Drawable drawable = mTipView.getDrawable();
-                    doAnim(drawable, location);
-
-                    getGoodsItems();
-
-                    CartItem cartItem = new CartItem();
-                    cartItem.userId = userId;
-                    cartItem.id = detail.getId();
-                    cartItem.name = detail.getTitle();
-                    cartItem.creatTime = System.currentTimeMillis();
-                    if (detail.getImgs() != null)
-                    {
-                        cartItem.imageUrl = detail.getImgs().get(0);
-                    }
-                    cartItem.currentPrice = mSpecification.price;//规格的价格
-                    cartItem.formalPrice = mSpecification.oldPrice;
-                    DecimalFormat df = new DecimalFormat("##.0");
-                    double saveMoney = Double.parseDouble(df.format(mSpecification.oldPrice - mSpecification.price));
-                    cartItem.saveMoney = saveMoney;
-                    cartItem.saveTotalMoney = saveMoney;
-                    cartItem.totalMoney = detail.getPrice();
-                    cartItem.num = 1;
-                    cartItem.size = mSpecification.getTitle();
-                    cartItem.sizeId = mSpecification.getId();
-                    cartItem.isPublish = "false";
-                    cartItem.isOver = "false";
-                    if (flags == 1)//是否零元特卖
-                    {
-                        cartItem.isOSale = "true";
-                    } else
-                    {
-                        cartItem.isOSale = "false";
-                    }
-                    CreatCartTools.insertByData(creatCartDB, items, cartItem);
-
-                    Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
-                    mContext.sendBroadcast(intent);
-                } else
-                {
-                    scrollView.scrollTo(0, 600);
-                    Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
-                }
-
+                addCartGoods();
             }
+
         } else
         {
             ToolUtils.setToast(mContext, "抱歉，尚未登录");
         }
 
+    }
+
+    private void addCartGoods()
+    {
+        if (detail != null)
+        {
+            if (mSpecification != null)
+            {
+                int[] location = new int[2];
+                mTipView.getLocationInWindow(location);
+                Drawable drawable = mTipView.getDrawable();
+                doAnim(drawable, location);
+
+                getGoodsItems();
+
+                CartItem cartItem = new CartItem();
+                cartItem.userId = userId;
+                cartItem.id = detail.getId();
+                cartItem.name = detail.getTitle();
+                cartItem.creatTime = System.currentTimeMillis();
+                if (detail.getImgs() != null)
+                {
+                    cartItem.imageUrl = detail.getImgs().get(0);
+                }
+                cartItem.currentPrice = mSpecification.price;//规格的价格
+                cartItem.formalPrice = mSpecification.oldPrice;
+                DecimalFormat df = new DecimalFormat("##.0");
+                double saveMoney = Double.parseDouble(df.format(mSpecification.oldPrice - mSpecification.price));
+                cartItem.saveMoney = saveMoney;
+                cartItem.saveTotalMoney = saveMoney;
+                cartItem.totalMoney = detail.getPrice();
+                cartItem.num = 1;
+                cartItem.size = mSpecification.getTitle();
+                cartItem.sizeId = mSpecification.getId();
+                cartItem.isPublish = "false";
+                cartItem.isOver = "false";
+                if (flags == 1)//是否零元特卖
+                {
+                    cartItem.isOSale = "true";
+                } else
+                {
+                    cartItem.isOSale = "false";
+                }
+                CreatCartTools.insertByData(creatCartDB, items, cartItem);
+
+                Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
+                mContext.sendBroadcast(intent);
+            } else
+            {
+                scrollView.scrollTo(0, 600);
+                Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     /**
@@ -1218,7 +1228,10 @@ public class GoodsDetailsFragment extends BaseFragment
         mRequestQueue.add(request);
     }
 
-
+    /**
+     * 立即购买清除掉购物车中的零元特卖
+     * @param cartItem
+     */
     private void ljBuyOkDialog(final CartItem cartItem)
     {
         final Dialog dialog = new Dialog(mContext, R.style.custom_dialog);
@@ -1232,6 +1245,8 @@ public class GoodsDetailsFragment extends BaseFragment
             public void onClick(View view)
             {
                 CreatCartTools.deleteByData(creatCartDB, cartItem);
+                Intent intent=new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
+                mContext.sendBroadcast(intent);
                 dialog.dismiss();
                 buyGoods();
             }
@@ -1253,7 +1268,10 @@ public class GoodsDetailsFragment extends BaseFragment
 
     }
 
-
+    /**
+     * 加入购物车清除掉购物车中的零元特卖
+     * @param cartItem
+     */
     private void addCartOkDialog(final CartItem cartItem)
     {
         final Dialog dialog = new Dialog(mContext, R.style.custom_dialog);
@@ -1270,6 +1288,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 Intent intent=new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
                 mContext.sendBroadcast(intent);
                 dialog.dismiss();
+                addCartGoods();
             }
         });
         TextView cancelTv = (TextView) view.findViewById(R.id.cancelTv);

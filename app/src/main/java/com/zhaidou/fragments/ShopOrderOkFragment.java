@@ -164,7 +164,7 @@ public class ShopOrderOkFragment extends BaseFragment {
                         int orderId = orderObj.optInt("id");
                         int amount = orderObj.optInt("amount");
                         int fare = moneyYF;
-                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId, amount, fare,15*60,null);
+                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId, amount, fare,15*60,null,1);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
 //                        Intent intent1=new Intent(getActivity(), PayDemoActivity.class);
 //                        intent1.putExtra("id",orderId);
@@ -511,6 +511,10 @@ public class ShopOrderOkFragment extends BaseFragment {
                             message.what=6;
                             message.obj=errorArr;
                             handler.sendMessage(message);
+
+                        }
+                        if (status==401)
+                        {
 
                         }
 
