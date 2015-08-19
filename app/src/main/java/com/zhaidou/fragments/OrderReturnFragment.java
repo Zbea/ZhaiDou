@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,8 +55,6 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
     private RequestQueue mRequestQueue;
     private ReturnAdapter returnAdapter;
     private List<Order> orders;
-//    private String STATUS_RETURN_GOOD_LIST="8";
-//    private String STATUS_RETURN_MONEY_LIST="11";
     private final int UPDATE_RETURN_LIST=1;
     private String token;
     private View rootView;
@@ -131,7 +130,6 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
         returnAdapter.setOnInViewClickListener(R.id.iv_delete, new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, final Integer position, Object values) {
-                Log.i("position--------->", position + "");
                 final Order order = (Order) values;
 
                 final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
@@ -213,6 +211,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
             TextView tv_order_number = ViewHolder.get(convertView, R.id.tv_order_number);
             TextView tv_order_amount = ViewHolder.get(convertView, R.id.tv_order_amount);
             TextView tv_order_status = ViewHolder.get(convertView, R.id.tv_order_status);
+            RelativeLayout mBottomLayout=ViewHolder.get(convertView,R.id.rl_btn);
             ImageView iv_order_img=ViewHolder.get(convertView,R.id.iv_order_img);
             ImageView iv_delete=ViewHolder.get(convertView,R.id.iv_delete);
             Order item = getList().get(position);
@@ -221,6 +220,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
             tv_order_amount.setText("￥"+item.getAmount()+"");
             tv_order_status.setText(item.getStatus_ch());
             ToolUtils.setImageCacheUrl(item.getImg(), iv_order_img);
+            mBottomLayout.setVisibility(View.GONE);
             if ((""+ZhaiDou.STATUS_RETURN_GOOD_SUCCESS).equalsIgnoreCase(item.getStatus())|(""+ZhaiDou.STATUS_RETURN_MONEY_SUCCESS).equalsIgnoreCase(item.getStatus())){
                 iv_delete.setVisibility(View.VISIBLE);
             }else {
