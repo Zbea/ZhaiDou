@@ -290,7 +290,7 @@ public class OrderUnReceiveFragment extends BaseFragment {
                             JSONObject orderObj = orderArr.optJSONObject(i);
                             int id = orderObj.optInt("id");
                             String number = orderObj.optString("number");
-                            int amount = orderObj.optInt("amount");
+                            double amount = orderObj.optDouble("amount");
                             String status = orderObj.optString("status");
                             String status_ch = orderObj.optString("status_ch");
                             String created_at = orderObj.optString("created_at");

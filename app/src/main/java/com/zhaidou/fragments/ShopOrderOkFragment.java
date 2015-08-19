@@ -228,7 +228,6 @@ public class ShopOrderOkFragment extends BaseFragment {
                 case R.id.back_btn:
                     ((MainActivity) getActivity()).popToStack(ShopOrderOkFragment.this);
                     break;
-
                 case R.id.jsOkBtn:
                     if (address!=null)
                     {
@@ -240,14 +239,15 @@ public class ShopOrderOkFragment extends BaseFragment {
                                 isOSale=true;
                             }
                         }
-                        if (isOSale)
-                        {
-                            FetchOSaleData(5);//判断零元特卖是否已经当天购买过
-                        }
-                        else
-                        {
-                            commit();
-                        }
+//                        if (isOSale)
+//                        {Log.i("FetchOSaleData--------------->","FetchOSaleData");
+//                            FetchOSaleData(5);//判断零元特卖是否已经当天购买过
+//                        }
+//                        else
+//                        {Log.i("commit--------------->","commit");
+//                            commit();
+//                        }
+                        commit();
                     } else {
                         ToolUtils.setToast(mContext, "抱歉,您未填写收货地址");
                     }
@@ -487,6 +487,7 @@ public class ShopOrderOkFragment extends BaseFragment {
             @Override
             public void run() {
                 String result = FetchRequset();
+                Log.i("result------------>",result.toString());
                 if (result != null) {
                     try {
                         JSONObject jsonObject=new JSONObject(result);

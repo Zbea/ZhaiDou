@@ -186,15 +186,62 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             allOrderAdapter.setOnInViewClickListener(R.id.bt_logistics, new BaseListAdapter.onInternalClickListener() {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                    Order order = (Order) values;
+                    final Order order = (Order) values;
                     Log.i("v---------->", v.toString());
                     TextView textView = (TextView) v;
                     if (mContext.getResources().getString(R.string.order_logistics).equalsIgnoreCase(textView.getText().toString())) {
                         LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "");
                         ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
                     } else if (mContext.getResources().getString(R.string.order_return_money).equalsIgnoreCase(textView.getText().toString())) {
-                        AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(order.getOrderId() + "", "return_money");
-                        ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
+//                        AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(order.getOrderId() + "", "return_money");
+//                        ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
+                        final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
+
+                        View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
+                        TextView textView1 = (TextView) view.findViewById(R.id.tv_msg);
+                        textView1.setText("是否申请退款?");
+                        TextView cancelTv = (TextView) view.findViewById(R.id.cancelTv);
+                        cancelTv.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                        TextView okTv = (TextView) view.findViewById(R.id.okTv);
+                        okTv.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + order.getOrderId() + "/update_status?status=3", new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(JSONObject jsonObject) {
+                                        JSONObject orderObj = jsonObject.optJSONObject("order");
+                                        if (orderObj != null) {
+                                            String status = orderObj.optString("status");
+                                            order.setStatus(status);
+                                        }
+                                    }
+                                }, new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError volleyError) {
+
+                                    }
+                                }) {
+                                    @Override
+                                    public Map<String, String> getHeaders() throws AuthFailureError {
+                                        Map<String, String> headers = new HashMap<String, String>();
+                                        headers.put("SECAuthorization", token);
+                                        return headers;
+                                    }
+                                };
+                                mRequestQueue.add(request);
+                                dialog.dismiss();
+                            }
+                        });
+                        dialog.setCanceledOnTouchOutside(true);
+                        dialog.setCancelable(true);
+                        dialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                        dialog.show();
                     }
                 }
             });
@@ -392,7 +439,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                             JSONObject orderObj = orderArr.optJSONObject(i);
                             int id = orderObj.optInt("id");
                             String number = orderObj.optString("number");
-                            int amount = orderObj.optInt("amount");
+                            double amount = orderObj.optDouble("amount");
                             String status = orderObj.optString("status");
                             String status_ch = orderObj.optString("status_ch");
                             String created_at = orderObj.optString("created_at");

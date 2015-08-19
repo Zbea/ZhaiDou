@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -152,22 +153,22 @@ public class OrderUnPayFragment extends BaseFragment {
                     final TextView btn2 = (TextView) v.findViewById(R.id.bt_order_timer);
                     if (btn2.getTag() != null)
                         preTime = Long.parseLong(btn2.getTag().toString());
+                    Log.i("preTime----------->", preTime + "");
                     OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(), order);
                     ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
                     orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
                         @Override
                         public void onOrderStatusChange(Order o) {
                             long time = o.getOver_at();
+                            Log.i("time-------------->",time+"------------"+o.getStatus());
+                            order.setStatus(o.getStatus());
+                            order.setOver_at(o.getOver_at());
                             if (!isTimerStart) {
                                 timeStmp = preTime - time;
                                 Log.i("timeStmp----------->", timeStmp + "");
                                 timerMap.clear();
-                                order.setStatus(o.getStatus());
-                                order.setOver_at(o.getOver_at());
                             } else {
                                 btn2.setTag(o.getOver_at());
-                                order.setOver_at(o.getOver_at());
-                                order.setStatus(o.getStatus());
                             }
                         }
                     });
@@ -182,7 +183,7 @@ public class OrderUnPayFragment extends BaseFragment {
                         ShowToast(mContext.getResources().getString(R.string.order_had_order_time));
                         return;
                     }
-                    ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.getOrderId(), order.getAmount(), 0, order.getOver_at(), order,2);
+                    ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.getOrderId(), order.getAmount(), 0, order.getOver_at(), order, 2);
                     ((BaseActivity) getActivity()).navigationToFragment(shopPaymentFragment);
                 }
             });
@@ -199,6 +200,7 @@ public class OrderUnPayFragment extends BaseFragment {
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?status=0", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+                Log.i("FetchData----------->", jsonObject.toString());
                 if (mDialog != null)
                     mDialog.dismiss();
                 if (jsonObject != null) {
@@ -209,7 +211,7 @@ public class OrderUnPayFragment extends BaseFragment {
                             JSONObject orderObj = orderArr.optJSONObject(i);
                             int id = orderObj.optInt("id");
                             String number = orderObj.optString("number");
-                            int amount = orderObj.optInt("amount");
+                            double amount = orderObj.optDouble("amount");
                             String status = orderObj.optString("status");
                             String status_ch = orderObj.optString("status_ch");
                             String created_at = orderObj.optString("created_at");
@@ -264,6 +266,7 @@ public class OrderUnPayFragment extends BaseFragment {
             TextView mOrderStatus = ViewHolder.get(convertView, R.id.tv_order_status);
             TextView mTimerBtn = ViewHolder.get(convertView, R.id.bt_order_timer);
             ImageView mOrderImg = ViewHolder.get(convertView, R.id.iv_order_img);
+            RelativeLayout mBottomLayout = ViewHolder.get(convertView, R.id.rl_pay);
             Order item = orders.get(position);
             mOrderTime.setText(item.getCreated_at_for());
             mOrderNum.setText(item.getNumber());
@@ -277,28 +280,33 @@ public class OrderUnPayFragment extends BaseFragment {
             }
 
             long l = Long.parseLong(mTimerBtn.getTag() + "");
-            if (l > 0) {
-                if (timeStmp > 0 && timerMap != null && (timerMap.get(position) == null || !timerMap.get(position))) {
-                    Log.i("hhhhhhhh---->", "dasfafaf");
-                    l = l - timeStmp;
-                    mTimerBtn.setTag(l);
-                    item.setOver_at(l);
-                    timerMap.put(position, true);
+            if (("" + ZhaiDou.STATUS_UNPAY).equalsIgnoreCase(item.getStatus())){
+                if (l > 0) {
+                    if (timeStmp > 0 && timerMap != null && (timerMap.get(position) == null || !timerMap.get(position))) {
+                        Log.i("hhhhhhhh---->", "dasfafaf");
+                        l = l - timeStmp;
+                        mTimerBtn.setTag(l);
+                        item.setOver_at(l);
+                        timerMap.put(position, true);
+                    } else {
+                        mTimerBtn.setTag(Long.parseLong(mTimerBtn.getTag() + "") - 1);
+                        item.setOver_at(Long.parseLong(mTimerBtn.getTag() + "") - 1);
+                    }
+                    mTimerBtn.setText(String.format(getResources().getString(R.string.timer_start), new SimpleDateFormat("mm:ss").format(new Date(l * 1000))));
                 } else {
-                    mTimerBtn.setTag(Long.parseLong(mTimerBtn.getTag() + "") - 1);
-                    item.setOver_at(Long.parseLong(mTimerBtn.getTag() + "") - 1);
+                    mTimerBtn.setText(mContext.getResources().getString(R.string.timer_finish));
+                    mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
+                    mTimerBtn.setBackgroundResource(R.drawable.btn_no_click_selector);
+                    item.setStatus(ZhaiDou.STATUS_DEAL_CLOSE + "");
+                    //刷新代付款数量显示
+                    Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
+                    mContext.sendBroadcast(intent);
                 }
-
-                mTimerBtn.setText(String.format(getResources().getString(R.string.timer_start),new SimpleDateFormat("mm:ss").format(new Date(l * 1000))));
-            } else {
-                mTimerBtn.setText(mContext.getResources().getString(R.string.timer_finish));
+            }else {
                 mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
-                mTimerBtn.setBackgroundResource(R.drawable.btn_no_click_selector);
-                item.setStatus(ZhaiDou.STATUS_DEAL_CLOSE + "");
-                //刷新代付款数量显示
-                Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
-                mContext.sendBroadcast(intent);
+                mBottomLayout.setVisibility(View.GONE);
             }
+
             mHashMap.put(position, convertView);
             return convertView;
         }
@@ -329,7 +337,7 @@ public class OrderUnPayFragment extends BaseFragment {
                 timer = new MyTimer(15 * 60 * 1000, 1000);
             isTimerStart = true;
             timer.start();
-            Log.i("onResume--->timer.start();----------->","timer.start()---------->");
+            Log.i("onResume--->timer.start();----------->", "timer.start()---------->");
         }
         super.onResume();
     }
