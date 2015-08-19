@@ -155,7 +155,7 @@ public class CreatCartTools
         try
         {
             ContentValues values = new ContentValues();
-            values.put("isPublish", itm.isPublish);
+            values.put("isPublish", "true");
             String whereClause = "userId=? and sizeId=?";
             String[] whereArgs = new String[]{String.valueOf(itm.userId),String.valueOf(itm.sizeId)};
             sqLiteDatabase.update(CreatCartDB.SqlName, values, whereClause, whereArgs);
