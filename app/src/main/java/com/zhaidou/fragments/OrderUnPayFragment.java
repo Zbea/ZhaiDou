@@ -299,7 +299,7 @@ public class OrderUnPayFragment extends BaseFragment {
                 }
             }else {
                 mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
-                mBottomLayout.setVisibility(View.GONE                mBottomLayout.setVisibility(View.GONE);
+                mBottomLayout.setVisibility(View.GONE);
             }
 
             mHashMap.put(position, convertView);
