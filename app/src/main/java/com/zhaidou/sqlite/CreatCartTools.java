@@ -149,6 +149,7 @@ public class CreatCartTools
      */
     public static void editIsLoseByData(CreatCartDB cartDB,CartItem itm)
     {
+        ToolUtils.setLog(itm.isPublish);
         SQLiteDatabase sqLiteDatabase = cartDB.getReadableDatabase();
         sqLiteDatabase.beginTransaction();
         try
@@ -168,6 +169,7 @@ public class CreatCartTools
             sqLiteDatabase.endTransaction();
             sqLiteDatabase.close();
         }
+        ToolUtils.setLog("jdfkskfdsj");
     }
 
     /**

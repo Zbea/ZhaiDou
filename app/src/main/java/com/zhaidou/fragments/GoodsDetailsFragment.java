@@ -56,6 +56,7 @@ import com.zhaidou.adapter.SpecificationAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.dialog.CustomToastDialog;
 import com.zhaidou.model.CartItem;
 import com.zhaidou.model.CountTime;
 import com.zhaidou.model.GoodDetail;
@@ -955,51 +956,84 @@ public class GoodsDetailsFragment extends BaseFragment
 
     }
 
+    /**
+     * 判断商品是否库存不走
+     * @return true 库存足
+     */
+    private boolean isOver()
+    {
+        items=CreatCartTools.selectByAll(creatCartDB,userId);
+
+        for (int i = 0; i <items.size(); i++)
+        {
+            if (items.get(i).sizeId==mSpecification.getId())
+            {
+                if (mSpecification.num>=items.get(i).num+1)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     private void addCartGoods()
     {
         if (detail != null)
         {
             if (mSpecification != null)
             {
-                int[] location = new int[2];
-                mTipView.getLocationInWindow(location);
-                Drawable drawable = mTipView.getDrawable();
-                doAnim(drawable, location);
-
-                getGoodsItems();
-
-                CartItem cartItem = new CartItem();
-                cartItem.userId = userId;
-                cartItem.id = detail.getId();
-                cartItem.name = detail.getTitle();
-                cartItem.creatTime = System.currentTimeMillis();
-                if (detail.getImgs() != null)
+                if (isOver())
                 {
-                    cartItem.imageUrl = detail.getImgs().get(0);
+                    int[] location = new int[2];
+                    mTipView.getLocationInWindow(location);
+                    Drawable drawable = mTipView.getDrawable();
+                    doAnim(drawable, location);
+
+                    getGoodsItems();
+
+                    CartItem cartItem = new CartItem();
+                    cartItem.userId = userId;
+                    cartItem.id = detail.getId();
+                    cartItem.name = detail.getTitle();
+                    cartItem.creatTime = System.currentTimeMillis();
+                    if (detail.getImgs() != null)
+                    {
+                        cartItem.imageUrl = detail.getImgs().get(0);
+                    }
+                    cartItem.currentPrice = mSpecification.price;//规格的价格
+                    cartItem.formalPrice = mSpecification.oldPrice;
+                    DecimalFormat df = new DecimalFormat("###.00");
+                    double saveMoney = Double.parseDouble(df.format(mSpecification.oldPrice - mSpecification.price));
+                    cartItem.saveMoney = saveMoney;
+                    cartItem.saveTotalMoney = saveMoney;
+                    cartItem.totalMoney = detail.getPrice();
+                    cartItem.num = 1;
+                    cartItem.size = mSpecification.getTitle();
+                    cartItem.sizeId = mSpecification.getId();
+                    cartItem.isPublish = "false";
+                    cartItem.isOver = "false";
+                    if (flags == 1)//是否零元特卖
+                    {
+                        cartItem.isOSale = "true";
+                    } else
+                    {
+                        cartItem.isOSale = "false";
+                    }
+                    CreatCartTools.insertByData(creatCartDB, items, cartItem);
+
+                    Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
+                    mContext.sendBroadcast(intent);
                 }
-                cartItem.currentPrice = mSpecification.price;//规格的价格
-                cartItem.formalPrice = mSpecification.oldPrice;
-                DecimalFormat df = new DecimalFormat("##.0");
-                double saveMoney = Double.parseDouble(df.format(mSpecification.oldPrice - mSpecification.price));
-                cartItem.saveMoney = saveMoney;
-                cartItem.saveTotalMoney = saveMoney;
-                cartItem.totalMoney = detail.getPrice();
-                cartItem.num = 1;
-                cartItem.size = mSpecification.getTitle();
-                cartItem.sizeId = mSpecification.getId();
-                cartItem.isPublish = "false";
-                cartItem.isOver = "false";
-                if (flags == 1)//是否零元特卖
+                else
                 {
-                    cartItem.isOSale = "true";
-                } else
-                {
-                    cartItem.isOSale = "false";
+                    CustomToastDialog.setToastDialog(mContext, "抱歉,商品数量不足,请勿继续添加");
                 }
-                CreatCartTools.insertByData(creatCartDB, items, cartItem);
 
-                Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
-                mContext.sendBroadcast(intent);
             } else
             {
                 scrollView.scrollTo(0, 600);
@@ -1031,7 +1065,7 @@ public class GoodsDetailsFragment extends BaseFragment
             for (String url : urls)
             {
                 ImageView imageView = new ImageView(mContext);
-                imageView.setImageResource(R.drawable.icon_loading_goods);
+                imageView.setImageResource(R.drawable.icon_loading_defalut);
                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                 imageView.setBackgroundColor(Color.parseColor("#ffffff"));
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
