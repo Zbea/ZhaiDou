@@ -275,7 +275,6 @@ public class OrderUnReceiveFragment extends BaseFragment {
         });
     }
 
-
     private void FetchReceiveData() {
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?status=1,4", new Response.Listener<JSONObject>() {
             @Override
