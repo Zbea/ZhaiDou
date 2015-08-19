@@ -545,6 +545,7 @@ public class ShopOrderOkFragment extends BaseFragment
             public void run()
             {
                 String result = FetchRequset();
+                Log.i("commit----------->",result);
                 if (result != null)
                 {
                     try
@@ -566,7 +567,7 @@ public class ShopOrderOkFragment extends BaseFragment
                         }
                         if (status == 400)
                         {
-                            String errorArr = jsonObject.optString("order_items.count");
+                            String errorArr = jsonObject.optJSONObject("message").optString("order_items.count");
                             if (errorArr.length() > 3)
                             {
                                 Message message = new Message();
@@ -575,7 +576,7 @@ public class ShopOrderOkFragment extends BaseFragment
                                 handler.sendMessage(message);
                             }
 
-                            String errorTimeArr = jsonObject.optString("order_items.time");
+                            String errorTimeArr = jsonObject.optJSONObject("message").optString("order_items.time");
                             if (errorTimeArr.length() > 3)
                             {
                                 Message message = new Message();

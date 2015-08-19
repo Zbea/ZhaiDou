@@ -209,7 +209,7 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                 final Address address = (Address) values;
                 int id = address.getId();
                 mDialog=CustomLoadingDialog.setLoadingDialog(getActivity(),"删除中");
-                String url = "http://192.168.199.173/special_mall/api/receivers/" + id;
+                String url =ZhaiDou.ORDER_RECEIVER_URL+ id;
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
@@ -235,7 +235,7 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                     public void onErrorResponse(VolleyError volleyError) {
                         if (mDialog!=null)
                             mDialog.dismiss();
-                        ShowToast("网络异常");
+                        ShowToast("加载失败");
                     }
                 }) {
                     @Override
@@ -355,7 +355,7 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
                 if (!TextUtils.isEmpty(token))
-                    headers.put("SECAuthorization", "Yk77mfWaq_xYyeEibAxx");
+                    headers.put("SECAuthorization",token);
                 return headers;
             }
         };
