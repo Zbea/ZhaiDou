@@ -64,7 +64,8 @@ import java.util.Map;
 /**
  * Created by roy on 15/7/24.
  */
-public class ShopOrderOkFragment extends BaseFragment {
+public class ShopOrderOkFragment extends BaseFragment
+{
     private static final String PAGE = "page";
     private static final String INDEX = "index";
 
@@ -83,7 +84,7 @@ public class ShopOrderOkFragment extends BaseFragment {
     private TypeFaceTextView moneyTv, moneyYfTv, moneyTotalTv, moneyNumTv;
     private TextView addressNameTv, addressPhoneTv, addressinfoTv;
     private ArrayList<CartItem> items;
-    private List<CartItem> erroritems=new ArrayList<CartItem>();
+    private List<CartItem> erroritems = new ArrayList<CartItem>();
     private List<Address> addressList = new ArrayList<Address>();
     private String Str_token;
 
@@ -103,12 +104,15 @@ public class ShopOrderOkFragment extends BaseFragment {
     private CreatCartDB creatCartDB;
     private String token;
     private int userId;
-    private int flags=0;//1代表零元特卖的立即购买
+    private int flags = 0;//1代表零元特卖的立即购买
 
-    private Handler handler = new Handler() {
+    private Handler handler = new Handler()
+    {
         @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
+        public void handleMessage(Message msg)
+        {
+            switch (msg.what)
+            {
                 case UPDATE_DEFALUE_ADDRESS_INFO:
                     mDialog.dismiss();
 
@@ -135,13 +139,14 @@ public class ShopOrderOkFragment extends BaseFragment {
                 case 4:
                     mDialog.dismiss();
 
-                    for (int i = 0; i < items.size(); i++) {
+                    for (int i = 0; i < items.size(); i++)
+                    {
                         CreatCartTools.deleteByData(creatCartDB, items.get(i));
                     }
 
-                    if(isljOsale)//清除购物车中的零元特卖
+                    if (isljOsale)//清除购物车中的零元特卖
                     {
-                        List<CartItem> itemsAll=CreatCartTools.selectByAll(creatCartDB,userId);
+                        List<CartItem> itemsAll = CreatCartTools.selectByAll(creatCartDB, userId);
                         for (int i = 0; i < itemsAll.size(); i++)
                         {
                             if (itemsAll.get(i).isOSale.equals("true"))
@@ -158,19 +163,21 @@ public class ShopOrderOkFragment extends BaseFragment {
                     ((MainActivity) getActivity()).popToStack(ShopOrderOkFragment.this);
 
                     String result = (String) msg.obj;
-                    try {
+                    try
+                    {
                         JSONObject jsonObject = new JSONObject(result);
                         JSONObject orderObj = jsonObject.optJSONObject("order");
                         int orderId = orderObj.optInt("id");
                         int amount = orderObj.optInt("amount");
                         int fare = moneyYF;
-                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId, amount, fare,15*60,null,1);
+                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId, amount, fare, 15 * 60, null, 1);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
 //                        Intent intent1=new Intent(getActivity(), PayDemoActivity.class);
 //                        intent1.putExtra("id",orderId);
 //                        intent1.putExtra("amount",amount);
 //                        startAnimActivity(intent1);
-                    } catch (Exception e) {
+                    } catch (Exception e)
+                    {
 
                     }
                     break;
@@ -179,81 +186,102 @@ public class ShopOrderOkFragment extends BaseFragment {
                     {
                         mDialog.dismiss();
                         Toast.makeText(mContext, "抱歉,您已经购买过零元特卖商品,今天已经不能购买", Toast.LENGTH_LONG).show();
-                    }
-                    else {
+                    } else
+                    {
                         commit();
                     }
                     break;
                 case 6:
                     mDialog.dismiss();
-                    String json=msg.obj.toString();
-                    String[] arrayStr =new String[]{};
-                    arrayStr=json.split(",");
+                    String json = msg.obj.toString();
+                    String[] arrayStr = new String[]{};
+                    arrayStr = json.split(",");
 
-                    for (int i = 0; i <items.size() ; i++)
+                    for (int i = 0; i < items.size(); i++)
                     {
-                        if (items.get(i).sizeId==Integer.valueOf(arrayStr[1]))
+                        if (items.get(i).sizeId == Integer.valueOf(arrayStr[1]))
                         {
-                            ToolUtils.setToast(mContext,items.get(i).name+"的"+items.get(i).size+"规格库存不足");
+                            ToolUtils.setToast(mContext, items.get(i).name + "的" + items.get(i).size + "规格库存不足");
                         }
                     }
                     break;
                 case 7:
                     mDialog.dismiss();
-                    String goodsbuy=msg.obj.toString();
-                    ToolUtils.setToast(mContext,goodsbuy);
+                    String goodsbuy = msg.obj.toString();
+                    ToolUtils.setToast(mContext, goodsbuy);
+                    break;
+                case 8:
+                    mDialog.dismiss();
+                    String publish = msg.obj.toString();
+                    String[] publishStr = new String[]{};
+                    publishStr = publish.split(",");
+
+                    for (int i = 0; i < items.size(); i++)
+                    {
+                        if (items.get(i).sizeId == Integer.valueOf(publishStr[1]))
+                        {
+                            ToolUtils.setToast(mContext, items.get(i).name +  "的活动已经下架");
+                        }
+                    }
                     break;
             }
         }
     };
 
 
-    private TextWatcher textWatcher = new TextWatcher() {
+    private TextWatcher textWatcher = new TextWatcher()
+    {
         @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+        public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3)
+        {
         }
 
         @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+        public void onTextChanged(CharSequence charSequence, int i, int i2, int i3)
+        {
             bzInfo_Str = charSequence.toString();
         }
 
         @Override
-        public void afterTextChanged(Editable editable) {
+        public void afterTextChanged(Editable editable)
+        {
         }
     };
 
     /**
      * 点击事件
      */
-    private View.OnClickListener onClickListener = new View.OnClickListener() {
+    private View.OnClickListener onClickListener = new View.OnClickListener()
+    {
         @Override
-        public void onClick(View view) {
-            switch (view.getId()) {
+        public void onClick(View view)
+        {
+            switch (view.getId())
+            {
                 case R.id.back_btn:
                     ((MainActivity) getActivity()).popToStack(ShopOrderOkFragment.this);
                     break;
 
                 case R.id.jsOkBtn:
-                    if (address!=null)
+                    if (address != null)
                     {
-                        mDialog=CustomLoadingDialog.setLoadingDialog(mContext,"提交中");
-                        for (int i = 0; i <items.size(); i++)
+                        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "提交中");
+                        for (int i = 0; i < items.size(); i++)
                         {
                             if (items.get(i).isOSale.equals("true"))
                             {
-                                isOSale=true;
+                                isOSale = true;
                             }
                         }
                         if (isOSale)
                         {
                             FetchOSaleData(5);//判断零元特卖是否已经当天购买过
-                        }
-                        else
+                        } else
                         {
                             commit();
                         }
-                    } else {
+                    } else
+                    {
                         ToolUtils.setToast(mContext, "抱歉,您未填写收货地址");
                     }
 
@@ -261,9 +289,11 @@ public class ShopOrderOkFragment extends BaseFragment {
                 case R.id.jsEditAddressBtn:
                     AddrSelectFragment addrManageFragment = AddrSelectFragment.newInstance("", STATUS_FROM_ORDER, address);
                     ((MainActivity) getActivity()).navigationToFragment(addrManageFragment);
-                    addrManageFragment.setAddressListener(new AddrSelectFragment.AddressListener() {
+                    addrManageFragment.setAddressListener(new AddrSelectFragment.AddressListener()
+                    {
                         @Override
-                        public void onDefalueAddressChange(Address maddress) {
+                        public void onDefalueAddressChange(Address maddress)
+                        {
                             ToolUtils.setLog(maddress.toString());
                             address = maddress;
                             setYFMoney(address);
@@ -273,7 +303,8 @@ public class ShopOrderOkFragment extends BaseFragment {
                         }
 
                         @Override
-                        public void onDeleteFinishAddress() {
+                        public void onDeleteFinishAddress()
+                        {
                             orderAddressInfoLine.setVisibility(View.GONE);
                             orderAddressNullLine.setVisibility(View.VISIBLE);
                             orderAddressEditLine.setVisibility(View.GONE);
@@ -284,9 +315,10 @@ public class ShopOrderOkFragment extends BaseFragment {
 
                     final NewAddrFragment newAddrFragment = NewAddrFragment.newInstance(0, "", "", "", "", 0, 2);
                     ((MainActivity) getActivity()).navigationToFragment(newAddrFragment);
-                    newAddrFragment.setAddrSaveSuccessListener(new NewAddrFragment.AddrSaveSuccessListener() {
+                    newAddrFragment.setAddrSaveSuccessListener(new NewAddrFragment.AddrSaveSuccessListener()
+                    {
                         @Override
-                        public void onSaveListener(JSONObject receiver, int status,int yfprice,String province, String city, String area)
+                        public void onSaveListener(JSONObject receiver, int status, int yfprice, String province, String city, String area)
                         {
                             int id = receiver.optInt("id");
                             int user_id = receiver.optInt("user_id");
@@ -295,18 +327,18 @@ public class ShopOrderOkFragment extends BaseFragment {
                             int provider_id = receiver.optInt("provider_id");
                             String addresss = receiver.optString("address");
                             boolean is_default = receiver.optBoolean("is_default");
-                            Address addr = new Address(id, name, is_default, phone, user_id, addresss, provider_id,yfprice);
+                            Address addr = new Address(id, name, is_default, phone, user_id, addresss, provider_id, yfprice);
                             addr.setProvince(province);
                             addr.setCity(city);
                             addr.setArea(area);
-                            address=addr;
+                            address = addr;
                             setYFMoney(addr);
                             orderAddressInfoLine.setVisibility(View.VISIBLE);
                             orderAddressNullLine.setVisibility(View.GONE);
                             orderAddressEditLine.setVisibility(View.VISIBLE);
                             addressPhoneTv.setText("收件人：" + addr.getPhone());
                             addressNameTv.setText("电话：" + addr.getName());
-                            addressinfoTv.setText(address.getProvince()+address.getCity()+address.getArea()+addr.getAddress());
+                            addressinfoTv.setText(address.getProvince() + address.getCity() + address.getArea() + addr.getAddress());
                             ((MainActivity) getActivity()).popToStack(newAddrFragment);
                         }
                     });
@@ -316,7 +348,8 @@ public class ShopOrderOkFragment extends BaseFragment {
     };
 
 
-    public static ShopOrderOkFragment newInstance(String page, int index) {
+    public static ShopOrderOkFragment newInstance(String page, int index)
+    {
         ShopOrderOkFragment fragment = new ShopOrderOkFragment();
         Bundle args = new Bundle();
         args.putString(PAGE, page);
@@ -325,13 +358,16 @@ public class ShopOrderOkFragment extends BaseFragment {
         return fragment;
     }
 
-    public ShopOrderOkFragment() {
+    public ShopOrderOkFragment()
+    {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        if (getArguments() != null)
+        {
             mPage = getArguments().getString(PAGE);
             mIndex = getArguments().getInt(INDEX);
             flags = getArguments().getInt("flags");
@@ -341,14 +377,17 @@ public class ShopOrderOkFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        if (mView == null) {
+                             Bundle savedInstanceState)
+    {
+        if (mView == null)
+        {
             mView = inflater.inflate(R.layout.shop_settlement_page, container, false);
             mContext = getActivity();
             initView();
         }
         ViewGroup parent = (ViewGroup) mView.getParent();
-        if (parent != null) {
+        if (parent != null)
+        {
             parent.removeView(mView);
         }
 
@@ -358,7 +397,8 @@ public class ShopOrderOkFragment extends BaseFragment {
     /**
      * 初始化数据
      */
-    private void initView() {
+    private void initView()
+    {
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
 
         mRequestQueue = Volley.newRequestQueue(getActivity());
@@ -370,9 +410,9 @@ public class ShopOrderOkFragment extends BaseFragment {
         okBtn = (Button) mView.findViewById(R.id.jsOkBtn);
         okBtn.setOnClickListener(onClickListener);
 
-        if (flags==1)
+        if (flags == 1)
         {
-            isljOsale=true;
+            isljOsale = true;
         }
         moneyTv = (TypeFaceTextView) mView.findViewById(R.id.jsPriceTotalTv);
         moneyYfTv = (TypeFaceTextView) mView.findViewById(R.id.jsPriceYfTv);
@@ -407,13 +447,14 @@ public class ShopOrderOkFragment extends BaseFragment {
     /**
      * 设置运费
      */
-    private void setYFMoney(Address area) {
+    private void setYFMoney(Address area)
+    {
         moneyYF = area.getPrice();
         moneyYfTv.setText("￥" + moneyYF);
 
         ToolUtils.setLog("运费：" + area.getPrice());
 
-        DecimalFormat df = new DecimalFormat("##.0");
+        DecimalFormat df = new DecimalFormat("###.00");
         totalMoney = Double.parseDouble(df.format(money + moneyYF));
         moneyTotalTv.setText("￥" + totalMoney);
     }
@@ -421,19 +462,22 @@ public class ShopOrderOkFragment extends BaseFragment {
     /**
      * 设置商品信息
      */
-    private void initData() {
-        if (items.size() > 0) {
+    private void initData()
+    {
+        if (items.size() > 0)
+        {
             addGoodsView();
         }
 
-        for (int i = 0; i < items.size(); i++) {
+        for (int i = 0; i < items.size(); i++)
+        {
             CartItem cartItem = items.get(i);
             num = num + cartItem.num;
             money = money + cartItem.num * cartItem.currentPrice;
         }
         moneyNumTv.setText("" + num);
 
-        DecimalFormat df = new DecimalFormat("##.0");
+        DecimalFormat df = new DecimalFormat("###.00");
         money = Double.parseDouble(df.format(money));
         totalMoney = Double.parseDouble(df.format(money + 0));
         moneyTv.setText("￥" + money);
@@ -447,9 +491,11 @@ public class ShopOrderOkFragment extends BaseFragment {
     /**
      * 添加商品集合
      */
-    private void addGoodsView() {
+    private void addGoodsView()
+    {
         orderGoodsListLine.removeAllViews();
-        for (int position = 0; position < items.size(); position++) {
+        for (int position = 0; position < items.size(); position++)
+        {
             View childeView = LayoutInflater.from(mContext).inflate(R.layout.shop_settlement_goods_item, null);
             TypeFaceTextView itemName = (TypeFaceTextView) childeView.findViewById(R.id.orderItemNameTv);
             TypeFaceTextView itemSize = (TypeFaceTextView) childeView.findViewById(R.id.orderItemSizeTv);
@@ -459,14 +505,18 @@ public class ShopOrderOkFragment extends BaseFragment {
             ImageView itemImage = (ImageView) childeView.findViewById(R.id.orderImageItemTv);
             ImageView itemLine = (ImageView) childeView.findViewById(R.id.orderItemLine);
 
-            if (items.size() > 1) {
-                if (position == items.size() - 1) {
+            if (items.size() > 1)
+            {
+                if (position == items.size() - 1)
+                {
                     itemLine.setVisibility(View.GONE);
                 }
-                if (position == 0) {
+                if (position == 0)
+                {
                     itemLine.setVisibility(View.VISIBLE);
                 }
-            } else {
+            } else
+            {
                 itemLine.setVisibility(View.GONE);
             }
 
@@ -487,74 +537,81 @@ public class ShopOrderOkFragment extends BaseFragment {
     /**
      * 提交订单接口
      */
-    private void commit() {
-        new Thread(new Runnable() {
+    private void commit()
+    {
+        new Thread(new Runnable()
+        {
             @Override
-            public void run() {
+            public void run()
+            {
                 String result = FetchRequset();
-                if (result != null) {
-                    try {
-                        JSONObject jsonObject=new JSONObject(result);
-                        int status=jsonObject.optInt("status");
-                        if (status==201)
-                        {
-                            JSONObject orderObj=jsonObject.optJSONObject("order");
-                            int id=orderObj.optInt("id");
-                            String number=orderObj.optString("number");
-                            int amount=orderObj.optInt("amount");
-                            int count =orderObj.optInt("count");
-
-                            Message message=new Message();
-                            message.what=4;
-                            message.obj=result;
-                            handler.sendMessage(message);
-                        }
-                        if (status==400)
-                        {
-                            String errorArr=jsonObject.optString("order_items.count");
-                            if (errorArr.length()>3)
-                            {
-                                Message message=new Message();
-                                message.what=6;
-                                message.obj=errorArr;
-                                handler.sendMessage(message);
-                            }
-
-                            String errorTimeArr=jsonObject.optString("order_items.time");
-                            if (errorTimeArr.length()>3)
-                            {
-                                Message message=new Message();
-                                message.what=8;
-                                message.obj=errorTimeArr;
-                                handler.sendMessage(message);
-                            }
-                        }
-                        if (status==401)
-                        {
-                            String errorArr=jsonObject.optString("message");
-                            Message message=new Message();
-                            message.what=7;
-                            message.obj=errorArr;
-                            handler.sendMessage(message);
-                        }
-
-                    }catch (Exception e){
-                    }
-
-
-                    } else
+                if (result != null)
+                {
+                    try
                     {
-                        handler.sendEmptyMessage(3);
+                        JSONObject jsonObject = new JSONObject(result);
+                        int status = jsonObject.optInt("status");
+                        if (status == 201)
+                        {
+                            JSONObject orderObj = jsonObject.optJSONObject("order");
+                            int id = orderObj.optInt("id");
+                            String number = orderObj.optString("number");
+                            int amount = orderObj.optInt("amount");
+                            int count = orderObj.optInt("count");
+
+                            Message message = new Message();
+                            message.what = 4;
+                            message.obj = result;
+                            handler.sendMessage(message);
+                        }
+                        if (status == 400)
+                        {
+                            String errorArr = jsonObject.optString("order_items.count");
+                            if (errorArr.length() > 3)
+                            {
+                                Message message = new Message();
+                                message.what = 6;
+                                message.obj = errorArr;
+                                handler.sendMessage(message);
+                            }
+
+                            String errorTimeArr = jsonObject.optString("order_items.time");
+                            if (errorTimeArr.length() > 3)
+                            {
+                                Message message = new Message();
+                                message.what = 8;
+                                message.obj = errorTimeArr;
+                                handler.sendMessage(message);
+                            }
+                        }
+                        if (status == 401)
+                        {
+                            String errorArr = jsonObject.optString("message");
+                            Message message = new Message();
+                            message.what = 7;
+                            message.obj = errorArr;
+                            handler.sendMessage(message);
+                        }
+
+                    } catch (Exception e)
+                    {
                     }
+
+                } else
+                {
+                    handler.sendEmptyMessage(3);
+                }
             }
         }).start();
 
     }
 
-    private String FetchRequset() {
+    private String FetchRequset()
+    {
         String result = null;
         BufferedReader in = null;
-        try {
+        try
+        {
             // 定义HttpClient
             HttpClient client = new DefaultHttpClient();
 
@@ -567,7 +624,8 @@ public class ShopOrderOkFragment extends BaseFragment {
             params.add(new BasicNameValuePair("sale_order[receiver_id]", "" + address.getId()));
 
             params.add(new BasicNameValuePair("sale_order[node]", bzInfo_Str));
-            for (int i = 0; i < items.size(); i++) {
+            for (int i = 0; i < items.size(); i++)
+            {
                 params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][merchandise_id]]", items.get(i).id + ""));
                 params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][specification_id]]", items.get(i).sizeId + ""));
                 params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][count]]", items.get(i).num + ""));
@@ -586,21 +644,26 @@ public class ShopOrderOkFragment extends BaseFragment {
             StringBuffer sb = new StringBuffer("");
             String line = "";
             String NL = System.getProperty("line.separator");
-            while ((line = in.readLine()) != null) {
+            while ((line = in.readLine()) != null)
+            {
                 sb.append(line + NL);
             }
             in.close();
             result = sb.toString();
-            Log.i("result------------>", result.toString());
             return result;
 
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
 
-        } finally {
-            if (in != null) {
-                try {
+        } finally
+        {
+            if (in != null)
+            {
+                try
+                {
                     in.close();
-                } catch (Exception e) {
+                } catch (Exception e)
+                {
                     e.printStackTrace();
                 }
             }
@@ -611,15 +674,21 @@ public class ShopOrderOkFragment extends BaseFragment {
     /**
      * 请求收货地址信息
      */
-    private void FetchAddressData() {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_RECEIVER_URL, new Response.Listener<JSONObject>() {
+    private void FetchAddressData()
+    {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_RECEIVER_URL, new Response.Listener<JSONObject>()
+        {
             @Override
-            public void onResponse(JSONObject jsonObject) {
+            public void onResponse(JSONObject jsonObject)
+            {
                 ToolUtils.setLog(jsonObject.toString());
-                if (jsonObject != null) {
+                if (jsonObject != null)
+                {
                     JSONArray receivers = jsonObject.optJSONArray("receivers");
-                    if (receivers != null && receivers.length() > 0) {
-                        for (int i = 0; i < receivers.length(); i++) {
+                    if (receivers != null && receivers.length() > 0)
+                    {
+                        for (int i = 0; i < receivers.length(); i++)
+                        {
                             JSONObject receiver = receivers.optJSONObject(i);
                             int id = receiver.optInt("id");
                             int user_id = receiver.optInt("user_id");
@@ -642,20 +711,25 @@ public class ShopOrderOkFragment extends BaseFragment {
                         message.what = UPDATE_DEFALUE_ADDRESS_INFO;
                         message.obj = addressList;
                         handler.sendMessage(message);
-                    } else {
+                    } else
+                    {
                         handler.sendEmptyMessage(2);
                     }
                 }
             }
-        }, new Response.ErrorListener() {
+        }, new Response.ErrorListener()
+        {
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
+            public void onErrorResponse(VolleyError volleyError)
+            {
                 mDialog.dismiss();
                 ShowToast("加载失败");
             }
-        }) {
+        })
+        {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("SECAuthorization", token);
                 return headers;
@@ -667,31 +741,40 @@ public class ShopOrderOkFragment extends BaseFragment {
     /**
      * 零元特卖是否购买请求
      */
-    public void FetchOSaleData(final int i) {
+    public void FetchOSaleData(final int i)
+    {
         String url = ZhaiDou.orderCheckOSaleUrl;
         Log.i("url---------------------->", url);
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
             @Override
-            public void onResponse(JSONObject jsonObject) {
+            public void onResponse(JSONObject jsonObject)
+            {
 
-                if (jsonObject != null) {
+                if (jsonObject != null)
+                {
                     isOSaleBuy = jsonObject.optBoolean("flag");
                     Log.i("isOSaleBuy---------------------->", "" + isOSaleBuy);
                 }
-                if (i == 5) {
+                if (i == 5)
+                {
                     handler.sendEmptyMessage(5);
                 }
             }
-        }, new Response.ErrorListener() {
+        }, new Response.ErrorListener()
+        {
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
+            public void onErrorResponse(VolleyError volleyError)
+            {
                 if (mDialog != null)
                     mDialog.dismiss();
                 Toast.makeText(getActivity(), "抱歉,请求失败", Toast.LENGTH_SHORT).show();
             }
-        }) {
+        })
+        {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("SECAuthorization", token);
                 return headers;

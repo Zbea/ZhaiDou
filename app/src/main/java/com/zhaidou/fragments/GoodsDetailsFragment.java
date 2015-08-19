@@ -565,7 +565,6 @@ public class GoodsDetailsFragment extends BaseFragment
             setAddOrBuyShow("此商品已下架");
         }
 
-        mView.findViewById(R.id.shopping_cart).setOnClickListener(onClickListener);
         tv_comment = (TextView) mView.findViewById(R.id.tv_comment);
         mCurrentPrice = (TextView) mView.findViewById(R.id.goodsCurrentPrice);
         mOldPrice = (TextView) mView.findViewById(R.id.goodsFormerPrice);
@@ -1022,7 +1021,7 @@ public class GoodsDetailsFragment extends BaseFragment
             {
                 ImageView imageView = new ImageView(mContext);
                 imageView.setImageResource(R.drawable.icon_loading_goods);
-                imageView.setScaleType(ImageView.ScaleType.CENTER);
+                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                 imageView.setBackgroundColor(Color.parseColor("#ffffff"));
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 imageView.setLayoutParams(params);
@@ -1174,7 +1173,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     mDialog.dismiss();
                 nullView.setVisibility(View.VISIBLE);
                 nullNetView.setVisibility(View.GONE);
-                Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "加载失败", Toast.LENGTH_SHORT).show();
             }
         });
         mRequestQueue.add(request);
