@@ -470,6 +470,7 @@ public class OrderDetailFragment extends BaseFragment {
                                 String status_ch = orderObj.optString("status_ch");
                                 String number = orderObj.optString("number");
                                 Order order = new Order(id, number, amount, status1, status_ch, created_at_for, created_at, "", 0);
+                                order.setOver_at(mOrder.getOver_at());
                                 if (orderListener != null)
                                     orderListener.onOrderStatusChange(order);
                                 ((MainActivity) getActivity()).popToStack(OrderDetailFragment.this);

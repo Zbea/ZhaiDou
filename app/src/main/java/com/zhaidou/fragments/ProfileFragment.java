@@ -269,13 +269,13 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             case R.id.ll_add_v:
                 break;
             case R.id.rl_nickname:
-                EditProfileFragment profileFragment = EditProfileFragment.newInstance("nick_name", tv_nick.getText().toString(), profileId, "个人昵称");
+                EditProfileFragment profileFragment = EditProfileFragment.newInstance("nick_name", tv_nick.getText().toString().trim(), profileId, "个人昵称");
                 profileFragment.setRefreshDataListener(this);
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container, profileFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
                 break;
             case R.id.rl_mobile:
-                EditProfileFragment mobileFragment = EditProfileFragment.newInstance("mobile", tv_mobile.getText().toString(), profileId, "手机号码");
+                EditProfileFragment mobileFragment = EditProfileFragment.newInstance("mobile", tv_mobile.getText().toString().trim(), profileId, "手机号码");
                 mobileFragment.setRefreshDataListener(this);
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container, mobileFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
@@ -309,7 +309,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 new DeleteAddressTask().execute();
                 break;
             case R.id.rl_into:
-                EditProfileFragment introFragment = EditProfileFragment.newInstance("description", tv_intro.getText().toString(), profileId, "个人简介");
+                EditProfileFragment introFragment = EditProfileFragment.newInstance("description", tv_intro.getText().toString().trim(), profileId, "个人简介");
                 introFragment.setRefreshDataListener(this);
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container, introFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);

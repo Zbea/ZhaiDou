@@ -169,10 +169,10 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
         switch (view.getId()) {
             case R.id.tv_save:
                 hideInputMethod();
-                String name = et_name.getText().toString();
-                String mobile = et_mobile.getText().toString();
-                String location = et_location.getText().toString();
-                String address = et_address_detail.getText().toString();
+                String name = et_name.getText().toString().trim();
+                String mobile = et_mobile.getText().toString().trim();
+                String location = et_location.getText().toString().trim();
+                String address = et_address_detail.getText().toString().trim();
                 if (TextUtils.isEmpty(name)) {
                     Toast.makeText(getActivity(), "收货人信息不能为空", Toast.LENGTH_SHORT).show();
                     return;

@@ -183,6 +183,10 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
                 tv_edit_msg.setText("");
                 break;
             case R.id.tv_done:
+                if (TextUtils.isEmpty(tv_edit_msg.getText().toString().trim())){
+                    ShowToast(mTitle+"不能为空");
+                    return;
+                }
                 hideInputMethod();
                 new MyTask().execute(mParam1,mParam2,mProfileId);
                 break;
@@ -246,11 +250,11 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
 
             parameters.add(new BasicNameValuePair("_method","PUT"));
             if ("description".equalsIgnoreCase(type)){
-                String old = tv_description.getText().toString();
+                String old = tv_description.getText().toString().trim();
                 String newStr = new String(old.getBytes("UTF-8"));
                 parameters.add(new BasicNameValuePair("profile["+type+"]",newStr));
             }else {
-                String old = tv_edit_msg.getText().toString();
+                String old = tv_edit_msg.getText().toString().trim();
                 String newStr = new String(old.getBytes("UTF-8"));
                 parameters.add(new BasicNameValuePair("profile["+type+"]",newStr));
             }
