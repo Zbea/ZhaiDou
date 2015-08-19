@@ -32,6 +32,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.dialog.CustomToastDialog;
 import com.zhaidou.model.Address;
 import com.zhaidou.model.CartItem;
 import com.zhaidou.sqlite.CreatCartDB;
@@ -185,7 +186,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     if (isOSaleBuy)
                     {
                         mDialog.dismiss();
-                        Toast.makeText(mContext, "抱歉,您已经购买过零元特卖商品,今天已经不能购买", Toast.LENGTH_LONG).show();
+                        CustomToastDialog.setToastDialog(mContext, "抱歉,您已经购买过零元特卖商品,今天已经不能购买");
                     } else
                     {
                         commit();
@@ -201,7 +202,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     {
                         if (items.get(i).sizeId == Integer.valueOf(arrayStr[1]))
                         {
-                            ToolUtils.setToast(mContext, items.get(i).name + "的" + items.get(i).size + "规格库存不足");
+                            CustomToastDialog.setToastDialog(mContext, items.get(i).name + "的" + items.get(i).size + "规格库存不足");
                         }
                     }
                     break;
@@ -220,7 +221,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     {
                         if (items.get(i).sizeId == Integer.valueOf(publishStr[1]))
                         {
-                            ToolUtils.setToast(mContext, items.get(i).name +  "的活动已经下架");
+                            CustomToastDialog.setToastDialog(mContext, items.get(i).name +  "的活动已经下架");
                         }
                     }
                     break;

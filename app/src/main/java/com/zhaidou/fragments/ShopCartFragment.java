@@ -42,6 +42,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.dialog.CustomShopCartDeleteDialog;
+import com.zhaidou.dialog.CustomToastDialog;
 import com.zhaidou.model.CartItem;
 import com.zhaidou.model.GoodDetail;
 import com.zhaidou.model.ShopSpecialItem;
@@ -158,14 +159,14 @@ public class ShopCartFragment extends BaseFragment
                                 textNumView.setText("" + mCartItem.num);
                             } else
                             {
-                                Toast.makeText(mContext,"库存不足,商品只剩"+count+"件",Toast.LENGTH_SHORT).show();
+                                CustomToastDialog.setToastDialog(mContext, "库存不足,商品只剩"+count+"件");
                             }
 
                         } else
                         {
                             if (count <mCartItem.num)
                             {
-                                Toast.makeText(mContext,"抱歉,该商品只剩"+count+"件,请及时更新购物车",Toast.LENGTH_SHORT).show();
+                                CustomToastDialog.setToastDialog(mContext, "抱歉,该商品只剩"+count+"件,及时更新购物车");
                             }
                             mCartItem.num = mCartItem.num - 1;
                             CreatCartTools.editNumByData(creatCartDB, mCartItem);
@@ -389,18 +390,17 @@ public class ShopCartFragment extends BaseFragment
                         {
                             ToolUtils.setLog("修改是否下架");
                             CreatCartTools.editIsLoseByData(creatCartDB, itemServer);//修改本地数据
-                            sendBroadCastEditAll();
                         }
                         if (itemServer.isOver.equals("true"))
                         {
                             ToolUtils.setLog("修改是否卖光");
                             CreatCartTools.editIsOverByData(creatCartDB, itemServer);//修改本地数据
-                            sendBroadCastEditAll();
                         }
                     }
                 }
             }
         }
+        sendBroadCastEditAll();
         addCartGoods();
 
     }
@@ -643,8 +643,8 @@ public class ShopCartFragment extends BaseFragment
                             obj = jsonArray.optJSONObject(i);
                             int id = obj.optInt("id");
                             String name = obj.optString("title");
-                            String isPublish = obj.optBoolean("is_publish") ==false? "true" : "false";
-//                            String isPublish ="true";
+//                            String isPublish = obj.optBoolean("is_publish") ==false? "true" : "false";
+                            String isPublish ="true";
                             JSONArray array = obj.optJSONArray("specifications");
                             for (int j = 0; j < array.length(); j++)
                             {
@@ -685,7 +685,7 @@ public class ShopCartFragment extends BaseFragment
             public void onErrorResponse(VolleyError volleyError)
             {
                 mHandler.sendEmptyMessage(1);
-                Toast.makeText(getActivity(), "加载出错", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "加载失败", Toast.LENGTH_SHORT).show();
             }
         });
         mRequestQueue.add(request);
