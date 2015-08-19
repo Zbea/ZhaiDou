@@ -343,7 +343,7 @@ public class OrderDetailFragment extends BaseFragment {
                 Intent intent1 = new Intent(getActivity(), PayDemoActivity.class);
                 intent1.putExtra("id", Integer.parseInt(mOrderId + ""));
                 intent1.putExtra("amount", mOrder.getAmount());
-                ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(Integer.parseInt(mOrderId), amount, 10, mOrder.getOver_at(), mOrder);
+                ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(Integer.parseInt(mOrderId), amount, 10, mOrder.getOver_at(), mOrder,2);
                 ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
                 shopPaymentFragment.setOrderListener(new Order.OrderListener() {
                     @Override
@@ -419,7 +419,7 @@ public class OrderDetailFragment extends BaseFragment {
             public void onErrorResponse(VolleyError volleyError) {
                 mDialog.dismiss();
                 if (getActivity() != null)
-                    Toast.makeText(mContext, "????", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "加载失败", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -483,7 +483,7 @@ public class OrderDetailFragment extends BaseFragment {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
                         dialog.dismiss();
-                        ToolUtils.setToast(mContext, "????");
+                        ToolUtils.setToast(mContext, "加载失败");
                     }
                 }) {
                     @Override
@@ -539,7 +539,7 @@ public class OrderDetailFragment extends BaseFragment {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
-                        ToolUtils.setToast(mContext, "????");
+                        ToolUtils.setToast(mContext, "加载失败");
                     }
                 }) {
                     @Override

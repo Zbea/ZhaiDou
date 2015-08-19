@@ -79,7 +79,7 @@
                 android:layout_marginRight="@dimen/default_margin"
                 android:textSize="15sp"
                 android:textColor="@color/text_main_color"
-                android:text="新特卖每天早10点更新"/>
+                android:text="新特卖,每日上新"/>
             </LinearLayout>
 
             <com.zhaidou.view.ListViewForScrollView

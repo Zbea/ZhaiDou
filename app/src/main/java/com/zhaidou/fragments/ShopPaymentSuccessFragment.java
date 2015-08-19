@@ -113,6 +113,7 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
                     transaction.remove(fragment2);
                     transaction.remove(fragment3);
                     transaction.commitAllowingStateLoss();
+
                     fragmentManager.popBackStack();
 
 

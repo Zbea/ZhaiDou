@@ -422,6 +422,9 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                         }
                         else
                         {
+                            loadingView.setVisibility(View.VISIBLE);
+                            nullView.setVisibility(View.VISIBLE);
+                            nullGoodsView.setVisibility(View.GONE);
                             if (imgs!=null &&imgs.length()>0)
                             {
                                 loadingView.setVisibility(View.GONE);
@@ -437,6 +440,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 mDialog.dismiss();
                 nullView.setVisibility(View.VISIBLE);
                 nullNetView.setVisibility(View.GONE);
+                if (getActivity()!=null)
+                    ToolUtils.setToast(getActivity(),"加载失败");
             }
         }
         );

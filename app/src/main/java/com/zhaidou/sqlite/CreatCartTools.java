@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.zhaidou.model.CartItem;
+import com.zhaidou.utils.ToolUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -158,6 +159,7 @@ public class CreatCartTools
             String[] whereArgs = new String[]{String.valueOf(itm.userId),String.valueOf(itm.sizeId)};
             sqLiteDatabase.update(CreatCartDB.SqlName, values, whereClause, whereArgs);
             sqLiteDatabase.setTransactionSuccessful();
+
         } catch (Exception e)
         {
             e.printStackTrace();

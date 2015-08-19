@@ -202,9 +202,10 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
                 View mDialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_adddress, null, false);
                 final WheelViewContainer wheelView= (WheelViewContainer) mDialogView.findViewById(R.id.wheel_view_wv);
                 LinearLayout cityView= (LinearLayout) mDialogView.findViewById(R.id.cityView);
-                if(provinceList != null && provinceList.size() > 10)
+                if(provinceList != null && provinceList.size() >1)
                 {
                     wheelView.setData(provinceList);
+                    wheelView.setVisibility(View.VISIBLE);
                 }
                 else
                 {
@@ -222,7 +223,7 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
                     @Override
                     public void onClick(View view)
                     {
-                        if(provinceList != null && provinceList.size() > 10)
+                        if(provinceList != null && provinceList.size() > 1)
                         {
                             selectedProvince = wheelView.getProvince();
                             selectedCity = wheelView.getCity();

@@ -80,15 +80,24 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case UPDATE_ORDER_LIST:
-                    Log.i("orders--------------->", orders.size() + "");
+                    loadingView.setVisibility(View.GONE);
+                    mListView.setVisibility(View.VISIBLE);
                     allOrderAdapter.notifyDataSetChanged();
 //                    if (timer == null)
 //                        timer = new MyTimer(15 * 60 * 1000, 1000);
 //                    timer.start();
                     break;
                 case UPDATE_COUNT_DOWN_TIME:
-                    loadingView.setVisibility(View.GONE);
-                    allOrderAdapter.notifyDataSetChanged();
+                    if (orders!=null&&orders.size()>0)
+                    {
+                        loadingView.setVisibility(View.GONE);
+                        allOrderAdapter.notifyDataSetChanged();
+                    }
+                    else
+                    {
+                        mListView.setVisibility(View.GONE);
+                        loadingView.setVisibility(View.VISIBLE);
+                    }
                     break;
             }
         }
@@ -219,7 +228,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                             ShowToast(mContext.getResources().getString(R.string.order_had_order_time));
                             return;
                         }
-                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.getOrderId(), order.getAmount(), 0, order.getOver_at(), order);
+                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.getOrderId(), order.getAmount(), 0, order.getOver_at(), order,2);
                         ((BaseActivity) getActivity()).navigationToFragment(shopPaymentFragment);
                         shopPaymentFragment.setOrderListener(new Order.OrderListener() {
                             @Override
@@ -368,9 +377,10 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         }
     }
 
-    private void FetchAllOrder() {
-        Log.i("token-------------->", token);
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST, new Response.Listener<JSONObject>() {
+    private void FetchAllOrder()
+    {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST, new Response.Listener<JSONObject>()
+        {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null) mDialog.dismiss();

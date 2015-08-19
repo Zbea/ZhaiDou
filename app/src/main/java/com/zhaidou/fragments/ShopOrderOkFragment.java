@@ -141,7 +141,6 @@ public class ShopOrderOkFragment extends BaseFragment {
 
                     if(isljOsale)//清除购物车中的零元特卖
                     {
-                        Toast.makeText(mContext, "即将清除购物车中的零元特卖", Toast.LENGTH_LONG).show();
                         List<CartItem> itemsAll=CreatCartTools.selectByAll(creatCartDB,userId);
                         for (int i = 0; i < itemsAll.size(); i++)
                         {
@@ -165,7 +164,7 @@ public class ShopOrderOkFragment extends BaseFragment {
                         int orderId = orderObj.optInt("id");
                         int amount = orderObj.optInt("amount");
                         int fare = moneyYF;
-                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId, amount, fare,15*60,null);
+                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId, amount, fare,15*60,null,1);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
 //                        Intent intent1=new Intent(getActivity(), PayDemoActivity.class);
 //                        intent1.putExtra("id",orderId);
@@ -176,10 +175,12 @@ public class ShopOrderOkFragment extends BaseFragment {
                     }
                     break;
                 case 5:
-                    if (isOSaleBuy) {
+                    if (isOSaleBuy)
+                    {
                         mDialog.dismiss();
                         Toast.makeText(mContext, "抱歉,您已经购买过零元特卖商品,今天已经不能购买", Toast.LENGTH_LONG).show();
-                    } else {
+                    }
+                    else {
                         commit();
                     }
                     break;
@@ -510,6 +511,10 @@ public class ShopOrderOkFragment extends BaseFragment {
                             message.what=6;
                             message.obj=errorArr;
                             handler.sendMessage(message);
+
+                        }
+                        if (status==401)
+                        {
 
                         }
 
