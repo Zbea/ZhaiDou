@@ -46,6 +46,7 @@
             android:textSize="18sp" />
     </RelativeLayout>
 
+
     <ScrollView
         android:layout_below="@id/common_actionbar"
         android:layout_width="match_parent"
@@ -384,4 +385,12 @@
                 android:text="支付15:00" />
         </LinearLayout>
     </FrameLayout>
+
+    <include
+        android:layout_below="@id/common_actionbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/content_null_layout"
+        ></include>
+
 </RelativeLayout>

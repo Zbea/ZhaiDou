@@ -57,7 +57,6 @@ public class OrderDetailFragment extends BaseFragment {
     private static final String ARG_ID = "id";
     private static final String ARG_TIMESTMP = "timestmp";
     private static final String ARG_ORDER = "order";
-    // TODO: Rename and change types of parameters
     private String mOrderId;
     private long mParam2;
     private Order mOrder;
@@ -76,9 +75,10 @@ public class OrderDetailFragment extends BaseFragment {
     private MyTimer timer;
     private boolean isTimerStart = false;
     private OrderListener orderListener;
+    private LinearLayout loadingView;
 
     private long timeLeft;
-    int amount;
+    double amount;
     private View rootView;
     private Context mContext;
     private List<OrderItem> orderItems = new ArrayList<OrderItem>();
@@ -90,6 +90,7 @@ public class OrderDetailFragment extends BaseFragment {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
+                    loadingView.setVisibility(View.GONE);
                     order = (Order) msg.obj;
                     mOrderNumber.setText(order.getNumber());
                     mOrderTime.setText(order.getCreated_at_for());
@@ -146,9 +147,6 @@ public class OrderDetailFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        Log.i("OrderDetailFragment--------->", "onCreateView");
-        Log.i("OrderDetailFragment---mParam2------>", mParam2 + "");
         if (null != rootView) {
             ViewGroup parent = (ViewGroup) rootView.getParent();
             if (null != parent) {
@@ -164,6 +162,7 @@ public class OrderDetailFragment extends BaseFragment {
     private void initView(View view) {
         mContext = getActivity();
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        loadingView= (LinearLayout) view.findViewById(R.id.loadingView);
         mOrderNumber = (TextView) view.findViewById(R.id.tv_order_number);
         mOrderTime = (TextView) view.findViewById(R.id.tv_order_time);
         mOrderStatus = (TextView) view.findViewById(R.id.tv_order_status);
@@ -364,9 +363,10 @@ public class OrderDetailFragment extends BaseFragment {
                 Log.i("jsonObject--------->", jsonObject.toString());
                 if (mDialog != null)
                     mDialog.dismiss();
-                if (jsonObject != null) {
+                if (jsonObject != null)
+                {
                     JSONObject orderObj = jsonObject.optJSONObject("order");
-                    amount = orderObj.optInt("amount");
+                    amount = orderObj.optDouble("amount");
                     int id = orderObj.optInt("id");
                     String status = orderObj.optString("status");
                     String created_at_for = orderObj.optString("created_at_for");
@@ -394,9 +394,9 @@ public class OrderDetailFragment extends BaseFragment {
                         for (int i = 0; i < order_items.length(); i++) {
                             JSONObject item = order_items.optJSONObject(i);
                             int itemId = item.optInt("id");
-                            int itemPrice = item.optInt("price");
+                            double itemPrice = item.optInt("price");
                             int count = item.optInt("count");
-                            int cost_price = item.optInt("cost_price");
+                            double cost_price = item.optInt("cost_price");
                             String merchandise = item.optString("merchandise");
                             String specification = item.optString("specification");
                             int merchandise_id = item.optInt("merchandise_id");

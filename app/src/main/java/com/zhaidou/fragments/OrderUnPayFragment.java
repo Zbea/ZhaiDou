@@ -209,7 +209,7 @@ public class OrderUnPayFragment extends BaseFragment {
                             JSONObject orderObj = orderArr.optJSONObject(i);
                             int id = orderObj.optInt("id");
                             String number = orderObj.optString("number");
-                            int amount = orderObj.optInt("amount");
+                            double amount = orderObj.optInt("amount");
                             String status = orderObj.optString("status");
                             String status_ch = orderObj.optString("status_ch");
                             String created_at = orderObj.optString("created_at");
@@ -219,7 +219,10 @@ public class OrderUnPayFragment extends BaseFragment {
                             Order order = new Order(id, number, amount, status, status_ch, created_at_for, created_at, "", 0);
                             order.setImg(img);
                             order.setOver_at(over_at);
-                            orders.add(order);
+                            if (over_at>0)
+                            {
+                                orders.add(order);
+                            }
                         }
                         handler.sendEmptyMessage(UPDATE_UNPAY_LIST);
                     } else {

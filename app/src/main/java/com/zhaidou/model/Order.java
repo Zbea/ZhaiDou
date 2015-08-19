@@ -209,7 +209,7 @@ public class Order implements Serializable{
                 '}';
     }
 
-    public Order(String time, long orderId, String number, int amount, String status, String status_ch, String created_at_for, String created_at, Receiver receiver, List<OrderItem> orderItems, String receiver_address, String receiver_phone, String deliver_number, String receiver_name) {
+    public Order(String time, long orderId, String number, double amount, String status, String status_ch, String created_at_for, String created_at, Receiver receiver, List<OrderItem> orderItems, String receiver_address, String receiver_phone, String deliver_number, String receiver_name) {
         this.time = time;
         this.orderId = orderId;
         this.number = number;

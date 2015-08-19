@@ -519,7 +519,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             public void onErrorResponse(VolleyError volleyError)
             {
                 if (volleyError != null)
-                    Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "加载失败", Toast.LENGTH_SHORT).show();
             }
         });
         requestQueue.add(request);

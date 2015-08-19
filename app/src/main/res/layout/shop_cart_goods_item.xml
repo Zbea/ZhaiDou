@@ -17,11 +17,11 @@
 
         <CheckBox
             android:layout_width="22dp"
-            android:layout_height="50dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_weight="0.00001"
-
             style="@style/CustomCheckboxTheme"
             android:id="@+id/chatItemCB"/>
 

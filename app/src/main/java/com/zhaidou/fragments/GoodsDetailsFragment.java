@@ -145,6 +145,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private Specification mSpecification;//选中规格
     private List<Specification> specificationList;
     private ImageView mTipView;
+    private ImageView goodsImage;
     private FrameLayout animation_viewGroup;
     private RadioGroup radioGroup;
     //动画时间
@@ -257,6 +258,11 @@ public class GoodsDetailsFragment extends BaseFragment
 
                     initData(detail.getImgs());
 
+                    if (detail.getImgs().size()<1&&detail.getSpecifications().size()<1&&detail.getEnd_time()==null)
+                    {
+                        setAddOrBuyShow("此商品已下架");
+                    }
+
                     String end_date = detail.getEnd_time();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -296,7 +302,7 @@ public class GoodsDetailsFragment extends BaseFragment
                         mDialog.dismiss();
                     if (isOSaleBuy)
                     {
-                        Toast.makeText(mContext, "抱歉,您已经购买了零元特卖商品,今天不能再购买了", Toast.LENGTH_LONG).show();
+                        setAddOrBuyShow("没有了零元特卖的购买资格");
                     } else
                     {
                         for (int i = 0; i < items.size(); i++)
@@ -304,8 +310,10 @@ public class GoodsDetailsFragment extends BaseFragment
                             if (items.get(i).isOSale.equals("true"))
                             {
                                 ljBuyOkDialog(items.get(i));
+                                return;
                             }
                         }
+                        buyGoods();
                     }
                     break;
                 case UPDATE_ISOSALEBUY:
@@ -419,6 +427,7 @@ public class GoodsDetailsFragment extends BaseFragment
                             {
                                 if (flags == 1)//判断零元特卖是否已经购买郭
                                 {
+                                    mDialog.show();
                                     FetchOSaleData(5);
                                 } else
                                 {
@@ -507,6 +516,7 @@ public class GoodsDetailsFragment extends BaseFragment
     {
         shareUrl=shareUrl+mIndex;
 
+
         shareBtn=(ImageView)mView.findViewById(R.id.share_iv);
         shareBtn.setOnClickListener(onClickListener);
         if (flags==1)//零元特卖不能分享
@@ -532,7 +542,6 @@ public class GoodsDetailsFragment extends BaseFragment
         titleTv.setText("商品详情");
 
         viewGroupe = (LinearLayout) mView.findViewById(R.id.goods_viewGroup);
-
         mGridView = (ChildGridView) mView.findViewById(R.id.gv_specification);
 
         myCartBtn = (View) mView.findViewById(R.id.goodsMyCartBtn);
@@ -543,6 +552,9 @@ public class GoodsDetailsFragment extends BaseFragment
         addCartBtn.setOnClickListener(onClickListener);
 
         publishBtn = (TextView) mView.findViewById(R.id.goodsPublish);
+
+        goodsImage=(ImageView)mView.findViewById(R.id.goodsImageView);
+        goodsImage.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth*630/720));
 
         RelativeLayout relativeLayout=(RelativeLayout)mView.findViewById(R.id.imageRl);
         relativeLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth*630/720));
@@ -1004,7 +1016,7 @@ public class GoodsDetailsFragment extends BaseFragment
         viewGroupe.removeAllViews();
         if (CollectionUtils.isNotNull(urls))
         {
-            ToolUtils.setLog(""+urls.size());
+            ToolUtils.setImageCacheUrl(urls.get(0),goodsImage);
             if (urls.size()>4)
             {
                 List<String> urlss=new ArrayList<String>();
@@ -1015,7 +1027,6 @@ public class GoodsDetailsFragment extends BaseFragment
                 urls.add(urlss.get(2));
                 urls.add(urlss.get(3));
             }
-            ToolUtils.setLog(""+urls.size());
 
             for (String url : urls)
             {

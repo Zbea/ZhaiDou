@@ -5,16 +5,16 @@ package com.zhaidou.model;
  */
 public class OrderItem {
     private int id;
-    private int price;
+    private double price;
     private int count;
-    private int cost_price;
+    private double cost_price;
     private String merchandise;
     private String specification;
     private int merchandise_id;
     private String merch_img;
     private int sale_cate;
 
-    public int getCost_price() {
+    public double getCost_price() {
         return cost_price;
     }
 
@@ -30,7 +30,7 @@ public class OrderItem {
         this.id = id;
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 
@@ -89,7 +89,7 @@ public class OrderItem {
     public OrderItem() {
     }
 
-    public OrderItem(int id, int price, int count, int cost_price, String merchandise, String specification, int merchandise_id, String merch_img) {
+    public OrderItem(int id, double price, int count, double cost_price, String merchandise, String specification, int merchandise_id, String merch_img) {
         this.id = id;
         this.price = price;
         this.count = count;

@@ -270,7 +270,6 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
                 {
                     JSONObject receiver=json.optJSONObject("receiver");
                     int  price=json.optInt("price");
-                    ToolUtils.setLog("receiver：" + receiver.toString());
                     if (addrSaveSuccessListener!=null)
                     {
                         addrSaveSuccessListener.onSaveListener(receiver,mStatus,price,selectedProvince.getName(), selectedCity.getName(), selectedArea.getName());
