@@ -31,6 +31,7 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
+import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
@@ -43,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class OrderUnReceiveFragment extends BaseFragment {
+public class OrderUnReceiveFragment extends BaseFragment implements View.OnClickListener{
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -57,21 +58,20 @@ public class OrderUnReceiveFragment extends BaseFragment {
     private UnReceiveAdapter unReceiveAdapter;
     private ListView mListView;
     private List<Order> orders;
-    private final int STATUS_UNRECEIVE_LIST=14;
+    private final int STATUS_UNRECEIVE_LIST = 14;
     private String token;
     private View rootView;
+    private View mEmptyView,mNetErrorView;
+    private Context mContext;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
+            switch (msg.what) {
                 case STATUS_UNRECEIVE_LIST:
-                    if (orders!=null&&orders.size()>0)
-                    {
+                    if (orders != null && orders.size() > 0) {
                         loadingView.setVisibility(View.GONE);
                         unReceiveAdapter.notifyDataSetChanged();
-                    }
-                    else
-                    {
+                    } else {
                         mListView.setVisibility(View.GONE);
                         loadingView.setVisibility(View.VISIBLE);
                     }
@@ -119,15 +119,19 @@ public class OrderUnReceiveFragment extends BaseFragment {
     }
 
     private void initView(View view) {
-        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
-        loadingView=(LinearLayout)view.findViewById(R.id.loadingView);
+        mContext=getActivity();
+//        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
+        loadingView = (LinearLayout) view.findViewById(R.id.loadingView);
+        mEmptyView=rootView.findViewById(R.id.nullline);
+        mNetErrorView=rootView.findViewById(R.id.nullNetline);
         mListView = (ListView) view.findViewById(R.id.lv_unreceivelist);
+        view.findViewById(R.id.netReload).setOnClickListener(this);
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         orders = new ArrayList<Order>();
         unReceiveAdapter = new UnReceiveAdapter(getActivity(), orders);
         mListView.setAdapter(unReceiveAdapter);
         mRequestQueue = Volley.newRequestQueue(getActivity());
-        FetchReceiveData();
+        initData();
         unReceiveAdapter.setOnInViewClickListener(R.id.bt_logistics, new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
@@ -211,21 +215,18 @@ public class OrderUnReceiveFragment extends BaseFragment {
                     @Override
                     public void onClick(View view) {
                         dialog.dismiss();
-                        mDialog=CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
+                        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
                         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + order.getOrderId() + "/update_status?status=5", new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject jsonObject) {
                                 JSONObject orderObj = jsonObject.optJSONObject("order");
-                                if (orderObj != null)
-                                {
+                                if (orderObj != null) {
                                     String status = orderObj.optString("status");
-                                    if ("5".equalsIgnoreCase(status))
-                                    {
+                                    if ("5".equalsIgnoreCase(status)) {
                                         orders.remove(order);
-                                    } else
-                                {
-                                    ToolUtils.setToast(getActivity(),"抱歉,确认收货失败");
-                                }
+                                    } else {
+                                        ToolUtils.setToast(getActivity(), "抱歉,确认收货失败");
+                                    }
                                     handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
                                     mDialog.dismiss();
 
@@ -235,7 +236,7 @@ public class OrderUnReceiveFragment extends BaseFragment {
                             @Override
                             public void onErrorResponse(VolleyError volleyError) {
                                 mDialog.dismiss();
-                                ToolUtils.setToast(getActivity(),"抱歉,确认收货失败");
+                                ToolUtils.setToast(getActivity(), "抱歉,确认收货失败");
                             }
                         }) {
                             @Override
@@ -262,10 +263,8 @@ public class OrderUnReceiveFragment extends BaseFragment {
                 ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
                 orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
                     @Override
-                    public void onOrderStatusChange(Order o)
-                    {
-                        if ("5".equalsIgnoreCase(o.getStatus())) 
-                        {
+                    public void onOrderStatusChange(Order o) {
+                        if ("5".equalsIgnoreCase(o.getStatus())) {
                             orders.remove(order);
                             handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
                         }
@@ -275,11 +274,25 @@ public class OrderUnReceiveFragment extends BaseFragment {
         });
     }
 
+    private void initData() {
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        if (NetworkUtils.isNetworkAvailable(mContext)) {
+            mNetErrorView.setVisibility(View.GONE);
+            loadingView.setVisibility(View.GONE);
+            FetchReceiveData();
+        } else {
+            if (mDialog != null)
+                mDialog.dismiss();
+            mEmptyView.setVisibility(View.GONE);
+            mNetErrorView.setVisibility(View.VISIBLE);
+            loadingView.setVisibility(View.VISIBLE);
+        }
+    }
     private void FetchReceiveData() {
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?status=1,4", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                if (mDialog!=null)
+                if (mDialog != null)
                     mDialog.dismiss();
                 Log.i("FetchReceiveData----------->", jsonObject.toString());
                 if (jsonObject != null) {
@@ -300,14 +313,13 @@ public class OrderUnReceiveFragment extends BaseFragment {
                             Order order = new Order(id, number, amount, status, status_ch, created_at_for, created_at, "", 0);
                             order.setImg(img);
                             order.setOver_at(over_at);
-                            if ((STATUS_UNRECEIVE_LIST+"").contains(status))
+                            if ((STATUS_UNRECEIVE_LIST + "").contains(status))
                                 orders.add(order);
                         }
                         handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
-                    }
-                    else
-                    {
+                    } else {
                         mListView.setVisibility(View.GONE);
+                        mEmptyView.setVisibility(View.VISIBLE);
                         loadingView.setVisibility(View.VISIBLE);
                     }
                 }
@@ -315,7 +327,7 @@ public class OrderUnReceiveFragment extends BaseFragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                if (mDialog!=null)
+                if (mDialog != null)
                     mDialog.dismiss();
                 Toast.makeText(getActivity(), "加载失败", Toast.LENGTH_SHORT).show();
             }
@@ -329,6 +341,15 @@ public class OrderUnReceiveFragment extends BaseFragment {
         };
         mRequestQueue.add(request);
     }
+    @Override
+    public void onClick(View view) {
+        super.onClick(view);
+        switch (view.getId()){
+            case R.id.netReload:
+                initData();
+                break;
+        }
+    }
     public class UnReceiveAdapter extends BaseListAdapter<Order> {
         public UnReceiveAdapter(Context context, List<Order> list) {
             super(context, list);
@@ -336,24 +357,24 @@ public class OrderUnReceiveFragment extends BaseFragment {
 
         @Override
         public View bindView(int position, View convertView, ViewGroup parent) {
-            if (convertView==null)
-                convertView=mInflater.inflate(R.layout.item_order_unreceive,null);
+            if (convertView == null)
+                convertView = mInflater.inflate(R.layout.item_order_unreceive, null);
             TextView tv_order_time = ViewHolder.get(convertView, R.id.tv_unreceive_order_time);
             TextView tv_order_number = ViewHolder.get(convertView, R.id.tv_order_number);
             TextView tv_order_amount = ViewHolder.get(convertView, R.id.tv_order_amount);
             TextView tv_order_status = ViewHolder.get(convertView, R.id.tv_order_status);
-            TextView bt_received=ViewHolder.get(convertView,R.id.bt_received);
-            TextView bt_logistics=ViewHolder.get(convertView,R.id.bt_logistics);
-            ImageView iv_order_img=ViewHolder.get(convertView,R.id.iv_order_img);
+            TextView bt_received = ViewHolder.get(convertView, R.id.bt_received);
+            TextView bt_logistics = ViewHolder.get(convertView, R.id.bt_logistics);
+            ImageView iv_order_img = ViewHolder.get(convertView, R.id.iv_order_img);
             Order item = getList().get(position);
             tv_order_time.setText(item.getCreated_at_for());
             tv_order_number.setText(item.getNumber());
-            tv_order_amount.setText("￥"+item.getAmount()+"");
+            tv_order_amount.setText("￥" + item.getAmount() + "");
             tv_order_status.setText(item.getStatus_ch());
-            if ("1".equalsIgnoreCase(item.getStatus())){
+            if ("1".equalsIgnoreCase(item.getStatus())) {
                 bt_received.setVisibility(View.GONE);
                 bt_logistics.setText("申请退款");
-            }else if ("4".equalsIgnoreCase(item.getStatus())){
+            } else if ("4".equalsIgnoreCase(item.getStatus())) {
                 bt_received.setVisibility(View.VISIBLE);
                 bt_logistics.setText("查看物流");
             }

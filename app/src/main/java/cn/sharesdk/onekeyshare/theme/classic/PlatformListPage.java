@@ -120,12 +120,12 @@ public class PlatformListPage extends PlatformListFakeActivity implements View.O
 		btnCancel.setTextColor(0xffffffff);
 		btnCancel.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         btnCancel.setTypeface(((ZDApplication)getContext().getApplicationContext()).getTypeFace());
-        btnCancel.setGravity(Gravity.CENTER);
+//        btnCancel.setGravity(Gravity.CENTER);
 		int resId = getStringRes(getContext(), "cancel");
 		if (resId > 0) {
 			btnCancel.setText(resId);
 		}
-//		btnCancel.setPadding(0, 0, 0, com.mob.tools.utils.R.dipToPx(getContext(), 5));
+		btnCancel.setPadding(0,com.mob.tools.utils.R.dipToPx(getContext(), 5), 0, com.mob.tools.utils.R.dipToPx(getContext(), 5));
 
 		resId = getBitmapRes(getContext(), "classic_platform_corners_bg");
 		if(resId > 0){

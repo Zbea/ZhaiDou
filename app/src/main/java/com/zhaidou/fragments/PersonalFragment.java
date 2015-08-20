@@ -58,16 +58,13 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     private String mParam2;
     private View view;
 
-
-    private SettingFragment mSettingFragment;
-
     AsyncImageLoader1 imageLoader;
     private RequestQueue mRequestQueue;
     private final int UPDATE_USER_INFO = 1;
     private final int UPDATE_USER_DESCRIPTION = 2;
-    private final int UPDATE_USER_COLLECT_COUNT=3;
-    private final int UPDATE_USER_COLLOCATION=4;
-    private final int UPDATE_UNPAY_COUNT=5;
+    private final int UPDATE_USER_COLLECT_COUNT = 3;
+    private final int UPDATE_USER_COLLOCATION = 4;
+    private final int UPDATE_UNPAY_COUNT = 5;
 
     private Map<String, String> cityMap = new HashMap<String, String>();
 
@@ -82,7 +79,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     private CreatCartDB creatCartDB;
     private List<CartItem> items = new ArrayList<CartItem>();
     private ImageView iv_header, mPrePayView, mPreReceivedView, mReturnView;
-    private TextView tv_nickname, tv_desc,tv_collect,tv_collocation,tv_unpay_count;
+    private TextView tv_nickname, tv_desc, tv_collect, tv_collocation, tv_unpay_count;
     private RelativeLayout mCouponsView, mSettingView, mAllOrderView;
     private FrameLayout mChildContainer;
     private TextView mCartCount;
@@ -90,43 +87,33 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     private String token;
     private int count;
 
-    private BroadcastReceiver broadcastReceiver=new BroadcastReceiver()
-    {
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            String action=intent.getAction();
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
-            {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag)) {
                 initCartTips();
             }
-            if (action.equals(ZhaiDou.IntentRefreshLoginTag))
-            {
+            if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
                 initCartTips();
             }
-            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
-            {
+            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag)) {
                 initCartTips();
                 exitLoginEvent();
             }
-            if (action.equals(ZhaiDou.IntentRefreshUnPayAddTag))
-            {
-                count=count+1;
-                tv_unpay_count.setText(count+"");
+            if (action.equals(ZhaiDou.IntentRefreshUnPayAddTag)) {
+                count = count + 1;
+                tv_unpay_count.setText(count + "");
                 tv_unpay_count.setVisibility(View.VISIBLE);
-                ((MainActivity)getActivity()).hideTip(View.VISIBLE);
+                ((MainActivity) getActivity()).hideTip(View.VISIBLE);
             }
-            if (action.equals(ZhaiDou.IntentRefreshUnPayDesTag))
-            {
-                count=count-1;
-                if (count<1)
-                {
+            if (action.equals(ZhaiDou.IntentRefreshUnPayDesTag)) {
+                count = count - 1;
+                if (count < 1) {
                     tv_unpay_count.setVisibility(View.GONE);
-                    ((MainActivity)getActivity()).hideTip(View.GONE);
-                }
-                else
-                {
-                    tv_unpay_count.setText(count+"");
+                    ((MainActivity) getActivity()).hideTip(View.GONE);
+                } else {
+                    tv_unpay_count.setText(count + "");
                 }
             }
         }
@@ -147,16 +134,16 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                     tv_desc.setText("null".equalsIgnoreCase(u.getDescription()) || u.getDescription() == null ? "" : u.getDescription());
                     break;
                 case UPDATE_USER_COLLECT_COUNT:
-                    tv_collect.setText(msg.arg1+"");
+                    tv_collect.setText(msg.arg1 + "");
                     break;
                 case UPDATE_USER_COLLOCATION:
-                    tv_collocation.setText(msg.arg1+"");
+                    tv_collocation.setText(msg.arg1 + "");
                     break;
                 case UPDATE_UNPAY_COUNT:
-                    count =msg.arg1;
+                    count = msg.arg1;
                     tv_unpay_count.setVisibility(View.VISIBLE);
-                    ((MainActivity)getActivity()).hideTip(View.VISIBLE);
-                    tv_unpay_count.setText(count+"");
+                    ((MainActivity) getActivity()).hideTip(View.VISIBLE);
+                    tv_unpay_count.setText(count + "");
                     break;
             }
         }
@@ -190,8 +177,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if(view==null)
-        {
+        if (view == null) {
             view = inflater.inflate(R.layout.personal, container, false);
 
             initBroadcastReceiver();
@@ -206,9 +192,9 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             iv_header = (ImageView) view.findViewById(R.id.iv_header);
             tv_desc = (TextView) view.findViewById(R.id.tv_desc);
             tv_nickname = (TextView) view.findViewById(R.id.tv_nickname);
-            tv_collect=(TextView)view.findViewById(R.id.tv_collect);
-            tv_collocation=(TextView)view.findViewById(R.id.tv_collocation);
-            tv_unpay_count=(TextView)view.findViewById(R.id.tv_unpay_count);
+            tv_collect = (TextView) view.findViewById(R.id.tv_collect);
+            tv_collocation = (TextView) view.findViewById(R.id.tv_collocation);
+            tv_unpay_count = (TextView) view.findViewById(R.id.tv_unpay_count);
             mCartCount = (TextView) view.findViewById(R.id.tv_cart_count);
 
             mPrePayView.setOnClickListener(this);
@@ -216,7 +202,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             mReturnView.setOnClickListener(this);
             mAllOrderView.setOnClickListener(this);
             mSettingView.setOnClickListener(this);
-            mSettingFragment = SettingFragment.newInstance("", "");
             view.findViewById(R.id.tv_shopping_cart).setOnClickListener(this);
             view.findViewById(R.id.rl_contact).setOnClickListener(this);
             view.findViewById(R.id.rl_competition).setOnClickListener(this);
@@ -225,13 +210,11 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             view.findViewById(R.id.ll_collect).setOnClickListener(this);
             view.findViewById(R.id.ll_collocation).setOnClickListener(this);
 
-            mSettingFragment.setProfileListener(this);
-
             mRequestQueue = Volley.newRequestQueue(getActivity());
             getUserDetail();
             getUserInfo();
-            userId=(Integer)SharedPreferencesUtil.getData(getActivity(),"userId",-1);
-            token=(String)SharedPreferencesUtil.getData(getActivity(),"token","");
+            userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
+            token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
             creatCartDB = new CreatCartDB(getActivity());
 
             initCartTips();
@@ -243,8 +226,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
         ViewGroup parent = (ViewGroup) view.getParent();
-        if (parent != null)
-        {
+        if (parent != null) {
             parent.removeView(view);
         }
         return view;
@@ -253,26 +235,24 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     /**
      * 注册广播
      */
-    private void initBroadcastReceiver()
-    {
-        IntentFilter intentFilter=new IntentFilter();
+    private void initBroadcastReceiver() {
+        IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshUnPayAddTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshUnPayDesTag);
-        getActivity().registerReceiver(broadcastReceiver,intentFilter);
+        getActivity().registerReceiver(broadcastReceiver, intentFilter);
     }
 
     /**
      * 退出登录事件处理
      */
-    private void exitLoginEvent()
-    {
+    private void exitLoginEvent() {
         tv_collect.setText("0");
         tv_collocation.setText("0");
         tv_unpay_count.setVisibility(View.GONE);
-        ((MainActivity)getActivity()).hideTip(View.GONE);
+        ((MainActivity) getActivity()).hideTip(View.GONE);
         tv_nickname.setText("");
         tv_desc.setText("");
 
@@ -290,14 +270,14 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 ((MainActivity) getActivity()).navigationToFragment(allOrdersFragment);
                 break;
             case R.id.rl_taobao_order:
-                Intent intent1=new Intent(getActivity(),WebViewActivity.class);
-                intent1.putExtra("url","https://h5.m.taobao.com/mlapp/olist.html");
+                Intent intent1 = new Intent(getActivity(), WebViewActivity.class);
+                intent1.putExtra("url", ZhaiDou.URL_TAOBAO_ORDER);
                 startAnimActivity(intent1);
                 break;
             case R.id.tv_pre_pay:
                 OrderUnPayFragment unPayFragment = OrderUnPayFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragment(unPayFragment);
-                ((MainActivity)getActivity()).hideTip(View.GONE);
+                ((MainActivity) getActivity()).hideTip(View.GONE);
                 break;
             case R.id.tv_pre_received:
                 OrderUnReceiveFragment unReceiveFragment = OrderUnReceiveFragment.newInstance("", "");
@@ -312,7 +292,21 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 ((MainActivity) getActivity()).navigationToFragment(addrManageFragment);
                 break;
             case R.id.rl_setting:
+                SettingFragment mSettingFragment=SettingFragment.newInstance("","");
                 ((MainActivity) getActivity()).navigationToFragment(mSettingFragment);
+                mSettingFragment.setProfileListener(new SettingFragment.ProfileListener() {
+                    @Override
+                    public void onProfileChange(User user) {
+                        Log.i("mSettingFragment.setProfileListener--------->",user.toString());
+                        if (!TextUtils.isEmpty(user.getDescription())){
+                            tv_desc.setText(user.getDescription());
+                        }else if (!TextUtils.isEmpty(user.getAvatar())){
+                            ToolUtils.setImageCacheUrl("http://" + user.getAvatar(), iv_header);
+                        }else if (!TextUtils.isEmpty(user.getNickName())){
+                            tv_nickname.setText(user.getNickName());
+                        }
+                    }
+                });
                 break;
             case R.id.rl_contact:
                 ContactUsFragment contactUsFragment = ContactUsFragment.newInstance("", "");
@@ -326,12 +320,12 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 startActivity(intent);
                 break;
             case R.id.ll_collect:
-                CollectFragment collectFragment=CollectFragment.newInstance("","");
-                ((MainActivity)getActivity()).navigationToFragment(collectFragment);
+                CollectFragment collectFragment = CollectFragment.newInstance("", "");
+                ((MainActivity) getActivity()).navigationToFragment(collectFragment);
                 break;
             case R.id.ll_collocation:
-                CollocationFragment collocationFragment=CollocationFragment.newInstance("","");
-                ((MainActivity)getActivity()).navigationToFragment(collocationFragment);
+                CollocationFragment collocationFragment = CollocationFragment.newInstance("", "");
+                ((MainActivity) getActivity()).navigationToFragment(collocationFragment);
                 break;
         }
 
@@ -444,8 +438,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     }
 
     @Override
-    public void onDestroy()
-    {
+    public void onDestroy() {
         getActivity().unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
@@ -453,23 +446,19 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     /**
      * 红色标识提示显示数量
      */
-    private void initCartTips()
-    {
-        if (MainActivity.num>0)
-        {
+    private void initCartTips() {
+        if (MainActivity.num > 0) {
             mCartCount.setVisibility(View.VISIBLE);
-            mCartCount.setText(""+MainActivity.num);
-        }
-        else
-        {
+            mCartCount.setText("" + MainActivity.num);
+        } else {
             mCartCount.setVisibility(View.GONE);
         }
     }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
-        Integer userId= (Integer)SharedPreferencesUtil.getData(getActivity(), "userId", -1);
-        if (!hidden&&userId!=-1){
+        Integer userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
+        if (!hidden && userId != -1) {
             getUserDetail();
             getUserInfo();
             FetchCollectData();
@@ -477,53 +466,54 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         }
         super.onHiddenChanged(hidden);
     }
-    private void FetchCollectData(){
-        JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_COLLECT_ITEM_URL+1,new Response.Listener<JSONObject>() {
+
+    private void FetchCollectData() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_COLLECT_ITEM_URL + 1, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("FetchCollectData-------->",jsonObject.toString());
-                if (jsonObject!=null){
+                Log.i("FetchCollectData-------->", jsonObject.toString());
+                if (jsonObject != null) {
                     JSONObject meta = jsonObject.optJSONObject("meta");
-                    int count=meta==null?0:meta.optInt("count");
-                    Message message=new Message();
-                    message.what=UPDATE_USER_COLLECT_COUNT;
-                    message.arg1=count;
+                    int count = meta == null ? 0 : meta.optInt("count");
+                    Message message = new Message();
+                    message.what = UPDATE_USER_COLLECT_COUNT;
+                    message.arg1 = count;
                     mHandler.sendMessage(message);
                 }
             }
-        },new Response.ErrorListener() {
+        }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
 
             }
-        }){
+        }) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String,String> headers=new HashMap<String, String>();
-                headers.put("SECAuthorization",token);
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("SECAuthorization", token);
                 return headers;
             }
         };
         mRequestQueue.add(request);
     }
-    private void FetchCollocationData(){
-        final String token=(String)SharedPreferencesUtil.getData(getActivity(),"token","");
-        final int userId=(Integer)SharedPreferencesUtil.getData(getActivity(),"userId", -1);
-        JsonObjectRequest request =new JsonObjectRequest(ZhaiDou.USER_COLLOCATION_ITEM_URL+userId+"/bean_collocations?page="+1
-                ,new Response.Listener<JSONObject>(){
+
+    private void FetchCollocationData() {
+        final String token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
+        final int userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_COLLOCATION_ITEM_URL + userId + "/bean_collocations?page=" + 1
+                , new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                if (jsonObject!=null){
+                if (jsonObject != null) {
                     JSONObject meta = jsonObject.optJSONObject("meta");
-                    int count=meta==null?0:meta.optInt("count");
-                    Message message=new Message();
-                    message.arg1=count;
-                    message.what=UPDATE_USER_COLLOCATION;
+                    int count = meta == null ? 0 : meta.optInt("count");
+                    Message message = new Message();
+                    message.arg1 = count;
+                    message.what = UPDATE_USER_COLLOCATION;
                     mHandler.sendMessage(message);
                 }
             }
-        },new Response.ErrorListener(){
+        }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
             }
@@ -531,29 +521,29 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         mRequestQueue.add(request);
     }
 
-    private void FetchUnPayCount(){
-        JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST+"?count=1&status=0",new Response.Listener<JSONObject>() {
+    private void FetchUnPayCount() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?count=1&status=0", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                if (jsonObject!=null){
-                    int count =jsonObject.optInt("count");
-                    if (count>0){
-                        Message message=new Message();
-                        message.what=UPDATE_UNPAY_COUNT;
-                        message.arg1=count;
+                if (jsonObject != null) {
+                    int count = jsonObject.optInt("count");
+                    if (count > 0) {
+                        Message message = new Message();
+                        message.what = UPDATE_UNPAY_COUNT;
+                        message.arg1 = count;
                         mHandler.sendMessage(message);
                     }
                 }
             }
-        },new Response.ErrorListener() {
+        }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
             }
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization",token);
+                headers.put("SECAuthorization", token);
                 return headers;
             }
         };

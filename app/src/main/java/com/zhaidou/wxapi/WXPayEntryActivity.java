@@ -65,6 +65,6 @@ public class WXPayEntryActivity extends FragmentActivity implements IWXAPIEventH
 			// builder.setMessage(getString(R.string.pay_result_callback_msg,
 			// resp.errStr +";code=" + String.valueOf(resp.errCode)));
 			// builder.show();
-		}
+        }
 	}
 }

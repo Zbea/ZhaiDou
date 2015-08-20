@@ -132,21 +132,11 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
         tv_description.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-                Log.i("beforeTextChanged--->","beforeTextChanged");
-                Log.i("beforeTextChanged--charSequence",charSequence+"");
-                Log.i("beforeTextChanged--i",""+i);
-                Log.i("beforeTextChanged--i2",""+i2);
-                Log.i("beforeTextChanged--i3",""+i3);
 //                tv_length.setText((75-tv_description.getText().toString().length())+"");
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-                Log.i("onTextChanged--->","beforeTextChanged");
-                Log.i("onTextChanged--charSequence",charSequence+"");
-                Log.i("onTextChanged--i",""+i);
-                Log.i("onTextChanged--i2",""+i2);
-                Log.i("onTextChanged--i3",""+i3);
                 tv_length.setText((75-tv_description.getText().toString().length())+"");
             }
 
@@ -183,7 +173,13 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
                 tv_edit_msg.setText("");
                 break;
             case R.id.tv_done:
-                if (TextUtils.isEmpty(tv_edit_msg.getText().toString().trim())){
+                if ("description".equalsIgnoreCase(mParam1)){
+                    System.out.println("\"description\".equalsIgnoreCase(mParam1)");
+                    if (TextUtils.isEmpty(tv_description.getText().toString().trim())){
+                        ShowToast(mTitle+"不能为空");
+                        return;
+                    }
+                }else if (TextUtils.isEmpty(tv_edit_msg.getText().toString().trim())){
                     ShowToast(mTitle+"不能为空");
                     return;
                 }

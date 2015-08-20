@@ -1,13 +1,10 @@
 package com.zhaidou.fragments;
 
-
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,26 +12,22 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.zhaidou.MainActivity;
@@ -47,7 +40,6 @@ import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.NativeHttpUtil;
 import com.zhaidou.utils.PhotoUtil;
 import com.zhaidou.utils.ToolUtils;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -56,8 +48,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
@@ -237,8 +227,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
         rl_nickname.setOnClickListener(this);
         rl_mobile.setOnClickListener(this);
-//        tv_intro.setOnClickListener(this);
-
 
         mSharedPreferences = getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         mRequestQueue = Volley.newRequestQueue(getActivity());
@@ -280,14 +268,8 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container, mobileFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
                 break;
-//            case R.id.tv_intro:
-//                EditProfileFragment introFragment=EditProfileFragment.newInstance("description",tv_intro.getText().toString(),profileId);
-//                introFragment.setRefreshDataListener(this);
-//                getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container,introFragment).addToBackStack(null).commit();
-//                mChildContainer.setVisibility(View.VISIBLE);
-//                break;
             case R.id.rl_job:
-                if ("未认证工程师".equalsIgnoreCase(tv_job.getText().toString())) {
+                if ("未认证设计师".equalsIgnoreCase(tv_job.getText().toString())) {
                     ImageBgFragment addVFragment = ImageBgFragment.newInstance("如何加V");
                     ((MainActivity) getActivity()).navigationToFragment(addVFragment);
                 }
@@ -359,7 +341,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     public void onMenuSelect(int position, String tag) {
         switch (position) {
             case MENU_CAMERA_SELECTED:
-                Toast.makeText(getActivity(), position + "--->" + tag, Toast.LENGTH_LONG).show();
                 File dir = new File(ZhaiDou.MyAvatarDir);
                 if (!dir.exists()) {
                     dir.mkdirs();
@@ -376,7 +357,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                         MENU_CAMERA_SELECTED);
                 break;
             case MENU_PHOTO_SELECTED:
-                Toast.makeText(getActivity(), position + "--->" + tag, Toast.LENGTH_LONG).show();
                 Intent intent1 = new Intent(Intent.ACTION_PICK, null);
                 intent1.setDataAndType(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
@@ -471,7 +451,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.i("onActivityResult------------------->", "MENU_CAMERA_SELECTED");
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case MENU_CAMERA_SELECTED:// 拍照修改头像
@@ -481,7 +460,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                         Toast.makeText(getActivity(), "SD不可用", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    Log.i("拍照修改头像------------>", "拍照修改头像");
                     isFromCamera = true;
                     File file = new File(filePath);
                     degree = PhotoUtil.readPictureDegree(file.getAbsolutePath());
@@ -564,24 +542,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             String base64str = PhotoUtil.bitmapToBase64(bitmap);
             Log.i("base64str0---------->", base64str);
             new UpLoadAvatar().execute(base64str);
-
-//            if (bitmap != null) {
-//                bitmap = PhotoUtil.toRoundCorner(bitmap, 0);//将图片变为圆角
-//                if (isFromCamera && degree != 0) {
-//                    bitmap = PhotoUtil.rotaingImageView(degree, bitmap);
-//                }
-//                iv_set_avator.setImageBitmap(bitmap);
-//                // 保存图片
-//                String filename = new SimpleDateFormat("yyMMddHHmmss")
-//                        .format(new Date());
-//                path = ZhaiDou.MyAvatarDir + filename;
-//                PhotoUtil.saveBitmap(ZhaiDou.MyAvatarDir, filename,
-//                        bitmap, true);
-//                // 上传头像
-//                if (bitmap != null && bitmap.isRecycled()) {
-//                    bitmap.recycle();
-//                }
-//            }
         }
     }
 
@@ -662,7 +622,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             }
             in.close();
             String result = sb.toString();
-            Log.i("ProfileFragment----------->", result);
             return result;
 
         } finally {
@@ -675,20 +634,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             }
         }
     }
-
-//    @Override
-//    public void onAddressDataChange(String name, String mobile, String address) {
-//        Log.i("onAddressDataChange--->",name+"----"+mobile+"----->"+address);
-//        tv_addr.setText(address);
-//        tv_addr_mobile.setText(mobile);
-//        tv_addr_username.setText(name);
-//        if (TextUtils.isEmpty(address)){
-//            ll_addr_info.setVisibility(View.GONE);
-//        }else {
-//            ll_addr_info.setVisibility(View.VISIBLE);
-//        }
-//        getChildFragmentManager().popBackStack();
-//    }
 
     public void setProfileListener(ProfileListener profileListener) {
         this.profileListener = profileListener;
@@ -705,14 +650,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             String mobile = tv_addr_mobile.getText().toString();
             String address = tv_addr.getText().toString();
 
-            Log.i("DeleteAddressTask---->", name + "---" + mobile + "---" + address + "----" + token + "---" + profileId);
-//            parameters.add(new BasicNameValuePair("_method","PUT"));
-////            String newStr = new String(old.getBytes("UTF-8"));
-//            parameters.add(new BasicNameValuePair("profile[nick_name]",name));
-//            parameters.add(new BasicNameValuePair("profile[mobile]",mobile));
-//            parameters.add(new BasicNameValuePair("profile[address2]",addr));
-//            parameters.add(new BasicNameValuePair("profile[id]",id));
-
             Map<String, String> map = new HashMap<String, String>();
             map.put("_method", "PUT");
             map.put("profile[first_name]", name);
@@ -722,7 +659,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             String result = null;
             try {
                 result = NativeHttpUtil.post(ZhaiDou.USER_EDIT_PROFILE_URL + profileId, token, map);
-                Log.i("result--->", result);
             } catch (Exception e) {
                 Log.e("Exception-------->", e.getMessage());
             }
@@ -732,7 +668,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
         @Override
         protected void onPostExecute(String s) {
-            Log.i("onPostExecute--->", s);
             if (!TextUtils.isEmpty(s)) {
                 try {
                     JSONObject json = new JSONObject(s);

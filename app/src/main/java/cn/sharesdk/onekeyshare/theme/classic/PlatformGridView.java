@@ -37,6 +37,7 @@ import cn.sharesdk.framework.ShareSDK;
 import com.mob.tools.gui.ViewPagerAdapter;
 import com.mob.tools.gui.ViewPagerClassic;
 import com.mob.tools.utils.UIHandler;
+import com.zhaidou.R;
 import com.zhaidou.view.TypeFaceTextView;
 
 import cn.sharesdk.onekeyshare.CustomerLogo;
@@ -437,7 +438,7 @@ public class PlatformGridView extends LinearLayout implements
 			ll.addView(iv);
 
             TypeFaceTextView tv = new TypeFaceTextView(context);
-			tv.setTextColor(0x99999999);
+			tv.setTextColor(context.getResources().getColor(R.color.title_color));//0x99999999
 			tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
 			tv.setSingleLine();
 			tv.setIncludeFontPadding(false);
