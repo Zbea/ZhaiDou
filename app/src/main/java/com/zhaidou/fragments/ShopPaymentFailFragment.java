@@ -33,6 +33,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.alipay.PayResult;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.CartItem;
+import com.zhaidou.model.Order;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.view.TypeFaceTextView;
 
@@ -55,11 +56,13 @@ public class ShopPaymentFailFragment extends BaseFragment {
     private static final String ARG_AMOUNT = "amount";
     private static final String ARG_FARE = "fare";
     private static final String ARG_TIMER="timer";
+    private static final String ARG_ORDER="order";
 
     private long mOrderId;
     private double mAmount;
     private int mFare;
     private long mTimeStamp;
+    private Order mOrder;
     private Context mContext;
 
     private final int UPDATE_COUNT_DOWN_TIME = 1001, UPDATE_UI_TIMER_FINISH = 1002, UPDATE_TIMER_START = 1003;
@@ -103,7 +106,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
                     if (TextUtils.equals(resultStatus, "9000")) {
                         Toast.makeText(getActivity(), "支付成功",
                                 Toast.LENGTH_SHORT).show();
-                        ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, 0);
+                        ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, 0,mOrder);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                         // 判断resultStatus 为非“9000”则代表可能支付失败
                         // “8000”代表支付结果因为支付渠道原因或者系统原因还在等待支付结果确认，最终交易是否成功以服务端异步通知为准（小概率状态）
@@ -134,21 +137,6 @@ public class ShopPaymentFailFragment extends BaseFragment {
             }
         }
     };
-    /**
-     * 下拉刷新
-     */
-    private PullToRefreshBase.OnRefreshListener2 refreshListener = new PullToRefreshBase.OnRefreshListener2() {
-        @Override
-        public void onPullDownToRefresh(PullToRefreshBase refreshView) {
-
-        }
-
-        @Override
-        public void onPullUpToRefresh(PullToRefreshBase refreshView) {
-
-        }
-    };
-
 
     /**
      * 点击事件
@@ -167,13 +155,14 @@ public class ShopPaymentFailFragment extends BaseFragment {
         }
     };
 
-    public static ShopPaymentFailFragment newInstance(long orderId, double amount, int fare,long timer) {
+    public static ShopPaymentFailFragment newInstance(long orderId, double amount, int fare,long timer,Order order) {
         ShopPaymentFailFragment fragment = new ShopPaymentFailFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_FARE, fare);
         args.putLong(ARG_ORDERID, orderId);
         args.putDouble(ARG_AMOUNT, amount);
         args.putLong(ARG_TIMER, timer);
+        args.putSerializable(ARG_ORDER,order);
         fragment.setArguments(args);
         return fragment;
     }
@@ -189,6 +178,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
             mAmount = getArguments().getDouble(ARG_AMOUNT);
             mFare = getArguments().getInt(ARG_FARE);
             mTimeStamp=getArguments().getLong(ARG_TIMER);
+            mOrder=(Order)getArguments().getSerializable(ARG_ORDER);
         }
     }
 
@@ -370,7 +360,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
                 break;
             case 0://支付成功
                 Log.i("----->", "支付成功");
-                ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, mAmount+mFare);
+                ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, mAmount+mFare,mOrder);
                 ((MainActivity)getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                 break;
             case -1://支付失败
