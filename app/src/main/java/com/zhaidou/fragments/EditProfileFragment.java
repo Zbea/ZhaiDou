@@ -64,7 +64,6 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
     private String mParam2;
     private String mProfileId;
     private String mTitle;
-    private String msg_Str;
 
     private String token;
 
@@ -124,6 +123,7 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
         tv_description.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+//                tv_length.setText((75-tv_description.getText().toString().length())+"");
             }
 
             @Override
@@ -162,21 +162,15 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
                 tv_edit_msg.setText("");
                 break;
             case R.id.tv_done:
-                if ("description".equalsIgnoreCase(mParam1))
-                {
-                    if (TextUtils.isEmpty(tv_description.getText().toString().trim()))
-                    {
+                if ("description".equalsIgnoreCase(mParam1)){
+                    System.out.println("\"description\".equalsIgnoreCase(mParam1)");
+                    if (TextUtils.isEmpty(tv_description.getText().toString().trim())){
                         ShowToast(mTitle+"不能为空");
                         return;
                     }
-                }
-                else
-                {
-                    if (TextUtils.isEmpty(tv_edit_msg.getText().toString().trim()))
-                    {
-                        ShowToast(mTitle+"不能为空");
-                        return;
-                    }
+                }else if (TextUtils.isEmpty(tv_edit_msg.getText().toString().trim())){
+                    ShowToast(mTitle+"不能为空");
+                    return;
                 }
                 hideInputMethod();
                 new MyTask().execute(mParam1,mParam2,mProfileId);

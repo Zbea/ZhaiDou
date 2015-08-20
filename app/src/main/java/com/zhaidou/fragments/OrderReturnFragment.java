@@ -30,6 +30,7 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
+import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
@@ -59,6 +60,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
     private String token;
     private View rootView;
     private Context mContext;
+    private View mEmptyView,mNetErrorView;
     private WeakHashMap<Integer,View> mHashMap=new WeakHashMap<Integer, View>();
     private Handler handler=new Handler(){
         @Override
@@ -109,8 +111,11 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
 
     private void initView(View view){
 
-        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
+//        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
         loadingView=(LinearLayout)view.findViewById(R.id.loadingView);
+        mEmptyView=rootView.findViewById(R.id.nullline);
+        mNetErrorView=rootView.findViewById(R.id.nullNetline);
+        view.findViewById(R.id.netReload).setOnClickListener(this);
         mContext=getActivity();
         orders=new ArrayList<Order>();
         mListView=(ListView)view.findViewById(R.id.lv_return);
@@ -118,7 +123,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
         mListView.setAdapter(returnAdapter);
         mRequestQueue= Volley.newRequestQueue(getActivity());
         token=(String) SharedPreferencesUtil.getData(getActivity(),"token","");
-        FetchReturnData();
+//        initData();
         returnAdapter.setOnInViewClickListener(R.id.orderlayout,new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
@@ -187,14 +192,26 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
             }
         });
     }
-
+    private void initData() {
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        if (NetworkUtils.isNetworkAvailable(mContext)) {
+            mNetErrorView.setVisibility(View.GONE);
+            loadingView.setVisibility(View.GONE);
+            FetchReturnData();
+        } else {
+            if (mDialog != null)
+                mDialog.dismiss();
+            mEmptyView.setVisibility(View.GONE);
+            mNetErrorView.setVisibility(View.VISIBLE);
+            loadingView.setVisibility(View.VISIBLE);
+        }
+    }
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-//            case R.id.tv_apply_support:
-//                AfterSaleFragment afterSaleFragment=AfterSaleFragment.newInstance("","");
-//                ((MainActivity)getActivity()).navigationToFragment(afterSaleFragment);
-//                break;
+            case R.id.netReload:
+                initData();
+                break;
         }
     }
     public class ReturnAdapter extends BaseListAdapter<Order> {
@@ -261,6 +278,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
                     else
                     {
                         mListView.setVisibility(View.GONE);
+                        mEmptyView.setVisibility(View.VISIBLE);
                         loadingView.setVisibility(View.VISIBLE);
                     }
                 }
@@ -285,7 +303,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
 
     @Override
     public void onStart() {
-        FetchReturnData();
+        initData();
         super.onStart();
     }
 }

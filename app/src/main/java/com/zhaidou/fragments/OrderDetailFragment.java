@@ -685,4 +685,5 @@ public class OrderDetailFragment extends BaseFragment {
     public interface OrderListener {
         public void onOrderStatusChange(Order order);
     }
+
 }

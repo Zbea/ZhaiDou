@@ -24,7 +24,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.alibaba.sdk.android.callback.CallbackContext;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
@@ -55,9 +54,9 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     private String coverUrl;
     private String url;
     private TextView tv_back;
-    private ImageView iv_share, mHeaderView;
+    private ImageView iv_share,mHeaderView;
     private FrameLayout mChildContainer;
-    private TextView mTitleView, mHeaderText;
+    private TextView mTitleView,mHeaderText;
     private Article article;
     private String is_new;
     private String is_id;
@@ -70,67 +69,69 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     private boolean isShowHeader;
     private RelativeLayout imageView;
 
-    //    private String from;
+//    private String from;
     private LoginFragment loginFragment;
     private RegisterFragment registerFragment;
 
     private SharedPreferences mSharedPreferences;
-    //    private Dialog mDialog;
+//    private Dialog mDialog;
     public static RefreshNotifyListener refreshNotifyListener;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_detail);
 
-        WindowManager wm = getWindowManager();
+        WindowManager wm =getWindowManager();
         screenWidth = wm.getDefaultDisplay().getWidth();
 
-        from = getIntent().getStringExtra("from");
-        article = (Article) getIntent().getSerializableExtra("article");
-        if (article != null)
+        from=getIntent().getStringExtra("from");
+        article=(Article)getIntent().getSerializableExtra("article");
+        if (article!=null)
         {
-            is_id = String.valueOf(article.getId());
-            is_new = article.getIs_new();
+            is_id=String.valueOf(article.getId());
+            is_new=article.getIs_new();
 
-            if (is_new.equals("true"))
+            if(is_new.equals("true"))
             {
-                SharedPreferences sharedPreferences = getSharedPreferences(is_id, 0);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean("is_new", true);
+                SharedPreferences sharedPreferences=getSharedPreferences(is_id,0);
+                SharedPreferences.Editor editor= sharedPreferences.edit();
+                editor.putBoolean("is_new",true);
                 editor.commit();
-                Intent intent = new Intent(ZhaiDou.IntentRefreshListTag);
+                Intent intent=new Intent(ZhaiDou.IntentRefreshListTag);
                 sendBroadcast(intent);
             }
 
         }
 
-        mSharedPreferences = getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
-        userId = mSharedPreferences.getInt("userId", -1);
-        token = mSharedPreferences.getString("token", null);
-        nickName = mSharedPreferences.getString("nickName", "");
-        tv_back = (TextView) findViewById(R.id.tv_back);
-        iv_share = (ImageView) findViewById(R.id.iv_share);
-        mChildContainer = (FrameLayout) findViewById(R.id.fl_child_container);
-        mTitleView = (TextView) findViewById(R.id.tv_title);
+        mSharedPreferences=getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
+        userId=mSharedPreferences.getInt("userId", -1);
+        token=mSharedPreferences.getString("token", null);
+        nickName=mSharedPreferences.getString("nickName","");
+        tv_back=(TextView)findViewById(R.id.tv_back);
+        iv_share=(ImageView)findViewById(R.id.iv_share);
+        mChildContainer=(FrameLayout)findViewById(R.id.fl_child_container);
+        mTitleView=(TextView)findViewById(R.id.tv_title);
 
-        mHeaderView = (ImageView) findViewById(R.id.iv_header);
-        mHeaderView.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 300 / 750));
+        mHeaderView=(ImageView)findViewById(R.id.iv_header);
+        mHeaderView.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth*300/750));
 
-        mHeaderText = (TextView) findViewById(R.id.tv_msg);
-        imageView = (RelativeLayout) findViewById(R.id.imageView);
+        mHeaderText=(TextView)findViewById(R.id.tv_msg);
+        imageView=(RelativeLayout)findViewById(R.id.imageView);
 
-        if (!NetworkUtils.isNetworkAvailable(this))
+        if(!NetworkUtils.isNetworkAvailable(this))
         {
-            Toast.makeText(this, "抱歉，请检查网络", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"抱歉，请检查网络",Toast.LENGTH_SHORT).show();
         }
 
-        loginFragment = LoginFragment.newInstance("", "");
+        loginFragment=LoginFragment.newInstance("","");
         loginFragment.setRegisterOrLoginListener(this);
         loginFragment.setBackClickListener(this);
         tv_back.setOnClickListener(this);
         iv_share.setOnClickListener(this);
+
+
+        //String postId = getIntent().getStringExtra("id");
 
         /* WebView Settings */
         webView = (CustomProgressWebview) findViewById(R.id.detailView);
@@ -144,18 +145,22 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         if (!"lottery".equalsIgnoreCase(from))
-            webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+           webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         webView.setVerticalScrollBarEnabled(false);
         webView.setVerticalScrollbarOverlay(false);
         webView.setHorizontalScrollbarOverlay(false);
         webView.setHorizontalFadingEdgeEnabled(false);
         webView.setInitialScale(1);
+        webView.setWebChromeClient(new WebChromeClient(){
+
+        });
         webView.setWebViewClient(new WebViewClient()
         {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url)
             {
+                Log.i("shouldOverrideUrlLoading---------------->", url);
                 getDeviceId();
                 if ("mobile://login?false".equalsIgnoreCase(url))
                 {
@@ -174,24 +179,19 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
                 }
                 return false;
             }
-
             @Override
             public void onPageFinished(WebView view, String url)
             {
-                if ("lottery".equalsIgnoreCase(from))
-                {
-                    if (!TextUtils.isEmpty(token))
-                    {
-                        webView.loadUrl("javascript:ReceiveUserInfo(" + userId + ", '" + token + "'," + getDeviceId() + ",'" + nickName + "')");
-                    } else
-                    {
-                        webView.loadUrl("javascript:ReceiveUserInfo(" + userId + ", '" + "" + "'," + getDeviceId() + ",'" + nickName + "')");
+                if ("lottery".equalsIgnoreCase(from)){
+                    if (!TextUtils.isEmpty(token)){
+                        webView.loadUrl("javascript:ReceiveUserInfo("+userId+", '"+token+"',"+getDeviceId()+",'"+nickName+"')");
+                    }else {
+                        webView.loadUrl("javascript:ReceiveUserInfo("+userId+", '"+""+"',"+getDeviceId()+",'"+nickName+"')");
                     }
 
-                } else if ("product".equalsIgnoreCase(from))
-                {
+                }else if ("product".equalsIgnoreCase(from)){
                     if (!TextUtils.isEmpty(token))
-                        webView.loadUrl("javascript:ReceiveUserInfo(" + userId + ", '" + token + "')");
+                        webView.loadUrl("javascript:ReceiveUserInfo("+userId+", '"+token+"')");
                 }
                 super.onPageFinished(view, url);
             }
@@ -202,11 +202,12 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
             @Override
             public void onProgressChanged(WebView view, int newProgress)
             {
-                if (newProgress == 100)
+                if (newProgress==100)
                 {
                     webView.progressBar.setVisibility(View.GONE);
 
-                } else
+                }
+                else
                 {
                     webView.progressBar.setVisibility(View.VISIBLE);
                     webView.progressBar.setProgress(newProgress);
@@ -216,58 +217,51 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         });
 
         url = getIntent().getStringExtra("url");
-        Log.i("url----------->", "url" + "------" + url);
-        webView.loadUrl(url + "?open=app");
+        Log.i("url----------->","url"+"------"+url);
+        webView.loadUrl(url+"?open=app");
         this.setTitle("");
 
         title = getIntent().getStringExtra("title");
         coverUrl = getIntent().getStringExtra("cover_url");
 
-        if (!TextUtils.isEmpty(title))
-        {
+        if (!TextUtils.isEmpty(title)){
             mTitleView.setText(title);
         }
-        if (!TextUtils.isEmpty(coverUrl))
-        {
+        if (!TextUtils.isEmpty(coverUrl)){
             Log.i("cover_url---------------->", coverUrl);
             ToolUtils.setImageCacheUrl(coverUrl, mHeaderView);
             mTitleView.setVisibility(View.GONE);
             mHeaderText.setText(title);
             imageView.setVisibility(View.VISIBLE);
         }
-        if ("lottery".equals(from) || "beauty".equals(from) || "competition".equalsIgnoreCase(from))
+        if ("lottery".equals(from)||"beauty".equals(from)||"competition".equalsIgnoreCase(from))
         {
             iv_share.setVisibility(View.GONE);
         }
-        if ("beauty1".equalsIgnoreCase(from))
-        {
+        if ("beauty1".equalsIgnoreCase(from)){
             iv_share.setVisibility(View.VISIBLE);
             imageView.setVisibility(View.GONE);
         }
 
-        isShowHeader = getIntent().getBooleanExtra("show_header", false);
+        isShowHeader=getIntent().getBooleanExtra("show_header",false);
 
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.item_detail, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
+    public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == android.R.id.home)
-        {
+        if (id == android.R.id.home) {
             finish();
             return true;
         }
 
-        if (id == R.id.action_share)
-        {
+        if (id == R.id.action_share) {
             ShareSDK.initSDK(this);
             OnekeyShare oks = new OnekeyShare();
             //关闭sso授权
@@ -298,15 +292,11 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     }
 
     @Override
-    public void onClick(View view)
-    {
-        switch (view.getId())
-        {
+    public void onClick(View view) {
+        switch (view.getId()){
             case R.id.tv_back:
-                if (webView.canGoBack())
-                {
-                    if ("product".equalsIgnoreCase(from))
-                    {
+                if (webView.canGoBack()){
+                    if ("product".equalsIgnoreCase(from)){
                         iv_share.setVisibility(View.VISIBLE);
                     }
                     webView.goBack();
@@ -320,8 +310,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         }
     }
 
-    private void doShare()
-    {
+    private void doShare(){
         ShareSDK.initSDK(this);
         OnekeyShare oks = new OnekeyShare();
         //关闭sso授权
@@ -334,7 +323,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         // titleUrl是标题的网络链接，仅在人人网和QQ空间使用
         oks.setTitleUrl(url);
         // text是分享文本，所有平台都需要这个字段
-        oks.setText(title + "   " + url);
+        oks.setText(title+"   "+url);
         // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
         oks.setImageUrl(coverUrl);//确保SDcard下面存在此张图片
         // url仅在微信（包括好友和朋友圈）中使用
@@ -349,7 +338,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         oks.show(this);
     }
 
-    //    public void popToStack(Fragment fragment){
+//    public void popToStack(Fragment fragment){
 //
 //        FragmentManager fragmentManager = getSupportFragmentManager();
 //        Log.i("childFragmentManager--->", fragmentManager.getBackStackEntryCount()+"");
@@ -358,18 +347,15 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 //    }
 //
     @Override
-    public void onRegisterOrLoginSuccess(User user, Fragment fragment)
-    {
+    public void onRegisterOrLoginSuccess(User user,Fragment fragment) {
 
-        if ("lottery".equalsIgnoreCase(from))
-        {
-            Log.i("onRegisterOrLoginSuccess--lottery----------->", "onPageFinished" + "------" + token);
-            webView.loadUrl("javascript:ReceiveUserInfo(" + user.getId() + ", '" + user.getAuthentication_token() + "'," + getDeviceId() + ",'" + user.getNickName() + "')");
-        } else if ("product".equalsIgnoreCase(from))
-        {
-            webView.loadUrl("javascript:ReceiveUserInfo(" + user.getId() + ", '" + user.getAuthentication_token() + "')");
+        if ("lottery".equalsIgnoreCase(from)){
+            Log.i("onRegisterOrLoginSuccess--lottery----------->","onPageFinished"+"------"+token);
+            webView.loadUrl("javascript:ReceiveUserInfo("+user.getId()+", '"+user.getAuthentication_token()+"',"+getDeviceId()+",'"+user.getNickName()+"')");
+        }else if ("product".equalsIgnoreCase(from)){
+            webView.loadUrl("javascript:ReceiveUserInfo("+user.getId()+", '"+user.getAuthentication_token()+"')");
         }
-        super.onRegisterOrLoginSuccess(user, fragment);
+        super.onRegisterOrLoginSuccess(user,fragment);
     }
 //    private void saveUserToSP(User user){
 //        SharedPreferences.Editor editor = mSharedPreferences.edit();
@@ -386,22 +372,20 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 //                .addToBackStack(null).commit();
 //    }
 
-    public String getDeviceId()
-    {
+    public String getDeviceId(){
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         return tm.getDeviceId();
     }
 
     @Override
-    public void onBackClick(Fragment fragment)
-    {
-        Log.i("ItemDetailActivity--fragment----->", fragment.getClass().getSimpleName());
+    public void onBackClick(Fragment fragment) {
+        Log.i("ItemDetailActivity--fragment----->",fragment.getClass().getSimpleName());
         webView.reload();
     }
 
     public void setRefreshNotifyListenter(RefreshNotifyListener refreshNotifyListenter)
     {
-        this.refreshNotifyListener = refreshNotifyListenter;
+        this.refreshNotifyListener=refreshNotifyListenter;
     }
 
     public interface RefreshNotifyListener
@@ -410,8 +394,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         CallbackContext.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
     }

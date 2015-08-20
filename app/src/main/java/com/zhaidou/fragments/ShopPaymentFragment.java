@@ -486,4 +486,5 @@ public class ShopPaymentFragment extends BaseFragment {
     public void setOrderListener(Order.OrderListener orderListener) {
         this.orderListener = orderListener;
     }
+
 }

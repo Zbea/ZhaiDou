@@ -36,12 +36,6 @@ import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONObject;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SettingFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
- */
 public class SettingFragment extends BaseFragment implements View.OnClickListener,ProfileFragment.ProfileListener{
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -252,7 +246,6 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
 
     @Override
     public void onProfileChange(User user) {
-        Log.i("SettingFragment--->","onProfileChange");
         profileListener.onProfileChange(user);
     }
 

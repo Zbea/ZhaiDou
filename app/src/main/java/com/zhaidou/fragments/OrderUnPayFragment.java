@@ -1,6 +1,7 @@
 package com.zhaidou.fragments;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
+import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
@@ -49,7 +51,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 
-public class OrderUnPayFragment extends BaseFragment {
+public class OrderUnPayFragment extends BaseFragment implements View.OnClickListener{
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -76,6 +78,7 @@ public class OrderUnPayFragment extends BaseFragment {
     private boolean isTimerStart = false;
     private long preTime = 0;
     private long timeStmp = 0;
+    private View mEmptyView,mNetErrorView;
     private Map<Integer, Boolean> timerMap = new HashMap<Integer, Boolean>();
     private Handler handler = new Handler() {
         @Override
@@ -132,8 +135,11 @@ public class OrderUnPayFragment extends BaseFragment {
         } else {
             rootView = inflater.inflate(R.layout.fragment_unpay, container, false);
             mContext = getActivity();
-            mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
+//            mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
+            mEmptyView=rootView.findViewById(R.id.nullline);
+            mNetErrorView=rootView.findViewById(R.id.nullNetline);
+            rootView.findViewById(R.id.netReload).setOnClickListener(this);
             mListView = (ListView) rootView.findViewById(R.id.lv_unpaylist);
             unPayAdapter = new UnPayAdapter(getActivity(), orders);
             mListView.setAdapter(unPayAdapter);
@@ -154,15 +160,14 @@ public class OrderUnPayFragment extends BaseFragment {
                         public void onOrderStatusChange(Order o) {
                             if (o.getStatus().equals(""+ZhaiDou.STATUS_PAYED))
                             {
-                                orders.remove(o);
-                                unPayAdapter.notifyDataSetChanged();
+                                orders.remove(order);
                                 if ( orders.size() <1)
                                 {
                                     mListView.setVisibility(View.GONE);
                                     loadingView.setVisibility(View.VISIBLE);
                                 }
                             }
-                             else
+                            else
                             {
                                 long time = o.getOver_at();
                                 order.setStatus(o.getStatus());
@@ -174,7 +179,6 @@ public class OrderUnPayFragment extends BaseFragment {
                                     btn2.setTag(o.getOver_at());
                                 }
                             }
-
                         }
                     });
                 }
@@ -196,7 +200,6 @@ public class OrderUnPayFragment extends BaseFragment {
                         public void onOrderStatusChange(Order ordera)
                         {
                             orders.remove(order);
-                            unPayAdapter.notifyDataSetChanged();
                             if ( orders.size() <1)
                             {
                                 mListView.setVisibility(View.GONE);
@@ -211,6 +214,22 @@ public class OrderUnPayFragment extends BaseFragment {
 
         return rootView;
     }
+
+    private void initData() {
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        if (NetworkUtils.isNetworkAvailable(mContext)) {
+            mNetErrorView.setVisibility(View.GONE);
+            loadingView.setVisibility(View.GONE);
+            FetchData();
+        } else {
+            if (mDialog != null)
+                mDialog.dismiss();
+            mEmptyView.setVisibility(View.GONE);
+            mNetErrorView.setVisibility(View.VISIBLE);
+            loadingView.setVisibility(View.VISIBLE);
+        }
+    }
+
 
     private void FetchData() {
         orders.clear();
@@ -246,6 +265,7 @@ public class OrderUnPayFragment extends BaseFragment {
                         handler.sendEmptyMessage(UPDATE_UNPAY_LIST);
                     } else {
                         mListView.setVisibility(View.GONE);
+                        mEmptyView.setVisibility(View.VISIBLE);
                         loadingView.setVisibility(View.VISIBLE);
                     }
                 }
@@ -268,6 +288,15 @@ public class OrderUnPayFragment extends BaseFragment {
         mRequestQueue.add(request);
     }
 
+    @Override
+    public void onClick(View view) {
+        super.onClick(view);
+        switch (view.getId()){
+            case R.id.netReload:
+                initData();
+                break;
+        }
+    }
 
     private class UnPayAdapter extends BaseListAdapter<Order> {
 
@@ -388,4 +417,5 @@ public class OrderUnPayFragment extends BaseFragment {
         }
         super.onDestroyView();
     }
+
 }
