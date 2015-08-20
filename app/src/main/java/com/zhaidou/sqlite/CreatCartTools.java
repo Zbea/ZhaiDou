@@ -3,6 +3,7 @@ package com.zhaidou.sqlite;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.zhaidou.model.CartItem;
 import com.zhaidou.utils.ToolUtils;

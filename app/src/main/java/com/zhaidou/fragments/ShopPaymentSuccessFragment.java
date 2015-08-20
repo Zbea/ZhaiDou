@@ -44,12 +44,13 @@ import java.util.Map;
 public class ShopPaymentSuccessFragment extends BaseFragment {
     private static final String ARG_ORDERID = "orderId";
     private static final String INDEX = "index";
+    private static final String ARG_ORDER = "order";
 
     private long mOrderId;
     private double mIndex;
     private View mView;
     private Context mContext;
-
+    private Order mOrder;
     private TypeFaceTextView backBtn, titleTv;
     private RequestQueue mRequestQueue;
     private String token;
@@ -62,30 +63,16 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
             switch (msg.what){
                 case UPDATE_PAY_SUCCESS_PAG:
                     Order order=(Order)msg.obj;
-                    tv_receiver.setText(order.getReceiver_name());
-                    tv_mobile.setText(order.getReceiver_phone());
+                    tv_receiver.setText("收件人："+order.getReceiver().getName());
+                    tv_address.setText(order.getReceiver().getProvince()+","+ order.getReceiver().getCity()+","+ order.getReceiver().getArea()+","+order.getReceiver().getAddress());
+                    tv_mobile.setText("电话："+order.getReceiver().getPhone());
                     Receiver receiver=order.getReceiver();
-                    tv_address.setText(receiver.getProvince()+","+receiver.getCity()+","+receiver.getArea()+","+receiver.getAddress());
-                    tv_amount.setText(order.getAmount()+"");
+                    tv_amount.setText("￥"+order.getAmount()+"");
+                    mOrder=order;
                     break;
             }
         }
     };
-    /**
-     * 下拉刷新
-     */
-    private PullToRefreshBase.OnRefreshListener2 refreshListener = new PullToRefreshBase.OnRefreshListener2() {
-        @Override
-        public void onPullDownToRefresh(PullToRefreshBase refreshView) {
-
-        }
-
-        @Override
-        public void onPullUpToRefresh(PullToRefreshBase refreshView) {
-
-        }
-    };
-
 
     /**
      * 点击事件
@@ -120,18 +107,19 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
 
                     break;
                 case R.id.tv_order_detail:
-                    OrderDetailFragment orderDetailFragment=OrderDetailFragment.newInstance(mOrderId+"",0,null);
+                    OrderDetailFragment orderDetailFragment=OrderDetailFragment.newInstance(mOrderId+"",0,mOrder);
                     ((MainActivity)getActivity()).navigationToFragment(orderDetailFragment);
                     break;
             }
         }
     };
 
-    public static ShopPaymentSuccessFragment newInstance(long orderId, double index) {
+    public static ShopPaymentSuccessFragment newInstance(long orderId, double index,Order order) {
         ShopPaymentSuccessFragment fragment = new ShopPaymentSuccessFragment();
         Bundle args = new Bundle();
         args.putLong(ARG_ORDERID, orderId);
         args.putDouble(INDEX, index);
+        args.putSerializable(ARG_ORDER,order);
         fragment.setArguments(args);
         return fragment;
     }
@@ -145,6 +133,7 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
         if (getArguments() != null) {
             mOrderId = getArguments().getLong(ARG_ORDERID);
             mIndex = getArguments().getDouble(INDEX);
+            mOrder=(Order)getArguments().getSerializable(ARG_ORDER);
         }
     }
 
@@ -184,6 +173,7 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
         tv_order_detail.setOnClickListener(onClickListener);
         mRequestQueue= Volley.newRequestQueue(getActivity());
         token=(String) SharedPreferencesUtil.getData(getActivity(),"token","");
+
         FetchData(mOrderId);
     }
 
@@ -193,7 +183,7 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
             public void onResponse(JSONObject jsonObject) {
                 if (jsonObject != null) {
                     JSONObject orderObj = jsonObject.optJSONObject("order");
-                    int amount = orderObj.optInt("amount");
+                    double amount = orderObj.optDouble("amount");
                     int id = orderObj.optInt("id");
                     String status = orderObj.optString("status");
                     String created_at_for = orderObj.optString("created_at_for");
