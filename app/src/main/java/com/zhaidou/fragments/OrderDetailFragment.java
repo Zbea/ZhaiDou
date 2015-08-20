@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -95,7 +96,7 @@ public class OrderDetailFragment extends BaseFragment {
                     mOrderNumber.setText(order.getNumber());
                     mOrderTime.setText(order.getCreated_at_for());
                     mOrderStatus.setText(order.getStatus_ch());
-                    if (mParam2 < 1) {
+                    if (mOrder.getStatus().equals(""+ZhaiDou.STATUS_UNPAY)&&mParam2<=0) {
                         mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
                     }
                     mReceiverName.setText(order.getReceiver().getName());
@@ -116,6 +117,24 @@ public class OrderDetailFragment extends BaseFragment {
                     mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
                     break;
             }
+        }
+    };
+
+
+    private AdapterView.OnItemClickListener onItemClickListener=new AdapterView.OnItemClickListener()
+    {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
+        {
+            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", orderItems.get(i).getId());
+            Bundle bundle = new Bundle();
+                    if(orderItems.get(i).getSale_cate()==1)
+                    {
+                        bundle.putInt("flags", 1);
+                    }
+            bundle.putInt("index", orderItems.get(i).getMerchandise_id());
+            goodsDetailsFragment.setArguments(bundle);
+            ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
         }
     };
 
@@ -179,6 +198,7 @@ public class OrderDetailFragment extends BaseFragment {
         mListView = (ListView) view.findViewById(R.id.lv_order_list);
         orderItemAdapter = new OrderItemAdapter(getActivity(), orderItems);
         mListView.setAdapter(orderItemAdapter);
+        mListView.setOnItemClickListener(onItemClickListener);
         requestQueue = Volley.newRequestQueue(getActivity());
         FetchOrderDetail(mOrderId);
 
@@ -196,7 +216,7 @@ public class OrderDetailFragment extends BaseFragment {
         Log.i("mOrder.getStatus()------------>", mOrder.getStatus());
         switch (Integer.parseInt(mOrder.getStatus())) {
             case ZhaiDou.STATUS_UNPAY:
-                if (mParam2 < 1) {
+                if (mOrder.getStatus().equals(""+ZhaiDou.STATUS_UNPAY) && mParam2 < 1) {
                     mBottomLayout.setVisibility(View.GONE);
                 }
                 break;
@@ -394,9 +414,9 @@ public class OrderDetailFragment extends BaseFragment {
                         for (int i = 0; i < order_items.length(); i++) {
                             JSONObject item = order_items.optJSONObject(i);
                             int itemId = item.optInt("id");
-                            double itemPrice = item.optInt("price");
+                            double itemPrice = item.optDouble("price");
                             int count = item.optInt("count");
-                            double cost_price = item.optInt("cost_price");
+                            double cost_price = item.optDouble("cost_price");
                             String merchandise = item.optString("merchandise");
                             String specification = item.optString("specification");
                             int merchandise_id = item.optInt("merchandise_id");

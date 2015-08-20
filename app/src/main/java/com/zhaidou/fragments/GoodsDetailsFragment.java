@@ -429,7 +429,7 @@ public class GoodsDetailsFragment extends BaseFragment
                                 if (flags == 1)//判断零元特卖是否已经购买郭
                                 {
                                     mDialog.show();
-                                    FetchOSaleData(5);
+                                    FetchOSaleData(UPDATE_LJBUY_ISOSALEBUY);
                                 } else
                                 {
                                     buyGoods();
@@ -688,7 +688,7 @@ public class GoodsDetailsFragment extends BaseFragment
             {
                 if (flags==1)
                 {
-                    FetchOSaleData(0);
+                    FetchOSaleData(UPDATE_ISOSALEBUY);
                 }
             }
         }
@@ -1240,6 +1240,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 if (jsonObject != null)
                 {
                     isOSaleBuy = jsonObject.optBoolean("flag");
+                    Log.i("isOSaleBuy---------------------->", ""+isOSaleBuy);
                 }
                 if (i == UPDATE_LJBUY_ISOSALEBUY)
                 {

@@ -107,8 +107,7 @@ public class CreatCartTools
             values.put("num", itm.num);
             String whereClause = "userId=? and sizeId=?";
             String[] whereArgs = new String[]{String.valueOf(itm.userId),String.valueOf(itm.sizeId)};
-            int i=sqLiteDatabase.update(CreatCartDB.SqlName, values, whereClause, whereArgs);
-            Log.i("i-------------------->",i+"");
+            sqLiteDatabase.update(CreatCartDB.SqlName, values, whereClause, whereArgs);
             sqLiteDatabase.setTransactionSuccessful();
 
         } catch (Exception e)
@@ -136,8 +135,6 @@ public class CreatCartTools
             String[] whereArgs = new String[]{String.valueOf(itm.userId),String.valueOf(itm.sizeId)};
             sqLiteDatabase.update(CreatCartDB.SqlName, values, whereClause, whereArgs);
             sqLiteDatabase.setTransactionSuccessful();
-            sqLiteDatabase.execSQL("select * from cartItem where userId="+itm.userId);
-
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -159,7 +156,7 @@ public class CreatCartTools
         try
         {
             ContentValues values = new ContentValues();
-            values.put("isPublish",itm.isPublish);
+            values.put("isPublish", itm.isPublish);
             String whereClause = "userId=? and sizeId=?";
             String[] whereArgs = new String[]{String.valueOf(itm.userId),String.valueOf(itm.sizeId)};
             sqLiteDatabase.update(CreatCartDB.SqlName, values, whereClause, whereArgs);

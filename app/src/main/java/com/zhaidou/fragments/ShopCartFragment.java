@@ -389,6 +389,7 @@ public class ShopCartFragment extends BaseFragment
                         if (itemServer.isPublish.equals("true"))
                         {
                             ToolUtils.setLog("修改是否下架");
+                            ToolUtils.setLog(""+itemServer.userId);
                             CreatCartTools.editIsLoseByData(creatCartDB, itemServer);//修改本地数据
                         }
                         if (itemServer.isOver.equals("true"))
@@ -643,8 +644,7 @@ public class ShopCartFragment extends BaseFragment
                             obj = jsonArray.optJSONObject(i);
                             int id = obj.optInt("id");
                             String name = obj.optString("title");
-//                            String isPublish = obj.optBoolean("is_publish") ==false? "true" : "false";
-                            String isPublish ="true";
+                            String isPublish = obj.optBoolean("is_publish") ==false? "true" : "false";
                             JSONArray array = obj.optJSONArray("specifications");
                             for (int j = 0; j < array.length(); j++)
                             {
@@ -662,6 +662,7 @@ public class ShopCartFragment extends BaseFragment
                                 }
                                 CartItem item = new CartItem();
                                 item.id = id;
+                                item.userId=userId;
                                 item.name = name;
                                 item.isPublish = isPublish;
                                 item.size = size;
