@@ -59,7 +59,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
-            android:text="普通特卖退货、退款，在订单管理中申请售后，确定是退款还是退货，联系客服确认商品有无损伤，说明退货原因，用户用快递退回商品，没有质量问题的退货需用户承担运费，有质量问题或者物流造成货品损伤的运费有宅豆承担。"
+            android:text="普通特卖退货、退款，在订单管理中申请售后，确定是退款还是退货，联系客服确认商品有无损伤，说明退货原因，用户用快递退回商品，没有质量问题的退货需用户承担运费，有质量问题或者物流造成货品损伤的运费由宅豆承担。"
             android:textColor="@color/text_gary_color" />
 
 

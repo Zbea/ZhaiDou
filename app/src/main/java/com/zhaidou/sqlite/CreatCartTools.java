@@ -149,13 +149,12 @@ public class CreatCartTools
      */
     public static void editIsLoseByData(CreatCartDB cartDB,CartItem itm)
     {
-        ToolUtils.setLog(itm.isPublish);
         SQLiteDatabase sqLiteDatabase = cartDB.getReadableDatabase();
         sqLiteDatabase.beginTransaction();
         try
         {
             ContentValues values = new ContentValues();
-            values.put("isPublish", "true");
+            values.put("isPublish", itm.isPublish);
             String whereClause = "userId=? and sizeId=?";
             String[] whereArgs = new String[]{String.valueOf(itm.userId),String.valueOf(itm.sizeId)};
             sqLiteDatabase.update(CreatCartDB.SqlName, values, whereClause, whereArgs);

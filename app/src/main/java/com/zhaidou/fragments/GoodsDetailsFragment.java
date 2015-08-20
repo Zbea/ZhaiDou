@@ -1218,7 +1218,6 @@ public class GoodsDetailsFragment extends BaseFragment
                     mDialog.dismiss();
                 nullView.setVisibility(View.VISIBLE);
                 nullNetView.setVisibility(View.GONE);
-                Toast.makeText(getActivity(), "加载失败", Toast.LENGTH_SHORT).show();
             }
         });
         mRequestQueue.add(request);

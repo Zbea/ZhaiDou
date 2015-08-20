@@ -155,7 +155,7 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:gravity="center"
-                    android:textColor="@color/text_gary_color"
+                    android:textColor="@color/text_main_color"
                     android:text="1"
                     android:background="@drawable/shop_cart_num"/>
                 <com.zhaidou.view.TypeFaceTextView
@@ -187,7 +187,7 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:gravity="center"
-                    android:textColor="@color/text_gary_color"
+                    android:textColor="@color/text_main_color"
                     android:text="1"/>
 
             </LinearLayout>
@@ -228,8 +228,8 @@
             <ImageView
                 android:id="@+id/cartItemDelBtn"
                 android:layout_width="45dp"
-                android:layout_height="28dp"
-                android:layout_marginTop="15dp"
+                android:layout_height="26dp"
+                android:layout_marginTop="20dp"
                 android:paddingLeft="20dp"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"

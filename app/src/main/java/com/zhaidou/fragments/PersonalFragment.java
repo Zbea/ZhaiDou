@@ -128,6 +128,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 {
                     tv_unpay_count.setText(count+"");
                 }
+                FetchUnPayCount();
             }
         }
     };
@@ -323,6 +324,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 intent.putExtra("url", ZhaiDou.COMPETITION_URL);
                 intent.putExtra("from", "competition");
                 intent.putExtra("title", "拼贴大赛");
+                intent.setFlags(2);
                 startActivity(intent);
                 break;
             case R.id.ll_collect:
@@ -542,6 +544,10 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                         message.what=UPDATE_UNPAY_COUNT;
                         message.arg1=count;
                         mHandler.sendMessage(message);
+                    }
+                    else
+                    {
+                        mCartCount.setVisibility(View.GONE);
                     }
                 }
             }

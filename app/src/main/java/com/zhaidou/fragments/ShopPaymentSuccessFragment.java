@@ -98,23 +98,24 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
                     ((MainActivity) getActivity()).popToStack(ShopPaymentSuccessFragment.this);
                     break;
                 case R.id.tv_mall:
-                    ShopSpecialFragment shopSpecialFragment = ShopSpecialFragment.newInstance("", 0);
-                    ((MainActivity) getActivity()).navigationToFragment(shopSpecialFragment);
-                    colseFragment(ShopPaymentSuccessFragment.this);
-
-                    FragmentManager fragmentManager=getFragmentManager();
-                    Fragment fragment=fragmentManager.findFragmentByTag((GoodsDetailsFragment.class).getClass().getSimpleName());
-                    Fragment fragment1=fragmentManager.findFragmentByTag((ShopCartFragment.class).getClass().getSimpleName());
-                    Fragment fragment2=fragmentManager.findFragmentByTag((ShopTodaySpecialFragment.class).getClass().getSimpleName());
-                    Fragment fragment3=fragmentManager.findFragmentByTag((OrderDetailFragment.class).getClass().getSimpleName());
-                    FragmentTransaction transaction=fragmentManager.beginTransaction();
-                    transaction.remove(fragment);
-                    transaction.remove(fragment1);
-                    transaction.remove(fragment2);
-                    transaction.remove(fragment3);
-                    transaction.commitAllowingStateLoss();
-
-                    fragmentManager.popBackStack();
+//                    ShopSpecialFragment shopSpecialFragment = ShopSpecialFragment.newInstance("", 0);
+//                    ((MainActivity) getActivity()).navigationToFragment(shopSpecialFragment);
+//                    colseFragment(ShopPaymentSuccessFragment.this);
+//
+//                    FragmentManager fragmentManager=getFragmentManager();
+//                    Fragment fragment=fragmentManager.findFragmentByTag((GoodsDetailsFragment.class).getClass().getSimpleName());
+//                    Fragment fragment1=fragmentManager.findFragmentByTag((ShopCartFragment.class).getClass().getSimpleName());
+//                    Fragment fragment2=fragmentManager.findFragmentByTag((ShopTodaySpecialFragment.class).getClass().getSimpleName());
+//                    Fragment fragment3=fragmentManager.findFragmentByTag((OrderDetailFragment.class).getClass().getSimpleName());
+//                    FragmentTransaction transaction=fragmentManager.beginTransaction();
+//                    transaction.remove(fragment);
+//                    transaction.remove(fragment1);
+//                    transaction.remove(fragment2);
+//                    transaction.remove(fragment3);
+//                    transaction.commitAllowingStateLoss();
+//
+//                    fragmentManager.popBackStack();
+                    ((MainActivity) getActivity()).popToStack(ShopPaymentSuccessFragment.this);
 
 
                     break;

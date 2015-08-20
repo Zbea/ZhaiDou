@@ -52,6 +52,7 @@ import com.pulltorefresh.internal.Utils;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.HomeCompetitionActivity;
 import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.SearchActivity;
@@ -604,11 +605,11 @@ public class HomeFragment extends BaseFragment implements
                 toggleMenu();
                 break;
             case R.id.ll_lottery:
-                Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
+                Intent detailIntent = new Intent(getActivity(), HomeCompetitionActivity.class);
                 detailIntent.putExtra("url", ZhaiDou.PRIZE_SCRAPING_URL);
                 detailIntent.putExtra("from", "lottery");
                 detailIntent.putExtra("title", "天天刮奖");
-                startActivity(detailIntent);
+                getActivity().startActivity(detailIntent);
                 break;
 
             case R.id.ll_special_shop:

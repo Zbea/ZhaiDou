@@ -164,14 +164,23 @@ public class ShopCartFragment extends BaseFragment
 
                         } else
                         {
-                            if (count <mCartItem.num)
+                            if (count<1)
+                            {
+                                mCartItem.num = 1;
+                            }
+                            if (count <mCartItem.num&&count>0)
                             {
                                 CustomToastDialog.setToastDialog(mContext, "抱歉,该商品只剩"+count+"件,及时更新购物车");
+                                mCartItem.num = count;
                             }
-                            mCartItem.num = mCartItem.num - 1;
+                            else
+                            {
+                                mCartItem.num = mCartItem.num - 1;
+                            }
                             CreatCartTools.editNumByData(creatCartDB, mCartItem);
                             sendBroadCastEditAll();
                             textNumView.setText("" + mCartItem.num);
+
                         }
                     }
                     break;
@@ -384,17 +393,18 @@ public class ShopCartFragment extends BaseFragment
                     CartItem itemLocal = items.get(j);
                     if (itemServer.sizeId == itemLocal.sizeId)
                     {
-                        items.get(j).isPublish=itemServer.isPublish;
-                        items.get(j).isOver=itemServer.isOver;
-                        if (itemServer.isPublish.equals("true"))
+                        if (!itemServer.isPublish.equals(itemLocal.isPublish))
                         {
+                            itemLocal.isPublish=itemServer.isPublish;
                             ToolUtils.setLog("修改是否下架");
-                            ToolUtils.setLog(""+itemServer.userId);
+                            ToolUtils.setLog(itemServer.isPublish);
                             CreatCartTools.editIsLoseByData(creatCartDB, itemServer);//修改本地数据
                         }
-                        if (itemServer.isOver.equals("true"))
+                        if (!itemServer.isOver.equals(itemLocal.isOver))
                         {
+                            itemLocal.isOver=itemServer.isOver;
                             ToolUtils.setLog("修改是否卖光");
+                            ToolUtils.setLog(itemServer.isPublish);
                             CreatCartTools.editIsOverByData(creatCartDB, itemServer);//修改本地数据
                         }
                     }

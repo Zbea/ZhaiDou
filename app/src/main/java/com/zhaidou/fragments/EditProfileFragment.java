@@ -64,6 +64,7 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
     private String mParam2;
     private String mProfileId;
     private String mTitle;
+    private String msg_Str;
 
     private String token;
 
@@ -81,15 +82,6 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
 
     private Dialog mDialog;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment EditProfileFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static EditProfileFragment newInstance(String param1, String param2,String profileId,String title) {
         EditProfileFragment fragment = new EditProfileFragment();
         Bundle args = new Bundle();
@@ -132,27 +124,15 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
         tv_description.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-                Log.i("beforeTextChanged--->","beforeTextChanged");
-                Log.i("beforeTextChanged--charSequence",charSequence+"");
-                Log.i("beforeTextChanged--i",""+i);
-                Log.i("beforeTextChanged--i2",""+i2);
-                Log.i("beforeTextChanged--i3",""+i3);
-//                tv_length.setText((75-tv_description.getText().toString().length())+"");
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-                Log.i("onTextChanged--->","beforeTextChanged");
-                Log.i("onTextChanged--charSequence",charSequence+"");
-                Log.i("onTextChanged--i",""+i);
-                Log.i("onTextChanged--i2",""+i2);
-                Log.i("onTextChanged--i3",""+i3);
                 tv_length.setText((75-tv_description.getText().toString().length())+"");
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                Log.i("afterTextChanged--->","afterTextChanged");
             }
         });
         if ("description".equalsIgnoreCase(mParam1)){
@@ -176,16 +156,27 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.ll_back:
-                Log.i("------","dsfdsfs");
                 ((ProfileFragment)getParentFragment()).popToStack();
                 break;
             case R.id.iv_cancel:
                 tv_edit_msg.setText("");
                 break;
             case R.id.tv_done:
-                if (TextUtils.isEmpty(tv_edit_msg.getText().toString().trim())){
-                    ShowToast(mTitle+"不能为空");
-                    return;
+                if ("description".equalsIgnoreCase(mParam1))
+                {
+                    if (TextUtils.isEmpty(tv_description.getText().toString().trim()))
+                    {
+                        ShowToast(mTitle+"不能为空");
+                        return;
+                    }
+                }
+                else
+                {
+                    if (TextUtils.isEmpty(tv_edit_msg.getText().toString().trim()))
+                    {
+                        ShowToast(mTitle+"不能为空");
+                        return;
+                    }
                 }
                 hideInputMethod();
                 new MyTask().execute(mParam1,mParam2,mProfileId);
@@ -231,9 +222,7 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
     }
 
     public String executeHttpPost(String type,String msg,String id) throws Exception {
-        Log.i("type--->",type==null?"":type);
-        Log.i("msg--->",msg==null?"":msg);
-        Log.i("id--->",id==null?"":id);
+
         BufferedReader in = null;
         try {
             // 定义HttpClient

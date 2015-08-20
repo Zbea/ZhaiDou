@@ -149,9 +149,10 @@ public class GoodsDetailsChildFragment extends BaseFragment {
             if (convertView == null)
                 convertView = mInflater.inflate(R.layout.item_goods_info, null);
             TextView tv_key = ViewHolder.get(convertView, R.id.tv_key);
+            tv_key.setMaxWidth(screenWidth/2-20);
             TextView tv_value = ViewHolder.get(convertView, R.id.tv_value);
             GoodInfo goodInfo = getList().get(position);
-            tv_key.setText(goodInfo.getTitle() + ": ");
+            tv_key.setText(goodInfo.getTitle());
             tv_value.setText(goodInfo.getValue());
             return convertView;
         }
@@ -173,39 +174,4 @@ public class GoodsDetailsChildFragment extends BaseFragment {
 
     }
 
-
-    public void FetchDetailData() {
-        String url = ZhaiDou.goodsDetailsUrlUrl + mIndex;
-        ToolUtils.setLog("url:" + url);
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject jsonObject) {
-                if (jsonObject != null) {
-                    JSONObject merchandise = jsonObject.optJSONObject("merchandise");
-                    JSONArray descriptions = merchandise.optJSONArray("descriptions");
-                    if (descriptions != null && descriptions.length() > 0) {
-                        for (int i = 0; i < descriptions.length(); i++) {
-                            JSONObject description = descriptions.optJSONObject(i);
-                            int id = description.optInt("id");
-                            String title = description.optString("title");
-                            String value = description.optString("value");
-                            GoodInfo goodInfo = new GoodInfo(id, title, value);
-                            goodInfos.add(goodInfo);
-                        }
-                        handler.sendEmptyMessage(UPDATE_GOOD_INFO);
-                    }
-                } else {
-                    Toast.makeText(getActivity(), "商品信息加载失败", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                if (volleyError != null)
-                    Toast.makeText(getActivity(), "商品信息加载失败", Toast.LENGTH_SHORT).show();
-            }
-        });
-        mRequestQueue.add(request);
-    }
 }

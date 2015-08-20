@@ -172,6 +172,10 @@ public class ZhaiDou {
      * 代付款减一
      */
     public static String IntentRefreshUnPayDesTag="com.zhaidou.home.refesh.unpay.des";
+    /**
+     * 订单支付成功刷新按钮
+     */
+    public static String IntentRefreshPaySuccessTag="com.zhaidou.home.refesh.pay.success";
 
 }
 //http://192.168.1.45/article/api/article_categories?catetory_id=13

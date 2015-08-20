@@ -95,7 +95,6 @@ public class OrderUnPayFragment extends BaseFragment {
                     unPayAdapter.notifyDataSetChanged();
                     break;
                 case UPDATE_UI_TIMER_FINISH:
-
                     break;
             }
         }
@@ -153,17 +152,29 @@ public class OrderUnPayFragment extends BaseFragment {
                     orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
                         @Override
                         public void onOrderStatusChange(Order o) {
-                            long time = o.getOver_at();
-                            Log.i("time-------------->",time+"------------"+o.getStatus());
-                            order.setStatus(o.getStatus());
-                            order.setOver_at(o.getOver_at());
-                            if (!isTimerStart) {
-                                timeStmp = preTime - time;
-                                Log.i("timeStmp----------->", timeStmp + "");
-                                timerMap.clear();
-                            } else {
-                                btn2.setTag(o.getOver_at());
+                            if (order.getStatus().equals(""+ZhaiDou.STATUS_PAYED))
+                            {
+                                orders.remove(order);
+                                unPayAdapter.notifyDataSetChanged();
+                                if ( orders.size() <1)
+                                {
+                                    mListView.setVisibility(View.GONE);
+                                    loadingView.setVisibility(View.VISIBLE);
+                                }
                             }
+                             else
+                            {
+                                long time = o.getOver_at();
+                                order.setStatus(o.getStatus());
+                                order.setOver_at(o.getOver_at());
+                                if (!isTimerStart) {
+                                    timeStmp = preTime - time;
+                                    timerMap.clear();
+                                } else {
+                                    btn2.setTag(o.getOver_at());
+                                }
+                            }
+
                         }
                     });
                 }
@@ -171,7 +182,7 @@ public class OrderUnPayFragment extends BaseFragment {
             unPayAdapter.setOnInViewClickListener(R.id.bt_order_timer, new BaseListAdapter.onInternalClickListener() {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                    Order order = (Order) values;
+                    final Order order = (Order) values;
                     TextView textView = (TextView) v;
                     if (mContext.getResources().getString(R.string.timer_finish).equalsIgnoreCase(textView.getText().toString())) {
                         ShowToast(mContext.getResources().getString(R.string.order_had_order_time));
@@ -179,13 +190,24 @@ public class OrderUnPayFragment extends BaseFragment {
                     }
                     ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.getOrderId(), order.getAmount(), 0, order.getOver_at(), order, 2);
                     ((BaseActivity) getActivity()).navigationToFragment(shopPaymentFragment);
+                    shopPaymentFragment.setOrderListener(new Order.OrderListener()
+                    {
+                        @Override
+                        public void onOrderStatusChange(Order ordera)
+                        {
+                            orders.remove(order);
+                            unPayAdapter.notifyDataSetChanged();
+                            if ( orders.size() <1)
+                            {
+                                mListView.setVisibility(View.GONE);
+                                loadingView.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    });
                 }
             });
             FetchData();
         }
-//        timer = new MyTimer(15 * 60 * 1000, 1000);
-//        timer.start();
-//        FetchData();
         return rootView;
     }
 
@@ -277,7 +299,8 @@ public class OrderUnPayFragment extends BaseFragment {
             }
 
             long l = Long.parseLong(mTimerBtn.getTag() + "");
-            if (("" + ZhaiDou.STATUS_UNPAY).equalsIgnoreCase(item.getStatus())){
+            if (("" + ZhaiDou.STATUS_UNPAY).equalsIgnoreCase(item.getStatus()))
+            {
                 if (l > 0) {
                     if (timeStmp > 0 && timerMap != null && (timerMap.get(position) == null || !timerMap.get(position))) {
                         l = l - timeStmp;
@@ -289,18 +312,27 @@ public class OrderUnPayFragment extends BaseFragment {
                         item.setOver_at(Long.parseLong(mTimerBtn.getTag() + "") - 1);
                     }
                     mTimerBtn.setText(String.format(getResources().getString(R.string.timer_start), new SimpleDateFormat("mm:ss").format(new Date(l * 1000))));
-                } else {
+                }
+                else {
                     mTimerBtn.setText(mContext.getResources().getString(R.string.timer_finish));
                     mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
                     mTimerBtn.setBackgroundResource(R.drawable.btn_no_click_selector);
-                    item.setStatus(ZhaiDou.STATUS_DEAL_CLOSE + "");
+                    item.setStatus(ZhaiDou.STATUS_UNPAY + "");
+                    item.setOver_at(0);//剩余时间
                     //刷新代付款数量显示
                     Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
                     mContext.sendBroadcast(intent);
                 }
-            }else {
+            }
+            else {
                 mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
-                mBottomLayout.setVisibility(View.GONE);
+                mTimerBtn.setText(mContext.getResources().getString(R.string.timer_finish));
+                mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
+                mTimerBtn.setBackgroundResource(R.drawable.btn_no_click_selector);
+                item.setOver_at(0);//剩余时间
+                //刷新代付款数量显示
+                Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
+                mContext.sendBroadcast(intent);
             }
 
             mHashMap.put(position, convertView);
