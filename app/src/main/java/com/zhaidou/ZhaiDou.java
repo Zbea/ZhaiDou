@@ -137,6 +137,8 @@ public class ZhaiDou {
     public static String ORDER_RECEIVER_URL=HOME_BASE_URL+"special_mall/api/receivers/";
     //省市区
     public static String ORDER_ADDRESS_URL=HOME_BASE_URL+"special_mall/api/sales/provider";
+// 淘宝订单
+    public static String URL_TAOBAO_ORDER="https://login.m.taobao.com/login.htm?tpl_redirect_url=https://h5.m.taobao.com/mlapp/olist.html";
 
 
     public static String BROADCAST_WXAPI_FILTER="com.zhaidou.wxapi.pay";
