@@ -114,6 +114,7 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
         }
     };
 
+
     public static ShopPaymentSuccessFragment newInstance(long orderId, double index,Order order) {
         ShopPaymentSuccessFragment fragment = new ShopPaymentSuccessFragment();
         Bundle args = new Bundle();
