@@ -152,9 +152,9 @@ public class OrderUnPayFragment extends BaseFragment {
                     orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
                         @Override
                         public void onOrderStatusChange(Order o) {
-                            if (order.getStatus().equals(""+ZhaiDou.STATUS_PAYED))
+                            if (o.getStatus().equals(""+ZhaiDou.STATUS_PAYED))
                             {
-                                orders.remove(order);
+                                orders.remove(o);
                                 unPayAdapter.notifyDataSetChanged();
                                 if ( orders.size() <1)
                                 {
