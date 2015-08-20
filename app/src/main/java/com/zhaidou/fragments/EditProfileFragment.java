@@ -81,15 +81,6 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
 
     private Dialog mDialog;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment EditProfileFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static EditProfileFragment newInstance(String param1, String param2,String profileId,String title) {
         EditProfileFragment fragment = new EditProfileFragment();
         Bundle args = new Bundle();
@@ -142,7 +133,6 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
 
             @Override
             public void afterTextChanged(Editable editable) {
-                Log.i("afterTextChanged--->","afterTextChanged");
             }
         });
         if ("description".equalsIgnoreCase(mParam1)){
@@ -166,7 +156,6 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.ll_back:
-                Log.i("------","dsfdsfs");
                 ((ProfileFragment)getParentFragment()).popToStack();
                 break;
             case R.id.iv_cancel:
@@ -227,9 +216,7 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
     }
 
     public String executeHttpPost(String type,String msg,String id) throws Exception {
-        Log.i("type--->",type==null?"":type);
-        Log.i("msg--->",msg==null?"":msg);
-        Log.i("id--->",id==null?"":id);
+
         BufferedReader in = null;
         try {
             // 定义HttpClient

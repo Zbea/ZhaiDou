@@ -33,6 +33,7 @@ public class HomePTActivity extends Activity
     private CustomProgressWebview webView;
     private String title;
     private String url;
+    private int flags;
 
     /**
      * 点击事件监听
@@ -64,6 +65,8 @@ public class HomePTActivity extends Activity
      */
     private void initView()
     {
+
+
         if(!NetworkUtils.isNetworkAvailable(this))
         {
             Toast.makeText(this, "抱歉，请检查网络", Toast.LENGTH_SHORT).show();
@@ -71,6 +74,7 @@ public class HomePTActivity extends Activity
 
         title = getIntent().getStringExtra("title");
         url = getIntent().getStringExtra("url");
+        flags=getIntent().getFlags();
 
         tv_back=(TextView)findViewById(R.id.tv_back);
         tv_back.setOnClickListener(onClickListener);

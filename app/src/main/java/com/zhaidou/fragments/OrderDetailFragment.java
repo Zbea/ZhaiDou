@@ -358,7 +358,6 @@ public class OrderDetailFragment extends BaseFragment {
                     Toast.makeText(mContext, mContext.getResources().getString(R.string.order_had_order_time), Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Log.i("mOrder.getOrderId()------------->", mOrder.getOrderId() + "");
                 Intent intent1 = new Intent(getActivity(), PayDemoActivity.class);
                 intent1.putExtra("id", Integer.parseInt(mOrderId + ""));
                 intent1.putExtra("amount", mOrder.getAmount());
@@ -367,8 +366,19 @@ public class OrderDetailFragment extends BaseFragment {
                 shopPaymentFragment.setOrderListener(new Order.OrderListener() {
                     @Override
                     public void onOrderStatusChange(Order order) {
-                        Log.i("onOrderStatusChange---------->", order.toString());
-                        mParam2 = order.getOver_at();
+                        if(order.getStatus().equals(""+ZhaiDou.STATUS_PAYED))
+                        {
+                            order.setStatus(""+ZhaiDou.STATUS_PAYED);
+                            order.setOver_at(0);
+                            mCancelOrder.setText(mContext.getResources().getString(R.string.order_return_money));
+                            mOrderTimer.setVisibility(View.GONE);
+                            mCancelOrder.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_green_click_bg));
+                            mOrderStatus.setText("已付款");
+                        }
+                        else
+                        {
+                            mParam2 = order.getOver_at();
+                        }
                     }
                 });
                 break;

@@ -280,18 +280,26 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         shopPaymentFragment.setOrderListener(new Order.OrderListener() {
                             @Override
                             public void onOrderStatusChange(Order o) {
-                                Log.i("shopPaymentFragment---o---->", o.toString());
-                                long time = o.getOver_at();
-                                if (!isTimerStart) {
-                                    timeStmp = preTime - time;
-                                    Log.i("timeStmp----------->", timeStmp + "");
-                                    isViewDestroy = false;
-                                    timerMap.clear();
-                                } else {
-                                    btn2.setTag(o.getOver_at());
-                                    order.setOver_at(o.getOver_at());
-                                    order.setStatus(o.getStatus());
+                                if(o.getStatus().equals(""+ZhaiDou.STATUS_PAYED))
+                                {
+                                    order.setStatus(""+ZhaiDou.STATUS_PAYED);
+                                    order.setOver_at(0);
                                 }
+                                else
+                                {
+                                    long time = o.getOver_at();
+                                    if (!isTimerStart)
+                                    {
+                                        timeStmp = preTime - time;
+                                        isViewDestroy = false;
+                                        timerMap.clear();
+                                    } else {
+                                        btn2.setTag(o.getOver_at());
+                                        order.setOver_at(o.getOver_at());
+                                        order.setStatus(o.getStatus());
+                                    }
+                                }
+
                             }
                         });
                         return;

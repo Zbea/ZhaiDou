@@ -109,6 +109,7 @@ public class ShopPaymentFragment extends BaseFragment {
 
                     // 判断resultStatus 为“9000”则代表支付成功，具体状态码代表含义可参考接口文档
                     if (TextUtils.equals(resultStatus, "9000")) {
+                        notificationPaySuccess();
                         Toast.makeText(getActivity(), "支付成功",
                                 Toast.LENGTH_SHORT).show();
                         setUnPayDesCount();
@@ -136,9 +137,6 @@ public class ShopPaymentFragment extends BaseFragment {
                         // 其他值就可以判断为支付失败，包括用户主动取消支付，或者系统返回的错误
                         Toast.makeText(getActivity(), "支付取消",
                                 Toast.LENGTH_SHORT).show();
-                        Log.i("支付取消----------->","支付取消");
-//                        ShopPaymentFailFragment shopPaymentFailFragment=ShopPaymentFailFragment.newInstance(mOrderId,mAmount,mFare,initTime);
-//                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
                     }
                     break;
                 case SDK_CHECK_FLAG: {
@@ -415,8 +413,10 @@ public class ShopPaymentFragment extends BaseFragment {
             case 0://支付成功
                 Log.i("----->", "支付成功");
                 setUnPayDesCount();
+                notificationPaySuccess();
                 ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, mAmount+mFare,mOrder);
                 ((MainActivity)getActivity()).navigationToFragment(shopPaymentSuccessFragment);
+
                 break;
             case -1://支付失败
                 Log.i("----->", "支付失败");
@@ -434,6 +434,17 @@ public class ShopPaymentFragment extends BaseFragment {
                 break;
         }
     }
+
+    private void notificationPaySuccess()
+    {
+        if (orderListener!=null){
+            mOrder.setStatus(""+ZhaiDou.STATUS_PAYED);
+            mOrder.setOver_at(0);
+            orderListener.onOrderStatusChange(mOrder);
+        }
+
+    }
+
 
     @Override
     public void onResume() {
@@ -459,8 +470,11 @@ public class ShopPaymentFragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         if (orderListener!=null){
-            mOrder.setOver_at(initTime);
-            orderListener.onOrderStatusChange(mOrder);
+            if (flags!=2)
+            {
+                mOrder.setOver_at(initTime);
+                orderListener.onOrderStatusChange(mOrder);
+            }
         }
         if (mTimer!=null){
             mTimer.cancel();

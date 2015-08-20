@@ -120,8 +120,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     {
         public void handleMessage(Message msg)
         {
-            if (mDialog!=null)
-                mDialog.dismiss();
             switch (msg.what)
             {
                 case 4:
@@ -427,9 +425,10 @@ public class ShopTodaySpecialFragment extends BaseFragment {
             @Override
             public void onResponse(JSONObject response)
             {
+                if (mDialog!=null)
+                    mDialog.dismiss();
                 if (response==null)
                 {
-                    mDialog.dismiss();
                     nullView.setVisibility(View.VISIBLE);
                     nullNetView.setVisibility(View.GONE);
                 }
@@ -476,10 +475,10 @@ public class ShopTodaySpecialFragment extends BaseFragment {
             @Override
             public void onErrorResponse(VolleyError error)
             {
-                mDialog.dismiss();
+                if (mDialog!=null)
+                    mDialog.dismiss();
                 nullView.setVisibility(View.VISIBLE);
                 nullNetView.setVisibility(View.GONE);
-                Toast.makeText(mContext, "加载失败", Toast.LENGTH_SHORT).show();
                 mScrollView.onRefreshComplete();
             }
         });

@@ -144,7 +144,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         webSettings.setLoadWithOverviewMode(true);
         webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
-        if ("lottery".equalsIgnoreCase(from))
+        if (!"lottery".equalsIgnoreCase(from))
            webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         webView.setVerticalScrollBarEnabled(false);
         webView.setVerticalScrollbarOverlay(false);

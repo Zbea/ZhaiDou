@@ -202,7 +202,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     {
                         if (items.get(i).sizeId == Integer.valueOf(arrayStr[1]))
                         {
-                            CustomToastDialog.setToastDialog(mContext, items.get(i).name + "的" + items.get(i).size + "规格库存不足");
+                            CustomToastDialog.setToastDialog(mContext, items.get(i).name + "的[" + items.get(i).size + "]库存不足");
                         }
                     }
                     break;
