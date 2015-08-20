@@ -434,6 +434,7 @@ public class ShopPaymentFragment extends BaseFragment {
                 break;
         }
     }
+
     @Override
     public void onResume() {
         if (!isTimerStart) {
