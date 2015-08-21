@@ -79,6 +79,7 @@ public class OrderDetailFragment extends BaseFragment {
     private OrderListener orderListener;
     private LinearLayout loadingView;
 
+
     private long timeLeft;
     double amount;
     private View rootView;
