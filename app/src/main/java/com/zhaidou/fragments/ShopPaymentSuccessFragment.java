@@ -58,6 +58,8 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
     private final int UPDATE_PAY_SUCCESS_PAG=1;
     private TextView tv_receiver,tv_mobile,tv_address,tv_amount,tv_mall,tv_order_detail;
 
+    private OnColseSuccess onColseSuccess;
+
     private Handler mHandler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -86,14 +88,14 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
                     colseFragment(ShopPaymentSuccessFragment.this);
                     break;
                 case R.id.tv_mall:
+                    ToolUtils.setLog("前往商城");
                     ShopSpecialFragment shopSpecialFragment = ShopSpecialFragment.newInstance("", 0);
                     ((MainActivity) getActivity()).navigationToFragment(shopSpecialFragment);
-                    colseFragment(ShopPaymentSuccessFragment.this);
                     break;
                 case R.id.tv_order_detail:
+                    ToolUtils.setLog("前往订单");
                     OrderDetailFragment orderDetailFragment=OrderDetailFragment.newInstance(mOrderId+"",0,mOrder);
                     ((MainActivity)getActivity()).navigationToFragment(orderDetailFragment);
-                    colseFragment(ShopPaymentSuccessFragment.this);
                     break;
             }
         }
@@ -214,7 +216,6 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
 
     private void colsePayment()
     {
-        ToolUtils.setLog("11111");
         FragmentManager fragmentManager=getFragmentManager();
         Fragment fragment=fragmentManager.findFragmentByTag((ShopPaymentFragment.class).getClass().getSimpleName());
         if (fragment!=null)
@@ -225,7 +226,16 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
     @Override
     public void onDestroyView()
     {
-        colsePayment();
         super.onDestroyView();
     }
+
+    public void setOnColseSuccess(OnColseSuccess OnColseSuccess)
+    {
+        this.onColseSuccess=OnColseSuccess;
+    }
+    public interface OnColseSuccess
+    {
+        public void colsePage();
+    }
+
 }

@@ -135,7 +135,6 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
         } else {
             rootView = inflater.inflate(R.layout.fragment_unpay, container, false);
             mContext = getActivity();
-//            mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
             mEmptyView=rootView.findViewById(R.id.nullline);
             mNetErrorView=rootView.findViewById(R.id.nullNetline);
@@ -209,7 +208,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                     });
                 }
             });
-            FetchData();
+            initData();
         }
 
         return rootView;

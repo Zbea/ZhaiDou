@@ -35,6 +35,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.activities.ItemDetailActivity;
+import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.adapter.AdViewAdpater;
 import com.zhaidou.adapter.ShopSpecialAdapter;
 import com.zhaidou.base.BaseActivity;
@@ -109,10 +110,12 @@ public class ShopSpecialFragment extends BaseFragment
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag))
             {
+                checkLogin();
                 initCartTips();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
             {
+                checkLogin();
                 initCartTips();
             }
         }
@@ -204,7 +207,9 @@ public class ShopSpecialFragment extends BaseFragment
                     }
                     else
                     {
-                        ToolUtils.setToast(getActivity(), "抱歉，尚未登录");
+                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+                        intent.setFlags(1);
+                        getActivity().startActivity(intent);
                     }
                     break;
 
