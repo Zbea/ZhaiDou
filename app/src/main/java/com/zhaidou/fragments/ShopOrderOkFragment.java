@@ -197,14 +197,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     String json = msg.obj.toString();
                     String[] arrayStr = new String[]{};
                     arrayStr = json.split(",");
-
-                    for (int i = 0; i < items.size(); i++)
-                    {
-                        if (items.get(i).sizeId == Integer.valueOf(arrayStr[1]))
-                        {
-                            CustomToastDialog.setToastDialog(mContext, items.get(i).name + "的[" + items.get(i).size + "]库存不足");
-                        }
-                    }
+                    CustomToastDialog.setToastDialog(mContext,arrayStr[0]);
                     break;
                 case 7:
                     mDialog.dismiss();
@@ -547,11 +540,12 @@ public class ShopOrderOkFragment extends BaseFragment
             {
                 String result = FetchRequset();
                 Log.i("commit----------->",result);
-                if (result != null)
+                if (result != null&&result.length()>10)
                 {
                     try
                     {
                         JSONObject jsonObject = new JSONObject(result);
+                        ToolUtils.setLog(jsonObject.toString());
                         int status = jsonObject.optInt("status");
                         if (status == 201)
                         {
@@ -566,9 +560,9 @@ public class ShopOrderOkFragment extends BaseFragment
                             message.obj = result;
                             handler.sendMessage(message);
                         }
-                        if (status == 400)
+                        else if (status == 400)
                         {
-                            String errorArr = jsonObject.optJSONObject("message").optString("order_items.count");
+                            String errorArr = jsonObject.optJSONObject("message").optString("order_items.merchandise_id");
                             if (errorArr.length() > 3)
                             {
                                 Message message = new Message();
@@ -576,23 +570,18 @@ public class ShopOrderOkFragment extends BaseFragment
                                 message.obj = errorArr;
                                 handler.sendMessage(message);
                             }
-
-                            String errorTimeArr = jsonObject.optJSONObject("message").optString("order_items.time");
-                            if (errorTimeArr.length() > 3)
-                            {
-                                Message message = new Message();
-                                message.what = 8;
-                                message.obj = errorTimeArr;
-                                handler.sendMessage(message);
-                            }
                         }
-                        if (status == 401)
+                        else if (status == 401)
                         {
                             String errorArr = jsonObject.optString("message");
                             Message message = new Message();
                             message.what = 7;
                             message.obj = errorArr;
                             handler.sendMessage(message);
+                        }
+                        else
+                        {
+                            handler.sendEmptyMessage(3);
                         }
 
                     } catch (Exception e)

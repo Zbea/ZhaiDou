@@ -3,13 +3,10 @@ package com.zhaidou.fragments;
 
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
@@ -79,8 +76,8 @@ public class PhotoMenuFragment extends BaseFragment implements View.OnClickListe
             case R.id.ll_menu_close:
                 if (getParentFragment()!=null&&getParentFragment() instanceof ProfileFragment){
                     ((ProfileFragment)getParentFragment()).toggleMenu();
-                }else if (getParentFragment()!=null&&getParentFragment() instanceof AfterSaleFragment){
-                    ((AfterSaleFragment)getParentFragment()).toggleMenu();
+                }else if (getParentFragment()!=null&&getParentFragment() instanceof OrderAfterSaleFragment){
+                    ((OrderAfterSaleFragment)getParentFragment()).toggleMenu();
                 }
                 break;
             default:

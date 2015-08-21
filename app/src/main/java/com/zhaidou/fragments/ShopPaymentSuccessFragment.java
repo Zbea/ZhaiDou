@@ -29,6 +29,7 @@ import com.zhaidou.model.Order;
 import com.zhaidou.model.OrderItem;
 import com.zhaidou.model.Receiver;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
@@ -64,7 +65,7 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
                 case UPDATE_PAY_SUCCESS_PAG:
                     Order order=(Order)msg.obj;
                     tv_receiver.setText("收件人："+order.getReceiver().getName());
-                    tv_address.setText(order.getReceiver().getProvince()+","+ order.getReceiver().getCity()+","+ order.getReceiver().getArea()+","+order.getReceiver().getAddress());
+                    tv_address.setText("地址："+order.getReceiver().getProvince()+","+ order.getReceiver().getCity()+","+ order.getReceiver().getArea()+","+order.getReceiver().getAddress());
                     tv_mobile.setText("电话："+order.getReceiver().getPhone());
                     Receiver receiver=order.getReceiver();
                     tv_amount.setText("￥"+order.getAmount()+"");
@@ -82,33 +83,17 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.back_btn:
-                    ((MainActivity) getActivity()).popToStack(ShopPaymentSuccessFragment.this);
+                    colseFragment(ShopPaymentSuccessFragment.this);
                     break;
                 case R.id.tv_mall:
-//                    ShopSpecialFragment shopSpecialFragment = ShopSpecialFragment.newInstance("", 0);
-//                    ((MainActivity) getActivity()).navigationToFragment(shopSpecialFragment);
-//                    colseFragment(ShopPaymentSuccessFragment.this);
-//
-//                    FragmentManager fragmentManager=getFragmentManager();
-//                    Fragment fragment=fragmentManager.findFragmentByTag((GoodsDetailsFragment.class).getClass().getSimpleName());
-//                    Fragment fragment1=fragmentManager.findFragmentByTag((ShopCartFragment.class).getClass().getSimpleName());
-//                    Fragment fragment2=fragmentManager.findFragmentByTag((ShopTodaySpecialFragment.class).getClass().getSimpleName());
-//                    Fragment fragment3=fragmentManager.findFragmentByTag((OrderDetailFragment.class).getClass().getSimpleName());
-//                    FragmentTransaction transaction=fragmentManager.beginTransaction();
-//                    transaction.remove(fragment);
-//                    transaction.remove(fragment1);
-//                    transaction.remove(fragment2);
-//                    transaction.remove(fragment3);
-//                    transaction.commitAllowingStateLoss();
-//
-//                    fragmentManager.popBackStack();
-                    ((MainActivity) getActivity()).popToStack(ShopPaymentSuccessFragment.this);
-
-
+                    ShopSpecialFragment shopSpecialFragment = ShopSpecialFragment.newInstance("", 0);
+                    ((MainActivity) getActivity()).navigationToFragment(shopSpecialFragment);
+                    colseFragment(ShopPaymentSuccessFragment.this);
                     break;
                 case R.id.tv_order_detail:
                     OrderDetailFragment orderDetailFragment=OrderDetailFragment.newInstance(mOrderId+"",0,mOrder);
                     ((MainActivity)getActivity()).navigationToFragment(orderDetailFragment);
+                    colseFragment(ShopPaymentSuccessFragment.this);
                     break;
             }
         }
@@ -215,7 +200,6 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
             }
         }) {
             @Override
@@ -228,4 +212,20 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
         mRequestQueue.add(request);
     }
 
+    private void colsePayment()
+    {
+        ToolUtils.setLog("11111");
+        FragmentManager fragmentManager=getFragmentManager();
+        Fragment fragment=fragmentManager.findFragmentByTag((ShopPaymentFragment.class).getClass().getSimpleName());
+        if (fragment!=null)
+            fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
+        fragmentManager.popBackStack();
+    }
+
+    @Override
+    public void onDestroyView()
+    {
+        colsePayment();
+        super.onDestroyView();
+    }
 }

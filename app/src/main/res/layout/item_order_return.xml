@@ -115,7 +115,7 @@
                     android:layout_height="wrap_content"
                     android:text="订单金额:"
                     android:textColor="@color/text_main_color"
-                    android:textSize="14sp" />
+                    android:textSize="13sp" />
 
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_order_amount"

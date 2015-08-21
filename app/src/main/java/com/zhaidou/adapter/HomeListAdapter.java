@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.zhaidou.R;
@@ -26,6 +27,7 @@ public class HomeListAdapter extends BaseAdapter
     private List<Article> items;
     private ViewHolder viewHolder;
     private Context context;
+    private int screenWidth;
 
     public void clear()
     {
@@ -33,10 +35,11 @@ public class HomeListAdapter extends BaseAdapter
         notifyDataSetChanged();
     }
 
-    public HomeListAdapter(Context context, List<Article> items)
+    public HomeListAdapter(Context context, List<Article> items,int screenWidth)
     {
         this.context = context;
         this.items = items;
+        this.screenWidth=screenWidth;
     }
 
     class ViewHolder
@@ -72,6 +75,7 @@ public class HomeListAdapter extends BaseAdapter
         TextView title = (TextView) view.findViewById(R.id.title);
         TextView articleViews = (TextView) view.findViewById(R.id.views);
         ImageView cover = (ImageView) view.findViewById(R.id.cover);
+        cover.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth,screenWidth*316/722));
         ImageView newView = (ImageView) view.findViewById(R.id.newsView);
 
         Article article = items.get(position);

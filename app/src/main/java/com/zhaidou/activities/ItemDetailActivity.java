@@ -25,6 +25,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.alibaba.sdk.android.callback.CallbackContext;
+import com.android.volley.AuthFailureError;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
@@ -39,6 +40,9 @@ import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
 
 import com.zhaidou.view.CustomProgressWebview;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class ItemDetailActivity extends BaseActivity implements View.OnClickListener,
@@ -114,7 +118,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         mTitleView=(TextView)findViewById(R.id.tv_title);
 
         mHeaderView=(ImageView)findViewById(R.id.iv_header);
-        mHeaderView.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth*300/750));
+        mHeaderView.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth*316/722));
 
         mHeaderText=(TextView)findViewById(R.id.tv_msg);
         imageView=(RelativeLayout)findViewById(R.id.imageView);
@@ -217,8 +221,13 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         });
 
         url = getIntent().getStringExtra("url");
-        Log.i("url----------->","url"+"------"+url);
-        webView.loadUrl(url+"?open=app");
+
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("ZhaidouVesion", "2.2");
+        webView.loadUrl(url+"?open=app",headers);
+
+
+
         this.setTitle("");
 
         title = getIntent().getStringExtra("title");
@@ -228,7 +237,6 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
             mTitleView.setText(title);
         }
         if (!TextUtils.isEmpty(coverUrl)){
-            Log.i("cover_url---------------->", coverUrl);
             ToolUtils.setImageCacheUrl(coverUrl, mHeaderView);
             mTitleView.setVisibility(View.GONE);
             mHeaderText.setText(title);

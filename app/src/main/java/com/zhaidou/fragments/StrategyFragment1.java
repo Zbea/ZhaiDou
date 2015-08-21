@@ -63,8 +63,6 @@ import java.util.WeakHashMap;
 public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<ListView>{
 
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -107,7 +105,6 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
     };
 
     public static StrategyFragment1 newInstance(String param1, String param2) {
-        Log.i("StrategyFragment1----------->","newInstance");
         StrategyFragment1 fragment = new StrategyFragment1();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
@@ -116,7 +113,6 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
         return fragment;
     }
     public StrategyFragment1() {
-        // Required empty public constructor
     }
 
     @Override

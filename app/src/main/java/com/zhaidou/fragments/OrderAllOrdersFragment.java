@@ -45,7 +45,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 
 public class OrderAllOrdersFragment extends BaseFragment implements View.OnClickListener {
@@ -257,7 +256,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                             ShowToast(mContext.getResources().getString(R.string.order_zero_unreturn_msg));
                             return;
                         }
-                        final AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(order.getOrderId() + "", order.getStatus() + "");
+                        final OrderAfterSaleFragment afterSaleFragment = OrderAfterSaleFragment.newInstance(order.getOrderId() + "", order.getStatus() + "");
                         ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
                         afterSaleFragment.setOrderListener(new Order.OrderListener() {
                             @Override

@@ -270,14 +270,12 @@ public class GoodsDetailsFragment extends BaseFragment
                     try
                     {
                         long millionSeconds = sdf.parse(end_date).getTime();//毫秒
-                        long hour = 3600 * 1000;
-                        long minute = 60 * 1000;
-                        millionSeconds = millionSeconds + hour * 23 + minute * 59 + 59 * 1000;
                         long temp = millionSeconds - System.currentTimeMillis();
-//                        if (temp==0)
-//                        {
-//                            ToolUtils.setToast(mContext,"特卖活动已结束");
-//                        }
+                        if (temp<=0)
+                        {
+                            mTimerView.setText("已结束");
+                            setAddOrBuyShow("活动已结束");
+                        }
                         mTimer = new MyTimer(temp, 1000);
                         mTimer.start();
                     } catch (Exception e)
