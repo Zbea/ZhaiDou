@@ -1,6 +1,5 @@
 package com.zhaidou.alipay;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import android.app.Activity;
@@ -8,8 +7,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
-
 import com.alipay.sdk.app.PayTask;
 
 /**

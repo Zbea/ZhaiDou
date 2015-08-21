@@ -123,17 +123,17 @@ public class GoodsDetailsChildFragment extends BaseFragment {
                 addImageToContainer(detail.getImgs());
 
         }
-        final ViewTreeObserver observer = mDetailContainer.getViewTreeObserver();
-        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                Log.i("mDetailContainer.getMeasuredWidth()-------------------->", mDetailContainer.getMeasuredWidth() + "");
-                Log.i("mDetailContainer.getMeasuredHeight()-------------------->", mDetailContainer.getMeasuredHeight() + "");
-                Log.i("mDetailContainer.getWidth()-------------------->", mDetailContainer.getWidth() + "");
-                Log.i("mDetailContainer.getHeight()-------------------->", mDetailContainer.getHeight() + "");
-                mDetailContainer.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-            }
-        });
+//        final ViewTreeObserver observer = mDetailContainer.getViewTreeObserver();
+//        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                Log.i("mDetailContainer.getMeasuredWidth()-------------------->", mDetailContainer.getMeasuredWidth() + "");
+//                Log.i("mDetailContainer.getMeasuredHeight()-------------------->", mDetailContainer.getMeasuredHeight() + "");
+//                Log.i("mDetailContainer.getWidth()-------------------->", mDetailContainer.getWidth() + "");
+//                Log.i("mDetailContainer.getHeight()-------------------->", mDetailContainer.getHeight() + "");
+//                mDetailContainer.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+//            }
+//        });
     }
 
     /**

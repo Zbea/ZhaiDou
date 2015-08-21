@@ -22,6 +22,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.sdk.android.util.NetworkUtils;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -350,6 +351,7 @@ public class OrderDetailFragment extends BaseFragment {
                 if (("" + ZhaiDou.STATUS_DEAL_SUCCESS).equalsIgnoreCase(mOrder.getStatus())) {
                     AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(mOrderId, mOrder.getStatus() + "");
                     ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
+
                     return;
                 } else if (mContext.getResources().getString(R.string.order_received).equalsIgnoreCase(mOrderTimer.getText().toString())) {
                     orderOkReciver();
@@ -366,6 +368,7 @@ public class OrderDetailFragment extends BaseFragment {
                 shopPaymentFragment.setOrderListener(new Order.OrderListener() {
                     @Override
                     public void onOrderStatusChange(Order order) {
+                        Log.i("shopPaymentFragment--------------->",order.toString());
                         if(order.getStatus().equals(""+ZhaiDou.STATUS_PAYED))
                         {
                             order.setStatus(""+ZhaiDou.STATUS_PAYED);

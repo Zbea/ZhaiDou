@@ -34,15 +34,20 @@ import com.zhaidou.alipay.PayResult;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.CartItem;
 import com.zhaidou.model.Order;
+import com.zhaidou.model.OrderItem;
+import com.zhaidou.model.Receiver;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.view.TypeFaceTextView;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -55,8 +60,8 @@ public class ShopPaymentFailFragment extends BaseFragment {
     private static final String ARG_ORDERID = "orderId";
     private static final String ARG_AMOUNT = "amount";
     private static final String ARG_FARE = "fare";
-    private static final String ARG_TIMER="timer";
-    private static final String ARG_ORDER="order";
+    private static final String ARG_TIMER = "timer";
+    private static final String ARG_ORDER = "order";
 
     private long mOrderId;
     private double mAmount;
@@ -64,8 +69,6 @@ public class ShopPaymentFailFragment extends BaseFragment {
     private long mTimeStamp;
     private Order mOrder;
     private Context mContext;
-
-    private final int UPDATE_COUNT_DOWN_TIME = 1001, UPDATE_UI_TIMER_FINISH = 1002, UPDATE_TIMER_START = 1003;
 
     private TypeFaceTextView backBtn, titleTv;
     private TypeFaceTextView timeInfoTv;
@@ -85,14 +88,16 @@ public class ShopPaymentFailFragment extends BaseFragment {
     private String token;
     private IWXAPI api;
     private RequestQueue mRequestQueue;
+    private List<OrderItem> orderItems = new ArrayList<OrderItem>();
     private View rootView;
     private static final int SDK_PAY_FLAG = 1;
 
     private static final int SDK_CHECK_FLAG = 2;
-    private Handler mHandler=new Handler(){
+    private static final int UPDATE_FEE_DETAIL=3;
+    private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
+            switch (msg.what) {
                 case SDK_PAY_FLAG:
                     Log.i("SDK_PAY_FLAG------------>", "SDK_PAY_FLAG");
                     PayResult payResult = new PayResult((String) msg.obj);
@@ -106,7 +111,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
                     if (TextUtils.equals(resultStatus, "9000")) {
                         Toast.makeText(getActivity(), "支付成功",
                                 Toast.LENGTH_SHORT).show();
-                        ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, 0,mOrder);
+                        ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, 0, mOrder);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                         // 判断resultStatus 为非“9000”则代表可能支付失败
                         // “8000”代表支付结果因为支付渠道原因或者系统原因还在等待支付结果确认，最终交易是否成功以服务端异步通知为准（小概率状态）
@@ -134,6 +139,21 @@ public class ShopPaymentFailFragment extends BaseFragment {
                             Toast.LENGTH_SHORT).show();
                     break;
                 }
+                case UPDATE_FEE_DETAIL:
+                    Order order=(Order)msg.obj;
+                    double amount=order.getAmount();
+                    List<OrderItem> items = order.getOrderItems();
+                    double price=0;
+                    for (OrderItem item:items) {
+                        price+=item.getPrice()*item.getCount();
+                    }
+                    Log.i("amount---------------->",amount+"");
+                    Log.i("price---------------->",price+"");
+                    Log.i("fare---------------->",(amount-price)+"");
+                    tv_amount.setText("￥" + price);
+                    tv_fare.setText("￥" + (amount-price));
+                    tv_total.setText("￥" + amount);
+                    break;
             }
         }
     };
@@ -155,14 +175,14 @@ public class ShopPaymentFailFragment extends BaseFragment {
         }
     };
 
-    public static ShopPaymentFailFragment newInstance(long orderId, double amount, int fare,long timer,Order order) {
+    public static ShopPaymentFailFragment newInstance(long orderId, double amount, int fare, long timer, Order order) {
         ShopPaymentFailFragment fragment = new ShopPaymentFailFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_FARE, fare);
         args.putLong(ARG_ORDERID, orderId);
         args.putDouble(ARG_AMOUNT, amount);
         args.putLong(ARG_TIMER, timer);
-        args.putSerializable(ARG_ORDER,order);
+        args.putSerializable(ARG_ORDER, order);
         fragment.setArguments(args);
         return fragment;
     }
@@ -177,15 +197,14 @@ public class ShopPaymentFailFragment extends BaseFragment {
             mOrderId = getArguments().getLong(ARG_ORDERID);
             mAmount = getArguments().getDouble(ARG_AMOUNT);
             mFare = getArguments().getInt(ARG_FARE);
-            mTimeStamp=getArguments().getLong(ARG_TIMER);
-            mOrder=(Order)getArguments().getSerializable(ARG_ORDER);
+            mTimeStamp = getArguments().getLong(ARG_TIMER);
+            mOrder = (Order) getArguments().getSerializable(ARG_ORDER);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.i("ShopPaymentFailFragment-------------------->","onCreateView");
         if (null != rootView) {
             ViewGroup parent = (ViewGroup) rootView.getParent();
             if (null != parent) {
@@ -193,7 +212,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
             }
         } else {
             rootView = inflater.inflate(R.layout.shop_payment_fail_page, container, false);
-            mContext=getActivity();
+            mContext = getActivity();
             initView(rootView);// 控件初始化
         }
         return rootView;
@@ -206,22 +225,19 @@ public class ShopPaymentFailFragment extends BaseFragment {
     private void initView(View mView) {
         api = WXAPIFactory.createWXAPI(mContext, null);
         api.registerApp("wxce03c66622e5b243");
-        mRequestQueue= Volley.newRequestQueue(getActivity());
-        token=(String) SharedPreferencesUtil.getData(getActivity(),"token","");
+        mRequestQueue = Volley.newRequestQueue(getActivity());
+        token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(R.string.shop_payment_fail_text);
 
-        bt_pay=(Button)mView.findViewById(R.id.bt_pay);
+        bt_pay = (Button) mView.findViewById(R.id.bt_pay);
         bt_pay.setOnClickListener(onClickListener);
         timeInfoTv = (TypeFaceTextView) mView.findViewById(R.id.failTimeInfo);
         tv_amount = (TextView) mView.findViewById(R.id.failPriceTotalTv);
         tv_fare = (TextView) mView.findViewById(R.id.failPriceYfTv);
         tv_total = (TextView) mView.findViewById(R.id.failTotalMoney);
-        tv_amount.setText("￥" + mAmount);
-        tv_fare.setText("￥" + mFare);
-        tv_total.setText("￥" + (mAmount + mFare));
 
         cb_weixin = (CheckBox) mView.findViewById(R.id.cb_weixin);
         cb_weixin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -243,7 +259,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
                 }
             }
         });
-
+        FetchDetail();
         mTimer = new Timer();
         mTimer.schedule(new MyTimer(), 1000, 1000);
 
@@ -255,9 +271,9 @@ public class ShopPaymentFailFragment extends BaseFragment {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mTimeStamp = mTimeStamp - 1000;
-                    timeInfoTv.setText(new SimpleDateFormat("mm:ss").format(new Date(mTimeStamp)));
-                    if (mTimeStamp <=0) {
+                    mTimeStamp = mTimeStamp - 1;
+                    timeInfoTv.setText(new SimpleDateFormat("mm:ss").format(new Date(mTimeStamp * 1000)));
+                    if (mTimeStamp <= 0) {
                         if (mTimer != null) {
                             mTimer.cancel();
                             timeInfoTv.setText("00:00");
@@ -270,12 +286,13 @@ public class ShopPaymentFailFragment extends BaseFragment {
     }
 
     private void stopView() {
-        mTimeStamp=0;
+        mTimeStamp = 0;
 //        paymentView.setVisibility(View.GONE);
 //        loseView.setVisibility(View.VISIBLE);
         bt_pay.setClickable(false);
         bt_pay.setBackgroundResource(R.drawable.btn_no_click_selector);
     }
+
     /**
      * 付款
      */
@@ -353,26 +370,99 @@ public class ShopPaymentFailFragment extends BaseFragment {
         Thread payThread = new Thread(payRunnable);
         payThread.start();
     }
-    public void handleWXPayResult(int result){
+
+    public void handleWXPayResult(int result) {
         switch (result) {
             case 800://商户订单号重复或生成错误
                 Log.i("----->", "商户订单号重复或生成错误");
                 break;
             case 0://支付成功
                 Log.i("----->", "支付成功");
-                ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, mAmount+mFare,mOrder);
-                ((MainActivity)getActivity()).navigationToFragment(shopPaymentSuccessFragment);
+                ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, mAmount + mFare, mOrder);
+                ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                 break;
             case -1://支付失败
                 Log.i("----->", "支付失败");
-                Toast.makeText(getActivity(),"支付失败",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "支付失败", Toast.LENGTH_SHORT).show();
                 break;
             case -2://取消支付
                 Log.i("----->", "取消支付");
-                Toast.makeText(getActivity(),"取消支付",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "取消支付", Toast.LENGTH_SHORT).show();
                 break;
             default:
                 break;
         }
+    }
+
+    private void FetchDetail() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "/" + mOrderId, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                Log.i("jsonObject--------->", jsonObject.toString());
+                if (jsonObject != null) {
+                    JSONObject orderObj = jsonObject.optJSONObject("order");
+                    amount = orderObj.optDouble("amount");
+                    int id = orderObj.optInt("id");
+                    String status = orderObj.optString("status");
+                    String created_at_for = orderObj.optString("created_at_for");
+                    String receiver_address = orderObj.optString("receiver_address");
+                    String created_at = orderObj.optString("created_at");
+                    String status_ch = orderObj.optString("status_ch");
+                    String number = orderObj.optString("number");
+                    String receiver_phone = orderObj.optString("receiver_phone");
+                    String deliver_number = orderObj.optString("deliver_number");
+                    String receiver_name = orderObj.optString("receiver_name");
+
+                    JSONObject receiverObj = orderObj.optJSONObject("receiver");
+                    int receiverId = receiverObj.optInt("id");
+                    String address = receiverObj.optString("address");
+                    String phone = receiverObj.optString("phone");
+                    String name = receiverObj.optString("name");
+                    String city_name = receiverObj.optString("city_name");
+                    String parent_name = receiverObj.optString("parent_name");
+                    String provider_name = receiverObj.optString("provider_name");
+                    Receiver receiver = new Receiver(receiverId, address, parent_name, city_name, provider_name, phone, name);
+
+
+                    JSONArray order_items = orderObj.optJSONArray("order_items");
+                    if (order_items != null && order_items.length() > 0) {
+                        for (int i = 0; i < order_items.length(); i++) {
+                            JSONObject item = order_items.optJSONObject(i);
+                            int itemId = item.optInt("id");
+                            double itemPrice = item.optDouble("price");
+                            int count = item.optInt("count");
+                            double cost_price = item.optDouble("cost_price");
+                            String merchandise = item.optString("merchandise");
+                            String specification = item.optString("specification");
+                            int merchandise_id = item.optInt("merchandise_id");
+                            String merch_img = item.optString("merch_img");
+                            int sale_cate = item.optInt("sale_cate");
+                            OrderItem orderItem = new OrderItem(itemId, itemPrice, count, cost_price, merchandise, specification, merchandise_id, merch_img);
+                            orderItem.setSale_cate(sale_cate);
+                            orderItems.add(orderItem);
+                        }
+                    }
+                    Order order = new Order("", id, number, amount, status, status_ch, created_at_for, created_at, receiver, orderItems, receiver_address, receiver_phone, deliver_number, receiver_name);
+                    Message message = new Message();
+                    message.obj = order;
+                    message.what = UPDATE_FEE_DETAIL;
+                    mHandler.sendMessage(message);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                if (getActivity() != null)
+                    Toast.makeText(mContext, "加载失败", Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("SECAuthorization", token);
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
     }
 }

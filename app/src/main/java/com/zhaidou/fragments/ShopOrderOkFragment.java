@@ -169,7 +169,7 @@ public class ShopOrderOkFragment extends BaseFragment
                         JSONObject jsonObject = new JSONObject(result);
                         JSONObject orderObj = jsonObject.optJSONObject("order");
                         int orderId = orderObj.optInt("id");
-                        int amount = orderObj.optInt("amount");
+                        double amount = orderObj.optDouble("amount");
                         int fare = moneyYF;
                         ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId, amount, fare, 15 * 60, null, 1);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
@@ -558,7 +558,7 @@ public class ShopOrderOkFragment extends BaseFragment
                             JSONObject orderObj = jsonObject.optJSONObject("order");
                             int id = orderObj.optInt("id");
                             String number = orderObj.optString("number");
-                            int amount = orderObj.optInt("amount");
+                            double amount = orderObj.optDouble("amount");
                             int count = orderObj.optInt("count");
 
                             Message message = new Message();

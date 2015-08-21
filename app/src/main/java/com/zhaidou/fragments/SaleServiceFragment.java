@@ -53,17 +53,17 @@ public class SaleServiceFragment extends BaseFragment {
         View view=inflater.inflate(R.layout.goods_details_aftersale_page, container, false);
         mContext=getActivity();
         mServiceContainer=(LinearLayout)view.findViewById(R.id.ll_service_container);
-        ViewTreeObserver viewTreeObserver = mServiceContainer.getViewTreeObserver();
-        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                Log.i("mDetailContainer.getMeasuredWidth()-------------------->", mServiceContainer.getMeasuredWidth() + "");
-                Log.i("mDetailContainer.getMeasuredHeight()-------------------->", mServiceContainer.getMeasuredHeight() + "");
-                Log.i("mDetailContainer.getWidth()-------------------->", mServiceContainer.getWidth() + "");
-                Log.i("mDetailContainer.getHeight()-------------------->", mServiceContainer.getHeight() + "");
-                mServiceContainer.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-            }
-        });
+//        ViewTreeObserver viewTreeObserver = mServiceContainer.getViewTreeObserver();
+//        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                Log.i("mDetailContainer.getMeasuredWidth()-------------------->", mServiceContainer.getMeasuredWidth() + "");
+//                Log.i("mDetailContainer.getMeasuredHeight()-------------------->", mServiceContainer.getMeasuredHeight() + "");
+//                Log.i("mDetailContainer.getWidth()-------------------->", mServiceContainer.getWidth() + "");
+//                Log.i("mDetailContainer.getHeight()-------------------->", mServiceContainer.getHeight() + "");
+//                mServiceContainer.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+//            }
+//        });
         view.findViewById(R.id.rl_qq_contact).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

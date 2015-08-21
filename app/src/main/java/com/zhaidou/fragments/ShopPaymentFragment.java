@@ -137,6 +137,8 @@ public class ShopPaymentFragment extends BaseFragment {
                         // 其他值就可以判断为支付失败，包括用户主动取消支付，或者系统返回的错误
                         Toast.makeText(getActivity(), "支付取消",
                                 Toast.LENGTH_SHORT).show();
+//                        ShopPaymentFailFragment shopPaymentFailFragment=ShopPaymentFailFragment.newInstance(mOrderId,mAmount,mFare,initTime,mOrder);
+//                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
                     }
                     break;
                 case SDK_CHECK_FLAG: {
@@ -199,7 +201,7 @@ public class ShopPaymentFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        Log.i("ShopPaymentFailFragment-------------------->","onCreateView----->--------------"+mAmount);
 
         if (mView == null) {
             mView = inflater.inflate(R.layout.shop_payment_page, container, false);
@@ -470,11 +472,11 @@ public class ShopPaymentFragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         if (orderListener!=null){
-            if (flags!=2)
-            {
+//            if (flags!=2)
+//            {
                 mOrder.setOver_at(initTime);
                 orderListener.onOrderStatusChange(mOrder);
-            }
+//            }
         }
         if (mTimer!=null){
             mTimer.cancel();
