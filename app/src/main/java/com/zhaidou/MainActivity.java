@@ -125,6 +125,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+            Log.i("action-------------->",action);
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag)) {
                 initCartTips();
             }
@@ -146,7 +147,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 if (fragments.size() > 1) {
                     System.out.println("fragments.size() > 1");
                     Fragment fragment = fragments.get(fragments.size() - 1);
-                    System.out.println("fragment.getClass().getSimpleName()---->"+fragment.getClass().getSimpleName());
+//                    System.out.println("fragment.getClass().getSimpleName()---->"+fragment.getClass().getSimpleName());
                     if (fragment instanceof ShopPaymentFragment) {
                         System.out.println("fragment instanceof ShopPaymentFragment------------"+result);
                         ((ShopPaymentFragment) fragment).handleWXPayResult(result);

@@ -423,8 +423,8 @@ public class ShopPaymentFragment extends BaseFragment {
             case -2://取消支付
                 Log.i("----->", "取消支付");
                 ShowToast("取消支付");
-                ShopPaymentFailFragment shopPaymentFailFragment1=ShopPaymentFailFragment.newInstance(mOrderId,mAmount,mFare,initTime,mOrder);
-                ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment1);
+//                ShopPaymentFailFragment shopPaymentFailFragment1=ShopPaymentFailFragment.newInstance(mOrderId,mAmount,mFare,initTime,mOrder);
+//                ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment1);
                 break;
             default:
                 break;

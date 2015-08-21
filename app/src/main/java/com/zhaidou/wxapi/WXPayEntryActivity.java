@@ -57,7 +57,7 @@ public class WXPayEntryActivity extends FragmentActivity implements IWXAPIEventH
 //            resp.errCode=0;
             Intent intent=new Intent(ZhaiDou.BROADCAST_WXAPI_FILTER);
             intent.putExtra("code",resp.errCode);
-            sendBroadcast(intent);
+            getApplicationContext().sendBroadcast(intent);
 			finish();
 			// AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			// builder.setTitle(R.string.app_tip);
