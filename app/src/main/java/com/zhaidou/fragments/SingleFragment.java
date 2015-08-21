@@ -68,12 +68,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SingleFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
- */
 public class SingleFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<GridView>{
     private static final String ARG_PARAM1 = "categoryId";
     private static final String ARG_FROM = "from";
@@ -164,7 +158,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
         tv_money=(TextView)view.findViewById(R.id.tv_money);
         gv_single=(PullToRefreshGridView)view.findViewById(R.id.gv_single);
         nullLine=(LinearLayout)view.findViewById(R.id.nullline);
-        productAdapter = new ProductAdapter(getActivity(),products,1);
+        productAdapter = new ProductAdapter(getActivity(),products,1,screenWidth);
         gv_single.setAdapter(productAdapter);
         mRequestQueue= Volley.newRequestQueue(getActivity());
         if ("category".equalsIgnoreCase(mParam2)){

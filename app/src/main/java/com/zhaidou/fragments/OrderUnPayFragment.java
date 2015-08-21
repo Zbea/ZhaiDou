@@ -273,6 +273,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
+                if (mDialog!=null)
                 mDialog.dismiss();
                 if (getActivity() != null)
                     Toast.makeText(getActivity(), mContext.getResources().getString(R.string.network_load_error), Toast.LENGTH_SHORT).show();

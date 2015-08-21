@@ -123,18 +123,17 @@ public class ShopTodaySpecialFragment extends BaseFragment {
             switch (msg.what)
             {
                 case 4:
+                    adapter.notifyDataSetChanged();
+                    if (mDialog!=null)
+                        mDialog.dismiss();
                     loadingView.setVisibility(View.GONE);
                     introduceTv.setText(introduce);
-                    adapter.notifyDataSetChanged();
                     break;
                 case UPDATE_TIMER_START:
                     String date = (String)msg.obj;
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                     try{
                         long millionSeconds = sdf.parse(date).getTime();//毫秒
-                        long hour=3600*1000;
-                        long minute=60*1000;
-                        millionSeconds=millionSeconds+hour*23+minute*59+59*1000;
                         long temp = millionSeconds-System.currentTimeMillis();
                         mTimer=new MyTimer(temp,1000);
                         mTimer.start();
@@ -420,17 +419,18 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     {
         final String url;
         url = ZhaiDou.shopSpecialTadayUrl+id;
+        ToolUtils.setLog(url);
         JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
             {
-                if (mDialog!=null)
-                    mDialog.dismiss();
                 if (response==null)
                 {
+                    mDialog.dismiss();
                     nullView.setVisibility(View.VISIBLE);
                     nullNetView.setVisibility(View.GONE);
+                    return;
                 }
                 String result=response.toString();
                 JSONObject obj;

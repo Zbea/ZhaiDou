@@ -67,13 +67,13 @@
                     android:gravity="center_vertical"
                     android:paddingLeft="15dp"
                     android:text="商品信息"
-                    android:textColor="@color/gray_9" />
+                    android:textColor="@color/text_main_color" />
             </LinearLayout>
 
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="#D2D2D2" />
+                android:layout_height="1dp"
+                android:background="@color/page_bg" />
 
             <com.zhaidou.view.ListViewForScrollView
                 android:id="@+id/lv_aftersale"
@@ -166,22 +166,23 @@
                     android:paddingLeft="15dp"
                     android:paddingTop="5dp"
                     android:text="服务类型"
-                    android:textColor="@color/gray_9" />
+                    android:textColor="@color/text_main_color" />
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="0.5dp"
-                    android:background="#D2D2D2" />
+
             </LinearLayout>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/page_bg" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
                 android:orientation="horizontal"
-                android:paddingBottom="20dp"
+                android:paddingBottom="15dp"
                 android:paddingLeft="15dp"
-                android:paddingTop="20dp">
+                android:paddingTop="15dp">
 
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_exchange"
@@ -219,18 +220,18 @@
                     android:gravity="center_vertical"
                     android:paddingLeft="15dp"
                     android:text="问题描述"
-                    android:textColor="@color/gray_9" />
+                    android:textColor="@color/text_main_color" />
 
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#EEEEEE" />
+                    android:background="@color/page_bg" />
 
                 <com.zhaidou.view.TypeFaceEditText
                     android:id="@+id/et_msg"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:layout_margin="10dp"
+                    android:layout_margin="15dp"
                     android:background="@drawable/shape_line_frame"
                     android:gravity="top"
                     android:padding="5dp"
@@ -251,12 +252,12 @@
                     android:gravity="center_vertical"
                     android:paddingLeft="15dp"
                     android:text="上传图片"
-                    android:textColor="@color/gray_9" />
+                    android:textColor="@color/text_main_color" />
 
                 <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="0.5dp"
-                    android:background="#D2D2D2" />
+                    android:layout_height="1dp"
+                    android:background="@color/page_bg" />
 
                 <ImageView
                     android:id="@+id/iv_return_img"
@@ -274,7 +275,7 @@
                     android:layout_height="wrap_content"/>
             </LinearLayout>
 
-            <com.zhaidou.view.TypeFaceTextView
+            <TextView
                 android:id="@+id/tv_commit"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
@@ -283,9 +284,10 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="10dp"
-                android:background="@color/red"
+                android:background="@drawable/btn_red_click_selector"
                 android:gravity="center"
                 android:text="提交"
+                android:textSize="16sp"
                 android:textColor="@color/white" />
         </LinearLayout>
     </ScrollView>

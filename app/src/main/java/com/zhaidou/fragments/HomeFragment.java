@@ -214,7 +214,7 @@ public class HomeFragment extends BaseFragment implements
                 loadingView.setVisibility(View.GONE);
                 if (mListAdapter == null)
                 {
-                    mListAdapter = new HomeListAdapter(mContext, articleList);
+                    mListAdapter = new HomeListAdapter(mContext, articleList,screenWidth);
                     listView.setAdapter(mListAdapter);
                 }
                 mScrollView.onRefreshComplete();

@@ -110,8 +110,6 @@ public class ShopPaymentFragment extends BaseFragment {
                     // 判断resultStatus 为“9000”则代表支付成功，具体状态码代表含义可参考接口文档
                     if (TextUtils.equals(resultStatus, "9000")) {
                         notificationPaySuccess();
-                        Toast.makeText(getActivity(), "支付成功",
-                                Toast.LENGTH_SHORT).show();
                         setUnPayDesCount();
                         ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, 0,mOrder);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
@@ -124,8 +122,6 @@ public class ShopPaymentFragment extends BaseFragment {
 
                     } else if (TextUtils.equals(resultStatus, "4000")) {
                         // 其他值就可以判断为支付失败，包括用户主动取消支付，或者系统返回的错误
-                        Toast.makeText(getActivity(), "支付失败",
-                                Toast.LENGTH_SHORT).show();
                         ShopPaymentFailFragment shopPaymentFailFragment=ShopPaymentFailFragment.newInstance(mOrderId,mAmount,mFare,initTime,mOrder);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
 

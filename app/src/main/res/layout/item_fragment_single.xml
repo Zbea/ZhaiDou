@@ -21,7 +21,7 @@
         android:textSize="14sp"
         android:id="@+id/tv_name"
         android:singleLine="true"
-        android:ellipsize="end"
+        android:ellipsize="marquee"
         android:marqueeRepeatLimit="marquee_forever"
         android:textColor="@color/text_main_color"
         android:paddingRight="5dp"

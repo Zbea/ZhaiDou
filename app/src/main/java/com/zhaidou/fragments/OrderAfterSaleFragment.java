@@ -31,7 +31,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -74,18 +73,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link AfterSaleFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class AfterSaleFragment extends BaseFragment implements View.OnClickListener {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+public class OrderAfterSaleFragment extends BaseFragment implements View.OnClickListener {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_STATUS = "status";
-
-    // TODO: Rename and change types of parameters
     private String mOrderId;
     private String mStatus;
 
@@ -132,23 +122,15 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
                     Order order = (Order) msg.obj;
                     if (orderListener != null)
                         orderListener.onOrderStatusChange(order);
-                    ((BaseActivity) getActivity()).popToStack(AfterSaleFragment.this);
+                    ToolUtils.setToast(getActivity(),"恭喜,申请退款成功");
+                    ((BaseActivity) getActivity()).popToStack(OrderAfterSaleFragment.this);
                     break;
             }
         }
     };
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AfterSaleFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static AfterSaleFragment newInstance(String orderId, String status) {
-        AfterSaleFragment fragment = new AfterSaleFragment();
+    public static OrderAfterSaleFragment newInstance(String orderId, String status) {
+        OrderAfterSaleFragment fragment = new OrderAfterSaleFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, orderId);
         args.putString(ARG_STATUS, status);
@@ -156,8 +138,7 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
         return fragment;
     }
 
-    public AfterSaleFragment() {
-        // Required empty public constructor
+    public OrderAfterSaleFragment() {
     }
 
     @Override
@@ -172,8 +153,6 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        Log.i("AfterSaleFragment--------------->", "onCreateView");
         if (null != rootView) {
             ViewGroup parent = (ViewGroup) rootView.getParent();
             if (null != parent) {
@@ -232,7 +211,6 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
             public void onMenuSelect(int position, String tag) {
                 switch (position) {
                     case MENU_CAMERA_SELECTED:
-                        Toast.makeText(getActivity(), position + "--->" + tag, Toast.LENGTH_LONG).show();
                         File dir = new File(ZhaiDou.MyAvatarDir);
                         if (!dir.exists()) {
                             dir.mkdirs();
@@ -249,7 +227,6 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
                                 MENU_CAMERA_SELECTED);
                         break;
                     case MENU_PHOTO_SELECTED:
-                        Toast.makeText(getActivity(), position + "--->" + tag, Toast.LENGTH_LONG).show();
                         Intent intent1 = new Intent(Intent.ACTION_PICK, null);
                         intent1.setDataAndType(
                                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
@@ -310,15 +287,6 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
                 break;
             case R.id.tv_commit:
                 new CommitTask().execute();
-//                for (int i = 0; i < imagePath.size(); i++) {
-//                    String path=imagePath.get(i);
-//                    if (!TextUtils.isEmpty(path)){
-//                        File file=new File(path);
-//                        Log.i("file----->",file.length()+"");
-//                        Bitmap bitmap=BitmapFactory.decodeFile(path);
-//                        String base64Str =PhotoUtil.bitmapToBase64(bitmap);
-//                    }
-//                }
                 break;
         }
     }
@@ -327,7 +295,6 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "/" + id, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("FetchOrderDetail-------------->", jsonObject.toString());
                 if (mDialog != null) mDialog.dismiss();
                 if (jsonObject != null) {
                     JSONObject orderObj = jsonObject.optJSONObject("order");
@@ -459,7 +426,6 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
                 }
                 break;
             case MENU_PHOTO_SELECTED:// 本地修改头像
-                Log.i("requestCode", "本地修改头像");
                 Uri uri = null;
                 if (data == null) {
                     return;
@@ -502,8 +468,6 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
 
                 break;
             case 2:// 裁剪头像返回
-                // TODO sent to crop
-                Log.i("裁剪头像返回----->", "裁剪头像返回");
                 if (data == null) {
                     Toast.makeText(getActivity(), "取消选择", Toast.LENGTH_SHORT).show();
                     return;
@@ -525,15 +489,11 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
      * @param data
      */
     private void saveCropAvator(Intent data) {
-        Log.i("saveCropAvator--------->", "saveCropAvator");
         Bundle extras = data.getExtras();
         if (extras != null) {
             Bitmap bitmap = extras.getParcelable("data");
-            Log.i("life", "avatar - bitmap = " + bitmap);
-
             String base64str = PhotoUtil.bitmapToBase64(bitmap);
-            Log.i("base64str0---------->", base64str);
-//            new UpLoadAvatar().execute(base64str);
+
         }
     }
 
@@ -605,7 +565,6 @@ public class AfterSaleFragment extends BaseFragment implements View.OnClickListe
                 String deliver_number = orderObj.optString("deliver_number");
                 Order order = new Order(id, number, amount, orderStatus, status_ch, created_at_for, created_at, over_at, 0);
                 if (201 == status) {
-                    Log.i("201==status----------------->", "201==status");
                     Message message = new Message();
                     message.what = ORDER_RETURN_SUCCESS;
                     message.obj = order;

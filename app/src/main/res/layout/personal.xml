@@ -44,7 +44,7 @@
                                                   android:id="@+id/iv_header"
                                                   android:layout_width="70dp"
                                                   android:layout_height="70dp"
-                                                  android:layout_centerVertical="true"
+                                                  android:layout_marginTop="55dp"
                                                   android:layout_marginLeft="20dp"
                                                   android:layout_marginRight="20dp"
                                                   app:border_color="@color/white"
@@ -53,14 +53,16 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
+                    android:layout_marginTop="65dp"
                     android:layout_toRightOf="@id/iv_header"
+                    android:layout_marginBottom="20dp"
                     android:orientation="vertical">
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:id="@+id/tv_nickname"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textSize="16sp"
                         android:textColor="@color/white"/>
 
                     <com.zhaidou.view.TypeFaceTextView
@@ -69,13 +71,25 @@
                         android:textColor="@color/white"
                         android:visibility="gone"/>
 
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:id="@+id/tv_desc"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:paddingRight="10dp"
+                        android:orientation="horizontal">
+                        <com.zhaidou.view.TypeFaceTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="简介："
+                            android:textColor="@color/white"/>
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:id="@+id/tv_desc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:textColor="@color/white"/>
+
+                    </LinearLayout>
                 </LinearLayout>
 
                 <LinearLayout

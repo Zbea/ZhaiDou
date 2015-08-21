@@ -81,7 +81,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
-                        android:text="收件人：嘿嘿"
+                        android:text=""
                         android:textSize="14sp"
                         android:singleLine="true"
                         android:ellipsize="end"
@@ -94,7 +94,7 @@
                         android:textColor="@color/white"
                         android:layout_marginLeft="50dp"
                         android:textSize="14sp"
-                        android:text="电话：13044444444"
+                        android:text=""
                         android:singleLine="true"
                         android:ellipsize="end"
                         android:marqueeRepeatLimit="marquee_forever"/>
@@ -107,7 +107,7 @@
                     android:layout_marginTop="8dp"
                     android:textSize="13sp"
                     android:textColor="@color/white"
-                    android:text="地址：广东省，深圳市，龙华新区，哈哈哈哈哈哈哈哈哈"/>
+                    android:text=""/>
 
 
             </LinearLayout>

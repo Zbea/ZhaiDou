@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.zhaidou.R;
@@ -25,11 +27,13 @@ public class ProductAdapter extends BaseListAdapter<Product>{
     private int mCheckPosition=-1;
     private int pos;
     private int flags;
+    private int screenWidth;
 
     private WeakHashMap<Integer,View> mHashMap = new WeakHashMap<Integer, View>();
-    public ProductAdapter(Context context, List<Product> list,int flags) {
+    public ProductAdapter(Context context, List<Product> list,int flags,int screenWidth) {
         super(context, list);
         this.flags=flags;
+        this.screenWidth=screenWidth;
     }
 
     @Override
@@ -39,6 +43,7 @@ public class ProductAdapter extends BaseListAdapter<Product>{
             convertView=mInflater.inflate(R.layout.item_fragment_single,null);
         TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
         ImageView image =ViewHolder.get(convertView,R.id.iv_single_item);
+        image.setLayoutParams(new LinearLayout.LayoutParams(screenWidth/2-1,(screenWidth/2-1)*175/186));
         TextView tv_money=ViewHolder.get(convertView,R.id.tv_money);
         ImageView iv_heart=ViewHolder.get(convertView,R.id.iv_heart);
         TextView tv_count=ViewHolder.get(convertView,R.id.tv_count);
