@@ -323,7 +323,7 @@ public class GoodsDetailsFragment extends BaseFragment
                         mDialog.dismiss();
                     if (isOSaleBuy)
                     {
-                        setAddOrBuyShow("没有了零元特卖的购买资格");
+                        setAddOrBuyShow("不能重复购买");
                     }
                     break;
             }

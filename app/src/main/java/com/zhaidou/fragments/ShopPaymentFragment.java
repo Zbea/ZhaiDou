@@ -436,7 +436,7 @@ public class ShopPaymentFragment extends BaseFragment {
         if (orderListener!=null){
             mOrder.setStatus(""+ZhaiDou.STATUS_PAYED);
             mOrder.setOver_at(0);
-            orderListener.onOrderStatusChange(mOrder);
+//            orderListener.onOrderStatusChange(mOrder);
         }
 
     }
