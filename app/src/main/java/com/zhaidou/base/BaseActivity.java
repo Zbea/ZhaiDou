@@ -56,11 +56,8 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
         fragmentManager.popBackStack();
-        if (fragment instanceof ShopPaymentFailFragment)
-        {
-            fragmentManager.popBackStack();
-        }
-//        if (fragment instanceof ShopPaymentFailFragment || fragment instanceof ShopPaymentSuccessFragment)
+        if (fragment instanceof ShopPaymentFailFragment || fragment instanceof ShopPaymentSuccessFragment)
+        fragmentManager.popBackStack();
         fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
 
         Log.i("fragment---->", fragment.getClass().getSimpleName());
@@ -74,7 +71,6 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
 
     @Override
     public void onRegisterOrLoginSuccess(User user, Fragment fragment) {
-        Log.i("BaseActivity-------onRegisterOrLoginSuccess---->", user.toString());
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.popBackStack();
         SharedPreferencesUtil.saveUser(this, user);

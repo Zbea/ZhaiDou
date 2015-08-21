@@ -56,9 +56,8 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
     private RequestQueue mRequestQueue;
     private String token;
     private final int UPDATE_PAY_SUCCESS_PAG=1;
+    private final int UPDATE_PAY_FAIL_PAG=2;
     private TextView tv_receiver,tv_mobile,tv_address,tv_amount,tv_mall,tv_order_detail;
-
-    private OnColseSuccess onColseSuccess;
 
     private Handler mHandler=new Handler(){
         @Override
@@ -72,6 +71,9 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
                     Receiver receiver=order.getReceiver();
                     tv_amount.setText("￥"+order.getAmount()+"");
                     mOrder=order;
+                    break;
+                case UPDATE_PAY_FAIL_PAG:
+                    tv_order_detail.setClickable(false);
                     break;
             }
         }
@@ -89,13 +91,20 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
                     break;
                 case R.id.tv_mall:
                     ToolUtils.setLog("前往商城");
-                    ShopSpecialFragment shopSpecialFragment = ShopSpecialFragment.newInstance("", 0);
-                    ((MainActivity) getActivity()).navigationToFragment(shopSpecialFragment);
+                    colseFragment(ShopPaymentSuccessFragment.this);
                     break;
                 case R.id.tv_order_detail:
                     ToolUtils.setLog("前往订单");
                     OrderDetailFragment orderDetailFragment=OrderDetailFragment.newInstance(mOrderId+"",0,mOrder);
                     ((MainActivity)getActivity()).navigationToFragment(orderDetailFragment);
+                    orderDetailFragment.setOnColseSuccess(new OrderDetailFragment.OnColseSuccess()
+                    {
+                        @Override
+                        public void colsePage()
+                        {
+                            colseFragment(ShopPaymentSuccessFragment.this);
+                        }
+                    });
                     break;
             }
         }
@@ -169,7 +178,8 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "/" + orderId, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                if (jsonObject != null) {
+                if (jsonObject != null)
+                {
                     JSONObject orderObj = jsonObject.optJSONObject("order");
                     double amount = orderObj.optDouble("amount");
                     int id = orderObj.optInt("id");
@@ -198,10 +208,16 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
                     message.what = UPDATE_PAY_SUCCESS_PAG;
                     mHandler.sendMessage(message);
                 }
+                else
+                {
+                    mHandler.sendEmptyMessage(UPDATE_PAY_FAIL_PAG);
+                }
             }
         }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                mHandler.sendEmptyMessage(UPDATE_PAY_FAIL_PAG);
             }
         }) {
             @Override
@@ -227,15 +243,6 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
     public void onDestroyView()
     {
         super.onDestroyView();
-    }
-
-    public void setOnColseSuccess(OnColseSuccess OnColseSuccess)
-    {
-        this.onColseSuccess=OnColseSuccess;
-    }
-    public interface OnColseSuccess
-    {
-        public void colsePage();
     }
 
 }

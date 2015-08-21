@@ -79,7 +79,7 @@ public class OrderDetailFragment extends BaseFragment {
     private OrderListener orderListener;
     private LinearLayout loadingView;
 
-
+    private OnColseSuccess onColseSuccess;
     private long timeLeft;
     double amount;
     private View rootView;
@@ -679,6 +679,8 @@ public class OrderDetailFragment extends BaseFragment {
         }
         if (orderListener != null)
             orderListener.onOrderStatusChange(mOrder);
+        if (onColseSuccess!=null)
+        onColseSuccess.colsePage();
         super.onDestroyView();
     }
 
@@ -697,6 +699,15 @@ public class OrderDetailFragment extends BaseFragment {
 
     public interface OrderListener {
         public void onOrderStatusChange(Order order);
+    }
+
+    public void setOnColseSuccess(OnColseSuccess OnColseSuccess)
+    {
+        this.onColseSuccess=OnColseSuccess;
+    }
+    public interface OnColseSuccess
+    {
+        public void colsePage();
     }
 
 }
