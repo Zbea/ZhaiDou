@@ -29,6 +29,7 @@ import com.zhaidou.model.Order;
 import com.zhaidou.model.OrderItem;
 import com.zhaidou.model.Receiver;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
@@ -82,16 +83,14 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.back_btn:
-                    ((MainActivity) getActivity()).popToStack(ShopPaymentSuccessFragment.this);
+                    colseFragment(ShopPaymentSuccessFragment.this);
                     break;
                 case R.id.tv_mall:
-                    colsePayment();
                     ShopSpecialFragment shopSpecialFragment = ShopSpecialFragment.newInstance("", 0);
                     ((MainActivity) getActivity()).navigationToFragment(shopSpecialFragment);
                     colseFragment(ShopPaymentSuccessFragment.this);
                     break;
                 case R.id.tv_order_detail:
-                    colsePayment();
                     OrderDetailFragment orderDetailFragment=OrderDetailFragment.newInstance(mOrderId+"",0,mOrder);
                     ((MainActivity)getActivity()).navigationToFragment(orderDetailFragment);
                     colseFragment(ShopPaymentSuccessFragment.this);
@@ -201,7 +200,6 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
             }
         }) {
             @Override
@@ -216,6 +214,7 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
 
     private void colsePayment()
     {
+        ToolUtils.setLog("11111");
         FragmentManager fragmentManager=getFragmentManager();
         Fragment fragment=fragmentManager.findFragmentByTag((ShopPaymentFragment.class).getClass().getSimpleName());
         if (fragment!=null)
@@ -223,4 +222,10 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
         fragmentManager.popBackStack();
     }
 
+    @Override
+    public void onDestroyView()
+    {
+        colsePayment();
+        super.onDestroyView();
+    }
 }

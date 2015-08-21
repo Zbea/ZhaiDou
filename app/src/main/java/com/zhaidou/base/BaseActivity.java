@@ -54,10 +54,10 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
     public void popToStack(Fragment fragment) {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        Log.i("childFragmentManager--->", fragmentManager.getBackStackEntryCount() + "");
         fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
         fragmentManager.popBackStack();
-        if (fragment instanceof ShopPaymentFailFragment || fragment instanceof ShopPaymentSuccessFragment)
+        if (fragment instanceof ShopPaymentFailFragment)
+//        if (fragment instanceof ShopPaymentFailFragment || fragment instanceof ShopPaymentSuccessFragment)
             fragmentManager.popBackStack();
         fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
 

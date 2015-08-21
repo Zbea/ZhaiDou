@@ -10,8 +10,10 @@
             android:orientation="vertical">
 
             <RelativeLayout
+                android:id="@+id/accountInfoBtn"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
+                android:clickable="true"
                 android:background="@drawable/bg_personal">
 
                 <FrameLayout

@@ -75,7 +75,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 
     private User user;
     private int num;
-
+    private ProfileFragment mProfileFragment;
     private CreatCartDB creatCartDB;
     private List<CartItem> items = new ArrayList<CartItem>();
     private ImageView iv_header, mPrePayView, mPreReceivedView, mReturnView;
@@ -198,6 +198,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             tv_unpay_count = (TextView) view.findViewById(R.id.tv_unpay_count);
             mCartCount = (TextView) view.findViewById(R.id.tv_cart_count);
 
+            view.findViewById(R.id.accountInfoBtn).setOnClickListener(this);
             mPrePayView.setOnClickListener(this);
             mPreReceivedView.setOnClickListener(this);
             mReturnView.setOnClickListener(this);
@@ -298,7 +299,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 mSettingFragment.setProfileListener(new SettingFragment.ProfileListener() {
                     @Override
                     public void onProfileChange(User user) {
-                        Log.i("mSettingFragment.setProfileListener--------->",user.toString());
                         if (!TextUtils.isEmpty(user.getDescription())){
                             tv_desc.setText(user.getDescription());
                         }else if (!TextUtils.isEmpty(user.getAvatar())){
@@ -312,6 +312,24 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             case R.id.rl_contact:
                 ContactUsFragment contactUsFragment = ContactUsFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragment(contactUsFragment);
+                break;
+            case R.id.accountInfoBtn:
+                mProfileFragment=ProfileFragment.newInstance("","");
+                mProfileFragment.setProfileListener(new ProfileFragment.ProfileListener()
+                {
+                    @Override
+                    public void onProfileChange(User user)
+                    {
+                        if (!TextUtils.isEmpty(user.getDescription())){
+                            tv_desc.setText(user.getDescription());
+                        }else if (!TextUtils.isEmpty(user.getAvatar())){
+                            ToolUtils.setImageCacheUrl("http://" + user.getAvatar(), iv_header);
+                        }else if (!TextUtils.isEmpty(user.getNickName())){
+                            tv_nickname.setText(user.getNickName());
+                        }
+                    }
+                });
+                ((MainActivity)getActivity()).navigationToFragment(mProfileFragment);
                 break;
             case R.id.rl_competition:
                 Intent intent = new Intent(getActivity(), HomePTActivity.class);
