@@ -112,7 +112,7 @@ public class OrderDetailFragment extends BaseFragment {
                     mOrderTimer.setText(time);
                     break;
                 case UPDATE_UI_TIMER_FINISH:
-                    mOrderTimer.setText(getResources().getString(R.string.timer_finish));
+                    mOrderTimer.setText(mContext.getResources().getString(R.string.timer_finish));
                     mOrderTimer.setBackgroundResource(R.drawable.btn_no_click_selector);
                     mOrderTimer.setClickable(true);
                     mOrder.setStatus("" + ZhaiDou.STATUS_DEAL_CLOSE);
