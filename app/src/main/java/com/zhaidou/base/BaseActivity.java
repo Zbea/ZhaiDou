@@ -57,8 +57,10 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
         fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
         fragmentManager.popBackStack();
         if (fragment instanceof ShopPaymentFailFragment)
-//        if (fragment instanceof ShopPaymentFailFragment || fragment instanceof ShopPaymentSuccessFragment)
+        {
             fragmentManager.popBackStack();
+        }
+//        if (fragment instanceof ShopPaymentFailFragment || fragment instanceof ShopPaymentSuccessFragment)
         fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
 
         Log.i("fragment---->", fragment.getClass().getSimpleName());

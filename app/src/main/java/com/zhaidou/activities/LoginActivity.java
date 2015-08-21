@@ -77,6 +77,7 @@ import cn.sharesdk.wechat.friends.Wechat;
 
     private static final int SHOW_DIALOG=1;
     private static final int CLOSE_DIALOG=2;
+    private int flags;
     public int index;
     RequestQueue requestQueue;
 
@@ -99,12 +100,15 @@ import cn.sharesdk.wechat.friends.Wechat;
                     Intent intent1=new Intent(ZhaiDou.IntentRefreshLoginTag);
                     sendBroadcast(intent1);
 
-                    Intent intent=new Intent();
-                    intent.putExtra("id",u.getId());
-                    intent.putExtra("email",u.getEmail());
-                    intent.putExtra("token",u.getAuthentication_token());
-                    intent.putExtra("nick",u.getNickName());
-                    setResult(2000, intent);
+                    if (flags!=1)
+                    {
+                        Intent intent=new Intent();
+                        intent.putExtra("id",u.getId());
+                        intent.putExtra("email",u.getEmail());
+                        intent.putExtra("token",u.getAuthentication_token());
+                        intent.putExtra("nick",u.getNickName());
+                        setResult(2000, intent);
+                    }
                     finish();//此处一定要调用finish()方法
                     break;
                 case SHOW_DIALOG:
@@ -125,6 +129,9 @@ import cn.sharesdk.wechat.friends.Wechat;
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.fragment_login);
+
+        flags=getIntent().getFlags();
+
         mEmailView=(TextView)findViewById(R.id.tv_email);
         mPswView=(TextView)findViewById(R.id.tv_password);
         mLoginView=(TextView)findViewById(R.id.bt_login);
@@ -225,7 +232,6 @@ import cn.sharesdk.wechat.friends.Wechat;
 
                                     new RegisterTask().execute(registers);
                                 }else {
-                                    Log.i("flag==1","flag==1");
                                     JSONObject userJson = jsonObject.optJSONObject("user");
                                     String token =userJson.optJSONObject("user_tokens").optString("token");
                                     JSONArray userArray = userJson.optJSONArray("users");

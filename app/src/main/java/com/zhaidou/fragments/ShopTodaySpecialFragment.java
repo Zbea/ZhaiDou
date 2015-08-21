@@ -32,6 +32,7 @@ import com.pulltorefresh.PullToRefreshScrollView;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.adapter.ShopTodaySpecialAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
@@ -102,14 +103,17 @@ public class ShopTodaySpecialFragment extends BaseFragment {
             String action=intent.getAction();
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
             {
+
                 initCartTips();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag))
             {
+                checkLogin();
                 initCartTips();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
             {
+                checkLogin();
                 initCartTips();
             }
         }
@@ -217,7 +221,9 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     }
                     else
                     {
-                        ToolUtils.setToast(getActivity(), "抱歉，尚未登录");
+                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+                        intent.setFlags(1);
+                        getActivity().startActivity(intent);
                     }
                     break;
                 case R.id.share_iv:

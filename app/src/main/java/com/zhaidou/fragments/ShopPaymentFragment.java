@@ -159,7 +159,9 @@ public class ShopPaymentFragment extends BaseFragment {
                     ((MainActivity) getActivity()).popToStack(ShopPaymentFragment.this);
                     break;
                 case R.id.paymentBtn:
-                    payment();
+//                    payment();
+                    ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, 0,mOrder);
+                    ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                     break;
             }
         }

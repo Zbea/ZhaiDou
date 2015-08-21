@@ -51,6 +51,7 @@ import com.viewpagerindicator.TabPageIndicator;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.adapter.GoodsImageAdapter;
 import com.zhaidou.adapter.SpecificationAdapter;
 import com.zhaidou.base.BaseFragment;
@@ -177,10 +178,12 @@ public class GoodsDetailsFragment extends BaseFragment
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag))
             {
+                checkLogin();
                 initCartTips();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
             {
+                checkLogin();
                 initCartTips();
             }
 
@@ -301,7 +304,7 @@ public class GoodsDetailsFragment extends BaseFragment
                         mDialog.dismiss();
                     if (isOSaleBuy)
                     {
-                        setAddOrBuyShow("没有了零元特卖的购买资格");
+                        setAddOrBuyShow("不能重复购买");
                     } else
                     {
                         for (int i = 0; i < items.size(); i++)
@@ -415,7 +418,9 @@ public class GoodsDetailsFragment extends BaseFragment
                         ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
                     } else
                     {
-                        ToolUtils.setToast(mContext, "抱歉,尚未登录");
+                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+                        intent.setFlags(1);
+                        getActivity().startActivity(intent);
                     }
                     break;
                 case R.id.goodsLjBuyBtn:
@@ -440,7 +445,9 @@ public class GoodsDetailsFragment extends BaseFragment
                             }
                     } else
                     {
-                        ToolUtils.setToast(mContext, "抱歉，尚未登录");
+                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+                        intent.setFlags(1);
+                        getActivity().startActivity(intent);
                     }
                     break;
                 case R.id.goodsAddBuyBtn:
@@ -949,7 +956,9 @@ public class GoodsDetailsFragment extends BaseFragment
 
         } else
         {
-            ToolUtils.setToast(mContext, "抱歉，尚未登录");
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            intent.setFlags(1);
+            getActivity().startActivity(intent);
         }
 
     }

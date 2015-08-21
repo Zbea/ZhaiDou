@@ -78,21 +78,13 @@ import com.alibaba.sdk.android.AlibabaSDK;
 import com.alibaba.sdk.android.login.LoginService;
 import com.alibaba.sdk.android.login.callback.LoginCallback;
 import com.zhaidou.utils.NativeHttpUtil;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link LoginFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
- */
 public class LoginFragment extends BaseFragment implements View.OnClickListener,PlatformActionListener{
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private TextView mEmailView,mPswView,mRegisterView,mResetView;
@@ -124,7 +116,6 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         return fragment;
     }
     public LoginFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -311,6 +302,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                     User user = new User(id,email,token,nick,null);
 
                     ToolUtils.setLog("要刷新登录了");
+                    SharedPreferencesUtil.saveUser(getActivity(), user);
                     Intent intent=new Intent(ZhaiDou.IntentRefreshLoginTag);
                     getActivity().sendBroadcast(intent);
 

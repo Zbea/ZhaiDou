@@ -33,6 +33,7 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
+import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
@@ -101,6 +102,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 
     private Coupon mCoupon;
     private View rootView;
+    private boolean isLogin;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -114,10 +116,14 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag))
             {
+                isLogin=true;
+                checkLogin();
                 initCartTips();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
             {
+                isLogin=false;
+                checkLogin();
                 initCartTips();
             }
         }
@@ -253,6 +259,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             myCartBtn.setOnClickListener(this);
             cartTipsTv = (TextView) rootView.findViewById(R.id.myCartTipsTv);
 
+            isLogin=checkLogin();
+
             initCartTips();
 
             initData();
@@ -363,14 +371,16 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 //                break;
 
             case R.id.myCartBtn:
-                if (checkLogin())
+                if (isLogin)
                 {
                     ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
                     ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
                 }
                 else
                 {
-                    ToolUtils.setToast(getActivity(), "抱歉，尚未登录");
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    intent.setFlags(1);
+                    getActivity().startActivity(intent);
                 }
                 break;
         }

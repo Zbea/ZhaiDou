@@ -60,7 +60,7 @@
             android:name=".activities.DiyActivity"
             android:configChanges="orientation|keyboardHidden|"
             android:label="@string/title_activity_diy"
-            android:screenOrientation="landscape"
+            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" >
         </activity>
         <activity
