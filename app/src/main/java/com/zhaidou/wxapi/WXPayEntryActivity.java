@@ -53,9 +53,8 @@ public class WXPayEntryActivity extends FragmentActivity implements IWXAPIEventH
 		Log.d(TAG, "onPayFinish, errCode = " + resp.errCode+"----->"+resp.errStr);
 
 		if (resp.getType() == ConstantsAPI.COMMAND_PAY_BY_WX) {
-			
-			Toast.makeText(WXPayEntryActivity.this, resp.errStr, Toast.LENGTH_SHORT).show();
-//			MainActivity.handler.sendEmptyMessage(resp.errCode);
+			//			MainActivity.handler.sendEmptyMessage(resp.errCode);
+//            resp.errCode=0;
             Intent intent=new Intent(ZhaiDou.BROADCAST_WXAPI_FILTER);
             intent.putExtra("code",resp.errCode);
             sendBroadcast(intent);

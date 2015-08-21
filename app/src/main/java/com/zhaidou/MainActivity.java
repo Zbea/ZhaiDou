@@ -113,6 +113,9 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private String serverInfo;
     private int serverCode;
     private RequestQueue mRequestQueue;
+    private final int WX_PAY_SUCCESS=0;
+    private final int WX_PAY_FAILED=-1;
+    private final int WX_PAY_CANCEL=-2;
     public static List<Province> provinceList = new ArrayList<Province>();
 
     public static int num = 0;
@@ -135,19 +138,21 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 List<Fragment> fragments = getSupportFragmentManager().getFragments();
                 Log.i("fragments--------------->", fragments.size() + "");
                 for (Fragment fragment : fragments) {
-//                    Log.i("fragment----------------->",fragment.getClass().getSimpleName());
+                    if (fragment!=null)
+                    Log.i("fragment----------------->",fragment.getClass().getSimpleName());
                 }
                 int result = intent.getIntExtra("code", -2);
+                Log.i("result---------------->",result+"------"+fragments.size());
                 if (fragments.size() > 1) {
+                    System.out.println("fragments.size() > 1");
                     Fragment fragment = fragments.get(fragments.size() - 1);
+                    System.out.println("fragment.getClass().getSimpleName()---->"+fragment.getClass().getSimpleName());
                     if (fragment instanceof ShopPaymentFragment) {
-                        if (result < 0) {
-                            mHandler.sendEmptyMessage(2);
-                        }
-//                        ((ShopPaymentFragment) fragment).handleWXPayResult(result);
-                    }
-                    if (fragment instanceof ShopPaymentFailFragment) {
-                        ((ShopPaymentFailFragment) fragment).handleWXPayResult(intent.getIntExtra("code", -1));
+                        System.out.println("fragment instanceof ShopPaymentFragment------------"+result);
+                        ((ShopPaymentFragment) fragment).handleWXPayResult(result);
+                    }else if (fragment instanceof ShopPaymentFailFragment) {
+                        System.out.println("fragment instanceof ShopPaymentFailFragment");
+                        ((ShopPaymentFailFragment) fragment).handleWXPayResult(result);
                     }
                 }
             }

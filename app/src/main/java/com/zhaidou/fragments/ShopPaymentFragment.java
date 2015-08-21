@@ -288,7 +288,6 @@ public class ShopPaymentFragment extends BaseFragment {
                 @Override
                 public void run() {
                     initTime = initTime - 1;
-                    Log.i("initTime----------------------------->",initTime+"");
                     timeInfoTv.setText(new SimpleDateFormat("mm:ss").format(new Date(initTime * 1000)));
                     if (initTime <= 0) {
                         if (mTimer != null) {
@@ -404,6 +403,7 @@ public class ShopPaymentFragment extends BaseFragment {
     }
 
     public void handleWXPayResult(int result){
+        System.out.println("handleWXPayResult------------>"+result);
         switch (result) {
             case 800://商户订单号重复或生成错误
                 Log.i("----->", "商户订单号重复或生成错误");
@@ -414,19 +414,17 @@ public class ShopPaymentFragment extends BaseFragment {
                 notificationPaySuccess();
                 ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, mAmount+mFare,mOrder);
                 ((MainActivity)getActivity()).navigationToFragment(shopPaymentSuccessFragment);
-
                 break;
             case -1://支付失败
                 Log.i("----->", "支付失败");
                 ShopPaymentFailFragment shopPaymentFailFragment=ShopPaymentFailFragment.newInstance(mOrderId,mAmount,mFare,initTime,mOrder);
                 ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
-
                 break;
             case -2://取消支付
                 Log.i("----->", "取消支付");
                 ShowToast("取消支付");
-//                ShopPaymentFailFragment shopPaymentFailFragment1=ShopPaymentFailFragment.newInstance(mOrderId,mAmount,mFare,initTime);
-//                ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment1);
+                ShopPaymentFailFragment shopPaymentFailFragment1=ShopPaymentFailFragment.newInstance(mOrderId,mAmount,mFare,initTime,mOrder);
+                ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment1);
                 break;
             default:
                 break;
@@ -467,6 +465,7 @@ public class ShopPaymentFragment extends BaseFragment {
 
     @Override
     public void onDestroyView() {
+        System.out.println("ShopPaymentFragment.onDestroyView");
         if (orderListener!=null){
 //            if (flags!=2)
 //            {

@@ -209,7 +209,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                     });
                 }
             });
-            FetchData();
+            initData();
         }
 
         return rootView;

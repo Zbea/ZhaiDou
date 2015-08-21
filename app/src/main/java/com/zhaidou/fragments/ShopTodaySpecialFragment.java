@@ -521,5 +521,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
             mTimer.cancel();
             mTimer=null;
         }
+        super.onDestroy();
     }
 }
