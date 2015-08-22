@@ -65,7 +65,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
 
     private long mOrderId;
     private double mAmount;
-    private int mFare;
+    private double mFare;
     private long mTimeStamp;
     private Order mOrder;
     private Context mContext;
@@ -99,7 +99,6 @@ public class ShopPaymentFailFragment extends BaseFragment {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case SDK_PAY_FLAG:
-                    Log.i("SDK_PAY_FLAG------------>", "SDK_PAY_FLAG");
                     PayResult payResult = new PayResult((String) msg.obj);
 
                     // 支付宝返回此次支付结果及加签，建议对支付宝签名信息拿签约时支付宝提供的公钥做验签
@@ -147,11 +146,10 @@ public class ShopPaymentFailFragment extends BaseFragment {
                     for (OrderItem item:items) {
                         price+=item.getPrice()*item.getCount();
                     }
-                    Log.i("amount---------------->",amount+"");
-                    Log.i("price---------------->",price+"");
-                    Log.i("fare---------------->",(amount-price)+"");
+                    DecimalFormat df = new DecimalFormat("###.00");
+                    price = Double.parseDouble(df.format(price));
                     tv_amount.setText("￥" + price);
-                    tv_fare.setText("￥" + (amount-price));
+                    tv_fare.setText("￥" + Double.parseDouble(df.format((amount-price))));
                     tv_total.setText("￥" + amount);
                     break;
             }
@@ -175,10 +173,10 @@ public class ShopPaymentFailFragment extends BaseFragment {
         }
     };
 
-    public static ShopPaymentFailFragment newInstance(long orderId, double amount, int fare, long timer, Order order) {
+    public static ShopPaymentFailFragment newInstance(long orderId, double amount, double fare, long timer, Order order) {
         ShopPaymentFailFragment fragment = new ShopPaymentFailFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_FARE, fare);
+        args.putDouble(ARG_FARE, fare);
         args.putLong(ARG_ORDERID, orderId);
         args.putDouble(ARG_AMOUNT, amount);
         args.putLong(ARG_TIMER, timer);

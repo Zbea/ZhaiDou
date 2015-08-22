@@ -15,18 +15,12 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
 
-/**
- * A simple {@link android.support.v4.app.Fragment} subclass.
- * Use the {@link com.zhaidou.fragments.PersonalFragment1#newInstance} factory method to
- * create an instance of this fragment.
- *
- */
+
 public class PersonalFragment1 extends BaseFragment implements View.OnClickListener{
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_CONTEXT = "context";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
@@ -35,7 +29,7 @@ public class PersonalFragment1 extends BaseFragment implements View.OnClickListe
     private RelativeLayout mCouponsView,mRewardView,mAddrView,mSettingView;
     private FrameLayout mChildContainer;
     SettingFragment settingFragment;
-    // TODO: Rename and change types and number of parameters
+
     public static PersonalFragment1 personalFragment;
     public static PersonalFragment1 newInstance(String param1, String context) {
         if (personalFragment==null)
@@ -47,7 +41,6 @@ public class PersonalFragment1 extends BaseFragment implements View.OnClickListe
         return personalFragment;
     }
     public PersonalFragment1() {
-        // Required empty public constructor
     }
 
     @Override
@@ -62,8 +55,6 @@ public class PersonalFragment1 extends BaseFragment implements View.OnClickListe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        Log.i("onCreateView----------------->","onCreateView");
         View view=inflater.inflate(R.layout.personal, container, false);
         mPrePayView=(ImageView)view.findViewById(R.id.tv_pre_pay);
         mPreReceivedView=(ImageView)view.findViewById(R.id.tv_pre_received);
@@ -95,9 +86,6 @@ public class PersonalFragment1 extends BaseFragment implements View.OnClickListe
             case R.id.rl_manage_address:
                 break;
             case R.id.rl_setting:
-                Log.i("rl_setting---->","rl_setting");
-//              SettingFragment settingFragment1=SettingFragment.newInstance("","");
-                Log.i("getactivity---------->",getActivity().toString());
                 ((MainActivity)getActivity()).navigationToFragment(settingFragment);
                 break;
         }

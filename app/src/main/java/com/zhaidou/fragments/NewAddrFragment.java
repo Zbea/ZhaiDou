@@ -151,6 +151,7 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
         mSharedPreferences = getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         token = mSharedPreferences.getString("token", null);
 
+        provinceList.removeAll(provinceList);
         if (MainActivity.provinceList!=null&&MainActivity.provinceList.size()>10)
         {
             ToolUtils.setLog("加载已经添加的");
@@ -269,7 +270,7 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
                 if (status==201)
                 {
                     JSONObject receiver=json.optJSONObject("receiver");
-                    int  price=json.optInt("price");
+                    double  price=json.optDouble("price");
                     if (addrSaveSuccessListener!=null)
                     {
                         addrSaveSuccessListener.onSaveListener(receiver,mStatus,price,selectedProvince.getName(), selectedCity.getName(), selectedArea.getName());
@@ -379,7 +380,7 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
                                         JSONObject areaObj = areaArr.optJSONObject(j);
                                         int areaId = areaObj.optInt("id");
                                         String areaName = areaObj.optString("name");
-                                        int areaPrice = areaObj.optInt("price");
+                                        double areaPrice = areaObj.optDouble("price");
                                         Area area = new Area();
                                         area.setId(areaId);
                                         area.setName(areaName);
@@ -412,6 +413,6 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
     }
 
     public interface AddrSaveSuccessListener{
-        public void onSaveListener(JSONObject receiver,int status,int yfPrice,String province,String city,String area);
+        public void onSaveListener(JSONObject receiver,int status,double yfPrice,String province,String city,String area);
     }
 }

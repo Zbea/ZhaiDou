@@ -54,11 +54,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link AddrManageFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class AddrManageFragment extends BaseFragment implements View.OnClickListener {
     private static final String ARG_NickName = "param1";
     private static final String ARG_MOBILE = "param2";
@@ -230,7 +225,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
 
                 newAddrFragment.setAddrSaveSuccessListener(new NewAddrFragment.AddrSaveSuccessListener() {
                     @Override
-                    public void onSaveListener(JSONObject receiverObj, int status,int yfprice, String province, String city, String area) {
+                    public void onSaveListener(JSONObject receiverObj, int status,double yfprice, String province, String city, String area) {
                         if (status==UPDATE_ADDRESS_INFO){
                             int id = receiverObj.optInt("id");
                             String phone = receiverObj.optString("phone");
@@ -291,7 +286,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 ((MainActivity) getActivity()).navigationToFragment(newAddrFragment);
                 newAddrFragment.setAddrSaveSuccessListener(new NewAddrFragment.AddrSaveSuccessListener() {
                     @Override
-                    public void onSaveListener(JSONObject receiverObj,int status,int yfprice, String province, String city, String area) {
+                    public void onSaveListener(JSONObject receiverObj,int status,double yfprice, String province, String city, String area) {
                         if (receiverObj != null&&CREATE_NEW_ADDRESS==status) {
                             int id = receiverObj.optInt("id");
                             int user_id = receiverObj.optInt("user_id");
@@ -438,7 +433,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                         String city=receiverObj.optString("city_name");
                         String area=receiverObj.optString("provider_name");
                         boolean is_default=receiverObj.optBoolean("is_default");
-                        int price=receiverObj.optInt("price");
+                        double price=receiverObj.optDouble("price");
                         if (is_default)
                             mCheckedPosition=i;
                         Address address = new Address();

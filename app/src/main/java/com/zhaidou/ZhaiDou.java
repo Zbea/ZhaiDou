@@ -42,13 +42,13 @@ public class ZhaiDou {
     //特卖banner
     public static String shopSpecialBannerUrl=HOME_BASE_URL+"special_mall/api/sales/sale_banner?status=";
     //特卖列表share
-    public static String shopSpecialListShareUrl="http://192.168.199.230:9000/mall/list.html?id=";
+    public static String shopSpecialListShareUrl=HOME_BASE_URL+"mall/list.html?id=";
     //特卖列表
     public static String shopSpecialListUrl=HOME_BASE_URL+"special_mall/api/sales?sale_cate=0";
     //特卖详情
     public static String shopSpecialTadayUrl=HOME_BASE_URL+"special_mall/api/sales/";
     //商品详情share
-    public static String goodsDetailsShareUrl="http://192.168.199.230:9000/mall/index.html?id=";
+    public static String goodsDetailsShareUrl=HOME_BASE_URL+"mall/index.html?id=";
     //商品详情
     public static String goodsDetailsUrlUrl=HOME_BASE_URL+"special_mall/api/merchandises/";
     //购物车商品详情
@@ -182,6 +182,10 @@ public class ZhaiDou {
      * 订单支付成功刷新按钮
      */
     public static String IntentRefreshPaySuccessTag="com.zhaidou.home.refesh.pay.success";
+    /**
+     * 商品详情零元特卖购买后刷新
+     */
+    public static String IntentRefreshGoodsDetailsTag="com.zhaidou.home.refesh.goods.details";
 
 }
 //http://192.168.1.45/article/api/article_categories?catetory_id=13

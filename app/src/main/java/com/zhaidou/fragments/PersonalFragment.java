@@ -85,7 +85,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     private TextView mCartCount;
     private int userId;
     private String token;
-    private int count;
+    private int count=0;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -98,6 +98,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 initCartTips();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginExitTag)) {
+                count=0;
                 initCartTips();
                 exitLoginEvent();
             }
@@ -138,13 +139,16 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                     tv_desc.setText("null".equalsIgnoreCase(u.getDescription()) || u.getDescription() == null ? "" : u.getDescription());
                     break;
                 case UPDATE_USER_COLLECT_COUNT:
+                    ToolUtils.setLog("收藏"+msg.arg1);
                     tv_collect.setText(msg.arg1 + "");
                     break;
                 case UPDATE_USER_COLLOCATION:
+                    ToolUtils.setLog("豆搭："+msg.arg1);
                     tv_collocation.setText(msg.arg1 + "");
                     break;
                 case UPDATE_UNPAY_COUNT:
                     count = msg.arg1;
+                    ToolUtils.setLog("代付款："+count);
                     tv_unpay_count.setVisibility(View.VISIBLE);
                     ((MainActivity) getActivity()).hideTip(View.VISIBLE);
                     tv_unpay_count.setText(count + "");
@@ -281,6 +285,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 startAnimActivity(intent1);
                 break;
             case R.id.tv_pre_pay:
+                ToolUtils.setLog("count:"+count);
                 OrderUnPayFragment unPayFragment = OrderUnPayFragment.newInstance("", "",count);
                 ((MainActivity) getActivity()).navigationToFragment(unPayFragment);
                 ((MainActivity) getActivity()).hideTip(View.GONE);
@@ -416,23 +421,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         mRequestQueue.add(request);
     }
 
-    public void getCityList() {
-        String city = getString(R.string.city);
-        try {
-            JSONArray cityArr = new JSONArray(city);
-            for (int i = 0; i < cityArr.length(); i++) {
-                JSONObject cityObj = cityArr.optJSONObject(i);
-                String index = cityObj.optString("index");
-                String desc = cityObj.optString("desc");
-                cityMap.put(index, desc);
-            }
-            getUserInfo();
-            getUserDetail();
-        } catch (Exception e) {
-
-        }
-    }
-
     @Override
     public void onCountChange(int count, Fragment fragment) {
         if (fragment instanceof CollectFragment) {
@@ -453,7 +441,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     }
 
     public void refreshData(Activity activity) {
-
     }
 
     @Override
@@ -479,19 +466,23 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         }
     }
 
+
     @Override
     public void onHiddenChanged(boolean hidden) {
-        Integer userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
+        userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
+        token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         if (!hidden && userId != -1) {
             getUserDetail();
             getUserInfo();
             FetchCollectData();
             FetchCollocationData();
+            FetchUnPayCount();
         }
         super.onHiddenChanged(hidden);
     }
 
     private void FetchCollectData() {
+        ToolUtils.setLog("查看收藏");
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_COLLECT_ITEM_URL + 1, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -522,6 +513,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     }
 
     private void FetchCollocationData() {
+        ToolUtils.setLog("查看豆搭");
         final String token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         final int userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_COLLOCATION_ITEM_URL + userId + "/bean_collocations?page=" + 1
@@ -546,11 +538,13 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     }
 
     private void FetchUnPayCount() {
+        ToolUtils.setLog("查看代付款数量");
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?count=1&status=0", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (jsonObject != null) {
                     int count = jsonObject.optInt("count");
+                    ToolUtils.setLog(""+count);
                     if (count > 0) {
                         Message message = new Message();
                         message.what = UPDATE_UNPAY_COUNT;
@@ -566,6 +560,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
+                mCartCount.setVisibility(View.GONE);
             }
         }) {
             @Override

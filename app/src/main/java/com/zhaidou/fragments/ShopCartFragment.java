@@ -99,6 +99,7 @@ public class ShopCartFragment extends BaseFragment
     private List<CartItem> itemsServer = new ArrayList<CartItem>();
     private ArrayList<CartItem> itemsCheck = new ArrayList<CartItem>();
     private List<CheckBox> boxs = new ArrayList<CheckBox>();
+    private List<View> views=new ArrayList<View>();
     private CartItem mCartItem;
 
 
@@ -123,7 +124,17 @@ public class ShopCartFragment extends BaseFragment
             }
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
             {
-//                addCartGoods();
+                items = CreatCartTools.selectByAll(creatCartDB, userId);
+                if (items.size() > 0)
+                {
+                    addCartGoods();
+
+                } else
+                {
+                    mDialog.dismiss();
+                    nullView.setVisibility(View.VISIBLE);
+                    contentView.setVisibility(View.GONE);
+                }
             }
         }
     };
@@ -421,8 +432,11 @@ public class ShopCartFragment extends BaseFragment
      */
     private void addCartGoods()
     {
+        allCb.setChecked(false);
         items = CreatCartTools.selectByAll(creatCartDB, userId);
         cartGoodsLine.removeAllViews();
+        boxs.removeAll(boxs);
+        itemsCheck.removeAll(itemsCheck);
         for (int position = 0; position < items.size(); position++)
         {
             final int tag=position;
@@ -579,7 +593,10 @@ public class ShopCartFragment extends BaseFragment
             });
             cartGoodsLine.addView(childeView);
         }
-
+        for (int i = 0; i <boxs.size() ; i++)
+        {
+            boxs.get(i).setChecked(false);
+        }
         if (mDialog != null)
             mDialog.dismiss();
     }

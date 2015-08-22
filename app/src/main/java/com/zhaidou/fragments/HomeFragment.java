@@ -218,6 +218,7 @@ public class HomeFragment extends BaseFragment implements
                     listView.setAdapter(mListAdapter);
                 }
                 mScrollView.onRefreshComplete();
+                mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
                 if (mDialog.isShowing())
                 {
                     mDialog.dismiss();
@@ -236,6 +237,7 @@ public class HomeFragment extends BaseFragment implements
                     ToolUtils.setImageCacheUrl(shopSpecialItem.imageUrl,itemImageIv);
                     itemNameTv.setText(shopSpecialItem.title);
                     itemTimeTv.setText(shopSpecialItem.overTime);
+                    itemSaleTv.setText(shopSpecialItem.sale);
                 }
 
             }
@@ -438,6 +440,7 @@ public class HomeFragment extends BaseFragment implements
         listView.setOnItemClickListener(this);
         fl_category_menu = (FrameLayout) view.findViewById(R.id.fl_category_menu);
         mScrollView = (PullToRefreshScrollView) view.findViewById(R.id.sv_home_scrollview);
+        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         mScrollView.setOnRefreshListener(this);
 
         view.findViewById(R.id.ll_lottery).setOnClickListener(this);

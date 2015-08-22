@@ -91,7 +91,7 @@ public class ShopOrderOkFragment extends BaseFragment
 
     private int num = 0;
     private double money = 0;
-    private int moneyYF = 0;
+    private double moneyYF = 0;
     private double totalMoney = 0;
 
     private RequestQueue mRequestQueue;
@@ -145,20 +145,27 @@ public class ShopOrderOkFragment extends BaseFragment
                         CreatCartTools.deleteByData(creatCartDB, items.get(i));
                     }
 
-                    if (isljOsale)//清除购物车中的零元特卖
+//                    if (isljOsale)//清除购物车中的零元特卖
+//                    {
+//                        List<CartItem> itemsAll = CreatCartTools.selectByAll(creatCartDB, userId);
+//                        for (int i = 0; i < itemsAll.size(); i++)
+//                        {
+//                            if (itemsAll.get(i).isOSale.equals("true"))
+//                            {
+//                                CreatCartTools.deleteByData(creatCartDB, itemsAll.get(i));
+//                            }
+//                        }
+//                    }
+
+                    if (isljOsale)
                     {
-                        List<CartItem> itemsAll = CreatCartTools.selectByAll(creatCartDB, userId);
-                        for (int i = 0; i < itemsAll.size(); i++)
-                        {
-                            if (itemsAll.get(i).isOSale.equals("true"))
-                            {
-                                CreatCartTools.deleteByData(creatCartDB, itemsAll.get(i));
-                            }
-                        }
+                        //发送刷新商品详情广播
+                        Intent intent1 = new Intent(ZhaiDou.IntentRefreshGoodsDetailsTag);
+                        mContext.sendBroadcast(intent1);
                     }
 
                     //发送刷新购物车广播
-                    Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
+                    Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsCheckTag);
                     mContext.sendBroadcast(intent);
                     //关闭本页面
                     ((MainActivity) getActivity()).popToStack(ShopOrderOkFragment.this);
@@ -170,7 +177,7 @@ public class ShopOrderOkFragment extends BaseFragment
                         JSONObject orderObj = jsonObject.optJSONObject("order");
                         int orderId = orderObj.optInt("id");
                         double amount = orderObj.optDouble("amount");
-                        int fare = moneyYF;
+                        double fare = moneyYF;
                         ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId, amount, fare, 15 * 60, null, 1);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
 //                        Intent intent1=new Intent(getActivity(), PayDemoActivity.class);
@@ -194,10 +201,9 @@ public class ShopOrderOkFragment extends BaseFragment
                     break;
                 case 6:
                     mDialog.dismiss();
-                    String json = msg.obj.toString();
-                    String[] arrayStr = new String[]{};
-                    arrayStr = json.split(",");
-                    CustomToastDialog.setToastDialog(mContext,arrayStr[0]);
+                    String json =msg.obj.toString();
+                    String json1=json.substring(2);
+                    CustomToastDialog.setToastDialog(mContext, json1.substring(0,json1.length()-1));
                     break;
                 case 7:
                     mDialog.dismiss();
@@ -312,7 +318,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     newAddrFragment.setAddrSaveSuccessListener(new NewAddrFragment.AddrSaveSuccessListener()
                     {
                         @Override
-                        public void onSaveListener(JSONObject receiver, int status, int yfprice, String province, String city, String area)
+                        public void onSaveListener(JSONObject receiver, int status, double yfprice, String province, String city, String area)
                         {
                             int id = receiver.optInt("id");
                             int user_id = receiver.optInt("user_id");
@@ -406,7 +412,12 @@ public class ShopOrderOkFragment extends BaseFragment
 
         if (flags == 1)
         {
-            isljOsale = true;
+            if (items.get(0).isOSale.equals("true"))
+            {
+
+                isljOsale=true;
+            }
+
         }
         moneyTv = (TypeFaceTextView) mView.findViewById(R.id.jsPriceTotalTv);
         moneyYfTv = (TypeFaceTextView) mView.findViewById(R.id.jsPriceYfTv);
@@ -691,7 +702,7 @@ public class ShopOrderOkFragment extends BaseFragment
                             String province = receiver.optString("parent_name");
                             String city = receiver.optString("city_name");
                             String area = receiver.optString("provider_name");
-                            int price = receiver.optInt("price");
+                            double price = receiver.optDouble("price");
                             Address address = new Address(id, name, is_default, phone, user_id, addr, provider_id, price);
                             address.setProvince(province);
                             address.setCity(city);

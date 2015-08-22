@@ -164,7 +164,7 @@ public class GoodsDetailsChildFragment extends BaseFragment {
             for (String url : urls) {
                 ImageView imageView = new ImageView(getActivity());
                 imageView.setImageResource(R.drawable.icon_loading_defalut);
-                imageView.setScaleType(ImageView.ScaleType.CENTER);
+                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                 imageView.setBackgroundColor(Color.parseColor("#ffffff"));
                 imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
                 ToolUtils.setImageCacheUrl(url, imageView);

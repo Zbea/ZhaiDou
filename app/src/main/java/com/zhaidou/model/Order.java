@@ -24,6 +24,7 @@ public class Order implements Serializable{
     private String receiver_phone;
     private String deliver_number;
     private String receiver_name;
+    public String node;
     private boolean zero;
 
 

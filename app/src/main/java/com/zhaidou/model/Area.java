@@ -6,7 +6,7 @@ package com.zhaidou.model;
 public class Area extends Address {
     private int price;
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 

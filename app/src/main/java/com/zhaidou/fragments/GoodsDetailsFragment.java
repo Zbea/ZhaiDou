@@ -186,6 +186,11 @@ public class GoodsDetailsFragment extends BaseFragment
                 checkLogin();
                 initCartTips();
             }
+            if (action.equals(ZhaiDou.IntentRefreshGoodsDetailsTag))
+            {
+                setAddOrBuyShow("不能重复购买");
+                FetchOSaleData(UPDATE_ISOSALEBUY);
+            }
 
         }
     };
@@ -268,11 +273,11 @@ public class GoodsDetailsFragment extends BaseFragment
                     }
 
                     String end_date = detail.getEnd_time();
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
                     try
                     {
-                        long millionSeconds = sdf.parse(end_date).getTime();//毫秒
+                        long millionSeconds = sdf.parse(end_date).getTime()-2*60*60*1000;//毫秒
                         long temp = millionSeconds - System.currentTimeMillis();
                         if (temp<=0)
                         {
@@ -830,6 +835,7 @@ public class GoodsDetailsFragment extends BaseFragment
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshGoodsDetailsTag);
         mContext.registerReceiver(broadcastReceiver, intentFilter);
     }
 

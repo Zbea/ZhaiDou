@@ -416,12 +416,14 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                                         int id = item.optInt("id");
                                         String title = item.optString("title");
                                         double price = item.optDouble("price");
+                                        double cost_price = item.optDouble("cost_price");
                                         String image = item.optString("img");
 //                                        int remaining = item.optInt("total_count");
                                         int remaining = item.optInt("percentum");
                                         Product product = new Product();
                                         product.setId(id);
                                         product.setPrice(price);
+                                        product.setCost_price(cost_price);
                                         product.setTitle(title);
                                         product.setImage(image);
                                         product.setRemaining(remaining);
@@ -482,7 +484,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             tv_name.setText(product.getTitle());
             ToolUtils.setImageCacheUrl(product.getImage(), image);
             tv_price.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
-            tv_price.setText("￥"+product.getPrice());
+            tv_price.setText("￥"+product.getCost_price());
             tv_count.setText("剩余 "+product.getRemaining()+"%");
 
             ll_sale_out.setVisibility(product.getRemaining()==0?View.VISIBLE:View.GONE);

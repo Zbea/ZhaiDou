@@ -141,7 +141,7 @@
                     android:textColor="@color/red"
                     android:textSize="16sp"
                     android:layout_marginLeft="2dp"
-                    android:text="￥834"/>
+                    android:text=""/>
 
             </LinearLayout>
 
@@ -157,13 +157,36 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
-                    android:id="@+id/successGoodsBtn"
+                    android:id="@+id/successOrderDetailsBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:layout_weight="1"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="10dp"
+                    android:gravity="center"
+                    android:background="@drawable/shop_cart_gg_selector">
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:id="@+id/tv_order_detail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_main_color"
+                        android:text="订单详情"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:padding="10dp"
+                        android:marqueeRepeatLimit="marquee_forever"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/successGoodsBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="20dp"
                     android:gravity="center"
                     android:background="@drawable/shop_cart_gg_selector">
 
@@ -179,28 +202,7 @@
                         android:marqueeRepeatLimit="marquee_forever"/>
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/successOrderDetailsBtn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="20dp"
-                    android:gravity="center"
-                    android:background="@drawable/shop_cart_gg_selector">
 
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:id="@+id/tv_order_detail"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/text_main_color"
-                        android:text="订单详情"
-                        android:singleLine="true"
-                        android:ellipsize="end"
-                        android:padding="10dp"
-                        android:marqueeRepeatLimit="marquee_forever"/>
-                </LinearLayout>
 
             </LinearLayout>
         </LinearLayout>

@@ -67,7 +67,7 @@ public class OrderDetailFragment extends BaseFragment {
     private RequestQueue requestQueue;
     private TextView mOrderNumber, mOrderTime, mOrderStatus,
             mReceiverName, mReceiverPhone, mReceiverAddress, mReceiverTime,
-            mOrderAmount, mOrderEdit, mCancelOrder, mOrderTimer;
+            mOrderAmount, mOrderEdit, mCancelOrder, mOrderTimer,goodsInfo;
     private ListView mListView;
     private TextView mSaleServiceTV;
     private Dialog mDialog;
@@ -98,6 +98,7 @@ public class OrderDetailFragment extends BaseFragment {
                     mOrderNumber.setText(order.getNumber());
                     mOrderTime.setText(order.getCreated_at_for());
                     mOrderStatus.setText(order.getStatus_ch());
+                    goodsInfo.setText(order.node);
                     if (mOrder.getStatus().equals(""+ZhaiDou.STATUS_UNPAY)&&mParam2<=0) {
                         mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
                     }
@@ -195,6 +196,7 @@ public class OrderDetailFragment extends BaseFragment {
         mOrderEdit = (TextView) view.findViewById(R.id.tv_order_edit);
         mCancelOrder = (TextView) view.findViewById(R.id.tv_cancel_order);
         mBottomLayout = (FrameLayout) view.findViewById(R.id.fl_bottom);
+        goodsInfo= (TextView) view.findViewById(R.id.goodsInfo);
         mOrderTimer = (TextView) view.findViewById(R.id.tv_order_time_left);
         mOrderTimer.setOnClickListener(this);
         mListView = (ListView) view.findViewById(R.id.lv_order_list);
@@ -429,6 +431,7 @@ public class OrderDetailFragment extends BaseFragment {
                     String city_name = receiverObj.optString("city_name");
                     String parent_name = receiverObj.optString("parent_name");
                     String provider_name = receiverObj.optString("provider_name");
+                    String node = receiverObj.optString("node");
                     Receiver receiver = new Receiver(receiverId, address, parent_name, city_name, provider_name, phone, name);
 
 
@@ -451,6 +454,7 @@ public class OrderDetailFragment extends BaseFragment {
                         }
                     }
                     Order order = new Order("", id, number, amount, status, status_ch, created_at_for, created_at, receiver, orderItems, receiver_address, receiver_phone, deliver_number, receiver_name);
+                    order.node=node;
                     Message message = new Message();
                     message.obj = order;
                     message.what = 1;

@@ -92,9 +92,11 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                         unPayAdapter.notifyDataSetChanged();
                     } else {
                         mListView.setVisibility(View.GONE);
+                        mEmptyView.setVisibility(View.VISIBLE);
                         loadingView.setVisibility(View.VISIBLE);
                     }
-
+                    ToolUtils.setLog("count:"+count);
+                    ToolUtils.setLog("orders.size():"+orders.size());
                     if (count!=orders.size())
                     {
                         Intent intent=new Intent(ZhaiDou.IntentRefreshUnPayTag);
@@ -262,11 +264,14 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                 Log.i("FetchData------------------>",jsonObject.toString());
                 if (mDialog != null)
                     mDialog.dismiss();
-                if (jsonObject != null) {
+                if (jsonObject != null)
+                {
                     JSONArray orderArr = jsonObject.optJSONArray("orders");
-                    if (orderArr != null && orderArr.length() > 0) {
+                    if (orderArr != null && orderArr.length() > 2)
+                    {
                         orders.clear();
-                        for (int i = 0; i < orderArr.length(); i++) {
+                        for (int i = 0; i < orderArr.length(); i++)
+                        {
                             JSONObject orderObj = orderArr.optJSONObject(i);
                             int id = orderObj.optInt("id");
                             String number = orderObj.optString("number");
@@ -287,9 +292,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                         }
                         handler.sendEmptyMessage(UPDATE_UNPAY_LIST);
                     } else {
-                        mListView.setVisibility(View.GONE);
-                        mEmptyView.setVisibility(View.VISIBLE);
-                        loadingView.setVisibility(View.VISIBLE);
+                        handler.sendEmptyMessage(UPDATE_UNPAY_LIST);
                     }
                 }
             }

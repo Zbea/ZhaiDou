@@ -22,7 +22,7 @@ public class Address implements Serializable
     private String city;
     private String area;
 
-    private int price;
+    private double price;
 
     public int getId() {
         return id;
@@ -112,12 +112,12 @@ public class Address implements Serializable
         this.updated_at = updated_at;
     }
 
-    public int getPrice()
+    public double getPrice()
     {
         return price;
     }
 
-    public void setPrice(int price)
+    public void setPrice(double price)
     {
         this.price = price;
     }
@@ -133,7 +133,7 @@ public class Address implements Serializable
     public Address() {
     }
 
-    public Address(int id, String name, boolean is_default, String phone, int user_id, String address, int provider_id,int price) {
+    public Address(int id, String name, boolean is_default, String phone, int user_id, String address, int provider_id,double price) {
         this.id = id;
         this.name = name;
         this.is_default = is_default;

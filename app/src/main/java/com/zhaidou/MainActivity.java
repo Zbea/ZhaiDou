@@ -170,7 +170,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     if (persoanlFragment == null) {
                         persoanlFragment = PersonalFragment.newInstance("", "");
                     } else {
-//                        persoanlFragment.refreshData(MainActivity.this);
+                        persoanlFragment.refreshData(MainActivity.this);
                     }
                     selectFragment(currentFragment, persoanlFragment);
                     setButton(personalButton);
@@ -367,6 +367,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 //                    navigationToFragment(mLoginFragment);
 //                    mChildContainer.setVisibility(View.VISIBLE);
                     Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    intent.setFlags(2);
                     MainActivity.this.startActivityForResult(intent, 10000);
                 } else {
                     if (persoanlFragment == null) {

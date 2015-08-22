@@ -174,7 +174,7 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                 ((MainActivity) getActivity()).navigationToFragment(newAddrFragment);
                 newAddrFragment.setAddrSaveSuccessListener(new NewAddrFragment.AddrSaveSuccessListener() {
                     @Override
-                    public void onSaveListener(JSONObject receiverObj,int status,int yfprice,String province, String city, String area) {
+                    public void onSaveListener(JSONObject receiverObj,int status,double yfprice,String province, String city, String area) {
                         if (receiverObj != null) {
                             int id = receiverObj.optInt("id");
                             int user_id = receiverObj.optInt("user_id");
@@ -264,7 +264,7 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                 newAddrFragment.setAddrSaveSuccessListener(new NewAddrFragment.AddrSaveSuccessListener() {
 
                     @Override
-                    public void onSaveListener(JSONObject receiver, int status, int yfPrice, String province, String city, String area)
+                    public void onSaveListener(JSONObject receiver, int status, double yfPrice, String province, String city, String area)
                     {
                         if (status==UPDATE_ADDRESS_INFO){
                             int id = receiver.optInt("id");
@@ -318,7 +318,7 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                         String city=receiverObj.optString("city_name");
                         String area=receiverObj.optString("provider_name");
                         boolean is_default=receiverObj.optBoolean("is_default");
-                        int price=receiverObj.optInt("price");
+                        double price=receiverObj.optDouble("price");
                         if (is_default)
                         {
                             mCheckedPosition=i;

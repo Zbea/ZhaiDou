@@ -51,6 +51,7 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import cn.sharesdk.framework.ShareSDK;
@@ -135,9 +136,11 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     break;
                 case UPDATE_TIMER_START:
                     String date = (String)msg.obj;
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    ToolUtils.setLog(date);
+//                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
                     try{
-                        long millionSeconds = sdf.parse(date).getTime();//毫秒
+                        long millionSeconds = sdf.parse(date).getTime()-2*60*60*1000;//毫秒
                         long temp = millionSeconds-System.currentTimeMillis();
                         mTimer=new MyTimer(temp,1000);
                         mTimer.start();
