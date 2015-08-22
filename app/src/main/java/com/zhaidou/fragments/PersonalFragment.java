@@ -539,6 +539,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 
     private void FetchUnPayCount() {
         ToolUtils.setLog("查看代付款数量");
+
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?count=1&status=0", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
