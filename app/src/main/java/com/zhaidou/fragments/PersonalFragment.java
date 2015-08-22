@@ -115,6 +115,9 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 } else {
                     tv_unpay_count.setText(count + "");
                 }
+            }
+            if (action.equals(ZhaiDou.IntentRefreshUnPayTag))
+            {
                 FetchUnPayCount();
             }
         }
@@ -244,6 +247,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshUnPayAddTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshUnPayDesTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshUnPayTag);
         getActivity().registerReceiver(broadcastReceiver, intentFilter);
     }
 
@@ -277,7 +281,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 startAnimActivity(intent1);
                 break;
             case R.id.tv_pre_pay:
-                OrderUnPayFragment unPayFragment = OrderUnPayFragment.newInstance("", "");
+                OrderUnPayFragment unPayFragment = OrderUnPayFragment.newInstance("", "",count);
                 ((MainActivity) getActivity()).navigationToFragment(unPayFragment);
                 ((MainActivity) getActivity()).hideTip(View.GONE);
                 break;

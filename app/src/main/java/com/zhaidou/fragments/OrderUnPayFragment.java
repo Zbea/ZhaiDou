@@ -57,6 +57,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
 
     private String mParam1;
     private String mParam2;
+    private int count;
 
     private RequestQueue mRequestQueue;
     private List<Order> orders = new ArrayList<Order>();
@@ -93,6 +94,13 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                         mListView.setVisibility(View.GONE);
                         loadingView.setVisibility(View.VISIBLE);
                     }
+
+                    if (count!=orders.size())
+                    {
+                        Intent intent=new Intent(ZhaiDou.IntentRefreshUnPayTag);
+                        mContext.sendBroadcast(intent);
+                    }
+
                     break;
                 case UPDATE_COUNT_DOWN_TIME:
                     unPayAdapter.notifyDataSetChanged();
@@ -103,11 +111,12 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
         }
     };
 
-    public static OrderUnPayFragment newInstance(String param1, String param2) {
+    public static OrderUnPayFragment newInstance(String param1, String param2,int count) {
         OrderUnPayFragment fragment = new OrderUnPayFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
+        args.putInt("count", count);
         fragment.setArguments(args);
         return fragment;
     }
@@ -121,6 +130,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+            count= getArguments().getInt("count");
         }
     }
 
@@ -198,11 +208,25 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                         @Override
                         public void onOrderStatusChange(Order ordera)
                         {
-                            orders.remove(order);
-                            if ( orders.size() <1)
+                            if (ordera.getStatus().equals(""+ZhaiDou.STATUS_PAYED))
                             {
-                                mListView.setVisibility(View.GONE);
-                                loadingView.setVisibility(View.VISIBLE);
+                                orders.remove(order);
+                                if ( orders.size() <1)
+                                {
+                                    mListView.setVisibility(View.GONE);
+                                    loadingView.setVisibility(View.VISIBLE);
+                                }
+                            }
+                            else
+                            {
+                                long time = ordera.getOver_at();
+                                order.setStatus(ordera.getStatus());
+                                order.setOver_at(ordera.getOver_at());
+                                if (!isTimerStart)
+                                {
+                                    timeStmp = preTime - time;
+                                    timerMap.clear();
+                                }
                             }
                         }
                     });
