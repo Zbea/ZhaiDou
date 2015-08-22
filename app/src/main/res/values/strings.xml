@@ -42,6 +42,7 @@
 
     <!--售后客服-->
     <string name="QQ_Number">2637059378</string>
+    <string name="after_sale_service">售后客服</string>
 
     <!-- Tab -->
     <string name="tab_utility_title">最实用</string>

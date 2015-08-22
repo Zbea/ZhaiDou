@@ -30,10 +30,8 @@ public class WXPayEntryActivity extends FragmentActivity implements IWXAPIEventH
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.pay_result);
-
-		api = WXAPIFactory.createWXAPI(this, Constants.APP_ID);
-
+        System.out.println("WXPayEntryActivity.onCreate---------------->"+Thread.currentThread()+"");
+        api = WXAPIFactory.createWXAPI(this, Constants.APP_ID);
 		api.handleIntent(getIntent(), this);
 	}
 
@@ -50,20 +48,21 @@ public class WXPayEntryActivity extends FragmentActivity implements IWXAPIEventH
 
 	@Override
 	public void onResp(BaseResp resp) {
-		Log.d(TAG, "onPayFinish, errCode = " + resp.errCode+"----->"+resp.errStr);
+		Log.d(TAG, "onPayFinish, errCode = " + resp.errCode+"----->"+resp.errStr+"-------------->"+resp.getType());
 
 		if (resp.getType() == ConstantsAPI.COMMAND_PAY_BY_WX) {
-			//			MainActivity.handler.sendEmptyMessage(resp.errCode);
+            System.out.println("WXPayEntryActivity.onResp----------------------->"+Thread.currentThread());
+//            			MainActivity.handler.sendEmptyMessage(resp.errCode);
 //            resp.errCode=0;
-            Intent intent=new Intent(ZhaiDou.BROADCAST_WXAPI_FILTER);
-            intent.putExtra("code",resp.errCode);
-            getApplicationContext().sendBroadcast(intent);
+            if (resp.errCode==-2){
+                Toast.makeText(WXPayEntryActivity.this,"取消支付",Toast.LENGTH_SHORT).show();
+            }else {
+                Intent intent = new Intent(ZhaiDou.BROADCAST_WXAPI_FILTER);
+                intent.putExtra("code", resp.errCode);
+                sendBroadcast(intent);
+            }
 			finish();
-			// AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			// builder.setTitle(R.string.app_tip);
-			// builder.setMessage(getString(R.string.pay_result_callback_msg,
-			// resp.errStr +";code=" + String.valueOf(resp.errCode)));
-			// builder.show();
+            overridePendingTransition(R.anim.alpha_enter,R.anim.alpha_out);
         }
 	}
 }

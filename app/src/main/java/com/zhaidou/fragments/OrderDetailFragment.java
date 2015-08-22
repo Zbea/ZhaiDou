@@ -231,7 +231,9 @@ public class OrderDetailFragment extends BaseFragment {
                 mBottomLayout.setVisibility(View.GONE);
                 break;
             case ZhaiDou.STATUS_ORDER_CANCEL_PAYED:
-                mBottomLayout.setVisibility(View.GONE);
+                mBottomLayout.setVisibility(View.VISIBLE);
+                mCancelOrder.setText(mContext.getResources().getString(R.string.after_sale_service));
+                mOrderTimer.setVisibility(View.GONE);
                 break;
             case ZhaiDou.STATUS_DELIVERY:
                 mCancelOrder.setText(mContext.getResources().getString(R.string.order_logistics));
@@ -341,7 +343,7 @@ public class OrderDetailFragment extends BaseFragment {
                     ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
                     return;
                 }
-                if (mOrder != null && "678".contains(mOrder.getStatus())) {
+                if (mOrder != null && "3678".contains(mOrder.getStatus())) {
                     String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_Number);
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                     return;

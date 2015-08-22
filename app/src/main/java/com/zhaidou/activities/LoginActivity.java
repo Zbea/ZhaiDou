@@ -307,9 +307,9 @@ import cn.sharesdk.wechat.friends.Wechat;
                     String nick = userObj.optString("nick_name");
                     String token=json.optJSONObject("user_tokens").optString("token");
 
-                    ToolUtils.setLog("要刷新登录了");
-                    Intent intent=new Intent(ZhaiDou.IntentRefreshLoginTag);
-                    sendBroadcast(intent);
+//                    ToolUtils.setLog("要刷新登录了");
+//                    Intent intent=new Intent(ZhaiDou.IntentRefreshLoginTag);
+//                    sendBroadcast(intent);
 
                     User user = new User(id,email,token,nick,null);
                     mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
