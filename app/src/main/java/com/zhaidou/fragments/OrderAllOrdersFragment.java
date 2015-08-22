@@ -192,8 +192,11 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "");
                         ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
                     } else if (mContext.getResources().getString(R.string.order_return_money).equalsIgnoreCase(textView.getText().toString())) {
-//                        AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(order.getOrderId() + "", "return_money");
-//                        ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
+                        System.out.println("OrderAllOrdersFragment.OnClickListener------->"+order.isZero());
+                        if (order.isZero()){
+                            ShowToast("零元特卖的商品不可以退哦");
+                            return;
+                        }
                         final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
 
                         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);

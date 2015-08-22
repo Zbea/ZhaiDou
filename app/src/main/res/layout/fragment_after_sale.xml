@@ -235,6 +235,7 @@
                     android:background="@drawable/shape_line_frame"
                     android:gravity="top"
                     android:padding="5dp"
+                    android:hint="请填写内容。。。"
                     android:textColor="@color/gray_9"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -266,13 +267,21 @@
                     android:layout_margin="15dp"
                     android:visibility="gone"
                     android:src="@drawable/icon_add" />
-                <GridView
+                <com.zhaidou.view.ChildGridView
                     android:id="@+id/gv_img"
                     android:numColumns="auto_fit"
                     android:layout_marginLeft="15dp"
                     android:columnWidth="80dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="match_parent"/>
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/title_color"
+                    android:textSize="10sp"
+                    android:text="最多上传3张,每张不超过5m,支持jpg、png、bmp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginBottom="5dp"/>
             </LinearLayout>
 
             <TextView

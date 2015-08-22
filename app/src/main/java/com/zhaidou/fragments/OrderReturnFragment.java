@@ -248,7 +248,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
         }
     }
     private void FetchReturnData(){
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST+"?status=6,7,8,11", new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?status=3,6,7,8,11", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog!=null) mDialog.dismiss();
@@ -261,7 +261,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
                             JSONObject orderObj = orderArr.optJSONObject(i);
                             int id = orderObj.optInt("id");
                             String number = orderObj.optString("number");
-                            double amount = orderObj.optInt("amount");
+                            double amount = orderObj.optDouble("amount");
                             String status = orderObj.optString("status");
                             String status_ch = orderObj.optString("status_ch");
                             String created_at = orderObj.optString("created_at");
@@ -271,6 +271,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
                             Order order = new Order(id, number, amount, status, status_ch, created_at_for, created_at, "", 0);
                             order.setImg(img);
                             order.setOver_at(over_at);
+//                            if ("6".equalsIgnoreCase(status)||"7".equalsIgnoreCase(status)||"8".equalsIgnoreCase(status)||"11".equalsIgnoreCase(status))
                             orders.add(order);
                         }
                         handler.sendEmptyMessage(UPDATE_RETURN_LIST);

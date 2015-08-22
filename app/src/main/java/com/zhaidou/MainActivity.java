@@ -147,7 +147,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 if (fragments.size() > 1) {
                     System.out.println("fragments.size() > 1");
                     Fragment fragment = fragments.get(fragments.size() - 1);
-//                    System.out.println("fragment.getClass().getSimpleName()---->"+fragment.getClass().getSimpleName());
+                    System.out.println("fragment.getClass().getSimpleName()---->"+fragment.getClass().getSimpleName());
                     if (fragment instanceof ShopPaymentFragment) {
                         System.out.println("fragment instanceof ShopPaymentFragment------------"+result);
                         ((ShopPaymentFragment) fragment).handleWXPayResult(result);
@@ -502,7 +502,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 mHandler.sendMessage(message);
                 break;
             case 1000:
-
                 Log.i("onActivityResult---user----1000------>", "sadadadada");
                 break;
         }

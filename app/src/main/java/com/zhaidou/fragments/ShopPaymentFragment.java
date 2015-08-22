@@ -332,8 +332,7 @@ public class ShopPaymentFragment extends BaseFragment {
                         int order_id = jsonObject.optInt("order_id");
                         final String paySign = jsonObject.optString("paySign");
                         if (mCheckPosition == 0) {
-                            Log.i("isWXAppInstalled-------------->",api.isWXAppInstalled()+"");
-                            if (api.isWXAppInstalled()){
+                            if (api.isWXAppInstalled()) {
 //                                mHandler.postDelayed(new Runnable() {
 //                                    @Override
 //                                    public void run() {
@@ -455,10 +454,9 @@ public class ShopPaymentFragment extends BaseFragment {
 
     @Override
     public void onStop() {
-        if (mTimer!=null){
-            mTimer.cancel();
-            mTimer=null;
-            isTimerStart = false;
+        System.out.println("ShopPaymentFragment.onStop");
+        if (mTimer != null) {
+//            isTimerStart = false;
         }
         super.onStop();
     }
@@ -473,9 +471,10 @@ public class ShopPaymentFragment extends BaseFragment {
                 orderListener.onOrderStatusChange(mOrder);
 //            }
         }
-        if (mTimer!=null){
+        if (mTimer != null) {
+            isTimerStart=false;
             mTimer.cancel();
-            mTimer=null;
+            mTimer = null;
         }
         super.onDestroyView();
     }

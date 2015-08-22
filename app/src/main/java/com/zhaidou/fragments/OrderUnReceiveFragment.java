@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class OrderUnReceiveFragment extends BaseFragment implements View.OnClickListener{
+public class OrderUnReceiveFragment extends BaseFragment implements View.OnClickListener {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -61,7 +61,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
     private final int STATUS_UNRECEIVE_LIST = 14;
     private String token;
     private View rootView;
-    private View mEmptyView,mNetErrorView;
+    private View mEmptyView, mNetErrorView;
     private Context mContext;
     private Handler handler = new Handler() {
         @Override
@@ -119,11 +119,11 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
     }
 
     private void initView(View view) {
-        mContext=getActivity();
+        mContext = getActivity();
 //        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
         loadingView = (LinearLayout) view.findViewById(R.id.loadingView);
-        mEmptyView=rootView.findViewById(R.id.nullline);
-        mNetErrorView=rootView.findViewById(R.id.nullNetline);
+        mEmptyView = rootView.findViewById(R.id.nullline);
+        mNetErrorView = rootView.findViewById(R.id.nullNetline);
         mListView = (ListView) view.findViewById(R.id.lv_unreceivelist);
         view.findViewById(R.id.netReload).setOnClickListener(this);
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
@@ -142,6 +142,10 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
                 } else if ("1".equalsIgnoreCase(order.getStatus())) {
 //                    AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(order.getOrderId() + "", order.getStatus());
 //                    ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
+                    if (order.isZero()) {
+                        ShowToast("零元特卖的商品不可以退哦");
+                        return;
+                    }
                     final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
 
                     View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
@@ -199,6 +203,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
             @Override
             public void OnClickListener(View parentV, View v, final Integer position, Object values) {
                 final Order order = (Order) values;
+
                 final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
                 View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
                 TextView textView = (TextView) view.findViewById(R.id.tv_msg);
@@ -288,6 +293,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
             loadingView.setVisibility(View.VISIBLE);
         }
     }
+
     private void FetchReceiveData() {
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?status=1,4", new Response.Listener<JSONObject>() {
             @Override
@@ -310,11 +316,12 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
                             String created_at_for = orderObj.optString("created_at_for");
                             String img = orderObj.optString("merch_img");
                             long over_at = orderObj.optLong("over_at");
+                            boolean is_zero=orderObj.optBoolean("is_zero");
                             Order order = new Order(id, number, amount, status, status_ch, created_at_for, created_at, "", 0);
                             order.setImg(img);
                             order.setOver_at(over_at);
-                            if ((STATUS_UNRECEIVE_LIST + "").contains(status))
-                                orders.add(order);
+                            order.setZero(is_zero);
+                            orders.add(order);
                         }
                         handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
                     } else {
@@ -341,15 +348,17 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
         };
         mRequestQueue.add(request);
     }
+
     @Override
     public void onClick(View view) {
         super.onClick(view);
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.netReload:
                 initData();
                 break;
         }
     }
+
     public class UnReceiveAdapter extends BaseListAdapter<Order> {
         public UnReceiveAdapter(Context context, List<Order> list) {
             super(context, list);

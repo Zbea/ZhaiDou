@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridView;
@@ -47,6 +48,7 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
 import com.zhaidou.model.OrderItem;
 import com.zhaidou.model.Receiver;
+import com.zhaidou.utils.CollectionUtils;
 import com.zhaidou.utils.PhotoUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -90,6 +92,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
     private AfterSaleAdapter afterSaleAdapter;
     private TextView tv_return, tv_exchange, lastSelected, tv_commit;
     List<OrderItem> orderItems = new ArrayList<OrderItem>();
+    private List<OrderItem> returnItem=new ArrayList<OrderItem>();
     private PhotoMenuFragment menuFragment;
     private FrameLayout mMenuContainer;
     boolean isFromCamera = false;// 区分拍照旋转
@@ -206,6 +209,20 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
             mTitleView.setText(mContext.getResources().getString(R.string.order_return_good));
             tv_exchange.setText("退货");
         }
+
+        afterSaleAdapter.setOnInViewClickListener(R.id.cb_return,new BaseListAdapter.onInternalClickListener() {
+            @Override
+            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                CheckBox checkBox=(CheckBox)v;
+                OrderItem item=(OrderItem)values;
+                if (checkBox.isChecked()){
+                    returnItem.add(item);
+                }else {
+                    returnItem.remove(item);
+                }
+            }
+        });
+
         menuFragment.setMenuSelectListener(new PhotoMenuFragment.MenuSelectListener() {
             @Override
             public void onMenuSelect(int position, String tag) {
@@ -253,10 +270,13 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                     photoViewFragment.setPhotoListener(new PhotoViewFragment.PhotoListener() {
                         @Override
                         public void onPhotoDelete(int position, String url) {
+                            System.out.println("OrderAfterSaleFragment.onPhotoDelete---->"+position+"---"+url);
                             if (!TextUtils.isEmpty(url)) {
                                 imagePath.remove(position);
-                                if (imagePath.size() < 3 && !imagePath.contains(""))
+                                if (imagePath.size() < 3 && !imagePath.contains("")){
+                                    System.out.println("OrderAfterSaleFragment.onPhotoDeleteimagePath.size() < 3 && !imagePath.contains");
                                     imagePath.add("");
+                                }
                                 imageAdapter.notifyDataSetChanged();
                             }
                         }
@@ -286,6 +306,18 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                 toggleMenu();
                 break;
             case R.id.tv_commit:
+                if (returnItem!=null&&returnItem.size()==0){
+                    ShowToast("请选择退货商品");
+                    return;
+                }
+                if (TextUtils.isEmpty(mEditText.getText().toString().trim())){
+                    ShowToast("请填写描述");
+                    return;
+                }
+                if (imagePath!=null&&imagePath.size()==1){
+                    ShowToast("请上传图片");
+                    return;
+                }
                 new CommitTask().execute();
                 break;
         }
@@ -295,10 +327,11 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "/" + id, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+                System.out.println("OrderAfterSaleFragment.onResponse-------->"+jsonObject.toString());
                 if (mDialog != null) mDialog.dismiss();
                 if (jsonObject != null) {
                     JSONObject orderObj = jsonObject.optJSONObject("order");
-                    int amount = orderObj.optInt("amount");
+                    double amount = orderObj.optDouble("amount");
                     int id = orderObj.optInt("id");
                     String status = orderObj.optString("status");
                     String created_at_for = orderObj.optString("created_at_for");
@@ -324,9 +357,9 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                         for (int i = 0; i < order_items.length(); i++) {
                             JSONObject item = order_items.optJSONObject(i);
                             int itemId = item.optInt("id");
-                            int itemPrice = item.optInt("price");
+                            double itemPrice = item.optDouble("price");
                             int count = item.optInt("count");
-                            int cost_price = item.optInt("cost_price");
+                            double cost_price = item.optDouble("cost_price");
                             String merchandise = item.optString("merchandise");
                             String specification = item.optString("specification");
                             int merchandise_id = item.optInt("merchandise_id");
@@ -378,15 +411,18 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
             TextView tv_price = ViewHolder.get(convertView, R.id.orderItemCurrentPrice);
             LinearLayout ll_count = ViewHolder.get(convertView, R.id.ll_count);
             TextView tv_zero_msg = ViewHolder.get(convertView, R.id.tv_zero_msg);
+            CheckBox mCheckBox=ViewHolder.get(convertView,R.id.cb_return);
 
             OrderItem item = getList().get(position);
-//            if (item.getSale_cate() == 0) {
-//                ll_count.setVisibility(View.VISIBLE);
-//                tv_zero_msg.setVisibility(View.GONE);
-//            } else {
-//                ll_count.setVisibility(View.GONE);
-//                tv_zero_msg.setVisibility(View.VISIBLE);
-//            }
+            if (item.getSale_cate() == 0) {
+                mCheckBox.setVisibility(View.VISIBLE);
+                ll_count.setVisibility(View.VISIBLE);
+                tv_zero_msg.setVisibility(View.GONE);
+            } else {
+                mCheckBox.setVisibility(View.INVISIBLE);
+                ll_count.setVisibility(View.GONE);
+                tv_zero_msg.setVisibility(View.VISIBLE);
+            }
             tv_name.setText(item.getMerchandise());
             tv_specification.setText(item.getSpecification());
             tv_count.setText(item.getCount() + "");
@@ -516,12 +552,16 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
 
         @Override
         public View bindView(int position, View convertView, ViewGroup parent) {
+            System.out.println("ImageAdapter.bindView------->"+imagePath.toString());
             convertView = mHashMap.get(position);
             if (convertView == null)
                 convertView = mInflater.inflate(R.layout.item_img_grid, null);
             ImageView iv_img = ViewHolder.get(convertView, R.id.iv_img);
+            iv_img.setBackgroundDrawable(null);
             String img = getList().get(position);
+            System.out.println("ImageAdapter.bindView---------->"+img);
             if (TextUtils.isEmpty(img)) {
+                System.out.println("TextUtils.isEmpty(img)");
                 iv_img.setBackgroundDrawable(getResources().getDrawable(R.drawable.icon_add));
             } else {
                 ToolUtils.setImageCacheUrl("file://" + img, iv_img);
@@ -592,7 +632,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
             // 创建名/值组列表
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("sale_return_item[return_category_id]", "" + mOrderId));
-            params.add(new BasicNameValuePair("sale_return_item[node]", mEditText.getText().toString()));
+            params.add(new BasicNameValuePair("sale_return_item[node]", mEditText.getText().toString().trim()));
             for (int i = 0; i < imagePath.size(); i++) {
                 Log.i("imagePath---------->", imagePath.get(i).toString());
                 String path = imagePath.get(i);
@@ -604,7 +644,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                 }
             }
 
-            for (int k = 0; k < orderItems.size(); k++) {
+            for (int k = 0; k < returnItem.size(); k++) {
                 params.add(new BasicNameValuePair("sale_return_item[order_item_ids][]", orderItems.get(k).getId() + ""));
             }
 
