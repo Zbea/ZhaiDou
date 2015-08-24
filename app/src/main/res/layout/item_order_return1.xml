@@ -36,18 +36,25 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/rl_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:gravity="right"
                 android:orientation="horizontal">
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_name"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
                     android:layout_marginTop="5dp"
                     android:text="女款连衣裙"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:gravity="left"
+                    android:paddingRight="5dp"
                     android:textColor="@color/text_main_color"
                     android:textSize="15sp" />
                 <com.zhaidou.view.TypeFaceTextView
@@ -55,12 +62,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
+                    android:layout_gravity="right|center"
                     android:text="￥123.5"
                     android:layout_alignParentRight="true"
                     android:textColor="@color/red"
                     android:textSize="14sp" />
 
-            </RelativeLayout>
+            </LinearLayout>
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -107,7 +115,6 @@
                 android:layout_marginTop="20dp"
                 android:layout_alignParentBottom="true"
                 android:orientation="horizontal">
-
                 <LinearLayout
                     android:id="@+id/ll_count"
                     android:layout_width="wrap_content"

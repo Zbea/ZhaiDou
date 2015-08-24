@@ -258,6 +258,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
 
 
     private void FetchData() {
+        token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         orders.clear();
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?status=0", new Response.Listener<JSONObject>() {
             @Override

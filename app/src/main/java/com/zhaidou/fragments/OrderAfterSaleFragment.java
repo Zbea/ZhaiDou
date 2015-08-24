@@ -109,6 +109,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
     private List<String> imagePath = new ArrayList<String>();
     private Order.OrderListener orderListener;
     private Dialog mDialog;
+    private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -260,6 +261,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 final String imgPath = (String) values;
+                final ImageView imageView=(ImageView)v;
                 if (TextUtils.isEmpty(imgPath)) {
                     imagePath.remove("");
                     mMenuContainer.setVisibility(View.VISIBLE);
@@ -270,14 +272,15 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                     photoViewFragment.setPhotoListener(new PhotoViewFragment.PhotoListener() {
                         @Override
                         public void onPhotoDelete(int position, String url) {
-                            System.out.println("OrderAfterSaleFragment.onPhotoDelete---->"+position+"---"+url);
+                            mHashMap.clear();
                             if (!TextUtils.isEmpty(url)) {
                                 imagePath.remove(position);
                                 if (imagePath.size() < 3 && !imagePath.contains("")){
-                                    System.out.println("OrderAfterSaleFragment.onPhotoDeleteimagePath.size() < 3 && !imagePath.contains");
                                     imagePath.add("");
                                 }
                                 imageAdapter.notifyDataSetChanged();
+                                if (position==imagePath.size()-1)
+                                    imageView.setBackgroundDrawable(getResources().getDrawable(R.drawable.icon_add));
                             }
                         }
                     });
@@ -544,7 +547,6 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
     }
 
     public class ImageAdapter extends BaseListAdapter<String> {
-        private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
 
         public ImageAdapter(Context context, List<String> list) {
             super(context, list);
@@ -552,20 +554,18 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
 
         @Override
         public View bindView(int position, View convertView, ViewGroup parent) {
-            System.out.println("ImageAdapter.bindView------->"+imagePath.toString());
             convertView = mHashMap.get(position);
-            if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_img_grid, null);
-            ImageView iv_img = ViewHolder.get(convertView, R.id.iv_img);
-            iv_img.setBackgroundDrawable(null);
-            String img = getList().get(position);
-            System.out.println("ImageAdapter.bindView---------->"+img);
-            if (TextUtils.isEmpty(img)) {
-                System.out.println("TextUtils.isEmpty(img)");
-                iv_img.setBackgroundDrawable(getResources().getDrawable(R.drawable.icon_add));
-            } else {
-                ToolUtils.setImageCacheUrl("file://" + img, iv_img);
-            }
+                if (convertView == null)
+                    convertView = mInflater.inflate(R.layout.item_img_grid, null);
+                ImageView iv_img = ViewHolder.get(convertView, R.id.iv_img);
+                iv_img.setBackgroundDrawable(null);
+                String img = getList().get(position);
+                if (TextUtils.isEmpty(img)) {
+                    iv_img.setBackgroundDrawable(getResources().getDrawable(R.drawable.icon_add));
+                } else {
+                    ToolUtils.setImageCacheUrl("file://" + img, iv_img);
+                }
+//            }
             mHashMap.put(position, convertView);
             return convertView;
         }

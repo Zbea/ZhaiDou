@@ -216,7 +216,6 @@ public class ShopPaymentFailFragment extends BaseFragment {
         return rootView;
     }
 
-
     /**
      * 初始化数据
      */

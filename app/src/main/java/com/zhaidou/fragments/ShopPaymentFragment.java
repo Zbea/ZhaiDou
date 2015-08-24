@@ -333,6 +333,7 @@ public class ShopPaymentFragment extends BaseFragment {
                         final String paySign = jsonObject.optString("paySign");
                         if (mCheckPosition == 0) {
                             if (api.isWXAppInstalled()) {
+                                System.out.println("ShopPaymentFragment.onResponse--------->"+Thread.currentThread());
 //                                mHandler.postDelayed(new Runnable() {
 //                                    @Override
 //                                    public void run() {

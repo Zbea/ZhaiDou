@@ -113,9 +113,9 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private String serverInfo;
     private int serverCode;
     private RequestQueue mRequestQueue;
-    private final int WX_PAY_SUCCESS=0;
-    private final int WX_PAY_FAILED=-1;
-    private final int WX_PAY_CANCEL=-2;
+    private final int WX_PAY_SUCCESS = 0;
+    private final int WX_PAY_FAILED = -1;
+    private final int WX_PAY_CANCEL = -2;
     public static List<Province> provinceList = new ArrayList<Province>();
 
     public static int num = 0;
@@ -125,7 +125,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            Log.i("action-------------->",action);
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag)) {
                 initCartTips();
             }
@@ -136,24 +135,30 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 initCartTips();
             }
             if (action.equalsIgnoreCase(ZhaiDou.BROADCAST_WXAPI_FILTER)) {
+                System.out.println("MainActivity.onReceive");
                 List<Fragment> fragments = getSupportFragmentManager().getFragments();
-                Log.i("fragments--------------->", fragments.size() + "");
-                for (Fragment fragment : fragments) {
-                    if (fragment!=null)
-                    Log.i("fragment----------------->",fragment.getClass().getSimpleName());
-                }
+//                Log.i("fragments--------------->", fragments.size() + "");
+//                for (Fragment fragment : fragments) {
+//                    if (fragment!=null)
+//                    Log.i("fragment----------------->",fragment.getClass().getSimpleName());
+//                }
+                System.out.println("MainActivity.thresd----------------->" + Thread.currentThread());
                 int result = intent.getIntExtra("code", -2);
-                Log.i("result---------------->",result+"------"+fragments.size());
+                Log.i("result---------------->", result + "------" + fragments.size());
                 if (fragments.size() > 1) {
-                    System.out.println("fragments.size() > 1");
+                    for (Fragment fragment : fragments) {
+                        if (fragment != null)
+                            Log.i("fragment----------------->", fragment.getClass().getSimpleName());
+                    }
                     Fragment fragment = fragments.get(fragments.size() - 1);
-                    System.out.println("fragment.getClass().getSimpleName()---->"+fragment.getClass().getSimpleName());
-                    if (fragment instanceof ShopPaymentFragment) {
-                        System.out.println("fragment instanceof ShopPaymentFragment------------"+result);
+                    if (fragment != null && fragment instanceof ShopPaymentFragment) {
+                        System.out.println("fragment instanceof ShopPaymentFragment------------" + result);
                         ((ShopPaymentFragment) fragment).handleWXPayResult(result);
-                    }else if (fragment instanceof ShopPaymentFailFragment) {
+                    } else if (fragment != null && fragment instanceof ShopPaymentFailFragment) {
                         System.out.println("fragment instanceof ShopPaymentFailFragment");
                         ((ShopPaymentFailFragment) fragment).handleWXPayResult(result);
+                    } else {
+                        System.out.println("MainActivity.onReceive--------->null------------>");
                     }
                 }
             }

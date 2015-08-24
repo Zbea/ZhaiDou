@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -34,6 +35,8 @@ import com.zhaidou.model.User;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomProgressWebview;
+
+import java.io.IOException;
 
 import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
@@ -118,6 +121,15 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
             @Override
             public void onPageFinished(WebView view, String url)
             {
+                view.loadUrl("javascript:!function(){" +
+
+                        "s=document.createElement('style');s.innerHTML="
+
+                        + "\"@font-face{font-family:FZLTXHK;src:url('**injection**/FZLTXHK.TTF');}*{font-family:FZLTXHK !important;}\";"
+
+                        + "document.getElementsByTagName('head')[0].appendChild(s);" +
+
+                        "document.getElementsByTagName('body')[0].style.fontFamily = \"FZLTXHK\";}()");
                 if (!TextUtils.isEmpty(token))
                 {
                     webView.loadUrl("javascript:ReceiveUserInfo(" + userId + ", '" + token + "'," + getDeviceId() + ",'" + nickName + "')");
@@ -126,6 +138,32 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
                     webView.loadUrl("javascript:ReceiveUserInfo(" + userId + ", '" + "" + "'," + getDeviceId() + ",'" + nickName + "')");
                 }
                 super.onPageFinished(view, url);
+            }
+
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+                WebResourceResponse response = super.shouldInterceptRequest(view, url);
+
+                if (url != null && url.contains("**injection**/")) {
+                    String assertPath = url.substring(url.indexOf("**injection**/") + "**injection**/".length(), url.length());
+
+                    try {
+
+                        response = new WebResourceResponse("application/x-font-ttf",
+
+                                "UTF8", getAssets().open(assertPath)
+
+                        );
+
+                    } catch (IOException e) {
+
+                        e.printStackTrace();
+
+                    }
+
+                }
+
+                return response;
             }
         });
 
