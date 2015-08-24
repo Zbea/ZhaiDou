@@ -13,33 +13,16 @@ import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.utils.ToolUtils;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link PhotoViewFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
- */
 public class PhotoViewFragment extends BaseFragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_POSITION = "position";
     private static final String ARG_URL = "url";
 
-    // TODO: Rename and change types of parameters
     private int mPosition;
     private String mUrl;
+    private ImageView mImageView;
 
     private PhotoListener photoListener;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param position Parameter 1.
-     * @param url Parameter 2.
-     * @return A new instance of fragment PhotoViewFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static PhotoViewFragment newInstance(int position, String url) {
         PhotoViewFragment fragment = new PhotoViewFragment();
         Bundle args = new Bundle();
@@ -49,7 +32,6 @@ public class PhotoViewFragment extends BaseFragment {
         return fragment;
     }
     public PhotoViewFragment() {
-        // Required empty public constructor
     }
 
     @Override

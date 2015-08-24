@@ -3,6 +3,7 @@ package com.zhaidou.activities;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -22,6 +24,8 @@ import com.zhaidou.R;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.view.CustomProgressWebview;
+
+import java.io.IOException;
 
 /**
  * Created by roy on 15/7/17.
@@ -94,10 +98,45 @@ public class HomePTActivity extends Activity
 
         webView.setWebViewClient(new WebViewClient()
         {
+
             @Override
             public void onPageFinished(WebView view, String url)
             {
+                view.loadUrl("javascript:!function(){" +
+
+                        "s=document.createElement('style');s.innerHTML="
+
+                        + "\"@font-face{font-family:FZLTXHK;src:url('**injection**/FZLTXHK.TTF');}*{font-family:FZLTXHK !important;}\";"
+
+                        + "document.getElementsByTagName('head')[0].appendChild(s);" +
+
+                        "document.getElementsByTagName('body')[0].style.fontFamily = \"FZLTXHK\";}()");
                 super.onPageFinished(view, url);
+            }
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+                WebResourceResponse response = super.shouldInterceptRequest(view, url);
+
+                if (url != null && url.contains("**injection**/")) {
+                    String assertPath = url.substring(url.indexOf("**injection**/") + "**injection**/".length(), url.length());
+
+                    try {
+
+                        response = new WebResourceResponse("application/x-font-ttf",
+
+                                "UTF8", getAssets().open(assertPath)
+
+                        );
+
+                    } catch (IOException e) {
+
+                        e.printStackTrace();
+
+                    }
+
+                }
+
+                return response;
             }
         });
 
