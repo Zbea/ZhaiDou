@@ -17,12 +17,12 @@
                 android:background="@drawable/bg_personal">
 
                 <FrameLayout
+                    android:id="@+id/tv_shopping_cart"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true">
 
                     <com.zhaidou.view.TypeFaceTextView
-                        android:id="@+id/tv_shopping_cart"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="20dp"

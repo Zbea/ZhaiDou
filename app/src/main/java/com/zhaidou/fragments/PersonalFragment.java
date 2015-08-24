@@ -58,7 +58,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     private String mParam2;
     private View view;
 
-    AsyncImageLoader1 imageLoader;
     private RequestQueue mRequestQueue;
     private final int UPDATE_USER_INFO = 1;
     private final int UPDATE_USER_DESCRIPTION = 2;
@@ -103,12 +102,14 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 exitLoginEvent();
             }
             if (action.equals(ZhaiDou.IntentRefreshUnPayAddTag)) {
+                ToolUtils.setLog("开始好刷新count加一");
                 count = count + 1;
                 tv_unpay_count.setText(count + "");
                 tv_unpay_count.setVisibility(View.VISIBLE);
                 ((MainActivity) getActivity()).hideTip(View.VISIBLE);
             }
             if (action.equals(ZhaiDou.IntentRefreshUnPayDesTag)) {
+                ToolUtils.setLog("开始好刷新count减一");
                 count = count - 1;
                 if (count < 1) {
                     tv_unpay_count.setVisibility(View.GONE);
@@ -119,6 +120,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             }
             if (action.equals(ZhaiDou.IntentRefreshUnPayTag))
             {
+                ToolUtils.setLog("开始好刷新count");
                 FetchUnPayCount();
             }
         }
@@ -435,12 +437,21 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         if (!TextUtils.isEmpty(user.getNickName()))
             tv_nickname.setText(user.getNickName());
         if (!TextUtils.isEmpty(user.getAvatar()))
-            imageLoader.LoadImage("http://" + user.getAvatar(), iv_header);
+            ToolUtils.setImageCacheUrl("http://" + user.getAvatar(), iv_header);
         if (!TextUtils.isEmpty(user.getDescription()))
             tv_desc.setText(user.getDescription());
     }
 
     public void refreshData(Activity activity) {
+        userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
+        token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
+        if (userId != -1) {
+            getUserDetail();
+            getUserInfo();
+            FetchCollectData();
+            FetchCollocationData();
+            FetchUnPayCount();
+        }
     }
 
     @Override
@@ -469,15 +480,15 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 
     @Override
     public void onHiddenChanged(boolean hidden) {
-        userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
-        token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
-        if (!hidden && userId != -1) {
-            getUserDetail();
-            getUserInfo();
-            FetchCollectData();
-            FetchCollocationData();
-            FetchUnPayCount();
-        }
+//        userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
+//        token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
+//        if (!hidden && userId != -1) {
+//            getUserDetail();
+//            getUserInfo();
+//            FetchCollectData();
+//            FetchCollocationData();
+//            FetchUnPayCount();
+//        }
         super.onHiddenChanged(hidden);
     }
 
@@ -539,14 +550,15 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 
     private void FetchUnPayCount() {
         ToolUtils.setLog("查看代付款数量");
-
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?count=1&status=0", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (jsonObject != null) {
+                    ToolUtils.setLog(jsonObject.toString());
                     int count = jsonObject.optInt("count");
-                    ToolUtils.setLog(""+count);
-                    if (count > 0) {
+                    ToolUtils.setLog("个人页面count:"+count);
+                    if (count > 0)
+                    {
                         Message message = new Message();
                         message.what = UPDATE_UNPAY_COUNT;
                         message.arg1 = count;
@@ -554,14 +566,14 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                     }
                     else
                     {
-                        mCartCount.setVisibility(View.GONE);
+                        tv_unpay_count.setVisibility(View.GONE);
                     }
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                mCartCount.setVisibility(View.GONE);
+                tv_unpay_count.setVisibility(View.GONE);
             }
         }) {
             @Override

@@ -140,7 +140,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
 //                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
                     try{
-                        long millionSeconds = sdf.parse(date).getTime()-2*60*60*1000;//毫秒
+                        long millionSeconds = sdf.parse(date).getTime();//毫秒
                         long temp = millionSeconds-System.currentTimeMillis();
                         mTimer=new MyTimer(temp,1000);
                         mTimer.start();

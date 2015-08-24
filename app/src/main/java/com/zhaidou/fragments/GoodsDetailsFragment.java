@@ -277,7 +277,7 @@ public class GoodsDetailsFragment extends BaseFragment
 
                     try
                     {
-                        long millionSeconds = sdf.parse(end_date).getTime()-2*60*60*1000;//毫秒
+                        long millionSeconds = sdf.parse(end_date).getTime();//毫秒
                         long temp = millionSeconds - System.currentTimeMillis();
                         if (temp<=0)
                         {
@@ -530,10 +530,10 @@ public class GoodsDetailsFragment extends BaseFragment
 
         shareBtn=(ImageView)mView.findViewById(R.id.share_iv);
         shareBtn.setOnClickListener(onClickListener);
-        if (flags==1)//零元特卖不能分享
-        {
-            shareBtn.setVisibility(View.GONE);
-        }
+//        if (flags==1)//零元特卖不能分享
+//        {
+//            shareBtn.setVisibility(View.GONE);
+//        }
 
         loadingView = (LinearLayout) mView.findViewById(R.id.loadingView);
         nullNetView= (LinearLayout) mView.findViewById(R.id.nullNetline);
