@@ -115,6 +115,7 @@ public class GoodsDetailsChildFragment extends BaseFragment {
         return mView;
     }
 
+
     private void initView() {
         mDetailContainer = (LinearLayout) mView.findViewById(R.id.ll_detail_container);
         mListView = (ListView) mView.findViewById(R.id.lv_good_info);
