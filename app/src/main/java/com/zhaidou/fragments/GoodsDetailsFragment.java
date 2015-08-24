@@ -165,7 +165,7 @@ public class GoodsDetailsFragment extends BaseFragment
 
     private int userId;
     private String token;
-    private long time;
+    private long temptime;
     private long currentTime;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
@@ -231,6 +231,8 @@ public class GoodsDetailsFragment extends BaseFragment
             {
                 case UPDATE_GOOD_DETAIL:
                     if (detail!=null)
+                        ljBtn.setVisibility(View.VISIBLE);
+                    addCartBtn.setVisibility(View.VISIBLE);
                     loadingView.setVisibility(View.GONE);
 
                     detail = (GoodDetail) msg.obj;
@@ -281,6 +283,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     {
                         long millionSeconds = sdf.parse(end_date).getTime();//毫秒
                         long temp = millionSeconds - System.currentTimeMillis();
+                        ToolUtils.setLog("temp:"+temp);
                         if (temp<=0)
                         {
                             mTimerView.setText("已结束");
@@ -303,6 +306,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     mTimerView.setText(timer);
                     break;
                 case UPDATE_UI_TIMER_FINISH:
+                    ToolUtils.setLog("temp:"+1);
                     mTimerView.setText("已结束");
                     setAddOrBuyShow("活动已结束");
                     break;
@@ -1494,7 +1498,7 @@ public class GoodsDetailsFragment extends BaseFragment
         @Override
         public void onTick(long l)
         {
-            time=l;
+            temptime=l;
             long day = 24 * 3600 * 1000;
             long hour = 3600 * 1000;
             long minute = 60 * 1000;
@@ -1540,14 +1544,17 @@ public class GoodsDetailsFragment extends BaseFragment
     @Override
     public void onResume()
     {
-        long temp=System.currentTimeMillis()-currentTime;
-        if (mTimer!=null)
+        long temp1=System.currentTimeMillis()-currentTime;
+        if (temptime-temp1>0)
         {
-            mTimer.cancel();
-            mTimer = null;
+            if (mTimer!=null)
+            {
+                mTimer.cancel();
+                mTimer = null;
+            }
+            mTimer=new MyTimer(temptime-temp1,1000);
+            mTimer.start();
         }
-        mTimer=new MyTimer(time-temp,1000);
-        mTimer.start();
         super.onResume();
     }
 
