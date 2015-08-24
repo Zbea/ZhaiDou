@@ -47,7 +47,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class PersonalFragment extends BaseFragment implements View.OnClickListener, CollectFragment.CollectCountChangeListener,
         CollocationFragment.CollocationCountChangeListener, SettingFragment.ProfileListener {
 
