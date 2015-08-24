@@ -64,6 +64,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     private final int UPDATE_USER_COLLECT_COUNT = 3;
     private final int UPDATE_USER_COLLOCATION = 4;
     private final int UPDATE_UNPAY_COUNT = 5;
+    private final int UPDATE_UNPAY_COUNT_REFRESH = 6;
 
     private Map<String, String> cityMap = new HashMap<String, String>();
 
@@ -107,6 +108,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 tv_unpay_count.setText(count + "");
                 tv_unpay_count.setVisibility(View.VISIBLE);
                 ((MainActivity) getActivity()).hideTip(View.VISIBLE);
+                FetchUnPayCount(UPDATE_UNPAY_COUNT_REFRESH);
             }
             if (action.equals(ZhaiDou.IntentRefreshUnPayDesTag)) {
                 ToolUtils.setLog("开始好刷新count减一");
@@ -117,11 +119,12 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 } else {
                     tv_unpay_count.setText(count + "");
                 }
+                FetchUnPayCount(UPDATE_UNPAY_COUNT_REFRESH);
             }
             if (action.equals(ZhaiDou.IntentRefreshUnPayTag))
             {
                 ToolUtils.setLog("开始好刷新count");
-                FetchUnPayCount();
+                FetchUnPayCount(UPDATE_UNPAY_COUNT_REFRESH);
             }
         }
     };
@@ -153,6 +156,12 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                     ToolUtils.setLog("代付款："+count);
                     tv_unpay_count.setVisibility(View.VISIBLE);
                     ((MainActivity) getActivity()).hideTip(View.VISIBLE);
+                    tv_unpay_count.setText(count + "");
+                    break;
+                case UPDATE_UNPAY_COUNT_REFRESH:
+                    count = msg.arg1;
+                    ToolUtils.setLog("代付款："+count);
+                    tv_unpay_count.setVisibility(View.VISIBLE);
                     tv_unpay_count.setText(count + "");
                     break;
             }
@@ -232,7 +241,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 
             FetchCollectData();
             FetchCollocationData();
-            FetchUnPayCount();
+            FetchUnPayCount(UPDATE_UNPAY_COUNT);
 
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
@@ -450,7 +459,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             getUserInfo();
             FetchCollectData();
             FetchCollocationData();
-            FetchUnPayCount();
+            FetchUnPayCount(UPDATE_UNPAY_COUNT);
         }
     }
 
@@ -545,7 +554,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         mRequestQueue.add(request);
     }
 
-    private void FetchUnPayCount() {
+    private void FetchUnPayCount(final int f) {
         ToolUtils.setLog("查看代付款数量");
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?count=1&status=0", new Response.Listener<JSONObject>() {
             @Override
@@ -557,7 +566,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                     if (count > 0)
                     {
                         Message message = new Message();
-                        message.what = UPDATE_UNPAY_COUNT;
+                        message.what = f;
                         message.arg1 = count;
                         mHandler.sendMessage(message);
                     }

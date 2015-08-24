@@ -167,9 +167,13 @@ public class GoodsDetailsChildFragment extends BaseFragment {
                 imageView.setImageResource(R.drawable.icon_loading_defalut);
                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                 imageView.setBackgroundColor(Color.parseColor("#ffffff"));
+//                imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
                 if (i==(urls.size()-1))
                 {
-                    imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth*6/5));
+                    imageView.setScaleType(ImageView.ScaleType.CENTER);
+                    LinearLayout.LayoutParams layoutParams= new LinearLayout.LayoutParams(screenWidth, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    layoutParams.bottomMargin=1;
+                    imageView.setLayoutParams(layoutParams);
                 }
                 else
                 {
