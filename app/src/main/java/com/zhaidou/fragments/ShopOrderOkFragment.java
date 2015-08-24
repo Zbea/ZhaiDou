@@ -104,7 +104,7 @@ public class ShopOrderOkFragment extends BaseFragment
     private CreatCartDB creatCartDB;
     private String token;
     private int userId;
-    private int flags = 0;//1代表零元特卖的立即购买
+    private int flags = 0;//1代表立即购买
 
     private Handler handler = new Handler()
     {
@@ -139,9 +139,12 @@ public class ShopOrderOkFragment extends BaseFragment
                 case 4:
                     mDialog.dismiss();
 
-                    for (int i = 0; i < items.size(); i++)
+                    if(flags!=1)
                     {
-                        CreatCartTools.deleteByData(creatCartDB, items.get(i));
+                        for (int i = 0; i < items.size(); i++)
+                        {
+                            CreatCartTools.deleteByData(creatCartDB, items.get(i));
+                        }
                     }
 
 //                    if (isljOsale)//清除购物车中的零元特卖
@@ -166,7 +169,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     //发送刷新购物车广播
                     Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsCheckTag);
                     mContext.sendBroadcast(intent);
-                    //发送刷新购物车广播
+                    //发送刷新购物车数量广播
                     Intent intent1 = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
                     mContext.sendBroadcast(intent1);
                     //关闭本页面
