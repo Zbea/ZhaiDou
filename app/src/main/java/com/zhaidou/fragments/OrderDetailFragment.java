@@ -103,10 +103,9 @@ public class OrderDetailFragment extends BaseFragment {
                     if (mOrder.getStatus().equals(""+ZhaiDou.STATUS_UNPAY)&&mParam2<=0) {
                         mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
                     }
-                    mReceiverName.setText(order.getReceiver().getName());
-                    mReceiverPhone.setText(order.getReceiver().getPhone());
-                    mReceiverAddress.setText(order.getReceiver().getProvince() + order.getReceiver().getCity() + order.getReceiver().getArea() + order.getReceiver().getAddress());
-//                    mReceiverTime.setText(order.getReceiver().get);
+                    mReceiverName.setText(order.getReceiver_name());
+                    mReceiverPhone.setText(order.getReceiver_phone());
+                    mReceiverAddress.setText(order.getParent_name() + order.getCity_name() + order.getProvider_name() + order.getReceiver_address());
                     orderItemAdapter.notifyDataSetChanged();
                     break;
                 case UPDATE_COUNT_DOWN_TIME:
@@ -124,24 +123,24 @@ public class OrderDetailFragment extends BaseFragment {
         }
     };
 
-
     private AdapterView.OnItemClickListener onItemClickListener=new AdapterView.OnItemClickListener()
     {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
         {
-            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", orderItems.get(i).getId());
+            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(orderItems.get(i).getMerchandise(), orderItems.get(i).getId());
             Bundle bundle = new Bundle();
                     if(orderItems.get(i).getSale_cate()==1)
                     {
                         bundle.putInt("flags", 1);
                     }
+            System.out.println("OrderDetailFragment.onItemClick-------"+orderItems.get(i).getMerchandise());
             bundle.putInt("index", orderItems.get(i).getMerchandise_id());
+            bundle.putString("page", orderItems.get(i).getMerchandise());
             goodsDetailsFragment.setArguments(bundle);
             ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
         }
     };
-
 
     public static OrderDetailFragment newInstance(String id, long timestmp, Order order) {
         OrderDetailFragment fragment = new OrderDetailFragment();
@@ -427,16 +426,19 @@ public class OrderDetailFragment extends BaseFragment {
                     String receiver_phone = orderObj.optString("receiver_phone");
                     String deliver_number = orderObj.optString("deliver_number");
                     String receiver_name = orderObj.optString("receiver_name");
+                    String parent_name=orderObj.optString("parent_name");
+                    String city_name=orderObj.optString("city_name");
+                    String provider_name=orderObj.optString("provider_name");
 
                     JSONObject receiverObj = orderObj.optJSONObject("receiver");
                     int receiverId = receiverObj.optInt("id");
-                    String address = receiverObj.optString("address");
-                    String phone = receiverObj.optString("phone");
-                    String name = receiverObj.optString("name");
-                    String city_name = receiverObj.optString("city_name");
-                    String parent_name = receiverObj.optString("parent_name");
-                    String provider_name = receiverObj.optString("provider_name");
-                    Receiver receiver = new Receiver(receiverId, address, parent_name, city_name, provider_name, phone, name);
+//                    String address = receiverObj.optString("address");
+//                    String phone = receiverObj.optString("phone");
+//                    String name = receiverObj.optString("name");
+//                    String city_name = receiverObj.optString("city_name");
+//                    String parent_name = receiverObj.optString("parent_name");
+//                    String provider_name = receiverObj.optString("provider_name");
+                    Receiver receiver = new Receiver(receiverId, null, parent_name, null, null, null, null);
 
                     JSONArray order_items = orderObj.optJSONArray("order_items");
                     if (order_items != null && order_items.length() > 0) {
@@ -458,6 +460,9 @@ public class OrderDetailFragment extends BaseFragment {
                     }
                     Order order = new Order("", id, number, amount, status, status_ch, created_at_for, created_at, receiver, orderItems, receiver_address, receiver_phone, deliver_number, receiver_name);
                     order.setNode(node);
+                    order.setParent_name(parent_name);
+                    order.setCity_name(city_name);
+                    order.setProvider_name(provider_name);
                     Message message = new Message();
                     message.obj = order;
                     message.what = 1;
@@ -475,7 +480,7 @@ public class OrderDetailFragment extends BaseFragment {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
+                headers.put("SECAuthorization",token);
                 return headers;
             }
         };

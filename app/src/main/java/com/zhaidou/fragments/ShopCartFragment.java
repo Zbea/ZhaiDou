@@ -472,6 +472,7 @@ public class ShopCartFragment extends BaseFragment
                         {
                             bundle.putInt("flags", 2);
                         }
+                        bundle.putString("page",items.get(tag).name);
                         bundle.putInt("index", items.get(tag).id);
                         goodsDetailsFragment.setArguments(bundle);
                         ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);

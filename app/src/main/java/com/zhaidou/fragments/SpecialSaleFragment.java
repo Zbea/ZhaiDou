@@ -268,6 +268,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     Bundle bundle = new Bundle();
                     bundle.putInt("flags", 1);
                     bundle.putInt("index", products.get(position).getId());
+                    bundle.putString("page", products.get(position).getTitle());
                     goodsDetailsFragment.setArguments(bundle);
                     ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
                 }

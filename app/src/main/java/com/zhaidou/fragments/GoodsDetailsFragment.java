@@ -507,6 +507,7 @@ public class GoodsDetailsFragment extends BaseFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
+        System.out.println("GoodsDetailsFragment.onCreateView");
 
         mContext = getActivity();
 

@@ -26,7 +26,9 @@ public class Order implements Serializable{
     private String receiver_name;
     private String node;
     private boolean zero;
-
+    private String parent_name;
+    private String city_name;
+    private String provider_name;
 
     public long getOrderId() {
         return orderId;
@@ -180,6 +182,30 @@ public class Order implements Serializable{
     public void setNode(String node)
     {
         this.node = node;
+    }
+
+    public String getParent_name() {
+        return parent_name;
+    }
+
+    public void setParent_name(String parent_name) {
+        this.parent_name = parent_name;
+    }
+
+    public String getCity_name() {
+        return city_name;
+    }
+
+    public void setCity_name(String city_name) {
+        this.city_name = city_name;
+    }
+
+    public String getProvider_name() {
+        return provider_name;
+    }
+
+    public void setProvider_name(String provider_name) {
+        this.provider_name = provider_name;
     }
 
     public Order(long orderId, String number, double amount, String status, String status_ch, String created_at_for, String created_at, String time, double price) {
