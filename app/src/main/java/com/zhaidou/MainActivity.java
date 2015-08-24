@@ -557,6 +557,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        System.out.println("MainActivity.onKeyDown");
         FragmentManager manager = getSupportFragmentManager();
         int num = manager.getBackStackEntryCount();
         if (num == 0) {
@@ -570,12 +571,23 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 return true;
             }
         } else {
+            System.out.println("keyCode = [" + keyCode + "], event = [" + event + "]");
             List<Fragment> fragments = manager.getFragments();
+            for (Fragment fragment : fragments) {
+                    if (fragment!=null)
+                        System.out.println("MainActivity.onKeyDownfragment----------------->"+fragment.getClass().getSimpleName()+"---"+fragments.size());
+            }
             if (fragments.size() > 0) {
                 Fragment fragment = fragments.get(fragments.size() - 1);
 //            Log.i("fragment---onKeyDown---->",fragment.getClass().getSimpleName());
-                if (fragment != null || fragment instanceof ShopPaymentSuccessFragment || fragment instanceof ShopPaymentFailFragment) {
-                    popToStack(fragment);
+                Fragment shopPaymentSuccessFragmen=getSupportFragmentManager().findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
+                Fragment shopPaymentFailFragment=getSupportFragmentManager().findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
+
+                if ((shopPaymentSuccessFragmen != null && shopPaymentSuccessFragmen instanceof ShopPaymentSuccessFragment )) {
+                    popToStack(shopPaymentSuccessFragmen);
+                    return true;
+                }else if (shopPaymentFailFragment!=null&& shopPaymentFailFragment instanceof ShopPaymentFailFragment){
+                    popToStack(shopPaymentFailFragment);
                     return true;
                 }
             }

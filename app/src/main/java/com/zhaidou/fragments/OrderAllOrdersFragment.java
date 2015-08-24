@@ -33,6 +33,7 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
+import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
@@ -72,6 +73,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     private long timeStmp = 0;
     private Context mContext;
     private boolean isViewDestroy = false;
+    private View mEmptyView,mNetErrorView;
     private Map<Integer, Boolean> timerMap = new HashMap<Integer, Boolean>();
     private boolean isTimerStart = false;
     private Handler handler = new Handler() {
@@ -137,15 +139,17 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         } else {
             rootView = inflater.inflate(R.layout.fragment_all_orders, container, false);
             mContext = getActivity();
-            mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
+            mEmptyView=rootView.findViewById(R.id.nullline);
+            mNetErrorView=rootView.findViewById(R.id.nullNetline);
+            rootView.findViewById(R.id.netReload).setOnClickListener(this);
             mListView = (ListView) rootView.findViewById(R.id.lv_all_orderlist);
             mRequestQueue = Volley.newRequestQueue(getActivity());
             allOrderAdapter = new AllOrderAdapter(getActivity(), orders);
             mListView.setAdapter(allOrderAdapter);
             token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
-            FetchAllOrder();
 
+            initData();
             allOrderAdapter.setOnInViewClickListener(R.id.orderlayout, new BaseListAdapter.onInternalClickListener() {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
@@ -418,10 +422,24 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
                 }
             });
-
         }
 
         return rootView;
+    }
+
+    private void initData() {
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        if (NetworkUtils.isNetworkAvailable(mContext)) {
+            mNetErrorView.setVisibility(View.GONE);
+            loadingView.setVisibility(View.GONE);
+            FetchAllOrder();
+        } else {
+            if (mDialog != null)
+                mDialog.dismiss();
+            mEmptyView.setVisibility(View.GONE);
+            mNetErrorView.setVisibility(View.VISIBLE);
+            loadingView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -431,6 +449,9 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 //                OrderDetailFragment orderDetailFragment=OrderDetailFragment.newInstance("",0);
 //                ((MainActivity)getActivity()).navigationToFragment(orderDetailFragment);
 //                break;
+            case R.id.netReload:
+                initData();
+                break;
         }
     }
 
@@ -467,6 +488,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     } else {
                         mListView.setVisibility(View.GONE);
                         loadingView.setVisibility(View.VISIBLE);
+                        mEmptyView.setVisibility(View.VISIBLE);
                     }
                 }
             }

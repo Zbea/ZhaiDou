@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,6 +23,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 
@@ -169,7 +173,28 @@ public class GoodsDetailsChildFragment extends BaseFragment {
                 imageView.setBackgroundColor(Color.parseColor("#ffffff"));
                 if (i==(urls.size()-1))
                 {
-                    imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth*6/5));
+//                    imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth*6/5));
+                    ImageLoader.getInstance().displayImage(urls.get(i),imageView,new ImageLoadingListener() {
+                        @Override
+                        public void onLoadingStarted(String s, View view) {
+
+                        }
+
+                        @Override
+                        public void onLoadingFailed(String s, View view, FailReason failReason) {
+
+                        }
+
+                        @Override
+                        public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+                            ((ImageView)view).setImageBitmap(bitmap);
+                        }
+
+                        @Override
+                        public void onLoadingCancelled(String s, View view) {
+
+                        }
+                    });
                 }
                 else
                 {

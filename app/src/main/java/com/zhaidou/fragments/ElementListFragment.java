@@ -292,7 +292,6 @@ public class ElementListFragment extends BaseFragment implements PullToRefreshBa
                     String requestUrl = MessageFormat.format(targetUrl, currentPage);
                     java.net.URL url = new URL(requestUrl);
                     String jsonContent = HtmlFetcher.fetch(url);
-                    System.out.print("-------> 加载jsonContent: " + jsonContent);
                     try
                     {
                         JSONObject root = new JSONObject(jsonContent);
