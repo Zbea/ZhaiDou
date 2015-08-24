@@ -784,6 +784,23 @@ public class ShopCartFragment extends BaseFragment
         mRequestQueue.add(request);
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden)
+    {
+        super.onHiddenChanged(hidden);
+        if (hidden)
+        {
+            allCb.setChecked(false);
+            for (int i = 0; i <boxs.size() ; i++)
+            {
+                boxs.get(i).setChecked(false);
+            }
+            ToolUtils.setLog("1实例化所有数据");
+            ToolUtils.setLog("1boxs："+boxs.size());
+            ToolUtils.setLog("1itemsCheck："+itemsCheck.size());
+            ToolUtils.setLog("1items："+items.size());
+        }
+    }
 
     @Override
     public void onDestroy()
