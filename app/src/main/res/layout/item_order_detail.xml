@@ -38,11 +38,15 @@
                 android:orientation="horizontal">
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_name"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
+                    android:layout_toLeftOf="@+id/orderItemCurrentPrice"
                     android:layout_marginTop="5dp"
                     android:text="女款连衣裙"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
                     android:textColor="@color/text_main_color"
                     android:textSize="15sp" />
                 <com.zhaidou.view.TypeFaceTextView
@@ -62,8 +66,9 @@
                 android:layout_below="@id/rl_name"
                 android:orientation="horizontal">
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/orderItemFormalPrice"
                     android:orientation="horizontal">
                     <com.zhaidou.view.TypeFaceTextView
                         android:layout_width="wrap_content"
@@ -76,11 +81,15 @@
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:id="@+id/tv_specification"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:layout_below="@id/tv_name"
                         android:layout_marginTop="5dp"
                         android:text="L"
+                        android:singleLine="true"
+                        android:ellipsize="marquee"
+                        android:marqueeRepeatLimit="marquee_forever"
                         android:textColor="@color/text_gary_color"
                         android:textSize="13sp" />
                 </LinearLayout>

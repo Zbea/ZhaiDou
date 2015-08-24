@@ -7,19 +7,16 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -31,12 +28,10 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.model.Address;
 import com.zhaidou.model.Area;
 import com.zhaidou.model.City;
 import com.zhaidou.model.HttpPatch;
 import com.zhaidou.model.Province;
-import com.zhaidou.utils.CollectionUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.WheelViewContainer;
 
@@ -54,11 +49,9 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class NewAddrFragment extends BaseFragment implements View.OnClickListener {
+public class AddrNewAddrFragment extends BaseFragment implements View.OnClickListener {
     private static final String ARG_ID="id";
     private static final String ARG_NickName = "param1";
     private static final String ARG_MOBILE = "param2";
@@ -91,8 +84,8 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
     private int UPDATE_ADDRESS_INFO=1;
     private int CREATE_NEW_ADDRESS=2;
 
-    public static NewAddrFragment newInstance(int id,String nickname, String mobile,String location,String address, int profileId, int status) {
-        NewAddrFragment fragment = new NewAddrFragment();
+    public static AddrNewAddrFragment newInstance(int id,String nickname, String mobile,String location,String address, int profileId, int status) {
+        AddrNewAddrFragment fragment = new AddrNewAddrFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_ID,id);
         args.putString(ARG_NickName, nickname);
@@ -105,7 +98,7 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
         return fragment;
     }
 
-    public NewAddrFragment() {
+    public AddrNewAddrFragment() {
     }
 
     @Override
@@ -151,8 +144,7 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
         mSharedPreferences = getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         token = mSharedPreferences.getString("token", null);
 
-        provinceList.removeAll(provinceList);
-        if (MainActivity.provinceList!=null&&MainActivity.provinceList.size()>10)
+        if (MainActivity.provinceList!=null&&MainActivity.provinceList.size()>1)
         {
             ToolUtils.setLog("加载已经添加的");
             provinceList=MainActivity.provinceList;
@@ -265,12 +257,14 @@ public class NewAddrFragment extends BaseFragment implements View.OnClickListene
             try {
                 mDialog.dismiss();
                 JSONObject json = new JSONObject(s);
+                ToolUtils.setLog("s:"+s);
                 String message=json.optString("message");
                 int status=json.optInt("status");
                 if (status==201)
                 {
                     JSONObject receiver=json.optJSONObject("receiver");
-                    double  price=json.optDouble("price");
+                    double price=json.optDouble("price");
+                    ToolUtils.setLog("yfPrice:"+price);
                     if (addrSaveSuccessListener!=null)
                     {
                         addrSaveSuccessListener.onSaveListener(receiver,mStatus,price,selectedProvince.getName(), selectedCity.getName(), selectedArea.getName());

@@ -98,7 +98,8 @@ public class OrderDetailFragment extends BaseFragment {
                     mOrderNumber.setText(order.getNumber());
                     mOrderTime.setText(order.getCreated_at_for());
                     mOrderStatus.setText(order.getStatus_ch());
-                    goodsInfo.setText(order.node);
+                    ToolUtils.setLog(order.getNode());
+                    goodsInfo.setText(order.getNode());
                     if (mOrder.getStatus().equals(""+ZhaiDou.STATUS_UNPAY)&&mParam2<=0) {
                         mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
                     }
@@ -414,6 +415,8 @@ public class OrderDetailFragment extends BaseFragment {
                 {
                     JSONObject orderObj = jsonObject.optJSONObject("order");
                     amount = orderObj.optDouble("amount");
+                    String node = orderObj.optString("node");
+                    ToolUtils.setLog("node:"+node);
                     int id = orderObj.optInt("id");
                     String status = orderObj.optString("status");
                     String created_at_for = orderObj.optString("created_at_for");
@@ -433,9 +436,7 @@ public class OrderDetailFragment extends BaseFragment {
                     String city_name = receiverObj.optString("city_name");
                     String parent_name = receiverObj.optString("parent_name");
                     String provider_name = receiverObj.optString("provider_name");
-                    String node = receiverObj.optString("node");
                     Receiver receiver = new Receiver(receiverId, address, parent_name, city_name, provider_name, phone, name);
-
 
                     JSONArray order_items = orderObj.optJSONArray("order_items");
                     if (order_items != null && order_items.length() > 0) {
@@ -456,7 +457,7 @@ public class OrderDetailFragment extends BaseFragment {
                         }
                     }
                     Order order = new Order("", id, number, amount, status, status_ch, created_at_for, created_at, receiver, orderItems, receiver_address, receiver_phone, deliver_number, receiver_name);
-                    order.node=node;
+                    order.setNode(node);
                     Message message = new Message();
                     message.obj = order;
                     message.what = 1;
@@ -523,8 +524,6 @@ public class OrderDetailFragment extends BaseFragment {
                                 if (orderListener != null)
                                     orderListener.onOrderStatusChange(order);
                                 ((MainActivity) getActivity()).popToStack(OrderDetailFragment.this);
-                                Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
-                                mContext.sendBroadcast(intent);
                             }
                         }
                         dialog.dismiss();

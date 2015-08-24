@@ -3,17 +3,14 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -37,19 +34,9 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Address;
 import com.zhaidou.utils.ToolUtils;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -170,9 +157,9 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
             @Override
             public void onClick(View view)
             {
-                final NewAddrFragment newAddrFragment = NewAddrFragment.newInstance(0,"", "","","",0,CREATE_NEW_ADDRESS);
+                final AddrNewAddrFragment newAddrFragment = AddrNewAddrFragment.newInstance(0, "", "", "", "", 0, CREATE_NEW_ADDRESS);
                 ((MainActivity) getActivity()).navigationToFragment(newAddrFragment);
-                newAddrFragment.setAddrSaveSuccessListener(new NewAddrFragment.AddrSaveSuccessListener() {
+                newAddrFragment.setAddrSaveSuccessListener(new AddrNewAddrFragment.AddrSaveSuccessListener() {
                     @Override
                     public void onSaveListener(JSONObject receiverObj,int status,double yfprice,String province, String city, String area) {
                         if (receiverObj != null) {
@@ -258,15 +245,16 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                 String addr=address.getAddress();
                 String location=address.getProvince()+"-"+address.getCity()+"-"+address.getArea();
                 int provider_id=address.getProvider_id();
-                final NewAddrFragment newAddrFragment = NewAddrFragment.newInstance(id,name,phone,location,addr,provider_id,UPDATE_ADDRESS_INFO);
+                final AddrNewAddrFragment newAddrFragment = AddrNewAddrFragment.newInstance(id, name, phone, location, addr, provider_id, UPDATE_ADDRESS_INFO);
                 ((MainActivity)getActivity()).navigationToFragment(newAddrFragment);
 
-                newAddrFragment.setAddrSaveSuccessListener(new NewAddrFragment.AddrSaveSuccessListener() {
+                newAddrFragment.setAddrSaveSuccessListener(new AddrNewAddrFragment.AddrSaveSuccessListener() {
 
                     @Override
                     public void onSaveListener(JSONObject receiver, int status, double yfPrice, String province, String city, String area)
                     {
                         if (status==UPDATE_ADDRESS_INFO){
+                            ToolUtils.setLog("yfPrice:"+yfPrice);
                             int id = receiver.optInt("id");
                             String phone = receiver.optString("phone");
                             String addr = receiver.optString("address");

@@ -26,7 +26,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.pulltorefresh.PullToRefreshBase;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
@@ -167,6 +166,9 @@ public class ShopOrderOkFragment extends BaseFragment
                     //发送刷新购物车广播
                     Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsCheckTag);
                     mContext.sendBroadcast(intent);
+                    //发送刷新购物车广播
+                    Intent intent1 = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
+                    mContext.sendBroadcast(intent1);
                     //关闭本页面
                     ((MainActivity) getActivity()).popToStack(ShopOrderOkFragment.this);
 
@@ -203,7 +205,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     mDialog.dismiss();
                     String json =msg.obj.toString();
                     String json1=json.substring(2);
-                    CustomToastDialog.setToastDialog(mContext, json1.substring(0,json1.length()-1));
+                    CustomToastDialog.setToastDialog(mContext, json1.substring(0,json1.length()-2));
                     break;
                 case 7:
                     mDialog.dismiss();
@@ -313,9 +315,9 @@ public class ShopOrderOkFragment extends BaseFragment
                     break;
                 case R.id.jsAddressNullLine:
 
-                    final NewAddrFragment newAddrFragment = NewAddrFragment.newInstance(0, "", "", "", "", 0, 2);
+                    final AddrNewAddrFragment newAddrFragment = AddrNewAddrFragment.newInstance(0, "", "", "", "", 0, 2);
                     ((MainActivity) getActivity()).navigationToFragment(newAddrFragment);
-                    newAddrFragment.setAddrSaveSuccessListener(new NewAddrFragment.AddrSaveSuccessListener()
+                    newAddrFragment.setAddrSaveSuccessListener(new AddrNewAddrFragment.AddrSaveSuccessListener()
                     {
                         @Override
                         public void onSaveListener(JSONObject receiver, int status, double yfprice, String province, String city, String area)

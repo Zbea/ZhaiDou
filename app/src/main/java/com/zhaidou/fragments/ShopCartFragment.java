@@ -88,6 +88,7 @@ public class ShopCartFragment extends BaseFragment
     private LinearLayout cartGoodsLine;//添加商品view
     private TextView textNumView;
     private int tags;
+    private LinearLayout loadingView;
 
     private RequestQueue mRequestQueue;
 
@@ -125,6 +126,7 @@ public class ShopCartFragment extends BaseFragment
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
             {
                 items = CreatCartTools.selectByAll(creatCartDB, userId);
+                ToolUtils.setLog("开始刷新购物车");
                 if (items.size() > 0)
                 {
                     addCartGoods();
@@ -147,6 +149,7 @@ public class ShopCartFragment extends BaseFragment
             switch (msg.what)
             {
                 case 1:
+                    loadingView.setVisibility(View.GONE);
                     initData();
                     break;
                 case 2:
@@ -342,7 +345,7 @@ public class ShopCartFragment extends BaseFragment
         ggBtn = (TypeFaceTextView) mView.findViewById(R.id.cartGgTv);
         ggBtn.setOnClickListener(onClickListener);
         contentView = (RelativeLayout) mView.findViewById(R.id.cartContentLine);
-
+        loadingView=(LinearLayout)mView.findViewById(R.id.loadingView);
 
         numTv = (TypeFaceTextView) mView.findViewById(R.id.cartNum);
         totalMoneyTv = (TextView) mView.findViewById(R.id.moneyTotalTv);
@@ -364,6 +367,7 @@ public class ShopCartFragment extends BaseFragment
             mDialog.dismiss();
             nullView.setVisibility(View.VISIBLE);
             contentView.setVisibility(View.GONE);
+            loadingView.setVisibility(View.GONE);
         }
 
     }
@@ -432,11 +436,19 @@ public class ShopCartFragment extends BaseFragment
      */
     private void addCartGoods()
     {
-        allCb.setChecked(false);
+        ToolUtils.setLog("开始重新实例化");
+        if (allCb.isChecked())
+        {
+            allCb.setChecked(false);
+        }
         items = CreatCartTools.selectByAll(creatCartDB, userId);
         cartGoodsLine.removeAllViews();
         boxs.removeAll(boxs);
         itemsCheck.removeAll(itemsCheck);
+        ToolUtils.setLog("清空所有数据");
+        ToolUtils.setLog("boxs："+boxs.size());
+        ToolUtils.setLog("itemsCheck："+itemsCheck.size());
+        ToolUtils.setLog("items："+items.size());
         for (int position = 0; position < items.size(); position++)
         {
             final int tag=position;
@@ -523,6 +535,7 @@ public class ShopCartFragment extends BaseFragment
                     {
                         if (b)
                         {
+                            ToolUtils.setLog("itemCheck"+""+tag+":"+b);
                             cartItem.isCheck = true;
                             itemsCheck.add(cartItem);
                         } else
@@ -597,6 +610,10 @@ public class ShopCartFragment extends BaseFragment
         {
             boxs.get(i).setChecked(false);
         }
+        ToolUtils.setLog("实例化所有数据");
+        ToolUtils.setLog("boxs："+boxs.size());
+        ToolUtils.setLog("itemsCheck："+itemsCheck.size());
+        ToolUtils.setLog("items："+items.size());
         if (mDialog != null)
             mDialog.dismiss();
     }

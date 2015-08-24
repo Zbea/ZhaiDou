@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
-    <string name="app_name">宅豆</string>
+    <string name="app_name">宅豆家居</string>
     <string name="app_versionName">2.2.1</string>
     <string name="app_version">宅豆家居 V%1$s</string>
     <string name="action_settings">宅豆</string>

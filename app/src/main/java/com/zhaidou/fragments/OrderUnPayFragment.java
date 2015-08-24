@@ -99,6 +99,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                     ToolUtils.setLog("orders.size():"+orders.size());
                     if (count!=orders.size())
                     {
+                        ToolUtils.setLog("执行刷新");
                         Intent intent=new Intent(ZhaiDou.IntentRefreshUnPayTag);
                         mContext.sendBroadcast(intent);
                     }
@@ -267,7 +268,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                 if (jsonObject != null)
                 {
                     JSONArray orderArr = jsonObject.optJSONArray("orders");
-                    if (orderArr != null && orderArr.length() > 2)
+                    if (orderArr != null && orderArr.length() > 0)
                     {
                         orders.clear();
                         for (int i = 0; i < orderArr.length(); i++)
@@ -358,7 +359,8 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
             long l = Long.parseLong(mTimerBtn.getTag() + "");
             if (("" + ZhaiDou.STATUS_UNPAY).equalsIgnoreCase(item.getStatus()))
             {
-                if (l > 0) {
+                if (l > 0)
+                {
                     if (timeStmp > 0 && timerMap != null && (timerMap.get(position) == null || !timerMap.get(position))) {
                         l = l - timeStmp;
                         mTimerBtn.setTag(l);

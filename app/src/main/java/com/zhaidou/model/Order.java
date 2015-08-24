@@ -24,7 +24,7 @@ public class Order implements Serializable{
     private String receiver_phone;
     private String deliver_number;
     private String receiver_name;
-    public String node;
+    private String node;
     private boolean zero;
 
 
@@ -172,6 +172,16 @@ public class Order implements Serializable{
         this.receiver_name = receiver_name;
     }
 
+    public String getNode()
+    {
+        return node;
+    }
+
+    public void setNode(String node)
+    {
+        this.node = node;
+    }
+
     public Order(long orderId, String number, double amount, String status, String status_ch, String created_at_for, String created_at, String time, double price) {
         this.orderId = orderId;
         this.number = number;
@@ -207,6 +217,7 @@ public class Order implements Serializable{
                 ", receiver_phone='" + receiver_phone + '\'' +
                 ", deliver_number='" + deliver_number + '\'' +
                 ", receiver_name='" + receiver_name + '\'' +
+                ", node='" + node + '\'' +
                 '}';
     }
 

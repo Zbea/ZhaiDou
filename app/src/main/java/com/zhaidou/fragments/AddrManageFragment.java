@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -220,10 +219,10 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 String addr=address.getAddress();
                 String location=address.getProvince()+"-"+address.getCity()+"-"+address.getArea();
                 int provider_id=address.getProvider_id();
-                final NewAddrFragment newAddrFragment = NewAddrFragment.newInstance(id,name,phone,location,addr,provider_id,UPDATE_ADDRESS_INFO);
+                final AddrNewAddrFragment newAddrFragment = AddrNewAddrFragment.newInstance(id, name, phone, location, addr, provider_id, UPDATE_ADDRESS_INFO);
                 ((MainActivity)getActivity()).navigationToFragment(newAddrFragment);
 
-                newAddrFragment.setAddrSaveSuccessListener(new NewAddrFragment.AddrSaveSuccessListener() {
+                newAddrFragment.setAddrSaveSuccessListener(new AddrNewAddrFragment.AddrSaveSuccessListener() {
                     @Override
                     public void onSaveListener(JSONObject receiverObj, int status,double yfprice, String province, String city, String area) {
                         if (status==UPDATE_ADDRESS_INFO){
@@ -282,9 +281,9 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 new MyTask().execute(tv_addr_username.getText().toString(), tv_addr_mobile.getText().toString(), "", mProfileId);
                 break;
             case R.id.bt_new_address:
-                final NewAddrFragment newAddrFragment = NewAddrFragment.newInstance(0,"", "","","",0,CREATE_NEW_ADDRESS);
+                final AddrNewAddrFragment newAddrFragment = AddrNewAddrFragment.newInstance(0, "", "", "", "", 0, CREATE_NEW_ADDRESS);
                 ((MainActivity) getActivity()).navigationToFragment(newAddrFragment);
-                newAddrFragment.setAddrSaveSuccessListener(new NewAddrFragment.AddrSaveSuccessListener() {
+                newAddrFragment.setAddrSaveSuccessListener(new AddrNewAddrFragment.AddrSaveSuccessListener() {
                     @Override
                     public void onSaveListener(JSONObject receiverObj,int status,double yfprice, String province, String city, String area) {
                         if (receiverObj != null&&CREATE_NEW_ADDRESS==status) {
