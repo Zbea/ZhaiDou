@@ -165,6 +165,8 @@ public class GoodsDetailsFragment extends BaseFragment
 
     private int userId;
     private String token;
+    private long time;
+    private long currentTime;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -1491,6 +1493,7 @@ public class GoodsDetailsFragment extends BaseFragment
         @Override
         public void onTick(long l)
         {
+            time=l;
             long day = 24 * 3600 * 1000;
             long hour = 3600 * 1000;
             long minute = 60 * 1000;
@@ -1513,6 +1516,8 @@ public class GoodsDetailsFragment extends BaseFragment
         }
     }
 
+
+
     @Override
     public void onDestroyView()
     {
@@ -1531,6 +1536,26 @@ public class GoodsDetailsFragment extends BaseFragment
         super.onDestroy();
     }
 
+    @Override
+    public void onResume()
+    {
+        long temp=System.currentTimeMillis()-currentTime;
+        if (mTimer!=null)
+        {
+            mTimer.cancel();
+            mTimer = null;
+        }
+        mTimer=new MyTimer(time-temp,1000);
+        mTimer.start();
+        super.onResume();
+    }
+
+    @Override
+    public void onPause()
+    {
+        currentTime=System.currentTimeMillis();
+        super.onPause();
+    }
 
     private class GoodsChildFragmentAdapter extends FragmentPagerAdapter
     {

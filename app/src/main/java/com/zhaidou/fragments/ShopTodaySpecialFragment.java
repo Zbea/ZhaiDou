@@ -91,6 +91,8 @@ public class ShopTodaySpecialFragment extends BaseFragment {
 
     private TextView myCartTips;
     private ImageView myCartBtn;
+    private long time;
+    private long currentTime;
 
     private List<ShopTodayItem> items=new ArrayList<ShopTodayItem>();
     private ShopTodaySpecialAdapter adapter;
@@ -504,6 +506,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         }
         @Override
         public void onTick(long l) {
+            time=l;
             long day=24*3600*1000;
             long hour=3600*1000;
             long minute=60*1000;
@@ -520,6 +523,27 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         public void onFinish() {
             handler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
         }
+    }
+
+    @Override
+    public void onResume()
+    {
+        long temp=System.currentTimeMillis()-currentTime;
+        if (mTimer!=null)
+        {
+            mTimer.cancel();
+            mTimer = null;
+        }
+        mTimer=new MyTimer(time-temp,1000);
+        mTimer.start();
+        super.onResume();
+    }
+
+    @Override
+    public void onPause()
+    {
+        currentTime=System.currentTimeMillis();
+        super.onPause();
     }
 
     @Override

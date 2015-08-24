@@ -40,6 +40,21 @@
             android:visibility="gone"
             android:background="@drawable/btn_green_click_bg"
             android:text="已卖光"/>
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/cartItemIsDate"
+            android:layout_width="34dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            android:gravity="center"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:layout_weight="0.00001"
+            android:visibility="gone"
+            android:background="@drawable/btn_no_click_selector"
+            android:text="已过期"/>
 
         <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/cartItemIsLose"

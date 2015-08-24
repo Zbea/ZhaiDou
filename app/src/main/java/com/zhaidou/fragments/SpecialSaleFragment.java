@@ -59,19 +59,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SpecialSaleFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class SpecialSaleFragment extends BaseFragment implements View.OnClickListener, RegisterFragment.RegisterOrLoginListener
 {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
@@ -103,6 +95,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     private Coupon mCoupon;
     private View rootView;
     private boolean isLogin;
+    private long time;
+    private long currentTime;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -559,6 +553,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         @Override
         public void onTick(long l)
         {
+            time=l;
             long day = 24 * 3600 * 1000;
             long hour = 3600 * 1000;
             long minute = 60 * 1000;
@@ -589,6 +584,27 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 //        if (fragment instanceof RegisterFragment){
 //            ((MainActivity)getActivity()).toHomeFragment();
 //        }
+    }
+
+    @Override
+    public void onResume()
+    {
+        long temp=System.currentTimeMillis()-currentTime;
+        if (mTimer!=null)
+        {
+            mTimer.cancel();
+            mTimer = null;
+        }
+        mTimer=new MyTimer(time-temp,1000);
+        mTimer.start();
+        super.onResume();
+    }
+
+    @Override
+    public void onPause()
+    {
+        currentTime=System.currentTimeMillis();
+        super.onPause();
     }
 
     @Override

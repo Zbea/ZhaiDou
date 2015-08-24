@@ -59,6 +59,8 @@ import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,6 +104,7 @@ public class ShopCartFragment extends BaseFragment
     private List<CheckBox> boxs = new ArrayList<CheckBox>();
     private List<View> views=new ArrayList<View>();
     private CartItem mCartItem;
+    private boolean isBuySuccess;
 
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
@@ -125,6 +128,7 @@ public class ShopCartFragment extends BaseFragment
             }
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
             {
+                isBuySuccess=true;
                 items = CreatCartTools.selectByAll(creatCartDB, userId);
                 ToolUtils.setLog("开始刷新购物车");
                 if (items.size() > 0)
@@ -398,6 +402,7 @@ public class ShopCartFragment extends BaseFragment
     {
         nullView.setVisibility(View.GONE);
         contentView.setVisibility(View.VISIBLE);
+        items = CreatCartTools.selectByAll(creatCartDB, userId);
         if (itemsServer.size() > 0)
         {
             for (int i = 0; i < itemsServer.size(); i++)
@@ -422,6 +427,12 @@ public class ShopCartFragment extends BaseFragment
                             ToolUtils.setLog(itemServer.isPublish);
                             CreatCartTools.editIsOverByData(creatCartDB, itemServer);//修改本地数据
                         }
+                        if (!itemServer.isDate.equals(itemLocal.isDate))
+                        {
+                            items.get(j).isDate=itemServer.isDate;
+                            ToolUtils.setLog("修改是否已过期");
+
+                        }
                     }
                 }
             }
@@ -436,19 +447,9 @@ public class ShopCartFragment extends BaseFragment
      */
     private void addCartGoods()
     {
-        ToolUtils.setLog("开始重新实例化");
-        if (allCb.isChecked())
-        {
-            allCb.setChecked(false);
-        }
-        items = CreatCartTools.selectByAll(creatCartDB, userId);
         cartGoodsLine.removeAllViews();
         boxs.removeAll(boxs);
         itemsCheck.removeAll(itemsCheck);
-        ToolUtils.setLog("清空所有数据");
-        ToolUtils.setLog("boxs："+boxs.size());
-        ToolUtils.setLog("itemsCheck："+itemsCheck.size());
-        ToolUtils.setLog("items："+items.size());
         for (int position = 0; position < items.size(); position++)
         {
             final int tag=position;
@@ -491,6 +492,7 @@ public class ShopCartFragment extends BaseFragment
             itemCheck.setId(position);
             TextView isOver = (TextView) childeView.findViewById(R.id.cartItemIsOver);
             TextView islose = (TextView) childeView.findViewById(R.id.cartItemIsLose);
+            TextView isDate = (TextView) childeView.findViewById(R.id.cartItemIsDate);
             ImageView itemDeleteBtn = (ImageView) childeView.findViewById(R.id.cartItemDelBtn);
             ImageView itemLine = (ImageView) childeView.findViewById(R.id.cartItemLine);
             LinearLayout cartNumView = (LinearLayout) childeView.findViewById(R.id.cartNumView);
@@ -514,7 +516,7 @@ public class ShopCartFragment extends BaseFragment
             final CartItem cartItem = items.get(position);
 
             //判断商品是否下架或者卖光处理
-            if (cartItem.isOver.equals("true") | cartItem.isPublish.equals("true"))
+            if (cartItem.isOver.equals("true") | cartItem.isPublish.equals("true")| cartItem.isDate.equals("true"))
             {
                 itemCheck.setVisibility(View.GONE);
                 cartNumView.setVisibility(View.GONE);
@@ -552,11 +554,20 @@ public class ShopCartFragment extends BaseFragment
             {
                 isOver.setVisibility(View.VISIBLE);
                 islose.setVisibility(View.GONE);
+                isDate.setVisibility(View.GONE);
             }
             if (cartItem.isPublish.equals("true"))
             {
                 isOver.setVisibility(View.GONE);
                 islose.setVisibility(View.VISIBLE);
+                isDate.setVisibility(View.GONE);
+            }
+            ToolUtils.setLog("是否已过期:"+cartItem.isDate);
+            if (cartItem.isDate.equals("true"))
+            {
+                isOver.setVisibility(View.GONE);
+                islose.setVisibility(View.GONE);
+                isDate.setVisibility(View.VISIBLE);
             }
 
             //零元特卖不给修改数量
@@ -606,14 +617,6 @@ public class ShopCartFragment extends BaseFragment
             });
             cartGoodsLine.addView(childeView);
         }
-        for (int i = 0; i <boxs.size() ; i++)
-        {
-            boxs.get(i).setChecked(false);
-        }
-        ToolUtils.setLog("实例化所有数据");
-        ToolUtils.setLog("boxs："+boxs.size());
-        ToolUtils.setLog("itemsCheck："+itemsCheck.size());
-        ToolUtils.setLog("items："+items.size());
         if (mDialog != null)
             mDialog.dismiss();
     }
@@ -688,6 +691,20 @@ public class ShopCartFragment extends BaseFragment
                             obj = jsonArray.optJSONObject(i);
                             int id = obj.optInt("id");
                             String name = obj.optString("title");
+                            String endtime = obj.optString("end_time");
+                            long over;
+                            String isDate="false";
+                            try
+                            {
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+                                over=sdf.parse(endtime).getTime()-System.currentTimeMillis();
+                                if (over<=0)
+                                    isDate="true";
+
+                            } catch (ParseException e)
+                            {
+                                e.printStackTrace();
+                            }
                             String isPublish = obj.optBoolean("is_publish") ==false? "true" : "false";
                             JSONArray array = obj.optJSONArray("specifications");
                             for (int j = 0; j < array.length(); j++)
@@ -713,6 +730,7 @@ public class ShopCartFragment extends BaseFragment
                                 item.sizeId = sizeId;
                                 item.num = count;
                                 item.isOver = isOver;
+                                item.isDate = isDate;
                                 itemsServer.add(item);
                             }
                         }
@@ -784,21 +802,21 @@ public class ShopCartFragment extends BaseFragment
     }
 
     @Override
-    public void onHiddenChanged(boolean hidden)
+    public void onResume()
     {
-        super.onHiddenChanged(hidden);
-        if (hidden)
+        if (isBuySuccess)
         {
-            allCb.setChecked(false);
+            isBuySuccess=false;
             for (int i = 0; i <boxs.size() ; i++)
             {
                 boxs.get(i).setChecked(false);
             }
-            ToolUtils.setLog("1实例化所有数据");
-            ToolUtils.setLog("1boxs："+boxs.size());
-            ToolUtils.setLog("1itemsCheck："+itemsCheck.size());
-            ToolUtils.setLog("1items："+items.size());
+            if (allCb.isChecked())
+            {
+                allCb.setChecked(false);
+            }
         }
+        super.onResume();
     }
 
     @Override

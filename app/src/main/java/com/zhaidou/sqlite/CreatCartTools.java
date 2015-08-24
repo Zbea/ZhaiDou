@@ -48,6 +48,7 @@ public class CreatCartTools
                 item.isOver = cursor.getString(cursor.getColumnIndex("isOver"));
                 item.isOSale = cursor.getString(cursor.getColumnIndex("isOSale"));
                 item.isCheck = false;
+                item.isDate="false";
                 item.creatTime = cursor.getLong(cursor.getColumnIndex("creatTime"));
                 itemss.add(item);
             }

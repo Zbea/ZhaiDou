@@ -161,13 +161,21 @@ public class GoodsDetailsChildFragment extends BaseFragment {
     private void addImageToContainer(List<String> urls) {
         mImageContainer.removeAllViews();
         if (urls != null) {
-            for (String url : urls) {
+            for (int i = 0; i <urls.size() ; i++)
+            {
                 ImageView imageView = new ImageView(getActivity());
                 imageView.setImageResource(R.drawable.icon_loading_defalut);
                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                 imageView.setBackgroundColor(Color.parseColor("#ffffff"));
-                imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
-                ToolUtils.setImageCacheUrl(url, imageView);
+                if (i==(urls.size()-1))
+                {
+                    imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth*6/5));
+                }
+                else
+                {
+                    imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
+                }
+                ToolUtils.setImageCacheUrl(urls.get(i), imageView);
                 mImageContainer.addView(imageView);
             }
         }

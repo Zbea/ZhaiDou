@@ -138,8 +138,8 @@
 </ScrollView>
 
     <RelativeLayout
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:layout_margin="20dp">
 

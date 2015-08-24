@@ -39,12 +39,14 @@ public class CartItem implements Serializable
     public boolean isCheck;
     //是否零元特卖
     public String isOSale;
+    //是否过期
+    public String isDate;
     //生成时间
     public long creatTime;
 
     public CartItem(int userId,int id, long creatTime, String name, String imageUrl, double currentPrice,
                     double formalPrice,double saveMoney, double saveTotalMoney, double totalMoney,
-                    int num, String size, int sizeId, String isPublish, String isOver, boolean isCheck,String isOSale)
+                    int num, String size, int sizeId, String isPublish, String isOver, boolean isCheck,String isOSale,String isDate)
     {
         this.userId=userId;
         this.id = id;
@@ -63,6 +65,7 @@ public class CartItem implements Serializable
         this.isOver = isOver;
         this.isCheck = isCheck;
         this.isOSale=isOSale;
+        this.isDate=isDate;
     }
 
     public CartItem()
