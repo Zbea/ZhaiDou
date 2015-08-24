@@ -480,7 +480,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
+                headers.put("SECAuthorization",token);
                 return headers;
             }
         };

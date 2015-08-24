@@ -148,16 +148,21 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 if (fragments.size() > 1) {
                     for (Fragment fragment : fragments) {
                         if (fragment != null)
-                            Log.i("fragment----------------->", fragment.getClass().getSimpleName());
+                            Log.i("fragment----------------->", fragment.getClass().getSimpleName()+"------"+fragments.size());
                     }
                     Fragment fragment = fragments.get(fragments.size() - 1);
-                    if (fragment != null && fragment instanceof ShopPaymentFragment) {
-                        System.out.println("fragment instanceof ShopPaymentFragment------------" + result);
-                        ((ShopPaymentFragment) fragment).handleWXPayResult(result);
-                    } else if (fragment != null && fragment instanceof ShopPaymentFailFragment) {
-                        System.out.println("fragment instanceof ShopPaymentFailFragment");
-                        ((ShopPaymentFailFragment) fragment).handleWXPayResult(result);
-                    } else {
+                    Fragment shopPaymentFragment=getSupportFragmentManager().findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
+                    Fragment shopPaymentFailFragment=getSupportFragmentManager().findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
+
+                    System.out.println("MainActivity.fragment1----------------->"+shopPaymentFragment.toString()==null?"null":shopPaymentFragment.toString());
+                    if (shopPaymentFragment!=null){
+                        Log.i("fragshopPaymentFragment1-------->",shopPaymentFragment.toString());
+                    }
+                    if (shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment) {
+                        ((ShopPaymentFailFragment) shopPaymentFailFragment).handleWXPayResult(result);
+                    }else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment) {
+                        ((ShopPaymentFragment) shopPaymentFragment).handleWXPayResult(result);
+                    }else {
                         System.out.println("MainActivity.onReceive--------->null------------>");
                     }
                 }

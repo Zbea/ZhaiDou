@@ -173,40 +173,65 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             @Override
             public void OnClickListener(View parentV, View v, final Integer position, Object values) {
                 final Address address = (Address) values;
-                int id = address.getId();
-                mDialog=CustomLoadingDialog.setLoadingDialog(getActivity(),"删除中");
-                String url =ZhaiDou.ORDER_RECEIVER_URL + id;
-                JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, new Response.Listener<JSONObject>() {
+                final int id = address.getId();
+                final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
+
+                View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
+                TextView textView = (TextView) view.findViewById(R.id.tv_msg);
+                textView.setText("是否删除地址?");
+                TextView cancelTv = (TextView) view.findViewById(R.id.cancelTv);
+                cancelTv.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onResponse(JSONObject jsonObject) {
-                        if (mDialog!=null)
-                            mDialog.dismiss();
-                        if (jsonObject!=null){
-                            int status=jsonObject.optInt("status");
-                            if (status==201){
-                                addressList.remove(address);
-                                addressAdapter.notifyDataSetChanged();
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+
+                TextView okTv = (TextView) view.findViewById(R.id.okTv);
+                okTv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                        mDialog.show();
+                        String url =ZhaiDou.ORDER_RECEIVER_URL + id;
+                        JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject jsonObject) {
+                                if (mDialog!=null)
+                                    mDialog.dismiss();
+                                if (jsonObject!=null){
+                                    int status=jsonObject.optInt("status");
+                                    if (status==201){
+                                        addressList.remove(address);
+                                        addressAdapter.notifyDataSetChanged();
+                                    }
+                                    String message=jsonObject.optString("message");
+                                    ShowToast(message);
+                                }
                             }
-                            String message=jsonObject.optString("message");
-                            ShowToast(message);
-                        }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError volleyError) {
+                                if (mDialog!=null)
+                                    mDialog.dismiss();
+                                ShowToast("网络异常");
+                            }
+                        }) {
+                            @Override
+                            public Map<String, String> getHeaders() throws AuthFailureError {
+                                Map<String, String> headers = new HashMap<String, String>();
+                                headers.put("SECAuthorization",token);
+                                return headers;
+                            }
+                        };
+                        mRequestQueue.add(request);
                     }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        if (mDialog!=null)
-                            mDialog.dismiss();
-                        ShowToast("网络异常");
-                    }
-                }) {
-                    @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
-                        Map<String, String> headers = new HashMap<String, String>();
-                        headers.put("SECAuthorization",token);
-                        return headers;
-                    }
-                };
-                mRequestQueue.add(request);
+                });
+                dialog.setCanceledOnTouchOutside(true);
+                dialog.setCancelable(true);
+                dialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                dialog.show();
+
             }
         });
         addressAdapter.setOnInViewClickListener(R.id.tv_edit, new BaseListAdapter.onInternalClickListener() {

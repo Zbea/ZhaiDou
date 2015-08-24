@@ -64,9 +64,11 @@ import cn.sharesdk.onekeyshare.OnekeyShare;
 public class ShopTodaySpecialFragment extends BaseFragment {
     private static final String PAGE = "page";
     private static final String INDEX = "index";
+    private static final String IMAGEURL="image";
 
     private String shareUrl=ZhaiDou.shopSpecialListShareUrl;
     private String mPage;
+    private String mImageUrl;
     private int mIndex;
     private View mView;
     private Context mContext;
@@ -243,11 +245,12 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     };
 
 
-    public static ShopTodaySpecialFragment newInstance(String page, int index) {
+    public static ShopTodaySpecialFragment newInstance(String page, int index,String imageUrl) {
         ShopTodaySpecialFragment fragment = new ShopTodaySpecialFragment();
         Bundle args = new Bundle();
         args.putString(PAGE, page);
         args.putInt(INDEX, index);
+        args.putString(IMAGEURL,imageUrl);
         fragment.setArguments(args);
         return fragment;
     }
@@ -260,6 +263,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         if (getArguments() != null) {
             mPage = getArguments().getString(PAGE);
             mIndex = getArguments().getInt(INDEX);
+            mImageUrl=getArguments().getString(IMAGEURL);
             id=mIndex;
             mTitle=mPage;
         }
@@ -408,7 +412,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         // text是分享文本，所有平台都需要这个字段
         oks.setText(mTitle+"   "+shareUrl);
         // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
-//        oks.setImageUrl(coverUrl);//确保SDcard下面存在此张图片
+        oks.setImageUrl(mImageUrl);//确保SDcard下面存在此张图片
         // url仅在微信（包括好友和朋友圈）中使用
         oks.setUrl(shareUrl);
         // comment是我对这条分享的评论，仅在人人网和QQ空间使用

@@ -162,7 +162,6 @@ public class ShopSpecialFragment extends BaseFragment
             FetchData(page);
             adapter.notifyDataSetChanged();
         }
-
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView)
         {
@@ -181,7 +180,7 @@ public class ShopSpecialFragment extends BaseFragment
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
         {
-            ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(items.get(i).title, items.get(i).id);
+            ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(items.get(i).title, items.get(i).id,items.get(i).imageUrl);
             ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
         }
     };
@@ -566,15 +565,11 @@ public class ShopSpecialFragment extends BaseFragment
                     nullView.setVisibility(View.VISIBLE);
                     nullNetView.setVisibility(View.GONE);
                 }
-                String result = response.toString();
-                JSONObject obj;
-                try
-                {
-                    JSONObject jsonObject = new JSONObject(result);
-                    JSONArray jsonArray = jsonObject.optJSONArray("sales");
+
+                    JSONArray jsonArray = response.optJSONArray("sales");
                     for (int i = 0; i < jsonArray.length(); i++)
                     {
-                        obj = jsonArray.optJSONObject(i);
+                        JSONObject obj = jsonArray.optJSONObject(i);
                         int id = obj.optInt("id");
                         String title = obj.optString("title");
                         String sales = obj.optString("tags");
@@ -587,10 +582,6 @@ public class ShopSpecialFragment extends BaseFragment
                         ShopSpecialItem shopSpecialItem = new ShopSpecialItem(id, title, sales, time, startTime, endTime, overTime, imageUrl);
                         items.add(shopSpecialItem);
                     }
-                } catch (JSONException e)
-                {
-                    e.printStackTrace();
-                }
                 Message message = new Message();
                 message.what = 1001;
                 handler.sendMessage(message);

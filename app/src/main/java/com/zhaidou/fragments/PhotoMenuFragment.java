@@ -71,7 +71,11 @@ public class PhotoMenuFragment extends BaseFragment implements View.OnClickListe
                 menuSelectListener.onMenuSelect(1,"相册");
                 break;
             case R.id.tv_cancel:
-                ((ProfileFragment)getParentFragment()).toggleMenu();
+                if (getParentFragment()!=null&&getParentFragment() instanceof ProfileFragment){
+                    ((ProfileFragment)getParentFragment()).toggleMenu();
+                }else if (getParentFragment()!=null&&getParentFragment() instanceof OrderAfterSaleFragment){
+                    ((OrderAfterSaleFragment)getParentFragment()).toggleMenu();
+                }
                 break;
             case R.id.ll_menu_close:
                 if (getParentFragment()!=null&&getParentFragment() instanceof ProfileFragment){

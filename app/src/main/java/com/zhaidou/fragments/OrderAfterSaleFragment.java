@@ -263,7 +263,6 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                 final String imgPath = (String) values;
                 final ImageView imageView=(ImageView)v;
                 if (TextUtils.isEmpty(imgPath)) {
-                    imagePath.remove("");
                     mMenuContainer.setVisibility(View.VISIBLE);
                     toggleMenu();
                 } else {
@@ -317,7 +316,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                     ShowToast("请填写描述");
                     return;
                 }
-                if (imagePath!=null&&imagePath.size()==1){
+                if ((imagePath!=null&&imagePath.size()==0)||(imagePath!=null&&imagePath.size()==1&&TextUtils.isEmpty(imagePath.get(0).toString().trim()))){
                     ShowToast("请上传图片");
                     return;
                 }
@@ -450,13 +449,13 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                         Toast.makeText(getActivity(), "SD不可用", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    Log.i("拍照修改头像------------>", "拍照修改头像");
                     isFromCamera = true;
                     File file = new File(filePath);
                     Log.i("MENU_CAMERA_SELECTED-------------->", filePath + "------->" + imagePath.size());
                     degree = PhotoUtil.readPictureDegree(file.getAbsolutePath());
 //                    ToolUtils.setImageCacheUrl("file://" + filePath, iv_return_img);
-                    if (imagePath != null && imagePath.size() < 3) {
+                    if (imagePath != null &&!TextUtils.isEmpty(filePath.trim())&& imagePath.size() <3) {
+                        imagePath.remove("");
                         imagePath.add(filePath);
                         imagePath.add("");
                         handler.sendEmptyMessage(UPDATE_UPLOAD_IMG_GRID);
@@ -493,7 +492,8 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                         String path = cursor.getString(column_index);
                         Log.i("MENU_PHOTO_SELECTED------------>path", path + "---------------->" + imagePath.size());
                         ToolUtils.setImageCacheUrl("file://" + path, iv_return_img);
-                        if (imagePath != null && imagePath.size() < 3) {
+                        if (imagePath != null&&!TextUtils.isEmpty(path.trim()) && imagePath.size() <=3) {
+                            imagePath.remove("");
                             imagePath.add(path);
                             imagePath.add("");
                             handler.sendEmptyMessage(UPDATE_UPLOAD_IMG_GRID);

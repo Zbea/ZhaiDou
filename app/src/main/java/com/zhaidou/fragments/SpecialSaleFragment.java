@@ -59,11 +59,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SpecialSaleFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class SpecialSaleFragment extends BaseFragment implements View.OnClickListener, RegisterFragment.RegisterOrLoginListener
 {
     // TODO: Rename parameter arguments, choose names that match
@@ -274,6 +269,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     Bundle bundle = new Bundle();
                     bundle.putInt("flags", 1);
                     bundle.putInt("index", products.get(position).getId());
+                    bundle.putString("page", products.get(position).getTitle());
                     goodsDetailsFragment.setArguments(bundle);
                     ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
                 }
