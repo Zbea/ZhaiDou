@@ -15,6 +15,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_below="@+id/headLine"
+        android:layout_marginBottom="70dp"
         android:fillViewport="true"
         android:scrollbars="none">
 
@@ -36,26 +37,26 @@
                     android:layout_centerInParent="true"
                     android:background="@color/white"
                     android:scaleType="fitXY"
-                    android:src="@drawable/icon_loading_defalut"/>
+                    android:src="@drawable/icon_loading_defalut" />
 
                 <com.zhaidou.view.CustomViewPager
                     android:id="@+id/goods_adv_pager"
                     android:layout_width="match_parent"
+                    android:layout_height="240dp"
                     android:layout_centerInParent="true"
                     android:background="@color/white"
-                    android:visibility="gone"
-                    android:layout_height="240dp"/>
+                    android:visibility="gone" />
 
                 <LinearLayout
                     android:id="@+id/goods_viewGroup"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_above="@+id/timeLine"
+                    android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="22dp"
-                    android:layout_alignParentBottom="true"
-                    android:layout_above="@+id/timeLine"
-                    android:visibility="gone"
-                    android:orientation="horizontal"></LinearLayout>
+                    android:orientation="horizontal"
+                    android:visibility="gone"></LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/timeLine"
@@ -78,8 +79,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingLeft="5dp"
-                        android:textSize="12sp"
-                        android:textColor="@color/white" />
+                        android:textColor="@color/white"
+                        android:textSize="12sp" />
 
                 </LinearLayout>
 
@@ -94,8 +95,8 @@
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="42dp"
-                    android:orientation="horizontal"
                     android:gravity="center_vertical"
+                    android:orientation="horizontal"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp">
 
@@ -121,8 +122,8 @@
                         android:paddingLeft="12dp"
                         android:paddingRight="12dp"
                         android:paddingTop="3dp"
-                        android:visibility="gone"
-                        android:textColor="@color/white" />
+                        android:textColor="@color/white"
+                        android:visibility="gone" />
 
                 </LinearLayout>
 
@@ -130,9 +131,9 @@
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:orientation="horizontal"
+                    android:paddingBottom="@dimen/default_margin"
                     android:paddingLeft="@dimen/default_margin"
                     android:paddingRight="@dimen/default_margin"
-                    android:paddingBottom="@dimen/default_margin"
                     android:paddingTop="5dp">
 
                     <com.zhaidou.view.TypeFaceTextView
@@ -234,66 +235,66 @@
             </LinearLayout>
 
             <LinearLayout
-            android:id="@+id/iconView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/default_margin"
-            android:background="@drawable/content_part_bg"
-            android:orientation="horizontal"
-            android:padding="@dimen/default_margin">
-
-            <LinearLayout
-                android:layout_width="fill_parent"
+                android:id="@+id/iconView"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:layout_marginTop="@dimen/default_margin"
+                android:background="@drawable/content_part_bg"
+                android:orientation="horizontal"
+                android:padding="@dimen/default_margin">
 
-                <ImageView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/icon_quality_goods" />
-            </LinearLayout>
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-            <TextView
-                android:layout_width="0.5dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center_vertical"
-                android:background="#EEEEEE" />
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/icon_quality_goods" />
+                </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
+                <TextView
+                    android:layout_width="0.5dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="#EEEEEE" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/icon_7_day_return" />
-            </LinearLayout>
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-            <TextView
-                android:layout_width="0.5dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center_vertical"
-                android:background="#EEEEEE" />
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/icon_7_day_return" />
+                </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
+                <TextView
+                    android:layout_width="0.5dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="#EEEEEE" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/icon_delivery" />
-            </LinearLayout>
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-        </LinearLayout>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/icon_delivery" />
+                </LinearLayout>
+
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/iconOSaleView"
@@ -339,10 +340,9 @@
             </LinearLayout>
 
             <include
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 layout="@layout/goods_details_tip_style"
-                ></include>
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"></include>
 
             <com.zhaidou.view.CustomViewPager
                 android:id="@+id/vp_goods_detail"
@@ -355,25 +355,24 @@
                 android:background="#EEEEEE" />
 
 
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="70dp"></LinearLayout>
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginBottom="70dp"></LinearLayout>-->
         </LinearLayout>
 
     </ScrollView>
 
     <ImageView
         android:id="@+id/goodsTop"
-        android:clickable="true"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_above="@+id/goods_bottom_line"
         android:layout_alignParentRight="true"
         android:layout_margin="10dp"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:visibility="gone"
-        android:src="@drawable/goods_details_to_top_icon"/>
+        android:clickable="true"
+        android:src="@drawable/goods_details_to_top_icon"
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/myCartTipsTv"
@@ -437,14 +436,14 @@
             android:id="@+id/goodsPublish"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_weight="1"
             android:background="@drawable/btn_no_click_selector"
             android:clickable="true"
-            android:layout_gravity="center"
-            android:textColor="@color/white"
+            android:gravity="center"
             android:text="此商品已下架"
-            android:visibility="gone"
-            android:gravity="center"/>
+            android:textColor="@color/white"
+            android:visibility="gone" />
 
         <LinearLayout
             android:id="@+id/goodsAddBuyBtn"
@@ -471,8 +470,8 @@
             android:id="@+id/goodsLjBuyBtn"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:layout_marginLeft="5dp"
+            android:layout_weight="1"
             android:background="@drawable/btn_red_click_selector"
             android:clickable="true"
             android:gravity="center">
@@ -491,10 +490,9 @@
     </LinearLayout>
 
     <include
+        layout="@layout/content_null_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/headLine"
-        layout="@layout/content_null_layout"
-        ></include>
+        android:layout_below="@+id/headLine"></include>
 
 </RelativeLayout>

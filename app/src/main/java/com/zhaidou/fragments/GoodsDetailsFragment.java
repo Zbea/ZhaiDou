@@ -298,7 +298,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     break;
                 case UPDATE_COUNT_DOWN_TIME:
                     CountTime time = (CountTime) msg.obj;
-                    String timerFormat = getActivity().getResources().getString(R.string.timer);
+                    String timerFormat = mContext.getResources().getString(R.string.timer);
                     String hourStr = String.format("%02d", time.getHour());
                     String minStr = String.format("%02d", time.getMinute());
                     String secondStr = String.format("%02d", time.getSecond());
