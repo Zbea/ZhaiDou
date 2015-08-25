@@ -34,6 +34,7 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.CartItem;
 import com.zhaidou.model.Order;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONObject;
@@ -49,7 +50,8 @@ import java.util.TimerTask;
 /**
  * Created by roy on 15/7/31.
  */
-public class ShopPaymentFragment extends BaseFragment {
+public class ShopPaymentFragment extends BaseFragment
+{
     private static final String ARG_ORDERID = "orderId";
     private static final String ARG_AMOUNT = "amount";
     private static final String ARG_FARE = "fare";
@@ -95,23 +97,28 @@ public class ShopPaymentFragment extends BaseFragment {
     private static final int SDK_CHECK_FLAG = 2;
     private String token;
     private IWXAPI api;
+    private boolean isSuccess;
 
     private long commitBtnTime = 0;
-    private Handler mHandler = new Handler() {
+    private Handler mHandler = new Handler()
+    {
         @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
+        public void handleMessage(Message msg)
+        {
+            paymentBtn.setClickable(true);
+            switch (msg.what)
+            {
                 case SDK_PAY_FLAG:
                     Log.i("SDK_PAY_FLAG------------>", "SDK_PAY_FLAG");
                     PayResult payResult = new PayResult((String) msg.obj);
-
                     // 支付宝返回此次支付结果及加签，建议对支付宝签名信息拿签约时支付宝提供的公钥做验签
                     String resultInfo = payResult.getResult();
 
                     String resultStatus = payResult.getResultStatus();
-
                     // 判断resultStatus 为“9000”则代表支付成功，具体状态码代表含义可参考接口文档
-                    if (TextUtils.equals(resultStatus, "9000")) {
+                    if (TextUtils.equals(resultStatus, "9000"))
+                    {
+                        isSuccess = true;
                         notificationPaySuccess();
                         setUnPayDesCount();
                         ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, 0, mOrder);
@@ -119,20 +126,25 @@ public class ShopPaymentFragment extends BaseFragment {
 //                        ((MainActivity) getActivity()).popToStack(ShopPaymentFragment.this);
                         // 判断resultStatus 为非“9000”则代表可能支付失败
                         // “8000”代表支付结果因为支付渠道原因或者系统原因还在等待支付结果确认，最终交易是否成功以服务端异步通知为准（小概率状态）
-                    } else if (TextUtils.equals(resultStatus, "8000")) {
+                    } else if (TextUtils.equals(resultStatus, "8000"))
+                    {
                         Toast.makeText(getActivity(), "支付结果确认中",
+
                                 Toast.LENGTH_SHORT).show();
 
-                    } else if (TextUtils.equals(resultStatus, "4000")) {
+                    } else if (TextUtils.equals(resultStatus, "4000"))
+                    {
                         // 其他值就可以判断为支付失败，包括用户主动取消支付，或者系统返回的错误
                         ShopPaymentFailFragment shopPaymentFailFragment = ShopPaymentFailFragment.newInstance(mOrderId, mAmount, mFare, initTime, mOrder);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
 
-                    } else if (TextUtils.equals(resultStatus, "6002")) {
+                    } else if (TextUtils.equals(resultStatus, "6002"))
+                    {
                         // 其他值就可以判断为支付失败，包括用户主动取消支付，或者系统返回的错误
                         Toast.makeText(getActivity(), "网络连接出错",
                                 Toast.LENGTH_SHORT).show();
-                    } else if (TextUtils.equals(resultStatus, "6001")) {
+                    } else if (TextUtils.equals(resultStatus, "6001"))
+                    {
                         // 其他值就可以判断为支付失败，包括用户主动取消支付，或者系统返回的错误
                         Toast.makeText(getActivity(), "支付取消",
                                 Toast.LENGTH_SHORT).show();
@@ -140,7 +152,8 @@ public class ShopPaymentFragment extends BaseFragment {
 //                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
                     }
                     break;
-                case SDK_CHECK_FLAG: {
+                case SDK_CHECK_FLAG:
+                {
                     Toast.makeText(getActivity(), "检查结果为：" + msg.obj,
                             Toast.LENGTH_SHORT).show();
                     break;
@@ -154,30 +167,41 @@ public class ShopPaymentFragment extends BaseFragment {
     /**
      * 点击事件
      */
-    private View.OnClickListener onClickListener = new View.OnClickListener() {
+    private View.OnClickListener onClickListener = new View.OnClickListener()
+    {
         @Override
-        public void onClick(View view) {
-            switch (view.getId()) {
+        public void onClick(View view)
+        {
+            switch (view.getId())
+            {
                 case R.id.back_btn:
                     ((MainActivity) getActivity()).popToStack(ShopPaymentFragment.this);
                     break;
                 case R.id.paymentBtn:
-                    long current = System.currentTimeMillis();
-                    if (commitBtnTime != 0) {
-                        long stmp = current - commitBtnTime;
-                        if (stmp < 1000) {
-                            ShowToast("点击的太快了哦");
-                            return;
-                        }
+//                    long current = System.currentTimeMillis();
+//                    if (commitBtnTime != 0) {
+//                        long stmp = current - commitBtnTime;
+//                        if (stmp < 10*1000) {
+//                            return;
+//                        }
+//                    }
+//                    commitBtnTime = current;
+//                    payment();
+                    if (isSuccess)
+                    {
+                        Toast.makeText(mContext, "您已经购买过了，请勿重新支付", Toast.LENGTH_LONG).show();
+                    } else
+                    {
+                        paymentBtn.setClickable(false);
+                        payment();
                     }
-                    commitBtnTime = current;
-                    payment();
                     break;
             }
         }
     };
 
-    public static ShopPaymentFragment newInstance(long orderId, double amount, double fare, long timeLeft, Order order, int flags) {
+    public static ShopPaymentFragment newInstance(long orderId, double amount, double fare, long timeLeft, Order order, int flags)
+    {
         ShopPaymentFragment fragment = new ShopPaymentFragment();
         Bundle args = new Bundle();
         args.putLong(ARG_ORDERID, orderId);
@@ -190,13 +214,16 @@ public class ShopPaymentFragment extends BaseFragment {
         return fragment;
     }
 
-    public ShopPaymentFragment() {
+    public ShopPaymentFragment()
+    {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        if (getArguments() != null)
+        {
             mOrderId = getArguments().getLong(ARG_ORDERID);
             mAmount = getArguments().getDouble(ARG_AMOUNT);
             mFare = getArguments().getDouble(ARG_FARE);
@@ -208,17 +235,20 @@ public class ShopPaymentFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             Bundle savedInstanceState)
+    {
         Log.i("ShopPaymentFailFragment-------------------->", "onCreateView----->--------------" + mAmount);
 
-        if (mView == null) {
+        if (mView == null)
+        {
             mView = inflater.inflate(R.layout.shop_payment_page, container, false);
             mContext = getActivity();
             initView();
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
         ViewGroup parent = (ViewGroup) mView.getParent();
-        if (parent != null) {
+        if (parent != null)
+        {
             parent.removeView(mView);
         }
 
@@ -229,8 +259,10 @@ public class ShopPaymentFragment extends BaseFragment {
     /**
      * 初始化数据
      */
-    private void initView() {
-        if (flags == 1) {
+    private void initView()
+    {
+        if (flags == 1)
+        {
             setUnPayAddCount();
         }
         api = WXAPIFactory.createWXAPI(mContext, null);
@@ -250,20 +282,26 @@ public class ShopPaymentFragment extends BaseFragment {
         loseView = (LinearLayout) mView.findViewById(R.id.loseView);
 
         cb_weixin = (CheckBox) mView.findViewById(R.id.cb_weixin);
-        cb_weixin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        cb_weixin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b)
+            {
+                if (b)
+                {
                     cb_zhifubao.setChecked(false);
                     mCheckPosition = 0;
                 }
             }
         });
         cb_zhifubao = (CheckBox) mView.findViewById(R.id.cb_zhifubao);
-        cb_zhifubao.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        cb_zhifubao.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b)
+            {
+                if (b)
+                {
                     cb_weixin.setChecked(false);
                     mCheckPosition = 1;
                 }
@@ -277,7 +315,8 @@ public class ShopPaymentFragment extends BaseFragment {
     /**
      * 发送刷新代付加一
      */
-    private void setUnPayAddCount() {
+    private void setUnPayAddCount()
+    {
         Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayAddTag);
         mContext.sendBroadcast(intent);
     }
@@ -285,21 +324,28 @@ public class ShopPaymentFragment extends BaseFragment {
     /**
      * 发送刷新代付减一
      */
-    private void setUnPayDesCount() {
+    private void setUnPayDesCount()
+    {
         Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
         mContext.sendBroadcast(intent);
     }
 
-    class MyTimer extends TimerTask {
+    class MyTimer extends TimerTask
+    {
         @Override
-        public void run() {
-            runOnUiThread(new Runnable() {
+        public void run()
+        {
+            runOnUiThread(new Runnable()
+            {
                 @Override
-                public void run() {
+                public void run()
+                {
                     initTime = initTime - 1;
                     timeInfoTv.setText(new SimpleDateFormat("mm:ss").format(new Date(initTime * 1000)));
-                    if (initTime <= 0) {
-                        if (mTimer != null) {
+                    if (initTime <= 0)
+                    {
+                        if (mTimer != null)
+                        {
                             mTimer.cancel();
                             timeInfoTv.setText("00:00");
                             stopView();
@@ -313,7 +359,8 @@ public class ShopPaymentFragment extends BaseFragment {
     /**
      * 支付超时处理
      */
-    private void stopView() {
+    private void stopView()
+    {
         initTime = 0;
         paymentView.setVisibility(View.GONE);
         loseView.setVisibility(View.VISIBLE);
@@ -324,14 +371,19 @@ public class ShopPaymentFragment extends BaseFragment {
     /**
      * 付款
      */
-    private void payment() {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "/" + mOrderId + "/order_payment?payment_id=" + mCheckPosition, new Response.Listener<JSONObject>() {
+    private void payment()
+    {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "/" + mOrderId + "/order_payment?payment_id=" + mCheckPosition, new Response.Listener<JSONObject>()
+        {
             @Override
-            public void onResponse(JSONObject jsonObject) {
+            public void onResponse(JSONObject jsonObject)
+            {
                 Log.i("jsonObject--------->", jsonObject.toString());
-                if (jsonObject != null) {
+                if (jsonObject != null)
+                {
                     int status = jsonObject.optInt("status");
-                    if (status == 201) {
+                    if (status == 201)
+                    {
                         final String appId = jsonObject.optString("appId");
                         final String timeStamp = jsonObject.optString("timeStamp");
                         final String signType = jsonObject.optString("signType");
@@ -340,8 +392,10 @@ public class ShopPaymentFragment extends BaseFragment {
                         final String prepayId = jsonObject.optString("prepayId");
                         int order_id = jsonObject.optInt("order_id");
                         final String paySign = jsonObject.optString("paySign");
-                        if (mCheckPosition == 0) {
-                            if (api.isWXAppInstalled()) {
+                        if (mCheckPosition == 0)
+                        {
+                            if (api.isWXAppInstalled())
+                            {
                                 System.out.println("ShopPaymentFragment.onResponse--------->" + Thread.currentThread());
 //                                mHandler.postDelayed(new Runnable() {
 //                                    @Override
@@ -357,15 +411,19 @@ public class ShopPaymentFragment extends BaseFragment {
                                 api.sendReq(request);
 //                                    }
 //                                }, 0);
-                            } else {
+                            } else
+                            {
                                 ShowToast("没有安装微信客户端哦");
                             }
 
-                        } else if (mCheckPosition == 1) {
+                        } else if (mCheckPosition == 1)
+                        {
                             final String url = jsonObject.optString("url");
-                            mHandler.postDelayed(new Runnable() {
+                            mHandler.postDelayed(new Runnable()
+                            {
                                 @Override
-                                public void run() {
+                                public void run()
+                                {
                                     pay(url);
                                 }
                             }, 0);
@@ -374,13 +432,17 @@ public class ShopPaymentFragment extends BaseFragment {
                     }
                 }
             }
-        }, new Response.ErrorListener() {
+        }, new Response.ErrorListener()
+        {
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
+            public void onErrorResponse(VolleyError volleyError)
+            {
             }
-        }) {
+        })
+        {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("SECAuthorization", token);
                 return map;
@@ -390,11 +452,14 @@ public class ShopPaymentFragment extends BaseFragment {
     }
 
 
-    public void pay(final String url) {
-        Runnable payRunnable = new Runnable() {
+    public void pay(final String url)
+    {
+        Runnable payRunnable = new Runnable()
+        {
 
             @Override
-            public void run() {
+            public void run()
+            {
                 // 构造PayTask 对象
                 PayTask alipay = new PayTask(getActivity());
                 // 调用支付接口，获取支付结果
@@ -411,14 +476,19 @@ public class ShopPaymentFragment extends BaseFragment {
         payThread.start();
     }
 
-    public void handleWXPayResult(int result) {
+    public void handleWXPayResult(int result)
+    {
+        paymentBtn.setClickable(true);
+        Log.i("----->", "paymentBtn");
         System.out.println("handleWXPayResult------------>" + result);
-        switch (result) {
+        switch (result)
+        {
             case 800://商户订单号重复或生成错误
                 Log.i("----->", "商户订单号重复或生成错误");
                 break;
             case 0://支付成功
                 Log.i("----->", "支付成功");
+                isSuccess = true;
                 setUnPayDesCount();
                 notificationPaySuccess();
                 ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, mAmount + mFare, mOrder);
@@ -440,8 +510,10 @@ public class ShopPaymentFragment extends BaseFragment {
         }
     }
 
-    private void notificationPaySuccess() {
-        if (orderListener != null) {
+    private void notificationPaySuccess()
+    {
+        if (orderListener != null)
+        {
             mOrder.setStatus("" + ZhaiDou.STATUS_PAYED);
             mOrder.setOver_at(0);
 //            orderListener.onOrderStatusChange(mOrder);
@@ -449,10 +521,12 @@ public class ShopPaymentFragment extends BaseFragment {
 
     }
 
-
     @Override
-    public void onResume() {
-        if (!isTimerStart) {
+    public void onResume()
+    {
+        paymentBtn.setClickable(true);
+        if (!isTimerStart)
+        {
             isTimerStart = true;
             if (mTimer == null)
                 mTimer = new Timer();
@@ -462,25 +536,30 @@ public class ShopPaymentFragment extends BaseFragment {
     }
 
     @Override
-    public void onStop() {
+    public void onStop()
+    {
         System.out.println("ShopPaymentFragment.onStop");
-        if (mTimer != null) {
+        if (mTimer != null)
+        {
 //            isTimerStart = false;
         }
         super.onStop();
     }
 
     @Override
-    public void onDestroyView() {
+    public void onDestroyView()
+    {
         System.out.println("ShopPaymentFragment.onDestroyView");
-        if (orderListener != null) {
+        if (orderListener != null)
+        {
 //            if (flags!=2)
 //            {
             mOrder.setOver_at(initTime);
             orderListener.onOrderStatusChange(mOrder);
 //            }
         }
-        if (mTimer != null) {
+        if (mTimer != null)
+        {
             isTimerStart = false;
             mTimer.cancel();
             mTimer = null;
@@ -488,8 +567,14 @@ public class ShopPaymentFragment extends BaseFragment {
         super.onDestroyView();
     }
 
-    public void setOrderListener(Order.OrderListener orderListener) {
+    public void setOrderListener(Order.OrderListener orderListener)
+    {
         this.orderListener = orderListener;
+    }
+
+    public void setPayment()
+    {
+        paymentBtn.setClickable(true);
     }
 
 }

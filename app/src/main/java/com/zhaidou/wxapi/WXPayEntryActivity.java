@@ -10,6 +10,8 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.PayActivity;
+import com.zhaidou.fragments.ShopPaymentFailFragment;
+import com.zhaidou.fragments.ShopPaymentFragment;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -21,48 +23,56 @@ import android.widget.Toast;
 
 import java.util.List;
 
-public class WXPayEntryActivity extends FragmentActivity implements IWXAPIEventHandler {
+public class WXPayEntryActivity extends FragmentActivity implements IWXAPIEventHandler
+{
 
-	private static final String TAG = "com.zhaidou.WXPayEntryActivity";
+    private static final String TAG = "com.zhaidou.WXPayEntryActivity";
 
-	private IWXAPI api;
+    private IWXAPI api;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-        System.out.println("WXPayEntryActivity.onCreate---------------->"+Thread.currentThread()+"");
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        System.out.println("WXPayEntryActivity.onCreate---------------->" + Thread.currentThread() + "");
         api = WXAPIFactory.createWXAPI(this, Constants.APP_ID);
-		api.handleIntent(getIntent(), this);
-	}
+        api.handleIntent(getIntent(), this);
+    }
 
-	@Override
-	protected void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-		setIntent(intent);
-		api.handleIntent(intent, this);
-	}
+    @Override
+    protected void onNewIntent(Intent intent)
+    {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        api.handleIntent(intent, this);
+    }
 
-	@Override
-	public void onReq(BaseReq req) {
-	}
+    @Override
+    public void onReq(BaseReq req)
+    {
+    }
 
-	@Override
-	public void onResp(BaseResp resp) {
-		Log.d(TAG, "onPayFinish, errCode = " + resp.errCode+"----->"+resp.errStr+"-------------->"+resp.getType());
+    @Override
+    public void onResp(BaseResp resp)
+    {
+        Log.d(TAG, "onPayFinish, errCode = " + resp.errCode + "----->" + resp.errStr + "-------------->" + resp.getType());
 
-		if (resp.getType() == ConstantsAPI.COMMAND_PAY_BY_WX) {
-            System.out.println("WXPayEntryActivity.onResp----------------------->"+Thread.currentThread());
+        if (resp.getType() == ConstantsAPI.COMMAND_PAY_BY_WX)
+        {
+            System.out.println("WXPayEntryActivity.onResp----------------------->" + Thread.currentThread());
 //            			MainActivity.handler.sendEmptyMessage(resp.errCode);
 //            resp.errCode=0;
-            if (resp.errCode==-2){
-                Toast.makeText(WXPayEntryActivity.this,"取消支付",Toast.LENGTH_SHORT).show();
-            }else {
+            if (resp.errCode == -2)
+            {
+                Toast.makeText(WXPayEntryActivity.this, "取消支付", Toast.LENGTH_SHORT).show();
+            } else
+            {
                 Intent intent = new Intent(ZhaiDou.BROADCAST_WXAPI_FILTER);
                 intent.putExtra("code", resp.errCode);
                 sendBroadcast(intent);
             }
-			finish();
-            overridePendingTransition(R.anim.alpha_enter,R.anim.alpha_out);
+            finish();
+            overridePendingTransition(R.anim.alpha_enter, R.anim.alpha_out);
         }
-	}
+    }
 }

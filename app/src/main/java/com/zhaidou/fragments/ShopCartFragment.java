@@ -489,7 +489,7 @@ public class ShopCartFragment extends BaseFragment
             final TypeFaceTextView itemNum = (TypeFaceTextView) childeView.findViewById(R.id.cartItemNum);
             TypeFaceTextView itemLoseNum = (TypeFaceTextView) childeView.findViewById(R.id.cartItemLoseNum);
             ImageView itemImage = (ImageView) childeView.findViewById(R.id.cartImageItemTv);
-            CheckBox itemCheck = (CheckBox) childeView.findViewById(R.id.chatItemCB);
+            final CheckBox itemCheck = (CheckBox) childeView.findViewById(R.id.chatItemCB);
             itemCheck.setId(position);
             TextView isOver = (TextView) childeView.findViewById(R.id.cartItemIsOver);
             TextView islose = (TextView) childeView.findViewById(R.id.cartItemIsLose);
@@ -594,6 +594,7 @@ public class ShopCartFragment extends BaseFragment
                 {
                     items.remove(cartItem);
                     itemsCheck.remove(cartItem);
+                    boxs.remove(itemCheck);
                     CustomShopCartDeleteDialog.setDelateDialog(mContext, cartItem, cartGoodsLine, childeView);
                 }
             });

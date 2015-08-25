@@ -85,6 +85,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     private int userId;
     private String token;
     private int count=0;
+    private int collectNum=0;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -95,11 +96,20 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
                 initCartTips();
+                FetchCollectData();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginExitTag)) {
                 count=0;
                 initCartTips();
                 exitLoginEvent();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshCollectDesTag)) {
+                collectNum=collectNum-1;
+                if (collectNum<=0)
+                {
+                    collectNum=0;
+                }
+                tv_collect.setText(collectNum+ "");
             }
             if (action.equals(ZhaiDou.IntentRefreshUnPayAddTag)) {
                 ToolUtils.setLog("开始好刷新count加一");
@@ -143,6 +153,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                     tv_desc.setText("null".equalsIgnoreCase(u.getDescription()) || u.getDescription() == null ? "" : u.getDescription());
                     break;
                 case UPDATE_USER_COLLECT_COUNT:
+                    collectNum=msg.arg1;
                     ToolUtils.setLog("收藏"+msg.arg1);
                     tv_collect.setText(msg.arg1 + "");
                     break;
@@ -262,6 +273,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         intentFilter.addAction(ZhaiDou.IntentRefreshUnPayAddTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshUnPayDesTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshUnPayTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshCollectDesTag);
         getActivity().registerReceiver(broadcastReceiver, intentFilter);
     }
 
@@ -485,6 +497,18 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         }
     }
 
+    @Override
+    public void onResume()
+    {
+        userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
+        token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
+        if (tv_collect!=null&& userId != -1)
+        {
+            FetchCollectData();
+            FetchCollocationData();
+        }
+        super.onResume();
+    }
 
     @Override
     public void onHiddenChanged(boolean hidden) {

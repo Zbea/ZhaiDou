@@ -200,8 +200,8 @@ public class GoodsDetailsChildFragment extends BaseFragment {
                 else
                 {
                     imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    ToolUtils.setImageCacheUrl(urls.get(i), imageView);
                 }
-                ToolUtils.setImageCacheUrl(urls.get(i), imageView);
                 mImageContainer.addView(imageView);
             }
         }
