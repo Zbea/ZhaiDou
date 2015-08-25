@@ -207,4 +207,5 @@ public class GoodsDetailsChildFragment extends BaseFragment {
 
     }
 
+
 }
