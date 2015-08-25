@@ -100,29 +100,6 @@
                 android:textColor="#666666"/>
         </LinearLayout>
     </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/goodsNullView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:visibility="gone"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="75dp"
-                android:layout_height="75dp"
-                android:layout_marginTop="50dp"
-                android:layout_marginBottom="20dp"
-                android:src="@drawable/icon_null_goods_fail"/>
-
-            <com.zhaidou.view.TypeFaceTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_gary_color"
-                android:text="抱歉,暂无零元特卖商品"/>
-
-            </LinearLayout>
     <com.zhaidou.view.ChildGridView
         android:id="@+id/gv_sale"
         android:layout_width="match_parent"

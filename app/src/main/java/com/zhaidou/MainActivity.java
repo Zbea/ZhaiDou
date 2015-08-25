@@ -157,10 +157,12 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     System.out.println("MainActivity.fragment1----------------->"+shopPaymentFragment.toString()==null?"null":shopPaymentFragment.toString());
                     if (shopPaymentFragment!=null){
                         Log.i("fragshopPaymentFragment1-------->",shopPaymentFragment.toString());
+                        ((ShopPaymentFragment) shopPaymentFragment).setPayment();
                     }
                     if (shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment) {
                         ((ShopPaymentFailFragment) shopPaymentFailFragment).handleWXPayResult(result);
                     }else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment) {
+                        ((ShopPaymentFragment) shopPaymentFragment).setPayment();
                         ((ShopPaymentFragment) shopPaymentFragment).handleWXPayResult(result);
                     }else {
                         System.out.println("MainActivity.onReceive--------->null------------>");

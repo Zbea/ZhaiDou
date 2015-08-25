@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -70,10 +71,10 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                     ((MainActivity)getActivity()).logout(SettingFragment.this);
                     break;
                 case 1:
-                    serverCode=parseJosn(msg.obj.toString());
-                    if (serverCode> ZDApplication.localVersionCode)
-                    {
-                        CustomVersionUpdateDialog customVersionUpdateDialog=new CustomVersionUpdateDialog(mContext,serverInfo);
+                    serverCode = parseJosn(msg.obj.toString());
+                    ToolUtils.setLog(" ZDApplication.localVersionCode:" + ZDApplication.localVersionCode);
+                    if (serverCode > ZDApplication.localVersionCode) {
+                        CustomVersionUpdateDialog customVersionUpdateDialog = new CustomVersionUpdateDialog(mContext, serverName);
                         customVersionUpdateDialog.checkUpdateInfo();
                     }
                     else
@@ -113,6 +114,9 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         View view=inflater.inflate(R.layout.fragment_setting, container, false);
 
         mContext=getActivity();
+
+        LinearLayout versionBtn=(LinearLayout)view.findViewById(R.id.ll_version);
+        versionBtn.setOnClickListener(this);
 
         view.findViewById(R.id.rl_back).setOnClickListener(this);
         view.findViewById(R.id.ll_profile).setOnClickListener(this);
@@ -168,7 +172,6 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                 logout();
                 break;
             case R.id.ll_version:
-
                 if (NetworkUtils.isNetworkAvailable(mContext))
                 {
                     getVersionServer();
@@ -177,7 +180,6 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                 {
                     ToolUtils.setToast(mContext,"抱歉,网络连接失败");
                 }
-
                 break;
             default:
                 break;
@@ -187,18 +189,14 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     /**
      * 获取版本信息
      */
-    private void getVersionServer()
-    {
-        new Thread(new Runnable()
-        {
+    private void getVersionServer() {
+        new Thread(new Runnable() {
             @Override
-            public void run()
-            {
-                String url=ZhaiDou.apkUpdateUrl;
-                String result= NetService.getHttpService(url);
-                if (result!=null)
-                {
-                    mHandler.obtainMessage(1,result).sendToTarget();
+            public void run() {
+                String url = ZhaiDou.apkUpdateUrl;
+                String result = NetService.getHttpService(url);
+                if (result != null) {
+                    mHandler.obtainMessage(1, result).sendToTarget();
                 }
             }
         }).start();
@@ -206,20 +204,19 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
 
     /**
      * 版本信息解析
+     *
      * @param json
      * @return
      */
-    private int parseJosn(String json)
-    {
-        try
-        {
-            JSONObject jsonObject=new JSONObject(json);
-            serverName=jsonObject.optString("name");
-            serverCode=jsonObject.optInt("code");
-            serverInfo=jsonObject.optString("info");
-        }
-        catch (Exception e)
-        {
+    private int parseJosn(String json) {
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            serverName = jsonObject.optString("name");
+            serverCode = jsonObject.optInt("code");
+            serverInfo = jsonObject.optString("info");
+            ToolUtils.setLog(serverName);
+            ToolUtils.setLog("" + serverCode);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return serverCode;

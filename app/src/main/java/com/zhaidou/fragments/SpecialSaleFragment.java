@@ -77,7 +77,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     private RequestQueue requestQueue;
     private List<Product> products = new ArrayList<Product>();
 
-    private LinearLayout loadingView, nullNetView, nullView,nullGoodsView;
+    private LinearLayout loadingView, nullNetView, nullView;
     private TextView reloadBtn, reloadNetBtn;
 
     private final int UPDATE_ADAPTER = 0;
@@ -110,56 +110,60 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag))
             {
-                isLogin=true;
+                isLogin = true;
                 checkLogin();
                 initCartTips();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
             {
-                isLogin=false;
+                isLogin = false;
                 checkLogin();
                 initCartTips();
             }
         }
     };
 
-    private Handler mHandler=new Handler()
+    private Handler mHandler = new Handler()
     {
         @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what){
+        public void handleMessage(Message msg)
+        {
+            switch (msg.what)
+            {
                 case UPDATE_ADAPTER:
                     loadingView.setVisibility(View.GONE);
                     mAdapter.notifyDataSetChanged();
                     break;
                 case UPDATE_COUNT_DOWN_TIME:
-                    CountTime time = (CountTime)msg.obj;
+                    CountTime time = (CountTime) msg.obj;
                     String timerFormat = getResources().getString(R.string.timer);
-                    String hourStr=String.format("%02d", time.getHour());
-                    String minStr=String.format("%02d", time.getMinute());
-                    String secondStr=String.format("%02d", time.getSecond());
-                    String timer = String.format(timerFormat,time.getDay(),hourStr,minStr,secondStr);
+                    String hourStr = String.format("%02d", time.getHour());
+                    String minStr = String.format("%02d", time.getMinute());
+                    String secondStr = String.format("%02d", time.getSecond());
+                    String timer = String.format(timerFormat, time.getDay(), hourStr, minStr, secondStr);
                     mTimerView.setText(timer);
                     break;
                 case UPDATE_UI_TIMER_FINISH:
                     mTimerView.setText("已结束");
                     break;
                 case UPDATE_TIMER_START:
-                    String date = (String)msg.obj;
+                    String date = (String) msg.obj;
 //                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-                    try{
+                    try
+                    {
                         long millionSeconds = sdf.parse(date).getTime();//毫秒
 ////                        Log.i("millionSeconds",millionSeconds+"");
 ////                        Log.i("current---->",System.currentTimeMillis()+"");
 //                        long hour=3600*1000;
 //                        long minute=60*1000;
 //                        millionSeconds=millionSeconds+hour*23+minute*59+59*1000;
-                        long temp = millionSeconds-System.currentTimeMillis();
-                        mTimer=new MyTimer(temp,1000);
+                        long temp = millionSeconds - System.currentTimeMillis();
+                        mTimer = new MyTimer(temp, 1000);
                         mTimer.start();
-                    }catch (Exception e){
-                        Log.i("Exception e",e.getMessage());
+                    } catch (Exception e)
+                    {
+                        Log.i("Exception e", e.getMessage());
                     }
                     break;
                 case UPDATE_BANNER:
@@ -182,20 +186,21 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         @Override
         public void onClick(View view)
         {
-      switch (view.getId())
-      {
-          case R.id.nullReload:
-              initData();
-              break;
-          case R.id.netReload:
-              initData();
-              break;
-      }
+            switch (view.getId())
+            {
+                case R.id.nullReload:
+                    initData();
+                    break;
+                case R.id.netReload:
+                    initData();
+                    break;
+            }
         }
     };
 
 
-    public static SpecialSaleFragment newInstance(String param1, String param2) {
+    public static SpecialSaleFragment newInstance(String param1, String param2)
+    {
         SpecialSaleFragment fragment = new SpecialSaleFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
@@ -209,9 +214,11 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        if (getArguments() != null)
+        {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
@@ -219,16 +226,17 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             Bundle savedInstanceState)
+    {
 
         if (rootView == null)
         {
             initBroadcastReceiver();
-            rootView=inflater.inflate(R.layout.fragment_special_sale, container, false);
+            rootView = inflater.inflate(R.layout.fragment_special_sale, container, false);
 
-            loadingView=(LinearLayout)rootView.findViewById(R.id.loadingView);
+            loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
 
-            mGridView=(GridView)rootView.findViewById(R.id.gv_sale);
+            mGridView = (GridView) rootView.findViewById(R.id.gv_sale);
             mGridView.setEmptyView(mEmptyView);
             mTimerView = (TextView) rootView.findViewById(R.id.tv_count_time);
             iv_banner = (ImageView) rootView.findViewById(R.id.iv_special_banner);
@@ -240,7 +248,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 //            rootView.findViewById(R.id.iv_coupon).setOnClickListener(this);
 
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
-            nullGoodsView= (LinearLayout) rootView.findViewById(R.id.goodsNullView);
             nullNetView = (LinearLayout) rootView.findViewById(R.id.nullNetline);
             nullView = (LinearLayout) rootView.findViewById(R.id.nullline);
             reloadBtn = (TextView) rootView.findViewById(R.id.nullReload);
@@ -253,7 +260,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             myCartBtn.setOnClickListener(this);
             cartTipsTv = (TextView) rootView.findViewById(R.id.myCartTipsTv);
 
-            isLogin=checkLogin();
+            isLogin = checkLogin();
 
             initCartTips();
 
@@ -308,14 +315,14 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
      */
     private void initData()
     {
-        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
+        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
         if (NetworkUtils.isNetworkAvailable(getActivity()))
         {
             getBanner();
             FetchData();
         } else
         {
-            if (mDialog!=null)
+            if (mDialog != null)
                 mDialog.dismiss();
             nullView.setVisibility(View.GONE);
             nullNetView.setVisibility(View.VISIBLE);
@@ -327,22 +334,23 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
      */
     private void initCartTips()
     {
-        if (MainActivity.num>0)
+        if (MainActivity.num > 0)
         {
             cartTipsTv.setVisibility(View.VISIBLE);
-            cartTipsTv.setText(""+MainActivity.num);
-        }
-        else
+            cartTipsTv.setText("" + MainActivity.num);
+        } else
         {
             cartTipsTv.setVisibility(View.GONE);
         }
     }
 
     @Override
-    public void onClick(View view) {
-        switch (view.getId()){
+    public void onClick(View view)
+    {
+        switch (view.getId())
+        {
             case R.id.ll_back:
-                ((MainActivity)getActivity()).popToStack(SpecialSaleFragment.this);
+                ((MainActivity) getActivity()).popToStack(SpecialSaleFragment.this);
                 break;
 //            case R.id.iv_coupon:
 //                if (mCoupon != null)
@@ -370,8 +378,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 {
                     ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
                     ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
-                }
-                else
+                } else
                 {
                     Intent intent = new Intent(getActivity(), LoginActivity.class);
                     intent.setFlags(1);
@@ -381,28 +388,34 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         }
     }
 
-    public void FetchData(){
-        JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.SPECIAL_SALE_URL,
-                new Response.Listener<JSONObject>() {
+    public void FetchData()
+    {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.SPECIAL_SALE_URL,
+                new Response.Listener<JSONObject>()
+                {
                     @Override
-                    public void onResponse(JSONObject jsonObject) {
+                    public void onResponse(JSONObject jsonObject)
+                    {
                         mDialog.dismiss();
+                        ToolUtils.setLog(jsonObject.toString());
                         if (jsonObject.equals(""))
                         {
                             nullView.setVisibility(View.VISIBLE);
                             nullNetView.setVisibility(View.GONE);
-                            ToolUtils.setToast(getActivity(),"加载失败"); return;
+                            ToolUtils.setToast(getActivity(), "加载失败");
+                            return;
                         }
                         JSONObject saleJson = jsonObject.optJSONObject("sale");
                         if (saleJson != null)
                         {
                             String end_date = saleJson.optString("end_time");
                             Message timerMsg = new Message();
-                            timerMsg.what=UPDATE_TIMER_START;
-                            timerMsg.obj=end_date;
+                            timerMsg.what = UPDATE_TIMER_START;
+                            timerMsg.obj = end_date;
                             mHandler.sendMessage(timerMsg);
                             JSONArray items = saleJson.optJSONArray("merchandises");
-                            if (items != null)
+                            if (items != null&&items.length()>2)
+                            {
                                 if (items != null && items.length() > 0)
                                 {
                                     for (int i = 0; i < items.length(); i++)
@@ -426,17 +439,15 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                                     }
                                     mHandler.sendEmptyMessage(UPDATE_ADAPTER);
                                 }
-                        }
-                        else
-                        {
-                            loadingView.setVisibility(View.VISIBLE);
-                            nullView.setVisibility(View.VISIBLE);
-                            nullGoodsView.setVisibility(View.GONE);
-                            if (imgs!=null &&imgs.length()>0)
-                            {
-                                loadingView.setVisibility(View.GONE);
-                                nullGoodsView.setVisibility(View.VISIBLE);
                             }
+                            else
+                            {
+                                mHandler.sendEmptyMessage(UPDATE_ADAPTER);
+                            }
+
+                        } else
+                        {
+                            mHandler.sendEmptyMessage(UPDATE_ADAPTER);
                         }
                     }
                 }, new Response.ErrorListener()
@@ -447,8 +458,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 mDialog.dismiss();
                 nullView.setVisibility(View.VISIBLE);
                 nullNetView.setVisibility(View.GONE);
-                if (getActivity()!=null)
-                    ToolUtils.setToast(getActivity(),"加载失败");
+                if (getActivity() != null)
+                    ToolUtils.setToast(getActivity(), "加载失败");
             }
         }
         );
@@ -470,7 +481,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 convertView = mInflater.inflate(R.layout.item_fragment_sale, null);
             TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
             ImageView image = ViewHolder.get(convertView, R.id.iv_single_item);
-            image.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth/2-1,(screenWidth/2-1)*175/186));
+            image.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / 2 - 1, (screenWidth / 2 - 1) * 175 / 186));
             TextView tv_money = ViewHolder.get(convertView, R.id.tv_money);
             TextView tv_price = ViewHolder.get(convertView, R.id.tv_price);
             TextView tv_count = ViewHolder.get(convertView, R.id.tv_count);
@@ -479,29 +490,36 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             tv_name.setText(product.getTitle());
             ToolUtils.setImageCacheUrl(product.getImage(), image);
             tv_price.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
-            tv_price.setText("￥"+product.getCost_price());
-            tv_count.setText("剩余 "+product.getRemaining()+"%");
+            tv_price.setText("￥" + product.getCost_price());
+            tv_count.setText("剩余 " + product.getRemaining() + "%");
 
-            ll_sale_out.setVisibility(product.getRemaining()==0?View.VISIBLE:View.GONE);
-            mHashMap.put(position,convertView);
+            ll_sale_out.setVisibility(product.getRemaining() == 0 ? View.VISIBLE : View.GONE);
+            mHashMap.put(position, convertView);
             return convertView;
         }
     }
-    public void FetchCouponData(){
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.COUPON_DATA_URL,new Response.Listener<JSONObject>() {
+
+    public void FetchCouponData()
+    {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.COUPON_DATA_URL, new Response.Listener<JSONObject>()
+        {
             @Override
-            public void onResponse(JSONObject jsonObject) {
-                int id=jsonObject.optInt("id");
-                String created_at=jsonObject.optString("created_at");
-                String updated_at=jsonObject.optString("updated_at");
-                String for_date=jsonObject.optString("for_date");
-                String url=jsonObject.optString("url");
-                mCoupon=new Coupon(id,created_at,updated_at,for_date,url);
+            public void onResponse(JSONObject jsonObject)
+            {
+                int id = jsonObject.optInt("id");
+                String created_at = jsonObject.optString("created_at");
+                String updated_at = jsonObject.optString("updated_at");
+                String for_date = jsonObject.optString("for_date");
+                String url = jsonObject.optString("url");
+                mCoupon = new Coupon(id, created_at, updated_at, for_date, url);
             }
-        },new Response.ErrorListener() {
+        }, new Response.ErrorListener()
+        {
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                if (null==volleyError.networkResponse){
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                if (null == volleyError.networkResponse)
+                {
                     mHandler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
                 }
             }
@@ -554,7 +572,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         @Override
         public void onTick(long l)
         {
-            time=l;
+            time = l;
             long day = 24 * 3600 * 1000;
             long hour = 3600 * 1000;
             long minute = 60 * 1000;
@@ -578,9 +596,10 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     }
 
     @Override
-    public void onRegisterOrLoginSuccess(User user, Fragment fragment) {
-        Log.i("SpecialSaleFragment-------------->",user.toString());
-        SharedPreferencesUtil.saveUser(getActivity(),user);
+    public void onRegisterOrLoginSuccess(User user, Fragment fragment)
+    {
+        Log.i("SpecialSaleFragment-------------->", user.toString());
+        SharedPreferencesUtil.saveUser(getActivity(), user);
         getActivity().getSupportFragmentManager().popBackStack();
 //        if (fragment instanceof RegisterFragment){
 //            ((MainActivity)getActivity()).toHomeFragment();
@@ -590,13 +609,13 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     @Override
     public void onResume()
     {
-        long temp=System.currentTimeMillis()-currentTime;
-        if (mTimer!=null)
+        long temp = System.currentTimeMillis() - currentTime;
+        if (mTimer != null)
         {
             mTimer.cancel();
             mTimer = null;
         }
-        mTimer=new MyTimer(time-temp,1000);
+        mTimer = new MyTimer(time - temp, 1000);
         mTimer.start();
         super.onResume();
     }
@@ -604,7 +623,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     @Override
     public void onPause()
     {
-        currentTime=System.currentTimeMillis();
+        currentTime = System.currentTimeMillis();
         super.onPause();
     }
 

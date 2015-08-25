@@ -182,7 +182,9 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
                 mNickName = name;
                 mMobile = mobile;
                 mAddress = address;
-                mProviderId=selectedArea==null?mProviderId:selectedArea.getId();
+//                mProviderId=selectedArea==null?mProviderId:selectedArea.getId();
+                ToolUtils.setLog("selectedArea.getId():"+selectedArea.getId());
+                ToolUtils.setLog("mProviderId:"+mProviderId);
                 new MyTask().execute();
                 break;
             case R.id.ll_address:
@@ -221,6 +223,8 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
                             selectedProvince = wheelView.getProvince();
                             selectedCity = wheelView.getCity();
                             selectedArea = wheelView.getArea();
+                            mProviderId=selectedArea.getId();
+                            ToolUtils.setLog("ok mProviderId:"+mProviderId);
                             et_location.setText(selectedProvince.getName() + "-" + selectedCity.getName() + "-" + selectedArea.getName());
                         }
                         dialog.dismiss();
