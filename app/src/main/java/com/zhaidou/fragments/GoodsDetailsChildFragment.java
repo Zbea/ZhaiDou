@@ -7,33 +7,26 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.zhaidou.R;
-import com.zhaidou.ZhaiDou;
 
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.GoodDetail;
 import com.zhaidou.model.GoodInfo;
+import com.zhaidou.utils.PixelUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONArray;
@@ -154,7 +147,7 @@ public class GoodsDetailsChildFragment extends BaseFragment {
             if (convertView == null)
                 convertView = mInflater.inflate(R.layout.item_goods_info, null);
             TextView tv_key = ViewHolder.get(convertView, R.id.tv_key);
-            tv_key.setMaxWidth(screenWidth/2-20);
+            tv_key.setMaxWidth(screenWidth / 2 - 20);
             TextView tv_value = ViewHolder.get(convertView, R.id.tv_value);
             GoodInfo goodInfo = getList().get(position);
             tv_key.setText(goodInfo.getTitle());
@@ -163,49 +156,56 @@ public class GoodsDetailsChildFragment extends BaseFragment {
         }
     }
 
-    private void addImageToContainer(List<String> urls) {
+    private void addImageToContainer(final List<String> urls) {
         mImageContainer.removeAllViews();
+        LinearLayout.LayoutParams containerParams = (LinearLayout.LayoutParams) mImageContainer.getLayoutParams();
+        containerParams.height = containerParams.height + (urls.size()>5?250:urls.size() * 50);
+        containerParams.setMargins(0, 0, 0, PixelUtil.dp2px(40, mContext));
+        mImageContainer.setLayoutParams(containerParams);
         if (urls != null) {
-            for (int i = 0; i <urls.size() ; i++)
-            {
+            for (int i = 0; i < urls.size(); i++) {
                 ImageView imageView = new ImageView(getActivity());
                 imageView.setImageResource(R.drawable.icon_loading_defalut);
                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                 imageView.setBackgroundColor(Color.parseColor("#ffffff"));
-                if (i==(urls.size()-1))
-                {
-//                    imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth*6/5));
-                    ImageLoader.getInstance().displayImage(urls.get(i),imageView,new ImageLoadingListener() {
-                        @Override
-                        public void onLoadingStarted(String s, View view) {
+                imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
+                ImageLoader.getInstance().displayImage(urls.get(i), imageView, new ImageLoadingListener() {
+                    @Override
+                    public void onLoadingStarted(String s, View view) {
 
-                        }
+                    }
 
-                        @Override
-                        public void onLoadingFailed(String s, View view, FailReason failReason) {
+                    @Override
+                    public void onLoadingFailed(String s, View view, FailReason failReason) {
 
-                        }
+                    }
 
-                        @Override
-                        public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-                            ((ImageView)view).setImageBitmap(bitmap);
-                        }
+                    @Override
+                    public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+                        System.out.println("GoodsDetailsChildFragment.onLoadingComplete--------" + bitmap.getWidth() + "-----------" + screenWidth);
+                        System.out.println("GoodsDetailsChildFragment.onLoadingComplete-------->" + bitmap.getHeight());
+                        ImageView imageView = (ImageView) view;
+                        ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
+                        layoutParams.width = screenWidth;
+                        layoutParams.height = screenWidth * bitmap.getHeight() / bitmap.getWidth();
+                        ViewGroup.LayoutParams containerParams = mImageContainer.getLayoutParams();
+                        containerParams.height = containerParams.height + layoutParams.height;
+                        mImageContainer.setLayoutParams(containerParams);
+                        imageView.setLayoutParams(layoutParams);
+                        imageView.setImageBitmap(bitmap);
+                    }
 
-                        @Override
-                        public void onLoadingCancelled(String s, View view) {
+                    @Override
+                    public void onLoadingCancelled(String s, View view) {
 
-                        }
-                    });
-                }
-                else
-                {
-                    imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
-                    ToolUtils.setImageCacheUrl(urls.get(i), imageView);
-                }
+                    }
+                });
+
                 mImageContainer.addView(imageView);
             }
         }
 
     }
+
 
 }
