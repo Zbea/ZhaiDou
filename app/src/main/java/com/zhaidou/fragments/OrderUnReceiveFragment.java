@@ -264,7 +264,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 final Order order = (Order) values;
-                OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(), order);
+                OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(), order,2);
                 ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
                 orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
                     @Override

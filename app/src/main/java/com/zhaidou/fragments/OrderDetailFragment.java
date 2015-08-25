@@ -62,6 +62,7 @@ public class OrderDetailFragment extends BaseFragment {
     private String mOrderId;
     private long mParam2;
     private Order mOrder;
+    private int flags=0;
 
 
     private RequestQueue requestQueue;
@@ -128,24 +129,27 @@ public class OrderDetailFragment extends BaseFragment {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
         {
-            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(orderItems.get(i).getMerchandise(), orderItems.get(i).getId());
-            Bundle bundle = new Bundle();
-                    if(orderItems.get(i).getSale_cate()==1)
-                    {
-                        bundle.putInt("flags", 1);
-                    }
-            System.out.println("OrderDetailFragment.onItemClick-------"+orderItems.get(i).getMerchandise());
-            bundle.putInt("index", orderItems.get(i).getMerchandise_id());
-            bundle.putString("page", orderItems.get(i).getMerchandise());
-            goodsDetailsFragment.setArguments(bundle);
-            ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
+            if (flags!=1)
+            {
+                GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(orderItems.get(i).getMerchandise(), orderItems.get(i).getId());
+                Bundle bundle = new Bundle();
+                if(orderItems.get(i).getSale_cate()==1)
+                {
+                    bundle.putInt("flags", 1);
+                }
+                bundle.putInt("index", orderItems.get(i).getMerchandise_id());
+                bundle.putString("page", orderItems.get(i).getMerchandise());
+                goodsDetailsFragment.setArguments(bundle);
+                ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
+            }
         }
     };
 
-    public static OrderDetailFragment newInstance(String id, long timestmp, Order order) {
+    public static OrderDetailFragment newInstance(String id, long timestmp, Order order,int flags) {
         OrderDetailFragment fragment = new OrderDetailFragment();
         Bundle args = new Bundle();
         args.putString(ARG_ID, id);
+        args.putInt("flags", flags);
         args.putLong(ARG_TIMESTMP, timestmp);
         args.putSerializable(ARG_ORDER, order);
         fragment.setArguments(args);
@@ -162,6 +166,7 @@ public class OrderDetailFragment extends BaseFragment {
         if (getArguments() != null) {
             mOrderId = getArguments().getString(ARG_ID);
             mParam2 = getArguments().getLong(ARG_TIMESTMP);
+            flags = getArguments().getInt("flags");
             mOrder = (Order) getArguments().getSerializable(ARG_ORDER);
         }
     }

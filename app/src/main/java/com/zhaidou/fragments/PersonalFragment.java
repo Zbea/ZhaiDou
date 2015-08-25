@@ -498,25 +498,13 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     }
 
     @Override
-    public void onResume()
-    {
-        userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
-        token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
-        if (tv_collect!=null&& userId != -1)
-        {
-            FetchCollectData();
-            FetchCollocationData();
-        }
-        super.onResume();
-    }
-
-    @Override
     public void onHiddenChanged(boolean hidden) {
         userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         if (!hidden && userId != -1) {
             FetchCollectData();
             FetchCollocationData();
+            FetchUnPayCount(UPDATE_UNPAY_COUNT_REFRESH);
         }
         super.onHiddenChanged(hidden);
     }

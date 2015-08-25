@@ -95,7 +95,7 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
                     break;
                 case R.id.tv_order_detail:
                     ToolUtils.setLog("前往订单");
-                    OrderDetailFragment orderDetailFragment=OrderDetailFragment.newInstance(mOrderId+"",0,mOrder);
+                    OrderDetailFragment orderDetailFragment=OrderDetailFragment.newInstance(mOrderId+"",0,mOrder,1);
                     ((MainActivity)getActivity()).navigationToFragment(orderDetailFragment);
                     orderDetailFragment.setOnColseSuccess(new OrderDetailFragment.OnColseSuccess()
                     {
