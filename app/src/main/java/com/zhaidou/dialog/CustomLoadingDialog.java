@@ -24,7 +24,7 @@ public class CustomLoadingDialog
         View view= LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_loading,null);
         TextView textView=(TextView)view.findViewById(R.id.loading_tv);
         textView.setText(msg);
-        Dialog mDialog=new Dialog(mContext, R.style.custom_dialog);
+        Dialog mDialog=new Dialog(mContext, R.style.custom_dialog_no);
         mDialog.setCanceledOnTouchOutside(false);
         mDialog.setCancelable(true);
         mDialog.addContentView(view,new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));

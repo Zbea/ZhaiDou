@@ -310,6 +310,21 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 ToolUtils.setLog("count:"+count);
                 OrderUnPayFragment unPayFragment = OrderUnPayFragment.newInstance("", "",count);
                 ((MainActivity) getActivity()).navigationToFragment(unPayFragment);
+                unPayFragment.setBackClickListener(new OrderUnPayFragment.BackCountListener()
+                {
+                    @Override
+                    public void onBackCount(int count)
+                    {
+                        if (count>0)
+                        {
+                            tv_unpay_count.setText(""+count);
+                        }
+                        else
+                        {
+                            tv_unpay_count.setVisibility(View.GONE);
+                        }
+                    }
+                });
                 ((MainActivity) getActivity()).hideTip(View.GONE);
                 break;
             case R.id.tv_pre_received:

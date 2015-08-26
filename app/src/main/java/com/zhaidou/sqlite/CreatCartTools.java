@@ -170,7 +170,6 @@ public class CreatCartTools
             sqLiteDatabase.endTransaction();
             sqLiteDatabase.close();
         }
-        ToolUtils.setLog("jdfkskfdsj");
     }
 
     /**
@@ -229,4 +228,19 @@ public class CreatCartTools
             sqLiteDatabase.close();
         }
     }
+
+    /**
+     * 清空数据库
+     */
+    public static void clearAll(CreatCartDB cartDB)
+    {
+        SQLiteDatabase sqLiteDatabase = cartDB.getReadableDatabase();
+        sqLiteDatabase.beginTransaction();
+        sqLiteDatabase.execSQL("delete * from cartItem");
+        sqLiteDatabase.setTransactionSuccessful();
+        sqLiteDatabase.endTransaction();
+        sqLiteDatabase.close();
+
+    }
+
 }
