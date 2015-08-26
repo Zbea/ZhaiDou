@@ -81,6 +81,8 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
     private long timeStmp = 0;
     private View mEmptyView,mNetErrorView;
     private Map<Integer, Boolean> timerMap = new HashMap<Integer, Boolean>();
+    private BackCountListener backClickListener;
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -165,7 +167,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                     final TextView btn2 = (TextView) v.findViewById(R.id.bt_order_timer);
                     if (btn2.getTag() != null)
                         preTime = Long.parseLong(btn2.getTag().toString());
-                    OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(), order);
+                    OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(), order,0);
                     ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
                     orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
                         @Override
@@ -445,7 +447,33 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
             timer.cancel();
             timer = null;
         }
+
+        if (orders!=null)
+            if (backClickListener!=null)
+            {
+                for (int i = 0; i <orders.size() ; i++)
+                {
+                    if (orders.get(i).getOver_at()<=0)
+                    {
+                        orders.remove(orders.get(i));
+                    }
+                }
+                backClickListener.onBackCount(orders.size());
+            }
         super.onDestroyView();
     }
+
+    public void setBackClickListener(BackCountListener backClickListener) {
+        this.backClickListener = backClickListener;
+    }
+
+    public interface BackCountListener{
+        public void onBackCount(int count);
+    }
+
+
+
+
+
 
 }

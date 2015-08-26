@@ -163,7 +163,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 //                    }
                     if (btn2.getTag() != null)
                         preTime = Long.parseLong(btn2.getTag().toString());
-                    OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(), order);
+                    OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(), order,2);
                     ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
                     orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
                         @Override

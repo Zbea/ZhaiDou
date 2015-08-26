@@ -8,13 +8,13 @@ public class ZhaiDou {
 
 
     public static String HOME_PAGE_URL = "http://buy.zhaidou.com/?json=get_category_posts&slug=%E5%AE%B6%E9%A5%B0%E4%BC%98%E9%80%89&status=publish";
-    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
-//    public static String HOME_BASE_URL = "http://www.zhaidou.com/";
+//    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
+    public static String HOME_BASE_URL = "http://www.zhaidou.com/";
 //    public static String HOME_BASE_URL = "http://192.168.199.173/";
     public static String TAG_BASE_URL = "http://buy.zhaidou.com/?tag=%s&json=1";
 
-    public static String apkUrl = HOME_BASE_URL+"zhaidou.apk";
-    public static String apkUpdateUrl = HOME_BASE_URL+"versionmanage.json";
+    public static String apkUrl = HOME_BASE_URL+"apk/zhaidou.apk";
+    public static String apkUpdateUrl = HOME_BASE_URL+"apk/versionmanage.json";
 
     public static String HOT_SEARCH_URL=HOME_BASE_URL+"article/api/articles/hot_search";
     public static String INDEX_CATEGORY_FILTER=HOME_BASE_URL+"article/api/article_categories";

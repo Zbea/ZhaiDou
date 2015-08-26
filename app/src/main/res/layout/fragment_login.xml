@@ -53,16 +53,38 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/btn_gray_line_click_bg"
         android:orientation="vertical">
-        <com.zhaidou.view.TypeFaceEditText
-            android:id="@+id/tv_email"
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/btn_height_dimen"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+        <com.zhaidou.view.TypeFaceEditText
+            android:id="@+id/tv_email"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:gravity="center_vertical"
             android:background="@color/transparent"
             android:paddingLeft="10dp"
             android:textSize="16sp"
             android:singleLine="true"
+            android:inputType="textEmailSubject"
+            android:textColor="@color/text_main_color"
+            android:textColorHint="@color/text_gary_color"
             android:hint="邮箱"/>
+
+            <ImageView
+                android:id="@+id/emailDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.0000001"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:clickable="true"
+                android:visibility="gone"
+                android:src="@drawable/cancel"/>
+        </LinearLayout>
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
@@ -77,6 +99,8 @@
             android:textSize="16sp"
             android:singleLine="true"
             android:inputType="textPassword"
+           android:textColor="@color/text_main_color"
+            android:textColorHint="@color/text_gary_color"
             android:hint="密码"/>
 
 

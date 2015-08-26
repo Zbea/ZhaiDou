@@ -310,6 +310,21 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 ToolUtils.setLog("count:"+count);
                 OrderUnPayFragment unPayFragment = OrderUnPayFragment.newInstance("", "",count);
                 ((MainActivity) getActivity()).navigationToFragment(unPayFragment);
+                unPayFragment.setBackClickListener(new OrderUnPayFragment.BackCountListener()
+                {
+                    @Override
+                    public void onBackCount(int count)
+                    {
+                        if (count>0)
+                        {
+                            tv_unpay_count.setText(""+count);
+                        }
+                        else
+                        {
+                            tv_unpay_count.setVisibility(View.GONE);
+                        }
+                    }
+                });
                 ((MainActivity) getActivity()).hideTip(View.GONE);
                 break;
             case R.id.tv_pre_received:
@@ -498,25 +513,13 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     }
 
     @Override
-    public void onResume()
-    {
-        userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
-        token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
-        if (tv_collect!=null&& userId != -1)
-        {
-            FetchCollectData();
-            FetchCollocationData();
-        }
-        super.onResume();
-    }
-
-    @Override
     public void onHiddenChanged(boolean hidden) {
         userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         if (!hidden && userId != -1) {
             FetchCollectData();
             FetchCollocationData();
+            FetchUnPayCount(UPDATE_UNPAY_COUNT_REFRESH);
         }
         super.onHiddenChanged(hidden);
     }

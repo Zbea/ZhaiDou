@@ -17,7 +17,6 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.PersonalFragment;
-import com.zhaidou.fragments.PersonalFragment1;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.fragments.ShopPaymentFailFragment;
 import com.zhaidou.fragments.ShopPaymentSuccessFragment;
@@ -31,7 +30,6 @@ import com.zhaidou.utils.ToolUtils;
 public class BaseActivity extends FragmentActivity implements RegisterFragment.RegisterOrLoginListener {
     protected FrameLayout mChildContainer;
     protected PersonalFragment persoanlFragment;
-    protected PersonalFragment1 persoanlFragment1;
     protected ImageButton personalButton;
     protected Fragment currentFragment;
     protected WebView webView;

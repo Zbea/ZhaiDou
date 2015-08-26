@@ -128,7 +128,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 Order order=(Order)values;
-                OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(),order);
+                OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(),order,0);
                 ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
             }
         }) ;

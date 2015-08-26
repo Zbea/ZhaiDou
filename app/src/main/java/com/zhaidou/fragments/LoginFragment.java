@@ -6,18 +6,23 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -87,7 +92,11 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
 
     private String mParam1;
     private String mParam2;
-    private TextView mEmailView,mPswView,mRegisterView,mResetView;
+    private TextView mRegisterView,mResetView;
+    private EditText mEmailView,mPswView;
+    private ImageView emailDelete;
+    private String strEmail;
+    private Context mContext;
 
     private TextView mLoginView;
     public static final String TAG=LoginFragment.class.getSimpleName();
@@ -106,6 +115,35 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
 
     private static final String FORMAT_STRING = "{\"version\":\"1.0.0.daily\",\"target\":\"thirdpartlogin\",\"params\":{\"loginInfo\":{\"loginId\":\"%s\",\"password\":\"%s\"}}}";
 
+
+
+    /**
+     * 输入邮箱改变事件
+     */
+    private TextWatcher textWatcher=new TextWatcher()
+    {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3)
+        {
+        }
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i2, int i3)
+        {
+            strEmail=charSequence.toString();
+            if (charSequence.toString().length()>0)
+            {
+                emailDelete.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                emailDelete.setVisibility(View.GONE);
+            }
+        }
+        @Override
+        public void afterTextChanged(Editable editable)
+        {
+        }
+    };
 
     public static LoginFragment newInstance(String param1, String param2) {
         LoginFragment fragment = new LoginFragment();
@@ -131,8 +169,20 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.fragment_login, container, false);
-        mEmailView=(TextView)view.findViewById(R.id.tv_email);
-        mPswView=(TextView)view.findViewById(R.id.tv_password);
+        mContext=getActivity();
+        strEmail=getEmail();
+
+        mEmailView=(EditText)view.findViewById(R.id.tv_email);
+        mEmailView.setText(strEmail);
+        mEmailView.addTextChangedListener(textWatcher);
+        emailDelete=(ImageView)findViewById(R.id.emailDelete);
+        emailDelete.setOnClickListener(this);
+        if (strEmail!=null)
+            if (strEmail.length()>0)
+            {
+                emailDelete.setVisibility(View.VISIBLE);
+            }
+        mPswView=(EditText)view.findViewById(R.id.tv_password);
         mLoginView=(TextView)view.findViewById(R.id.bt_login);
         mRegisterView=(TextView)view.findViewById(R.id.tv_register);
         mResetView=(TextView)view.findViewById(R.id.tv_reset_psw);
@@ -150,21 +200,41 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         return view;
     }
 
+    /**
+     * 记住邮箱帐号
+     */
+    private void saveEmail()
+    {
+        SharedPreferences sharedPreferences=mContext.getSharedPreferences("email",0);
+        SharedPreferences.Editor editor=sharedPreferences.edit();
+        editor.putString("email",strEmail);
+        editor.commit();
+    }
+
+    /**
+     * 获得保存的邮箱帐号
+     * @return
+     */
+    private String getEmail()
+    {
+        return mContext.getSharedPreferences("email",0).getString("email","");
+    }
+
     @Override
     public void onClick(View view) {
         ShareSDK.initSDK(getActivity());
         switch (view.getId()){
             case R.id.bt_login:
                 hideInputMethod();
-                String email = mEmailView.getText().toString();
                 String password =mPswView.getText().toString();
-                if (TextUtils.isEmpty(email)){
+                if (TextUtils.isEmpty(strEmail)){
                     Toast.makeText(getActivity(),"邮箱不能为空哦！",Toast.LENGTH_SHORT).show();
                     return;
                 }else if (TextUtils.isEmpty(password)){
                     Toast.makeText(getActivity(),"密码不能为空哦!",Toast.LENGTH_SHORT).show();
                     return;
                 }
+                saveEmail();
                 new MyTask().execute();
                 break;
             case R.id.tv_register:
@@ -258,6 +328,9 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                         Log.i("onFailure---->","onFailure");
                     }
                 });
+                break;
+            case R.id.emailDelete:
+                mEmailView.setText("");
                 break;
             default:
                 break;
