@@ -55,8 +55,7 @@
         android:id="@+id/iv_special_banner"
         android:layout_width="match_parent"
         android:scaleType="fitXY"
-        android:layout_height="165dp"
-        android:src="@drawable/icon_loading_osale"/>
+        android:layout_height="165dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"

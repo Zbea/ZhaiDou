@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.telephony.TelephonyManager;
@@ -62,7 +63,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     private String coverUrl;
     private String url;
     private TextView tv_back;
-    private ImageView iv_share, mHeaderView;
+    private ImageView iv_share, mHeaderView,iv_shadow;
     private FrameLayout mChildContainer;
     private TextView mTitleView, mHeaderText;
     private Article article;
@@ -116,6 +117,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         nickName = mSharedPreferences.getString("nickName", "");
         tv_back = (TextView) findViewById(R.id.tv_back);
         iv_share = (ImageView) findViewById(R.id.iv_share);
+        iv_shadow=(ImageView)findViewById(R.id.iv_shadow);
         mChildContainer = (FrameLayout) findViewById(R.id.fl_child_container);
         mTitleView = (TextView) findViewById(R.id.tv_title);
 
@@ -266,6 +268,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         }
         if (!TextUtils.isEmpty(coverUrl)) {
             ToolUtils.setImageCacheUrl(coverUrl, mHeaderView);
+            ToolUtils.setImageCacheUrl("drawable://"+R.drawable.icon_item_details_shadow,iv_shadow);
             mTitleView.setVisibility(View.GONE);
             mHeaderText.setText(title);
             imageView.setVisibility(View.VISIBLE);

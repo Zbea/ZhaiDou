@@ -97,6 +97,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     private boolean isLogin;
     private long time;
     private long currentTime;
+    private Context mContext;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -136,7 +137,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     break;
                 case UPDATE_COUNT_DOWN_TIME:
                     CountTime time = (CountTime) msg.obj;
-                    String timerFormat = getResources().getString(R.string.timer);
+                    String timerFormat = mContext.getResources().getString(R.string.timer);
                     String hourStr = String.format("%02d", time.getHour());
                     String minStr = String.format("%02d", time.getMinute());
                     String secondStr = String.format("%02d", time.getSecond());
@@ -231,6 +232,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 
         if (rootView == null)
         {
+            mContext=getActivity();
             initBroadcastReceiver();
             rootView = inflater.inflate(R.layout.fragment_special_sale, container, false);
 

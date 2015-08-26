@@ -146,27 +146,24 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 int result = intent.getIntExtra("code", -2);
                 Log.i("result---------------->", result + "------" + fragments.size());
                 if (fragments.size() > 1) {
-                    for (Fragment fragment : fragments) {
-                        if (fragment != null)
-                            Log.i("fragment----------------->", fragment.getClass().getSimpleName()+"------"+fragments.size());
-                    }
                     Fragment fragment = fragments.get(fragments.size() - 1);
-                    Fragment shopPaymentFragment=getSupportFragmentManager().findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
-                    Fragment shopPaymentFailFragment=getSupportFragmentManager().findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
+                    Fragment shopPaymentFragment = getSupportFragmentManager().findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
+                    Fragment shopPaymentFailFragment = getSupportFragmentManager().findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
 
-                    System.out.println("MainActivity.fragment1----------------->"+shopPaymentFragment.toString()==null?"null":shopPaymentFragment.toString());
-                    if (shopPaymentFragment!=null){
-                        Log.i("fragshopPaymentFragment1-------->",shopPaymentFragment.toString());
+                    System.out.println("MainActivity.fragment1----------------->" + shopPaymentFragment.toString() == null ? "null" : shopPaymentFragment.toString());
+                    if (shopPaymentFragment != null) {
+                        Log.i("fragshopPaymentFragment1-------->", shopPaymentFragment.toString());
                         ((ShopPaymentFragment) shopPaymentFragment).setPayment();
                     }
                     if (shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment) {
                         ((ShopPaymentFailFragment) shopPaymentFailFragment).handleWXPayResult(result);
-                    }else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment) {
+                    } else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment) {
                         ((ShopPaymentFragment) shopPaymentFragment).setPayment();
                         ((ShopPaymentFragment) shopPaymentFragment).handleWXPayResult(result);
-                    }else {
+                    } else {
                         System.out.println("MainActivity.onReceive--------->null------------>");
                     }
+
                 }
             }
         }
@@ -576,19 +573,19 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             System.out.println("keyCode = [" + keyCode + "], event = [" + event + "]");
             List<Fragment> fragments = manager.getFragments();
             for (Fragment fragment : fragments) {
-                    if (fragment!=null)
-                        System.out.println("MainActivity.onKeyDownfragment----------------->"+fragment.getClass().getSimpleName()+"---"+fragments.size());
+                if (fragment != null)
+                    System.out.println("MainActivity.onKeyDownfragment----------------->" + fragment.getClass().getSimpleName() + "---" + fragments.size());
             }
             if (fragments.size() > 0) {
                 Fragment fragment = fragments.get(fragments.size() - 1);
 //            Log.i("fragment---onKeyDown---->",fragment.getClass().getSimpleName());
-                Fragment shopPaymentSuccessFragmen=getSupportFragmentManager().findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
-                Fragment shopPaymentFailFragment=getSupportFragmentManager().findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
+                Fragment shopPaymentSuccessFragmen = getSupportFragmentManager().findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
+                Fragment shopPaymentFailFragment = getSupportFragmentManager().findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
 
-                if ((shopPaymentSuccessFragmen != null && shopPaymentSuccessFragmen instanceof ShopPaymentSuccessFragment )) {
+                if ((shopPaymentSuccessFragmen != null && shopPaymentSuccessFragmen instanceof ShopPaymentSuccessFragment)) {
                     popToStack(shopPaymentSuccessFragmen);
                     return true;
-                }else if (shopPaymentFailFragment!=null&& shopPaymentFailFragment instanceof ShopPaymentFailFragment){
+                } else if (shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment) {
                     popToStack(shopPaymentFailFragment);
                     return true;
                 }
@@ -669,4 +666,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         });
         mRequestQueue.add(request);
     }
+
+
 }

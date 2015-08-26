@@ -57,15 +57,14 @@
                 android:id="@+id/iv_header"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/home_item_dimen"
-                android:scaleType="fitXY"
-                android:background="@drawable/icon_loading_item"/>
+                android:scaleType="fitXY"/>
 
                 <ImageView
+                    android:id="@+id/iv_shadow"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
                     android:scaleType="fitXY"
-                    android:layout_alignParentBottom="true"
-                    android:src="@drawable/icon_item_details_shadow"/>
+                    android:layout_alignParentBottom="true"/>
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_msg"
                     android:layout_width="match_parent"
