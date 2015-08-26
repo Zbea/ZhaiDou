@@ -65,6 +65,7 @@ public class ToolUtils
         ImageLoader.getInstance().displayImage(url, imageView,options);
     }
 
+
     /**
      * 图片异步加载（不缓存图片设置）
      * @param url
