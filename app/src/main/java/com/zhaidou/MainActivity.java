@@ -519,17 +519,23 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         setButton(homeButton);
     }
 
-//    private void allfragment()
-//    {
-//        List<Fragment> fragments = getSupportFragmentManager().getFragments();
-//        for (Fragment fragment:fragments)
-//        {
-//            if (fragment instanceof HomeFragment.class)
-//            {
-//
-//            }
-//        }
-//    }
+    /**
+     * 清除除开首页的全部fragment
+     */
+    private void allfragment()
+    {
+        FragmentManager manager=getSupportFragmentManager();
+        List<Fragment> fragments = manager.getFragments();
+        for (Fragment fragment:fragments)
+        {
+            if (fragment instanceof HomeFragment ||fragment instanceof PersonalFragment||fragment instanceof CategoryFragment1||fragment instanceof StrategyFragment)
+            {
+                break;
+            }
+            manager.popBackStack();
+            manager.beginTransaction().remove(fragment).commit();
+        }
+    }
 
     public void replaceFragment(Fragment fragment) {
         SettingFragment settingFragment = SettingFragment.newInstance("", "");
