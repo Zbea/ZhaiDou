@@ -519,6 +519,18 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         setButton(homeButton);
     }
 
+//    private void allfragment()
+//    {
+//        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+//        for (Fragment fragment:fragments)
+//        {
+//            if (fragment instanceof HomeFragment.class)
+//            {
+//
+//            }
+//        }
+//    }
+
     public void replaceFragment(Fragment fragment) {
         SettingFragment settingFragment = SettingFragment.newInstance("", "");
         getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, settingFragment).addToBackStack(null).show(settingFragment).commit();
