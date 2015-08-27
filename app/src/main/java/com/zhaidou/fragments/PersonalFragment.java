@@ -518,6 +518,8 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             FetchCollectData();
             FetchCollocationData();
             FetchUnPayCount(UPDATE_UNPAY_COUNT_REFRESH);
+            getUserDetail();
+            getUserInfo();
         }
         super.onHiddenChanged(hidden);
     }
