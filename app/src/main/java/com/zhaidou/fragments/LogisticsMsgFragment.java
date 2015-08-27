@@ -30,19 +30,10 @@ import com.zhaidou.model.Logistics;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link LogisticsMsgFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
- */
 public class LogisticsMsgFragment extends BaseFragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_TYPE = "type";
     private static final String ARG_NUMBER = "number";
 
-    // TODO: Rename and change types of parameters
     private String mType;
     private String mNumber;
 
@@ -52,15 +43,7 @@ public class LogisticsMsgFragment extends BaseFragment {
     private Context context;
     private WebView mWebView;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment LogisticsMsgFragment.
-     */
-    // TODO: Rename and change types and number of parameters
+
     public static LogisticsMsgFragment newInstance(String type, String number) {
         LogisticsMsgFragment fragment = new LogisticsMsgFragment();
         Bundle args = new Bundle();
@@ -70,7 +53,6 @@ public class LogisticsMsgFragment extends BaseFragment {
         return fragment;
     }
     public LogisticsMsgFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -99,7 +81,7 @@ public class LogisticsMsgFragment extends BaseFragment {
 //        mWebView.setHorizontalScrollbarOverlay(false);
 //        mWebView.setHorizontalFadingEdgeEnabled(false);
 //        mWebView.setInitialScale(1);
-        String url="http://m.kuaidi100.com/index_all.html?type="+(TextUtils.isEmpty(mType)?"huitongkuaidi":mType)+"&postid="+(TextUtils.isEmpty(mNumber)?"50109307408462":mNumber)+"#result";
+        String url="http://m.kuaidi100.com/index_all.html?type="+(TextUtils.isEmpty(mType)?"huitongkuaidi":mType)+"&postid="+mNumber+"#result";
         mWebView.loadUrl(url);
 
         Log.i("url------------>",url);
@@ -134,7 +116,6 @@ public class LogisticsMsgFragment extends BaseFragment {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v,
                                         int groupPosition, long id) {
-                // TODO Auto-generated method stub
                 return true;
             }
         });

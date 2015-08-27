@@ -117,7 +117,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 tv_unpay_count.setText(count + "");
                 tv_unpay_count.setVisibility(View.VISIBLE);
                 ((MainActivity) getActivity()).hideTip(View.VISIBLE);
-                FetchUnPayCount(UPDATE_UNPAY_COUNT_REFRESH);
             }
             if (action.equals(ZhaiDou.IntentRefreshUnPayDesTag)) {
                 ToolUtils.setLog("开始好刷新count减一");
@@ -128,7 +127,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 } else {
                     tv_unpay_count.setText(count + "");
                 }
-                FetchUnPayCount(UPDATE_UNPAY_COUNT_REFRESH);
             }
             if (action.equals(ZhaiDou.IntentRefreshUnPayTag))
             {
@@ -313,11 +311,11 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 unPayFragment.setBackClickListener(new OrderUnPayFragment.BackCountListener()
                 {
                     @Override
-                    public void onBackCount(int count)
+                    public void onBackCount(int counts)
                     {
-                        if (count>0)
+                        if (counts>0)
                         {
-                            tv_unpay_count.setText(""+count);
+                            tv_unpay_count.setText(""+counts);
                         }
                         else
                         {

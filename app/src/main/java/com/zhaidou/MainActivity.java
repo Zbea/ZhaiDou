@@ -82,20 +82,16 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private Fragment beautyHomeFragment;
     private Fragment categoryFragment;
     private Fragment diyFragment;
-//    private PersonalFragment persoanlFragment;
-//    private Fragment currentFragment;
 
     private ImageButton homeButton;
     private ImageButton beautyButton;
     private ImageButton categoryButton;
     private ImageButton diyButton;
-//    private ImageButton personalButton;
 
     private ImageButton lastButton;
 
     private TextView titleView;
     private LinearLayout mTabContainer;
-    //    private FrameLayout mChildContainer;
     private LoginFragment mLoginFragment;
     private ImageView iv_dot;
 
@@ -137,12 +133,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             if (action.equalsIgnoreCase(ZhaiDou.BROADCAST_WXAPI_FILTER)) {
                 System.out.println("MainActivity.onReceive");
                 List<Fragment> fragments = getSupportFragmentManager().getFragments();
-//                Log.i("fragments--------------->", fragments.size() + "");
-//                for (Fragment fragment : fragments) {
-//                    if (fragment!=null)
-//                    Log.i("fragment----------------->",fragment.getClass().getSimpleName());
-//                }
-                System.out.println("MainActivity.thresd----------------->" + Thread.currentThread());
                 int result = intent.getIntExtra("code", -2);
                 Log.i("result---------------->", result + "------" + fragments.size());
                 if (fragments.size() > 1) {
@@ -174,7 +164,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             switch (msg.what) {
                 case 0:
                     User user = (User) msg.obj;
-                    Log.i("persoanlFragment---------------->", persoanlFragment == null ? "null" : "no null");
                     if (persoanlFragment == null) {
                         persoanlFragment = PersonalFragment.newInstance("", "");
                     } else {
@@ -293,7 +282,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         lastButton = homeButton;
 
         if (utilityFragment == null) {
-//            utilityFragment = ElementListFragment.newInstance(ZhaiDou.HOME_PAGE_URL, ZhaiDou.ListType.HOME.toString());
             utilityFragment = HomeFragment.newInstance(ZhaiDou.HOME_PAGE_URL, ZhaiDou.ListType.HOME.toString());
         }
 
@@ -335,7 +323,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 //                titleView.setText("全类别");
 
                 if (categoryFragment == null) {
-//                    categoryFragment = CategoryFragment.newInstance("haha", "haha");
                     categoryFragment = CategoryFragment1.newInstance("", "");
                 }
 
@@ -349,14 +336,9 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         diyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                titleView.setText("DIY");
                 if (diyFragment == null) {
                     diyFragment = DiyFragment.newInstance("haha", "haha");
                 }
-//                startActivity(new Intent(MainActivity.this, DiyActivity.class));
-//                startActivity(new Intent(MainActivity.this,SearchActivity.class));
-//                return;
-
 
                 selectFragment(currentFragment, diyFragment);
 
@@ -368,18 +350,12 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         personalButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("---personalButton-->", checkLogin() + "");
                 if (!checkLogin()) {
-//                    mLoginFragment=LoginFragment.newInstance("","");
-//                    mLoginFragment.setRegisterOrLoginListener(MainActivity.this);
-//                    navigationToFragment(mLoginFragment);
-//                    mChildContainer.setVisibility(View.VISIBLE);
                     Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                     intent.setFlags(2);
                     MainActivity.this.startActivityForResult(intent, 10000);
                 } else {
                     if (persoanlFragment == null) {
-//                        persoanlFragment= PersonalFragment.newInstance("", "");
                         persoanlFragment = PersonalFragment.newInstance("", "");
                     }
                     selectFragment(currentFragment, persoanlFragment);
@@ -438,57 +414,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         boolean isLogin = !TextUtils.isEmpty(token) && id > -1;
         return isLogin;
     }
-//
-//    public void navigationToFragment(Fragment fragment){
-//        if (fragment!=null&&fragment instanceof RegisterFragment){
-//            RegisterFragment registerFragment=(RegisterFragment)fragment;
-//            registerFragment.setRegisterOrLoginListener(this);
-//        }
-//        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container,fragment,fragment.getClass().getSimpleName())
-//                .addToBackStack(null).commit();
-//        mChildContainer.setVisibility(View.VISIBLE);
-//    }
 
-//    @Override
-//    public void onRegisterOrLoginSuccess(User user,Fragment fragment) {
-////        Log.i("MainActivity---->",user.toString());
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        fragmentManager.popBackStack();
-//        SharedPreferencesUtil.saveUser(this,user);
-//        if (fragment instanceof RegisterFragment){
-//            popToStack(fragment);
-//        }
-//        if (persoanlFragment==null){
-//            persoanlFragment= PersonalFragment.newInstance("", "");
-//        }
-//        selectFragment(currentFragment,persoanlFragment);
-//        setButton(personalButton);
-//
-//        fragmentManager.beginTransaction().hide(fragment).commit();
-//    }
-//    public void popToStack(Fragment fragment){
-//
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        Log.i("childFragmentManager--->", fragmentManager.getBackStackEntryCount()+"");
-//        fragmentManager.popBackStack();
-//        fragmentManager.beginTransaction().remove(fragment).commit();
-//
-//        Log.i("fragment---->",fragment.getClass().getSimpleName());
-////        if (fragment!=null&&fragment instanceof LoginFragment)
-////            mChildContainer.setVisibility(View.GONE);
-//    }
-//
-//    private void saveUserToSP(User user){
-//        SharedPreferences.Editor editor = mSharedPreferences.edit();
-//        editor.putInt("userId",user.getId());
-//        editor.putString("email", user.getEmail());
-//        editor.putString("token",user.getAuthentication_token());
-//        editor.putString("avatar",user.getAvatar());
-//        editor.putString("nickName",user.getNickName());
-//        editor.commit();
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        fragmentManager.popBackStack();
-//    }
 
     public interface PhotoSelectListener {
         public void onPhotoSelect();
@@ -510,7 +436,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 mHandler.sendMessage(message);
                 break;
             case 1000:
-                Log.i("onActivityResult---user----1000------>", "sadadadada");
                 break;
         }
 
@@ -571,13 +496,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         } else {
             System.out.println("keyCode = [" + keyCode + "], event = [" + event + "]");
             List<Fragment> fragments = manager.getFragments();
-            for (Fragment fragment : fragments) {
-                    if (fragment!=null)
-                        System.out.println("MainActivity.onKeyDownfragment----------------->"+fragment.getClass().getSimpleName()+"---"+fragments.size());
-            }
             if (fragments.size() > 0) {
                 Fragment fragment = fragments.get(fragments.size() - 1);
-//            Log.i("fragment---onKeyDown---->",fragment.getClass().getSimpleName());
                 Fragment shopPaymentSuccessFragmen=getSupportFragmentManager().findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
                 Fragment shopPaymentFailFragment=getSupportFragmentManager().findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
 

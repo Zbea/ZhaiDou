@@ -175,7 +175,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         mEmailView=(EditText)view.findViewById(R.id.tv_email);
         mEmailView.setText(strEmail);
         mEmailView.addTextChangedListener(textWatcher);
-        emailDelete=(ImageView)findViewById(R.id.emailDelete);
+        emailDelete=(ImageView)view.findViewById(R.id.emailDelete);
         emailDelete.setOnClickListener(this);
         if (strEmail!=null)
             if (strEmail.length()>0)
