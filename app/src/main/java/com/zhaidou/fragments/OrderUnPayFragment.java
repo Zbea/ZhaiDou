@@ -97,11 +97,8 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                         mEmptyView.setVisibility(View.VISIBLE);
                         loadingView.setVisibility(View.VISIBLE);
                     }
-                    ToolUtils.setLog("count:"+count);
-                    ToolUtils.setLog("orders.size():"+orders.size());
                     if (count!=orders.size())
                     {
-                        ToolUtils.setLog("执行刷新");
                         Intent intent=new Intent(ZhaiDou.IntentRefreshUnPayTag);
                         mContext.sendBroadcast(intent);
                     }
@@ -381,9 +378,9 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                     mTimerBtn.setBackgroundResource(R.drawable.btn_no_click_selector);
                     item.setStatus(ZhaiDou.STATUS_UNPAY + "");
                     item.setOver_at(0);//剩余时间
-                    //刷新代付款数量显示
-                    Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
-                    mContext.sendBroadcast(intent);
+//                    //刷新代付款数量显示
+//                    Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
+//                    mContext.sendBroadcast(intent);
                 }
             }
             else {
@@ -392,9 +389,9 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                 mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
                 mTimerBtn.setBackgroundResource(R.drawable.btn_no_click_selector);
                 item.setOver_at(0);//剩余时间
-                //刷新代付款数量显示
-                Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
-                mContext.sendBroadcast(intent);
+//                //刷新代付款数量显示
+//                Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
+//                mContext.sendBroadcast(intent);
             }
 
             mHashMap.put(position, convertView);

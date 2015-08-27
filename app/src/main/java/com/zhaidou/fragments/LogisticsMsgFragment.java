@@ -16,11 +16,13 @@ import android.widget.ExpandableListView;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LogisticsMsgFragment extends BaseFragment {
     private static final String ARG_TYPE = "type";
     private static final String ARG_NUMBER = "number";
 
-    // TODO: Rename and change types of parameters
     private String mType;
     private String mNumber;
 
@@ -28,6 +30,7 @@ public class LogisticsMsgFragment extends BaseFragment {
 
     private Context context;
     private WebView mWebView;
+
 
     public static LogisticsMsgFragment newInstance(String type, String number) {
         LogisticsMsgFragment fragment = new LogisticsMsgFragment();
@@ -38,7 +41,6 @@ public class LogisticsMsgFragment extends BaseFragment {
         return fragment;
     }
     public LogisticsMsgFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -67,7 +69,7 @@ public class LogisticsMsgFragment extends BaseFragment {
 //        mWebView.setHorizontalScrollbarOverlay(false);
 //        mWebView.setHorizontalFadingEdgeEnabled(false);
 //        mWebView.setInitialScale(1);
-        String url="http://m.kuaidi100.com/index_all.html?type="+(TextUtils.isEmpty(mType)?"huitongkuaidi":mType)+"&postid="+(TextUtils.isEmpty(mNumber)?"50109307408462":mNumber)+"#result";
+        String url="http://m.kuaidi100.com/index_all.html?type="+(TextUtils.isEmpty(mType)?"huitongkuaidi":mType)+"&postid="+mNumber+"#result";
         mWebView.loadUrl(url);
 
         Log.i("url------------>",url);
