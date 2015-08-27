@@ -398,7 +398,7 @@ public class LoginFragment1 extends BaseFragment implements View.OnClickListener
     }
 
     @Override
-    public void onComplete(final Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
+    public void onComplete(final Platform platform, int i,final HashMap<String, Object> stringObjectHashMap) {
         Log.i("onComplete----->",platform.getName()+"---"+i);
 //        Log.i("stringObjectHashMap",stringObjectHashMap.toString());
         String plat =platform.getName();
@@ -407,7 +407,11 @@ public class LoginFragment1 extends BaseFragment implements View.OnClickListener
         Log.i("getUserIcon",platform.getDb().getUserIcon());
         Log.i("getUserName",platform.getDb().getUserName());
         Map<String,String> params =new HashMap<String, String>();
-        params.put("uid",platform.getDb().getUserId());
+        if ("weixin".equalsIgnoreCase(provider)){
+            params.put("uid",stringObjectHashMap.get("unionid")+"");
+        }else {
+            params.put("uid",platform.getDb().getUserId());
+        }
         params.put("provider",provider);
         params.put("nick_name",platform.getDb().getUserName());
 
@@ -432,7 +436,11 @@ public class LoginFragment1 extends BaseFragment implements View.OnClickListener
                     Map<String,String> registers = new HashMap<String, String>();
                     registers.put("user[email]",email);
                     registers.put("user[nick_name]",platform.getDb().getUserName());
-                    registers.put("user[uid]",platform.getDb().getUserId());
+                    if ("weixin".equalsIgnoreCase(provider)){
+                        registers.put("uid",stringObjectHashMap.get("unionid")+"");
+                    }else {
+                        registers.put("uid",platform.getDb().getUserId());
+                    }
                     registers.put("user[provider]",provider);
                     registers.put("user[agreed]",true+"");
                     if ("tqq".equalsIgnoreCase(provider)){//http://www.zhaidou.com/uploads/user/avatar/77069/thumb_f713f712d202b1ecab67497877401835.png

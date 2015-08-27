@@ -476,7 +476,11 @@ import cn.sharesdk.wechat.friends.Wechat;
 //        Log.i("getUserIcon","");//platform.getDb().getUserIcon()
         Log.i("getUserName",platform.getDb().getUserName());
         Map<String,String> params =new HashMap<String, String>();
-        params.put("uid",platform.getDb().getUserId());
+        if ("weixin".equalsIgnoreCase(provider)){
+            params.put("uid",stringObjectHashMap.get("unionid")+"");
+        }else {
+            params.put("uid",platform.getDb().getUserId());
+        }
         params.put("provider",provider);
 
         params.put("nick_name",platform.getDb().getUserName());
@@ -495,7 +499,11 @@ import cn.sharesdk.wechat.friends.Wechat;
                     Map<String,String> registers = new HashMap<String, String>();
                     registers.put("user[email]",email);
                     registers.put("user[nick_name]",nick);
-                    registers.put("user[uid]",platform.getDb().getUserId());
+                    if ("weixin".equalsIgnoreCase(provider)){
+                        registers.put("uid",stringObjectHashMap.get("unionid")+"");
+                    }else {
+                        registers.put("uid",platform.getDb().getUserId());
+                    }
                     registers.put("user[provider]",provider);
                     Log.i("provider---------------->",provider);
                     if ("tqq".equalsIgnoreCase(provider)){//http://www.zhaidou.com/uploads/user/avatar/77069/thumb_f713f712d202b1ecab67497877401835.png

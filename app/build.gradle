@@ -10,6 +10,20 @@ android {
         targetSdkVersion 19
         versionCode 35
         versionName "2.2.0"
+        manifestPlaceholders = [ UMENG_CHANNEL_VALUE:"default_channel" ]
+    }
+    productFlavors {
+        default_channel{"default_channel"}
+        wandoujia{"wandoujia"}
+        _360{"_360"}
+        yingyongbao{"yingyongbao"}
+        xiaomi{"xiaomi"}
+        baidu{"baidu"}
+        huawei{"huawei"}
+        jifeng{"jifeng"}
+    }
+    productFlavors.all { flavor ->
+        flavor.manifestPlaceholders = [ UMENG_CHANNEL_VALUE:name ]
     }
     buildTypes {
         release {
