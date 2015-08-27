@@ -417,7 +417,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void onBackClick(Fragment fragment) {
-        Log.i("ItemDetailActivity--fragment----->", fragment.getClass().getSimpleName());
+        Log.i("ItemDetailActivity--fragment----->",fragment.getClass().getSimpleName());
         webView.reload();
     }
 

@@ -10,6 +10,9 @@
         android:name=".ZDApplication"
         android:label="@string/app_name"
         android:theme="@style/app_theme">
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="${UMENG_CHANNEL_VALUE}" />
 
         <activity
             android:name=".WelcomePage"
