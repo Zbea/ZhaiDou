@@ -43,11 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A simple {@link android.support.v4.app.Fragment} subclass.
- * Use the {@link com.zhaidou.fragments.AddrSelectFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class AddrSelectFragment extends BaseFragment implements View.OnClickListener
 {
 
