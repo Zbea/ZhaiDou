@@ -351,6 +351,36 @@
         </LinearLayout>
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/ll_recommend"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:background="@drawable/item_click_selector"
+                android:layout_height="40dp">
+                <ImageView
+                    android:layout_marginLeft="20dp"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:scaleType="fitXY"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/icon_profile"/>
+                <com.zhaidou.view.TypeFaceTextView
+                    android:paddingLeft="10dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/text_main_color"
+                    android:text="精品推荐"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleType="center"
+                    android:layout_gravity="center_vertical"
+                    android:paddingRight="15dp"
+                    android:src="@drawable/icon_arrow_right"/>
+            </LinearLayout>
+
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/bt_logout"
                 android:layout_width="match_parent"
