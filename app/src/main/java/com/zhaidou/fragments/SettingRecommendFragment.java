@@ -89,6 +89,7 @@ public class SettingRecommendFragment extends BaseFragment {
         if (parent != null) {
             parent.removeView(mView);
         }
+
         return mView;
     }
 
