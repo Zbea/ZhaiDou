@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/page_bg"
     android:orientation="vertical">
 
 
@@ -10,6 +11,43 @@
         android:layout_height="wrap_content"
         layout="@layout/head_style_page"
         ></include>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:scrollbars="none"
+        android:listSelector="@color/transparent"
+        android:divider="@null"></ListView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="10dp"
+        android:layout_weight="0.0001"
+        android:orientation="vertical">
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:textColor="@color/text_gary_color"
+            android:text="深圳市雅革科技有限公司"/>
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:layout_marginTop="5dp"
+            android:textSize="13sp"
+            android:textColor="@color/text_gary_color"
+            android:text="APP名称深圳市雅革科技有限公司"/>
+
+        </LinearLayout>
 
 
 

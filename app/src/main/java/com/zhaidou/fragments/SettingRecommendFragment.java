@@ -45,11 +45,7 @@ public class SettingRecommendFragment extends BaseFragment {
     private String mIndex;
     private Context mContext;
     private ListView mListView;
-    private List<GoodInfo> goodInfos;
-    private RequestQueue mRequestQueue;
-    private static final int UPDATE_GOOD_INFO = 0;
-    private LinearLayout mImageContainer;
-    private LinearLayout mDetailContainer;
+
 
 
 

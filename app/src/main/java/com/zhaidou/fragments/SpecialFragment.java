@@ -48,19 +48,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.WeakHashMap;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SpecialFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
- */
+
 public class SpecialFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<ListView>{
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_CATEGORY = "category";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private Category mCategory;
 
@@ -106,15 +98,6 @@ public class SpecialFragment extends BaseFragment implements PullToRefreshBase.O
             }
         }
     };
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param category Parameter 2.
-     * @return A new instance of fragment SpecialFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static SpecialFragment newInstance(String param1, Category category) {
         SpecialFragment fragment = new SpecialFragment();
         Bundle args = new Bundle();
@@ -124,7 +107,6 @@ public class SpecialFragment extends BaseFragment implements PullToRefreshBase.O
         return fragment;
     }
     public SpecialFragment() {
-        // Required empty public constructor
     }
 
     @Override
