@@ -78,6 +78,7 @@ public class HomeListAdapter extends BaseAdapter
 
         title.setText(article.getTitle());
         articleViews.setText(article.getReviews() + "");
+        Log.i("article.getImg_url()----->",article.getImg_url());
         ToolUtils.setImageCacheUrl(article.getImg_url(), cover);
 
         SharedPreferences editor = context.getSharedPreferences(String.valueOf(article.getId()), 0);

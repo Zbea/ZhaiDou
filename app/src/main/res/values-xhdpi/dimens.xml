@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="home_item_dimen">70dp</dimen>
+    <dimen name="home_item_dimen">155dp</dimen>
     <dimen name="goods_height_dimen">200dp</dimen>
 </resources>

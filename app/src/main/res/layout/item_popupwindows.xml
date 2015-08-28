@@ -56,7 +56,7 @@
             android:layout_marginRight="30dp"
             android:horizontalSpacing="5dp"
             android:verticalSpacing="10dp"
-            android:numColumns="4"/>
+            android:numColumns="3"/>
         </LinearLayout>
     <RelativeLayout
         android:layout_width="match_parent"

@@ -1,6 +1,6 @@
 package com.zhaidou.fragments;
 
-import android.app.Dialog;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -85,7 +85,6 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
         return fragment;
     }
     public HomeCategoryFragment() {
-        // Required empty public constructor
     }
 
     @Override

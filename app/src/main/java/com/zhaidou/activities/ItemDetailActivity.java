@@ -170,9 +170,9 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
             {
                 if ("lottery".equalsIgnoreCase(from)){
                     if (!TextUtils.isEmpty(token)){
-                        webView.loadUrl("javascript:ReceiveUserInfo("+userId+", '"+token+"',"+getDeviceId()+",'"+nickName+"')");
+                        webView.loadUrl("javascript:ReceiveUserInfo("+userId+", '"+token+"','"+getDeviceId()+"','"+nickName+"')");
                     }else {
-                        webView.loadUrl("javascript:ReceiveUserInfo("+userId+", '"+""+"',"+getDeviceId()+",'"+nickName+"')");
+                        webView.loadUrl("javascript:ReceiveUserInfo("+userId+", '"+""+"','"+getDeviceId()+"','"+nickName+"')");
                     }
 
                 }else if ("product".equalsIgnoreCase(from)){
@@ -358,7 +358,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
         if ("lottery".equalsIgnoreCase(from)){
             Log.i("onRegisterOrLoginSuccess--lottery----------->","onPageFinished"+"------"+token);
-            webView.loadUrl("javascript:ReceiveUserInfo("+user.getId()+", '"+user.getAuthentication_token()+"',"+getDeviceId()+",'"+user.getNickName()+"')");
+            webView.loadUrl("javascript:ReceiveUserInfo("+user.getId()+", '"+user.getAuthentication_token()+"','"+getDeviceId()+"','"+user.getNickName()+"')");
         }else if ("product".equalsIgnoreCase(from)){
             webView.loadUrl("javascript:ReceiveUserInfo("+user.getId()+", '"+user.getAuthentication_token()+"')");
         }
