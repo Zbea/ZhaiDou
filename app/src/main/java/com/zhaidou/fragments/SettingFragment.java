@@ -119,6 +119,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         versionBtn.setOnClickListener(this);
 
         view.findViewById(R.id.rl_back).setOnClickListener(this);
+        view.findViewById(R.id.ll_recommend).setOnClickListener(this);
         view.findViewById(R.id.ll_profile).setOnClickListener(this);
         view.findViewById(R.id.ll_competition).setOnClickListener(this);
         view.findViewById(R.id.ll_bbs_question).setOnClickListener(this);
@@ -154,6 +155,10 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
             case R.id.ll_collocation:
                 ImageBgFragment fragment= ImageBgFragment.newInstance("豆搭教程");
                 ((MainActivity)getActivity()).navigationToFragment(fragment);
+                break;
+            case R.id.ll_recommend:
+                SettingRecommendFragment settingRecommendFragment= SettingRecommendFragment.newInstance("","");
+                ((MainActivity)getActivity()).navigationToFragment(settingRecommendFragment);
                 break;
             case R.id.ll_add_v:
                 ImageBgFragment addVFragment= ImageBgFragment.newInstance("如何加V");

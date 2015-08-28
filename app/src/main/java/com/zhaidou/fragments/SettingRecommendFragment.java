@@ -10,6 +10,7 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -20,13 +21,17 @@ import com.android.volley.toolbox.Volley;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.adapter.RecommendAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.GoodDetail;
 import com.zhaidou.model.GoodInfo;
+import com.zhaidou.model.RecommendItem;
 import com.zhaidou.utils.PixelUtil;
+import com.zhaidou.view.TypeFaceTextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,10 +50,33 @@ public class SettingRecommendFragment extends BaseFragment {
     private String mIndex;
     private Context mContext;
     private ListView mListView;
+    private TextView backBtn,headTitle;
+    private List<RecommendItem> lists=new ArrayList<RecommendItem>();
 
 
+    private AdapterView.OnItemClickListener onItemClickListener=new AdapterView.OnItemClickListener()
+    {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+        {
+
+        }
+    };
 
 
+    private View.OnClickListener onClickListener=new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            switch (v.getId())
+            {
+                case R.id.back_btn:
+                    ((MainActivity) getActivity()).popToStack(SettingRecommendFragment.this);
+                    break;
+            }
+        }
+    };
 
     public static SettingRecommendFragment newInstance(String page, String index) {
         SettingRecommendFragment fragment = new SettingRecommendFragment();
@@ -89,13 +117,44 @@ public class SettingRecommendFragment extends BaseFragment {
         return mView;
     }
 
-
+    /**
+     * 初始化
+     */
     private void initView() {
+        backBtn = (TextView) mView.findViewById(R.id.back_btn);
+        backBtn.setOnClickListener(onClickListener);
+        headTitle = (TextView) mView.findViewById(R.id.title_tv);
+        headTitle.setText(R.string.setting_recommend_txt);
+        initDate();
 
+        mListView=(ListView)mView.findViewById(R.id.recommendList);
+        RecommendAdapter recommendAdapter=new RecommendAdapter(mContext,lists);
+        mListView.setAdapter(recommendAdapter);
+        mListView.setOnItemClickListener(onItemClickListener);
 
     }
 
+    /**
+     * 初始化数据
+     */
+    private void initDate()
+    {
+        lists.clear();
+        RecommendItem recommendItem=new RecommendItem();
+        recommendItem.title="QQ空间";
+        recommendItem.info="QQ空间，超过6亿用户使用的社交网络。致力于帮助用户随时随地“分享生活，留住感动”。您可以使用手机查看好友动态、与好友互动，上传照片、写说说、写日志、签到、送礼；更有“玩吧”汇聚众多热门游戏，满足各种娱乐需求。";
+        recommendItem.imageUrl="http://www.anzhi.com/icon.php?u=ZGF0YTJ8aWNvbnwyMDE0MDh8MTR8b2Qxc0MzQjlDa2VTcEt3aEMxeDhqbmk4NTdxYWJjc1Z0Rmlp";
+        recommendItem.appUrl="http://www.anzhi.com/soft_2319051.html";
+        lists.add(recommendItem);
 
+        RecommendItem recommendItem1=new RecommendItem();
+        recommendItem1.title="宅豆家具";
+        recommendItem1.info="亲爱的小主，宅豆APP，献给热爱生活热爱家居的你！";
+        recommendItem1.imageUrl="http://www.anzhi.com/icon.php?u=ZGF0YTN8aWNvbnwyMDE1MDd8MjB8b2Qxc0MzQjJHRW1WcFp4aGJGRjZqSGk1NzlXZEFOSlg5RS91cHY4PQ==";
+        recommendItem1.appUrl="http://www.anzhi.com/soft_2301571.html";
+        lists.add(recommendItem1);
+
+    }
 
 
 }

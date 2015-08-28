@@ -78,7 +78,6 @@ public abstract class BaseListAdapter<E> extends BaseAdapter {
 
 	@Override
 	public long getItemId(int arg0) {
-		// TODO Auto-generated method stub
 		return arg0;
 	}
 
