@@ -1,12 +1,9 @@
 
 package com.zhaidou.activities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.telephony.TelephonyManager;
@@ -15,7 +12,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceResponse;
@@ -29,7 +25,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.sdk.android.callback.CallbackContext;
-import com.android.volley.AuthFailureError;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
@@ -48,7 +43,6 @@ import com.zhaidou.view.CustomProgressWebview;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 
 public class ItemDetailActivity extends BaseActivity implements View.OnClickListener,
         RegisterFragment.RegisterOrLoginListener,
@@ -268,7 +262,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         }
         if (!TextUtils.isEmpty(coverUrl)) {
             ToolUtils.setImageCacheUrl(coverUrl, mHeaderView);
-            ToolUtils.setImageCacheUrl("drawable://"+R.drawable.icon_item_details_shadow,iv_shadow);
+//            ToolUtils.setImageCacheUrl("drawable://"+R.drawable.icon_item_details_shadow,iv_shadow);
             mTitleView.setVisibility(View.GONE);
             mHeaderText.setText(title);
             imageView.setVisibility(View.VISIBLE);
