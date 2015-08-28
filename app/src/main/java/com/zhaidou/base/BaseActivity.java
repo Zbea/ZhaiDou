@@ -11,7 +11,6 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
@@ -41,11 +40,11 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
             RegisterFragment registerFragment = (RegisterFragment) fragment;
             registerFragment.setRegisterOrLoginListener(this);
         }
-        if ("MainActivity".equalsIgnoreCase(this.getClass().getSimpleName())) {
-            Log.i("MainActivity---->", "this.getClass().getSimpleName()------------" + fragment.getClass().getSimpleName());
+        if ("MainActivity".equalsIgnoreCase(((Object)this).getClass().getSimpleName())) {
+            Log.i("MainActivity---->", "this.getClass().getSimpleName()------------" + ((Object)fragment).getClass().getSimpleName());
             mChildContainer.setVisibility(View.VISIBLE);
         }
-        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, fragment, fragment.getClass().getSimpleName())
+        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, fragment, ((Object)fragment).getClass().getSimpleName())
                 .addToBackStack(null).commitAllowingStateLoss();
     }
 
@@ -58,9 +57,9 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
         fragmentManager.popBackStack();
         fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
 
-        Log.i("fragment---->", fragment.getClass().getSimpleName());
+        Log.i("fragment---->", ((Object)fragment).getClass().getSimpleName());
         if (fragment != null && fragment instanceof LoginFragment) {
-            if ("MainActivity".equalsIgnoreCase(this.getClass().getSimpleName())) {
+            if ("MainActivity".equalsIgnoreCase(((Object)this).getClass().getSimpleName())) {
                 mChildContainer.setVisibility(View.GONE);
             }
         }
@@ -81,7 +80,7 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
         if (fragment instanceof RegisterFragment) {
             popToStack(fragment);
         }
-        if ("MainActivity".equalsIgnoreCase(this.getClass().getSimpleName())) {
+        if ("MainActivity".equalsIgnoreCase(((Object)this).getClass().getSimpleName())) {
             if (persoanlFragment == null) {
                 persoanlFragment = PersonalFragment.newInstance("", "");
                 persoanlFragment.onAttach(this);
@@ -91,8 +90,8 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
             MainActivity mainActivity = (MainActivity) this;
             mainActivity.selectFragment(currentFragment, persoanlFragment);
             mainActivity.setButton(personalButton);
-        } else if ("ItemDetailActivity".equalsIgnoreCase(this.getClass().getSimpleName())) {
-            Log.i("ItemDetailActivity-------------->", this.getClass().getSimpleName());
+        } else if ("ItemDetailActivity".equalsIgnoreCase(((Object)this).getClass().getSimpleName())) {
+            Log.i("ItemDetailActivity-------------->", ((Object)this).getClass().getSimpleName());
             this.user = user;
             Log.i("from-------------->", from);
             if ("lottery".equalsIgnoreCase(from)) {
