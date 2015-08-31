@@ -14,9 +14,7 @@ import com.zhaidou.utils.ToolUtils;
 
 import java.util.List;
 
-/**
- * Created by wangclark on 15/6/10.
- */
+
 public class RecommendAdapter extends BaseListAdapter<RecommendItem> {
 
 

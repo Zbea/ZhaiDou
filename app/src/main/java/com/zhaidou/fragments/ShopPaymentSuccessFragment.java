@@ -1,6 +1,7 @@
 package com.zhaidou.fragments;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -91,7 +92,9 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
                     break;
                 case R.id.tv_mall:
                     ToolUtils.setLog("前往商城");
-                    colseFragment(ShopPaymentSuccessFragment.this);
+//                    colseFragment(ShopPaymentSuccessFragment.this);
+                    ((MainActivity)mContext).allfragment();
+                    ((MainActivity)mContext).toHomeFragment();
                     break;
                 case R.id.tv_order_detail:
                     ToolUtils.setLog("前往订单");

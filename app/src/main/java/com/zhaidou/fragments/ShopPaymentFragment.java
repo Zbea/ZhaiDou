@@ -1,5 +1,6 @@
 package com.zhaidou.fragments;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,10 +15,12 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alipay.sdk.app.PayTask;
 import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -175,7 +178,7 @@ public class ShopPaymentFragment extends BaseFragment
             switch (view.getId())
             {
                 case R.id.back_btn:
-                    ((MainActivity) getActivity()).popToStack(ShopPaymentFragment.this);
+                    backDialog();
                     break;
                 case R.id.paymentBtn:
 //                    long current = System.currentTimeMillis();
@@ -213,11 +216,9 @@ public class ShopPaymentFragment extends BaseFragment
         fragment.setArguments(args);
         return fragment;
     }
-
     public ShopPaymentFragment()
     {
     }
-
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -369,6 +370,36 @@ public class ShopPaymentFragment extends BaseFragment
     }
 
     /**
+     * 返回弹窗确认
+     */
+    public void backDialog()
+    {
+        final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
+        View dialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
+        TextView textView = (TextView) dialogView.findViewById(R.id.tv_msg);
+        textView.setText("确认要放弃支付?");
+        TextView cancelTv = (TextView) dialogView.findViewById(R.id.cancelTv);
+        cancelTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        TextView okTv = (TextView) dialogView.findViewById(R.id.okTv);
+        okTv.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                ((MainActivity) getActivity()).popToStack(ShopPaymentFragment.this);
+            }
+        });
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.setCancelable(true);
+        dialog.addContentView(dialogView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        dialog.show();    }
+
+    /**
      * 付款
      */
     private void payment()
@@ -502,8 +533,6 @@ public class ShopPaymentFragment extends BaseFragment
             case -2://取消支付
                 Log.i("----->", "取消支付");
                 ShowToast("取消支付");
-//                ShopPaymentFailFragment shopPaymentFailFragment1=ShopPaymentFailFragment.newInstance(mOrderId,mAmount,mFare,initTime,mOrder);
-//                ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment1);
                 break;
             default:
                 break;
@@ -516,7 +545,6 @@ public class ShopPaymentFragment extends BaseFragment
         {
             mOrder.setStatus("" + ZhaiDou.STATUS_PAYED);
             mOrder.setOver_at(0);
-//            orderListener.onOrderStatusChange(mOrder);
         }
 
     }
@@ -552,11 +580,8 @@ public class ShopPaymentFragment extends BaseFragment
         System.out.println("ShopPaymentFragment.onDestroyView");
         if (orderListener != null)
         {
-//            if (flags!=2)
-//            {
             mOrder.setOver_at(initTime);
             orderListener.onOrderStatusChange(mOrder);
-//            }
         }
         if (mTimer != null)
         {
@@ -566,6 +591,7 @@ public class ShopPaymentFragment extends BaseFragment
         }
         super.onDestroyView();
     }
+
 
     public void setOrderListener(Order.OrderListener orderListener)
     {

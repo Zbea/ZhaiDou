@@ -38,6 +38,7 @@ import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -53,7 +54,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -480,7 +483,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        System.out.println("MainActivity.onKeyDown");
         FragmentManager manager = getSupportFragmentManager();
         int num = manager.getBackStackEntryCount();
         if (num == 0) {
@@ -494,13 +496,12 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 return true;
             }
         } else {
-            System.out.println("keyCode = [" + keyCode + "], event = [" + event + "]");
             List<Fragment> fragments = manager.getFragments();
             if (fragments.size() > 0) {
                 Fragment fragment = fragments.get(fragments.size() - 1);
                 Fragment shopPaymentSuccessFragmen=getSupportFragmentManager().findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
                 Fragment shopPaymentFailFragment=getSupportFragmentManager().findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
-
+                Fragment shopPaymentFragment=getSupportFragmentManager().findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
                 if ((shopPaymentSuccessFragmen != null && shopPaymentSuccessFragmen instanceof ShopPaymentSuccessFragment )) {
                     popToStack(shopPaymentSuccessFragmen);
                     return true;
@@ -508,10 +509,48 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     popToStack(shopPaymentFailFragment);
                     return true;
                 }
+                else if(shopPaymentFragment!=null&& shopPaymentFragment instanceof ShopPaymentFragment)
+                {
+                    BackPaymentDialog(shopPaymentFragment);
+                    return true;
+                }
+
             }
 
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    /**
+     * 收银台返回弹窗处理
+     * @param shopPaymentFragment
+     */
+    private void BackPaymentDialog(final Fragment shopPaymentFragment)
+    {
+        final Dialog dialog = new Dialog(this, R.style.custom_dialog);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_custom_collect_hint, null);
+        TextView textView = (TextView) dialogView.findViewById(R.id.tv_msg);
+        textView.setText("确认要放弃支付?");
+        TextView cancelTv = (TextView) dialogView.findViewById(R.id.cancelTv);
+        cancelTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        TextView okTv = (TextView) dialogView.findViewById(R.id.okTv);
+        okTv.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                popToStack(shopPaymentFragment);
+            }
+        });
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.setCancelable(true);
+        dialog.addContentView(dialogView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        dialog.show();
     }
 
     public void toHomeFragment() {
@@ -522,7 +561,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     /**
      * 清除除开首页的全部fragment
      */
-    private void allfragment()
+    public void allfragment()
     {
         FragmentManager manager=getSupportFragmentManager();
         List<Fragment> fragments = manager.getFragments();
