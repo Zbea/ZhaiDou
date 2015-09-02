@@ -92,7 +92,6 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
                     break;
                 case R.id.tv_mall:
                     ToolUtils.setLog("前往商城");
-//                    colseFragment(ShopPaymentSuccessFragment.this);
                     ((MainActivity)mContext).allfragment();
                     ((MainActivity)mContext).toHomeFragment();
                     break;

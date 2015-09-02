@@ -174,6 +174,7 @@ public class SettingRecommendFragment extends BaseFragment {
      */
     private void initDate()
     {
+        mDialog.dismiss();
         lists.clear();
         RecommendItem recommendItem=new RecommendItem();
         recommendItem.title="QQ空间";

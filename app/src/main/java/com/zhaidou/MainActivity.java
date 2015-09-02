@@ -554,8 +554,18 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     }
 
     public void toHomeFragment() {
-        selectFragment(currentFragment, utilityFragment);
-        setButton(homeButton);
+        if (currentFragment instanceof HomeFragment)
+        {
+            ToolUtils.setLog("3333333333");
+            return;
+        }
+        else
+        {
+            ToolUtils.setLog("44444444");
+            if (utilityFragment!=null)
+                selectFragment(currentFragment, utilityFragment);
+            setButton(homeButton);
+        }
     }
 
     /**
@@ -567,19 +577,10 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         List<Fragment> fragments = manager.getFragments();
         for (Fragment fragment:fragments)
         {
-            if (fragment instanceof HomeFragment ||fragment instanceof PersonalFragment||fragment instanceof CategoryFragment1||fragment instanceof StrategyFragment)
-            {
-                break;
-            }
+            ToolUtils.setLog("1111111111111");
             manager.popBackStack();
             manager.beginTransaction().remove(fragment).commit();
         }
-    }
-
-    public void replaceFragment(Fragment fragment) {
-        SettingFragment settingFragment = SettingFragment.newInstance("", "");
-        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, settingFragment).addToBackStack(null).show(settingFragment).commit();
-        mChildContainer.setVisibility(View.VISIBLE);
     }
 
     public void hideTip(int v) {

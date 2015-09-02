@@ -5,6 +5,8 @@
     <dimen name="default_image_view_height">140dp</dimen>
     <dimen name="default_margin">10dp</dimen>
 
+
+    <dimen name="header_height_dimen">50dp</dimen>
     <dimen name="home_item_dimen">150dp</dimen>
     <dimen name="goods_height_dimen">240dp</dimen>
     <dimen name="image_height_dimen">113dp</dimen>
@@ -13,6 +15,10 @@
     <dimen name="home_tips_dimen">50dp</dimen>
     <dimen name="btn_height_dimen">42dp</dimen>
     <dimen name="dialog_width_dimen">250dp</dimen>
+
+    <dimen name="account_image_width_dimen">75dp</dimen>
+    <dimen name="account_text_txt">16sp</dimen>
+    <dimen name="account_text_info_txt">14sp</dimen>
 
     <!--actionbar-->
     <dimen name="base_action_bar_height">50.0dip</dimen>

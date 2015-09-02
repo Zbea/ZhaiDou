@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="header_height_dimen">50dp</dimen>
     <dimen name="home_item_dimen">150dp</dimen>
     <dimen name="goods_height_dimen">240dp</dimen>
     <dimen name="image_height_dimen">113dp</dimen>
@@ -7,4 +8,8 @@
     <dimen name="goods_bottom_height_dimen">60dp</dimen>
     <dimen name="home_tips_dimen">50dp</dimen>
     <dimen name="btn_height_dimen">42dp</dimen>
+
+    <dimen name="account_image_width_dimen">75dp</dimen>
+    <dimen name="account_text_txt">15sp</dimen>
+    <dimen name="account_text_info_txt">12sp</dimen>
     </resources>

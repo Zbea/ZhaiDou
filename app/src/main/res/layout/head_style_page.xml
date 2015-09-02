@@ -6,7 +6,7 @@
     <RelativeLayout
         android:id="@+id/rl_back"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/header_height_dimen"
         android:background="#39495d">
         <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/back_btn"

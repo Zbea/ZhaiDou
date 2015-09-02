@@ -448,7 +448,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                Log.i("volleyError---------->", volleyError.toString());
             }
         });
         if (mRequestQueue == null)
@@ -479,11 +478,11 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         if (userId != -1) {
-            getUserDetail();
-            getUserInfo();
-            FetchCollectData();
-            FetchCollocationData();
-            FetchUnPayCount(UPDATE_UNPAY_COUNT);
+//            getUserDetail();
+//            getUserInfo();
+//            FetchCollectData();
+//            FetchCollocationData();
+//            FetchUnPayCount(UPDATE_UNPAY_COUNT);
         }
     }
 
