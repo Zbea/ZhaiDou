@@ -153,6 +153,8 @@ public class ShopPaymentFragment extends BaseFragment
                                 Toast.LENGTH_SHORT).show();
 //                        ShopPaymentFailFragment shopPaymentFailFragment=ShopPaymentFailFragment.newInstance(mOrderId,mAmount,mFare,initTime,mOrder);
 //                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
+                        ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, 0, mOrder);
+                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                     }
                     break;
                 case SDK_CHECK_FLAG:
