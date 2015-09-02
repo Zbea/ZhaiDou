@@ -580,8 +580,14 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         List<Fragment> fragments = manager.getFragments();
         for (Fragment fragment:fragments)
         {
-            manager.popBackStack();
-            manager.beginTransaction().remove(fragment).commit();
+            if (fragment instanceof HomeFragment ||fragment instanceof PersonalFragment||fragment instanceof StrategyFragment||fragment instanceof CategoryFragment1||fragment instanceof DiyFragment)
+            {
+            }
+            else
+            {
+                manager.popBackStack();
+                manager.beginTransaction().remove(fragment).commit();
+            }
         }
     }
 
