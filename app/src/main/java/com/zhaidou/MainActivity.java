@@ -20,7 +20,6 @@ import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.PersonalFragment;
 import com.zhaidou.fragments.PersonalMainFragment;
 import com.zhaidou.fragments.RegisterFragment;
-import com.zhaidou.fragments.SettingFragment;
 import com.zhaidou.fragments.ShopPaymentFailFragment;
 import com.zhaidou.fragments.ShopPaymentFragment;
 import com.zhaidou.fragments.ShopPaymentSuccessFragment;
@@ -71,7 +70,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  */
@@ -421,11 +419,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         return isLogin;
     }
 
-
-    public interface PhotoSelectListener {
-        public void onPhotoSelect();
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         CallbackContext.onActivityResult(requestCode, resultCode, data);
@@ -580,8 +573,9 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         List<Fragment> fragments = manager.getFragments();
         for (Fragment fragment:fragments)
         {
-            manager.popBackStack();
-            manager.beginTransaction().remove(fragment).commit();
+            System.out.println("MainActivity.allfragment-------->"+fragment.getClass().getSimpleName());
+//            manager.popBackStack();
+//            manager.beginTransaction().remove(fragment).commit();
         }
     }
 
