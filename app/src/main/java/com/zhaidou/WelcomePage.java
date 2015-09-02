@@ -9,6 +9,8 @@ import android.view.KeyEvent;
 import android.view.Window;
 import android.widget.ImageView;
 
+import com.testin.agent.TestinAgent;
+
 /**
  * Created by roy on 15/7/22.
  */
@@ -22,6 +24,8 @@ public class WelcomePage extends Activity
         setContentView(R.layout.welcom_page);
 
         initView();
+        TestinAgent.init(this, "a6fa2001f0268f633bd007e5b0f118ca");
+        TestinAgent.setLocalDebug(true);
 
     }
 

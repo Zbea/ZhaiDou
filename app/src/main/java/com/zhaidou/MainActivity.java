@@ -18,7 +18,6 @@ import com.zhaidou.fragments.ElementListFragment;
 import com.zhaidou.fragments.HomeFragment;
 import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.PersonalFragment;
-import com.zhaidou.fragments.PersonalMainFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.fragments.SettingFragment;
 import com.zhaidou.fragments.ShopPaymentFailFragment;
@@ -68,7 +67,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  */
@@ -76,7 +74,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         StrategyFragment.OnFragmentInteractionListener,
         ElementListFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
         HomeFragment.OnFragmentInteractionListener, CategoryFragment1.OnFragmentInteractionListener,
-        PersonalMainFragment.OnFragmentInteractionListener, RegisterFragment.RegisterOrLoginListener {
+        RegisterFragment.RegisterOrLoginListener {
 
     private Fragment utilityFragment;
     private Fragment beautyHomeFragment;
