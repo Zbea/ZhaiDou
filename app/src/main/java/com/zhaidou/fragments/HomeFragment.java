@@ -220,6 +220,7 @@ public class HomeFragment extends BaseFragment implements
         }
     };
 
+
     /**
      * 广告轮播设置
      */
