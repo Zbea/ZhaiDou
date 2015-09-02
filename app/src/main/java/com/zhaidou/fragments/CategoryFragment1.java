@@ -60,7 +60,6 @@ public class CategoryFragment1 extends BaseFragment{
     List<Category> categoryList = new ArrayList<Category>();
 
     private RequestQueue mRequestQueue;
-    private AsyncImageLoader1 imageLoader;
     private CategoryExpandeAdapter categoryExpandeAdapter;
     private ExpandableListView expandableListView;
 
@@ -212,13 +211,6 @@ public class CategoryFragment1 extends BaseFragment{
                         String childUrl = childAvatar.optString("url");
                         String childThumb = childAvatar.optJSONObject("thumb").optString("url");
                         int childLevel =child.optInt("level");
-//                        Log.i("childId------->",childId+"");
-//                        Log.i("parentId------->",parentId+"");
-//                        Log.i("lft------->",lft+"");
-//                        Log.i("rgt------->",rgt+"");
-//                        Log.i("childName------->",childName+"");
-//                        Log.i("childUrl------->",childUrl+"");
-//                        Log.i("childThumb------->",childThumb+"");
                         childItem = new CategoryItem(childId,parentId,lft,rgt,childName,childUrl,childThumb,childLevel);
                         childList.add(childItem);
                     }

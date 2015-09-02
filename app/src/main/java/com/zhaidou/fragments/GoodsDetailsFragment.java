@@ -5,9 +5,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -31,6 +33,7 @@ import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -43,6 +46,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
@@ -51,6 +57,7 @@ import com.zhaidou.adapter.GoodsImageAdapter;
 import com.zhaidou.adapter.SpecificationAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
+import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.dialog.CustomToastDialog;
 import com.zhaidou.model.CartItem;
@@ -62,6 +69,7 @@ import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;
 import com.zhaidou.utils.CollectionUtils;
 import com.zhaidou.utils.NetworkUtils;
+import com.zhaidou.utils.PixelUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ChildGridView;
@@ -105,11 +113,7 @@ public class GoodsDetailsFragment extends BaseFragment {
     private Dialog mDialog;
     private GridView mGridView;
     private RequestQueue mRequestQueue;
-    private ViewPager mViewPager;
     private List<Fragment> fragments = new ArrayList<Fragment>();
-    private GoodsDetailsChildFragment goodsDetailsChildFragment;
-    private SaleServiceFragment saleServiceFragment;
-    private GoodsChildFragmentAdapter goodsChildFragmentAdapter;
 
     private ArrayList<GoodInfo> goodInfos = new ArrayList<GoodInfo>();
     private int mSpecificationSelectPosition = -1;
@@ -144,6 +148,12 @@ public class GoodsDetailsFragment extends BaseFragment {
     private ImageView goodsImage;
     private FrameLayout animation_viewGroup;
     private RadioGroup radioGroup;
+
+    private ListView mListView;
+    private GoodInfoAdapter mAdapter;
+    private LinearLayout mImageContainer;
+    private LinearLayout goodsImagesView;
+    private LinearLayout goodsInfoView;
     //动画时间
     private int AnimationDuration = 1000;
     //正在执行的动画数量
@@ -353,10 +363,14 @@ public class GoodsDetailsFragment extends BaseFragment {
         @Override
         public void onCheckedChanged(RadioGroup radioGroup, int i) {
             if (i == R.id.infoRb) {
-                mViewPager.setCurrentItem(0);
+               goodsImagesView.setVisibility(View.VISIBLE);
+                goodsInfoView.setVisibility(View.GONE);
+//                mViewPager.setCurrentItem(0);
             }
             if (i == R.id.afterSaleRb) {
-                mViewPager.setCurrentItem(1);
+                goodsImagesView.setVisibility(View.GONE);
+                goodsInfoView.setVisibility(View.VISIBLE);
+//                mViewPager.setCurrentItem(1);
             }
         }
     };
@@ -468,13 +482,8 @@ public class GoodsDetailsFragment extends BaseFragment {
     private void initView() {
         shareUrl = shareUrl + mIndex;
 
-
         shareBtn = (ImageView) mView.findViewById(R.id.share_iv);
         shareBtn.setOnClickListener(onClickListener);
-//        if (flags==1)//零元特卖不能分享
-//        {
-//            shareBtn.setVisibility(View.GONE);
-//        }
 
         loadingView = (LinearLayout) mView.findViewById(R.id.loadingView);
         nullNetView = (LinearLayout) mView.findViewById(R.id.nullNetline);
@@ -557,8 +566,6 @@ public class GoodsDetailsFragment extends BaseFragment {
         topBtn = (ImageView) mView.findViewById(R.id.goodsTop);
         topBtn.setOnClickListener(onClickListener);
 
-        mViewPager = (ViewPager) mView.findViewById(R.id.vp_goods_detail);
-
         radioGroup = (RadioGroup) mView.findViewById(R.id.goodsRG);
         radioGroup.setOnCheckedChangeListener(onCheckedChangeListener);
 
@@ -599,6 +606,20 @@ public class GoodsDetailsFragment extends BaseFragment {
 
 
                 }
+            }
+        });
+
+        goodsImagesView=(LinearLayout)mView.findViewById(R.id.goodInfoView);
+        goodsInfoView=(LinearLayout)mView.findViewById(R.id.goodInfo1View);
+
+        mListView = (ListView) mView.findViewById(R.id.lv_good_info);
+        mImageContainer = (LinearLayout) mView.findViewById(R.id.ll_img_container);
+
+        mView.findViewById(R.id.rl_qq_contact).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String url="mqqwpa://im/chat?chat_type=wpa&uin="+mContext.getResources().getString(R.string.QQ_Number);
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
             }
         });
 
@@ -692,16 +713,20 @@ public class GoodsDetailsFragment extends BaseFragment {
      * @param goodInfos
      */
     private void setChildFargment(GoodDetail detail, ArrayList<GoodInfo> goodInfos) {
-        fragments.removeAll(fragments);
-        goodsDetailsChildFragment = GoodsDetailsChildFragment.newInstance(detail, goodInfos);
-        saleServiceFragment = SaleServiceFragment.newInstance("", "");
-        fragments.add(goodsDetailsChildFragment);
-        fragments.add(saleServiceFragment);
-        goodsChildFragmentAdapter = new GoodsChildFragmentAdapter(getChildFragmentManager());
-        mViewPager.setOnPageChangeListener(onPageChange);
-        mViewPager.setAdapter(goodsChildFragmentAdapter);
-        mViewPager.setCurrentItem(0);
-
+        mAdapter = new GoodInfoAdapter(mContext, goodInfos);
+        mListView.setAdapter(mAdapter);
+        mImageContainer.removeAllViews();
+        if (detail.getImgs() != null) {
+            for (int i = 0; i < detail.getImgs().size(); i++) {
+                ImageView imageView = new ImageView(getActivity());
+                imageView.setImageResource(R.drawable.icon_loading_defalut);
+                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                imageView.setBackgroundColor(Color.parseColor("#ffffff"));
+                imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
+                ToolUtils.setImageCacheUrl(detail.getImgs().get(i),imageView);
+                mImageContainer.addView(imageView);
+            }
+        }
     }
 
     /**
@@ -1356,19 +1381,23 @@ public class GoodsDetailsFragment extends BaseFragment {
         super.onPause();
     }
 
-    private class GoodsChildFragmentAdapter extends FragmentPagerAdapter {
-        private GoodsChildFragmentAdapter(FragmentManager fm) {
-            super(fm);
+
+    public class GoodInfoAdapter extends BaseListAdapter<GoodInfo> {
+        public GoodInfoAdapter(Context context, List<GoodInfo> list) {
+            super(context, list);
         }
 
         @Override
-        public int getCount() {
-            return fragments.size();
-        }
-
-        @Override
-        public Fragment getItem(int i) {
-            return fragments.get(i);
+        public View bindView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null)
+                convertView = mInflater.inflate(R.layout.item_goods_info, null);
+            TextView tv_key = ViewHolder.get(convertView, R.id.tv_key);
+            tv_key.setMaxWidth(screenWidth / 2 - 20);
+            TextView tv_value = ViewHolder.get(convertView, R.id.tv_value);
+            GoodInfo goodInfo = getList().get(position);
+            tv_key.setText(goodInfo.getTitle());
+            tv_value.setText(goodInfo.getValue());
+            return convertView;
         }
     }
 }
