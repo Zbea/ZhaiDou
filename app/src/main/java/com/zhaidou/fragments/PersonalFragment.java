@@ -492,10 +492,11 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroyView()
+    {
         if (broadcastReceiver!=null)
-        getActivity().unregisterReceiver(broadcastReceiver);
-        super.onDestroy();
+            getActivity().unregisterReceiver(broadcastReceiver);
+        super.onDestroyView();
     }
 
     /**

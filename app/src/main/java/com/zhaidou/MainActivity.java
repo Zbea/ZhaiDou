@@ -97,6 +97,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private LinearLayout mTabContainer;
     private LoginFragment mLoginFragment;
     private ImageView iv_dot;
+    private LinearLayout viewLayout;
 
     private String token;
     private int id;
@@ -193,6 +194,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main_layout);
         iv_dot = (ImageView) findViewById(R.id.iv_dot);
+        viewLayout=(LinearLayout)findViewById(R.id.content);
         mContext = this;
         initBroadcastReceiver();
 
@@ -390,7 +392,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             currentFragment = to;
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
-            if (!to.isAdded()) {
+            if (!to.isAdded())
+            {
                 transaction.hide(from).add(R.id.content, to).commit();
             } else {
                 transaction.hide(from).show(to).commit();
@@ -556,12 +559,12 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     public void toHomeFragment() {
         if (currentFragment instanceof HomeFragment)
         {
-            ToolUtils.setLog("3333333333");
-            return;
+            FragmentManager manager = getSupportFragmentManager();
+            FragmentTransaction transaction = manager.beginTransaction();
+            transaction.show(currentFragment).commit();
         }
         else
         {
-            ToolUtils.setLog("44444444");
             if (utilityFragment!=null)
                 selectFragment(currentFragment, utilityFragment);
             setButton(homeButton);
@@ -577,7 +580,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         List<Fragment> fragments = manager.getFragments();
         for (Fragment fragment:fragments)
         {
-            ToolUtils.setLog("1111111111111");
             manager.popBackStack();
             manager.beginTransaction().remove(fragment).commit();
         }
