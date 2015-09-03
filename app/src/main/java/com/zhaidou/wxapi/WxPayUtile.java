@@ -23,7 +23,6 @@ import com.tencent.mm.sdk.modelpay.PayReq;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.zhaidou.R;
-import com.zhaidou.activities.PayActivity;
 
 public class WxPayUtile {
 
@@ -149,7 +148,6 @@ public class WxPayUtile {
                 Message msg = new Message();
                 msg.obj = result.get("result_code");
                 msg.what = 800;
-                PayActivity.handler.sendMessage(msg);
             }
 
         }

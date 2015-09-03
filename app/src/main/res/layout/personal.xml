@@ -44,11 +44,11 @@
 
                 <com.zhaidou.view.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                                                   android:id="@+id/iv_header"
-                                                  android:layout_width="70dp"
-                                                  android:layout_height="70dp"
+                                                  android:layout_width="@dimen/account_image_width_dimen"
+                                                  android:layout_height="@dimen/account_image_width_dimen"
                                                   android:layout_marginTop="55dp"
-                                                  android:layout_marginLeft="20dp"
-                                                  android:layout_marginRight="20dp"
+                                                  android:layout_marginLeft="15dp"
+                                                  android:layout_marginRight="15dp"
                                                   app:border_color="@color/white"
                                                   app:border_width="2dp"/>
 
@@ -64,7 +64,7 @@
                         android:id="@+id/tv_nickname"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="16sp"
+                        android:textSize="@dimen/account_text_txt"
                         android:textColor="@color/white"/>
 
                     <com.zhaidou.view.TypeFaceTextView
@@ -82,11 +82,13 @@
                         <com.zhaidou.view.TypeFaceTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:textSize="@dimen/account_text_info_txt"
                             android:text="简介："
                             android:textColor="@color/white"/>
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:id="@+id/tv_desc"
+                        android:textSize="@dimen/account_text_info_txt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"/>
@@ -157,7 +159,7 @@
             <RelativeLayout
                 android:id="@+id/all_order"
                 android:layout_width="match_parent"
-                android:layout_height="42dp"
+                android:layout_height="@dimen/btn_height_dimen"
                 android:background="@color/white"
                 android:gravity="center_vertical">
 
@@ -262,7 +264,7 @@
                 <RelativeLayout
                     android:id="@+id/rl_taobao_order"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="@dimen/list_height_dimen"
                     android:background="@drawable/item_click_selector"
                     android:gravity="center_vertical">
 
@@ -287,7 +289,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginLeft="40dp"
+                    android:layout_marginLeft="@dimen/list_height_dimen"
                     android:background="@color/line_color"></View>
 
                 <RelativeLayout
@@ -326,7 +328,7 @@
                 <RelativeLayout
                     android:id="@+id/rl_addr_manage"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="@dimen/list_height_dimen"
                     android:background="@drawable/item_click_selector"
                     android:gravity="center_vertical">
 
@@ -357,7 +359,7 @@
                 <RelativeLayout
                     android:id="@+id/rl_contact"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="@dimen/list_height_dimen"
                     android:background="@drawable/item_click_selector"
                     android:gravity="center_vertical">
 
@@ -383,7 +385,7 @@
                 <RelativeLayout
                     android:id="@+id/rl_setting"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="@dimen/list_height_dimen"
                     android:layout_marginTop="@dimen/default_margin"
                     android:background="@drawable/item_click_selector"
                     android:gravity="center_vertical">

@@ -121,7 +121,6 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         view.findViewById(R.id.ll_add_v).setOnClickListener(this);
         view.findViewById(R.id.ll_version).setOnClickListener(this);
         view.findViewById(R.id.ll_award_history).setOnClickListener(this);
-        view.findViewById(R.id.ll_score).setOnClickListener(this);
         view.findViewById(R.id.ll_about).setOnClickListener(this);
         view.findViewById(R.id.bt_logout).setOnClickListener(this);
         mSharedPreferences=getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
@@ -159,8 +158,6 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                 ((MainActivity)getActivity()).navigationToFragment(addVFragment);
                 break;
             case R.id.ll_award_history:
-                break;
-            case R.id.ll_score:
                 break;
             case R.id.ll_about:
                 AboutFragment aboutFragment = AboutFragment.newInstance("","");

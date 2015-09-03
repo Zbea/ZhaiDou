@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_alignParentTop="true"
         android:background="@color/actionbar_background_color"
-        android:layout_height="50dp">
+        android:layout_height="@dimen/header_height_dimen">
         <LinearLayout
             android:id="@+id/ll_back"
             android:layout_width="wrap_content"
@@ -71,7 +71,7 @@
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_marginLeft="10dp"
-                android:src="@drawable/icon_notify"/>
+                android:src="@drawable/icon_inform_black"/>
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -95,6 +95,9 @@
                 android:paddingLeft="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
                 android:text="计时中"
                 android:textColor="#666666"/>
         </LinearLayout>

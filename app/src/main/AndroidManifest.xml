@@ -54,12 +54,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.HomeActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:label="@string/title_activity_home"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
             android:name=".activities.DiyActivity"
             android:configChanges="orientation|keyboardHidden|"
             android:label="@string/title_activity_diy"
@@ -129,16 +123,6 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <data android:scheme="wxce03c66622e5b243"/>
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".activities.PayActivity"
-            android:theme="@style/StyledIndicators"
-            android:label="@string/title_activity_search">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="wxce03c66622e5b243" />
             </intent-filter>
         </activity>
         <activity android:name="com.alibaba.sdk.android.webview.BaseWebViewActivity"/>

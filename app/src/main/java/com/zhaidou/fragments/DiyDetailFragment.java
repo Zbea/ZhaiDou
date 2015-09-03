@@ -49,9 +49,7 @@ public class DiyDetailFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_diy_detail,null);
-        System.out.println("item------------>"+mParam1);
         TextView mTextView =(TextView) view.findViewById(R.id.tv_text);
         bt_back=(Button) view.findViewById(R.id.bt_back);
         bt_back.setOnClickListener(new View.OnClickListener() {
