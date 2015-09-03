@@ -39,7 +39,7 @@
             android:layout_centerInParent="true"
             android:textSize="18sp"
             android:textColor="@color/white"
-            android:text="我的豆搭"/>
+            android:text="@string/title_collocation"/>
     </RelativeLayout>
 
     <LinearLayout

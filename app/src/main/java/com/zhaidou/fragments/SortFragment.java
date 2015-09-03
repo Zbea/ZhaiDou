@@ -25,20 +25,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SortFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
- */
 public class SortFragment extends BaseFragment implements AdapterView.OnItemClickListener,
                                   View.OnClickListener{
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String PAGE = "page";
     private static final String INDEX = "index";
 
-    // TODO: Rename and change types of parameters
     private String mPage;
     private int mIndex;
 
@@ -51,15 +42,7 @@ public class SortFragment extends BaseFragment implements AdapterView.OnItemClic
     private RelativeLayout mRelativeLayout;
     public static String TAG=SortFragment.class.getSimpleName();
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SortFragment.
-     */
-    // TODO: Rename and change types and number of parameters
+
     public static SortFragment newInstance(String page, int index) {
         SortFragment fragment = new SortFragment();
         Bundle args = new Bundle();
@@ -69,7 +52,6 @@ public class SortFragment extends BaseFragment implements AdapterView.OnItemClic
         return fragment;
     }
     public SortFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -84,7 +66,6 @@ public class SortFragment extends BaseFragment implements AdapterView.OnItemClic
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_sort, container, false);
         mListView=(ListView)view.findViewById(R.id.lv_sort);
         mRelativeLayout=(RelativeLayout)view.findViewById(R.id.rl_menu_close);

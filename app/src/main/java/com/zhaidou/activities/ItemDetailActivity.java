@@ -411,7 +411,6 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void onBackClick(Fragment fragment) {
-        Log.i("ItemDetailActivity--fragment----->",fragment.getClass().getSimpleName());
         webView.reload();
     }
 
@@ -424,12 +423,14 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onPageStart("ItemDetailActivity");
         MobclickAgent.onResume(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        MobclickAgent.onPageEnd("ItemDetailActivity");
         MobclickAgent.onPause(this);
     }
 }

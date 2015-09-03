@@ -39,7 +39,7 @@
             android:layout_centerInParent="true"
             android:textSize="18sp"
             android:textColor="@color/white"
-            android:text="设置"/>
+            android:text="@string/title_setting"/>
         </RelativeLayout>
     <ScrollView
         android:layout_width="match_parent"

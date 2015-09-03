@@ -18,9 +18,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -29,6 +27,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
@@ -541,6 +540,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         mTimer=new MyTimer(time-temp,1000);
         mTimer.start();
         super.onResume();
+        MobclickAgent.onPageStart(mTitle);
     }
 
     @Override
@@ -548,6 +548,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     {
         currentTime=System.currentTimeMillis();
         super.onPause();
+        MobclickAgent.onPageEnd(mTitle);
     }
 
     @Override

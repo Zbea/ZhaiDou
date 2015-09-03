@@ -1,8 +1,6 @@
 package com.zhaidou.fragments;
 
-
 import android.app.Dialog;
- import android.app.ProgressDialog;
  import android.content.Context;
  import android.content.Intent;
  import android.content.SharedPreferences;
@@ -21,7 +19,8 @@ import android.app.Dialog;
  import android.widget.Toast;
  import com.android.volley.RequestQueue;
  import com.android.volley.toolbox.Volley;
- import com.zhaidou.R;
+import com.umeng.analytics.MobclickAgent;
+import com.zhaidou.R;
  import com.zhaidou.ZhaiDou;
  import com.zhaidou.activities.ItemDetailActivity;
  import com.zhaidou.base.BaseActivity;
@@ -47,19 +46,11 @@ import android.app.Dialog;
  import java.util.List;
  import java.util.Map;
 
-/**
-  * A simple {@link Fragment} subclass.
-  * Use the {@link RegisterFragment#newInstance} factory method to
-  * create an instance of this fragment.
-  */
  public class RegisterFragment extends BaseFragment implements View.OnClickListener {
-     // TODO: Rename parameter arguments, choose names that match
-     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
      private static final String ARG_PARAM1 = "param1";
      private static final String ARG_PARAM2 = "param2";
      public static final String TAG = RegisterFragment.class.getSimpleName();
 
-     // TODO: Rename and change types of parameters
      private String mParam1;
      private String mParam2;
 
@@ -78,19 +69,16 @@ import android.app.Dialog;
          }
      };
 
-     // TODO: Rename and change types and number of parameters
      public static RegisterFragment newInstance(String param1, String param2) {
          RegisterFragment fragment = new RegisterFragment();
          Bundle args = new Bundle();
          args.putString(ARG_PARAM1, param1);
          args.putString(ARG_PARAM2, param2);
          fragment.setArguments(args);
- //        mRegisterListener = registerOrLoginListener;
          return fragment;
      }
 
      public RegisterFragment() {
-         // Required empty public constructor
      }
 
      @Override
@@ -105,7 +93,6 @@ import android.app.Dialog;
      @Override
      public View onCreateView(LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState) {
-         // Inflate the layout for this fragment
          View view = inflater.inflate(R.layout.fragment_register, container, false);
          mEmailView = (EditText) view.findViewById(R.id.tv_email);
          mNickView = (EditText) view.findViewById(R.id.tv_nick);
@@ -210,33 +197,23 @@ import android.app.Dialog;
                      return;
                  }
 
-                 Log.i("before--->", "before");
                  JSONObject userObj = json.optJSONObject("user");
-                 Log.i("userObj--->", "userObj");
                  int id = userObj.optInt("id");
-                 Log.i("id--->", "id");
                  String email = userObj.optString("email");
-                 Log.i("email--->", "email");
                  String token = userObj.optString("authentication_token");
-                 Log.i("token--->", "token");
                  String state = userObj.optString("state");
-                 Log.i("state--->", "state");
                  String avatar = userObj.optJSONObject("avatar").optJSONObject("mobile_icon").optString("url");
-                 Log.i("avatar--->", "avatar");
                  String nickname = userObj.optString("nick_name");
-                 Log.i("nickname--->", "nickname");
                  User user = new User(id, email, token, nickname, avatar);
 
                  Intent intent = new Intent(ZhaiDou.IntentRefreshLoginTag);
                  getActivity().sendBroadcast(intent);
 
-                 Log.i("user------------>", user.toString());
                  if (getActivity() != null && getActivity() instanceof ItemDetailActivity) {
                      ((BaseActivity) getActivity()).onRegisterOrLoginSuccess(user, RegisterFragment.this);
                  } else {
                      mRegisterListener.onRegisterOrLoginSuccess(user, RegisterFragment.this);
                  }
-                 Log.i("onRegisterOrLoginSuccess---->", "onRegisterOrLoginSuccess");
              } catch (Exception e) {
 
              }
@@ -300,6 +277,15 @@ import android.app.Dialog;
 
      public interface RegisterOrLoginListener {
          public void onRegisterOrLoginSuccess(User user, Fragment fragment);
+     }
+
+     public void onResume() {
+         super.onResume();
+         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_register));
+     }
+     public void onPause() {
+         super.onPause();
+         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_register));
      }
 
  }

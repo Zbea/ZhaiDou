@@ -654,12 +654,14 @@ import cn.sharesdk.wechat.friends.Wechat;
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onPageStart(getResources().getString(R.string.title_login));
         MobclickAgent.onResume(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        MobclickAgent.onPageEnd(getResources().getString(R.string.title_login));
         MobclickAgent.onPause(this);
     }
 }

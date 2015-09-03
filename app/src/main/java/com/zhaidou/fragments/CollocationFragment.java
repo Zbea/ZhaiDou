@@ -28,6 +28,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshGridView;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
@@ -179,7 +180,7 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
                 JSONArray collocationsArr=jsonObject.optJSONArray("bean_collocations");
                 JSONObject meta = jsonObject.optJSONObject("meta");
                 count=meta==null?0:meta.optInt("count");
-                Collocation collocation=null;
+                Collocation collocation= null;
                 if (collocationsArr!=null&&collocationsArr.length()>0)
                 {
                     for (int i=0;i<collocationsArr.length();i++){
@@ -270,5 +271,13 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
             mAdapter.notifyDataSetChanged();
         }
         FetchCollocationData(currentpage=1);
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_collocation));
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_collocation));
     }
 }

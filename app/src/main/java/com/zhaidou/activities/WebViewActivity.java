@@ -1,7 +1,6 @@
 package com.zhaidou.activities;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -110,12 +109,14 @@ public class WebViewActivity extends Activity implements View.OnClickListener{
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onPageStart("WebViewActivity");
         MobclickAgent.onResume(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        MobclickAgent.onPageEnd("WebViewActivity");
         MobclickAgent.onPause(this);
     }
 }

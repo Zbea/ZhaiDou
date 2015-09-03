@@ -169,12 +169,14 @@ public class HomePTActivity extends Activity
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onPageStart("拼贴大赛");
         MobclickAgent.onResume(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        MobclickAgent.onPageEnd("拼贴大赛");
         MobclickAgent.onPause(this);
     }
 }

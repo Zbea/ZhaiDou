@@ -44,7 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="家居生活新时尚"/>
+            android:text="@string/title_home"/>
 
         <ImageView
             android:id="@+id/iv_search"

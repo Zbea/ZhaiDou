@@ -258,12 +258,14 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onPageStart(getResources().getString(R.string.title_register));
         MobclickAgent.onResume(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        MobclickAgent.onPageEnd(getResources().getString(R.string.title_register));
         MobclickAgent.onPause(this);
     }
 }

@@ -38,7 +38,7 @@
             android:layout_centerInParent="true"
             android:textSize="18sp"
             android:textColor="@color/white"
-            android:text="所有订单"/>
+            android:text="@string/title_all_order"/>
     </RelativeLayout>
 
 

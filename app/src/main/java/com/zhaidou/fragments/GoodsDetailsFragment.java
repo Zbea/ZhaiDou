@@ -49,6 +49,7 @@ import com.android.volley.toolbox.Volley;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
@@ -500,7 +501,7 @@ public class GoodsDetailsFragment extends BaseFragment {
         backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
-        titleTv.setText("商品详情");
+        titleTv.setText(mContext.getResources().getString(R.string.title_goods_detail));
 
         viewGroupe = (LinearLayout) mView.findViewById(R.id.goods_viewGroup);
         mGridView = (ChildGridView) mView.findViewById(R.id.gv_specification);
@@ -1373,12 +1374,14 @@ public class GoodsDetailsFragment extends BaseFragment {
             mTimer.start();
         }
         super.onResume();
+        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_goods_detail));
     }
 
     @Override
     public void onPause() {
         currentTime = System.currentTimeMillis();
         super.onPause();
+        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_goods_detail));
     }
 
 

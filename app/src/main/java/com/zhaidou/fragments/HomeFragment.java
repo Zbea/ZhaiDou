@@ -39,6 +39,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
@@ -929,6 +930,14 @@ public class HomeFragment extends BaseFragment implements
         }
     }
 
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_home));
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_home));
+    }
     @Override
     public void onDestroy()
     {
@@ -936,4 +945,5 @@ public class HomeFragment extends BaseFragment implements
         mContext.unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
+
 }

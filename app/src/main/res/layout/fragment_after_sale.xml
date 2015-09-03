@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="申请退款/退货"
+            android:text="@string/title_after_sale"
             android:textColor="@color/white"
             android:textSize="18sp" />
     </RelativeLayout>

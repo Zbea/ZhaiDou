@@ -1,27 +1,19 @@
 package com.zhaidou.activities;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
 import android.widget.TextView;
 
-import com.mob.tools.gui.ViewPagerAdapter;
 import com.umeng.analytics.MobclickAgent;
 import com.viewpagerindicator.TabPageIndicator;
 import com.zhaidou.R;
-import com.zhaidou.ZhaiDou;
 import com.zhaidou.fragments.SingleFragment;
 import com.zhaidou.fragments.StrategyFragment1;
 
@@ -107,12 +99,14 @@ public class CategoryActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onPageStart("单品列表页");
         MobclickAgent.onResume(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        MobclickAgent.onPageEnd("单品列表页");
         MobclickAgent.onPause(this);
     }
 }

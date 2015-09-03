@@ -379,12 +379,14 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onPageStart("搜索单品、攻略页面");
         MobclickAgent.onResume(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        MobclickAgent.onPageEnd("搜索单品、攻略页面");
         MobclickAgent.onPause(this);
     }
 }

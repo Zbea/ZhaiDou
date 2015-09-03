@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -92,5 +93,14 @@ public class AboutFragment extends BaseFragment implements View.OnClickListener{
             e.printStackTrace();
             return null;
         }
+    }
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_about)); //统计页面
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_about));
     }
 }
