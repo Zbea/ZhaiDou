@@ -18,6 +18,7 @@ import android.webkit.WebView;
 import android.widget.TextView;
 
 import com.mob.tools.gui.ViewPagerAdapter;
+import com.umeng.analytics.MobclickAgent;
 import com.viewpagerindicator.TabPageIndicator;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
@@ -103,4 +104,15 @@ public class CategoryActivity extends FragmentActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 }

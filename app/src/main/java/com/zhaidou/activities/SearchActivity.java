@@ -28,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.umeng.analytics.MobclickAgent;
 import com.viewpagerindicator.TabPageIndicator;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
@@ -373,5 +374,17 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
         Log.i("position---------------->",position+"----->"+history);
         mEditText.setText(history);
         onSearch();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

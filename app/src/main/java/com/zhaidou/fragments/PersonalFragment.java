@@ -35,11 +35,9 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.CartItem;
 import com.zhaidou.model.User;
 import com.zhaidou.sqlite.CreatCartDB;
-import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;

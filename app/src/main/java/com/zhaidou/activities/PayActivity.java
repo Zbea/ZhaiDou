@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.wxapi.MD5;
 import com.zhaidou.wxapi.WxPayUtile;
@@ -73,4 +74,16 @@ public class PayActivity extends Activity {
 		Random random = new Random();
 		return MD5.getMessageDigest(String.valueOf(random.nextInt(10000)).getBytes());
 	}
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 }

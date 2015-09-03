@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
@@ -92,5 +93,4 @@ public class AboutFragment extends BaseFragment implements View.OnClickListener{
             return null;
         }
     }
-
 }

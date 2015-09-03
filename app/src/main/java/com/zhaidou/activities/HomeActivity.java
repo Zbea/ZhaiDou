@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.utils.AsyncImageLoader;
 import com.zhaidou.utils.AsyncImageLoader1;
@@ -392,6 +393,18 @@ public class HomeActivity extends Activity implements AbsListView.OnScrollListen
             }
             return convertView;
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }
 

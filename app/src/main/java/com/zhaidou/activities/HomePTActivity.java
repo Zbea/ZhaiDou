@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.utils.NetworkUtils;
@@ -165,4 +166,15 @@ public class HomePTActivity extends Activity
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 }
