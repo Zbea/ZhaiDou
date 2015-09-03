@@ -75,7 +75,6 @@ public class HomeFragment extends BaseFragment implements
         HeaderLayout.onRightImageButtonClickListener,
         HomeCategoryFragment.CategorySelectedListener,
         AdapterView.OnItemClickListener, View.OnClickListener,
-        ItemDetailActivity.RefreshNotifyListener,
         PullToRefreshBase.OnRefreshListener2<ScrollView>
 
 {
@@ -219,6 +218,7 @@ public class HomeFragment extends BaseFragment implements
             viewPager.setCurrentItem(currentItem);
         }
     };
+
 
     /**
      * 广告轮播设置
@@ -550,11 +550,6 @@ public class HomeFragment extends BaseFragment implements
         mListener = null;
     }
 
-    @Override
-    public void setRefreshList()
-    {
-        refresh();
-    }
 
     public interface OnFragmentInteractionListener
     {
@@ -604,7 +599,7 @@ public class HomeFragment extends BaseFragment implements
             case R.id.home_item_goods:
                 if (shopSpecialItem != null)
                 {
-                    ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(shopSpecialItem.title, shopSpecialItem.id,"");
+                    ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(shopSpecialItem.title, shopSpecialItem.id,shopSpecialItem.imageUrl);
                     ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
                     break;
                 }

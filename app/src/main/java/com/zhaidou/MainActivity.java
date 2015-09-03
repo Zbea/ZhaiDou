@@ -9,6 +9,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
@@ -20,7 +21,6 @@ import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.PersonalFragment;
 import com.zhaidou.fragments.PersonalMainFragment;
 import com.zhaidou.fragments.RegisterFragment;
-import com.zhaidou.fragments.SettingFragment;
 import com.zhaidou.fragments.ShopPaymentFailFragment;
 import com.zhaidou.fragments.ShopPaymentFragment;
 import com.zhaidou.fragments.ShopPaymentSuccessFragment;
@@ -71,7 +71,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  */
@@ -421,11 +420,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         return isLogin;
     }
 
-
-    public interface PhotoSelectListener {
-        public void onPhotoSelect();
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         CallbackContext.onActivityResult(requestCode, resultCode, data);
@@ -650,5 +644,17 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         });
         mRequestQueue.add(request);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

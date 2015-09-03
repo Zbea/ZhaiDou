@@ -9,6 +9,8 @@ import android.view.KeyEvent;
 import android.view.Window;
 import android.widget.ImageView;
 
+import com.umeng.analytics.MobclickAgent;
+
 /**
  * Created by roy on 15/7/22.
  */
@@ -87,5 +89,15 @@ public class WelcomePage extends Activity
         return super.onKeyDown(keyCode, event);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 }

@@ -10,6 +10,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Gravity;
 
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.fragments.ContainerFragment;
 import com.zhaidou.fragments.DiyCategoryFragment;
@@ -62,5 +63,17 @@ public class DiyActivity extends FragmentActivity implements ContainerFragment.O
     @Override
     public void onFragmentInteraction(Uri uri) {
         Log.i("onFragmentInteraction--->",uri.toString());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

@@ -11,6 +11,8 @@ import android.view.Window;
 import android.webkit.WebView;
 import android.widget.TextView;
 
+import com.mob.tools.gui.ViewPagerAdapter;
+import com.umeng.analytics.MobclickAgent;
 import com.viewpagerindicator.TabPageIndicator;
 import com.zhaidou.R;
 import com.zhaidou.fragments.SingleFragment;
@@ -83,6 +85,7 @@ public class CategoryActivity extends FragmentActivity {
 
         @Override
         public int getCount() {
+//            return mFragments.size();
             return 1;
         }
 
