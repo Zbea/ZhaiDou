@@ -42,17 +42,16 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
             registerFragment.setRegisterOrLoginListener(this);
         }
         if ("MainActivity".equalsIgnoreCase(this.getClass().getSimpleName())) {
-            Log.i("MainActivity---->", "this.getClass().getSimpleName()------------" + fragment.getClass().getSimpleName());
             mChildContainer.setVisibility(View.VISIBLE);
         }
-        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, fragment, fragment.getClass().getSimpleName())
+        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.page_enter_into_the,R.anim.page_enter_out_the,R.anim.page_out_into_the,R.anim.page_out_out_the).replace(R.id.fl_child_container, fragment, fragment.getClass().getSimpleName())
                 .addToBackStack(null).commitAllowingStateLoss();
     }
 
     public void popToStack(Fragment fragment) {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
+        fragmentManager.beginTransaction().setCustomAnimations(R.anim.page_out_into_the,R.anim.page_out_out_the).remove(fragment).commitAllowingStateLoss();
         fragmentManager.popBackStack();
         if (fragment instanceof ShopPaymentFailFragment || fragment instanceof ShopPaymentSuccessFragment)
         fragmentManager.popBackStack();
@@ -72,11 +71,6 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.popBackStack();
         SharedPreferencesUtil.saveUser(this, user);
-
-        ToolUtils.setLog("开始登录刷新啦————————————————》");
-        Intent intent = new Intent(ZhaiDou.IntentRefreshLoginTag);
-        sendBroadcast(intent);
-        ToolUtils.setLog("开始登录刷新啦1————————————————》");
 
         if (fragment instanceof RegisterFragment) {
             popToStack(fragment);

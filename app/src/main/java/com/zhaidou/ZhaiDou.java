@@ -11,8 +11,8 @@ public class ZhaiDou {
 //    public static String HOME_BASE_URL = "http://192.168.199.173/";
     public static String TAG_BASE_URL = "http://buy.zhaidou.com/?tag=%s&json=1";
 
-    public static String apkUrl = HOME_BASE_URL+"apk/zhaidou.apk";
-    public static String apkUpdateUrl = HOME_BASE_URL+"apk/versionmanage.json";
+    public static String apkUrl = "http://www.zhaidou.com/apk/zhaidou.apk";
+    public static String apkUpdateUrl = "http://www.zhaidou.com/apk/versionmanage.json";
 
     public static String HOT_SEARCH_URL=HOME_BASE_URL+"article/api/articles/hot_search";
     public static String INDEX_CATEGORY_FILTER=HOME_BASE_URL+"article/api/article_categories";
@@ -62,6 +62,9 @@ public class ZhaiDou {
     public static String orderCommitUrl=HOME_BASE_URL+"special_mall/api/orders";
     //查看当天是否已经购买了0元特卖商品
     public static String orderCheckOSaleUrl=HOME_BASE_URL+"special_mall/api/orders/order_items_0_status";
+
+    //APP换量
+    public static String settingRecommendAppUrl="http://192.168.199.163:3000/api/v1/app_exchanges?sys=2";
 
 
     //TAB分类

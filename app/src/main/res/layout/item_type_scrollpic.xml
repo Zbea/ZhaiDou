@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<com.zhaidou.view.ImageSwitchWall xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/isw_imagewall"
-    android:layout_width="match_parent"
-    android:background="@color/red"
-    android:layout_height="200dp" >
-    </com.zhaidou.view.ImageSwitchWall>

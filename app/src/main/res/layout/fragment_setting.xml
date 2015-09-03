@@ -8,7 +8,7 @@
     <RelativeLayout
         android:id="@+id/rl_back"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/header_height_dimen"
         android:background="#39495d">
         <LinearLayout
             android:id="@+id/ll_back"
@@ -60,14 +60,14 @@
             android:id="@+id/ll_profile"
             android:layout_width="match_parent"
             android:background="@drawable/item_click_selector"
-            android:layout_height="40dp">
+            android:layout_height="@dimen/list_height_dimen">
             <ImageView
                 android:layout_marginLeft="20dp"
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:scaleType="fitXY"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/icon_profile"/>
+                android:src="@drawable/icon_setting_profile"/>
             <com.zhaidou.view.TypeFaceTextView
                 android:paddingLeft="10dp"
                 android:layout_width="0dp"
@@ -157,12 +157,12 @@
             android:id="@+id/ll_collocation"
             android:layout_width="match_parent"
             android:background="@drawable/item_click_selector"
-            android:layout_height="40dp">
+            android:layout_height="@dimen/list_height_dimen">
             <ImageView
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/icon_course"
+                android:src="@drawable/icon_setting_course"
                 android:layout_marginLeft="20dp"/>
             <com.zhaidou.view.TypeFaceTextView
                 android:paddingLeft="10dp"
@@ -189,13 +189,13 @@
             android:id="@+id/ll_add_v"
             android:layout_width="match_parent"
             android:background="@drawable/item_click_selector"
-            android:layout_height="40dp">
+            android:layout_height="@dimen/list_height_dimen">
             <ImageView
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:scaleType="fitXY"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/icon_add_v"
+                android:src="@drawable/icon_setting_add_v"
                 android:layout_marginLeft="20dp"/>
             <com.zhaidou.view.TypeFaceTextView
                 android:paddingLeft="10dp"
@@ -244,40 +244,7 @@
                 android:paddingRight="10dp"
                 android:scaleType="fitXY"/>
         </LinearLayout>
-        <LinearLayout
-            android:id="@+id/ll_score"
-            android:layout_marginTop="10dp"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:background="@color/white"
-            android:layout_height="40dp">
-            <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:layout_marginLeft="10dp"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/icon_score"/>
-            <com.zhaidou.view.TypeFaceTextView
-                android:paddingLeft="10dp"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:text="安卓打分"
-                android:textColor="@color/text_main_color"
-                android:gravity="center_vertical"/>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/icon_arrow_right"
-                android:paddingRight="10dp"
-                android:scaleType="fitXY"/>
-        </LinearLayout>
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_marginLeft="40dp"
-                android:layout_height="1dp"
-                android:src="#eeeeee"/>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -290,7 +257,7 @@
                 android:id="@+id/ll_version"
                 android:layout_width="match_parent"
                 android:background="@drawable/item_click_selector"
-                android:layout_height="40dp">
+                android:layout_height="@dimen/list_height_dimen">
                 <ImageView
                     android:layout_width="18dp"
                     android:layout_height="18dp"
@@ -325,13 +292,13 @@
             android:id="@+id/ll_about"
             android:layout_width="match_parent"
             android:background="@drawable/item_click_selector"
-            android:layout_height="40dp">
+            android:layout_height="@dimen/list_height_dimen">
             <ImageView
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:scaleType="fitXY"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/icon_about"
+                android:src="@drawable/icon_setting_about"
                 android:layout_marginLeft="20dp"/>
             <com.zhaidou.view.TypeFaceTextView
                 android:paddingLeft="10dp"
@@ -356,14 +323,14 @@
                 android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
                 android:background="@drawable/item_click_selector"
-                android:layout_height="40dp">
+                android:layout_height="@dimen/list_height_dimen">
                 <ImageView
                     android:layout_marginLeft="20dp"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:scaleType="fitXY"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/icon_profile"/>
+                    android:src="@drawable/icon_setting_load"/>
                 <com.zhaidou.view.TypeFaceTextView
                     android:paddingLeft="10dp"
                     android:layout_width="0dp"
@@ -384,7 +351,7 @@
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/bt_logout"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="@dimen/list_height_dimen"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="20dp"
                 android:gravity="center"

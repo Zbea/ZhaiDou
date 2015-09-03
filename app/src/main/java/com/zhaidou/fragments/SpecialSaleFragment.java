@@ -354,26 +354,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             case R.id.ll_back:
                 ((MainActivity) getActivity()).popToStack(SpecialSaleFragment.this);
                 break;
-//            case R.id.iv_coupon:
-//                if (mCoupon != null)
-//                {
-//                    String token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
-//                    if (TextUtils.isEmpty(token))
-//                    {
-//                        LoginFragment1 loginFragment = LoginFragment1.newInstance("special", "");
-//                        loginFragment.setRegisterOrLoginListener(this);
-//                        ((BaseActivity) getActivity()).navigationToFragment(loginFragment);
-//                        return;
-//                    }
-//                    Intent intent = new Intent(getActivity(), WebViewActivity.class);
-//                    intent.putExtra("url", mCoupon.getUrl());
-//                    intent.putExtra("from", "coupon");
-//                    startActivity(intent);
-//                } else
-//                {
-//                    Toast.makeText(getActivity(), "特卖已结束", Toast.LENGTH_SHORT).show();
-//                }
-//                break;
 
             case R.id.myCartBtn:
                 if (isLogin)
@@ -460,8 +440,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 mDialog.dismiss();
                 nullView.setVisibility(View.VISIBLE);
                 nullNetView.setVisibility(View.GONE);
-                if (getActivity() != null)
-                    ToolUtils.setToast(getActivity(), "加载失败");
             }
         }
         );
@@ -500,35 +478,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             return convertView;
         }
     }
-
-    public void FetchCouponData()
-    {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.COUPON_DATA_URL, new Response.Listener<JSONObject>()
-        {
-            @Override
-            public void onResponse(JSONObject jsonObject)
-            {
-                int id = jsonObject.optInt("id");
-                String created_at = jsonObject.optString("created_at");
-                String updated_at = jsonObject.optString("updated_at");
-                String for_date = jsonObject.optString("for_date");
-                String url = jsonObject.optString("url");
-                mCoupon = new Coupon(id, created_at, updated_at, for_date, url);
-            }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-                if (null == volleyError.networkResponse)
-                {
-                    mHandler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
-                }
-            }
-        });
-        requestQueue.add(request);
-    }
-
     public void getBanner()
     {
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.SPECIAL_SALE_BANNER_URL, new Response.Listener<JSONObject>()
@@ -546,8 +495,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             @Override
             public void onErrorResponse(VolleyError volleyError)
             {
-                if (volleyError != null)
-                    Toast.makeText(getActivity(), "加载失败", Toast.LENGTH_SHORT).show();
             }
         });
         requestQueue.add(request);
@@ -603,9 +550,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         Log.i("SpecialSaleFragment-------------->", user.toString());
         SharedPreferencesUtil.saveUser(getActivity(), user);
         getActivity().getSupportFragmentManager().popBackStack();
-//        if (fragment instanceof RegisterFragment){
-//            ((MainActivity)getActivity()).toHomeFragment();
-//        }
     }
 
     @Override

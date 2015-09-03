@@ -8,7 +8,7 @@
         android:id="@+id/common_actionbar"
         android:layout_width="match_parent"
         android:background="@color/actionbar_background_color"
-        android:layout_height="50dp">
+        android:layout_height="@dimen/header_height_dimen">
         <LinearLayout
             android:id="@+id/ll_back"
             android:layout_width="wrap_content"
@@ -110,7 +110,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="@dimen/btn_height_dimen"
         android:text="注册"
         android:gravity="center"
         android:layout_marginTop="20dp"

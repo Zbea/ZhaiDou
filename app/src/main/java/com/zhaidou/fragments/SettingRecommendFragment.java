@@ -70,6 +70,7 @@ public class SettingRecommendFragment extends BaseFragment {
     private TextView backBtn,headTitle;
     private List<RecommendItem> lists=new ArrayList<RecommendItem>();
     private RequestQueue mRequestQueue;
+    private RecommendAdapter recommendAdapter;
 
     private Handler mHandler=new Handler()
     {
@@ -79,6 +80,7 @@ public class SettingRecommendFragment extends BaseFragment {
             switch (msg.what)
             {
                 case 1:
+                    recommendAdapter.notifyDataSetChanged();
                     break;
             }
         }
@@ -160,36 +162,14 @@ public class SettingRecommendFragment extends BaseFragment {
         backBtn.setOnClickListener(onClickListener);
         headTitle = (TextView) mView.findViewById(R.id.title_tv);
         headTitle.setText(R.string.setting_recommend_txt);
-        initDate();
 
         mListView=(ListView)mView.findViewById(R.id.recommendList);
-        RecommendAdapter recommendAdapter=new RecommendAdapter(mContext,lists);
+        recommendAdapter=new RecommendAdapter(mContext,lists);
         mListView.setAdapter(recommendAdapter);
         mListView.setOnItemClickListener(onItemClickListener);
         mRequestQueue= Volley.newRequestQueue(mContext);
-    }
 
-    /**
-     * 初始化数据
-     */
-    private void initDate()
-    {
-        mDialog.dismiss();
-        lists.clear();
-        RecommendItem recommendItem=new RecommendItem();
-        recommendItem.title="QQ空间";
-        recommendItem.info="QQ空间，超过6亿用户使用的社交网络。致力于帮助用户随时随地“分享生活，留住感动”。您可以使用手机查看好友动态、与好友互动，上传照片、写说说、写日志、签到、送礼；更有“玩吧”汇聚众多热门游戏，满足各种娱乐需求。";
-        recommendItem.imageUrl="http://www.anzhi.com/icon.php?u=ZGF0YTJ8aWNvbnwyMDE0MDh8MTR8b2Qxc0MzQjlDa2VTcEt3aEMxeDhqbmk4NTdxYWJjc1Z0Rmlp";
-        recommendItem.appUrl="http://www.anzhi.com/soft_2319051.html";
-        lists.add(recommendItem);
-
-        RecommendItem recommendItem1=new RecommendItem();
-        recommendItem1.title="宅豆家具";
-        recommendItem1.info="亲爱的小主，宅豆APP，献给热爱生活热爱家居的你！";
-        recommendItem1.imageUrl="http://www.anzhi.com/icon.php?u=ZGF0YTN8aWNvbnwyMDE1MDd8MjB8b2Qxc0MzQjJHRW1WcFp4aGJGRjZqSGk1NzlXZEFOSlg5RS91cHY4PQ==";
-        recommendItem1.appUrl="http://www.anzhi.com/soft_2301571.html";
-        lists.add(recommendItem1);
-
+        FetchData();
     }
 
     /**
@@ -197,7 +177,8 @@ public class SettingRecommendFragment extends BaseFragment {
      */
     private void FetchData()
     {
-        String url=null;
+        lists.clear();
+        String url=ZhaiDou.settingRecommendAppUrl;
         ToolUtils.setLog(url);
         JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
@@ -206,10 +187,24 @@ public class SettingRecommendFragment extends BaseFragment {
             {
                 if (mDialog!=null)
                     mDialog.dismiss();
+                JSONArray array=response.optJSONArray("app_exchanges");
+                for (int i = 0; i < array.length(); i++)
+                {
+                    JSONObject obj=array.optJSONObject(i);
+                    String title=obj.optString("title");
+                    String desc=obj.optString("desc");
+                    String android_url=obj.optString("android");
+                    String logo="http://192.168.199.163:3000"+obj.optString("logo");
+                    ToolUtils.setLog(android_url);
+                    RecommendItem recommendItem=new RecommendItem();
+                    recommendItem.title=title;
+                    recommendItem.info=desc;
+                    recommendItem.appUrl=android_url;
+                    recommendItem.imageUrl=logo;
+                    lists.add(recommendItem);
 
-                RecommendItem recommendItem=new RecommendItem();
-                mHandler.obtainMessage(1,recommendItem).sendToTarget();
-
+                }
+                mHandler.obtainMessage(1).sendToTarget();
             }
         }, new Response.ErrorListener()
         {

@@ -12,6 +12,7 @@ public class GoodDetail implements Serializable
     private int id;
     private String title;
     private String designer;
+    private String imageUrl;
     private String end_time;
     private int total_count;
     private double price;
@@ -35,6 +36,16 @@ public class GoodDetail implements Serializable
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getImageUrl()
+    {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl)
+    {
+        this.imageUrl = imageUrl;
     }
 
     public String getDesigner() {

@@ -955,16 +955,7 @@ public class GoodsDetailsFragment extends BaseFragment {
     private void initData(List<String> urls) {
         viewGroupe.removeAllViews();
         if (CollectionUtils.isNotNull(urls)) {
-            ToolUtils.setImageCacheUrl(urls.get(0), goodsImage);
-            if (urls.size() > 4) {
-                List<String> urlss = new ArrayList<String>();
-                urlss.addAll(urls);
-                urls.removeAll(urls);
-                urls.add(urlss.get(0));
-                urls.add(urlss.get(1));
-                urls.add(urlss.get(2));
-                urls.add(urlss.get(3));
-            }
+            ToolUtils.setImageCacheUrl(detail.getImageUrl(), goodsImage);
 
             for (String url : urls) {
                 ImageView imageView = new ImageView(mContext);
@@ -1051,6 +1042,15 @@ public class GoodsDetailsFragment extends BaseFragment {
                             imgsList.add(url);
                         }
                         detail.setImgs(imgsList);
+                    }
+
+                    JSONArray imgArray = merchandise.optJSONArray("desc_images");
+                    if (imgArray != null && imgArray.length() > 0) {
+                        for (int i = 0; i < imgArray.length(); i++) {
+                            JSONObject imgObj = imgArray.optJSONObject(i);
+                            String url = imgObj.optString("url");
+                            detail.setImageUrl(url);
+                        }
                     }
 
                     JSONArray specifications = merchandise.optJSONArray("specifications");
