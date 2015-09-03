@@ -53,6 +53,7 @@ public class CategoryActivity extends FragmentActivity {
         mTextView=(TextView)findViewById(R.id.tv_category_name);
         mTextView.setText(title);
 
+
         mIndicator=(TabPageIndicator)findViewById(R.id.indicator);
         mViewPager=(ViewPager)findViewById(R.id.vp_category);
         mFragments=new ArrayList<Fragment>();
