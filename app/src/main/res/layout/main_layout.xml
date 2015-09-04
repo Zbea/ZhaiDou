@@ -11,6 +11,7 @@
         android:layout_height="50dp"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
+        android:paddingTop="3.5dp"
         android:background="@drawable/tab_background">
 
         <RelativeLayout
@@ -33,22 +34,6 @@
             android:layout_weight="1">
 
             <ImageButton
-                android:id="@+id/tab_beauty"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:scaleType="fitXY"
-                android:background="@drawable/home_icon"
-                android:layout_centerInParent="true"
-                android:contentDescription="@string/app_name"
-                />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <ImageButton
                 android:id="@+id/tab_category"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -57,7 +42,20 @@
                 android:contentDescription="@string/app_name"
                 />
         </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
+            <ImageButton
+                android:id="@+id/tab_beauty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/home_icon"
+                android:layout_centerInParent="true"
+                android:contentDescription="@string/app_name"
+                />
+        </RelativeLayout>
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -85,6 +83,15 @@
                 android:background="@drawable/personal_icon"
                 android:contentDescription="@string/app_name"
                 />
+            <ImageView
+                android:id="@+id/iv_dot"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="6dp"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_dot"/>
         </RelativeLayout>
 
     </LinearLayout>

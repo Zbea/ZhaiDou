@@ -3,40 +3,118 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              android:background="@drawable/item_click_selector"
+    >
 
     <LinearLayout
+        android:id="@+id/lineView"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clickable="true"
         android:gravity="center_vertical">
 
         <CheckBox
+            android:layout_width="22dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="0.00001"
+            style="@style/CustomCheckboxTheme"
+            android:id="@+id/chatItemCB"/>
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/cartItemIsOver"
+            android:layout_width="34dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            android:gravity="center"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:layout_weight="0.00001"
+            android:visibility="gone"
+            android:background="@drawable/btn_green_click_bg"
+            android:text="已卖光"/>
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/cartItemIsDate"
+            android:layout_width="34dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            android:gravity="center"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:layout_weight="0.00001"
+            android:visibility="gone"
+            android:background="@drawable/btn_no_click_selector"
+            android:text="已过期"/>
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/cartItemIsLose"
+            android:layout_width="34dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            android:gravity="center"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:layout_weight="0.00001"
+            android:visibility="gone"
+            android:background="@drawable/btn_red_click_selector"
+            android:text="已下架"/>
+
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/chartItemCB"/>
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_weight="0.00001">
 
         <ImageView
             android:id="@+id/cartImageItemTv"
-            android:layout_width="@dimen/image_height_dimen"
-            android:layout_height="@dimen/image_height_dimen"
+            android:layout_width="100dp"
+            android:layout_height="96dp"
+            android:scaleType="fitXY"
             android:src="@drawable/icon_loading_defalut"/>
+
+            <TextView
+                android:id="@+id/cartItemIsFlags"
+                android:layout_width="100dp"
+                android:layout_height="96dp"
+                android:visibility="gone"
+                android:background="#99333333"/>
+
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_marginRight="5dp"
             android:layout_weight="1">
 
             <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/cartItemNameTv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:textSize="15sp"
                 android:textColor="@color/text_main_color"
-                android:text="不包含运费"
+                android:text="商品价格名称哈哈啊哈哈"
                 android:singleLine="true"
-                android:ellipsize="end"
+                android:ellipsize="marquee"
                 android:marqueeRepeatLimit="marquee_forever"/>
 
             <LinearLayout
@@ -56,42 +134,130 @@
                         android:layout_height="wrap_content"
                         android:textSize="12sp"
                         android:textColor="@color/text_gary_color"
-                        android:text="颜色："
+                        android:text="规格："
                         />
-
                     <com.zhaidou.view.TypeFaceTextView
+                        android:id="@+id/cartItemSizeTv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="12sp"
+                        android:singleLine="true"
+                        android:ellipsize="marquee"
+                        android:marqueeRepeatLimit="marquee_forever"
                         android:textColor="@color/text_gary_color"
-                        android:text="蓝色"
+                        android:text=""
                         />
                 </LinearLayout>
 
-                <LinearLayout
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cartNumView"
+                android:layout_marginTop="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/cartItemSubBtn"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shop_cart_sub_selector"/>
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/cartItemNum"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:gravity="center"
+                    android:textColor="@color/text_main_color"
+                    android:text="1"
+                    android:background="@drawable/shop_cart_num"/>
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/cartItemAddBtn"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:background="@drawable/shop_cart_add_selector"/>
+
+                </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cartNumLoseView"
+                android:layout_marginTop="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:visibility="gone"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginLeft="10dp">
+                    android:textColor="@color/text_gary_color"
+                    android:text="数量："/>
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/cartItemLoseNum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:gravity="center"
+                    android:textColor="@color/text_main_color"
+                    android:text="1"/>
 
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_gary_color"
-                        android:text="尺码："
-                        />
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_gary_color"
-                        android:text="L"
-                        />
-                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_weight="0.00001"
+            android:layout_marginRight="10dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="right"
+            >
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/cartItemCurrentPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:textSize="14sp"
+                android:textColor="@color/red"
+                android:text="$123.5"
+                />
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/cartItemFormalPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:textSize="12sp"
+                android:textColor="@color/text_gary_color"
+                android:text="$ 123.5"
+                />
+
+            <ImageView
+                android:id="@+id/cartItemDelBtn"
+                android:layout_width="45dp"
+                android:layout_height="26dp"
+                android:layout_marginTop="20dp"
+                android:paddingLeft="20dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:clickable="true"
+                android:src="@drawable/delete"/>
+
+            </LinearLayout>
+
     </LinearLayout>
+    <ImageView
+        android:id="@+id/cartItemLine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:src="@drawable/shop_cart_line_bg"/>
 </LinearLayout>

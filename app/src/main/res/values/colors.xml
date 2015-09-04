@@ -20,9 +20,14 @@
     <color name="white">#FFFFFF</color>
     <color name="tab_text_selected">#336699</color>
     <color name="black">#F1F1F1</color>
-    <color name="text_main_color">#aa000000</color>
-    <color name="text_gary_color">#77000000</color>
-    <color name="line_color">#D5D5D5</color>
+    <color name="page_bg">#F1F1F1</color>
+    <color name="text_main_color">#333333</color>
+    <color name="text_gary_color">#999999</color>
+    <color name="line_color">#f3f3f3</color>
+    <color name="sale_color">#ff6262</color>
+    <color name="green_color">#38C3BF</color>
+    <color name="red">#ff6262</color>
+    <color name="click_gray">#d5d5d5</color>
 
     <color name="tab_line">#CCCCCCCC</color>
     <color name="tab_transparent_highlight">#28FFFFFF</color>
@@ -34,7 +39,9 @@
 
     <color name="gray">#38C3BF</color>
 
-    <color name="red">#f83e12</color>
+    <color name="c00bbb9">#00bbb9</color>
+
+
 
 
     <color name="text_sort_selected">#ff6f6f</color>
@@ -61,4 +68,7 @@
 
     <!---->
     <color name="gray_light">#ececec</color>
+
+    <!---->
+    <color name="all_e">#EEEEEE</color>
 </resources>

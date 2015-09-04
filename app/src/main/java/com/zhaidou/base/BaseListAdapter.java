@@ -40,6 +40,10 @@ public abstract class BaseListAdapter<E> extends BaseAdapter {
 		this.list.add(e);
 		notifyDataSetChanged();
 	}
+    public void add(E e,int position) {
+        this.list.add(position,e);
+        notifyDataSetChanged();
+    }
 
 	public void addAll(List<E> list) {
 		this.list.addAll(list);

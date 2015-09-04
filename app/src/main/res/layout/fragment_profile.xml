@@ -53,15 +53,15 @@
             android:orientation="vertical">
     <RelativeLayout
         android:id="@+id/rl_header_layout"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:layout_width="match_parent"
         android:background="@color/white"
         android:layout_height="80dp">
         <com.zhaidou.view.TypeFaceTextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textColor="#666666"
+            android:textColor="@color/text_main_color"
             android:gravity="center_vertical"
             android:layout_marginLeft="20dp"
             android:text="更换头像"/>
@@ -96,7 +96,7 @@
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#666666"
+                    android:textColor="@color/text_main_color"
                     android:text="我的昵称"
                     android:layout_centerVertical="true"
                     android:paddingLeft="20dp"/>
@@ -124,7 +124,7 @@
                     android:layout_height="1dp"
                     android:layout_marginLeft="20dp"
                     android:layout_alignParentBottom="true"
-                    android:background="#eeeeee"/>
+                    android:background="#f1f1f1"/>
             </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/rl_email"
@@ -135,7 +135,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="注册邮箱"
-                    android:textColor="#666666"
+                    android:textColor="@color/text_main_color"
                     android:layout_centerVertical="true"
                     android:paddingLeft="20dp"/>
                 <com.zhaidou.view.TypeFaceTextView
@@ -232,7 +232,7 @@
                     android:layout_height="1dp"
                     android:layout_marginLeft="20dp"
                     android:layout_alignParentBottom="true"
-                    android:background="#eeeeee"/>
+                    android:background="#f1f1f1"/>
             </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/rl_job"
@@ -243,7 +243,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="我的职业"
-                    android:textColor="#666666"
+                    android:textColor="@color/text_main_color"
                     android:layout_centerVertical="true"
                     android:paddingLeft="20dp"/>
                 <ImageView
@@ -297,7 +297,7 @@
                     android:layout_height="1dp"
                     android:layout_marginLeft="20dp"
                     android:layout_alignParentBottom="true"
-                    android:background="#eeeeee"/>
+                    android:background="#f1f1f1"/>
             </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/rl_mobile"
@@ -308,7 +308,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="手机号码"
-                    android:textColor="#666666"
+                    android:textColor="@color/text_main_color"
                     android:layout_centerVertical="true"
                     android:paddingLeft="20dp"/>
                 <ImageView
@@ -354,7 +354,7 @@
             </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/rl_into"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@color/white">
@@ -362,7 +362,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="个人简介"
-                    android:textColor="#666666"
+                    android:textColor="@color/text_main_color"
                     android:layout_centerVertical="true"
                     android:paddingLeft="20dp"/>
                 <ImageView
@@ -378,7 +378,7 @@
                     android:layout_height="1dp"
                     android:layout_marginLeft="20dp"
                     android:layout_alignParentBottom="true"
-                    android:background="#eeeeee"/>
+                    android:background="#f1f1f1"/>
             </RelativeLayout>
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/tv_intro"
@@ -393,6 +393,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginTop="20dp"
+                android:visibility="gone"
                 android:background="@color/white">
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
@@ -415,11 +416,13 @@
                 android:layout_marginLeft="20dp"
                 android:background="#eeeeee"/>
             <LinearLayout
+                android:visibility="gone"
                 android:id="@+id/ll_addr_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="10dp"
@@ -444,6 +447,7 @@
                 android:paddingLeft="20dp"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"/>

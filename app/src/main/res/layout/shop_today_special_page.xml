@@ -14,7 +14,7 @@
 
     <com.pulltorefresh.PullToRefreshScrollView
         xmlns:ptr="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/scrollview"
+        android:id="@+id/sv_shop_today_special_scrollview"
         android:layout_width="match_parent"
         android:scrollbars="none"
         android:focusable="true"
@@ -29,74 +29,76 @@
             android:layout_below="@+id/headLine"
             android:layout_height="match_parent">
 
-            <RelativeLayout
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/adText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                >
+                android:paddingTop="30dp"
+                android:paddingBottom="30dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:minHeight="@dimen/home_item_dimen"
+                android:textSize="14sp"
+                android:gravity="center_vertical"
+                android:layout_centerInParent="true"
+                android:textColor="#666666"
+                android:background="@color/white"
+                android:text=""/>
 
-                <ImageView
-                    android:id="@+id/shopAdImage"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/home_item_dimen"
-                    android:scaleType="fitXY"
-                    android:background="@drawable/icon_loading_item"
-                    />
-
-                <com.zhaidou.view.TypeFaceTextView
-                    android:id="@+id/adText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_margin="10dp"
-                    android:layout_centerInParent="true"
-                    android:textColor="@color/white"
-                    android:text="新特卖每天早10点更新"/>
-            </RelativeLayout>
-
-            <LinearLayout
+            <RelativeLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/gray_9"
+                android:background="@color/green_color"
                 android:padding="10dp"
                 android:gravity="center_vertical">
 
                 <LinearLayout
                     android:orientation="horizontal"
-                    android:layout_width="fill_parent"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_alignParentLeft="true"
                     android:layout_height="wrap_content">
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:src="@drawable/icon_inform_white"/>
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
+                        android:layout_marginLeft="5dp"
                         android:text="限时限量 疯狂抢购"/>
                 </LinearLayout>
 
                 <LinearLayout
                     android:orientation="horizontal"
-                    android:layout_width="fill_parent"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentRight="true"
                     android:gravity="center_vertical|right"
                     android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:src="@drawable/icon_time_white"/>
+
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
-                        android:text="剩余时间 2天 10：16：50"
+                        android:text=""
+                        android:layout_marginLeft="5dp"
                         android:id="@+id/shopTimeTv"/>
                 </LinearLayout>
-            </LinearLayout>
+            </RelativeLayout>
 
             <com.zhaidou.view.ListViewForScrollView
                 android:id="@+id/shopListView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
                 android:divider="@null"
                 android:scrollbars="none"
                 android:listSelector="@android:color/transparent"
@@ -105,5 +107,41 @@
 
         </LinearLayout>
     </com.pulltorefresh.PullToRefreshScrollView>
+
+    <RelativeLayout
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="20dp">
+
+
+    <ImageView
+        android:id="@+id/myCartBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:layout_centerInParent="true"
+        android:src="@drawable/shop_goods_my_cart_selector"/>
+
+        <TextView
+            android:id="@+id/myCartTipsTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:layout_alignParentRight="true"
+            android:text=""
+            android:visibility="gone"
+            android:gravity="center"
+            android:background="@drawable/shop_goods_my_cart_tips_red_bg"
+            android:textSize="12sp"/>
+    </RelativeLayout>
+
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/headLine"
+        layout="@layout/content_null_layout"
+        ></include>
 
 </RelativeLayout>

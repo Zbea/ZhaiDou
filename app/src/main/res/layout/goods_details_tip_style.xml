@@ -1,38 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <RadioGroup
+        android:id="@+id/goodsRG"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="42dp"
+        android:layout_marginTop="@dimen/default_margin"
+        android:background="@color/white"
         android:orientation="horizontal">
 
-        <RadioButton
+        <com.zhaidou.view.TypeFaceRadioButton
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="商品详情"
-            android:textColor="@color/text_main_color"
-            android:background="@color/transparent"
-            android:padding="10dp"
+            android:checked="true"
+            android:textColor="@color/goods_options_text_color_selecter"
             android:gravity="center"
             android:button="@null"
             android:textSize="16sp"
+            android:background="@drawable/goods_options_selector"
             android:id="@+id/infoRb"/>
 
-        <RadioButton
+        <com.zhaidou.view.TypeFaceRadioButton
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="咨询与售后服务"
-            android:background="@color/transparent"
-            android:padding="10dp"
-            android:textColor="@color/text_main_color"
+            android:background="@drawable/goods_options_selector"
+            android:textColor="@color/goods_options_text_color_selecter"
             android:gravity="center"
             android:button="@null"
             android:textSize="16sp"
             android:id="@+id/afterSaleRb"/>
     </RadioGroup>
+
 
 </LinearLayout>

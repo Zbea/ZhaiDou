@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/black">
+
+    <include
+        android:id="@+id/headLine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/head_style_page"
+        ></include>
+
+    <LinearLayout
+        android:layout_below="@+id/headLine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/paymentView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:background="@drawable/content_part_bg"
+            >
+
+            <ImageView
+                android:id="@+id/paymentIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_margin="15dp"
+                android:src="@drawable/shop_order_payment_slecte_icon"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/paymentNameTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="@color/text_main_color"
+                    android:text="选择支付方式"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:orientation="horizontal">
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_gary_color"
+                        android:text="订单为你保留"/>
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:id="@+id/failTimeInfo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/red"
+                        android:layout_marginLeft="2dp"
+                        android:layout_marginRight="2dp"/>
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_gary_color"
+                        android:text=",超时将自动取消"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/loseView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:visibility="gone"
+            android:background="@drawable/content_part_bg"
+            >
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_margin="15dp"
+                android:src="@drawable/shop_order_payment_lose_icon"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="@color/text_main_color"
+                    android:text="订单失效"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:orientation="horizontal">
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_gary_color"
+                        android:text="订单超时已失效,如需购买,需重新添加"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_margin"
+            android:background="@drawable/content_part_bg"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:padding="@dimen/default_margin">
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/text_main_color"
+                    android:textSize="16sp"
+                    android:text="支付方式"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:marqueeRepeatLimit="marquee_forever"/>
+            </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/line_color"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/default_margin"
+                android:paddingRight="@dimen/default_margin"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
+
+                <CheckBox
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/CustomCheckboxTheme"
+                    android:checked="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/transparent"
+                    android:id="@+id/cb_weixin"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="22dp"
+                    android:layout_centerVertical="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/shop_order_payment_weixin"/>
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_main_color"
+                    android:text="微信"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:marqueeRepeatLimit="marquee_forever"/>
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/default_margin"
+                    android:textSize="12sp"
+                    android:layout_marginRight="10dp"
+                    android:textColor="@color/text_gary_color"
+                    android:text="单笔订单金额最高为8000"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:marqueeRepeatLimit="marquee_forever"/>
+                </LinearLayout>
+            </RelativeLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="20dp"
+                android:background="@color/line_color"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/default_margin"
+                android:paddingRight="@dimen/default_margin"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
+
+                <CheckBox
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/CustomCheckboxTheme"
+                    android:layout_centerVertical="true"
+                    android:background="@color/transparent"
+                    android:id="@+id/cb_zhifubao"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="22dp"
+                    android:layout_centerVertical="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="5dp"
+                        android:src="@drawable/shop_order_payment_zhifubao"/>
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_main_color"
+                        android:text="支付宝"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:marqueeRepeatLimit="marquee_forever"/>
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/default_margin"
+                        android:textSize="12sp"
+                        android:layout_marginRight="10dp"
+                        android:textColor="@color/text_gary_color"
+                        android:text="支持大额订单支付"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:marqueeRepeatLimit="marquee_forever"/>
+                </LinearLayout>
+            </RelativeLayout>
+
+            </LinearLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/goods_bottom_height_dimen"
+        android:layout_alignParentBottom="true"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="@dimen/default_margin"
+        android:paddingBottom="@dimen/default_margin"
+        android:background="@color/white"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/paymentBtn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="确认支付"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:background="@drawable/btn_red_click_selector"/>
+    </LinearLayout>
+
+
+
+</RelativeLayout>

@@ -2,17 +2,23 @@ package com.zhaidou.activities;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +41,7 @@ import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.NativeHttpUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -65,7 +72,10 @@ import cn.sharesdk.wechat.friends.Wechat;
  */
         public class LoginActivity extends FragmentActivity implements View.OnClickListener,PlatformActionListener,RegisterFragment.RegisterOrLoginListener{
 
-    private TextView mEmailView,mPswView,mRegisterView,mResetView;
+    private TextView mRegisterView,mResetView;
+    private EditText mEmailView,mPswView;
+    private ImageView emailDelete;
+    private String strEmail;
 
     private TextView mLoginView;
 
@@ -76,6 +86,7 @@ import cn.sharesdk.wechat.friends.Wechat;
 
     private static final int SHOW_DIALOG=1;
     private static final int CLOSE_DIALOG=2;
+    private int flags;
     public int index;
     RequestQueue requestQueue;
 
@@ -93,12 +104,20 @@ import cn.sharesdk.wechat.friends.Wechat;
                     User u=(User)msg.obj;//id,email,token,nick,null
                     Log.i("handleMessage------------>",u.toString());
                     SharedPreferencesUtil.saveUser(getApplicationContext(), u);
-                    Intent intent=new Intent();
-                    intent.putExtra("id",u.getId());
-                    intent.putExtra("email",u.getEmail());
-                    intent.putExtra("token",u.getAuthentication_token());
-                    intent.putExtra("nick",u.getNickName());
-                    setResult(2000, intent);
+
+                    ToolUtils.setLog("要刷新登录了");
+                    Intent intent1=new Intent(ZhaiDou.IntentRefreshLoginTag);
+                    sendBroadcast(intent1);
+
+                    if (flags!=1)
+                    {
+                        Intent intent=new Intent();
+                        intent.putExtra("id",u.getId());
+                        intent.putExtra("email",u.getEmail());
+                        intent.putExtra("token",u.getAuthentication_token());
+                        intent.putExtra("nick",u.getNickName());
+                        setResult(2000, intent);
+                    }
                     finish();//此处一定要调用finish()方法
                     break;
                 case SHOW_DIALOG:
@@ -114,13 +133,56 @@ import cn.sharesdk.wechat.friends.Wechat;
         }
     };
 
+    /**
+     * 输入邮箱改变事件
+     */
+    private TextWatcher textWatcher=new TextWatcher()
+    {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3)
+        {
+        }
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i2, int i3)
+        {
+            strEmail=charSequence.toString();
+            if (charSequence.toString().length()>0)
+            {
+                emailDelete.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                emailDelete.setVisibility(View.GONE);
+            }
+        }
+        @Override
+        public void afterTextChanged(Editable editable)
+        {
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.fragment_login);
-        mEmailView=(TextView)findViewById(R.id.tv_email);
-        mPswView=(TextView)findViewById(R.id.tv_password);
+
+        flags=getIntent().getFlags();
+
+        strEmail=getEmail();
+
+
+        mEmailView=(EditText)findViewById(R.id.tv_email);
+        mEmailView.setText(strEmail);
+        mEmailView.addTextChangedListener(textWatcher);
+        emailDelete=(ImageView)findViewById(R.id.emailDelete);
+        emailDelete.setOnClickListener(this);
+        if (strEmail!=null)
+        if (strEmail.length()>0)
+        {
+           emailDelete.setVisibility(View.VISIBLE);
+        }
+        mPswView=(EditText)findViewById(R.id.tv_password);
         mLoginView=(TextView)findViewById(R.id.bt_login);
         mRegisterView=(TextView)findViewById(R.id.tv_register);
         mResetView=(TextView)findViewById(R.id.tv_reset_psw);
@@ -138,32 +200,49 @@ import cn.sharesdk.wechat.friends.Wechat;
         setRegisterOrLoginListener(this);
     }
 
+    /**
+     * 记住邮箱帐号
+     */
+    private void saveEmail()
+    {
+        SharedPreferences sharedPreferences=getSharedPreferences("email",0);
+        SharedPreferences.Editor editor=sharedPreferences.edit();
+        editor.putString("email",strEmail);
+        editor.commit();
+    }
+
+    /**
+     * 获得保存的邮箱帐号
+     * @return
+     */
+    private String getEmail()
+    {
+        return getSharedPreferences("email",0).getString("email","");
+    }
+
     @Override
     public void onClick(View view) {
         ShareSDK.initSDK(this);
         switch (view.getId()){
             case R.id.bt_login:
-                String email = mEmailView.getText().toString();
+//                String email = mEmailView.getText().toString();
                 String password =mPswView.getText().toString();
-                if (TextUtils.isEmpty(email)){
+                if (TextUtils.isEmpty(strEmail)){
                     Toast.makeText(this, "邮箱不能为空哦！", Toast.LENGTH_SHORT).show();
                     return;
                 }else if (TextUtils.isEmpty(password)){
                     Toast.makeText(this,"密码不能为空哦!",Toast.LENGTH_SHORT).show();
                     return;
                 }
+                saveEmail();
                 new MyTask().execute();
                 break;
             case R.id.tv_register:
-//                RegisterFragment fragment = RegisterFragment.newInstance("","");
-//                ((BaseActivity)).navigationToFragment(fragment);
                 startActivityForResult(new Intent(LoginActivity.this,RegisterActivity.class),200);
                 break;
             case R.id.tv_reset_psw:
                 break;
             case R.id.ll_back:
-                Log.i("ll_back--->", "ll_back");
-//                ((BaseActivity)getActivity()).popToStack(this);
                 finish();
                 break;
             case R.id.ll_weixin:
@@ -184,6 +263,9 @@ import cn.sharesdk.wechat.friends.Wechat;
                 Platform sina = ShareSDK.getPlatform(SinaWeibo.NAME);
                 sina.removeAccount(true);
                 authorize(sina);
+                break;
+            case R.id.emailDelete:
+                mEmailView.setText("");
                 break;
             case R.id.ll_taobao:
 
@@ -219,7 +301,6 @@ import cn.sharesdk.wechat.friends.Wechat;
 
                                     new RegisterTask().execute(registers);
                                 }else {
-                                    Log.i("flag==1","flag==1");
                                     JSONObject userJson = jsonObject.optJSONObject("user");
                                     String token =userJson.optJSONObject("user_tokens").optString("token");
                                     JSONArray userArray = userJson.optJSONArray("users");
@@ -282,7 +363,6 @@ import cn.sharesdk.wechat.friends.Wechat;
                 JSONObject json = new JSONObject(s);
                 String msg = json.optString("message");
                 if (!TextUtils.isEmpty(msg)){
-//                    JSONArray errMsg =  json.optJSONArray("message");
                     Toast.makeText(LoginActivity.this,msg,Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -292,18 +372,16 @@ import cn.sharesdk.wechat.friends.Wechat;
                 for (int i=0;i<userArr.length();i++){
                     JSONObject userObj = userArr.optJSONObject(i);
                     int id = userObj.optInt("id");
-                    Log.i("id--->",id+"");
                     String email=userObj.optString("email");
-                    Log.i("email--->",email);
                     String nick = userObj.optString("nick_name");
-                    Log.i("nickname--->",nick);
                     String token=json.optJSONObject("user_tokens").optString("token");
-                    Log.i("token--->",token);
+
+//                    ToolUtils.setLog("要刷新登录了");
+//                    Intent intent=new Intent(ZhaiDou.IntentRefreshLoginTag);
+//                    sendBroadcast(intent);
 
                     User user = new User(id,email,token,nick,null);
-                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user,null);
-                    Log.i("LoginFragment----onRegisterOrLoginSuccess---->","onRegisterOrLoginSuccess");
-//                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user,LoginFragment.this);
+                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
                 }
 
             }catch (Exception e){
@@ -398,7 +476,11 @@ import cn.sharesdk.wechat.friends.Wechat;
 //        Log.i("getUserIcon","");//platform.getDb().getUserIcon()
         Log.i("getUserName",platform.getDb().getUserName());
         Map<String,String> params =new HashMap<String, String>();
-        params.put("uid",platform.getDb().getUserId());
+        if ("weixin".equalsIgnoreCase(provider)){
+            params.put("uid",stringObjectHashMap.get("unionid")+"");
+        }else {
+            params.put("uid",platform.getDb().getUserId());
+        }
         params.put("provider",provider);
 
         params.put("nick_name",platform.getDb().getUserName());
@@ -417,7 +499,11 @@ import cn.sharesdk.wechat.friends.Wechat;
                     Map<String,String> registers = new HashMap<String, String>();
                     registers.put("user[email]",email);
                     registers.put("user[nick_name]",nick);
-                    registers.put("user[uid]",platform.getDb().getUserId());
+                    if ("weixin".equalsIgnoreCase(provider)){
+                        registers.put("uid",stringObjectHashMap.get("unionid")+"");
+                    }else {
+                        registers.put("uid",platform.getDb().getUserId());
+                    }
                     registers.put("user[provider]",provider);
                     Log.i("provider---------------->",provider);
                     if ("tqq".equalsIgnoreCase(provider)){//http://www.zhaidou.com/uploads/user/avatar/77069/thumb_f713f712d202b1ecab67497877401835.png

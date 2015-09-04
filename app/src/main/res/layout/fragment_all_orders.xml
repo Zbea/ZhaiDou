@@ -1,0 +1,124 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#f1f1f1">
+
+    <RelativeLayout
+        android:id="@+id/rl_back"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#39495d">
+        <LinearLayout
+            android:id="@+id/ll_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_marginLeft="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:src="@drawable/icon_back"/>
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textSize="16sp"
+                android:drawablePadding="2dp"
+                android:layout_marginLeft="6dp"
+                android:textColor="@color/white"
+                android:layout_alignParentLeft="true"
+                android:text="返回"/>
+        </LinearLayout>
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:text="所有订单"/>
+    </RelativeLayout>
+
+
+    <ListView
+        android:id="@+id/lv_all_orderlist"
+        android:layout_below="@id/rl_back"
+        android:listSelector="@android:color/transparent"
+        android:dividerHeight="10dp"
+        android:layout_marginBottom="10dp"
+        android:scrollbars="none"
+        android:divider="@android:color/transparent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <LinearLayout
+        android:layout_below="@id/rl_back"
+        android:id="@+id/loadingView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/page_bg"
+        android:gravity="center"
+        android:visibility="gone"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/nullline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:visibility="gone"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_null_order_recver" />
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="80dp"
+                android:layout_marginTop="20dp"
+                android:text="抱歉,暂无待付款订单"
+                android:textColor="@color/text_gary_color" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/nullNetline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_null_net"/>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_gary_color"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="50dp"
+                android:text="抱歉,网络连接失败"/>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/netReload"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:layout_marginBottom="30dp"
+                android:gravity="center"
+                android:clickable="true"
+                android:padding="10dp"
+                android:background="@drawable/btn_green_click_bg"
+                android:text="重新加载"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>

@@ -1,0 +1,186 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/page_bg"
+    android:orientation="vertical">
+    <RelativeLayout
+        android:id="@+id/rl_actionbar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#39495d">
+        <LinearLayout
+            android:id="@+id/ll_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/icon_back" />
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="6dp"
+                android:drawablePadding="2dp"
+                android:gravity="center"
+                android:text="返回"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+        </LinearLayout>
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="新建地址"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/tv_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:paddingRight="10dp"
+            android:text="保存"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/btn_height_dimen"
+        android:background="@drawable/content_part_bg"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingLeft="15dp"
+            android:text="收货人:"
+            android:textSize="15sp"
+            android:textColor="@color/text_main_color"  />
+
+        <com.zhaidou.view.TypeFaceEditText
+            android:id="@+id/tv_addr_username"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:singleLine="true"
+            android:textSize="14sp"
+            android:background="@color/white"
+            android:textColor="@color/text_main_color"
+            android:text="" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/btn_height_dimen"
+        android:background="@drawable/content_part_bg"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="15dp"
+            android:textSize="15sp"
+            android:text="联系方式:"
+            android:textColor="@color/text_main_color" />
+
+        <com.zhaidou.view.TypeFaceEditText
+            android:id="@+id/tv_addr_mobile"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@color/white"
+            android:inputType="phone"
+            android:maxLength="11"
+            android:textSize="14sp"
+            android:textColor="@color/text_main_color"
+            android:text="" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_address"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/btn_height_dimen"
+        android:background="@drawable/content_part_bg"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="15dp"
+            android:text="所在地区:"
+            android:textSize="15sp"
+            android:textColor="#666666" />
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent">
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/tv_addr_loc"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="14sp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:singleLine="true"
+                android:gravity="center_vertical"
+                android:layout_toLeftOf="@+id/imageArrow"
+                android:textColor="@color/text_main_color"
+                android:text="" />
+            <ImageView
+                android:id="@+id/imageArrow"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:src="@drawable/icon_arrow_down"/>
+        </RelativeLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/btn_height_dimen"
+        android:background="@drawable/content_part_bg"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">>
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="15dp"
+            android:text="详细地址:"
+            android:textSize="15sp"
+            android:textColor="@color/text_main_color" />
+
+        <com.zhaidou.view.TypeFaceEditText
+            android:id="@+id/tv_addr_detail"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:singleLine="true"
+            android:textSize="14sp"
+            android:background="@color/white"
+            android:textColor="@color/text_main_color"
+            android:text="" />
+    </LinearLayout>
+
+</LinearLayout>

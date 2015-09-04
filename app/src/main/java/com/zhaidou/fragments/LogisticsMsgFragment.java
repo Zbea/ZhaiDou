@@ -4,65 +4,51 @@ package com.zhaidou.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-
-import com.pulltorefresh.PullToRefreshListView;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.ExpandableListView;
 import com.zhaidou.R;
-import com.zhaidou.base.BaseListAdapter;
-import com.zhaidou.base.ViewHolder;
-import com.zhaidou.model.Logistics;
+import com.zhaidou.base.BaseFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link LogisticsMsgFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
- */
-public class LogisticsMsgFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class LogisticsMsgFragment extends BaseFragment {
+    private static final String ARG_TYPE = "type";
+    private static final String ARG_NUMBER = "number";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String mType;
+    private String mNumber;
 
-    private PullToRefreshListView mLogisticsView;
+    private ExpandableListView mLogisticsView;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment LogisticsMsgFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static LogisticsMsgFragment newInstance(String param1, String param2) {
+    private Context context;
+    private WebView mWebView;
+
+
+    public static LogisticsMsgFragment newInstance(String type, String number) {
         LogisticsMsgFragment fragment = new LogisticsMsgFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_TYPE, type);
+        args.putString(ARG_NUMBER, number);
         fragment.setArguments(args);
         return fragment;
     }
     public LogisticsMsgFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mType = getArguments().getString(ARG_TYPE);
+            mNumber = getArguments().getString(ARG_NUMBER);
         }
     }
 
@@ -71,20 +57,29 @@ public class LogisticsMsgFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_logistics, container, false);
-        mLogisticsView=(PullToRefreshListView)view.findViewById(R.id.lv_logistics);
+        context = getActivity();
+        mLogisticsView = (ExpandableListView)view.findViewById(R.id.lv_logistics);
+        mWebView=(WebView)view.findViewById(R.id.wv_logistics);
+        mWebView.getSettings().setJavaScriptEnabled(true);
+        WebSettings webSettings = mWebView.getSettings();
+//        webSettings.setUseWideViewPort(true);
+//        webSettings.setLoadWithOverviewMode(true);
+//        mWebView.setVerticalScrollBarEnabled(false);
+//        mWebView.setVerticalScrollbarOverlay(false);
+//        mWebView.setHorizontalScrollbarOverlay(false);
+//        mWebView.setHorizontalFadingEdgeEnabled(false);
+//        mWebView.setInitialScale(1);
+        String url="http://m.kuaidi100.com/index_all.html?type="+(TextUtils.isEmpty(mType)?"huitongkuaidi":mType)+"&postid="+mNumber+"#result";
+        mWebView.loadUrl(url);
+
+        Log.i("url------------>",url);
+        mWebView.setWebViewClient(new WebViewClient(){
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                mWebView.loadUrl("javascript:$('.smart-header').remove();$('.adsbygoogle').hide();$('#result').css('padding-top','0px');" +
+                        "$('.smart-footer').remove();");
+            }
+        });
         return view;
     }
-
-//    private class LogisticsAdapter extends BaseListAdapter<Logistics>{
-//        public LogisticsAdapter(Context context, List<String> list) {
-//            super(context, list);
-//        }
-//
-//        @Override
-//        public View bindView(int position, View convertView, ViewGroup parent) {
-//            if (convertView==null)
-//                convertView=mInflater.inflate(R.layout.search_item_gv,null);
-//            return convertView;
-//        }
-//    }
 }

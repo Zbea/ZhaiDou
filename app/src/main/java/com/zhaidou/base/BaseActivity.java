@@ -1,6 +1,7 @@
 package com.zhaidou.base;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -10,15 +11,17 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.PersonalFragment;
-import com.zhaidou.fragments.PersonalFragment1;
 import com.zhaidou.fragments.RegisterFragment;
+import com.zhaidou.fragments.ShopPaymentFailFragment;
+import com.zhaidou.fragments.ShopPaymentSuccessFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 
 /**
  * Created by wangclark on 15/7/3.
@@ -26,7 +29,6 @@ import com.zhaidou.utils.SharedPreferencesUtil;
 public class BaseActivity extends FragmentActivity implements RegisterFragment.RegisterOrLoginListener {
     protected FrameLayout mChildContainer;
     protected PersonalFragment persoanlFragment;
-    protected PersonalFragment1 persoanlFragment1;
     protected ImageButton personalButton;
     protected Fragment currentFragment;
     protected WebView webView;
@@ -38,26 +40,26 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
             RegisterFragment registerFragment = (RegisterFragment) fragment;
             registerFragment.setRegisterOrLoginListener(this);
         }
-//        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, fragment, fragment.getClass().getSimpleName())
-//                .addToBackStack(null).commit();
-        if ("MainActivity".equalsIgnoreCase(this.getClass().getSimpleName())) {
-            Log.i("MainActivity---->","this.getClass().getSimpleName()------------"+fragment.getClass().getSimpleName());
+        if ("MainActivity".equalsIgnoreCase(((Object)this).getClass().getSimpleName())) {
+            Log.i("MainActivity---->", "this.getClass().getSimpleName()------------" + ((Object)fragment).getClass().getSimpleName());
             mChildContainer.setVisibility(View.VISIBLE);
         }
-        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, fragment, fragment.getClass().getSimpleName())
-                .addToBackStack(null).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, fragment, ((Object)fragment).getClass().getSimpleName())
+                .addToBackStack(null).commitAllowingStateLoss();
     }
 
     public void popToStack(Fragment fragment) {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        Log.i("childFragmentManager--->", fragmentManager.getBackStackEntryCount() + "");
+        fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
         fragmentManager.popBackStack();
-        fragmentManager.beginTransaction().remove(fragment).commit();
+        if (fragment instanceof ShopPaymentFailFragment || fragment instanceof ShopPaymentSuccessFragment)
+        fragmentManager.popBackStack();
+        fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
 
-        Log.i("fragment---->", fragment.getClass().getSimpleName());
+        Log.i("fragment---->", ((Object)fragment).getClass().getSimpleName());
         if (fragment != null && fragment instanceof LoginFragment) {
-            if ("MainActivity".equalsIgnoreCase(this.getClass().getSimpleName())) {
+            if ("MainActivity".equalsIgnoreCase(((Object)this).getClass().getSimpleName())) {
                 mChildContainer.setVisibility(View.GONE);
             }
         }
@@ -66,14 +68,19 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
 
     @Override
     public void onRegisterOrLoginSuccess(User user, Fragment fragment) {
-        Log.i("BaseActivity-------onRegisterOrLoginSuccess---->", user.toString());
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.popBackStack();
         SharedPreferencesUtil.saveUser(this, user);
+
+        ToolUtils.setLog("开始登录刷新啦————————————————》");
+        Intent intent = new Intent(ZhaiDou.IntentRefreshLoginTag);
+        sendBroadcast(intent);
+        ToolUtils.setLog("开始登录刷新啦1————————————————》");
+
         if (fragment instanceof RegisterFragment) {
             popToStack(fragment);
         }
-        if ("MainActivity".equalsIgnoreCase(this.getClass().getSimpleName())) {
+        if ("MainActivity".equalsIgnoreCase(((Object)this).getClass().getSimpleName())) {
             if (persoanlFragment == null) {
                 persoanlFragment = PersonalFragment.newInstance("", "");
                 persoanlFragment.onAttach(this);
@@ -83,9 +90,9 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
             MainActivity mainActivity = (MainActivity) this;
             mainActivity.selectFragment(currentFragment, persoanlFragment);
             mainActivity.setButton(personalButton);
-        } else if ("ItemDetailActivity".equalsIgnoreCase(this.getClass().getSimpleName())) {
-            Log.i("ItemDetailActivity-------------->", this.getClass().getSimpleName());
-            this.user=user;
+        } else if ("ItemDetailActivity".equalsIgnoreCase(((Object)this).getClass().getSimpleName())) {
+            Log.i("ItemDetailActivity-------------->", ((Object)this).getClass().getSimpleName());
+            this.user = user;
             Log.i("from-------------->", from);
             if ("lottery".equalsIgnoreCase(from)) {
                 return;
@@ -98,6 +105,7 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
             fragmentManager.beginTransaction().hide(fragment).commit();
         }
     }
+
     public String getDeviceId() {
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         return tm.getDeviceId();
