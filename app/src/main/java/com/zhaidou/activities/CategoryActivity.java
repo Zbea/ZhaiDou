@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.Window;
-import android.webkit.WebView;
 import android.widget.TextView;
 
 import com.umeng.analytics.MobclickAgent;
@@ -22,9 +21,6 @@ import java.util.List;
 
 public class CategoryActivity extends FragmentActivity {
 
-    private WebView webView;
-
-    private long lastClickTime = 0L;
     private TextView mTextView;
     private TabPageIndicator mIndicator;
     private ViewPager mViewPager;
@@ -53,7 +49,6 @@ public class CategoryActivity extends FragmentActivity {
         mTextView=(TextView)findViewById(R.id.tv_category_name);
         mTextView.setText(title);
 
-
         mIndicator=(TabPageIndicator)findViewById(R.id.indicator);
         mViewPager=(ViewPager)findViewById(R.id.vp_category);
         mFragments=new ArrayList<Fragment>();
@@ -68,7 +63,6 @@ public class CategoryActivity extends FragmentActivity {
             mFragments.add(mSingleFragment);
 //            mFragments.add(mStrategyFragment);
         }
-
 
         mFragmentAdapter.notifyDataSetChanged();
         mIndicator.notifyDataSetChanged();
