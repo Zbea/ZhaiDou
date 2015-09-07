@@ -46,6 +46,7 @@ import com.zhaidou.activities.HomeCompetitionActivity;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.SearchActivity;
 import com.zhaidou.adapter.AdViewAdpater;
+import com.zhaidou.adapter.GoodsImageAdapter;
 import com.zhaidou.adapter.HomeListAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
@@ -124,7 +125,8 @@ public class HomeFragment extends BaseFragment implements
     private List<SwitchImage> banners;
     private ImageView[] dots;
     private List<View> adPics = new ArrayList<View>();
-    private AdViewAdpater adpater;
+    private AdViewAdpater adpaters;
+    private GoodsImageAdapter adapter;
     private int currentItem = 5000;
     boolean nowAction = false;
     boolean isStop = true;
@@ -249,13 +251,13 @@ public class HomeFragment extends BaseFragment implements
                         {
                             SwitchImage switchImage = banners.get(tag);
                             Category category = new Category();
-                            category.setId(switchImage.getId());
+                            category.setId(switchImage.id);
                             SpecialFragment fragment = SpecialFragment.newInstance("", category);
                             ((BaseActivity) getActivity()).navigationToFragment(fragment);
                         }
                     }
                 });
-                ToolUtils.setImageCacheUrl(banners.get(i).imageUrl, img);
+                ToolUtils.setImageCacheUrl(banners.get(i).imageUrl, img,R.drawable.icon_loading_item);
                 adPics.add(img);
             }
             dots = new ImageView[adPics.size()];
@@ -284,10 +286,10 @@ public class HomeFragment extends BaseFragment implements
                 }
 
             }
-            if (adpater == null)
+            if (adpaters == null)
             {
-                adpater = new AdViewAdpater(mContext, adPics);
-                viewPager.setAdapter(adpater);
+                adpaters = new AdViewAdpater(mContext, adPics);
+                viewPager.setAdapter(adpaters);
                 viewPager.setOnPageChangeListener(new MyPageChangeListener());
                 viewPager.setOnTouchListener(new View.OnTouchListener()
                 {
@@ -323,7 +325,7 @@ public class HomeFragment extends BaseFragment implements
                 }).start();
             } else
             {
-                adpater.notifyDataSetChanged();
+                adpaters.notifyDataSetChanged();
             }
 
         }

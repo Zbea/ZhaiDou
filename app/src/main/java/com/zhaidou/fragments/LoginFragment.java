@@ -63,6 +63,7 @@ import com.alibaba.sdk.android.login.callback.LoginCallback;
 import com.zhaidou.utils.NativeHttpUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.CustomEditText;
 
 public class LoginFragment extends BaseFragment implements View.OnClickListener,PlatformActionListener{
     private static final String ARG_PARAM1 = "param1";
@@ -71,8 +72,8 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     private String mParam1;
     private String mParam2;
     private TextView mRegisterView,mResetView;
-    private EditText mEmailView,mPswView;
-    private ImageView emailDelete;
+    private CustomEditText mEmailView;
+    private CustomEditText mPswView;
     private String strEmail;
     private Context mContext;
 
@@ -108,14 +109,6 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         public void onTextChanged(CharSequence charSequence, int i, int i2, int i3)
         {
             strEmail=charSequence.toString();
-            if (charSequence.toString().length()>0)
-            {
-                emailDelete.setVisibility(View.VISIBLE);
-            }
-            else
-            {
-                emailDelete.setVisibility(View.GONE);
-            }
         }
         @Override
         public void afterTextChanged(Editable editable)
@@ -150,17 +143,10 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         mContext=getActivity();
         strEmail=getEmail();
 
-        mEmailView=(EditText)view.findViewById(R.id.tv_email);
+        mEmailView=(CustomEditText)view.findViewById(R.id.tv_email);
         mEmailView.setText(strEmail);
         mEmailView.addTextChangedListener(textWatcher);
-        emailDelete=(ImageView)view.findViewById(R.id.emailDelete);
-        emailDelete.setOnClickListener(this);
-        if (strEmail!=null)
-            if (strEmail.length()>0)
-            {
-                emailDelete.setVisibility(View.VISIBLE);
-            }
-        mPswView=(EditText)view.findViewById(R.id.tv_password);
+        mPswView=(CustomEditText)view.findViewById(R.id.tv_password);
         mLoginView=(TextView)view.findViewById(R.id.bt_login);
         mRegisterView=(TextView)view.findViewById(R.id.tv_register);
         mResetView=(TextView)view.findViewById(R.id.tv_reset_psw);
@@ -206,14 +192,22 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                 hideInputMethod();
                 String password =mPswView.getText().toString();
                 if (TextUtils.isEmpty(strEmail)){
-                    Toast.makeText(getActivity(),"邮箱不能为空哦！",Toast.LENGTH_SHORT).show();
+                    mEmailView.setShakeAnimation();
                     return;
                 }else if (TextUtils.isEmpty(password)){
-                    Toast.makeText(getActivity(),"密码不能为空哦!",Toast.LENGTH_SHORT).show();
+                    mPswView.setShakeAnimation();
                     return;
                 }
-                saveEmail();
-                new MyTask().execute();
+                if (ToolUtils.isEmailOK(strEmail) && strEmail.length() > 0)
+                {
+                    saveEmail();
+                    new MyTask().execute();
+                }
+                else
+                {
+                    mEmailView.setShakeAnimation();
+                    Toast.makeText(mContext,"抱歉,无效邮箱",Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.tv_register:
                 RegisterFragment fragment = RegisterFragment.newInstance(mParam1,"");
@@ -222,11 +216,9 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
             case R.id.tv_reset_psw:
                 break;
             case R.id.ll_back:
-                Log.i("ll_back--->","ll_back");
                 ((BaseActivity)getActivity()).popToStack(this);
                 break;
             case R.id.ll_weixin:
-                Log.i("ll_weixin--->","ll_weixin");
                 Platform wechat = ShareSDK.getPlatform(Wechat.NAME);
                 if (!wechat.isClientValid()){
                     Toast.makeText(getActivity(),"没有安装微信客户端哦！",Toast.LENGTH_SHORT).show();
@@ -306,9 +298,6 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                         Log.i("onFailure---->","onFailure");
                     }
                 });
-                break;
-            case R.id.emailDelete:
-                mEmailView.setText("");
                 break;
             default:
                 break;

@@ -119,7 +119,7 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
         {
             viewHolder.itemSales.setVisibility(View.GONE);
         }
-        ToolUtils.setImageCacheUrl(todayShopItem.imageUrl,viewHolder.itemImage);
+        ToolUtils.setImageCacheUrl(todayShopItem.imageUrl,viewHolder.itemImage,R.drawable.icon_loading_defalut);
 
         viewHolder.itemBuy.setOnClickListener(new View.OnClickListener()
         {

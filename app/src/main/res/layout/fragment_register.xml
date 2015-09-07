@@ -48,60 +48,80 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/btn_gray_line_click_bg"
         android:orientation="vertical">
-        <com.zhaidou.view.TypeFaceEditText
+        <com.zhaidou.view.CustomEditText
             android:id="@+id/tv_email"
             android:layout_width="match_parent"
             android:layout_height="@dimen/btn_height_dimen"
             android:gravity="center_vertical"
-            android:paddingLeft="10dp"
             android:inputType="textEmailAddress"
             android:textSize="16sp"
             android:background="@color/transparent"
             android:singleLine="true"
+            android:textColor="@color/text_main_color"
+            android:textColorHint="@color/text_gary_color"
+            android:drawableRight="@drawable/cancel"
+            android:paddingRight="10dp"
+            android:drawablePadding="10dp"
+            android:paddingLeft="10dp"
             android:hint="输入邮箱"/>
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:background="#EEEEEE"/>
-        <com.zhaidou.view.TypeFaceEditText
+        <com.zhaidou.view.CustomEditText
             android:id="@+id/tv_nick"
             android:layout_width="match_parent"
             android:layout_height="@dimen/btn_height_dimen"
             android:gravity="center_vertical"
-            android:paddingLeft="10dp"
             android:textSize="16sp"
             android:singleLine="true"
             android:background="@color/transparent"
+            android:textColor="@color/text_main_color"
+            android:textColorHint="@color/text_gary_color"
+            android:drawableRight="@drawable/cancel"
+            android:paddingRight="10dp"
+            android:drawablePadding="10dp"
+            android:paddingLeft="10dp"
             android:hint="用户昵称"/>
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:background="#EEEEEE"/>
-        <com.zhaidou.view.TypeFaceEditText
+        <com.zhaidou.view.CustomEditText
             android:id="@+id/tv_password"
             android:layout_width="match_parent"
             android:layout_height="@dimen/btn_height_dimen"
             android:gravity="center_vertical"
-            android:paddingLeft="10dp"
             android:textSize="16sp"
             android:singleLine="true"
             android:background="@color/transparent"
             android:inputType="textPassword"
+            android:textColor="@color/text_main_color"
+            android:textColorHint="@color/text_gary_color"
+            android:drawableRight="@drawable/cancel"
+            android:paddingRight="10dp"
+            android:drawablePadding="10dp"
+            android:paddingLeft="10dp"
             android:hint="设置密码"/>
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:background="#EEEEEE"/>
-        <com.zhaidou.view.TypeFaceEditText
+        <com.zhaidou.view.CustomEditText
             android:id="@+id/tv_password_confirm"
             android:layout_width="match_parent"
             android:layout_height="@dimen/btn_height_dimen"
             android:gravity="center_vertical"
-            android:paddingLeft="10dp"
             android:textSize="16sp"
             android:singleLine="true"
             android:inputType="textPassword"
             android:background="@color/transparent"
+            android:textColor="@color/text_main_color"
+            android:textColorHint="@color/text_gary_color"
+            android:drawableRight="@drawable/cancel"
+            android:paddingRight="10dp"
+            android:drawablePadding="10dp"
+            android:paddingLeft="10dp"
             android:hint="确认密码"/>
     </LinearLayout>
     <com.zhaidou.view.TypeFaceTextView
@@ -110,7 +130,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/btn_height_dimen"
+        android:layout_height="@dimen/list_height_dimen"
         android:text="注册"
         android:gravity="center"
         android:layout_marginTop="20dp"

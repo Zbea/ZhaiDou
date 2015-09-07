@@ -149,16 +149,10 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     break;
                 case UPDATE_TIMER_START:
                     String date = (String) msg.obj;
-//                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
                     try
                     {
                         long millionSeconds = sdf.parse(date).getTime();//毫秒
-////                        Log.i("millionSeconds",millionSeconds+"");
-////                        Log.i("current---->",System.currentTimeMillis()+"");
-//                        long hour=3600*1000;
-//                        long minute=60*1000;
-//                        millionSeconds=millionSeconds+hour*23+minute*59+59*1000;
                         long temp = millionSeconds - System.currentTimeMillis();
                         mTimer = new MyTimer(temp, 1000);
                         mTimer.start();
@@ -174,7 +168,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                         if (jsonObject.optJSONArray("sale_banners") != null && jsonObject.optJSONArray("sale_banners").length() > 0)
                         {
                             imgs = jsonObject.optJSONArray("sale_banners").optJSONObject(0).optString("imgs");
-                            ToolUtils.setImageUrl(imgs, iv_banner);
+                            ToolUtils.setImageCacheUrl(imgs, iv_banner,R.drawable.icon_loading_osale);
                         }
                     }
                     break;
@@ -466,9 +460,10 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             TextView tv_price = ViewHolder.get(convertView, R.id.tv_price);
             TextView tv_count = ViewHolder.get(convertView, R.id.tv_count);
             LinearLayout ll_sale_out = ViewHolder.get(convertView, R.id.ll_sale_out);
+            ll_sale_out.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / 2 - 1, (screenWidth / 2 - 1) * 175 / 186));
             Product product = getList().get(position);
             tv_name.setText(product.getTitle());
-            ToolUtils.setImageCacheUrl(product.getImage(), image);
+            ToolUtils.setImageCacheUrl(product.getImage(), image,R.drawable.icon_loading_defalut);
             tv_price.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
             tv_price.setText("￥" + product.getCost_price());
             tv_count.setText("剩余 " + product.getRemaining() + "%");

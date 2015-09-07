@@ -16,16 +16,14 @@ public class ZhaiDou {
 
     public static String HOT_SEARCH_URL=HOME_BASE_URL+"article/api/articles/hot_search";
     public static String INDEX_CATEGORY_FILTER=HOME_BASE_URL+"article/api/article_categories";
-
+    //0元特卖页面：status=0,普通特卖页面：status=1,首页：status=2
+    public static String BannerUrl="http://192.168.199.160:3000/special_mall/api/sales/sale_banner?status=";
     //拼贴大赛
     public static String COMPETITION_URL="http://www.zhaidou.com/competitions/current?zdclient=ios";
 
-    //获取优惠卷URL
-    public static String COUPON_DATA_URL=HOME_BASE_URL+"api/v1/coupons/current";
-    //天天刮奖  "http://192.168.199.230:3000/lotteries";//
+    //天天刮奖
     public static String PRIZE_SCRAPING_URL=HOME_BASE_URL+"lotteries";
     //获取0元特卖数据
-//    public static String SPECIAL_SALE_URL=HOME_BASE_URL+"api/v1/events/current";
     public static String SPECIAL_SALE_URL=HOME_BASE_URL+"special_mall/api/sales/zero_sale";
     //0元特卖banner
     public static String SPECIAL_SALE_BANNER_URL=HOME_BASE_URL+"special_mall/api/sales/sale_banner?status=0";
@@ -41,7 +39,7 @@ public class ZhaiDou {
     //特卖首页
     public static String shopHomeSpecialUrl=HOME_BASE_URL+"special_mall/api/sales/new_sale";
     //特卖banner
-    public static String shopSpecialBannerUrl=HOME_BASE_URL+"special_mall/api/sales/sale_banner?status=";
+    public static String shopSpecialBannerUrl="http://192.168.199.160:3000/special_mall/api/sales/sale_banner?status=";
     //特卖列表share
     public static String shopSpecialListShareUrl=HOME_BASE_URL+"mall/list.html?id=";
     //特卖列表

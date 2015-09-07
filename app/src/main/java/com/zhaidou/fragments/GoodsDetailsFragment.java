@@ -462,7 +462,6 @@ public class GoodsDetailsFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        System.out.println("GoodsDetailsFragment.onCreateView");
 
         mContext = getActivity();
 
@@ -964,7 +963,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                 imageView.setBackgroundColor(Color.parseColor("#ffffff"));
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 imageView.setLayoutParams(params);
-                ToolUtils.setImageCacheUrl(url, imageView);
+                ToolUtils.setImageCacheUrl(url, imageView,R.drawable.icon_loading_osale);
                 adPics.add(imageView);
             }
             dots = new ImageView[adPics.size()];

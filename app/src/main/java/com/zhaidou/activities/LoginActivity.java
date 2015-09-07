@@ -43,6 +43,7 @@ import com.zhaidou.model.User;
 import com.zhaidou.utils.NativeHttpUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.CustomEditText;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -71,11 +72,11 @@ import cn.sharesdk.wechat.friends.Wechat;
 /**
  * Created by wangclark on 15/7/16.
  */
-        public class LoginActivity extends FragmentActivity implements View.OnClickListener,PlatformActionListener,RegisterFragment.RegisterOrLoginListener{
+public class LoginActivity extends FragmentActivity implements View.OnClickListener,PlatformActionListener,RegisterFragment.RegisterOrLoginListener{
 
     private TextView mRegisterView,mResetView;
-    private EditText mEmailView,mPswView;
-    private ImageView emailDelete;
+    private CustomEditText mEmailView;
+    private CustomEditText mPswView;
     private String strEmail;
 
     private TextView mLoginView;
@@ -103,7 +104,6 @@ import cn.sharesdk.wechat.friends.Wechat;
                         mDialog.dismiss();
                     }
                     User u=(User)msg.obj;//id,email,token,nick,null
-                    Log.i("handleMessage------------>",u.toString());
                     SharedPreferencesUtil.saveUser(getApplicationContext(), u);
 
                     ToolUtils.setLog("要刷新登录了");
@@ -147,14 +147,6 @@ import cn.sharesdk.wechat.friends.Wechat;
         public void onTextChanged(CharSequence charSequence, int i, int i2, int i3)
         {
             strEmail=charSequence.toString();
-            if (charSequence.toString().length()>0)
-            {
-                emailDelete.setVisibility(View.VISIBLE);
-            }
-            else
-            {
-                emailDelete.setVisibility(View.GONE);
-            }
         }
         @Override
         public void afterTextChanged(Editable editable)
@@ -173,17 +165,10 @@ import cn.sharesdk.wechat.friends.Wechat;
         strEmail=getEmail();
 
 
-        mEmailView=(EditText)findViewById(R.id.tv_email);
+        mEmailView=(CustomEditText)findViewById(R.id.tv_email);
         mEmailView.setText(strEmail);
         mEmailView.addTextChangedListener(textWatcher);
-        emailDelete=(ImageView)findViewById(R.id.emailDelete);
-        emailDelete.setOnClickListener(this);
-        if (strEmail!=null)
-        if (strEmail.length()>0)
-        {
-           emailDelete.setVisibility(View.VISIBLE);
-        }
-        mPswView=(EditText)findViewById(R.id.tv_password);
+        mPswView=(CustomEditText)findViewById(R.id.tv_password);
         mLoginView=(TextView)findViewById(R.id.bt_login);
         mRegisterView=(TextView)findViewById(R.id.tv_register);
         mResetView=(TextView)findViewById(R.id.tv_reset_psw);
@@ -229,14 +214,22 @@ import cn.sharesdk.wechat.friends.Wechat;
 //                String email = mEmailView.getText().toString();
                 String password =mPswView.getText().toString();
                 if (TextUtils.isEmpty(strEmail)){
-                    Toast.makeText(this, "邮箱不能为空哦！", Toast.LENGTH_SHORT).show();
+                    mEmailView.setShakeAnimation();
                     return;
                 }else if (TextUtils.isEmpty(password)){
-                    Toast.makeText(this,"密码不能为空哦!",Toast.LENGTH_SHORT).show();
+                    mPswView.setShakeAnimation();
                     return;
                 }
-                saveEmail();
-                new MyTask().execute();
+                if (ToolUtils.isEmailOK(strEmail) && strEmail.length() > 0)
+                {
+                    saveEmail();
+                    new MyTask().execute();
+                }
+                else
+                {
+                    mEmailView.setShakeAnimation();
+                    Toast.makeText(this,"抱歉,无效邮箱",Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.tv_register:
                 startActivityForResult(new Intent(LoginActivity.this,RegisterActivity.class),200);
@@ -247,7 +240,6 @@ import cn.sharesdk.wechat.friends.Wechat;
                 finish();
                 break;
             case R.id.ll_weixin:
-                Log.i("ll_weixin--->","ll_weixin");
                 Platform wechat = ShareSDK.getPlatform(Wechat.NAME);
                 if (!wechat.isClientValid()){
                     Toast.makeText(this,"没有安装微信客户端哦！",Toast.LENGTH_SHORT).show();
@@ -264,9 +256,6 @@ import cn.sharesdk.wechat.friends.Wechat;
                 Platform sina = ShareSDK.getPlatform(SinaWeibo.NAME);
                 sina.removeAccount(true);
                 authorize(sina);
-                break;
-            case R.id.emailDelete:
-                mEmailView.setText("");
                 break;
             case R.id.ll_taobao:
 

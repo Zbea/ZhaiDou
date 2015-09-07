@@ -70,7 +70,7 @@
             android:textSize="15sp"
             android:textColor="@color/text_main_color"  />
 
-        <com.zhaidou.view.TypeFaceEditText
+        <com.zhaidou.view.CustomEditText
             android:id="@+id/tv_addr_username"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -81,6 +81,8 @@
             android:textSize="14sp"
             android:background="@color/white"
             android:textColor="@color/text_main_color"
+            android:drawableRight="@drawable/cancel"
+            android:drawablePadding="10dp"
             android:text="" />
     </LinearLayout>
 
@@ -99,7 +101,7 @@
             android:text="联系方式:"
             android:textColor="@color/text_main_color" />
 
-        <com.zhaidou.view.TypeFaceEditText
+        <com.zhaidou.view.CustomEditText
             android:id="@+id/tv_addr_mobile"
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -111,6 +113,8 @@
             android:maxLength="11"
             android:textSize="14sp"
             android:textColor="@color/text_main_color"
+            android:drawableRight="@drawable/cancel"
+            android:drawablePadding="10dp"
             android:text="" />
     </LinearLayout>
 
@@ -169,7 +173,7 @@
             android:textSize="15sp"
             android:textColor="@color/text_main_color" />
 
-        <com.zhaidou.view.TypeFaceEditText
+        <com.zhaidou.view.CustomEditText
             android:id="@+id/tv_addr_detail"
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -180,6 +184,8 @@
             android:textSize="14sp"
             android:background="@color/white"
             android:textColor="@color/text_main_color"
+            android:drawableRight="@drawable/cancel"
+            android:drawablePadding="10dp"
             android:text="" />
     </LinearLayout>
 

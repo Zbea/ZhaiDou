@@ -84,7 +84,7 @@ public class ShopSpecialAdapter extends BaseAdapter
         viewHolder.itemName.setText(shopSpecialItem.title);
         viewHolder.itemSale.setText(shopSpecialItem.sale);
         viewHolder.itemTime.setText(shopSpecialItem.overTime);
-        ToolUtils.setImageCacheUrl(shopSpecialItem.imageUrl,viewHolder.itemImage);
+        ToolUtils.setImageCacheUrl(shopSpecialItem.imageUrl,viewHolder.itemImage,R.drawable.icon_loading_item);
 
         return convertView;
     }

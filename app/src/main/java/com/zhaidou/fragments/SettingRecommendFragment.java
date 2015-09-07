@@ -194,7 +194,7 @@ public class SettingRecommendFragment extends BaseFragment {
                     String title=obj.optString("title");
                     String desc=obj.optString("desc");
                     String android_url=obj.optString("android");
-                    String logo="http://192.168.199.163:3000"+obj.optString("logo");
+                    String logo=obj.optString("logo");
                     ToolUtils.setLog(android_url);
                     RecommendItem recommendItem=new RecommendItem();
                     recommendItem.title=title;
