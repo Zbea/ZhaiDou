@@ -16,7 +16,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
@@ -26,6 +25,7 @@ import com.zhaidou.model.Category;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class HomeCategoryFragment extends BaseFragment implements  View.OnClickListener{
@@ -53,7 +53,8 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case UPDATE_CATEGORY_LIST:
-
+                    mCategoryAdapter.notifyDataSetChanged();
+                    break;
             }
         }
     };
@@ -91,7 +92,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
         mCategoryAdapter = new CategoryAdapter(getActivity(),mCategoryList);
         mGridView =(GridView)view.findViewById(R.id.gv_category);
         mGridView.setAdapter(mCategoryAdapter);
-        FetchCatogoryData();
+        FetchCategoryData();
 
         mAllCategory.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,7 +117,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
         return view;
     }
 
-    private void FetchCatogoryData(){
+    private void FetchCategoryData(){
         JsonObjectRequest jr = new JsonObjectRequest(ZhaiDou.INDEX_CATEGORY_FILTER,null,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -193,5 +194,14 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
             mCategoryAdapter.notifyDataSetChanged();
         }
 
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        System.out.println("HomeCategoryFragment.onHiddenChanged------>"+hidden);
+        if (!hidden&&mCategoryList.size()==0){
+            System.out.println("HomeCategoryFragment.onHiddenChanged------->!hidden&&mCategoryList.size()==0");
+            FetchCategoryData();
+        }
     }
 }
