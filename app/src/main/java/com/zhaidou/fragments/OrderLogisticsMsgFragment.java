@@ -16,7 +16,7 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
 
-public class LogisticsMsgFragment extends BaseFragment {
+public class OrderLogisticsMsgFragment extends BaseFragment {
     private static final String ARG_TYPE = "type";
     private static final String ARG_NUMBER = "number";
 
@@ -29,15 +29,15 @@ public class LogisticsMsgFragment extends BaseFragment {
     private WebView mWebView;
 
 
-    public static LogisticsMsgFragment newInstance(String type, String number) {
-        LogisticsMsgFragment fragment = new LogisticsMsgFragment();
+    public static OrderLogisticsMsgFragment newInstance(String type, String number) {
+        OrderLogisticsMsgFragment fragment = new OrderLogisticsMsgFragment();
         Bundle args = new Bundle();
         args.putString(ARG_TYPE, type);
         args.putString(ARG_NUMBER, number);
         fragment.setArguments(args);
         return fragment;
     }
-    public LogisticsMsgFragment() {
+    public OrderLogisticsMsgFragment() {
     }
 
     @Override

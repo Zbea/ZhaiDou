@@ -467,6 +467,7 @@ public class HomeFragment extends BaseFragment implements
         {
             mDialog.dismiss();
             nullNetView.setVisibility(View.VISIBLE);
+            nullView.setVisibility(View.GONE);
         }
 
     }
@@ -698,6 +699,7 @@ public class HomeFragment extends BaseFragment implements
                     mDialog.dismiss();
                 }
                 nullView.setVisibility(View.VISIBLE);
+                nullNetView.setVisibility(View.GONE);
                 mScrollView.onRefreshComplete();
                 mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
             }

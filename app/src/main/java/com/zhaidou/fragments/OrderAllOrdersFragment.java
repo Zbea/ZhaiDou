@@ -194,8 +194,8 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     Log.i("v---------->", v.toString());
                     TextView textView = (TextView) v;
                     if (mContext.getResources().getString(R.string.order_logistics).equalsIgnoreCase(textView.getText().toString())) {
-                        LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "");
-                        ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
+                        OrderLogisticsMsgFragment orderLogisticsMsgFragment = OrderLogisticsMsgFragment.newInstance("", "");
+                        ((MainActivity) getActivity()).navigationToFragment(orderLogisticsMsgFragment);
                     } else if (mContext.getResources().getString(R.string.order_return_money).equalsIgnoreCase(textView.getText().toString())) {
                         System.out.println("OrderAllOrdersFragment.OnClickListener------->"+order.isZero());
                         if (order.isZero()){
