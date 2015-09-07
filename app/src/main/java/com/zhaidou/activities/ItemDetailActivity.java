@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.sdk.android.callback.CallbackContext;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
@@ -411,7 +412,6 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void onBackClick(Fragment fragment) {
-        Log.i("ItemDetailActivity--fragment----->",fragment.getClass().getSimpleName());
         webView.reload();
     }
 
@@ -427,5 +427,13 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         CallbackContext.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }
