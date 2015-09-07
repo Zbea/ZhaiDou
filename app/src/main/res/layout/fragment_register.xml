@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="#f1f1f1"
+    android:background="@color/white"
     android:orientation="vertical"
     android:layout_height="match_parent">
     <RelativeLayout
@@ -45,18 +45,18 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginTop="30dp"
-        android:background="@color/white"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/btn_gray_line_click_bg"
         android:orientation="vertical">
         <com.zhaidou.view.TypeFaceEditText
             android:id="@+id/tv_email"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="@dimen/btn_height_dimen"
             android:gravity="center_vertical"
             android:paddingLeft="10dp"
-            android:background="@color/white"
             android:inputType="textEmailAddress"
             android:textSize="16sp"
+            android:background="@color/transparent"
             android:singleLine="true"
             android:hint="输入邮箱"/>
         <View
@@ -66,12 +66,12 @@
         <com.zhaidou.view.TypeFaceEditText
             android:id="@+id/tv_nick"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="@dimen/btn_height_dimen"
             android:gravity="center_vertical"
             android:paddingLeft="10dp"
             android:textSize="16sp"
             android:singleLine="true"
-            android:background="@color/white"
+            android:background="@color/transparent"
             android:hint="用户昵称"/>
         <View
             android:layout_width="match_parent"
@@ -80,12 +80,12 @@
         <com.zhaidou.view.TypeFaceEditText
             android:id="@+id/tv_password"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="@dimen/btn_height_dimen"
             android:gravity="center_vertical"
             android:paddingLeft="10dp"
-            android:background="@color/white"
             android:textSize="16sp"
             android:singleLine="true"
+            android:background="@color/transparent"
             android:inputType="textPassword"
             android:hint="设置密码"/>
         <View
@@ -95,13 +95,13 @@
         <com.zhaidou.view.TypeFaceEditText
             android:id="@+id/tv_password_confirm"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="@dimen/btn_height_dimen"
             android:gravity="center_vertical"
-            android:background="@color/white"
             android:paddingLeft="10dp"
             android:textSize="16sp"
             android:singleLine="true"
             android:inputType="textPassword"
+            android:background="@color/transparent"
             android:hint="确认密码"/>
     </LinearLayout>
     <com.zhaidou.view.TypeFaceTextView
@@ -116,7 +116,7 @@
         android:layout_marginTop="20dp"
         android:textColor="@color/white"
         android:textSize="16sp"
-        android:background="#38bbba"/>
+        android:background="@drawable/btn_green_click_bg"/>
     <LinearLayout
         android:layout_marginTop="20dp"
         android:layout_marginRight="20dp"

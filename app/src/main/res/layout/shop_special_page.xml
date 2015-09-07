@@ -14,7 +14,7 @@
 
     <com.pulltorefresh.PullToRefreshScrollView
         xmlns:ptr="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/scrollview"
+        android:id="@+id/sv_special_scrollview"
         android:layout_width="match_parent"
         android:scrollbars="none"
         android:focusable="true"
@@ -29,34 +29,106 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:id="@+id/shopAdImage"
+                android:id="@+id/shopBanner"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/home_item_dimen"
+                android:layout_height="wrap_content"
                 android:scaleType="fitXY"
-                android:background="@drawable/icon_loading_item"
-                />
+                android:src="@drawable/shop_special_banner"/>
 
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:orientation="vertical"
+                >
+
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/home_adv_pager"
+                    android:layout_width="fill_parent"
+                    android:layout_height="152dp">
+                </android.support.v4.view.ViewPager>
+
+                <LinearLayout
+                    android:id="@+id/home_viewGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginBottom="15dp"
+                    android:layout_centerHorizontal="true"
+                    android:orientation="horizontal">
+                </LinearLayout>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/content_part_bg">
+                <TextView
+                    android:layout_width="8dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:background="@color/red"/>
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:textSize="16sp"
+                android:layout_marginLeft="@dimen/default_margin"
+                android:layout_marginRight="@dimen/default_margin"
+                android:textSize="15sp"
                 android:textColor="@color/text_main_color"
-                android:text="新特卖每天早10点更新"/>
+                android:text="新特卖,每日上新"/>
+            </LinearLayout>
 
             <com.zhaidou.view.ListViewForScrollView
                 android:id="@+id/shopListView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
                 android:divider="@null"
                 android:scrollbars="none"
                 android:listSelector="@android:color/transparent"
                 android:background="@color/black"
-                android:dividerHeight="0dp"></com.zhaidou.view.ListViewForScrollView>
+                android:dividerHeight="0dp"
+                android:layout_marginBottom="@dimen/default_margin"></com.zhaidou.view.ListViewForScrollView>
 
         </LinearLayout>
     </com.pulltorefresh.PullToRefreshScrollView>
+
+    <RelativeLayout
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="20dp">
+
+        <ImageView
+            android:id="@+id/myCartBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:layout_centerInParent="true"
+            android:src="@drawable/shop_goods_my_cart_selector"/>
+
+        <TextView
+            android:id="@+id/myCartTipsTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:layout_alignParentRight="true"
+            android:text=""
+            android:gravity="center"
+            android:visibility="gone"
+            android:background="@drawable/shop_goods_my_cart_tips_red_bg"
+            android:textSize="12sp"/>
+    </RelativeLayout>
+
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/headLine"
+        layout="@layout/content_null_layout"
+        ></include>
 
 </RelativeLayout>

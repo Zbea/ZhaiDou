@@ -46,6 +46,8 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
 import com.zhaidou.model.Product;
 import com.zhaidou.utils.AsyncImageLoader1;
+import com.zhaidou.utils.NetworkUtils;
+import com.zhaidou.utils.ToolUtils;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -74,19 +76,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CollectFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
- */
 public class CollectFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<GridView>{
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
@@ -97,15 +90,15 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
 
     private RequestQueue mRequestQueue;
     private SharedPreferences mSharedPreferences;
-    private AsyncImageLoader1 imageLoader;
     private ProductAdapter productAdapter;
 
     private int count;
     private int currentpage=1;
 
-    private long lastClickTime;
-    private ImageView mEmptyView;
+    private LinearLayout loadingView,nullLine;
     private Dialog mDialog;
+
+    private long lastClickTime;
     private Map<Integer,View> mHashMap=new HashMap<Integer, View>();
     private CollectCountChangeListener collectCountChangeListener;
     private Handler mHandler= new Handler(){
@@ -115,7 +108,13 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
             {
                 mDialog.dismiss();
             }
+            loadingView.setVisibility(View.GONE);
             productAdapter.notifyDataSetChanged();
+            if (products.size()==0)
+            {
+                loadingView.setVisibility(View.VISIBLE);
+                nullLine.setVisibility(View.VISIBLE);
+            }
             int num =msg.arg1;
             if (collectCountChangeListener!=null){
                 collectCountChangeListener.onCountChange(count,CollectFragment.this);
@@ -123,15 +122,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
             }
         }
     };
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CollectFragment.
-     */
-    // TODO: Rename and change types and number of parameters
+
     public static CollectFragment newInstance(String param1, String param2) {
         CollectFragment fragment = new CollectFragment();
         Bundle args = new Bundle();
@@ -161,11 +152,10 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
         mGridView=(PullToRefreshGridView)view.findViewById(R.id.gv_collect);
         mGridView.setMode(PullToRefreshBase.Mode.BOTH);
         mGridView.setOnRefreshListener(this);
-        mEmptyView=(ImageView)view.findViewById(R.id.iv_collect_empty);
 
         mRequestQueue= Volley.newRequestQueue(getActivity());
         mSharedPreferences=getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
-        productAdapter=new ProductAdapter(getActivity(),products);
+        productAdapter=new ProductAdapter(getActivity(),products,2,screenWidth);
         mGridView.setAdapter(productAdapter);
 
         productAdapter.setOnInViewClickListener(R.id.ll_single_layout,new BaseListAdapter.onInternalClickListener() {
@@ -226,23 +216,26 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
                 dialog.show();
             }
         });
-        new MyTask().execute();
-        return view;
-    }
 
-    /**
-     * 开启进度条显示
-     * @param msg
-     */
-    private void setLoadingProgress(String msg)
-    {
-//        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(), msg);
+        loadingView=(LinearLayout)view.findViewById(R.id.loadingView);
+        nullLine=(LinearLayout)view.findViewById(R.id.nullLine);
+
+        if (NetworkUtils.isNetworkAvailable(getActivity()))
+        {
+            mDialog=CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
+            new MyTask().execute();
+        }
+        else
+        {
+            ToolUtils.setToast(getActivity(), "抱歉,网络连接失败");
+        }
+
+        return view;
     }
 
     private class MyTask extends AsyncTask<Void,Void,JSONObject>{
         @Override
         protected void onPreExecute() {
-            setLoadingProgress("loading");
             super.onPreExecute();
         }
 
@@ -256,13 +249,12 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
             {
                 mDialog.dismiss();
             }
-            if (jsonObject!=null){
+            if (jsonObject!=null)
+            {
                 JSONArray article_items=jsonObject.optJSONArray("article_items");
                 JSONObject meta = jsonObject.optJSONObject("meta");
                 count=meta==null?0:meta.optInt("count");
-                mEmptyView.setVisibility(View.VISIBLE);
                 if (article_items!=null&&article_items.length()>0){
-                    mEmptyView.setVisibility(View.GONE);
                     for (int i=0;i<article_items.length();i++){
                         JSONObject articleObj = article_items.optJSONObject(i);
                         int id = articleObj.optInt("id");
@@ -285,6 +277,10 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
                 message.arg1=count;
                 mHandler.sendMessage(message);
             }
+            else
+            {
+                nullLine.setVisibility(View.VISIBLE);
+            }
 
         }
     }
@@ -297,13 +293,6 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
     private JSONObject getHttp(String url,Map<String, String> headers){
         HttpGet httpGet = new HttpGet(url);
 
-//        if (headers != null) {
-//            Set<String> keys = headers.keySet();
-//            for (Iterator<String> i = keys.iterator(); i.hasNext();) {
-//                String key = (String) i.next();
-//                httpGet.addHeader(key, headers.get(key));
-//            }
-//        }
         String token=mSharedPreferences.getString("token","");
         httpGet.addHeader("SECAuthorization",token);
 
@@ -323,7 +312,6 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
                 strber.append(line + "\n");
             inStream.close();
             if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                Log.i("MobilpriseActivity", "success");
             }
             return new JSONObject(strber.toString());
         } catch (ClientProtocolException e) {
@@ -339,11 +327,10 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
 
     private class CancelTask extends AsyncTask<String,Void,String>{
         String position;
-
         @Override
         protected void onPreExecute()
         {
-            setLoadingProgress("取消中");
+            mDialog=CustomLoadingDialog.setLoadingDialog(getActivity(),"");
             super.onPreExecute();
         }
 
@@ -365,17 +352,32 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
                 mDialog.dismiss();
             Log.i("CancelTask------>",s);
             try {
-                if (!TextUtils.isEmpty(s)){
+                if (!TextUtils.isEmpty(s))
+                {
                     JSONObject jsonObject = new JSONObject(s);
                     String like_state=jsonObject.optString("like_state");
                     String likes=jsonObject.optString("likes");
-                    if (Integer.parseInt(position)<productAdapter.getCount()){
+                    if (Integer.parseInt(position)<productAdapter.getCount())
+                    {
                         productAdapter.remove(Integer.parseInt(position));
                         if (collectCountChangeListener!=null){
                             collectCountChangeListener.onCountChange(productAdapter.getCount(),CollectFragment.this);
                         }
+                        if (productAdapter.getCount()==0)
+                        {
+                            loadingView.setVisibility(View.VISIBLE);
+                            nullLine.setVisibility(View.VISIBLE);
+                        }
                         productAdapter.notifyDataSetChanged();
+
+                        Intent intent=new Intent(ZhaiDou.IntentRefreshCollectDesTag);
+                        getActivity().sendBroadcast(intent);
+
                     }
+                }
+                else
+                {
+                    ToolUtils.setToast(getActivity(),"抱歉,取消失败");
                 }
             }catch (Exception e){
 

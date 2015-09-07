@@ -285,12 +285,10 @@ public abstract class LoadingLayout extends FrameLayout implements ILoadingLayou
 		setSubHeaderText(label);
 	}
 
-	public final void setLoadingDrawable(Drawable imageDrawable) {
-		// Set Drawable
-		mHeaderImage.setImageDrawable(imageDrawable);
+	public final void setLoadingDrawable(Drawable imageDrawable)
+    {
+        mHeaderImage.setImageResource(R.drawable.dialog_loading_icon_small);
 		mUseIntrinsicAnimation = (imageDrawable instanceof AnimationDrawable);
-
-		// Now call the callback
 		onLoadingDrawableSet(imageDrawable);
 	}
 

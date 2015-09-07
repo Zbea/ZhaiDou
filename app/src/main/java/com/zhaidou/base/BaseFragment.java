@@ -19,9 +19,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.activities.ItemDetailActivity;
-import com.zhaidou.fragments.LoginFragment1;
 import com.zhaidou.utils.NetStateUtils;
 import com.zhaidou.view.HeaderLayout;
 
@@ -60,9 +60,11 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     protected int screenHeight;
     public static NetStateUtils netStateUtils;
     public static boolean isNetState;
+
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
 //        setRetainInstance(true);
         mInflater = LayoutInflater.from(getActivity());
@@ -86,14 +88,10 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
             mBackView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.i("WebViewFragment--233-->","R.id.rl_back:");
-//                    Log.i("currentFragment.getParentFragment()",currentFragment.getParentFragment().toString());
                     if (inputMethodManager.isActive())
                         inputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().peekDecorView().getApplicationWindowToken(),0);
                     if (currentFragment.getParentFragment()!=null){
                         currentFragment.getParentFragment().getChildFragmentManager().popBackStack();
-                        if (currentFragment.getParentFragment() instanceof LoginFragment1)
-                            ((LoginFragment1)currentFragment.getParentFragment()).toggleChildView();
                         return;
                     }
                     if (getActivity() instanceof ItemDetailActivity){
@@ -122,14 +120,26 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
         return isNetState;
     }
 
+    public int getScreenWidth()
+    {
+        return screenWidth;
+    }
+
     Toast mToast;
 
     public void ShowToast(String text) {
-        if (mToast == null) {
-            mToast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
-        } else {
+        if (mToast == null)
+        {
+            if(getActivity()!=null)
+            {
+                mToast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
+            }
+        }
+        else
+        {
             mToast.setText(text);
         }
+        if (mToast!=null)
         mToast.show();
     }
 
@@ -153,8 +163,6 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     }
 
     public View findViewById(int paramInt) {
-        ShowLog("------------------------->"+paramInt);
-        ShowLog("------------------------->"+getView().toString());
         return getView().findViewById(paramInt);
     }
 
@@ -268,5 +276,13 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     public void onDestroy() {
 //        getActivity().unregisterReceiver(netStateUtils);
         super.onDestroy();
+    }
+
+    /**
+     * 关闭当前页面
+     */
+    public void colseFragment(Fragment fragment)
+    {
+        ((MainActivity) getActivity()).popToStack(fragment);
     }
 }

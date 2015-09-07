@@ -37,6 +37,9 @@ import cn.sharesdk.framework.ShareSDK;
 import com.mob.tools.gui.ViewPagerAdapter;
 import com.mob.tools.gui.ViewPagerClassic;
 import com.mob.tools.utils.UIHandler;
+import com.zhaidou.R;
+import com.zhaidou.view.TypeFaceTextView;
+
 import cn.sharesdk.onekeyshare.CustomerLogo;
 
 /** platform logo list gridview */
@@ -434,8 +437,8 @@ public class PlatformGridView extends LinearLayout implements
 			iv.setImageBitmap(logo);
 			ll.addView(iv);
 
-			TextView tv = new TextView(context);
-			tv.setTextColor(0xff000000);
+            TypeFaceTextView tv = new TypeFaceTextView(context);
+			tv.setTextColor(context.getResources().getColor(R.color.title_color));//0x99999999
 			tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
 			tv.setSingleLine();
 			tv.setIncludeFontPadding(false);
@@ -462,7 +465,8 @@ public class PlatformGridView extends LinearLayout implements
 				return null;
 			}
 
-			String resName = "logo_" + plat.getName();
+//			String resName = "logo_" + plat.getName();
+            String resName = "skyblue_logo_" + plat.getName()+"_checked";
 			int resId = getBitmapRes(getContext(), resName.toLowerCase());
 			return BitmapFactory.decodeResource(getResources(), resId);
 		}

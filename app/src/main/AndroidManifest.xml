@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    android:versionCode="31"
+    android:versionCode="35"
     android:versionName="@string/app_versionName"
     package="com.zhaidou">
     <application
@@ -10,6 +10,9 @@
         android:name=".ZDApplication"
         android:label="@string/app_name"
         android:theme="@style/app_theme">
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="${UMENG_CHANNEL_VALUE}" />
 
         <activity
             android:name=".WelcomePage"
@@ -23,11 +26,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".WelcomeGuidancePage"
+            android:configChanges="orientation|keyboardHidden|"
+            android:screenOrientation="portrait"
+            android:theme="@style/app_theme" >
+        </activity>
 
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/app_name"
+            android:windowSoftInputMode="stateHidden|adjustPan"
             android:screenOrientation="portrait"
             android:theme="@style/StyledIndicators">
             <!--<intent-filter>-->
@@ -35,6 +45,13 @@
 
                 <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="wxce03c66622e5b243" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".activities.HomeActivity"
@@ -46,7 +63,7 @@
             android:name=".activities.DiyActivity"
             android:configChanges="orientation|keyboardHidden|"
             android:label="@string/title_activity_diy"
-            android:screenOrientation="landscape"
+            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" >
         </activity>
         <activity
@@ -60,6 +77,12 @@
             android:name=".activities.HomePTActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_item_detail"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activities.HomeCompetitionActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:windowSoftInputMode="adjustPan|stateHidden"
             android:screenOrientation="portrait" >
         </activity>
         <activity
@@ -101,6 +124,23 @@
             android:theme="@style/StyledIndicators"
             android:label="@string/title_activity_search">
         </activity>
+        <activity android:name=".alipay.PayDemoActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="wxce03c66622e5b243"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.PayActivity"
+            android:theme="@style/StyledIndicators"
+            android:label="@string/title_activity_search">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="wxce03c66622e5b243" />
+            </intent-filter>
+        </activity>
         <activity android:name="com.alibaba.sdk.android.webview.BaseWebViewActivity"/>
         <activity android:name="com.alibaba.sdk.android.login.ui.LoginWebViewActivity"/>
         <activity android:name="com.alibaba.sdk.android.login.ui.QrLoginActivity"
@@ -119,6 +159,23 @@
             android:exported="true"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name="com.alipay.sdk.app.H5PayActivity"
+            android:configChanges="orientation|keyboardHidden|navigation"
+            android:exported="false"
+            android:screenOrientation="behind"
+            android:windowSoftInputMode="adjustResize|stateHidden" >
+        </activity>
+        <receiver
+            android:name=".wxapi.AppRegister">
+            <intent-filter>
+                <action android:name="com.tencent.mm.plugin.openapi.Intent.ACTION_REFRESH_WXAPP" />
+            </intent-filter>
+        </receiver>
+        <activity
+            android:name=".wxapi.WXPayEntryActivity"
+            android:exported="true"
+            android:launchMode="singleTop"/>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -135,6 +192,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
     <uses-permission android:name="android.permission.READ_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_LOGS"/>
     <!--<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>-->
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
 
 </manifest>

@@ -155,7 +155,6 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
         autoGridView.setOnHistoryItemClickListener(this);
         mHistorys = mSharedPreferences.getStringSet("history",new LinkedHashSet<String>());
         historyCount=(Integer)SharedPreferencesUtil.getData(this,"historyCount",0);
-        Log.i("historyCount----->",historyCount+"");
         mSearchLayout.setVisibility(View.GONE);
         if (historyCount!=0){
             for (int i=0;i<historyCount;i++){
@@ -163,7 +162,6 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
                 if (!TextUtils.isEmpty(history)){
                     mHistoryList.add(history);
                 }
-                Log.i("history------------->",history);
             }
             mSearchLayout.setVisibility(View.VISIBLE);
         }
@@ -183,9 +181,6 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
         mSortView.setOnClickListener(this);
 
         mHotAdapter=new SearchAdapter(SearchActivity.this,mHotList);
-
-        Log.i("mHistoryList------>",mHistoryList.size()+"");
-
 
         mHistoryAdapter=new SearchAdapter(SearchActivity.this,mHistoryList);
         gv_hot.setAdapter(mHotAdapter);
@@ -242,20 +237,14 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
                 mEditText.setText("");
                 break;
             case R.id.iv_search:
-                Log.i("iv_search--------->","onClick");
-
                 onSearch();
-
                 break;
             case R.id.tv_delete:
-//                historyCancel();
                 mSearchLayout.setVisibility(View.GONE);
                 autoGridView.clear();
                 SharedPreferencesUtil.clearSearchHistory(this);
                 break;
             case R.id.tv_cancel:
-                Log.i("tv_cancel------------>","tv_cancel");
-//                finish();
                 if (!TextUtils.isEmpty(mEditText.getText().toString().trim())){
                     if (inputMethodManager.isActive())
                         inputMethodManager.hideSoftInputFromWindow(getWindow().peekDecorView().getApplicationWindowToken(),0);

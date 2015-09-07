@@ -2,56 +2,47 @@ package com.zhaidou.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.text.format.DateUtils;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
-import com.pulltorefresh.internal.Utils;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.activities.HomePTActivity;
+import com.zhaidou.activities.HomeCompetitionActivity;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.SearchActivity;
 import com.zhaidou.adapter.AdViewAdpater;
@@ -63,70 +54,44 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
 import com.zhaidou.model.Category;
+import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.SwitchImage;
-//import com.zhaidou.utils.AsyncImageLoader1;
-import com.zhaidou.utils.HtmlFetcher;
-import com.zhaidou.utils.ImageDownloader;
-import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.NetworkUtils;
-import com.zhaidou.utils.PixelUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.HeaderLayout;
-import com.zhaidou.view.ImageSwitchWall;
 import com.zhaidou.view.ListViewForScrollView;
-import com.zhaidou.view.SwipeRefreshLayout;
-import com.zhaidou.view.XListView;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URL;
-import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.WeakHashMap;
 
-
-/**
- * A simple {@link android.support.v4.app.Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link com.zhaidou.fragments.HomeFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link com.zhaidou.fragments.HomeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class HomeFragment extends BaseFragment implements
         HeaderLayout.onLeftImageButtonClickListener,
         HeaderLayout.onRightImageButtonClickListener,
-        SwipeRefreshLayout.OnLoadListener, SwipeRefreshLayout.OnRefreshListener,
         HomeCategoryFragment.CategorySelectedListener,
         AdapterView.OnItemClickListener, View.OnClickListener,
         ItemDetailActivity.RefreshNotifyListener,
         PullToRefreshBase.OnRefreshListener2<ScrollView>
 
 {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String URL = "targetUrl";
     private static final String TYPE = "type";
 
     private ListView listView;
     private ZhaiDou.ListType listType;
 
-    /* pagination */
     private String targetUrl;
     private int currentPage = 1;
     private int count = -1;
 
     private boolean loadedAll = false;
     private final int LOADED = 1;
-    //private AsyncImageLoader1 imageLoader;
+
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     /* Data Definition*/
     List<JSONObject> listItem;
@@ -136,9 +101,12 @@ public class HomeFragment extends BaseFragment implements
     private static final int UPDATE_HOMELIST = 3;
     private static final int UPDATE_BANNER = 4;
 
-    private ImageView mSearchView, mCategoryView;
+    private ImageView mSearchView, mCategoryView,mDotView;
     private TextView mTitleView;
     private int screenWidth;
+    private View view;
+    private Dialog mDialog;
+    private Context mContext;
 
     private PopupWindow mPopupWindow = null;
     private LinearLayout ll_poplayout;
@@ -148,8 +116,8 @@ public class HomeFragment extends BaseFragment implements
     private List<String> categoryList;
     private RequestQueue mRequestQueue;
     private List<Article> articleList = new ArrayList<Article>();
-    private List<Article> formerList = new ArrayList<Article>();
-    //private HomeAdapter mHomeAdapter;
+
+    private LinearLayout itemBtn;
 
     public HomeListAdapter mListAdapter;
     private ViewPager viewPager;
@@ -164,11 +132,17 @@ public class HomeFragment extends BaseFragment implements
 
     private HomeCategoryFragment homeCategoryFragment;
     private Category mCategory;
-    private LinearLayout mBackView;
+    private ShopSpecialItem shopSpecialItem;
 
-    private LinearLayout mSwipeView;
-    private Dialog mDialog;
-    private Context mContext;
+    //特卖view初始化
+    private ImageView itemTipsIv;
+    private ImageView itemImageIv;
+    private TypeFaceTextView itemNameTv;
+    private TypeFaceTextView itemTimeTv;
+    private TypeFaceTextView itemSaleTv;
+
+    private LinearLayout loadingView,nullNetView,nullView;
+    private TextView  reloadBtn,reloadNetBtn;
 
     private PullToRefreshScrollView mScrollView;
     /* Log cat */
@@ -187,33 +161,48 @@ public class HomeFragment extends BaseFragment implements
         }
     };
 
-    private Handler handler = new Handler() {
-        public void handleMessage(Message msg) {
-            // mHomeAdapter.notifyDataSetChanged();
-            if (msg.what == LOADED) {
+
+    private Handler handler = new Handler()
+    {
+        public void handleMessage(Message msg)
+        {
+            if (msg.what == LOADED)
+            {
 
             } else if (msg.what == UPDATE_CATEGORY) {
                 mCategoryAdapter.setList(categoryList);
-            } else if (msg.what == UPDATE_HOMELIST) {
-                Log.i("UPDATE_HOMELIST---------->", articleList.size() + "");
-                if (mListAdapter == null) {
-                    mListAdapter = new HomeListAdapter(mContext, articleList);
+            } else if (msg.what == UPDATE_HOMELIST)
+            {
+                loadingView.setVisibility(View.GONE);
+                if (mListAdapter == null)
+                {
+                    mListAdapter = new HomeListAdapter(mContext, articleList,screenWidth);
                     listView.setAdapter(mListAdapter);
                 }
                 mScrollView.onRefreshComplete();
-//                mHomeAdapter.setList(articleList);
-//                mScrollView.onRefreshComplete();
-                if (mDialog.isShowing()) {
+                mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+                if (mDialog.isShowing())
+                {
                     mDialog.dismiss();
                 }
 
-            } else if (msg.what == UPDATE_BANNER) {
-//                List<SwitchImage> banners = (List<SwitchImage>) msg.obj;
-//                imageSwitchWall.setDatas(banners);
+            } else if (msg.what == UPDATE_BANNER)
+            {
                 adPics.removeAll(adPics);
                 setAdView();
             }
-            // mHomeAdapter.notifyDataSetChanged();
+            else if(msg.what==1001)
+            {
+                if(shopSpecialItem!=null)
+                {
+                    itemBtn.setVisibility(View.VISIBLE);
+                    ToolUtils.setImageCacheUrl(shopSpecialItem.imageUrl,itemImageIv);
+                    itemNameTv.setText(shopSpecialItem.title);
+                    itemTimeTv.setText(shopSpecialItem.overTime);
+                    itemSaleTv.setText(shopSpecialItem.sale);
+                }
+
+            }
             if (mListAdapter != null)
                 mListAdapter.notifyDataSetChanged();
         }
@@ -238,22 +227,28 @@ public class HomeFragment extends BaseFragment implements
                 img.setBackgroundResource(R.drawable.icon_loading_item);
                 img.setScaleType(ImageView.ScaleType.FIT_XY);
                 img.setLayoutParams(new ViewGroup.LayoutParams(screenWidth, screenWidth * 300 / 750));
-//                ViewGroup.LayoutParams layoutParams=img.getLayoutParams();
-//                layoutParams.width=screenWidth;
-//                layoutParams.height=screenWidth*300/750;
-//                img.setLayoutParams(layoutParams);
-                img.setOnClickListener(new View.OnClickListener() {
+
+                img.setOnClickListener(new View.OnClickListener()
+                {
                     @Override
-                    public void onClick(View v) {
-                        SwitchImage switchImage = banners.get(tag);
-                        Category category = new Category();
-                        category.setId(switchImage.getId());
-                        SpecialFragment fragment = SpecialFragment.newInstance("", category);
-                        ((BaseActivity) getActivity()).navigationToFragment(fragment);
+                    public void onClick(View v)
+                    {
+                        if (tag==0)
+                        {
+                            SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", "");
+                            ((MainActivity) getActivity()).navigationToFragment(specialSaleFragment);
+                        }
+                        else
+                        {
+                            SwitchImage switchImage = banners.get(tag);
+                            Category category = new Category();
+                            category.setId(switchImage.getId());
+                            SpecialFragment fragment = SpecialFragment.newInstance("", category);
+                            ((BaseActivity) getActivity()).navigationToFragment(fragment);
+                        }
                     }
                 });
-                ToolUtils.setImageCacheUrl(banners.get(i).getUrl(), img);
-                //ImageLoader.getInstance().displayImage(banners.get(i).getUrl(), img);
+                ToolUtils.setImageCacheUrl(banners.get(i).imageUrl, img);
                 adPics.add(img);
             }
             dots = new ImageView[adPics.size()];
@@ -316,8 +311,8 @@ public class HomeFragment extends BaseFragment implements
 
     private OnFragmentInteractionListener mListener;
 
-    // TODO: Rename and change types and number of parameters
-    public static HomeFragment newInstance(String url, String type) {
+    public static HomeFragment newInstance(String url, String type)
+    {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
         args.putString(URL, url);
@@ -326,8 +321,8 @@ public class HomeFragment extends BaseFragment implements
         return fragment;
     }
 
-    public HomeFragment() {
-        // Required empty public constructor
+    public HomeFragment()
+    {
     }
 
     @Override
@@ -347,33 +342,49 @@ public class HomeFragment extends BaseFragment implements
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             Bundle savedInstanceState)
+    {
+        if(view==null)
+        {
+            view = inflater.inflate(R.layout.fragment_home, container, false);
+            mContext = getActivity();
+            initBroadcastReceiver();
+            WindowManager wm = ((Activity)mContext).getWindowManager();
+            screenWidth = wm.getDefaultDisplay().getWidth();
+            initView();
 
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        }
+        //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
+        ViewGroup parent = (ViewGroup) view.getParent();
+        if (parent != null)
+        {
+            parent.removeView(view);
+        }
+        return view;
+    }
 
-        mContext = getActivity();
+    private void initView()
+    {
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
 
-        initBroadcastReceiver();
-
-
-        WindowManager wm = ((Activity) mContext).getWindowManager();
-        screenWidth = wm.getDefaultDisplay().getWidth();
+        loadingView = (LinearLayout) view.findViewById(R.id.loadingView);
+        nullNetView= (LinearLayout) view.findViewById(R.id.nullNetline);
+        nullView= (LinearLayout) view.findViewById(R.id.nullline);
+        reloadBtn = (TextView) view.findViewById(R.id.nullReload);
+        reloadBtn.setOnClickListener(this);
+        reloadNetBtn = (TextView) view.findViewById(R.id.netReload);
+        reloadNetBtn.setOnClickListener(this);
 
         listView = (ListViewForScrollView) view.findViewById(R.id.homeItemList);
         listView.setOnItemClickListener(this);
         fl_category_menu = (FrameLayout) view.findViewById(R.id.fl_category_menu);
-        mScrollView = (PullToRefreshScrollView) view.findViewById(R.id.scrollview);
+
+        mScrollView = (PullToRefreshScrollView) view.findViewById(R.id.sv_home_scrollview);
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         mScrollView.setOnRefreshListener(this);
-        mSwipeView = (LinearLayout) view.findViewById(R.id.ll_adview);
-        mBackView = (LinearLayout) view.findViewById(R.id.ll_back);
-        mBackView.setOnClickListener(this);
-
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
-        mDialog.show();
 
         view.findViewById(R.id.ll_lottery).setOnClickListener(this);
-        view.findViewById(R.id.ll_competition).setOnClickListener(this);
+        view.findViewById(R.id.ll_special_shop).setOnClickListener(this);
         view.findViewById(R.id.ll_sale).setOnClickListener(this);
         view.findViewById(R.id.ll_forward).setOnClickListener(this);
         view.findViewById(R.id.ll_category_view).setOnClickListener(this);
@@ -383,31 +394,53 @@ public class HomeFragment extends BaseFragment implements
         mCategoryView = (ImageView) view.findViewById(R.id.iv_category);
         mCategoryView.setOnClickListener(this);
         mTitleView = (TextView) view.findViewById(R.id.tv_title);
+        mDotView=(ImageView)view.findViewById(R.id.iv_dot);
         viewPager = (ViewPager) view.findViewById(R.id.home_adv_pager);
         tipsLine = (LinearLayout) view.findViewById(R.id.home_viewGroup);
-        currentPage = 1;
 
+        itemBtn=(LinearLayout)view.findViewById(R.id.home_item_goods);
+        itemBtn.setVisibility(View.GONE);
+        itemBtn.setOnClickListener(this);
+
+        currentPage = 1;
         loadedAll = false;
 
         mRequestQueue = Volley.newRequestQueue(getActivity());
         listItem = new ArrayList<JSONObject>();
 
-
-//        mHomeAdapter = new HomeAdapter(getActivity(), articleList);
-//        listView.setEmptyView(mEmptyView);
-//        listView.setAdapter(mHomeAdapter);
-        Log.i("mEmptyView---->", mEmptyView.toString());
-
-        getBannerData();
-        FetchData(currentPage, null);
-        setUpPopView();
-
         if (homeCategoryFragment == null)
+        {
             homeCategoryFragment = HomeCategoryFragment.newInstance("", "");
-        getChildFragmentManager().beginTransaction().add(R.id.fl_category_menu, homeCategoryFragment
-                , HomeCategoryFragment.TAG).hide(homeCategoryFragment).commit();
-        homeCategoryFragment.setCategorySelectedListener(this);
-        return view;
+            getChildFragmentManager().beginTransaction().add(R.id.fl_category_menu, homeCategoryFragment
+                    , HomeCategoryFragment.TAG).hide(homeCategoryFragment).commit();
+            homeCategoryFragment.setCategorySelectedListener(this);
+        }
+
+        itemTipsIv=(ImageView)view.findViewById(R.id.homeGoodsTips);
+        itemImageIv=(ImageView)view.findViewById(R.id.homeGoodsImage);
+        itemImageIv.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 316 / 722));
+        itemNameTv=(TypeFaceTextView)view.findViewById(R.id.homeGoodsName);
+        itemTimeTv=(TypeFaceTextView)view.findViewById(R.id.shop_time_item);
+        itemSaleTv=(TypeFaceTextView)view.findViewById(R.id.homeGoodsSale);
+        initDate();
+
+    }
+
+    private void initDate()
+    {
+        if (NetworkUtils.isNetworkAvailable(mContext))
+        {
+            FetchShopData();
+            getBannerData();
+            FetchData(currentPage, null);
+            setUpPopView();
+        }
+        else
+        {
+            mDialog.dismiss();
+            nullNetView.setVisibility(View.VISIBLE);
+        }
+
     }
 
     /**
@@ -456,9 +489,10 @@ public class HomeFragment extends BaseFragment implements
         });
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
+    public void onButtonPressed(Uri uri)
+    {
+        if (mListener != null)
+        {
             mListener.onFragmentInteraction(uri);
         }
     }
@@ -485,18 +519,8 @@ public class HomeFragment extends BaseFragment implements
         refresh();
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+    public interface OnFragmentInteractionListener
+    {
         public void onFragmentInteraction(Uri uri);
     }
 
@@ -507,32 +531,21 @@ public class HomeFragment extends BaseFragment implements
                 startActivity(new Intent(getActivity(), SearchActivity.class));
                 break;
             case R.id.ll_category_view:
-                Log.i("ll_category_view----------->", "ll_category_view");
                 toggleMenu();
                 break;
             case R.id.ll_lottery:
-//                WebViewFragment prizeFragment=WebViewFragment.newInstance("http://192.168.199.158/test1.html",true);
-//                ((BaseActivity)getActivity()).navigationToFragment(prizeFragment);
-                Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
+                Intent detailIntent = new Intent(getActivity(), HomeCompetitionActivity.class);
                 detailIntent.putExtra("url", ZhaiDou.PRIZE_SCRAPING_URL);
-//                detailIntent.putExtra("url","http://192.168.199.230:3000/lotteries");
                 detailIntent.putExtra("from", "lottery");
                 detailIntent.putExtra("title", "天天刮奖");
-                startActivity(detailIntent);
+                getActivity().startActivity(detailIntent);
                 break;
-            case R.id.ll_competition:
-                Intent intent = new Intent(getActivity(), HomePTActivity.class);
-                intent.putExtra("url", ZhaiDou.COMPETITION_URL);
-                intent.putExtra("from", "competition");
-                intent.putExtra("title", "拼贴大赛");
-                startActivity(intent);
 
-//                Intent intent = new Intent(getActivity(), ItemDetailActivity.class);
-//                intent.putExtra("url", ZhaiDou.COMPETITION_URL);
-//                intent.putExtra("from", "competition");
-//                intent.putExtra("title", "拼贴大赛");
-//                startActivity(intent);
+            case R.id.ll_special_shop:
+                ShopSpecialFragment shopSpecialFragment = ShopSpecialFragment.newInstance("", 0);
+                ((MainActivity) getActivity()).navigationToFragment(shopSpecialFragment);
                 break;
+
             case R.id.ll_sale:
                 SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragment(specialSaleFragment);
@@ -547,9 +560,24 @@ public class HomeFragment extends BaseFragment implements
                 break;
             case R.id.ll_back:
                 mCategoryView.setVisibility(View.VISIBLE);
-                mBackView.setVisibility(View.GONE);
-                mSwipeView.setVisibility(View.VISIBLE);
                 break;
+
+            case R.id.home_item_goods:
+                if (shopSpecialItem != null)
+                {
+                    ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(shopSpecialItem.title, shopSpecialItem.id,shopSpecialItem.imageUrl);
+                    ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
+                    break;
+                }
+            case R.id.nullReload:
+                mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+                initDate();
+                break;
+            case R.id.netReload:
+                mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+                initDate();
+                break;
+
         }
     }
 
@@ -572,14 +600,16 @@ public class HomeFragment extends BaseFragment implements
         }
     }
 
-    private void FetchData(int page, Category category) {
-        Log.i("FetchData------------------>", "FetchData--->" + page);
+
+    private void FetchData(int page, Category category)
+    {
         currentPage = page;
         if (page == 1) {
             loadedAll = false;
         }
 
-        if (loadedAll) {
+        if (loadedAll)
+        {
             Toast.makeText(getActivity(), "已经加载完毕了哦！！！", Toast.LENGTH_SHORT).show();
             mScrollView.onRefreshComplete();
             return;
@@ -587,21 +617,13 @@ public class HomeFragment extends BaseFragment implements
 
         String categoryId = (category == null ? "" : category.getId() + "");
         final String url;
-//        if (category==null){
-//            url=ZhaiDou.HOME_BASE_URL+"article/api/articles?page="+page+"&catetory_id";
-//        }else {
-//            url="http://192.168.199.171/article/api/articles?page="+page+"&catetory_id="+categoryId;
-//        }
         url = ZhaiDou.HOME_CATEGORY_URL + page + ((category == null) ? "&catetory_id" : "&catetory_id=" + categoryId);
-        Log.i("categoryId------------>", categoryId);
 
-        Log.i("url---->", url);
-
-        JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
+        JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
             @Override
             public void onResponse(JSONObject response) {
 
-                Log.i("FetchData--->data---->", response.toString());
                 JSONArray articles = response.optJSONArray("articles");
                 JSONObject meta = response.optJSONObject("meta");
                 count = meta == null ? 0 : meta.optInt("count");
@@ -616,19 +638,10 @@ public class HomeFragment extends BaseFragment implements
                     String title = article.optString("title");
                     String img_url = article.optString("img_url");
                     String is_new = article.optString("is_new");
-                    Log.i("is_new---->", is_new);
                     int reviews = article.optInt("reviews");
                     Article item = new Article(id, title, img_url, is_new, reviews);
                     articleList.add(item);
                 }
-
-//                JSONObject meta = response.optJSONObject("meta");
-//                int count = meta.optInt("count");
-//                int page = meta.optInt("page");
-//                int size = meta.optInt("size");
-//                loadedAll = count<size;
-
-
                 Message message = new Message();
                 message.what = UPDATE_HOMELIST;
                 handler.sendMessage(message);
@@ -640,17 +653,21 @@ public class HomeFragment extends BaseFragment implements
                 if (mDialog.isShowing()) {
                     mDialog.dismiss();
                 }
+                nullView.setVisibility(View.VISIBLE);
                 mScrollView.onRefreshComplete();
                 mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
-//                Log.i("onErrorResponse------->",error.getMessage());
             }
         });
         mRequestQueue.add(jr);
     }
 
-
-    public void toggleMenu() {
-        if (homeCategoryFragment.isHidden()) {
+    /**
+     * 切换
+     */
+    public void toggleMenu()
+    {
+        if (homeCategoryFragment.isHidden())
+        {
             mCategoryView.setImageResource(R.drawable.icon_close);
             fl_category_menu.setVisibility(View.VISIBLE);
             getChildFragmentManager().beginTransaction().show(homeCategoryFragment).commit();
@@ -662,29 +679,20 @@ public class HomeFragment extends BaseFragment implements
         homeCategoryFragment.notifyDataSetChanged();
     }
 
-    private String getTime() {
-        return new SimpleDateFormat("MM-dd HH:mm", Locale.CHINA).format(new Date());
-    }
-
     @Override
-    public void onRefresh() {
-        Log.i("OnRefreshListener---->", "OnRefreshListener");
-        FetchData(currentPage = 1, mCategory);
-    }
-
-    @Override
-    public void onLoad() {
-        Log.i("onLoad------>", "onLoad");
-        FetchData(++currentPage, mCategory);
-    }
-
-    @Override
-    public void onCategorySelected(Category category) {
-        Log.i("HomeFragment-------------->", category == null ? "全部" : category.getName());
+    public void onCategorySelected(Category category)
+    {
         mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
         articleList.removeAll(articleList);
         FetchData(currentPage = 1, mCategory = category);
-        //mHomeAdapter.notifyDataSetChanged();
+        if (category!=null)
+        {
+            mDotView.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            mDotView.setVisibility(View.GONE);
+        }
         toggleMenu();
     }
 
@@ -694,12 +702,11 @@ public class HomeFragment extends BaseFragment implements
      */
     private void getBannerData() {
         String url = ZhaiDou.HOME_BANNER_URL;
-        Log.i("HOME_BANNER_URL------------------->", ZhaiDou.HOME_BANNER_URL);
         banners = new ArrayList<SwitchImage>();
         JsonObjectRequest bannerRequest = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(JSONObject jsonObject) {
-                Log.i("bannerRequest------>", jsonObject.toString());
+            public void onResponse(JSONObject jsonObject)
+            {
                 JSONArray article_categories = jsonObject.optJSONArray("article_categories");
                 if (article_categories != null && article_categories.length() > 0) {
                     for (int i = 0; i < article_categories.length(); i++) {
@@ -711,7 +718,7 @@ public class HomeFragment extends BaseFragment implements
                             String name = banner.optString("name");
                             String url = banner.optJSONObject("avatar").optString("url");
 
-                            SwitchImage switchImage = new SwitchImage("http://" + url, id, name);
+                            SwitchImage switchImage = new SwitchImage("", id, name,"http://" + url);
                             banners.add(switchImage);
                         }
                     }
@@ -729,6 +736,59 @@ public class HomeFragment extends BaseFragment implements
             }
         });
         mRequestQueue.add(bannerRequest);
+    }
+
+    /**
+     * 加载列表数据
+     */
+    private void FetchShopData()
+    {
+        final String url;
+        url = ZhaiDou.shopHomeSpecialUrl;
+        JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+                String result=response.toString();
+                JSONObject obj;
+                try
+                {
+                    JSONObject jsonObject=new JSONObject(result);
+                    JSONArray jsonArray=jsonObject.optJSONArray("sales");
+                    if (jsonArray.length()>0)
+                    {
+                        obj=jsonArray.optJSONObject(0);
+                        int id=obj.optInt("id");
+                        String title=obj.optString("title");
+                        String sales=obj.optString("tags");
+                        String time=obj.optString("day");
+                        String startTime=obj.optString("start_time");
+                        String endTime=obj.optString("end_time");
+                        String overTime=obj.optString("over_day");
+                        String imageUrl=obj.optString("banner");
+                        shopSpecialItem=new ShopSpecialItem(id,title,sales,time,startTime,endTime,overTime,imageUrl);
+                    }
+                } catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+                Message message = new Message();
+                message.what = 1001;
+                handler.sendMessage(message);
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                mDialog.dismiss();
+                Toast.makeText(mContext, "加载失败", Toast.LENGTH_SHORT).show();
+                mScrollView.onRefreshComplete();
+                mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+            }
+        });
+        mRequestQueue.add(jr);
     }
 
     @Override
@@ -750,18 +810,18 @@ public class HomeFragment extends BaseFragment implements
         String label = DateUtils.formatDateTime(getActivity(), System.currentTimeMillis(),
                 DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
         refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
-        Log.i("onPullDownToRefresh--->", "onPullDownToRefresh");
         getBannerData();
+        FetchShopData();
         articleList.clear();
         FetchData(currentPage = 1, mCategory);
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
     }
 
     @Override
-    public void onPullUpToRefresh(PullToRefreshBase<ScrollView> refreshView) {
-        Log.i("onPullUpToRefresh---->", "onPullUpToRefresh");
-        //if (count!=-1&&mHomeAdapter.getCount()==count){
-        if (count != -1 && articleList.size() == count) {
+    public void onPullUpToRefresh(PullToRefreshBase<ScrollView> refreshView)
+    {
+        if (count != -1 && articleList.size() == count)
+        {
             Toast.makeText(getActivity(), "已经加载完毕", Toast.LENGTH_SHORT).show();
             mScrollView.onRefreshComplete();
             mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
@@ -770,16 +830,22 @@ public class HomeFragment extends BaseFragment implements
         FetchData(++currentPage, mCategory);
     }
 
-    private class MyPageChangeListener implements ViewPager.OnPageChangeListener {
-        public void onPageSelected(int position) {
+    /**
+     * 广告轮播指示器
+     */
+    private class MyPageChangeListener implements ViewPager.OnPageChangeListener
+    {
+        public void onPageSelected(int position)
+        {
             currentItem = position;
             if (adPics.size() != 0) {
                 changeDotsBg(currentItem % adPics.size());
             }
         }
-
-        public void onPageScrollStateChanged(int arg0) {
-            if (arg0 == 0) {
+        public void onPageScrollStateChanged(int arg0)
+        {
+            if (arg0 == 0)
+            {
                 nowAction = false;
             }
             if (arg0 == 1) {
@@ -789,7 +855,8 @@ public class HomeFragment extends BaseFragment implements
             }
         }
 
-        public void onPageScrolled(int arg0, float arg1, int arg2) {
+        public void onPageScrolled(int arg0, float arg1, int arg2)
+        {
             viewPager.getParent().requestDisallowInterceptTouchEvent(true);
         }
 

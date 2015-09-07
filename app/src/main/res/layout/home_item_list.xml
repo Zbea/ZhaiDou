@@ -5,38 +5,36 @@
     android:layout_height="@dimen/home_item_dimen"
     android:clipChildren="true"
     android:clipToPadding="true"
-    android:padding="@dimen/default_margin">
+    android:paddingLeft="7dp"
+    android:paddingRight="7dp"
+    android:paddingTop="7dp"
+    >
 
     <ImageView
         android:id="@+id/cover"
         android:layout_width="match_parent"
         android:layout_height="@dimen/home_item_dimen"
-        android:background="@drawable/icon_loading_item"
+        android:src="@drawable/icon_loading_item"
         android:scaleType="fitXY" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="100dp"
+        android:background="@drawable/icon_item_shadow"
         android:layout_alignParentBottom="true">
 
-        <LinearLayout
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical">
-
-            <com.zhaidou.view.TypeFaceTextView
-                android:id="@+id/title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:paddingLeft="10dp"
-                android:text="好看的花啊！"
-                android:singleLine="true"
-                android:textSize="18sp"
-                android:gravity="center_vertical"
-                android:background="@drawable/shadow"
-                android:textColor="@android:color/white" />
-        </LinearLayout>
+            android:layout_height="match_parent"
+            android:layout_gravity="left"
+            android:paddingLeft="10dp"
+            android:text="好看的花啊！"
+            android:gravity="bottom"
+            android:singleLine="true"
+            android:textSize="18sp"
+            android:paddingBottom="6dp"
+            android:textColor="@android:color/white" />
     </LinearLayout>
     <RelativeLayout
         android:layout_width="66dp"
@@ -73,8 +71,8 @@
     </RelativeLayout>
 
     <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="@dimen/home_tips_dimen"
+        android:layout_height="@dimen/home_tips_dimen"
         android:id="@+id/newsView"
         android:visibility="gone"
         android:src="@drawable/home_info_news_icon"/>
