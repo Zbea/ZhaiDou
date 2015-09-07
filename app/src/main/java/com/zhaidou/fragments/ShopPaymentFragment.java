@@ -20,7 +20,6 @@ import android.widget.Toast;
 
 import com.alipay.sdk.app.PayTask;
 import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -29,6 +28,7 @@ import com.android.volley.toolbox.Volley;
 import com.tencent.mm.sdk.modelpay.PayReq;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
@@ -563,6 +563,7 @@ public class ShopPaymentFragment extends BaseFragment
             mTimer.schedule(new MyTimer(), 1000, 1000);
         }
         super.onResume();
+        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.shop_payment_text));
     }
 
     @Override
@@ -604,5 +605,8 @@ public class ShopPaymentFragment extends BaseFragment
     {
         paymentBtn.setClickable(true);
     }
-
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.shop_payment_text));
+    }
 }

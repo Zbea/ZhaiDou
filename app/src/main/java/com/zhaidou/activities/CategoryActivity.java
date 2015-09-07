@@ -8,9 +8,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.Window;
-import android.webkit.WebView;
 import android.widget.TextView;
 
+import com.umeng.analytics.MobclickAgent;
 import com.viewpagerindicator.TabPageIndicator;
 import com.zhaidou.R;
 import com.zhaidou.fragments.SingleFragment;
@@ -21,9 +21,6 @@ import java.util.List;
 
 public class CategoryActivity extends FragmentActivity {
 
-    private WebView webView;
-
-    private long lastClickTime = 0L;
     private TextView mTextView;
     private TabPageIndicator mIndicator;
     private ViewPager mViewPager;
@@ -67,7 +64,6 @@ public class CategoryActivity extends FragmentActivity {
 //            mFragments.add(mStrategyFragment);
         }
 
-
         mFragmentAdapter.notifyDataSetChanged();
         mIndicator.notifyDataSetChanged();
     }
@@ -95,4 +91,17 @@ public class CategoryActivity extends FragmentActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("单品列表页");
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("单品列表页");
+        MobclickAgent.onPause(this);
+    }
 }

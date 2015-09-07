@@ -243,12 +243,14 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onPageStart("天天刮奖");
         MobclickAgent.onResume(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        MobclickAgent.onPageEnd("天天刮奖");
         MobclickAgent.onPause(this);
     }
 }

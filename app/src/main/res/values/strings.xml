@@ -85,6 +85,20 @@
     <string name="app_tip">提示</string>
     <string name="getting_prepayid">正在获取预支付订单...</string>
 
+    <!--标题-->
+    <string name="title_about">关于</string>
+    <string name="title_address_manage">地址管理</string>
+    <string name="title_address_create">新建地址</string>
+    <string name="title_all_category">全类别</string>
+    <string name="title_collect">我的收藏</string>
+    <string name="title_collocation">我的豆搭</string>
+    <string name="title_contact_us">联系我们</string>
+    <string name="title_goods_detail">商品详情</string>
+    <string name="title_home">家居生活新时尚</string>
+    <string name="title_login">用户登录</string>
+    <string name="title_logistics">物流信息</string>
+    <string name="title_beauty">专业家居美化方案</string>
+
 
     <array name="product_sort">
         <item>默认排序</item>
@@ -107,7 +121,16 @@
     <string name="header_hint_refresh_time">Time：</string>
     <string name="footer_hint_load_normal">Load more</string>
     <string name="footer_hint_load_ready">Release to load more</string>
-
+    <string name="title_after_sale">申请退款/退货</string>
+    <string name="title_all_order">所有订单</string>
+    <string name="title_order_detail">订单详情</string>
+    <string name="title_order_return">退货/退款</string>
+    <string name="title_order_unpay">待付款订单</string>
+    <string name="title_order_unreceive">待收货</string>
+    <string name="title_personal">我</string>
+    <string name="title_register">用户注册</string>
+    <string name="title_profile">个人资料</string>
+    <string name="title_setting">设置</string>
 
 
 </resources>

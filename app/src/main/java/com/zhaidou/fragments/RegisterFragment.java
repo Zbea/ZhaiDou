@@ -1,8 +1,6 @@
 package com.zhaidou.fragments;
 
-
 import android.app.Dialog;
- import android.app.ProgressDialog;
  import android.content.Context;
  import android.content.Intent;
  import android.content.SharedPreferences;
@@ -21,7 +19,8 @@ import android.app.Dialog;
  import android.widget.Toast;
  import com.android.volley.RequestQueue;
  import com.android.volley.toolbox.Volley;
- import com.zhaidou.R;
+import com.umeng.analytics.MobclickAgent;
+import com.zhaidou.R;
  import com.zhaidou.ZhaiDou;
  import com.zhaidou.activities.ItemDetailActivity;
  import com.zhaidou.base.BaseActivity;
@@ -213,33 +212,23 @@ import org.apache.http.HttpResponse;
                      return;
                  }
 
-                 Log.i("before--->", "before");
                  JSONObject userObj = json.optJSONObject("user");
-                 Log.i("userObj--->", "userObj");
                  int id = userObj.optInt("id");
-                 Log.i("id--->", "id");
                  String email = userObj.optString("email");
-                 Log.i("email--->", "email");
                  String token = userObj.optString("authentication_token");
-                 Log.i("token--->", "token");
                  String state = userObj.optString("state");
-                 Log.i("state--->", "state");
                  String avatar = userObj.optJSONObject("avatar").optJSONObject("mobile_icon").optString("url");
-                 Log.i("avatar--->", "avatar");
                  String nickname = userObj.optString("nick_name");
-                 Log.i("nickname--->", "nickname");
                  User user = new User(id, email, token, nickname, avatar);
 
                  Intent intent = new Intent(ZhaiDou.IntentRefreshLoginTag);
                  getActivity().sendBroadcast(intent);
 
-                 Log.i("user------------>", user.toString());
                  if (getActivity() != null && getActivity() instanceof ItemDetailActivity) {
                      ((BaseActivity) getActivity()).onRegisterOrLoginSuccess(user, RegisterFragment.this);
                  } else {
                      mRegisterListener.onRegisterOrLoginSuccess(user, RegisterFragment.this);
                  }
-                 Log.i("onRegisterOrLoginSuccess---->", "onRegisterOrLoginSuccess");
              } catch (Exception e) {
 
              }
@@ -303,6 +292,15 @@ import org.apache.http.HttpResponse;
 
      public interface RegisterOrLoginListener {
          public void onRegisterOrLoginSuccess(User user, Fragment fragment);
+     }
+
+     public void onResume() {
+         super.onResume();
+         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_register));
+     }
+     public void onPause() {
+         super.onPause();
+         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_register));
      }
 
  }

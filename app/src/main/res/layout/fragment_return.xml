@@ -37,7 +37,7 @@
             android:layout_centerInParent="true"
             android:textSize="18sp"
             android:textColor="@color/white"
-            android:text="退货/退款"/>
+            android:text="@string/title_order_return"/>
     </RelativeLayout>
     <ListView
         android:layout_below="@id/rl_back"

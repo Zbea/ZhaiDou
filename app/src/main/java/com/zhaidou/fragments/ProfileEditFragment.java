@@ -23,6 +23,8 @@ import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.umeng.analytics.MobclickAgent;
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
@@ -285,5 +287,13 @@ public class ProfileEditFragment extends BaseFragment implements View.OnClickLis
 
     public interface RefreshDataListener{
         public void onRefreshData(String type,String msg,String json);
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(mTitle);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mTitle);
     }
 }

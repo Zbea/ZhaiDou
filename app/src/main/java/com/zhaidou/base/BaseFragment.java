@@ -61,6 +61,7 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     protected int screenHeight;
     public static NetStateUtils netStateUtils;
     public static boolean isNetState;
+    protected Context mContext;
 
 
 
@@ -70,6 +71,7 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
 //        setRetainInstance(true);
         mInflater = LayoutInflater.from(getActivity());
         mEmptyView =mInflater.inflate(R.layout.list_empty_view,null);
+        mContext=getActivity();
         DisplayMetrics dm = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
         screenWidth=dm.widthPixels;

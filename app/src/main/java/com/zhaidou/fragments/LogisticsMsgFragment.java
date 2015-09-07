@@ -1,7 +1,5 @@
 package com.zhaidou.fragments;
 
-
-
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -13,11 +11,10 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ExpandableListView;
+
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class LogisticsMsgFragment extends BaseFragment {
     private static final String ARG_TYPE = "type";
@@ -55,20 +52,13 @@ public class LogisticsMsgFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_logistics, container, false);
         context = getActivity();
         mLogisticsView = (ExpandableListView)view.findViewById(R.id.lv_logistics);
         mWebView=(WebView)view.findViewById(R.id.wv_logistics);
         mWebView.getSettings().setJavaScriptEnabled(true);
         WebSettings webSettings = mWebView.getSettings();
-//        webSettings.setUseWideViewPort(true);
-//        webSettings.setLoadWithOverviewMode(true);
-//        mWebView.setVerticalScrollBarEnabled(false);
-//        mWebView.setVerticalScrollbarOverlay(false);
-//        mWebView.setHorizontalScrollbarOverlay(false);
-//        mWebView.setHorizontalFadingEdgeEnabled(false);
-//        mWebView.setInitialScale(1);
+
         String url="http://m.kuaidi100.com/index_all.html?type="+(TextUtils.isEmpty(mType)?"huitongkuaidi":mType)+"&postid="+mNumber+"#result";
         mWebView.loadUrl(url);
 
@@ -81,5 +71,13 @@ public class LogisticsMsgFragment extends BaseFragment {
             }
         });
         return view;
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_logistics));
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_logistics));
     }
 }
