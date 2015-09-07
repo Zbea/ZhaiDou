@@ -9,6 +9,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
@@ -18,7 +19,6 @@ import com.zhaidou.fragments.ElementListFragment;
 import com.zhaidou.fragments.HomeFragment;
 import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.PersonalFragment;
-import com.zhaidou.fragments.PersonalMainFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.fragments.SettingFragment;
 import com.zhaidou.fragments.ShopPaymentFailFragment;
@@ -68,7 +68,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  */
@@ -76,7 +75,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         StrategyFragment.OnFragmentInteractionListener,
         ElementListFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
         HomeFragment.OnFragmentInteractionListener, CategoryFragment1.OnFragmentInteractionListener,
-        PersonalMainFragment.OnFragmentInteractionListener, RegisterFragment.RegisterOrLoginListener {
+        RegisterFragment.RegisterOrLoginListener {
 
     private Fragment utilityFragment;
     private Fragment beautyHomeFragment;
@@ -602,5 +601,13 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         });
         mRequestQueue.add(request);
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

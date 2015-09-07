@@ -604,7 +604,7 @@ public class HomeFragment extends BaseFragment implements
             case R.id.home_item_goods:
                 if (shopSpecialItem != null)
                 {
-                    ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(shopSpecialItem.title, shopSpecialItem.id,"");
+                    ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(shopSpecialItem.title, shopSpecialItem.id,shopSpecialItem.imageUrl);
                     ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
                     break;
                 }

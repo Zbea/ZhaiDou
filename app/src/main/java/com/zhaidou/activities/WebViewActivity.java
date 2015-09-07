@@ -12,6 +12,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.view.CustomProgressWebview;
 
@@ -104,5 +105,13 @@ public class WebViewActivity extends Activity implements View.OnClickListener{
                 finish();
                 break;
         }
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }
