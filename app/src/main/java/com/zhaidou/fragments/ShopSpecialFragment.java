@@ -36,6 +36,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.LoginActivity;
+import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.adapter.AdViewAdpater;
 import com.zhaidou.adapter.GoodsImageAdapter;
 import com.zhaidou.adapter.ShopSpecialAdapter;
@@ -126,13 +127,13 @@ public class ShopSpecialFragment extends BaseFragment
     {
         public void handleMessage(Message msg)
         {
-            if (mDialog != null)
-                mDialog.dismiss();
             switch (msg.what)
             {
                 case 1001:
-                    loadingView.setVisibility(View.GONE);
                     adapterList.notifyDataSetChanged();
+                    if (mDialog != null)
+                        mDialog.dismiss();
+                    loadingView.setVisibility(View.GONE);
                     break;
                 case 1002:
                     viewPager.setCurrentItem(currentItem);
@@ -377,19 +378,20 @@ public class ShopSpecialFragment extends BaseFragment
                         }
                         else if (item.type==1)
                         {
-                            Intent intent1 = new Intent();
-                            intent1.putExtra("url", item.typeValue);
-                            intent1.putExtra("title", item.title);
-                            intent1.setClass(getActivity(), HomePTActivity.class);
-                            getActivity().startActivity(intent1);
+                            Intent intent = new Intent();
+                            intent.putExtra("url", item.typeValue);
+                            intent.setClass(getActivity(), WebViewActivity.class);
+                            getActivity().startActivity(intent);
                         }
                         else if (item.type==2)
                         {
-                            Intent intent1 = new Intent();
-                            intent1.putExtra("url", item.typeValue);
-                            intent1.putExtra("title", item.title);
-                            intent1.setClass(getActivity(), HomePTActivity.class);
-                            getActivity().startActivity(intent1);
+                            Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
+                            detailIntent.putExtra("id", item.id + "");
+                            detailIntent.putExtra("from", "product");
+                            detailIntent.putExtra("title", item.title);
+                            detailIntent.putExtra("cover_url", item.imageUrl);
+                            detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+item.id);
+                            mContext.startActivity(detailIntent);
                         }
                         else if (item.type==3)
                         {
@@ -500,19 +502,20 @@ public class ShopSpecialFragment extends BaseFragment
                         }
                         else if (item.type==1)
                         {
-                            Intent intent1 = new Intent();
-                            intent1.putExtra("url", item.typeValue);
-                            intent1.putExtra("title", item.title);
-                            intent1.setClass(getActivity(), HomePTActivity.class);
-                            getActivity().startActivity(intent1);
+                            Intent intent = new Intent();
+                            intent.putExtra("url", item.typeValue);
+                            intent.setClass(getActivity(), WebViewActivity.class);
+                            getActivity().startActivity(intent);
                         }
                         else if (item.type==2)
                         {
-                            Intent intent1 = new Intent();
-                            intent1.putExtra("url", item.typeValue);
-                            intent1.putExtra("title", item.title);
-                            intent1.setClass(getActivity(), HomePTActivity.class);
-                            getActivity().startActivity(intent1);
+                            Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
+                            detailIntent.putExtra("id", item.id + "");
+                            detailIntent.putExtra("from", "product");
+                            detailIntent.putExtra("title", item.title);
+                            detailIntent.putExtra("cover_url", item.imageUrl);
+                            detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+item.id);
+                            mContext.startActivity(detailIntent);
                         }
                         else if (item.type==3)
                         {
@@ -630,11 +633,12 @@ public class ShopSpecialFragment extends BaseFragment
             {
                 if (response==null)
                 {
+                    if (mDialog!=null)
                     mDialog.dismiss();
                     nullView.setVisibility(View.VISIBLE);
                     nullNetView.setVisibility(View.GONE);
+                    return;
                 }
-
                     JSONArray jsonArray = response.optJSONArray("sales");
                     for (int i = 0; i < jsonArray.length(); i++)
                     {
@@ -660,6 +664,7 @@ public class ShopSpecialFragment extends BaseFragment
             @Override
             public void onErrorResponse(VolleyError error)
             {
+                if (mDialog!=null)
                 mDialog.dismiss();
                 nullView.setVisibility(View.VISIBLE);
                 nullNetView.setVisibility(View.GONE);

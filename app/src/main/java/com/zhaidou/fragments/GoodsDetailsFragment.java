@@ -723,7 +723,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                 imageView.setBackgroundColor(Color.parseColor("#ffffff"));
                 imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
-                ToolUtils.setImageCacheUrl(detail.getImgs().get(i),imageView);
+                ToolUtils.setImageCacheUrl(detail.getImgs().get(i), imageView,R.drawable.icon_loading_osale);
                 mImageContainer.addView(imageView);
             }
         }

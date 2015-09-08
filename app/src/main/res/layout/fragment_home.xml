@@ -10,6 +10,26 @@
         android:background="@color/actionbar_background_color"
         android:layout_height="@dimen/header_height_dimen">
 
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/iv_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="15dp"
+                android:src="@drawable/icon_category"/>
+            <ImageView
+                android:id="@+id/iv_dot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="-19dp"
+                android:layout_marginTop="10dp"
+                android:visibility="gone"
+                android:layout_toRightOf="@id/iv_category"
+                android:src="@drawable/icon_dot"/>
+            </RelativeLayout>
+
 
         <RelativeLayout
             android:id="@+id/ll_category_view"
@@ -19,22 +39,6 @@
             android:clickable="true"
             android:background="@color/transparent"
             android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/iv_category"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
-                android:src="@drawable/icon_category"/>
-            <ImageView
-                android:id="@+id/iv_dot"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="-8dp"
-                android:layout_marginTop="-4dp"
-                android:visibility="gone"
-                android:layout_toRightOf="@id/iv_category"
-                android:src="@drawable/icon_dot"/>
         </RelativeLayout>
 
         <com.zhaidou.view.TypeFaceTextView
@@ -223,7 +227,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
-
                     <ImageView
                         android:id="@+id/homeGoodsImage"
                         android:layout_width="match_parent"
@@ -290,7 +293,7 @@
                         <com.zhaidou.view.TypeFaceTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/text_gary_color"
+                            android:textColor="@color/text_main_color"
                             android:layout_marginLeft="5dp"
                             android:textSize="13sp"
                             android:text="剩余"
@@ -301,7 +304,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="2dp"
-                            android:textColor="@color/text_gary_color"
+                            android:textColor="@color/text_main_color"
                             android:text="1"
                             />
 

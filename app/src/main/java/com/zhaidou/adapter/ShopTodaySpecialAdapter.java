@@ -2,6 +2,7 @@ package com.zhaidou.adapter;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.fragments.GoodsDetailsFragment;
@@ -24,7 +28,6 @@ import java.util.List;
  */
 public class ShopTodaySpecialAdapter extends BaseAdapter
 {
-
     private List<ShopTodayItem> items;
     private ViewHolder viewHolder;
     private Context context;
@@ -119,7 +122,21 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
         {
             viewHolder.itemSales.setVisibility(View.GONE);
         }
-        ToolUtils.setImageCacheUrl(todayShopItem.imageUrl,viewHolder.itemImage,R.drawable.icon_loading_defalut);
+
+        DisplayImageOptions options=new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.icon_loading_defalut)
+                .showImageForEmptyUri(R.drawable.icon_loading_defalut)
+                .showImageOnFail(R.drawable.icon_loading_defalut)
+                .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
+                .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
+                .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
+                .build();
+
+        ImageLoader.getInstance().displayImage(todayShopItem.imageUrl, viewHolder.itemImage,options);
+
+//        ToolUtils.setImageCacheUrl(todayShopItem.imageUrl,viewHolder.itemImage,R.drawable.icon_loading_defalut);
 
         viewHolder.itemBuy.setOnClickListener(new View.OnClickListener()
         {
@@ -148,3 +165,97 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
         return convertView;
     }
 }
+
+//    public class ShopTodaySpecialAdapter extends BaseListAdapter<ShopTodayItem>
+//    {
+//        public ShopTodaySpecialAdapter(Context context, List<ShopTodayItem> list)
+//        {
+//            super(context, list);
+//        }
+//        @Override
+//        public View bindView(int position, View convertView, ViewGroup parent)
+//        {
+//            convertView = mHashMap.get(position);
+//            if (convertView == null)
+//                convertView = mInflater.inflate(R.layout.shop_today_special_item, null);
+//
+//            TextView itemName = ViewHolder.get(convertView, R.id.shopNameItem);
+//            TextView itemSales = ViewHolder.get(convertView, R.id.shopSaleTv);
+//            TextView itemIntorduce = ViewHolder.get(convertView, R.id.shopIntroduceItem);
+//            TextView itemCurrentPrice = ViewHolder.get(convertView, R.id.shopCurrentPrice);
+//            TextView itemFormerPrice = ViewHolder.get(convertView, R.id.shopFormerPrice);
+//            TextView itemBuy = ViewHolder.get(convertView, R.id.buyGoodsBtn);
+//            ImageView itemImage = ViewHolder.get(convertView, R.id.shopGoodsImage);
+//            ImageView itemNull = ViewHolder.get(convertView, R.id.shopGoodsImageNo);
+//
+//            ShopTodayItem todayShopItem=items.get(position);
+//            itemFormerPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+//            itemName.setText(todayShopItem.title);
+//            itemIntorduce.setText("                        "+todayShopItem.designer);
+//            itemCurrentPrice.setText("￥ "+todayShopItem.currentPrice);
+//            itemFormerPrice.getPaint().setAntiAlias(true);//去锯齿
+//            itemFormerPrice.setText("￥ "+todayShopItem.formerPrice);
+//            if(todayShopItem.formerPrice!=0)
+//            {
+//                DecimalFormat df = new DecimalFormat("##.0");
+//                String zk=df.format(todayShopItem.currentPrice/todayShopItem.formerPrice*10);
+//                if (zk.contains(".0"))
+//                {
+//                    int sales=(int)Double.parseDouble(zk);
+//                    itemSales.setText(sales+"折");
+//                }
+//                else
+//                {
+//                    Double sales=Double.parseDouble(zk);
+//                    itemSales.setText(sales+"折");
+//                }
+//            }
+//            else
+//            {
+//                itemSales.setVisibility(View.GONE);
+//            }
+//
+//            DisplayImageOptions options=new DisplayImageOptions.Builder()
+//                    .showImageOnLoading(R.drawable.icon_loading_defalut)
+//                    .showImageForEmptyUri(R.drawable.icon_loading_defalut)
+//                    .showImageOnFail(R.drawable.icon_loading_defalut)
+//                    .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
+//                    .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
+//                    .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
+//                    .bitmapConfig(Bitmap.Config.RGB_565)
+//                    .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
+//                    .build();
+//
+//            ImageLoader.getInstance().displayImage(todayShopItem.imageUrl, itemImage,options);
+////        ToolUtils.setImageCacheUrl(todayShopItem.imageUrl,viewHolder.itemImage,R.drawable.icon_loading_defalut);`
+//
+//            final int tag=position;
+//            itemBuy.setOnClickListener(new View.OnClickListener()
+//            {
+//                @Override
+//                public void onClick(View view)
+//                {
+//                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(tag).title, items.get(tag).id);
+//                    ((MainActivity) mContext).navigationToFragment(goodsDetailsFragment);
+//                }
+//            });
+//
+//            if (todayShopItem.num>0)
+//            {
+//                itemNull.setVisibility(View.GONE);
+//                itemBuy.setBackgroundResource(R.drawable.btn_red_click_selector);
+//                itemBuy.setText("马上抢");
+//                itemBuy.setClickable(true);
+//            }
+//            else
+//            {
+//                itemNull.setVisibility(View.VISIBLE);
+//                itemBuy.setBackgroundResource(R.drawable.btn_no_click_selector);
+//                itemBuy.setText("抢光了");
+//                itemBuy.setClickable(false);
+//            }
+//
+//            mHashMap.put(position, convertView);
+//            return convertView;
+//        }
+//    }

@@ -92,7 +92,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     private ImageView myCartBtn;
     private String imgs;
 
-    private Coupon mCoupon;
     private View rootView;
     private boolean isLogin;
     private long time;
@@ -241,7 +240,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             mAdapter = new ProductAdapter(getActivity(), products);
             mGridView.setAdapter(mAdapter);
             rootView.findViewById(R.id.ll_back).setOnClickListener(this);
-//            rootView.findViewById(R.id.iv_coupon).setOnClickListener(this);
 
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
             nullNetView = (LinearLayout) rootView.findViewById(R.id.nullNetline);
@@ -440,13 +438,34 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         requestQueue.add(request);
     }
 
+    public void getBanner()
+    {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.BannerUrl+0, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                Message message = new Message();
+                message.obj = jsonObject;
+                message.what = UPDATE_BANNER;
+                mHandler.sendMessage(message);
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+            }
+        });
+        requestQueue.add(request);
+    }
+
     public class ProductAdapter extends BaseListAdapter<Product>
     {
         public ProductAdapter(Context context, List<Product> list)
         {
             super(context, list);
         }
-
         @Override
         public View bindView(int position, View convertView, ViewGroup parent)
         {
@@ -472,27 +491,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             mHashMap.put(position, convertView);
             return convertView;
         }
-    }
-    public void getBanner()
-    {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.SPECIAL_SALE_BANNER_URL, new Response.Listener<JSONObject>()
-        {
-            @Override
-            public void onResponse(JSONObject jsonObject)
-            {
-                Message message = new Message();
-                message.obj = jsonObject;
-                message.what = UPDATE_BANNER;
-                mHandler.sendMessage(message);
-            }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-            }
-        });
-        requestQueue.add(request);
     }
 
     @Override
@@ -542,7 +540,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     @Override
     public void onRegisterOrLoginSuccess(User user, Fragment fragment)
     {
-        Log.i("SpecialSaleFragment-------------->", user.toString());
         SharedPreferencesUtil.saveUser(getActivity(), user);
         getActivity().getSupportFragmentManager().popBackStack();
     }

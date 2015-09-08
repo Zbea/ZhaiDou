@@ -68,7 +68,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:textColor="@color/text_gary_color"
+                android:textColor="@color/text_main_color"
                 android:textSize="12sp"
                 android:text="剩余"
                 />
@@ -77,14 +77,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="2dp"
-                android:textColor="@color/text_gary_color"
+                android:textColor="@color/text_main_color"
                 android:textSize="12sp"
                 android:text="1"
                 />
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_gary_color"
+                android:textColor="@color/text_main_color"
                 android:textSize="12sp"
                 android:text="天"
                 />

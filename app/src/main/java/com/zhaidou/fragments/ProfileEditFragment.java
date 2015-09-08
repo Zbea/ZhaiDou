@@ -172,14 +172,22 @@ public class ProfileEditFragment extends BaseFragment implements View.OnClickLis
                     ShowToast(mTitle+"不能为空");
                     return;
                 }
-                if (ToolUtils.isPhoneOk(tv_edit_msg.getText().toString()))
+                if(mTitle.equals("手机号码"))
                 {
-                    hideInputMethod();
-                    new MyTask().execute(mParam1,mParam2,mProfileId);
+                    if (ToolUtils.isPhoneOk(tv_edit_msg.getText().toString()))
+                    {
+                        hideInputMethod();
+                        new MyTask().execute(mParam1,mParam2,mProfileId);
+                    }
+                    else
+                    {
+                        ToolUtils.setToast(getActivity(),"抱歉,手机号码格式输入不正确");
+                    }
                 }
                 else
                 {
-                    ToolUtils.setToast(getActivity(),"抱歉,手机号码格式输入不正确");
+                    hideInputMethod();
+                    new MyTask().execute(mParam1,mParam2,mProfileId);
                 }
                 break;
         }

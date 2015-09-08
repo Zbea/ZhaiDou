@@ -497,8 +497,8 @@
 
     <ImageView
         android:id="@+id/goodsTop"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:layout_above="@+id/goods_bottom_line"
         android:layout_alignParentRight="true"
         android:layout_margin="10dp"
