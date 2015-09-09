@@ -40,6 +40,7 @@ import com.zhaidou.utils.CollectionUtils;
 import com.zhaidou.utils.HtmlFetcher;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.view.AutoGridView;
+import com.zhaidou.view.CustomEditText;
 
 import org.json.JSONArray;
 import java.net.URL;
@@ -53,8 +54,8 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
                               SortFragment.RefreshDataListener,AutoGridView.OnHistoryItemClickListener{
 
     private GridView gv_hot;
-    private EditText mEditText;
-    private ImageView mClearView,mSearchiv;
+    private CustomEditText mEditText;
+    private ImageView mSearchiv;
     private TextView mDeleteView,mSearchView;
     private ViewPager mViewPager;
     private LinearLayout ll_viewpager;
@@ -97,7 +98,6 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
                     String text = (String)msg.obj;
                     autoGridView.setHistoryList(mHistoryList);
                     if (mFragments.size()<2){
-                        Log.i("mFragments.size()<2",mFragments.size()+"");
                         mSingleFragment=SingleFragment.newInstance(text,text);
                         mStrategyFragment=StrategyFragment1.newInstance(text, text);
                         mFragments.add(mSingleFragment);
@@ -139,8 +139,7 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
     private void initView(){
 
         gv_hot=(GridView)findViewById(R.id.gv_hot_search);
-        mEditText=(EditText)findViewById(R.id.et_search);
-        mClearView=(ImageView)findViewById(R.id.iv_cancel);
+        mEditText=(CustomEditText)findViewById(R.id.et_search);
         mSearchiv=(ImageView)findViewById(R.id.iv_search);
         mDeleteView=(TextView)findViewById(R.id.tv_delete);
         mSearchView=(TextView)findViewById(R.id.tv_cancel);
@@ -166,15 +165,12 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
             }
             mSearchLayout.setVisibility(View.VISIBLE);
         }
-//        if (mHistorys!=null&&mHistorys.size()>0)
-//             mHistoryList.addAll(CollectionUtils.set2list(mHistorys));
 
         mFragments = new ArrayList<Fragment>();
         mSearchFragmentAdapter=new SearchFragmentAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mSearchFragmentAdapter);
         indicator.setViewPager(mViewPager);
 
-        mClearView.setOnClickListener(this);
         mSearchiv.setOnClickListener(this);
         mDeleteView.setOnClickListener(this);
         mSearchView.setOnClickListener(this);
@@ -201,7 +197,8 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
                         if (!TextUtils.isEmpty(mEditText.getText().toString().trim())){
                             onSearch();
                         }else {
-                            Toast.makeText(SearchActivity.this,"还没有输入关键词哦。。。",Toast.LENGTH_SHORT).show();
+                            mEditText.setShakeAnimation();
+                            Toast.makeText(SearchActivity.this,"请输入搜索关键词",Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -234,9 +231,6 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.iv_cancel:
-                mEditText.setText("");
-                break;
             case R.id.iv_search:
                 onSearch();
                 break;
@@ -251,7 +245,8 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
                         inputMethodManager.hideSoftInputFromWindow(getWindow().peekDecorView().getApplicationWindowToken(),0);
                     onSearch();
                 }else {
-                    Toast.makeText(SearchActivity.this,"还没输入搜索关键词哦！",Toast.LENGTH_SHORT).show();
+                    mEditText.setShakeAnimation();
+                    Toast.makeText(SearchActivity.this,"请输入搜索关键词",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.ll_back:
@@ -278,13 +273,6 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
         mSearchView.setVisibility(View.GONE);
 
         keyWord= mEditText.getText().toString().trim();
-//        SharedPreferences.Editor editor=mSharedPreferences.edit();
-        Log.i("msg-------->",keyWord);
-//        mHistorys.add(keyWord);
-//        editor.putStringSet("history",mHistorys);
-//        editor.commit();
-
-        Log.i("mHistoryList.contains(keyWord)--->",mHistoryList.contains(keyWord)+"");
         if (mHistoryList.contains(keyWord)){
             mHistoryList.remove(keyWord);
         }
@@ -303,7 +291,6 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
                 try {
                     URL url = new URL(ZhaiDou.HOT_SEARCH_URL);
                     String jsonContent = HtmlFetcher.fetch(url);
-                    Log.d("HOT", "-------> 加载jsonContent: " + jsonContent);
                     JSONArray array = new JSONArray(jsonContent);
                     for (int i=0;i<array.length();i++){
                         mHotList.add(array.getString(i));
@@ -371,7 +358,6 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
 
     @Override
     public void onHistoryItemClick(int position,String history) {
-        Log.i("position---------------->",position+"----->"+history);
         mEditText.setText(history);
         onSearch();
     }

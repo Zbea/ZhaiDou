@@ -12,6 +12,7 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.utils.ToolUtils;
 
 public class ImageBgFragment extends BaseFragment {
     private static final String TITLE = "title";
@@ -41,21 +42,27 @@ public class ImageBgFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.i("onCreateView---->","onCreateView");
         View view=inflater.inflate(R.layout.fragment_add_v, container, false);
         tv_title=(TextView)view.findViewById(R.id.tv_title);
-        Log.i("tv_title---->",tv_title.toString());
         iv_bg_1=(ImageView)view.findViewById(R.id.iv_bg_1);
         iv_bg_2=(ImageView)view.findViewById(R.id.iv_bg_2);
         iv_bg_3=(ImageView)view.findViewById(R.id.iv_bg_3);
         tv_title.setText(mTitle);
+
+        String imageUri = "drawable://" + R.drawable.bg_collocation_1;
+        String imageUri1 = "drawable://" + R.drawable.bg_collocation_2;
+        String imageUri2 = "drawable://" + R.drawable.bg_collocation_3;
+
+        String addUrl = "drawable://" + R.drawable.add_v_1;
+        String addUrl1 = "drawable://" + R.drawable.add_v_2;
+
         if ("豆搭教程".equalsIgnoreCase(mTitle)){
-            iv_bg_1.setImageResource(R.drawable.bg_collocation_1);
-            iv_bg_2.setImageResource(R.drawable.bg_collocation_2);
-            iv_bg_3.setImageResource(R.drawable.bg_collocation_3);
+            ToolUtils.setImagePreventMemoryLeaksUrl(imageUri, iv_bg_1);
+            ToolUtils.setImagePreventMemoryLeaksUrl(imageUri1, iv_bg_2);
+            ToolUtils.setImagePreventMemoryLeaksUrl(imageUri2, iv_bg_3);
         }else {
-            iv_bg_1.setImageResource(R.drawable.add_v_1);
-            iv_bg_2.setImageResource(R.drawable.add_v_2);
+            ToolUtils.setImagePreventMemoryLeaksUrl(addUrl, iv_bg_1);
+            ToolUtils.setImagePreventMemoryLeaksUrl(addUrl1, iv_bg_2);
         }
 
         view.findViewById(R.id.rl_back).setOnClickListener(new View.OnClickListener() {

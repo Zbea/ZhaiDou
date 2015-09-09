@@ -149,6 +149,21 @@ public class ToolUtils
     }
 
     /**
+     * 本地图片异步加载（不缓存图片设置，处理内存溢出）
+     * @param url
+     * @param imageView
+     */
+    public static final void setImagePreventMemoryLeaksUrl(String url,ImageView imageView)
+    {
+        DisplayImageOptions options=new DisplayImageOptions.Builder()
+                .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
+                .build();
+        ImageLoader.getInstance().displayImage(url, imageView,options);
+    }
+
+    /**
      * 打印信息
      * @param msg
      */

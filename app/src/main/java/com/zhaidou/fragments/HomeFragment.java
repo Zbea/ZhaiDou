@@ -926,6 +926,9 @@ public class HomeFragment extends BaseFragment implements
         super.onDestroy();
     }
 
+    /**
+     * 处理切换图标变换
+     */
     public static void getHomeCategory()
     {
         mCategoryView.setImageResource(R.drawable.icon_category);
