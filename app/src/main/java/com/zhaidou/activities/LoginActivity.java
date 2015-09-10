@@ -212,7 +212,7 @@ import cn.sharesdk.wechat.friends.Wechat;
         ShareSDK.initSDK(this);
         switch (view.getId()){
             case R.id.bt_login:
-//                String email = mEmailView.getText().toString();
+                String email = mEmailView.getText().toString();
                 String password =mPswView.getText().toString();
                 if (TextUtils.isEmpty(strEmail)){
                     mEmailView.setShakeAnimation();
@@ -450,15 +450,6 @@ import cn.sharesdk.wechat.friends.Wechat;
                         User u = new User(id,email,token,nick,null);
                         Log.i("LoginFragment----onRegisterOrLoginSuccess---->",u.toString());
                         mRegisterOrLoginListener.onRegisterOrLoginSuccess(u,null);
-//                        Message message=new Message();
-//                        message.obj=u;
-//                        mHandler.sendEmptyMessage(0);
-//                        Intent intent=new Intent();
-//                        intent.putExtra("id",u.getId());
-//                        intent.putExtra("email",u.getEmail());
-//                        intent.putExtra("token",u.getAuthentication_token());
-//                        intent.putExtra("nick",u.getNickName());
-//                        setResult(1000000, intent);
                     }
                 }
             }
