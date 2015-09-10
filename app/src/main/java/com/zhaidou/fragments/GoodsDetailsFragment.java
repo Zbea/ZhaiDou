@@ -409,7 +409,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                                 }
 
                             } else {
-                                scrollView.scrollTo(0, 600);
+                                scrollView.scrollTo(0, goodsImage.getHeight());
                                 Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
                             }
                     } else {
@@ -551,23 +551,29 @@ public class GoodsDetailsFragment extends BaseFragment {
         animation_viewGroup = createAnimLayout();
         mRequestQueue = Volley.newRequestQueue(getActivity());
 
+        topBtn = (ImageView) mView.findViewById(R.id.goodsTop);
+        topBtn.setOnClickListener(onClickListener);
+
         scrollView = (ScrollView) mView.findViewById(R.id.sv_goods_detail);
         scrollView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
+                scrollView.getParent().requestDisallowInterceptTouchEvent(true);
                 if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
                     int scrollY = view.getScrollY();
-                    if (scrollY != 0) {
+                    if (scrollY >goodsImage.getHeight())
+                    {
                         topBtn.setVisibility(View.VISIBLE);
-                    } else {
+                    }
+
+                   if(scrollY<goodsImage.getHeight())
+                    {
                         topBtn.setVisibility(View.GONE);
                     }
                 }
                 return false;
             }
         });
-        topBtn = (ImageView) mView.findViewById(R.id.goodsTop);
-        topBtn.setOnClickListener(onClickListener);
 
         radioGroup = (RadioGroup) mView.findViewById(R.id.goodsRG);
         radioGroup.setOnCheckedChangeListener(onCheckedChangeListener);
@@ -708,7 +714,6 @@ public class GoodsDetailsFragment extends BaseFragment {
             mDiscount.setVisibility(View.GONE);
         }
     }
-
 
     /**
      * 加载子fargment信息
