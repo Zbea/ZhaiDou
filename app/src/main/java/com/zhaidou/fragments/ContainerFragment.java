@@ -31,7 +31,6 @@ public class ContainerFragment extends android.support.v4.app.Fragment {
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
-        Log.i("newInstance","ContainerFragment----newInstance");
         return fragment;
     }
     public ContainerFragment() {

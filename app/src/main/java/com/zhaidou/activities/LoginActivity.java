@@ -4,10 +4,8 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -27,19 +25,26 @@ import com.alibaba.sdk.android.callback.CallbackContext;
 import com.alibaba.sdk.android.login.LoginService;
 import com.alibaba.sdk.android.login.callback.LoginCallback;
 import com.alibaba.sdk.android.session.model.Session;
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.base.BaseActivity;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.model.User;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.NativeHttpUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -54,12 +59,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import cn.sharesdk.framework.Platform;
@@ -72,7 +72,7 @@ import cn.sharesdk.wechat.friends.Wechat;
 /**
  * Created by wangclark on 15/7/16.
  */
-public class LoginActivity extends FragmentActivity implements View.OnClickListener,PlatformActionListener,RegisterFragment.RegisterOrLoginListener{
+        public class LoginActivity extends FragmentActivity implements View.OnClickListener,PlatformActionListener,RegisterFragment.RegisterOrLoginListener{
 
     private TextView mRegisterView,mResetView;
     private CustomEditText mEmailView;
@@ -104,6 +104,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                         mDialog.dismiss();
                     }
                     User u=(User)msg.obj;//id,email,token,nick,null
+                    Log.i("handleMessage------------>",u.toString());
                     SharedPreferencesUtil.saveUser(getApplicationContext(), u);
 
                     ToolUtils.setLog("要刷新登录了");
@@ -223,7 +224,42 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 if (ToolUtils.isEmailOK(strEmail) && strEmail.length() > 0)
                 {
                     saveEmail();
-                    new MyTask().execute();
+                    final Map<String, String> params = new HashMap<String, String>();
+                    params.put("user_token[email]", email);
+                    params.put("user_token[password]", password);
+                    mDialog = CustomLoadingDialog.setLoadingDialog(LoginActivity.this, "登陆中");
+                    ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_URL, params, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject jsonObject) {
+                            if (mDialog != null)
+                                mDialog.dismiss();
+                            if (jsonObject != null) {
+                                String msg = jsonObject.optString("message");
+                                if (!TextUtils.isEmpty(msg)) {
+                                    Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_LONG).show();
+                                    return;
+                                }
+
+                                JSONArray userArr = jsonObject.optJSONArray("users");
+                                for (int i = 0; i < userArr.length(); i++) {
+                                    JSONObject userObj = userArr.optJSONObject(i);
+                                    int id = userObj.optInt("id");
+                                    String email = userObj.optString("email");
+                                    String nick = userObj.optString("nick_name");
+                                    String token = jsonObject.optJSONObject("user_tokens").optString("token");
+
+                                    User user = new User(id, email, token, nick, null);
+                                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+                                }
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError volleyError) {
+
+                        }
+                    });
+                    requestQueue.add(request);
                 }
                 else
                 {
@@ -313,6 +349,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                         });
                         requestQueue.add(request);
                     }
+
                     @Override
                     public void onFailure(int i, String s) {
                         Log.i("onFailure---->","onFailure");
@@ -323,110 +360,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 break;
         }
     }
-    private class MyTask extends AsyncTask<Void,Void,String> {
-        @Override
-        protected void onPreExecute() {
-            mDialog= CustomLoadingDialog.setLoadingDialog(LoginActivity.this, "登陆中");
-            super.onPreExecute();
-        }
 
-        @Override
-        protected String doInBackground(Void... voids) {
-            String str=null;
-            try {
-                String email = mEmailView.getText().toString();
-                String password =mPswView.getText().toString();
-
-                str = executeHttpPost(email,password);
-            }catch (Exception e){
-
-            }
-            return str;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            Log.i("login---->onPostExecute------------>", s);
-            if (mDialog!=null)
-                mDialog.dismiss();
-            try {
-                JSONObject json = new JSONObject(s);
-                String msg = json.optString("message");
-                if (!TextUtils.isEmpty(msg)){
-                    Toast.makeText(LoginActivity.this,msg,Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                Log.i("before--->","before");
-                JSONArray userArr = json.optJSONArray("users");
-                for (int i=0;i<userArr.length();i++){
-                    JSONObject userObj = userArr.optJSONObject(i);
-                    int id = userObj.optInt("id");
-                    String email=userObj.optString("email");
-                    String nick = userObj.optString("nick_name");
-                    String token=json.optJSONObject("user_tokens").optString("token");
-
-//                    ToolUtils.setLog("要刷新登录了");
-//                    Intent intent=new Intent(ZhaiDou.IntentRefreshLoginTag);
-//                    sendBroadcast(intent);
-
-                    User user = new User(id,email,token,nick,null);
-                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
-                }
-
-            }catch (Exception e){
-
-            }
-
-        }
-    }
-    public String executeHttpPost(String email,String psw) throws Exception {
-        BufferedReader in = null;
-        try {
-            // 定义HttpClient
-            HttpClient client = new DefaultHttpClient();
-
-
-            // 实例化HTTP方法
-            HttpPost request = new HttpPost(ZhaiDou.USER_LOGIN_URL);
-
-            // 创建名/值组列表
-            List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-
-
-            parameters.add(new BasicNameValuePair("user_token[email]",email));
-            parameters.add(new BasicNameValuePair("user_token[password]",psw));
-//            parameters.add(new BasicNameValuePair("user[nick_name]",nick));
-
-            // 创建UrlEncodedFormEntity对象
-            UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
-                    parameters);
-            request.setEntity(formEntiry);
-            // 执行请求
-            HttpResponse response = client.execute(request);
-
-            in = new BufferedReader(new InputStreamReader(response.getEntity()
-                    .getContent()));
-            StringBuffer sb = new StringBuffer("");
-            String line = "";
-            String NL = System.getProperty("line.separator");
-            while ((line = in.readLine()) != null) {
-                sb.append(line + NL);
-            }
-            in.close();
-            String result = sb.toString();
-            return result;
-
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
     private void authorize(Platform plat) {
         Log.i("Platform----->",plat.getName());
         if (plat == null) {
@@ -447,9 +381,9 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 //        }
         plat.setPlatformActionListener(this);
         //关闭SSO授权
-        if ("SinaWeibo".equalsIgnoreCase(plat.getName())){
+        if ("SinaWeibo".equalsIgnoreCase(plat.getName())) {
             plat.SSOSetting(true);
-        }else {
+        } else {
             plat.SSOSetting(false);
         }
         plat.showUser(null);
@@ -590,13 +524,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             }catch (Exception e){
 //                Log.i("e--------->",e.getMessage());
             }
-        }
-    }
-
-    private class RegisterThirdTask extends AsyncTask<String,Void,String>{
-        @Override
-        protected String doInBackground(String... strings) {
-            return null;
         }
     }
 

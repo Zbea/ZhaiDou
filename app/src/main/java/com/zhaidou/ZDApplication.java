@@ -10,6 +10,7 @@ import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemor
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.utils.StorageUtils;
+import com.tencent.bugly.crashreport.CrashReport;
 import com.zhaidou.utils.ToolUtils;
 
 import java.io.File;
@@ -27,8 +28,8 @@ public class ZDApplication extends Application{
     public void onCreate() {
 
         super.onCreate();
+        CrashReport.initCrashReport(this, "900008762", false);
         initTypeFace();
-
         try
         {
             PackageInfo packageInfo=getApplicationContext().getPackageManager().getPackageInfo(getPackageName(),0);

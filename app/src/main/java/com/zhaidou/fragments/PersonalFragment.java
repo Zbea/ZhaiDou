@@ -102,14 +102,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 initCartTips();
                 exitLoginEvent();
             }
-            if (action.equals(ZhaiDou.IntentRefreshCollectDesTag)) {
-                collectNum=collectNum-1;
-                if (collectNum<=0)
-                {
-                    collectNum=0;
-                }
-                tv_collect.setText(collectNum+ "");
-            }
+
             if (action.equals(ZhaiDou.IntentRefreshUnPayAddTag)) {
                 ToolUtils.setLog("开始好刷新count加一");
                 count = count + 1;
@@ -270,7 +263,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         intentFilter.addAction(ZhaiDou.IntentRefreshUnPayAddTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshUnPayDesTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshUnPayTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshCollectDesTag);
         getActivity().registerReceiver(broadcastReceiver, intentFilter);
     }
 
@@ -385,6 +377,18 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             case R.id.ll_collect:
                 CollectFragment collectFragment = CollectFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragment(collectFragment);
+                collectFragment.setCollectCountChangeListener(new CollectFragment.CollectCountChangeListener() {
+                    @Override
+                    public void onCountChange(int count, Fragment fragment) {
+                        System.out.println("PersonalFragment.onCountChange------->"+collectNum);
+//                        collectNum=collectNum-1;
+//                        if (collectNum<=0)
+//                        {
+//                            collectNum=0;
+//                        }
+                        tv_collect.setText(collectNum-1<=0?0+"":""+--collectNum);
+                    }
+                });
                 break;
             case R.id.ll_collocation:
                 CollocationFragment collocationFragment = CollocationFragment.newInstance("", "");
@@ -512,6 +516,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
 
     @Override
     public void onHiddenChanged(boolean hidden) {
+        System.out.println("PersonalFragment.onHiddenChanged-------->"+hidden);
         userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         if (!hidden && userId != -1) {

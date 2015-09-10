@@ -76,7 +76,7 @@
 -keepclassmembers class fqcn.of.javascript.interface.for.webview {
    public *;
 }
-
+-keep public class com.tencent.bugly.**{*;}
 ##淘宝
 -keepattributes Signature
 -keep class sun.misc.Unsafe { *; }
