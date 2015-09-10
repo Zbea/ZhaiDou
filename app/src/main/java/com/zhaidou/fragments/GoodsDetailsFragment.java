@@ -69,6 +69,7 @@ import com.zhaidou.model.Specification;
 import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;
 import com.zhaidou.utils.CollectionUtils;
+import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -79,6 +80,7 @@ import com.zhaidou.view.TypeFaceTextView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -555,17 +557,22 @@ public class GoodsDetailsFragment extends BaseFragment {
         topBtn.setOnClickListener(onClickListener);
 
         scrollView = (ScrollView) mView.findViewById(R.id.sv_goods_detail);
-        scrollView.setOnTouchListener(new View.OnTouchListener() {
+        scrollView.setOnTouchListener(new View.OnTouchListener()
+        {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
+            public boolean onTouch(View view, MotionEvent motionEvent)
+            {
                 scrollView.getParent().requestDisallowInterceptTouchEvent(true);
-                if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_MOVE)
+                {
                     int scrollY = view.getScrollY();
-                    if (scrollY > goodsImage.getHeight()) {
+                    if (scrollY > goodsImage.getHeight())
+                    {
                         topBtn.setVisibility(View.VISIBLE);
                     }
 
-                    if (scrollY < goodsImage.getHeight()) {
+                    if (scrollY < goodsImage.getHeight())
+                    {
                         topBtn.setVisibility(View.GONE);
                     }
                 }
@@ -739,7 +746,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                 imageView.setBackgroundColor(Color.parseColor("#ffffff"));
 //                ToolUtils.setImageCacheUrl(detail.getImgs().get(i), imageView);
                 System.out.println(i + "---------" + detail.getImgs().get(i));
-                ImageLoader.getInstance().displayImage(detail.getImgs().get(i), imageView, new ImageLoadingListener() {
+                ImageLoader.getInstance().displayImage(detail.getImgs().get(i),imageView, new ImageLoadingListener() {
                     @Override
                     public void onLoadingStarted(String s, View view) {
 
@@ -752,9 +759,10 @@ public class GoodsDetailsFragment extends BaseFragment {
 
                     @Override
                     public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-                        if (bitmap != null) {
-                            LargeImgView imageView1 = (LargeImgView) view;
-                            if (bitmap.getHeight() < 4000) {
+                        if (bitmap!=null){
+                            LargeImgView imageView1=(LargeImgView)view;
+                                imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+                            if (bitmap.getHeight()<4000){
                                 imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
                                 imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
                                 imageView1.setImageBitmap(bitmap);

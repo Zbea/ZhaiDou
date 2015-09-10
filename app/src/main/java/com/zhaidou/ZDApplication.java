@@ -52,11 +52,11 @@ public class ZDApplication extends Application{
     {
         File cacheDir = StorageUtils.getOwnCacheDirectory(getApplicationContext(), "zhaidou/image_cache/");
         ImageLoaderConfiguration configuration = new  ImageLoaderConfiguration.Builder(this)
-                .threadPoolSize(5)//线程池加载的数量
+                .threadPoolSize(3)//线程池加载的数量
                 .diskCacheFileCount(50)//最大缓存数量
                 .diskCacheSize(50 * 1024 * 1024)
                 .diskCache(new UnlimitedDiscCache(cacheDir))//设置缓存路径
-                .memoryCache(new UsingFreqLimitedMemoryCache(2 * 1024 * 1024))
+                .memoryCache(new UsingFreqLimitedMemoryCache(2* 1024 * 1024))
                 .build();
         ImageLoader.getInstance().init(configuration);
     }
