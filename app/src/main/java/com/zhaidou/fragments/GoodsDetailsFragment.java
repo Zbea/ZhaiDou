@@ -69,6 +69,7 @@ import com.zhaidou.model.Specification;
 import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;
 import com.zhaidou.utils.CollectionUtils;
+import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -79,6 +80,7 @@ import com.zhaidou.view.TypeFaceTextView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -555,18 +557,21 @@ public class GoodsDetailsFragment extends BaseFragment {
         topBtn.setOnClickListener(onClickListener);
 
         scrollView = (ScrollView) mView.findViewById(R.id.sv_goods_detail);
-        scrollView.setOnTouchListener(new View.OnTouchListener() {
+        scrollView.setOnTouchListener(new View.OnTouchListener()
+        {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
+            public boolean onTouch(View view, MotionEvent motionEvent)
+            {
                 scrollView.getParent().requestDisallowInterceptTouchEvent(true);
-                if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_MOVE)
+                {
                     int scrollY = view.getScrollY();
-                    if (scrollY >goodsImage.getHeight())
+                    if (scrollY > goodsImage.getHeight())
                     {
                         topBtn.setVisibility(View.VISIBLE);
                     }
 
-                   if(scrollY<goodsImage.getHeight())
+                    if (scrollY < goodsImage.getHeight())
                     {
                         topBtn.setVisibility(View.GONE);
                     }
@@ -734,45 +739,50 @@ public class GoodsDetailsFragment extends BaseFragment {
                         .imageScaleType(ImageScaleType.NONE)
                         .build();
         if (detail.getImgs() != null) {
-            for (int i = 0; i < detail.getImgs().size(); i++) {
+            for (int i = 0; i < detail.getImgs().size(); i++)
+            {
                 LargeImgView imageView = new LargeImgView(getActivity());
-//                imageView.setImageResource(R.drawable.icon_loading_defalut);
-                imageView.setScaleType(ImageView.ScaleType.MATRIX);
+                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                 imageView.setBackgroundColor(Color.parseColor("#ffffff"));
-//                ToolUtils.setImageCacheUrl(detail.getImgs().get(i), imageView);
-                System.out.println(i + "---------" + detail.getImgs().get(i));
-                ImageLoader.getInstance().displayImage(detail.getImgs().get(i),imageView, new ImageLoadingListener() {
+                ImageLoader.getInstance().displayImage(detail.getImgs().get(i), imageView, options, new ImageLoadingListener()
+                {
                     @Override
-                    public void onLoadingStarted(String s, View view) {
-
+                    public void onLoadingStarted(String s, View view)
+                    {
                     }
 
                     @Override
-                    public void onLoadingFailed(String s, View view, FailReason failReason) {
-
+                    public void onLoadingFailed(String s, View view, FailReason failReason)
+                    {
                     }
 
                     @Override
-                    public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-                        if (bitmap!=null){
-                            LargeImgView imageView1=(LargeImgView)view;
-                                imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
-                            if (bitmap.getHeight()<4000){
+                    public void onLoadingComplete(String s, View view, Bitmap bitmap)
+                    {
+                        if (bitmap != null)
+                        {
+                            LargeImgView imageView1 = (LargeImgView) view;
+                            imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * bitmap.getHeight() / bitmap.getWidth()));
+
+                            ToolUtils.setLog("bitmap.getHeight():" + bitmap.getHeight());
+                            ToolUtils.setLog("bitmap.getWidth():" + bitmap.getWidth());
+
+                            if (bitmap.getHeight() < 4000)
+                            {
                                 imageView1.setImageBitmap(bitmap);
-                            }else {
-                                imageView1.setImageBitmap1(bitmap);
+                            } else
+                            {
+                                imageView1.setImageBitmapLarge(bitmap);
                             }
                         }
                     }
 
                     @Override
-                    public void onLoadingCancelled(String s, View view) {
-
+                    public void onLoadingCancelled(String s, View view)
+                    {
                     }
                 });
-
-                            mImageContainer.addView(imageView);
-
+                mImageContainer.addView(imageView);
             }
         }
     }

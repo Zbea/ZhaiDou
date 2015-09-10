@@ -58,7 +58,7 @@ public class NetService
      * @param url
      * @return
      */
-    public static String getHttpServiceIs(String url)
+    public static InputStream getHttpServiceIs(String url)
     {
         try
         {
@@ -67,13 +67,11 @@ public class NetService
             HttpResponse httpResponse=httpClient.execute(httpGet);
             if (httpResponse.getStatusLine().getStatusCode()==HttpStatus.SC_OK)
             {
-                httpResponse.getEntity().getContent();
-                result=EntityUtils.toString(httpResponse.getEntity(), "utf-8");
-                Log.i("zhaidou", "result:"+result);
+                is=httpResponse.getEntity().getContent();
             }
             else
             {
-                result=null;
+                is=null;
             }
         }
         catch (ClientProtocolException e)
@@ -84,8 +82,7 @@ public class NetService
         {
             e.printStackTrace();
         }
-
-        return result;
+        return is;
 
     }
 }

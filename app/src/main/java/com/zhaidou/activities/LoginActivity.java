@@ -212,7 +212,7 @@ import cn.sharesdk.wechat.friends.Wechat;
         ShareSDK.initSDK(this);
         switch (view.getId()){
             case R.id.bt_login:
-//                String email = mEmailView.getText().toString();
+                String email = mEmailView.getText().toString();
                 String password =mPswView.getText().toString();
                 if (TextUtils.isEmpty(strEmail)){
                     mEmailView.setShakeAnimation();
@@ -221,7 +221,7 @@ import cn.sharesdk.wechat.friends.Wechat;
                     mPswView.setShakeAnimation();
                     return;
                 }
-                if (ToolUtils.isEmailOK(strEmail) && strEmail.length() > 0)
+                if (ToolUtils.isEmailOK(strEmail))
                 {
                     saveEmail();
                     final Map<String, String> params = new HashMap<String, String>();
@@ -239,7 +239,6 @@ import cn.sharesdk.wechat.friends.Wechat;
                                     Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_LONG).show();
                                     return;
                                 }
-
                                 JSONArray userArr = jsonObject.optJSONArray("users");
                                 for (int i = 0; i < userArr.length(); i++) {
                                     JSONObject userObj = userArr.optJSONObject(i);
@@ -247,7 +246,6 @@ import cn.sharesdk.wechat.friends.Wechat;
                                     String email = userObj.optString("email");
                                     String nick = userObj.optString("nick_name");
                                     String token = jsonObject.optJSONObject("user_tokens").optString("token");
-
                                     User user = new User(id, email, token, nick, null);
                                     mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
                                 }

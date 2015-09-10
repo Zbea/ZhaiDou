@@ -63,9 +63,16 @@ public class ToolUtils
      */
     public static boolean isEmailOK(String email)
     {
-        Pattern p=Pattern.compile("[a-zA-Z0-9._-]+@[a-z]+\\.[a-z]+");
-        Matcher m=p.matcher(email);
-        return m.matches();
+        if (email!=null&email.length()>0)
+        {
+            Pattern p=Pattern.compile("[a-zA-Z0-9._-]+@[a-z]+\\.[a-z]+");
+            Matcher m=p.matcher(email);
+            return m.matches();
+        }
+        else
+        {
+            return false;
+        }
     }
 
 

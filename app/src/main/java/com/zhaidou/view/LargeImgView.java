@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapRegionDecoder;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Build;
@@ -51,7 +52,7 @@ public class LargeImgView extends ImageView {
     public LargeImgView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         cxt = context;
-        setImageResource(getResources().getColor(R.color.white));
+        setImageResource(Color.parseColor("#ffffff"));
         if(context instanceof Activity){
             DisplayMetrics dm = new DisplayMetrics();
             ((Activity)context).getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -74,8 +75,7 @@ public class LargeImgView extends ImageView {
         this.sh = reqH;
     }
 
-    public void setImageBitmap1(final Bitmap bm) {
-//        Toast.makeText(this.getContext(), "large bitmap" + bm.getHeight(), 0).show();
+    public void setImageBitmapLarge(final Bitmap bm) {
         startAnimation(AnimationUtils.loadAnimation(cxt, android.R.anim.fade_in));
         new Thread(new Runnable() {
             @Override
@@ -85,7 +85,6 @@ public class LargeImgView extends ImageView {
                     int h = bm.getHeight();
                     int c = h/sh;
                     int count = h%sh==0?c:c+1;
-//                    DeLog.d(TAG, "sh=" + sh + ",h=" + h+",count="+count+",Build.VERSION.SDK_INT="+ Build.VERSION.SDK_INT);
                     if(Build.VERSION.SDK_INT>1000){//因兼容低版本问题，暂不使用此切图方式
                         InputStream is = Bitmap2IS(bm);
                         mDecoder = BitmapRegionDecoder.newInstance(is, true);
@@ -119,7 +118,6 @@ public class LargeImgView extends ImageView {
         try {
             int top = 0;
             for(int i=0;bs!=null && i<bs.length;i++){
-                //DeLog.d(TAG,"i =" +i +",bs.length="+bs.length+",top="+top+",scale="+minScale);
                 canvas.save();
                 if(minScale != 0){
                     canvas.scale(minScale, minScale);
