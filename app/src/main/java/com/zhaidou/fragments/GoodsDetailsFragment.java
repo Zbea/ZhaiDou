@@ -709,6 +709,7 @@ public class GoodsDetailsFragment extends BaseFragment {
         }
     }
 
+
     /**
      * 加载子fargment信息
      *
