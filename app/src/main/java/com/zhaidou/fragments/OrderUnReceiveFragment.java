@@ -137,8 +137,8 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 final Order order = (Order) values;
                 if ("4".equalsIgnoreCase(order.getStatus())) {
-                    LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "");
-                    ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
+                    OrderLogisticsMsgFragment orderLogisticsMsgFragment = OrderLogisticsMsgFragment.newInstance("", "");
+                    ((MainActivity) getActivity()).navigationToFragment(orderLogisticsMsgFragment);
                 } else if ("1".equalsIgnoreCase(order.getStatus())) {
 //                    AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(order.getOrderId() + "", order.getStatus());
 //                    ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);

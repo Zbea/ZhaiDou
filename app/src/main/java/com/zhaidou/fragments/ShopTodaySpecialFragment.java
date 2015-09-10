@@ -6,6 +6,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -25,6 +27,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
@@ -34,6 +39,8 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.adapter.ShopTodaySpecialAdapter;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.base.BaseListAdapter;
+import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CountTime;
 import com.zhaidou.model.ShopSpecialItem;
@@ -48,10 +55,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
@@ -82,6 +92,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private MyTimer mTimer;
 
     private RequestQueue mRequestQueue;
+    private Map<Integer, View> mHashMap = new HashMap<Integer, View>();
 
     private ImageView shareBtn;
     private TypeFaceTextView backBtn,titleTv,introduceTv,timeTv;
@@ -134,13 +145,10 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     adapter.notifyDataSetChanged();
                     if (mDialog!=null)
                         mDialog.dismiss();
-                    loadingView.setVisibility(View.GONE);
-                    introduceTv.setText(introduce);
                     break;
                 case UPDATE_TIMER_START:
                     String date = (String)msg.obj;
                     ToolUtils.setLog(date);
-//                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
                     try{
                         long millionSeconds = sdf.parse(date).getTime();//毫秒
@@ -343,9 +351,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         backBtn.setOnClickListener(onClickListener);
         titleTv=(TypeFaceTextView)mView.findViewById(R.id.title_tv);
         titleTv.setText(mTitle);
-
-        mScrollView = (PullToRefreshScrollView)mView.findViewById(R.id.sv_shop_today_special_scrollview);
-        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         timeTv=(TypeFaceTextView)mView.findViewById(R.id.shopTimeTv);
 
         mScrollView = (PullToRefreshScrollView)mView.findViewById(R.id.sv_shop_today_special_scrollview);
@@ -353,9 +358,9 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         mScrollView.setOnRefreshListener(refreshListener);
 
         mListView=(ListViewForScrollView)mView.findViewById(R.id.shopListView);
+        mListView.setOnItemClickListener(onItemClickListener);
         adapter=new ShopTodaySpecialAdapter(mContext,items);
         mListView.setAdapter(adapter);
-        mListView.setOnItemClickListener(onItemClickListener);
 
         introduceTv=(TypeFaceTextView)mView.findViewById(R.id.adText);
 
@@ -431,8 +436,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
      */
     private void FetchData(int id)
     {
-        final String url;
-        url = ZhaiDou.shopSpecialTadayUrl+id;
+        String url = ZhaiDou.shopSpecialTadayUrl+id;
         ToolUtils.setLog(url);
         JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
@@ -446,12 +450,10 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     nullNetView.setVisibility(View.GONE);
                     return;
                 }
-                String result=response.toString();
-                JSONObject obj;
                 try
                 {
-                    JSONObject jsonObject=new JSONObject(result);
-                    JSONObject josnObject1=jsonObject.optJSONObject("sale");
+                    JSONObject obj;
+                    JSONObject josnObject1=response.optJSONObject("sale");
                     int id=josnObject1.optInt("id");
                     String title=josnObject1.optString("title");
                     String time=josnObject1.optString("day");
@@ -476,10 +478,12 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                         ShopTodayItem shopTodayItem=new ShopTodayItem(Baseid,Listtitle,designer,imageUrl,price,cost_price,num);
                         items.add(shopTodayItem);
                     }
-                } catch (JSONException e)
+                } catch (Exception e)
                 {
                     e.printStackTrace();
                 }
+                introduceTv.setText(introduce);
+                loadingView.setVisibility(View.GONE);
                 Message message = new Message();
                 message.what = 4;
                 handler.sendMessage(message);
@@ -498,6 +502,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         });
         mRequestQueue.add(jr);
     }
+
 
     /**
      * 倒计时

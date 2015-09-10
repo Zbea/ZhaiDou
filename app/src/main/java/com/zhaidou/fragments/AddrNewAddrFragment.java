@@ -34,6 +34,7 @@ import com.zhaidou.model.City;
 import com.zhaidou.model.HttpPatch;
 import com.zhaidou.model.Province;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.CustomEditText;
 import com.zhaidou.view.WheelViewContainer;
 
 import org.apache.http.HttpResponse;
@@ -74,7 +75,7 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
 
     private Dialog mDialog;
     private RequestQueue mRequestQueue;
-    private EditText et_name, et_mobile, et_address_detail;
+    private CustomEditText et_name, et_mobile, et_address_detail;
     private TextView et_location;
 
     private List<Province> provinceList = new ArrayList<Province>();
@@ -120,9 +121,9 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_new_addr, container, false);
-        et_name = (EditText) view.findViewById(R.id.tv_addr_username);
-        et_address_detail = (EditText) view.findViewById(R.id.tv_addr_detail);
-        et_mobile = (EditText) view.findViewById(R.id.tv_addr_mobile);
+        et_name = (CustomEditText) view.findViewById(R.id.tv_addr_username);
+        et_address_detail = (CustomEditText) view.findViewById(R.id.tv_addr_detail);
+        et_mobile = (CustomEditText) view.findViewById(R.id.tv_addr_mobile);
         et_location = (TextView) view.findViewById(R.id.tv_addr_loc);
 
         et_name.setText(mNickName);
@@ -168,12 +169,14 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
                 String location = et_location.getText().toString().trim();
                 String address = et_address_detail.getText().toString().trim();
                 if (TextUtils.isEmpty(name)) {
-                    Toast.makeText(getActivity(), "收货人信息不能为空", Toast.LENGTH_SHORT).show();
+                    et_name.setShakeAnimation();
                     return;
                 } else if (TextUtils.isEmpty(mobile)) {
+                    et_mobile.setShakeAnimation();
                     Toast.makeText(getActivity(), "联系方式不能为空", Toast.LENGTH_SHORT).show();
                     return;
                 } else if (TextUtils.isEmpty(address)) {
+                    et_address_detail.setShakeAnimation();
                     Toast.makeText(getActivity(), "详细地址不能为空", Toast.LENGTH_SHORT).show();
                     return;
                 } else if (TextUtils.isEmpty(location)) {
@@ -183,10 +186,16 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
                 mNickName = name;
                 mMobile = mobile;
                 mAddress = address;
-//                mProviderId=selectedArea==null?mProviderId:selectedArea.getId();
-                ToolUtils.setLog("selectedArea.getId():"+selectedArea.getId());
-                ToolUtils.setLog("mProviderId:"+mProviderId);
-                new MyTask().execute();
+
+                if (ToolUtils.isPhoneOk(mMobile))
+                {
+                    new MyTask().execute();
+                }
+                else
+                {
+                    et_mobile.setShakeAnimation();
+                    ToolUtils.setToast(getActivity(),"抱歉,手机号码格式输入不正确");
+                }
                 break;
             case R.id.ll_address:
                 final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);

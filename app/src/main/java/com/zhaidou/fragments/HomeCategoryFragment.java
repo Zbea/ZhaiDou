@@ -1,5 +1,6 @@
 package com.zhaidou.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,7 +9,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.RotateAnimation;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.android.volley.RequestQueue;
@@ -22,6 +28,8 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Category;
+import com.zhaidou.utils.NetworkUtils;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
@@ -34,26 +42,36 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
 
     private String mParam1;
     private String mParam2;
+    private static final int UPDATE_CATEGORY_LIST=0;
+    private static final int UPDATE_EMPTY_LIST=1;
 
     private RelativeLayout mRelativeLayout;
+    private View view;
 
     private GridView mGridView;
     private TextView mAllCategory;
     private int mCheckedPosition=-1;
-    private List<Category> mCategoryList;
+    private List<Category> mCategoryList=new ArrayList<Category>();;
     private RequestQueue mRequestQueue;
     public static String TAG=HomeCategoryFragment.class.getSimpleName();
 
     private CategorySelectedListener mCategorySelectedListener;
     private CategoryAdapter mCategoryAdapter;
-    private static final int UPDATE_CATEGORY_LIST=0;
+    private ImageView refreshBtn;
+    private Animation animation;
+
 
     private Handler mHandler =new Handler(){
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case UPDATE_CATEGORY_LIST:
+                    if (animation!=null)
+                    animation.cancel();
                     mCategoryAdapter.notifyDataSetChanged();
+                    break;
+                case UPDATE_EMPTY_LIST:
+                    animation.cancel();
                     break;
             }
         }
@@ -82,17 +100,41 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.item_popupwindows, container, false);
+
+        if(view==null)
+        {
+            view=inflater.inflate(R.layout.item_popupwindows, container, false);
+            mContext = getActivity();
+            initView();
+
+        }
+        //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
+        ViewGroup parent = (ViewGroup) view.getParent();
+        if (parent != null)
+        {
+            parent.removeView(view);
+        }
+        return view;
+    }
+
+    private void initView()
+    {
         mRelativeLayout = (RelativeLayout)view.findViewById(R.id.ll_category_close);
         mAllCategory=(TextView)view.findViewById(R.id.tv_category_all);
         mAllCategory.setPressed(true);
         mRelativeLayout.setOnClickListener(this);
         mRequestQueue = Volley.newRequestQueue(getActivity());
-        mCategoryList=new ArrayList<Category>();
+
+        refreshBtn= (ImageView)view.findViewById(R.id.categoryRefresh);
+        refreshBtn.setOnClickListener(this);
+
         mCategoryAdapter = new CategoryAdapter(getActivity(),mCategoryList);
         mGridView =(GridView)view.findViewById(R.id.gv_category);
         mGridView.setAdapter(mCategoryAdapter);
-        FetchCategoryData();
+
+        animation= AnimationUtils.loadAnimation(mContext,R.anim.dialog_rotate);
+        refreshBtn.setAnimation(animation);
+        animation.start();
 
         mAllCategory.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,29 +148,26 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
         mCategoryAdapter.setOnInViewClickListener(R.id.tv_category_item,new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
-
                 Category category = mCategoryList.get(position);
-                Log.i("category------------->",category.toString());
                 mCategorySelectedListener.onCategorySelected(category);
                 mCheckedPosition=position;
 
             }
         });
-        return view;
+
+        FetchCategoryData();
     }
 
     private void FetchCategoryData(){
         JsonObjectRequest jr = new JsonObjectRequest(ZhaiDou.INDEX_CATEGORY_FILTER,null,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-//                Log.i("FetchCatogoryData", response.toString());
+                mCategoryList.clear();
                 JSONArray categoryArray = response.optJSONArray("article_categories");
                 for (int i=0;i<categoryArray.length();i++){
                     JSONObject categoryObj=categoryArray.optJSONObject(i);
                     int id = categoryObj.optInt("id");
                     String name = categoryObj.optString("name");
-                    Log.i("id----->",id+"");
-                    Log.i("name----->",name);
                     Category c =new Category(id,name);
                     mCategoryList.add(c);
                 }
@@ -137,7 +176,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
         },new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-//                Log.i("onErrorResponse------->",error.getMessage());
+                mHandler.sendEmptyMessage(UPDATE_EMPTY_LIST);
             }
         });
         mRequestQueue.add(jr);
@@ -148,6 +187,10 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
         switch (view.getId()){
             case R.id.ll_category_close:
                 ((HomeFragment)getParentFragment()).toggleMenu();
+                break;
+            case R.id.categoryRefresh:
+                animation.start();
+                FetchCategoryData();
                 break;
         }
     }
@@ -167,7 +210,6 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
                 tv_item.setPressed(true);
             }else {
                 tv_item.setPressed(false);
-//                tv_item.setBackgroundDrawable(getResources().getDrawable(R.drawable.category_item_selector));
             }
             tv_item.setText(item.getName());
 
@@ -198,9 +240,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
 
     @Override
     public void onHiddenChanged(boolean hidden) {
-        System.out.println("HomeCategoryFragment.onHiddenChanged------>"+hidden);
         if (!hidden&&mCategoryList.size()==0){
-            System.out.println("HomeCategoryFragment.onHiddenChanged------->!hidden&&mCategoryList.size()==0");
             FetchCategoryData();
         }
     }

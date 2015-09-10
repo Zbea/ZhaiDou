@@ -27,8 +27,10 @@ import com.zhaidou.R;
  import com.zhaidou.base.BaseFragment;
  import com.zhaidou.dialog.CustomLoadingDialog;
  import com.zhaidou.model.User;
+import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.CustomEditText;
 
- import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponse;
  import org.apache.http.NameValuePair;
  import org.apache.http.client.HttpClient;
  import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -46,7 +48,9 @@ import com.zhaidou.R;
  import java.util.List;
  import java.util.Map;
 
+
  public class RegisterFragment extends BaseFragment implements View.OnClickListener {
+
      private static final String ARG_PARAM1 = "param1";
      private static final String ARG_PARAM2 = "param2";
      public static final String TAG = RegisterFragment.class.getSimpleName();
@@ -54,7 +58,7 @@ import com.zhaidou.R;
      private String mParam1;
      private String mParam2;
 
-     private EditText mEmailView, mNickView, mPswView, mConfirmPsw;
+     private CustomEditText mEmailView, mNickView, mPswView, mConfirmPsw;
      private TextView mLogin;
      private TextView mRegister;
      private RequestQueue mRequestQueue;
@@ -94,10 +98,10 @@ import com.zhaidou.R;
      public View onCreateView(LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState) {
          View view = inflater.inflate(R.layout.fragment_register, container, false);
-         mEmailView = (EditText) view.findViewById(R.id.tv_email);
-         mNickView = (EditText) view.findViewById(R.id.tv_nick);
-         mPswView = (EditText) view.findViewById(R.id.tv_password);
-         mConfirmPsw = (EditText) view.findViewById(R.id.tv_password_confirm);
+         mEmailView = (CustomEditText) view.findViewById(R.id.tv_email);
+         mNickView = (CustomEditText) view.findViewById(R.id.tv_nick);
+         mPswView = (CustomEditText) view.findViewById(R.id.tv_password);
+         mConfirmPsw = (CustomEditText) view.findViewById(R.id.tv_password_confirm);
          mLogin = (TextView) view.findViewById(R.id.tv_login);
          mRegister = (TextView) view.findViewById(R.id.bt_register);
 
@@ -121,19 +125,32 @@ import com.zhaidou.R;
                  String psw_confirm = mConfirmPsw.getText().toString();
                  String nick = mNickView.getText().toString();
                  if (TextUtils.isEmpty(email)) {
-                     Toast.makeText(getActivity(), "邮箱不能为空哦！", Toast.LENGTH_SHORT).show();
+                     mEmailView.setShakeAnimation();
                      return;
                  } else if (TextUtils.isEmpty(nick)) {
-                     Toast.makeText(getActivity(), "昵称不能为空哦！", Toast.LENGTH_SHORT).show();
+                     mNickView.setShakeAnimation();
                      return;
                  } else if (TextUtils.isEmpty(password)) {
-                     Toast.makeText(getActivity(), "密码不能为空哦！", Toast.LENGTH_SHORT).show();
-                     return;
-                 } else if (!password.equals(psw_confirm)) {
-                     Toast.makeText(getActivity(), "两次密码不一致哦！", Toast.LENGTH_SHORT).show();
+                     mPswView.setShakeAnimation();
                      return;
                  }
-                 doRegister();
+                 else if (TextUtils.isEmpty(psw_confirm)) {
+                     mConfirmPsw.setShakeAnimation();
+                     return;
+                 }
+                 if (ToolUtils.isEmailOK(email) && email.length() > 0)
+                 {
+                     if (!password.equals(psw_confirm)) {
+                         ToolUtils.setToast(getActivity(),"两次填写的密码不一致");
+                         return;
+                     }
+                     doRegister();
+                 }
+                 else
+                 {
+                     mEmailView.setShakeAnimation();
+                     ToolUtils.setToast(getActivity(),"抱歉,无效邮箱");
+                 }
                  break;
              case R.id.tv_login:
                  ((BaseActivity) getActivity()).popToStack(this);
@@ -147,8 +164,6 @@ import com.zhaidou.R;
      }
 
      private void doRegister() {
-         Log.i("doRegister------->", "doRegister");
-
          new MyTask().execute();
      }
 

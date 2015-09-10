@@ -52,7 +52,7 @@ public class ProductAdapter extends BaseListAdapter<Product>{
         tv_name.setText(product.getTitle());
         tv_money.setText("￥"+product.getPrice());
         tv_count.setText(product.getBean_like_count()+"");
-        ToolUtils.setImageCacheUrl("http://"+product.getImage(),image);
+        ToolUtils.setImageCacheUrl("http://"+product.getImage(),image,R.drawable.icon_loading_defalut);
 
         iv_heart.setImageResource(R.drawable.heart_normal);
         if (pos==position)

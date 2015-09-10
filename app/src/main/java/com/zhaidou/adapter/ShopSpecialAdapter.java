@@ -1,12 +1,16 @@
 package com.zhaidou.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.zhaidou.R;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.utils.ToolUtils;
@@ -84,8 +88,21 @@ public class ShopSpecialAdapter extends BaseAdapter
         viewHolder.itemName.setText(shopSpecialItem.title);
         viewHolder.itemSale.setText(shopSpecialItem.sale);
         viewHolder.itemTime.setText(shopSpecialItem.overTime);
-        ToolUtils.setImageCacheUrl(shopSpecialItem.imageUrl,viewHolder.itemImage);
 
+        DisplayImageOptions options=new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.icon_loading_item)
+                .showImageForEmptyUri(R.drawable.icon_loading_item)
+                .showImageOnFail(R.drawable.icon_loading_item)
+                .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
+                .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
+                .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
+                .build();
+
+        ImageLoader.getInstance().displayImage(shopSpecialItem.imageUrl, viewHolder.itemImage,options);
+
+//        ToolUtils.setImageCacheUrl(shopSpecialItem.imageUrl,viewHolder.itemImage,R.drawable.icon_loading_item);
         return convertView;
     }
 }

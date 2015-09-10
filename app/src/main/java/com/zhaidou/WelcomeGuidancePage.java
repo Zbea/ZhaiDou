@@ -2,6 +2,7 @@ package com.zhaidou;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -10,6 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.zhaidou.utils.ToolUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,16 +48,20 @@ public class WelcomeGuidancePage extends Activity
     {
         mViewPager=(ViewPager)findViewById(R.id.welcomeView);
 
+        String imageUri = "drawable://" + R.drawable.icon_welcome_guidance1;
         ImageView img=new ImageView(this);
-        img.setImageResource(R.drawable.icon_welcome_guidance1);
+        ToolUtils.setImagePreventMemoryLeaksUrl(imageUri, img);
         images.add(img);
 
+        String imageUri1 = "drawable://" + R.drawable.icon_welcome_guidance2;
         ImageView img1=new ImageView(this);
-        img1.setImageResource(R.drawable.icon_welcome_guidance2);
+        ToolUtils.setImagePreventMemoryLeaksUrl(imageUri1, img1);
         images.add(img1);
 
+        String imageUri2 = "drawable://" + R.drawable.icon_welcome_guidance3;
         ImageView img2=new ImageView(this);
-        img2.setImageResource(R.drawable.icon_welcome_guidance3);
+        ToolUtils.setImagePreventMemoryLeaksUrl(imageUri2, img2);
+
         img2.setOnClickListener(new View.OnClickListener()
         {
             @Override

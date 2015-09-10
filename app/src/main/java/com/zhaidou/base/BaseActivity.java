@@ -43,7 +43,8 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
         }
         if ("MainActivity".equalsIgnoreCase(this.getClass().getSimpleName())) {
             mChildContainer.setVisibility(View.VISIBLE);
-        }//.setCustomAnimations(R.anim.page_enter_into_the,R.anim.page_enter_out_the,R.anim.page_out_into_the,R.anim.page_out_out_the)
+        }
+        //.setCustomAnimations(R.anim.page_enter_into_the,R.anim.page_enter_out_the,R.anim.page_out_into_the,R.anim.page_out_out_the)
         getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, fragment, fragment.getClass().getSimpleName())
                 .addToBackStack(null).commitAllowingStateLoss();
     }
@@ -51,7 +52,8 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
     public void popToStack(Fragment fragment) {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().setCustomAnimations(R.anim.page_out_into_the,R.anim.page_out_out_the).remove(fragment).commitAllowingStateLoss();
+        //.setCustomAnimations(R.anim.page_out_into_the,R.anim.page_out_out_the)
+        fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
         fragmentManager.popBackStack();
         if (fragment instanceof ShopPaymentFailFragment || fragment instanceof ShopPaymentSuccessFragment)
         fragmentManager.popBackStack();

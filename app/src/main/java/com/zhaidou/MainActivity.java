@@ -16,6 +16,7 @@ import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.fragments.CategoryFragment1;
 import com.zhaidou.fragments.DiyFragment;
 import com.zhaidou.fragments.ElementListFragment;
+import com.zhaidou.fragments.HomeCategoryFragment;
 import com.zhaidou.fragments.HomeFragment;
 import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.PersonalFragment;
@@ -143,9 +144,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     Fragment shopPaymentFragment=getSupportFragmentManager().findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
                     Fragment shopPaymentFailFragment=getSupportFragmentManager().findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
 
-                    System.out.println("MainActivity.fragment1----------------->"+shopPaymentFragment.toString()==null?"null":shopPaymentFragment.toString());
                     if (shopPaymentFragment!=null){
-                        Log.i("fragshopPaymentFragment1-------->",shopPaymentFragment.toString());
                         ((ShopPaymentFragment) shopPaymentFragment).setPayment();
                     }
                     if (shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment) {
@@ -482,6 +481,21 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         FragmentManager manager = getSupportFragmentManager();
         int num = manager.getBackStackEntryCount();
+        List<Fragment> fragments = manager.getFragments();
+        //当分类显示时候，返回先隐藏
+        for (Fragment fragment:fragments)
+        {
+            if (fragment instanceof HomeFragment)
+            {
+                Fragment homeCategoryFragment=fragment.getChildFragmentManager().findFragmentByTag(HomeCategoryFragment.class.getSimpleName());
+                if (!homeCategoryFragment.isHidden())
+                {
+                    ((HomeFragment) fragment).getHomeCategory();
+                    fragment.getChildFragmentManager().beginTransaction().hide(homeCategoryFragment).commit();
+                    return true;
+                }
+            }
+        }
         if (num == 0) {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
                 if ((System.currentTimeMillis() - mTime) > 2000) {
@@ -493,21 +507,22 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 return true;
             }
         } else {
-            List<Fragment> fragments = manager.getFragments();
             if (fragments.size() > 0) {
-                Fragment fragment = fragments.get(fragments.size() - 1);
-                Fragment shopPaymentSuccessFragmen=getSupportFragmentManager().findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
-                Fragment shopPaymentFailFragment=getSupportFragmentManager().findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
-                Fragment shopPaymentFragment=getSupportFragmentManager().findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
+                Fragment shopPaymentSuccessFragmen=manager.findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
+                Fragment shopPaymentFailFragment=manager.findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
+                Fragment shopPaymentFragment=manager.findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
                 if ((shopPaymentSuccessFragmen != null && shopPaymentSuccessFragmen instanceof ShopPaymentSuccessFragment )) {
+                    //ShopPaymentSuccessFragment关闭
                     popToStack(shopPaymentSuccessFragmen);
                     return true;
                 }else if (shopPaymentFailFragment!=null&& shopPaymentFailFragment instanceof ShopPaymentFailFragment){
+                    //ShopPaymentFailFragment关闭
                     popToStack(shopPaymentFailFragment);
                     return true;
                 }
                 else if(shopPaymentFragment!=null&& shopPaymentFragment instanceof ShopPaymentFragment)
                 {
+                    //ShopPaymentFragment返回弹出提示
                     BackPaymentDialog(shopPaymentFragment);
                     return true;
                 }

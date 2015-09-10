@@ -259,7 +259,6 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
                 {
                     gv_single.onRefreshComplete();
                     nullLine.setVisibility(View.VISIBLE);
-                    Toast.makeText(getActivity(),"抱歉，未找到商品",Toast.LENGTH_SHORT).show();
                     return;
                 }
                 for (int i=0;i<items.length();i++){
@@ -291,7 +290,6 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
             public void onErrorResponse(VolleyError error) {
                 setEndLoading();
                 nullLine.setVisibility(View.GONE);
-                Toast.makeText(getActivity(),"抱歉,加载失败",Toast.LENGTH_SHORT).show();
                 Log.i("onErrorResponse",error.toString());
             }
         });
@@ -337,7 +335,6 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 setEndLoading();
-                Toast.makeText(getActivity(),"抱歉，加载失败",Toast.LENGTH_SHORT).show();
             }
         });
         mRequestQueue.add(fetchCategoryTask);

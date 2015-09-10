@@ -92,7 +92,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     private ImageView myCartBtn;
     private String imgs;
 
-    private Coupon mCoupon;
     private View rootView;
     private boolean isLogin;
     private long time;
@@ -149,16 +148,10 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     break;
                 case UPDATE_TIMER_START:
                     String date = (String) msg.obj;
-//                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
                     try
                     {
                         long millionSeconds = sdf.parse(date).getTime();//毫秒
-////                        Log.i("millionSeconds",millionSeconds+"");
-////                        Log.i("current---->",System.currentTimeMillis()+"");
-//                        long hour=3600*1000;
-//                        long minute=60*1000;
-//                        millionSeconds=millionSeconds+hour*23+minute*59+59*1000;
                         long temp = millionSeconds - System.currentTimeMillis();
                         mTimer = new MyTimer(temp, 1000);
                         mTimer.start();
@@ -174,7 +167,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                         if (jsonObject.optJSONArray("sale_banners") != null && jsonObject.optJSONArray("sale_banners").length() > 0)
                         {
                             imgs = jsonObject.optJSONArray("sale_banners").optJSONObject(0).optString("imgs");
-                            ToolUtils.setImageUrl(imgs, iv_banner);
+                            ToolUtils.setImageCacheUrl(imgs, iv_banner,R.drawable.icon_loading_osale);
                         }
                     }
                     break;
@@ -247,7 +240,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             mAdapter = new ProductAdapter(getActivity(), products);
             mGridView.setAdapter(mAdapter);
             rootView.findViewById(R.id.ll_back).setOnClickListener(this);
-//            rootView.findViewById(R.id.iv_coupon).setOnClickListener(this);
 
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
             nullNetView = (LinearLayout) rootView.findViewById(R.id.nullNetline);
@@ -446,41 +438,9 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         requestQueue.add(request);
     }
 
-    public class ProductAdapter extends BaseListAdapter<Product>
-    {
-        public ProductAdapter(Context context, List<Product> list)
-        {
-            super(context, list);
-        }
-
-        @Override
-        public View bindView(int position, View convertView, ViewGroup parent)
-        {
-            convertView = mHashMap.get(position);
-            if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_fragment_sale, null);
-            TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
-            ImageView image = ViewHolder.get(convertView, R.id.iv_single_item);
-            image.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / 2 - 1, (screenWidth / 2 - 1) * 175 / 186));
-            TextView tv_money = ViewHolder.get(convertView, R.id.tv_money);
-            TextView tv_price = ViewHolder.get(convertView, R.id.tv_price);
-            TextView tv_count = ViewHolder.get(convertView, R.id.tv_count);
-            LinearLayout ll_sale_out = ViewHolder.get(convertView, R.id.ll_sale_out);
-            Product product = getList().get(position);
-            tv_name.setText(product.getTitle());
-            ToolUtils.setImageCacheUrl(product.getImage(), image);
-            tv_price.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
-            tv_price.setText("￥" + product.getCost_price());
-            tv_count.setText("剩余 " + product.getRemaining() + "%");
-
-            ll_sale_out.setVisibility(product.getRemaining() == 0 ? View.VISIBLE : View.GONE);
-            mHashMap.put(position, convertView);
-            return convertView;
-        }
-    }
     public void getBanner()
     {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.SPECIAL_SALE_BANNER_URL, new Response.Listener<JSONObject>()
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.BannerUrl+0, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -498,6 +458,39 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             }
         });
         requestQueue.add(request);
+    }
+
+    public class ProductAdapter extends BaseListAdapter<Product>
+    {
+        public ProductAdapter(Context context, List<Product> list)
+        {
+            super(context, list);
+        }
+        @Override
+        public View bindView(int position, View convertView, ViewGroup parent)
+        {
+            convertView = mHashMap.get(position);
+            if (convertView == null)
+                convertView = mInflater.inflate(R.layout.item_fragment_sale, null);
+            TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
+            ImageView image = ViewHolder.get(convertView, R.id.iv_single_item);
+            image.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / 2 - 1, (screenWidth / 2 - 1) * 175 / 186));
+            TextView tv_money = ViewHolder.get(convertView, R.id.tv_money);
+            TextView tv_price = ViewHolder.get(convertView, R.id.tv_price);
+            TextView tv_count = ViewHolder.get(convertView, R.id.tv_count);
+            LinearLayout ll_sale_out = ViewHolder.get(convertView, R.id.ll_sale_out);
+            ll_sale_out.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / 2 - 1, (screenWidth / 2 - 1) * 175 / 186));
+            Product product = getList().get(position);
+            tv_name.setText(product.getTitle());
+            ToolUtils.setImageCacheUrl(product.getImage(), image,R.drawable.icon_loading_defalut);
+            tv_price.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
+            tv_price.setText("￥" + product.getCost_price());
+            tv_count.setText("剩余 " + product.getRemaining() + "%");
+
+            ll_sale_out.setVisibility(product.getRemaining() == 0 ? View.VISIBLE : View.GONE);
+            mHashMap.put(position, convertView);
+            return convertView;
+        }
     }
 
     @Override
@@ -547,7 +540,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     @Override
     public void onRegisterOrLoginSuccess(User user, Fragment fragment)
     {
-        Log.i("SpecialSaleFragment-------------->","USER-->"+user.toString());
         SharedPreferencesUtil.saveUser(getActivity(), user);
         getActivity().getSupportFragmentManager().popBackStack();
     }

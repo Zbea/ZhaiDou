@@ -14,14 +14,31 @@
         android:background="#ffffff"
         android:orientation="vertical" >
 
-        <com.zhaidou.view.TypeFaceTextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:paddingLeft="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="15dp"
+            android:paddingLeft="5dp"
             android:text="攻略分类"
             android:textSize="16sp"
-            android:textColor="#999999"/>
+            android:textColor="@color/text_main_color"/>
+
+            <ImageView
+                android:id="@+id/categoryRefresh"
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.0001"
+                android:layout_marginRight="20dp"
+                android:clickable="true"
+                android:src="@drawable/icon_home_cateory_refresh"/>
+
+        </LinearLayout>
         <TextView
             android:layout_marginRight="20dp"
             android:layout_marginLeft="20dp"
@@ -51,7 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:listSelector="@android:color/transparent"
-            android:layout_marginBottom="50dp"
+            android:layout_marginBottom="40dp"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:horizontalSpacing="5dp"

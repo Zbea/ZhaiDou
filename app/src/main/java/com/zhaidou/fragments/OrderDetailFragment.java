@@ -283,8 +283,8 @@ public class OrderDetailFragment extends BaseFragment {
         switch (view.getId()) {
             case R.id.tv_cancel_order:
                 if (("" + ZhaiDou.STATUS_DEAL_SUCCESS).equalsIgnoreCase(mOrder.getStatus())) {
-                    LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "");
-                    ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
+                    OrderLogisticsMsgFragment orderLogisticsMsgFragment = OrderLogisticsMsgFragment.newInstance("", "");
+                    ((MainActivity) getActivity()).navigationToFragment(orderLogisticsMsgFragment);
                     return;
                 } else if (mContext.getResources().getString(R.string.order_return_money).equalsIgnoreCase(mCancelOrder.getText().toString())) {
                     final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
@@ -345,8 +345,8 @@ public class OrderDetailFragment extends BaseFragment {
 //                    ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
                     return;
                 } else if (mContext.getResources().getString(R.string.order_logistics).equalsIgnoreCase(mCancelOrder.getText().toString())) {
-                    LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "");
-                    ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
+                    OrderLogisticsMsgFragment orderLogisticsMsgFragment = OrderLogisticsMsgFragment.newInstance("", "");
+                    ((MainActivity) getActivity()).navigationToFragment(orderLogisticsMsgFragment);
                     return;
                 }
                 if (mOrder != null && "3678".contains(mOrder.getStatus())) {

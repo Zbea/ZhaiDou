@@ -41,6 +41,7 @@ public class RecommendAdapter extends BaseListAdapter<RecommendItem> {
 
         DisplayImageOptions options=new DisplayImageOptions.Builder()
                 .displayer(new RoundedBitmapDisplayer(20))//设置圆角半径
+                .showImageOnLoading(R.drawable.icon_loading_defalut)
                 .showImageForEmptyUri(R.drawable.icon_loading_defalut)
                 .showImageOnFail(R.drawable.icon_loading_defalut)
                 .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位

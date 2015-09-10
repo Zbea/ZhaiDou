@@ -36,7 +36,9 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.LoginActivity;
+import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.adapter.AdViewAdpater;
+import com.zhaidou.adapter.GoodsImageAdapter;
 import com.zhaidou.adapter.ShopSpecialAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
@@ -83,14 +85,15 @@ public class ShopSpecialFragment extends BaseFragment
     private PullToRefreshScrollView mScrollView;
     private ListViewForScrollView mListView;
     private List<ShopSpecialItem> items = new ArrayList<ShopSpecialItem>();
-    private ShopSpecialAdapter adapter;
+    private ShopSpecialAdapter adapterList;
 
     private ViewPager viewPager;
     private LinearLayout tipsLine;//轮播指示标志
     private List<SwitchImage> banners;
     private ImageView[] dots;
     private List<View> adPics = new ArrayList<View>();
-    private AdViewAdpater adViewAdpater;
+    private AdViewAdpater adpaters;
+    private GoodsImageAdapter adapter;
     private int currentItem = 5000;
     boolean nowAction = false;
     boolean isStop = true;
@@ -124,18 +127,17 @@ public class ShopSpecialFragment extends BaseFragment
     {
         public void handleMessage(Message msg)
         {
-            if (mDialog != null)
-                mDialog.dismiss();
             switch (msg.what)
             {
                 case 1001:
+                    adapterList.notifyDataSetChanged();
+                    if (mDialog != null)
+                        mDialog.dismiss();
                     loadingView.setVisibility(View.GONE);
-                    adapter.notifyDataSetChanged();
                     break;
                 case 1002:
                     viewPager.setCurrentItem(currentItem);
                     break;
-
                 case UPDATE_BANNER:
                     setAdView();
                     break;
@@ -156,9 +158,9 @@ public class ShopSpecialFragment extends BaseFragment
             items.removeAll(items);
             banners.removeAll(banners);
             page = 1;
-            getBannerData(1);
+            getBannerData();
             FetchData(page);
-            adapter.notifyDataSetChanged();
+            adapterList.notifyDataSetChanged();
         }
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView)
@@ -166,7 +168,7 @@ public class ShopSpecialFragment extends BaseFragment
             page++;
             mScrollView.onRefreshComplete();
             FetchData(page);
-            adapter.notifyDataSetChanged();
+            adapterList.notifyDataSetChanged();
         }
     };
 
@@ -301,20 +303,16 @@ public class ShopSpecialFragment extends BaseFragment
         mScrollView.setOnRefreshListener(refreshListener);
 
         mListView = (ListViewForScrollView) mView.findViewById(R.id.shopListView);
-        adapter = new ShopSpecialAdapter(mContext, items);
-        mListView.setAdapter(adapter);
+        adapterList = new ShopSpecialAdapter(mContext, items);
+        mListView.setAdapter(adapterList);
         mListView.setOnItemClickListener(onItemClickListener);
 
         myCartBtn = (ImageView) mView.findViewById(R.id.myCartBtn);
         myCartBtn.setOnClickListener(onClickListener);
         cartTipsTv=(TextView)mView.findViewById(R.id.myCartTipsTv);
 
-
         viewPager = (ViewPager) mView.findViewById(R.id.home_adv_pager);
         viewPager.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth*300/750));
-
-        ImageView imageView=(ImageView)mView.findViewById(R.id.shopBanner);
-        imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth*300/750));
 
         mRequestQueue = Volley.newRequestQueue(mContext);
         initCartTips();
@@ -367,11 +365,49 @@ public class ShopSpecialFragment extends BaseFragment
                     @Override
                     public void onClick(View v)
                     {
-                        Intent intent1 = new Intent();
-                        intent1.putExtra("url", banners.get(tag).url);
-                        intent1.putExtra("title", banners.get(tag).getTitle());
-                        intent1.setClass(getActivity(), HomePTActivity.class);
-                        getActivity().startActivity(intent1);
+//                            r_type=0：0元特卖商城
+//                            r_type=1：H5页面
+//                            r_type=2：文章
+//                            r_type=3：单品
+//                            r_type=4：分类
+                        SwitchImage item=banners.get(tag);
+                        if (item.type==0)
+                        {
+                            SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", "");
+                            ((MainActivity) getActivity()).navigationToFragment(specialSaleFragment);
+                        }
+                        else if (item.type==1)
+                        {
+                            Intent intent = new Intent();
+                            intent.putExtra("url", item.typeValue);
+                            intent.setClass(getActivity(), WebViewActivity.class);
+                            getActivity().startActivity(intent);
+                        }
+                        else if (item.type==2)
+                        {
+                            Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
+                            detailIntent.putExtra("id", item.id + "");
+                            detailIntent.putExtra("from", "product");
+                            detailIntent.putExtra("title", item.title);
+                            detailIntent.putExtra("cover_url", item.imageUrl);
+                            detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+item.id);
+                            mContext.startActivity(detailIntent);
+                        }
+                        else if (item.type==3)
+                        {
+                            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0);
+                            Bundle bundle = new Bundle();
+                            bundle.putInt("flags", 1);
+                            bundle.putInt("index", Integer.valueOf(item.typeValue));
+                            bundle.putString("page", item.title);
+                            goodsDetailsFragment.setArguments(bundle);
+                            ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
+                        }else
+                        {
+                            ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title, Integer.valueOf(item.typeValue),item.imageUrl);
+                            ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
+                        }
+
                     }
                 });
                 ToolUtils.setImageCacheUrl(banners.get(i).imageUrl, img);
@@ -401,10 +437,10 @@ public class ShopSpecialFragment extends BaseFragment
                     dots[i].setBackgroundResource(R.drawable.home_tips_icon);
                 }
             }
-            if(adViewAdpater==null)
+            if(adpaters==null)
             {
-                adViewAdpater = new AdViewAdpater(mContext, adPics);
-                viewPager.setAdapter(adViewAdpater);
+                adpaters = new AdViewAdpater(mContext, adPics);
+                viewPager.setAdapter(adpaters);
                 viewPager.setOnPageChangeListener(new MyPageChangeListener());
                 viewPager.setOnTouchListener(new View.OnTouchListener()
                 {
@@ -440,7 +476,7 @@ public class ShopSpecialFragment extends BaseFragment
             }
             else
             {
-                adViewAdpater.notifyDataSetChanged();
+                adpaters.notifyDataSetChanged();
             }
 
         } else if (banners.size() == 1)
@@ -458,25 +494,56 @@ public class ShopSpecialFragment extends BaseFragment
                     @Override
                     public void onClick(View v)
                     {
-                        Intent intent1 = new Intent();
-                        intent1.putExtra("url", banners.get(tag).url);
-                        intent1.putExtra("from", "beauty");
-                        intent1.putExtra("title", banners.get(tag).getTitle());
-                        intent1.setClass(getActivity(), ItemDetailActivity.class);
-                        getActivity().startActivity(intent1);
+                        SwitchImage item=banners.get(tag);
+                        if (item.type==0)
+                        {
+                            SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", "");
+                            ((MainActivity) getActivity()).navigationToFragment(specialSaleFragment);
+                        }
+                        else if (item.type==1)
+                        {
+                            Intent intent = new Intent();
+                            intent.putExtra("url", item.typeValue);
+                            intent.setClass(getActivity(), WebViewActivity.class);
+                            getActivity().startActivity(intent);
+                        }
+                        else if (item.type==2)
+                        {
+                            Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
+                            detailIntent.putExtra("id", item.id + "");
+                            detailIntent.putExtra("from", "product");
+                            detailIntent.putExtra("title", item.title);
+                            detailIntent.putExtra("cover_url", item.imageUrl);
+                            detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+item.id);
+                            mContext.startActivity(detailIntent);
+                        }
+                        else if (item.type==3)
+                        {
+                            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0);
+                            Bundle bundle = new Bundle();
+                            bundle.putInt("flags", 1);
+                            bundle.putInt("index", Integer.valueOf(item.typeValue));
+                            bundle.putString("page", item.title);
+                            goodsDetailsFragment.setArguments(bundle);
+                            ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
+                        }else
+                        {
+                            ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title, Integer.valueOf(item.typeValue),item.imageUrl);
+                            ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
+                        }
                     }
                 });
-                ToolUtils.setImageCacheUrl(banners.get(i).imageUrl, img);
+                ToolUtils.setImageCacheUrl(banners.get(i).imageUrl, img,R.drawable.icon_loading_item);
                 adPics.add(img);
             }
-            if(adViewAdpater==null)
+            if(adapter==null)
             {
-                adViewAdpater = new AdViewAdpater(mContext, adPics);
-                viewPager.setAdapter(adViewAdpater);
+                adapter = new GoodsImageAdapter(mContext, adPics);
+                viewPager.setAdapter(adapter);
             }
             else
             {
-                adViewAdpater.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
             }
 
         }
@@ -490,7 +557,7 @@ public class ShopSpecialFragment extends BaseFragment
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
-            getBannerData(1);
+            getBannerData();
             FetchData(page);
         }
         else
@@ -506,9 +573,10 @@ public class ShopSpecialFragment extends BaseFragment
     /**
      * 获得广告数据
      */
-    private void getBannerData(int i)
+    private void getBannerData()
     {
-        String url = ZhaiDou.shopSpecialBannerUrl + i;
+        String url = ZhaiDou.BannerUrl + 1;
+        ToolUtils.setLog(url);
         banners = new ArrayList<SwitchImage>();
         JsonObjectRequest bannerRequest = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
@@ -522,10 +590,16 @@ public class ShopSpecialFragment extends BaseFragment
                     {
                         JSONObject obj = jsonArray.optJSONObject(i);
                         int id = obj.optInt("id");
-                        String name = obj.optString("title");
-                        String imageUrl = obj.optString("imgs");
-                        String url = obj.optString("url");
-                        SwitchImage switchImage = new SwitchImage(url, id, name, imageUrl);
+                        int type = obj.optInt("r_type");
+                        String typeValue = obj.optString("r_value");
+                        String imageUrl =obj.optString("imgs");
+                        String title = obj.optString("title");
+                        SwitchImage switchImage = new SwitchImage();
+                        switchImage.id=id;
+                        switchImage.type=type;
+                        switchImage.typeValue=typeValue;
+                        switchImage.imageUrl=imageUrl;
+                        switchImage.title=title;
                         banners.add(switchImage);
                     }
                     Message message = new Message();
@@ -559,11 +633,12 @@ public class ShopSpecialFragment extends BaseFragment
             {
                 if (response==null)
                 {
+                    if (mDialog!=null)
                     mDialog.dismiss();
                     nullView.setVisibility(View.VISIBLE);
                     nullNetView.setVisibility(View.GONE);
+                    return;
                 }
-
                     JSONArray jsonArray = response.optJSONArray("sales");
                     for (int i = 0; i < jsonArray.length(); i++)
                     {
@@ -589,6 +664,7 @@ public class ShopSpecialFragment extends BaseFragment
             @Override
             public void onErrorResponse(VolleyError error)
             {
+                if (mDialog!=null)
                 mDialog.dismiss();
                 nullView.setVisibility(View.VISIBLE);
                 nullNetView.setVisibility(View.GONE);

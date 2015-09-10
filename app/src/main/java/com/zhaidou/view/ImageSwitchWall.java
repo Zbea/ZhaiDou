@@ -96,8 +96,7 @@ public class ImageSwitchWall extends RelativeLayout implements
             iv.setLayoutParams(params);
             iv.setScaleType(ImageView.ScaleType.FIT_XY);
             iv.setOnClickListener(this);
-            // new DownLoadImage(iv, wi.getImageUrl()).execute();
-            mImageLoader.LoadImage(wi.getUrl(), iv);
+            mImageLoader.LoadImage(wi.typeValue, iv);
             mViewList.add(iv);
         }
         mAdapter = new ISWAdapter();
@@ -113,12 +112,12 @@ public class ImageSwitchWall extends RelativeLayout implements
         {
             mIndicator.setVisibility(View.VISIBLE);
             mTextView.setPadding(0, 0, 0, dp2px(11));
-            mTextView.setText(mDataList.get(0).getTitle());
+            mTextView.setText(mDataList.get(0).title);
             mThread = new ScollThread();
             mThread.start();
         } else if (list.size() == 1)
         {
-            mTextView.setText(mDataList.get(0).getTitle());
+            mTextView.setText(mDataList.get(0).title);
             mIndicator.setVisibility(View.GONE);
             mTextView.setPadding(0, 0, 0, 0);
         }
@@ -223,7 +222,7 @@ public class ImageSwitchWall extends RelativeLayout implements
             mThread = new ScollThread();
             mThread.start();
         }
-        mTextView.setText(mDataList.get(arg0).getTitle());
+        mTextView.setText(mDataList.get(arg0).title);
     }
 
     @Override

@@ -178,7 +178,6 @@ public class StrategyFragment extends BaseFragment {
 
         @Override
         public Fragment getItem(int position) {
-            Log.d("HAHAHHAHHA", "swip?");
             switch (position) {
                 case 0: {
                     return ElementListFragment.newInstance("http://buy.zhaidou.com/?zdclient=ios&tag=006&count=10&json=1", ZhaiDou.ListType.TAG.toString());

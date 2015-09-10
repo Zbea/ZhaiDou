@@ -28,6 +28,8 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.User;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.CustomEditText;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -39,7 +41,7 @@ import java.util.Map;
  * Created by wangclark on 15/7/16.
  */
 public class RegisterActivity extends FragmentActivity implements View.OnClickListener{
-    private EditText mEmailView,mNickView,mPswView,mConfirmPsw;
+    private CustomEditText mEmailView,mNickView,mPswView,mConfirmPsw;
     private TextView mLogin;
     private TextView mRegister;
     private RequestQueue mRequestQueue;
@@ -52,7 +54,6 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
                 case 0:
                     User user =(User)msg.obj;
                     SharedPreferencesUtil.saveUser(getApplicationContext(), user);
-                    Log.i("handleMessage---------->",user.toString());
                     Intent intent=new Intent();
                     intent.putExtra("id",user.getId());
                     intent.putExtra("email",user.getEmail());
@@ -70,10 +71,10 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.fragment_register);
-        mEmailView=(EditText)findViewById(R.id.tv_email);
-        mNickView=(EditText)findViewById(R.id.tv_nick);
-        mPswView=(EditText)findViewById(R.id.tv_password);
-        mConfirmPsw=(EditText)findViewById(R.id.tv_password_confirm);
+        mEmailView=(CustomEditText)findViewById(R.id.tv_email);
+        mNickView=(CustomEditText)findViewById(R.id.tv_nick);
+        mPswView=(CustomEditText)findViewById(R.id.tv_password);
+        mConfirmPsw=(CustomEditText)findViewById(R.id.tv_password_confirm);
         mLogin=(TextView)findViewById(R.id.tv_login);
         mRegister=(TextView)findViewById(R.id.bt_register);
 
@@ -93,26 +94,38 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
                 String password =mPswView.getText().toString();
                 String psw_confirm=mConfirmPsw.getText().toString();
                 String nick =mNickView.getText().toString();
-                if (TextUtils.isEmpty(email)){
-                    Toast.makeText(this, "邮箱不能为空哦！", Toast.LENGTH_SHORT).show();
+                if (TextUtils.isEmpty(email)) {
+                    mEmailView.setShakeAnimation();
                     return;
-                }else if (TextUtils.isEmpty(nick)){
-                    Toast.makeText(this,"昵称不能为空哦！",Toast.LENGTH_SHORT).show();
+                } else if (TextUtils.isEmpty(nick)) {
+                    mNickView.setShakeAnimation();
                     return;
-                }else if (TextUtils.isEmpty(password)){
-                    Toast.makeText(this,"密码不能为空哦！",Toast.LENGTH_SHORT).show();
-                    return;
-                }else if (!password.equals(psw_confirm)){
-                    Toast.makeText(this,"两次密码不一致哦！",Toast.LENGTH_SHORT).show();
+                } else if (TextUtils.isEmpty(password)) {
+                    mPswView.setShakeAnimation();
                     return;
                 }
-                doRegister();
+                else if (TextUtils.isEmpty(psw_confirm)) {
+                    mConfirmPsw.setShakeAnimation();
+                    return;
+                }
+
+                if (ToolUtils.isEmailOK(email) && email.length() > 0)
+                {
+                    if (!password.equals(psw_confirm)) {
+                        ToolUtils.setToast(this,"两次填写的密码不一致");
+                        return;
+                    }
+                    doRegister();
+                }
+                else
+                {
+                    mEmailView.setShakeAnimation();
+                    ToolUtils.setToast(this,"抱歉,无效邮箱");
+                }
                 break;
             case R.id.tv_login:
-//                ((BaseActivity)getActivity()).popToStack(this);
                 break;
             case R.id.ll_back:
-//                ((BaseActivity)getActivity()).popToStack(this);
                 finish();
                 break;
             default:

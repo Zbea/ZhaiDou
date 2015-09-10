@@ -135,7 +135,7 @@ public class GoodsDetailsFragment extends BaseFragment {
     private int num;
     private ScrollView scrollView;
     private ImageView topBtn;
-    private LinearLayout iconView, iconOSaleView;
+    private LinearLayout iconView, iconOSaleView,commentView;
 
     private LinearLayout loadingView, nullNetView, nullView;
     private TextView reloadBtn, reloadNetBtn;
@@ -463,7 +463,6 @@ public class GoodsDetailsFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        System.out.println("GoodsDetailsFragment.onCreateView");
 
         mContext = getActivity();
 
@@ -523,12 +522,15 @@ public class GoodsDetailsFragment extends BaseFragment {
 
         iconView = (LinearLayout) mView.findViewById(R.id.iconView);
         iconOSaleView = (LinearLayout) mView.findViewById(R.id.iconOSaleView);
+        commentView= (LinearLayout) mView.findViewById(R.id.commentView);
         if (flags == 1) {
             iconView.setVisibility(View.GONE);
             iconOSaleView.setVisibility(View.VISIBLE);
+            commentView.setVisibility(View.GONE);
         } else {
             iconView.setVisibility(View.VISIBLE);
             iconOSaleView.setVisibility(View.GONE);
+            commentView.setVisibility(View.VISIBLE);
         }
 
         if (flags == 2) {
@@ -717,7 +719,6 @@ public class GoodsDetailsFragment extends BaseFragment {
         mAdapter = new GoodInfoAdapter(mContext, goodInfos);
         mListView.setAdapter(mAdapter);
         mImageContainer.removeAllViews();
-        System.out.println("GoodsDetailsFragment.setChildFargment------------>"+detail.getImgs().size());
                 DisplayImageOptions options=new DisplayImageOptions.Builder()
                         .showImageOnLoading(R.drawable.icon_loading_osale)
                         .showImageForEmptyUri(R.drawable.icon_loading_osale)
@@ -1005,7 +1006,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                 imageView.setBackgroundColor(Color.parseColor("#ffffff"));
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 imageView.setLayoutParams(params);
-                ToolUtils.setImageCacheUrl(url, imageView);
+                ToolUtils.setImageCacheUrl(url, imageView,R.drawable.icon_loading_osale);
                 adPics.add(imageView);
             }
             dots = new ImageView[adPics.size()];

@@ -6,8 +6,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -21,12 +21,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
@@ -34,6 +29,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.utils.ToolUtils;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -43,19 +39,14 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.lang.reflect.Method;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
-public class EditProfileFragment extends BaseFragment implements View.OnClickListener{
+public class ProfileEditFragment extends BaseFragment implements View.OnClickListener{
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String PROFILE_ID="profileId";
@@ -81,9 +72,10 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
     RefreshDataListener refreshDataListener;
 
     private Dialog mDialog;
+    private String str_phone;
 
-    public static EditProfileFragment newInstance(String param1, String param2,String profileId,String title) {
-        EditProfileFragment fragment = new EditProfileFragment();
+    public static ProfileEditFragment newInstance(String param1, String param2,String profileId,String title) {
+        ProfileEditFragment fragment = new ProfileEditFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -92,7 +84,7 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
         fragment.setArguments(args);
         return fragment;
     }
-    public EditProfileFragment() {
+    public ProfileEditFragment() {
     }
 
     @Override
@@ -117,14 +109,20 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
 
         iv_cancel=(ImageView)view.findViewById(R.id.iv_cancel);
         tv_edit_msg=(EditText)view.findViewById(R.id.tv_edit_msg);
+        if(mTitle.equals("手机号码"))
+        {
+            tv_edit_msg.setInputType(InputType.TYPE_CLASS_PHONE);
+            tv_edit_msg.setMaxEms(11);
+        }
+        tv_edit_msg.setText(TextUtils.isEmpty(mParam2)?"":mParam2);
+
         tv_description=(EditText)view.findViewById(R.id.tv_description);
         tv_length=(TextView)view.findViewById(R.id.tv_length);
-        tv_edit_msg.setText(TextUtils.isEmpty(mParam2)?"":mParam2);
+
 
         tv_description.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-//                tv_length.setText((75-tv_description.getText().toString().length())+"");
             }
 
             @Override
@@ -169,12 +167,28 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
                         ShowToast(mTitle+"不能为空");
                         return;
                     }
-                }else if (TextUtils.isEmpty(tv_edit_msg.getText().toString().trim())){
+                }else if (TextUtils.isEmpty(tv_edit_msg.getText().toString().trim()))
+                {
                     ShowToast(mTitle+"不能为空");
                     return;
                 }
-                hideInputMethod();
-                new MyTask().execute(mParam1,mParam2,mProfileId);
+                if(mTitle.equals("手机号码"))
+                {
+                    if (ToolUtils.isPhoneOk(tv_edit_msg.getText().toString()))
+                    {
+                        hideInputMethod();
+                        new MyTask().execute(mParam1,mParam2,mProfileId);
+                    }
+                    else
+                    {
+                        ToolUtils.setToast(getActivity(),"抱歉,手机号码格式输入不正确");
+                    }
+                }
+                else
+                {
+                    hideInputMethod();
+                    new MyTask().execute(mParam1,mParam2,mProfileId);
+                }
                 break;
         }
     }

@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -44,9 +45,12 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomeCompetitionActivity;
+import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.SearchActivity;
+import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.adapter.AdViewAdpater;
+import com.zhaidou.adapter.GoodsImageAdapter;
 import com.zhaidou.adapter.HomeListAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
@@ -101,7 +105,8 @@ public class HomeFragment extends BaseFragment implements
     private static final int UPDATE_HOMELIST = 3;
     private static final int UPDATE_BANNER = 4;
 
-    private ImageView mSearchView, mCategoryView,mDotView;
+    private ImageView mSearchView;
+    private static ImageView mCategoryView,mDotView;
     private TextView mTitleView;
     private int screenWidth;
     private View view;
@@ -110,9 +115,8 @@ public class HomeFragment extends BaseFragment implements
 
     private PopupWindow mPopupWindow = null;
     private LinearLayout ll_poplayout;
-    private FrameLayout fl_category_menu;
+    private static FrameLayout fl_category_menu;
     private GridView gv_category;
-    private CategoryAdapter mCategoryAdapter;
     private List<String> categoryList;
     private RequestQueue mRequestQueue;
     private List<Article> articleList = new ArrayList<Article>();
@@ -125,12 +129,13 @@ public class HomeFragment extends BaseFragment implements
     private List<SwitchImage> banners;
     private ImageView[] dots;
     private List<View> adPics = new ArrayList<View>();
-    private AdViewAdpater adpater;
+    private AdViewAdpater adpaters;
+    private GoodsImageAdapter adapter;
     private int currentItem = 5000;
     boolean nowAction = false;
     boolean isStop = true;
 
-    private HomeCategoryFragment homeCategoryFragment;
+    public HomeCategoryFragment homeCategoryFragment;
     private Category mCategory;
     private ShopSpecialItem shopSpecialItem;
 
@@ -173,7 +178,6 @@ public class HomeFragment extends BaseFragment implements
 
             } else if (msg.what == UPDATE_CATEGORY)
             {
-                mCategoryAdapter.setList(categoryList);
             } else if (msg.what == UPDATE_HOMELIST)
             {
                 loadingView.setVisibility(View.GONE);
@@ -241,22 +245,51 @@ public class HomeFragment extends BaseFragment implements
                     @Override
                     public void onClick(View v)
                     {
-                        if (tag==0)
+//                            r_type=0：0元特卖商城
+//                            r_type=1：H5页面
+//                            r_type=2：文章
+//                            r_type=3：单品
+//                            r_type=4：分类
+                        SwitchImage item=banners.get(tag);
+                        if (item.type==0)
                         {
                             SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", "");
                             ((MainActivity) getActivity()).navigationToFragment(specialSaleFragment);
                         }
-                        else
+                        else if (item.type==1)
                         {
-                            SwitchImage switchImage = banners.get(tag);
-                            Category category = new Category();
-                            category.setId(switchImage.getId());
-                            SpecialFragment fragment = SpecialFragment.newInstance("", category);
-                            ((BaseActivity) getActivity()).navigationToFragment(fragment);
+                            Intent intent = new Intent();
+                            intent.putExtra("url", item.typeValue);
+                            intent.setClass(getActivity(), WebViewActivity.class);
+                            getActivity().startActivity(intent);
+                        }
+                        else if (item.type==2)
+                        {
+                            Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
+                            detailIntent.putExtra("id", item.id + "");
+                            detailIntent.putExtra("from", "product");
+                            detailIntent.putExtra("title", item.title);
+                            detailIntent.putExtra("cover_url", item.imageUrl);
+                            detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+item.id);
+                            mContext.startActivity(detailIntent);
+                        }
+                        else if (item.type==3)
+                        {
+                            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0);
+                            Bundle bundle = new Bundle();
+                            bundle.putInt("flags", 1);
+                            bundle.putInt("index", Integer.valueOf(item.typeValue));
+                            bundle.putString("page", item.title);
+                            goodsDetailsFragment.setArguments(bundle);
+                            ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
+                        }else
+                        {
+                            ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title, Integer.valueOf(item.typeValue),item.imageUrl);
+                            ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
                         }
                     }
                 });
-                ToolUtils.setImageCacheUrl(banners.get(i).imageUrl, img);
+                ToolUtils.setImageCacheUrl(banners.get(i).imageUrl, img,R.drawable.icon_loading_item);
                 adPics.add(img);
             }
             dots = new ImageView[adPics.size()];
@@ -285,10 +318,10 @@ public class HomeFragment extends BaseFragment implements
                 }
 
             }
-            if (adpater == null)
+            if (adpaters == null)
             {
-                adpater = new AdViewAdpater(mContext, adPics);
-                viewPager.setAdapter(adpater);
+                adpaters = new AdViewAdpater(mContext, adPics);
+                viewPager.setAdapter(adpaters);
                 viewPager.setOnPageChangeListener(new MyPageChangeListener());
                 viewPager.setOnTouchListener(new View.OnTouchListener()
                 {
@@ -324,7 +357,7 @@ public class HomeFragment extends BaseFragment implements
                 }).start();
             } else
             {
-                adpater.notifyDataSetChanged();
+                adpaters.notifyDataSetChanged();
             }
 
         }
@@ -438,7 +471,7 @@ public class HomeFragment extends BaseFragment implements
         {
             homeCategoryFragment = HomeCategoryFragment.newInstance("", "");
             getChildFragmentManager().beginTransaction().add(R.id.fl_category_menu, homeCategoryFragment
-                    , HomeCategoryFragment.TAG).hide(homeCategoryFragment).commit();
+                    , HomeCategoryFragment.TAG).hide(homeCategoryFragment).addToBackStack(null).commit();
             homeCategoryFragment.setCategorySelectedListener(this);
         }
 
@@ -459,12 +492,12 @@ public class HomeFragment extends BaseFragment implements
             FetchShopData();
             getBannerData();
             FetchData(currentPage, null);
-            setUpPopView();
         }
         else
         {
             mDialog.dismiss();
             nullNetView.setVisibility(View.VISIBLE);
+            nullView.setVisibility(View.GONE);
         }
 
     }
@@ -486,41 +519,7 @@ public class HomeFragment extends BaseFragment implements
 
     }
 
-    private void setUpPopView()
-    {
-        mPopupWindow = new PopupWindow(getActivity());
-        View view = getActivity().getLayoutInflater().inflate(R.layout.item_popupwindows, null);
 
-        ll_poplayout = (LinearLayout) view.findViewById(R.id.ll_popup);
-
-        gv_category = (GridView) view.findViewById(R.id.gv_category);
-        categoryList = new ArrayList<String>();
-        mCategoryAdapter = new CategoryAdapter(getActivity(), categoryList);
-        gv_category.setAdapter(mCategoryAdapter);
-        mPopupWindow.setWidth(LinearLayout.LayoutParams.MATCH_PARENT);
-        mPopupWindow.setHeight(LinearLayout.LayoutParams.WRAP_CONTENT);
-        mPopupWindow.setBackgroundDrawable(new BitmapDrawable());
-
-        mPopupWindow.setOutsideTouchable(true);
-        mPopupWindow.setContentView(view);
-        gv_category.setOnItemClickListener(new GridView.OnItemClickListener()
-        {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
-            {
-
-                mPopupWindow.dismiss();
-            }
-        });
-
-        mCategoryAdapter.setOnInViewClickListener(R.id.tv_category_item, new BaseListAdapter.onInternalClickListener()
-        {
-            @Override
-            public void OnClickListener(View parentV, View v, Integer position, Object values)
-            {
-            }
-        });
-    }
 
     public void onButtonPressed(Uri uri)
     {
@@ -616,28 +615,6 @@ public class HomeFragment extends BaseFragment implements
         }
     }
 
-    public class CategoryAdapter extends BaseListAdapter<String>
-    {
-        public CategoryAdapter(Context context, List<String> list)
-        {
-            super(context, list);
-        }
-
-
-        @Override
-        public View bindView(int position, View convertView, ViewGroup parent)
-        {
-
-            if (convertView == null)
-                convertView = mInflater.inflate(R.layout.category_item_gv, null);
-            TextView tv_item = ViewHolder.get(convertView, R.id.tv_category_item);
-            String item = getList().get(position);
-            tv_item.setText(item);
-
-            return convertView;
-        }
-    }
-
     private void FetchData(int page, Category category)
     {
         currentPage = page;
@@ -696,6 +673,7 @@ public class HomeFragment extends BaseFragment implements
                     mDialog.dismiss();
                 }
                 nullView.setVisibility(View.VISIBLE);
+                nullNetView.setVisibility(View.GONE);
                 mScrollView.onRefreshComplete();
                 mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
             }
@@ -722,6 +700,8 @@ public class HomeFragment extends BaseFragment implements
         homeCategoryFragment.notifyDataSetChanged();
     }
 
+
+
     @Override
     public void onCategorySelected(Category category)
     {
@@ -746,37 +726,37 @@ public class HomeFragment extends BaseFragment implements
      */
     private void getBannerData()
     {
-        String url = ZhaiDou.HOME_BANNER_URL;
+        String url = ZhaiDou.BannerUrl+2;
         banners = new ArrayList<SwitchImage>();
         JsonObjectRequest bannerRequest = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
             {
-                JSONArray article_categories = jsonObject.optJSONArray("article_categories");
-                if (article_categories != null && article_categories.length() > 0)
+                JSONArray jsonArray = jsonObject.optJSONArray("sale_banners");
+                if (jsonArray != null && jsonArray.length() > 0)
                 {
-                    for (int i = 0; i < article_categories.length(); i++)
+                    for (int i = 0; i < jsonArray.length(); i++)
                     {
-                        JSONObject categoryobj = article_categories.optJSONObject(i);
-                        JSONArray childrenObj = categoryobj.optJSONArray("children");
-                        for (int k = 0; k < childrenObj.length(); k++)
-                        {
-                            JSONObject banner = childrenObj.optJSONObject(k);
-                            int id = banner.optInt("id");
-                            String name = banner.optString("name");
-                            String url = banner.optJSONObject("avatar").optString("url");
-
-                            SwitchImage switchImage = new SwitchImage("", id, name,"http://" + url);
-                            banners.add(switchImage);
-                        }
+                        JSONObject obj = jsonArray.optJSONObject(i);
+                        int id = obj.optInt("id");
+                        int type = obj.optInt("r_type");
+                        String typeValue = obj.optString("r_value");
+                        String imageUrl =obj.optString("imgs");
+                        String title = obj.optString("title");
+                        SwitchImage switchImage = new SwitchImage();
+                        switchImage.id=id;
+                        switchImage.type=type;
+                        switchImage.typeValue=typeValue;
+                        switchImage.imageUrl=imageUrl;
+                        switchImage.title=title;
+                        banners.add(switchImage);
                     }
                     Message message = new Message();
                     message.what = UPDATE_BANNER;
                     message.obj = banners;
                     handler.sendMessage(message);
                 }
-
             }
         }, new Response.ErrorListener()
         {
@@ -944,6 +924,15 @@ public class HomeFragment extends BaseFragment implements
         isStop = false;
         mContext.unregisterReceiver(broadcastReceiver);
         super.onDestroy();
+    }
+
+    /**
+     * 处理切换图标变换
+     */
+    public static void getHomeCategory()
+    {
+        mCategoryView.setImageResource(R.drawable.icon_category);
+        fl_category_menu.setVisibility(View.GONE);
     }
 
 }
