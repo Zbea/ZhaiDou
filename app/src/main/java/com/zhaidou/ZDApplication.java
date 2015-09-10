@@ -45,6 +45,7 @@ public class ZDApplication extends Application{
         setImageLoad();
     }
 
+
     /**
      * universal_image_loader基本配置
      */
