@@ -229,7 +229,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/default_margin"
-                    android:textColor="@color/text_gary_color"
+                    android:textColor="@color/text_normal_color"
                     android:textSize="14sp"/>
 
             </LinearLayout>

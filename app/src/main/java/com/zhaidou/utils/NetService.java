@@ -1,6 +1,7 @@
 package com.zhaidou.utils;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -15,6 +16,7 @@ import android.util.Log;
 public class NetService
 {
 	private static String result;
+    private static InputStream is;
 	
 	/**
 	 * http get请求
@@ -50,4 +52,40 @@ public class NetService
 		return result;
 		
 	}
+
+    /**
+     * http get请求
+     * @param url
+     * @return
+     */
+    public static String getHttpServiceIs(String url)
+    {
+        try
+        {
+            HttpGet httpGet=new HttpGet(url);
+            HttpClient httpClient=new DefaultHttpClient();
+            HttpResponse httpResponse=httpClient.execute(httpGet);
+            if (httpResponse.getStatusLine().getStatusCode()==HttpStatus.SC_OK)
+            {
+                httpResponse.getEntity().getContent();
+                result=EntityUtils.toString(httpResponse.getEntity(), "utf-8");
+                Log.i("zhaidou", "result:"+result);
+            }
+            else
+            {
+                result=null;
+            }
+        }
+        catch (ClientProtocolException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return result;
+
+    }
 }

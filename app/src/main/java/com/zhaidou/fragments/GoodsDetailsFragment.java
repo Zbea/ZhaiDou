@@ -46,8 +46,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
@@ -409,7 +411,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                                 }
 
                             } else {
-                                scrollView.scrollTo(0, 600);
+                                scrollView.scrollTo(0, goodsImage.getHeight());
                                 Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
                             }
                     } else {
@@ -551,23 +553,29 @@ public class GoodsDetailsFragment extends BaseFragment {
         animation_viewGroup = createAnimLayout();
         mRequestQueue = Volley.newRequestQueue(getActivity());
 
+        topBtn = (ImageView) mView.findViewById(R.id.goodsTop);
+        topBtn.setOnClickListener(onClickListener);
+
         scrollView = (ScrollView) mView.findViewById(R.id.sv_goods_detail);
         scrollView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
+                scrollView.getParent().requestDisallowInterceptTouchEvent(true);
                 if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
                     int scrollY = view.getScrollY();
-                    if (scrollY != 0) {
+                    if (scrollY >goodsImage.getHeight())
+                    {
                         topBtn.setVisibility(View.VISIBLE);
-                    } else {
+                    }
+
+                   if(scrollY<goodsImage.getHeight())
+                    {
                         topBtn.setVisibility(View.GONE);
                     }
                 }
                 return false;
             }
         });
-        topBtn = (ImageView) mView.findViewById(R.id.goodsTop);
-        topBtn.setOnClickListener(onClickListener);
 
         radioGroup = (RadioGroup) mView.findViewById(R.id.goodsRG);
         radioGroup.setOnCheckedChangeListener(onCheckedChangeListener);
@@ -722,11 +730,49 @@ public class GoodsDetailsFragment extends BaseFragment {
         if (detail.getImgs() != null) {
             for (int i = 0; i < detail.getImgs().size(); i++) {
                 ImageView imageView = new ImageView(getActivity());
-                imageView.setImageResource(R.drawable.icon_loading_defalut);
-                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                imageView.setBackgroundColor(Color.parseColor("#ffffff"));
-                imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
-                ToolUtils.setImageCacheUrl(detail.getImgs().get(i), imageView,R.drawable.icon_loading_osale);
+//                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+//                imageView.setBackgroundColor(Color.parseColor("#ffffff"));
+//                imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
+//                ToolUtils.setImageCacheUrl(detail.getImgs().get(i), imageView,R.drawable.icon_loading_osale);
+
+                DisplayImageOptions options=new DisplayImageOptions.Builder()
+                        .showImageOnLoading(R.drawable.icon_loading_osale)
+                        .showImageForEmptyUri(R.drawable.icon_loading_osale)
+                        .showImageOnFail(R.drawable.icon_loading_osale)
+                        .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
+                        .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
+                        .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
+                        .bitmapConfig(Bitmap.Config.RGB_565)
+                        .imageScaleType(ImageScaleType.EXACTLY)
+                        .build();
+
+                ImageLoader.getInstance().displayImage(detail.getImgs().get(i), imageView,options,new ImageLoadingListener()
+                {
+                    @Override
+                    public void onLoadingStarted(String s, View view)
+                    {
+                    }
+                    @Override
+                    public void onLoadingFailed(String s, View view, FailReason failReason)
+                    {
+                    }
+                    @Override
+                    public void onLoadingComplete(String s, View view, Bitmap bitmap)
+                    {
+                        int width=bitmap.getWidth();
+                        int height=bitmap.getHeight();
+                        ToolUtils.setLog("大小:"+bitmap.getByteCount());
+                        ToolUtils.setLog("width:"+width);
+                        ToolUtils.setLog("height:"+height);
+                        view.setLayoutParams(new LinearLayout.LayoutParams(screenWidth,screenWidth*height/width));
+                        ((ImageView)view).setImageBitmap(bitmap);
+                    }
+                    @Override
+                    public void onLoadingCancelled(String s, View view)
+                    {
+                    }
+                });
+
                 mImageContainer.addView(imageView);
             }
         }
