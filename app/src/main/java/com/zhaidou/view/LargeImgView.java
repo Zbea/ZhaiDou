@@ -11,9 +11,10 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import com.zhaidou.R;
+import android.widget.LinearLayout;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -37,9 +38,11 @@ public class LargeImgView extends ImageView {
     private Paint mPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
 
     private float minScale;
+    private float minScaleH;
 
     Context cxt;
     int screenW;
+    int screenH;
     public LargeImgView(Context context) {
         this(context, null);
     }
@@ -51,15 +54,17 @@ public class LargeImgView extends ImageView {
     public LargeImgView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         cxt = context;
-        setImageResource(getResources().getColor(R.color.white));
+//        setImageResource(getResources().getColor(R.color.white));
         if(context instanceof Activity){
             DisplayMetrics dm = new DisplayMetrics();
             ((Activity)context).getWindowManager().getDefaultDisplay().getMetrics(dm);
             screenW= dm.widthPixels;
-            minScale = screenW/(float)screenW;
+            screenH=dm.heightPixels;
+            minScale = screenW/(float)720;
             sw = screenW;
             sh = 1000;
         }
+        setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
     public void setMinScale1(float s){
@@ -76,12 +81,18 @@ public class LargeImgView extends ImageView {
 
     public void setImageBitmap1(final Bitmap bm) {
 //        Toast.makeText(this.getContext(), "large bitmap" + bm.getHeight(), 0).show();
+        minScale = screenW/(float)bm.getWidth();
+//        minScale=0.96f;
+//        minScaleH=sc
+        System.out.println("LargeImgView.setImageBitmap1---->"+minScale);
+        System.out.println("LargeImgView.setImageBitmap1---->"+screenW);
+        System.out.println("LargeImgView.setImageBitmap1---->"+bm.getWidth());
         startAnimation(AnimationUtils.loadAnimation(cxt, android.R.anim.fade_in));
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    int w = bm.getWidth();
+                    int w =bm.getWidth();
                     int h = bm.getHeight();
                     int c = h/sh;
                     int count = h%sh==0?c:c+1;
@@ -104,8 +115,13 @@ public class LargeImgView extends ImageView {
                             }
                         }
                     }
-                    if(bm!=null) bm.recycle();
                     handler.sendEmptyMessage(0);
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(bm!=null) bm.recycle();
+                        }
+                    },2000);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -115,25 +131,25 @@ public class LargeImgView extends ImageView {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
         try {
             int top = 0;
             for(int i=0;bs!=null && i<bs.length;i++){
                 //DeLog.d(TAG,"i =" +i +",bs.length="+bs.length+",top="+top+",scale="+minScale);
                 canvas.save();
                 if(minScale != 0){
-                    canvas.scale(minScale, minScale);
+                    canvas.scale(minScale, 1);
                 }
                 if(bs[i] == null){
                     return;
                 }
-                canvas.drawBitmap(bs[i], 0,top, mPaint);
+                canvas.drawBitmap(bs[i], 0, top, mPaint);
                 canvas.restore();
                 top+=bs[i].getHeight();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        super.onDraw(canvas);
     }
 
 

@@ -561,13 +561,11 @@ public class GoodsDetailsFragment extends BaseFragment {
                 scrollView.getParent().requestDisallowInterceptTouchEvent(true);
                 if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
                     int scrollY = view.getScrollY();
-                    if (scrollY >goodsImage.getHeight())
-                    {
+                    if (scrollY > goodsImage.getHeight()) {
                         topBtn.setVisibility(View.VISIBLE);
                     }
 
-                   if(scrollY<goodsImage.getHeight())
-                    {
+                    if (scrollY < goodsImage.getHeight()) {
                         topBtn.setVisibility(View.GONE);
                     }
                 }
@@ -741,7 +739,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                 imageView.setBackgroundColor(Color.parseColor("#ffffff"));
 //                ToolUtils.setImageCacheUrl(detail.getImgs().get(i), imageView);
                 System.out.println(i + "---------" + detail.getImgs().get(i));
-                ImageLoader.getInstance().displayImage(detail.getImgs().get(i),imageView, new ImageLoadingListener() {
+                ImageLoader.getInstance().displayImage(detail.getImgs().get(i), imageView, new ImageLoadingListener() {
                     @Override
                     public void onLoadingStarted(String s, View view) {
 
@@ -754,12 +752,15 @@ public class GoodsDetailsFragment extends BaseFragment {
 
                     @Override
                     public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-                        if (bitmap!=null){
-                            LargeImgView imageView1=(LargeImgView)view;
+                        if (bitmap != null) {
+                            LargeImgView imageView1 = (LargeImgView) view;
+                            if (bitmap.getHeight() < 4000) {
+                                imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
                                 imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
-                            if (bitmap.getHeight()<4000){
                                 imageView1.setImageBitmap(bitmap);
-                            }else {
+                            } else {
+                                imageView1.setScaleType(ImageView.ScaleType.MATRIX);
+                                imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
                                 imageView1.setImageBitmap1(bitmap);
                             }
                         }
