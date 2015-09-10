@@ -132,5 +132,8 @@
     <string name="title_profile">个人资料</string>
     <string name="title_setting">设置</string>
 
+    
+    <!--dialog标题-->
+    <string name="dialog_hint_collect">是否确认取消收藏?</string>
 
 </resources>

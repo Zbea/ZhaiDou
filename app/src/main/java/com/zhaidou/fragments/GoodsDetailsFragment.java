@@ -15,8 +15,6 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -46,8 +44,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
@@ -70,10 +70,10 @@ import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;
 import com.zhaidou.utils.CollectionUtils;
 import com.zhaidou.utils.NetworkUtils;
-import com.zhaidou.utils.PixelUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ChildGridView;
+import com.zhaidou.view.LargeImgView;
 import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
@@ -717,15 +717,55 @@ public class GoodsDetailsFragment extends BaseFragment {
         mAdapter = new GoodInfoAdapter(mContext, goodInfos);
         mListView.setAdapter(mAdapter);
         mImageContainer.removeAllViews();
+        System.out.println("GoodsDetailsFragment.setChildFargment------------>"+detail.getImgs().size());
+                DisplayImageOptions options=new DisplayImageOptions.Builder()
+                        .showImageOnLoading(R.drawable.icon_loading_osale)
+                        .showImageForEmptyUri(R.drawable.icon_loading_osale)
+                        .showImageOnFail(R.drawable.icon_loading_osale)
+                        .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
+                        .bitmapConfig(Bitmap.Config.RGB_565)
+                        .imageScaleType(ImageScaleType.NONE)
+                        .build();
         if (detail.getImgs() != null) {
             for (int i = 0; i < detail.getImgs().size(); i++) {
-                ImageView imageView = new ImageView(getActivity());
-                imageView.setImageResource(R.drawable.icon_loading_defalut);
-                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                LargeImgView imageView = new LargeImgView(getActivity());
+//                imageView.setImageResource(R.drawable.icon_loading_defalut);
+                imageView.setScaleType(ImageView.ScaleType.MATRIX);
                 imageView.setBackgroundColor(Color.parseColor("#ffffff"));
-                imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
-                ToolUtils.setImageCacheUrl(detail.getImgs().get(i),imageView);
-                mImageContainer.addView(imageView);
+//                ToolUtils.setImageCacheUrl(detail.getImgs().get(i), imageView);
+                System.out.println(i + "---------" + detail.getImgs().get(i));
+                ImageLoader.getInstance().displayImage(detail.getImgs().get(i),imageView, new ImageLoadingListener() {
+                    @Override
+                    public void onLoadingStarted(String s, View view) {
+
+                    }
+
+                    @Override
+                    public void onLoadingFailed(String s, View view, FailReason failReason) {
+
+                    }
+
+                    @Override
+                    public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+                        if (bitmap!=null){
+                            LargeImgView imageView1=(LargeImgView)view;
+                                imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+                            if (bitmap.getHeight()<4000){
+                                imageView1.setImageBitmap(bitmap);
+                            }else {
+                                imageView1.setImageBitmap1(bitmap);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onLoadingCancelled(String s, View view) {
+
+                    }
+                });
+
+                            mImageContainer.addView(imageView);
+
             }
         }
     }
@@ -1345,7 +1385,6 @@ public class GoodsDetailsFragment extends BaseFragment {
             handler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
         }
     }
-
 
     @Override
     public void onDestroyView() {

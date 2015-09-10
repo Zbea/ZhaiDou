@@ -43,8 +43,8 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
         }
         if ("MainActivity".equalsIgnoreCase(this.getClass().getSimpleName())) {
             mChildContainer.setVisibility(View.VISIBLE);
-        }
-        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.page_enter_into_the,R.anim.page_enter_out_the,R.anim.page_out_into_the,R.anim.page_out_out_the).replace(R.id.fl_child_container, fragment, fragment.getClass().getSimpleName())
+        }//.setCustomAnimations(R.anim.page_enter_into_the,R.anim.page_enter_out_the,R.anim.page_out_into_the,R.anim.page_out_out_the)
+        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, fragment, fragment.getClass().getSimpleName())
                 .addToBackStack(null).commitAllowingStateLoss();
     }
 

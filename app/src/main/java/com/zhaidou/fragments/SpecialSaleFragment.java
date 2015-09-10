@@ -164,7 +164,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                         mTimer.start();
                     } catch (Exception e)
                     {
-                        Log.i("Exception e", e.getMessage());
+                        Log.i("Exception e","E--->"+ e.getMessage());
                     }
                     break;
                 case UPDATE_BANNER:
@@ -547,7 +547,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     @Override
     public void onRegisterOrLoginSuccess(User user, Fragment fragment)
     {
-        Log.i("SpecialSaleFragment-------------->", user.toString());
+        Log.i("SpecialSaleFragment-------------->","USER-->"+user.toString());
         SharedPreferencesUtil.saveUser(getActivity(), user);
         getActivity().getSupportFragmentManager().popBackStack();
     }
