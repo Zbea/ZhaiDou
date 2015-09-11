@@ -52,6 +52,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     private Context mContext;
     private String serverName;
     private String serverInfo;
+    private String serverUrl;
     private int serverCode;
 
     private Handler mHandler=new Handler(){
@@ -70,7 +71,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                     serverCode = parseJosn(msg.obj.toString());
                     ToolUtils.setLog(" ZDApplication.localVersionCode:" + ZDApplication.localVersionCode);
                     if (serverCode > ZDApplication.localVersionCode) {
-                        CustomVersionUpdateDialog customVersionUpdateDialog = new CustomVersionUpdateDialog(mContext, serverName);
+                        CustomVersionUpdateDialog customVersionUpdateDialog = new CustomVersionUpdateDialog(mContext, serverName,serverUrl);
                         customVersionUpdateDialog.checkUpdateInfo();
                     }
                     else
@@ -189,7 +190,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String url = ZhaiDou.apkUpdateUrl;
+                String url = ZhaiDou.ApkUrl;
                 String result = NetService.getHttpService(url);
                 if (result != null) {
                     mHandler.obtainMessage(1, result).sendToTarget();
@@ -207,9 +208,9 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     private int parseJosn(String json) {
         try {
             JSONObject jsonObject = new JSONObject(json);
-            serverName = jsonObject.optString("name");
-            serverCode = jsonObject.optInt("code");
-            serverInfo = jsonObject.optString("info");
+            serverName = jsonObject.optString("app_version");
+            serverCode = jsonObject.optInt("code_version");
+            serverUrl = jsonObject.optString("package_url");
             ToolUtils.setLog(serverName);
             ToolUtils.setLog("" + serverCode);
         } catch (Exception e) {

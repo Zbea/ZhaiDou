@@ -55,7 +55,7 @@ public class LargeImgView extends ImageView {
     public LargeImgView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         cxt = context;
-        setImageResource(Color.parseColor("#ffffff"));
+//        setImageResource(Color.parseColor("#ffffff"));
         if(context instanceof Activity){
             DisplayMetrics dm = new DisplayMetrics();
             ((Activity)context).getWindowManager().getDefaultDisplay().getMetrics(dm);

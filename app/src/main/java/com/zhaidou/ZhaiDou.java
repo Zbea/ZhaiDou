@@ -11,13 +11,14 @@ public class ZhaiDou {
 //    public static String HOME_BASE_URL = "http://192.168.199.173/";
     public static String TAG_BASE_URL = "http://buy.zhaidou.com/?tag=%s&json=1";
 
-    public static String apkUrl = "http://www.zhaidou.com/apk/zhaidou.apk";
-    public static String apkUpdateUrl = "http://www.zhaidou.com/apk/versionmanage.json";
+    public static String ApkUrl = "http://192.168.199.160:3000/api/v1/app_versions?os=2";
+    //0元特卖页面：status=0,普通特卖页面：status=1,首页：status=2
+    public static String BannerUrl="http://192.168.199.160:3000/special_mall/api/sales/sale_banner?status=";
+    //APP换量
+    public static String settingRecommendAppUrl=HOME_BASE_URL+"/api/v1/app_exchanges?sys=2";
 
     public static String HOT_SEARCH_URL=HOME_BASE_URL+"article/api/articles/hot_search";
     public static String INDEX_CATEGORY_FILTER=HOME_BASE_URL+"article/api/article_categories";
-    //0元特卖页面：status=0,普通特卖页面：status=1,首页：status=2
-    public static String BannerUrl="http://192.168.199.160:3000/special_mall/api/sales/sale_banner?status=";
     //拼贴大赛
     public static String COMPETITION_URL="http://www.zhaidou.com/competitions/current?zdclient=ios";
 
@@ -27,7 +28,6 @@ public class ZhaiDou {
     public static String SPECIAL_SALE_URL=HOME_BASE_URL+"special_mall/api/sales/zero_sale";
     //0元特卖banner
     public static String SPECIAL_SALE_BANNER_URL=HOME_BASE_URL+"special_mall/api/sales/sale_banner?status=0";
-
     //首页分类文章
     public static String HOME_CATEGORY_URL=HOME_BASE_URL+"article/api/articles?page=";
     //首页轮播图
@@ -60,10 +60,6 @@ public class ZhaiDou {
     public static String orderCommitUrl=HOME_BASE_URL+"special_mall/api/orders";
     //查看当天是否已经购买了0元特卖商品
     public static String orderCheckOSaleUrl=HOME_BASE_URL+"special_mall/api/orders/order_items_0_status";
-
-    //APP换量
-    public static String settingRecommendAppUrl=HOME_BASE_URL+"/api/v1/app_exchanges?sys=2";
-
 
     //TAB分类
     public static String CATEGORY_ITEM_URL=HOME_BASE_URL+"article/api/item_categories";

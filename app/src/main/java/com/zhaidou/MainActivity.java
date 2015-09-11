@@ -111,6 +111,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private CreatCartDB creatCartDB;
     private String serverName;
     private String serverInfo;
+    private String serverUrl;
     private int serverCode;
     private RequestQueue mRequestQueue;
     private final int WX_PAY_SUCCESS = 0;
@@ -178,7 +179,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 case 1:
                     serverCode = parseJosn(msg.obj.toString());
                     if (serverCode > ZDApplication.localVersionCode) {
-                        CustomVersionUpdateDialog customVersionUpdateDialog = new CustomVersionUpdateDialog(mContext, serverName);
+                        CustomVersionUpdateDialog customVersionUpdateDialog = new CustomVersionUpdateDialog(mContext, serverName,serverUrl);
                         customVersionUpdateDialog.checkUpdateInfo();
                     }
 
@@ -222,7 +223,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String url = ZhaiDou.apkUpdateUrl;
+                String url = ZhaiDou.ApkUrl;
                 String result = NetService.getHttpService(url);
                 if (result != null) {
                     mHandler.obtainMessage(1, result).sendToTarget();
@@ -450,12 +451,12 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private int parseJosn(String json) {
         try {
             JSONObject jsonObject = new JSONObject(json);
-            serverName = jsonObject.optString("name");
-            serverCode = jsonObject.optInt("code");
-            serverInfo = jsonObject.optString("info");
+            serverName = jsonObject.optString("app_version");
+            serverCode = jsonObject.optInt("code_version");
+            serverUrl = jsonObject.optString("package_url");
             ToolUtils.setLog(serverName);
             ToolUtils.setLog("" + serverCode);
-            ToolUtils.setLog(serverInfo);
+            ToolUtils.setLog(serverUrl);
         } catch (Exception e) {
             e.printStackTrace();
         }
