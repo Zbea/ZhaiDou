@@ -75,7 +75,7 @@ public class LogisticsMsgFragment extends BaseFragment {
         mWebView=(CustomProgressWebview)view.findViewById(R.id.wv_logistics);
         mWebView.getSettings().setJavaScriptEnabled(true);
 
-        String url="http://m.kuaidi100.com/index_all.html?type="+(TextUtils.isEmpty(mType)?"huitongkuaidi":mType)+"&postid="+mNumber+"#result";
+        String url="http://m.kuaidi100.com/index_all.html?type="+(TextUtils.isEmpty(mType)?"huitongkuaidi":mType)+"&postid="+mOrder.logisticsNum+"#result";
         mWebView.loadUrl(url);
 
         Log.i("url------------>",url);
@@ -83,7 +83,7 @@ public class LogisticsMsgFragment extends BaseFragment {
             @Override
             public void onPageFinished(WebView view, String url) {
                 mWebView.loadUrl("javascript:$('.smart-header').remove();$('.adsbygoogle').hide();$('#result').css('padding-top','0px');" +
-                        "$('.smart-footer').remove();");
+                        "$('.smart-footer').remove();$('#kuaidiNum').val("+mOrder.logisticsNum+");");
             }
         });
 
