@@ -119,9 +119,9 @@ public class LargeImgView extends ImageView {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            if(bm!=null) bm.recycle();
+                            if (bm != null) bm.recycle();
                         }
-                    },2000);
+                    }, 2000);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -145,6 +145,10 @@ public class LargeImgView extends ImageView {
                 canvas.restore();
                 top+=bs[i].getHeight();
             }
+//            for(Bitmap b:bs){
+//                if (b!=null)
+//                    b.recycle();
+//            }
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -13,8 +13,9 @@ android {
     }
     productFlavors {
         default_channel { "default_channel" }
+        wandoujiaAD{"wandoujiaAD"}
         wandoujia { "wandoujia" }
-        _360 { "_360" }
+        _360 { "360" }
         yingyongbao { "yingyongbao" }
         xiaomi { "xiaomi" }
         baidu { "baidu" }
