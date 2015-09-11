@@ -284,7 +284,7 @@ public class OrderDetailFragment extends BaseFragment {
         switch (view.getId()) {
             case R.id.tv_cancel_order:
                 if (("" + ZhaiDou.STATUS_DEAL_SUCCESS).equalsIgnoreCase(mOrder.getStatus())) {
-                    LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "");
+                    LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "",order);
                     ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
                     return;
                 } else if (mContext.getResources().getString(R.string.order_return_money).equalsIgnoreCase(mCancelOrder.getText().toString())) {
@@ -346,7 +346,7 @@ public class OrderDetailFragment extends BaseFragment {
 //                    ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
                     return;
                 } else if (mContext.getResources().getString(R.string.order_logistics).equalsIgnoreCase(mCancelOrder.getText().toString())) {
-                    LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "");
+                    LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "",order);
                     ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
                     return;
                 }
@@ -428,6 +428,7 @@ public class OrderDetailFragment extends BaseFragment {
                     String created_at = orderObj.optString("created_at");
                     String status_ch = orderObj.optString("status_ch");
                     String number = orderObj.optString("number");
+                    int logNum = orderObj.optInt("deliver_number");
                     String receiver_phone = orderObj.optString("receiver_phone");
                     String deliver_number = orderObj.optString("deliver_number");
                     String receiver_name = orderObj.optString("receiver_name");
@@ -464,6 +465,7 @@ public class OrderDetailFragment extends BaseFragment {
                         }
                     }
                     Order order = new Order("", id, number, amount, status, status_ch, created_at_for, created_at, receiver, orderItems, receiver_address, receiver_phone, deliver_number, receiver_name);
+                    order.logisticsNum=logNum;
                     order.setNode(node);
                     order.setParent_name(parent_name);
                     order.setCity_name(city_name);

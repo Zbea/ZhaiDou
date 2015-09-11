@@ -193,7 +193,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     Log.i("v---------->", v.toString());
                     TextView textView = (TextView) v;
                     if (mContext.getResources().getString(R.string.order_logistics).equalsIgnoreCase(textView.getText().toString())) {
-                        LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "");
+                        LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "",order);
                         ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
                     } else if (mContext.getResources().getString(R.string.order_return_money).equalsIgnoreCase(textView.getText().toString())) {
                         System.out.println("OrderAllOrdersFragment.OnClickListener------->"+order.isZero());
@@ -470,6 +470,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                             JSONObject orderObj = orderArr.optJSONObject(i);
                             int id = orderObj.optInt("id");
                             String number = orderObj.optString("number");
+                            int logNum = orderObj.optInt("deliver_number");
                             double amount = orderObj.optDouble("amount");
                             String status = orderObj.optString("status");
                             String status_ch = orderObj.optString("status_ch");
@@ -479,6 +480,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                             long over_at = orderObj.optLong("over_at");
                             boolean is_zero = orderObj.optBoolean("is_zero");
                             Order order = new Order(id, number, amount, status, status_ch, created_at_for, created_at, "", 0);
+                            order.logisticsNum=logNum;
                             order.setImg(img);
                             order.setOver_at(over_at);
                             order.setZero(is_zero);
