@@ -488,6 +488,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             TextView tv_price = ViewHolder.get(convertView, R.id.tv_price);
             TextView tv_count = ViewHolder.get(convertView, R.id.tv_count);
             LinearLayout ll_sale_out = ViewHolder.get(convertView, R.id.ll_sale_out);
+            ll_sale_out.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / 2 - 1, (screenWidth / 2 - 1) * 175 / 186));
             Product product = getList().get(position);
             tv_name.setText(product.getTitle());
             ToolUtils.setImageCacheUrl(product.getImage(), image);
