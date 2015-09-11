@@ -29,7 +29,7 @@ public class Order implements Serializable{
     private String parent_name;
     private String city_name;
     private String provider_name;
-    public int logisticsNum;
+    public String logisticsNum;
 
     public long getOrderId() {
         return orderId;

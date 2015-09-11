@@ -309,7 +309,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
                             JSONObject orderObj = orderArr.optJSONObject(i);
                             int id = orderObj.optInt("id");
                             String number = orderObj.optString("number");
-                            int logNum = orderObj.optInt("deliver_number");
+                            String logNum = orderObj.optString("deliver_number");
                             double amount = orderObj.optDouble("amount");
                             String status = orderObj.optString("status");
                             String status_ch = orderObj.optString("status_ch");

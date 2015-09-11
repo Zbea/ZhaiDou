@@ -428,7 +428,6 @@ public class OrderDetailFragment extends BaseFragment {
                     String created_at = orderObj.optString("created_at");
                     String status_ch = orderObj.optString("status_ch");
                     String number = orderObj.optString("number");
-                    int logNum = orderObj.optInt("deliver_number");
                     String receiver_phone = orderObj.optString("receiver_phone");
                     String deliver_number = orderObj.optString("deliver_number");
                     String receiver_name = orderObj.optString("receiver_name");
@@ -438,6 +437,7 @@ public class OrderDetailFragment extends BaseFragment {
 
                     JSONObject receiverObj = orderObj.optJSONObject("receiver");
                     int receiverId = receiverObj.optInt("id");
+                    String logNum = orderObj.optString("deliver_number");
 //                    String address = receiverObj.optString("address");
 //                    String phone = receiverObj.optString("phone");
 //                    String name = receiverObj.optString("name");
