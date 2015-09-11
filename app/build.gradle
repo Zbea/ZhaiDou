@@ -21,6 +21,7 @@ android {
         baidu { "baidu" }
         huawei { "huawei" }
         jifeng { "jifeng" }
+        Android360 { "Android360" }
     }
     productFlavors.all { flavor ->
         flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
