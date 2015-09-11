@@ -54,6 +54,7 @@ public class CustomVersionUpdateDialog
     private int count = 0;
     private int length;
     private String serviceInfo;
+    private String serviceUrl;
     private LinearLayout managerLine;
     private RelativeLayout updateline;
 
@@ -93,10 +94,11 @@ public class CustomVersionUpdateDialog
         };
     };
 
-    public CustomVersionUpdateDialog(Context context, String info)
+    public CustomVersionUpdateDialog(Context context, String info,String url)
     {
         this.mContext = context;
         this.serviceInfo = info;
+        this.serviceUrl = url;
     }
 
     public void checkUpdateInfo()
@@ -166,7 +168,7 @@ public class CustomVersionUpdateDialog
         {
             try
             {
-                URL url = new URL(ZhaiDou.apkUrl);
+                URL url = new URL(serviceUrl);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.connect();
                 length = conn.getContentLength();

@@ -369,12 +369,10 @@ public class GoodsDetailsFragment extends BaseFragment {
             if (i == R.id.infoRb) {
                goodsImagesView.setVisibility(View.VISIBLE);
                 goodsInfoView.setVisibility(View.GONE);
-//                mViewPager.setCurrentItem(0);
             }
             if (i == R.id.afterSaleRb) {
                 goodsImagesView.setVisibility(View.GONE);
                 goodsInfoView.setVisibility(View.VISIBLE);
-//                mViewPager.setCurrentItem(1);
             }
         }
     };
@@ -743,7 +741,6 @@ public class GoodsDetailsFragment extends BaseFragment {
         if (detail.getImgs() != null) {
             for (int i = 0; i < detail.getImgs().size(); i++) {
                 LargeImgView imageView = new LargeImgView(getActivity());
-//                imageView.setImageResource(R.drawable.icon_loading_defalut);
                 imageView.setScaleType(ImageView.ScaleType.MATRIX);
                 System.out.println(i + "---------" + detail.getImgs().get(i));
                 AsyncImageLoader1 asyncImageLoader1=new AsyncImageLoader1(mContext);

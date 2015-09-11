@@ -245,11 +245,7 @@ public class HomeFragment extends BaseFragment implements
                     @Override
                     public void onClick(View v)
                     {
-//                            r_type=0：0元特卖商城
-//                            r_type=1：H5页面
-//                            r_type=2：文章
-//                            r_type=3：单品
-//                            r_type=4：分类
+//              r_type=0：0元特卖商城r_type=1：H5页面r_type=2：文章r_type=3：单品r_type=4：分类
                         SwitchImage item=banners.get(tag);
                         if (item.type==0)
                         {
