@@ -8,8 +8,8 @@ android {
         applicationId "com.zhaidou"
         minSdkVersion 15
         targetSdkVersion 19
-        versionCode 35
-        versionName "2.2.0"
+        versionCode 36
+        versionName "2.2.1"
         manifestPlaceholders = [ UMENG_CHANNEL_VALUE:"default_channel" ]
     }
     productFlavors {

@@ -137,7 +137,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 final Order order = (Order) values;
                 if ("4".equalsIgnoreCase(order.getStatus())) {
-                    LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "");
+                    LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "",order);
                     ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
                 } else if ("1".equalsIgnoreCase(order.getStatus())) {
 //                    AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(order.getOrderId() + "", order.getStatus());
@@ -309,6 +309,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
                             JSONObject orderObj = orderArr.optJSONObject(i);
                             int id = orderObj.optInt("id");
                             String number = orderObj.optString("number");
+                            int logNum = orderObj.optInt("deliver_number");
                             double amount = orderObj.optDouble("amount");
                             String status = orderObj.optString("status");
                             String status_ch = orderObj.optString("status_ch");
@@ -318,6 +319,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
                             long over_at = orderObj.optLong("over_at");
                             boolean is_zero=orderObj.optBoolean("is_zero");
                             Order order = new Order(id, number, amount, status, status_ch, created_at_for, created_at, "", 0);
+                            order.logisticsNum=logNum;
                             order.setImg(img);
                             order.setOver_at(over_at);
                             order.setZero(is_zero);
