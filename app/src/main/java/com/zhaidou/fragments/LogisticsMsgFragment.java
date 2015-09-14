@@ -75,6 +75,7 @@ public class LogisticsMsgFragment extends BaseFragment {
         mWebView=(CustomProgressWebview)view.findViewById(R.id.wv_logistics);
         mWebView.getSettings().setJavaScriptEnabled(true);
 
+
         String url="http://m.kuaidi100.com/index_all.html?type="+(TextUtils.isEmpty(mType)?"huitongkuaidi":mType)+"&postid="+mOrder.logisticsNum+"#result";
         mWebView.loadUrl(url);
 
