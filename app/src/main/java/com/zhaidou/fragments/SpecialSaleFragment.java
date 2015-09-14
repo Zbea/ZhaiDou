@@ -157,7 +157,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                         mTimer.start();
                     } catch (Exception e)
                     {
-                        Log.i("Exception e","E--->"+ e.getMessage());
+                        Log.i("Exception e","E--->"+ e==null?"null":e.getMessage());
                     }
                     break;
                 case UPDATE_BANNER:

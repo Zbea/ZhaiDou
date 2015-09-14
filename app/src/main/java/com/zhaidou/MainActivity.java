@@ -3,6 +3,8 @@ package com.zhaidou;
 import com.alibaba.sdk.android.AlibabaSDK;
 import com.alibaba.sdk.android.callback.CallbackContext;
 import com.alibaba.sdk.android.callback.InitResultCallback;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -32,6 +34,7 @@ import com.zhaidou.model.CartItem;
 import com.zhaidou.model.City;
 import com.zhaidou.model.Province;
 import com.zhaidou.model.User;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;
 import com.zhaidou.utils.NetService;
@@ -45,6 +48,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -52,6 +57,7 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -71,7 +77,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  */
@@ -201,6 +209,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
 
         init();
+        commitActiveData();
         AlibabaSDK.asyncInit(this, new InitResultCallback() {
             @Override
             public void onSuccess() {
@@ -214,6 +223,42 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         });
 
         initComponents();
+    }
+
+    private void commitActiveData() {
+        ApplicationInfo appInfo = null;
+        try {
+            appInfo = this.getPackageManager()
+                    .getApplicationInfo(getPackageName(),
+                            PackageManager.GET_META_DATA);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        final String channel=appInfo.metaData.getString("UMENG_CHANNEL");
+        Log.d("appInfo---", " msg == " + channel);
+        String imei = ((TelephonyManager) getSystemService(TELEPHONY_SERVICE))
+                .getDeviceId();
+        Map<String,String> map=new HashMap<String, String>();
+        map.put("device_token[device_token]",imei);
+        ZhaiDouRequest request=new ZhaiDouRequest(Request.Method.POST,"http://192.168.199.173/api/v1/device_tokens",map,new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                System.out.println("ZDApplication.onResponse---->"+jsonObject.toString());
+            }
+        },new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> header=new HashMap<String, String>();
+                header.put("Zd_Client",channel);
+                return header;
+            }
+        };
+        mRequestQueue.add(request);
     }
 
     /**

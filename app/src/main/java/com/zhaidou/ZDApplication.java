@@ -46,7 +46,6 @@ public class ZDApplication extends Application{
         super.onCreate();
         CrashReport.initCrashReport(this, "900008762", false);
         mRequestQueue= Volley.newRequestQueue(this);
-//        postActiveData();
         initTypeFace();
         try
         {
@@ -62,42 +61,6 @@ public class ZDApplication extends Application{
         creatFile();
         setImageLoad();
 
-    }
-
-    private void postActiveData() {
-        ApplicationInfo appInfo = null;
-        try {
-            appInfo = this.getPackageManager()
-                    .getApplicationInfo(getPackageName(),
-                            PackageManager.GET_META_DATA);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        final String channel=appInfo.metaData.getString("UMENG_CHANNEL");
-        Log.d("appInfo---", " msg == " + channel);
-        String imei = ((TelephonyManager) getSystemService(TELEPHONY_SERVICE))
-                .getDeviceId();
-        Map<String,String> map=new HashMap<String, String>();
-        map.put("device_token[device_token]",imei);
-        ZhaiDouRequest request=new ZhaiDouRequest(Request.Method.POST,"http://192.168.199.173/api/v1/device_tokens",map,new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject jsonObject) {
-                System.out.println("ZDApplication.onResponse---->"+jsonObject.toString());
-            }
-        },new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-
-            }
-        }){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> header=new HashMap<String, String>();
-                header.put("Zd_Client",channel);
-                return header;
-            }
-        };
-        mRequestQueue.add(request);
     }
 
 

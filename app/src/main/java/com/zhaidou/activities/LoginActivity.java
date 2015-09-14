@@ -486,7 +486,6 @@ import cn.sharesdk.wechat.friends.Wechat;
     private class RegisterTask extends AsyncTask<Map<String,String>,Void,String>{
         @Override
         protected String doInBackground(Map<String, String>... maps) {
-            Log.i("doInBackground--------------->",maps[0].toString());
             String s=null;
             try {
                 s= NativeHttpUtil.post(ZhaiDou.USER_REGISTER_URL, null, maps[0]);
@@ -498,7 +497,6 @@ import cn.sharesdk.wechat.friends.Wechat;
 
         @Override
         protected void onPostExecute(String s) {
-            Log.i("RegisterTask-->onPostExecute-->s--->",s);
             try{
                 JSONObject json = new JSONObject(s);
                 JSONObject userJson = json.optJSONObject("user");
@@ -507,7 +505,6 @@ import cn.sharesdk.wechat.friends.Wechat;
                 String token =userJson.optString("authentication_token");
                 String avatar =userJson.optJSONObject("avatar").optString("url");
                 String nick=userJson.optString("nick_name");
-                Log.i("LoginFragment----onRegisterOrLoginSuccess---->","onRegisterOrLoginSuccess");
                 User user=new User(id,email,token,nick,avatar);
                 mRegisterOrLoginListener.onRegisterOrLoginSuccess(user,null);
             }catch (Exception e){
@@ -518,7 +515,6 @@ import cn.sharesdk.wechat.friends.Wechat;
 
     @Override
     public void onRegisterOrLoginSuccess(User user, Fragment fragment) {
-        Log.i("onRegisterOrLoginSuccess----------->", user.toString());
         Message message=new Message();
         message.obj=user;
         message.what=0;
