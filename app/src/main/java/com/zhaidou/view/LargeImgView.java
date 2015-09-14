@@ -80,7 +80,11 @@ public class LargeImgView extends ImageView {
         this.sh = reqH;
     }
 
-    public void setImageBitmap1(final Bitmap bm) {
+    /**
+     * 剪切长图
+     * @param bm
+     */
+    public void setImageBitmapLarge(final Bitmap bm) {
 //        Toast.makeText(this.getContext(), "large bitmap" + bm.getHeight(), 0).show();
         minScale = screenW/(float)bm.getWidth();
 //        minScale=0.96f;

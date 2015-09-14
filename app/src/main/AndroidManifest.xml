@@ -10,7 +10,6 @@
         android:name=".ZDApplication"
         android:label="@string/app_name"
         android:theme="@style/app_theme">
-        <!--<meta-data android:value="55c1c1e0e0f55a397c001975" android:name="UMENG_APPKEY"></meta-data>-->
         <meta-data
             android:name="UMENG_CHANNEL"
             android:value="${UMENG_CHANNEL_VALUE}" />
@@ -41,11 +40,6 @@
             android:windowSoftInputMode="stateHidden|adjustPan"
             android:screenOrientation="portrait"
             android:theme="@style/StyledIndicators">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 

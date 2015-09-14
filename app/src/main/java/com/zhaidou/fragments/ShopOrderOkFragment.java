@@ -100,6 +100,7 @@ public class ShopOrderOkFragment extends BaseFragment
     private boolean isOSaleBuy;//是否已经购买过零元特卖
     private boolean isOSale;//是否含有零元特卖
     private boolean isljOsale;//是否是来自立即购买的零元特卖
+    private boolean isNoFree;//是否不免邮，当只有一个商品且为零元特卖时为真
 
     private Address address;
     private CreatCartDB creatCartDB;
@@ -122,7 +123,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     orderAddressNullLine.setVisibility(View.GONE);
 
                     address = addressList.get(0);
-                    setYFMoney(address);
+                    setYFMoney(address.getPrice());
                     addressPhoneTv.setText("收件人：" + address.getPhone());
                     addressNameTv.setText("电话：" + address.getName());
                     addressinfoTv.setText(address.getProvince() + address.getCity() + address.getArea() + address.getAddress());
@@ -186,10 +187,6 @@ public class ShopOrderOkFragment extends BaseFragment
                         double fare = moneyYF;
                         ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId, amount, fare, 15 * 60, null, 1);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
-//                        Intent intent1=new Intent(getActivity(), PayDemoActivity.class);
-//                        intent1.putExtra("id",orderId);
-//                        intent1.putExtra("amount",amount);
-//                        startAnimActivity(intent1);
                     } catch (Exception e)
                     {
 
@@ -302,7 +299,7 @@ public class ShopOrderOkFragment extends BaseFragment
                         {
                             ToolUtils.setLog(maddress.toString());
                             address = maddress;
-                            setYFMoney(address);
+                            setYFMoney(address.getPrice());
                             addressPhoneTv.setText("收件人：" + address.getPhone());
                             addressNameTv.setText("电话：" + address.getName());
                             addressinfoTv.setText(address.getProvince() + address.getCity() + address.getArea() + address.getAddress());
@@ -338,7 +335,7 @@ public class ShopOrderOkFragment extends BaseFragment
                             addr.setCity(city);
                             addr.setArea(area);
                             address = addr;
-                            setYFMoney(addr);
+                            setYFMoney(addr.getPrice());
                             orderAddressInfoLine.setVisibility(View.VISIBLE);
                             orderAddressNullLine.setVisibility(View.GONE);
                             orderAddressEditLine.setVisibility(View.VISIBLE);
@@ -420,10 +417,16 @@ public class ShopOrderOkFragment extends BaseFragment
         {
             if (items.get(0).isOSale.equals("true"))
             {
-
                 isljOsale=true;
             }
+        }
 
+        if(items.size()==1)
+        {
+            if (items.get(0).isOSale.equals("true"))
+            {
+                isNoFree=true;
+            }
         }
         moneyTv = (TypeFaceTextView) mView.findViewById(R.id.jsPriceTotalTv);
         moneyYfTv = (TypeFaceTextView) mView.findViewById(R.id.jsPriceYfTv);
@@ -458,16 +461,32 @@ public class ShopOrderOkFragment extends BaseFragment
     /**
      * 设置运费
      */
-    private void setYFMoney(Address area)
+    private void setYFMoney(double mm)
     {
-        moneyYF = area.getPrice();
-        moneyYfTv.setText("￥" + moneyYF);
+        if(isNoFree)
+        {
+            moneyYF =mm;
+            moneyYfTv.setText("￥" + moneyYF);
+        }
+        else
+        {
+            moneyYF =0;
+            moneyYfTv.setText("￥" + 0);
+        }
 
-        ToolUtils.setLog("运费：" + area.getPrice());
+        ToolUtils.setLog("运费：" + moneyYF);
 
         DecimalFormat df = new DecimalFormat("###.00");
         totalMoney = Double.parseDouble(df.format(money + moneyYF));
         moneyTotalTv.setText("￥" + totalMoney);
+    }
+
+    /**
+     * 判断是否免邮
+     */
+    private void setYFIsFree(double mm)
+    {
+
     }
 
     /**

@@ -24,14 +24,18 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.Order;
+import com.zhaidou.model.OrderItem;
 import com.zhaidou.model.Receiver;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,6 +57,7 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
     private final int UPDATE_PAY_SUCCESS_PAG=1;
     private final int UPDATE_PAY_FAIL_PAG=2;
     private TextView tv_receiver,tv_mobile,tv_address,tv_amount,tv_mall,tv_order_detail;
+    private List<OrderItem> orderItems = new ArrayList<OrderItem>();
 
     private Handler mHandler=new Handler(){
         @Override
@@ -197,6 +202,26 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
                     String address = receiverObj.optString("address");
                     String phone = receiverObj.optString("phone");
                     String name = receiverObj.optString("name");
+
+                    JSONArray order_items = orderObj.optJSONArray("order_items");
+                    if (order_items != null && order_items.length() > 0) {
+                        for (int i = 0; i < order_items.length(); i++) {
+                            JSONObject item = order_items.optJSONObject(i);
+                            int itemId = item.optInt("id");
+                            double itemPrice = item.optDouble("price");
+                            int count = item.optInt("count");
+                            double cost_price = item.optDouble("cost_price");
+                            String merchandise = item.optString("merchandise");
+                            String specification = item.optString("specification");
+                            int merchandise_id = item.optInt("merchandise_id");
+                            String merch_img = item.optString("merch_img");
+                            int sale_cate = item.optInt("sale_cate");
+                            OrderItem orderItem = new OrderItem(itemId, itemPrice, count, cost_price, merchandise, specification, merchandise_id, merch_img);
+                            orderItem.setSale_cate(sale_cate);
+                            orderItems.add(orderItem);
+                        }
+                    }
+
                     Receiver receiver=new Receiver(receiverId,address,province,city,area,phone,name);
                     Order order = new Order("", id, number, amount, status, status_ch, created_at_for, created_at, receiver, null, receiver_address, receiver_phone, deliver_number, receiver_name);
                     Message message = new Message();

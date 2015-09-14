@@ -731,68 +731,45 @@ public class GoodsDetailsFragment extends BaseFragment {
         mImageContainer.removeAllViews();
                 DisplayImageOptions options=new DisplayImageOptions.Builder()
                         .showImageOnLoading(R.drawable.icon_loading_osale)
-                        .showImageForEmptyUri(R.drawable.icon_loading_osale)
-                        .showImageOnFail(R.drawable.icon_loading_osale)
-                        .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
-                        .bitmapConfig(Bitmap.Config.RGB_565)
-                        .imageScaleType(ImageScaleType.NONE)
-                        .cacheInMemory(true) // default
+//                        .showImageForEmptyUri(R.drawable.icon_loading_osale)
+//                        .showImageOnFail(R.drawable.icon_loading_osale)
+//                        .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
+//                        .bitmapConfig(Bitmap.Config.RGB_565)
+//                        .imageScaleType(ImageScaleType.NONE)
+//                        .cacheInMemory(true) // default
                         .build();
         if (detail.getImgs() != null) {
-            for (int i = 0; i < detail.getImgs().size(); i++) {
+            for (int i = 0; i < detail.getImgs().size(); i++)
+            {
                 LargeImgView imageView = new LargeImgView(getActivity());
                 imageView.setScaleType(ImageView.ScaleType.MATRIX);
-                System.out.println(i + "---------" + detail.getImgs().get(i));
-                AsyncImageLoader1 asyncImageLoader1=new AsyncImageLoader1(mContext);
-//                asyncImageLoader1.LoadImage(detail.getImgs().get(i),imageView);
-                Bitmap bitmap=asyncImageLoader1.getTheImage(detail.getImgs().get(i),1);
-                if (bitmap.getHeight()<4000){
-                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                    imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
-                    imageView.setImageBitmap(bitmap);
+                ImageLoader.getInstance().displayImage(detail.getImgs().get(i),imageView,new ImageLoadingListener() {
+                    @Override
+                    public void onLoadingStarted(String s, View view) {
+                    }
+                    @Override
+                    public void onLoadingFailed(String s, View view, FailReason failReason) {
+                    }
+                    @Override
+                    public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+                        if (bitmap!=null){
+                            LargeImgView imageView1=(LargeImgView)view;
+                                imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+                            if (bitmap.getHeight()<4000){
+                                imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
+                                imageView1.setImageBitmap(bitmap);
                             } else {
-                                imageView.setScaleType(ImageView.ScaleType.MATRIX);
-                                imageView.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
-                    imageView.setImageBitmap1(bitmap);
+                                imageView1.setImageBitmapLarge(bitmap);
                             }
-//                ImageLoader.getInstance().displayImage(detail.getImgs().get(i),imageView, new ImageLoadingListener() {
-//                    @Override
-//                    public void onLoadingStarted(String s, View view) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onLoadingFailed(String s, View view, FailReason failReason) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-//                        System.out.println("GoodsDetailsFragment.onLoadingComplete-------->"+bitmap.getWidth());
-//                        System.out.println("GoodsDetailsFragment.onLoadingComplete-------->"+bitmap.getHeight());
-//                        if (bitmap!=null){
-//                            LargeImgView imageView1=(LargeImgView)view;
-//                                imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
-//                            if (bitmap.getHeight()<4000){
-//                                imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
-//                                imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
-//                                imageView1.setImageBitmap(bitmap);
-//                            } else {
-////                                imageView1.setScaleType(ImageView.ScaleType.MATRIX);
-////                                imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
-//                                imageView1.setImageBitmap1(bitmap);
-//                            }
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onLoadingCancelled(String s, View view) {
-//
-//                    }
-//                });
+                        }
+                    }
 
-                            mImageContainer.addView(imageView);
+                    @Override
+                    public void onLoadingCancelled(String s, View view) {
 
+                    }
+                });
+                mImageContainer.addView(imageView);
             }
         }
     }

@@ -5,6 +5,11 @@
     android:orientation="vertical"
     tools:context=".MyActivity">
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_above="@+id/tab_container"
+        android:background="@color/line_color"></View>
     <LinearLayout
         android:id="@+id/tab_container"
         android:layout_width="match_parent"
@@ -12,7 +17,7 @@
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:paddingTop="3.5dp"
-        android:background="@drawable/tab_background">
+        android:background="@color/white">
 
         <RelativeLayout
             android:layout_width="0dp"

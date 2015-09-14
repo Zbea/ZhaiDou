@@ -19,14 +19,14 @@
                 android:scaleType="fitXY"
                 android:id="@+id/iv_single_item"
                 android:background="@drawable/icon_loading_defalut"/>
-            <LinearLayout
+            <ImageView
                 android:id="@+id/ll_sale_out"
                 android:layout_width="match_parent"
                 android:visibility="gone"
-                android:orientation="horizontal"
-                android:background="@drawable/icon_sale_out"
+                android:scaleType="centerInside"
+                android:src="@drawable/icon_sale_out"
                 android:layout_height="match_parent">
-            </LinearLayout>
+            </ImageView>
         </RelativeLayout>
 
     <com.zhaidou.view.TypeFaceTextView

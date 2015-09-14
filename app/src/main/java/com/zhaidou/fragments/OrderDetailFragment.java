@@ -439,12 +439,6 @@ public class OrderDetailFragment extends BaseFragment {
                     JSONObject receiverObj = orderObj.optJSONObject("receiver");
                     int receiverId = receiverObj.optInt("id");
                     String logNum = orderObj.optString("deliver_number");
-//                    String address = receiverObj.optString("address");
-//                    String phone = receiverObj.optString("phone");
-//                    String name = receiverObj.optString("name");
-//                    String city_name = receiverObj.optString("city_name");
-//                    String parent_name = receiverObj.optString("parent_name");
-//                    String provider_name = receiverObj.optString("provider_name");
                     Receiver receiver = new Receiver(receiverId, null, parent_name, null, null, null, null);
 
                     JSONArray order_items = orderObj.optJSONArray("order_items");

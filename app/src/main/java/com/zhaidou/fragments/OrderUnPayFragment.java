@@ -76,6 +76,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
     private String token;
     private Context mContext;
     private boolean isTimerStart = false;
+    private boolean isNoFree;//是否不免邮，当只有一个商品且为零元特卖时为真
     private long preTime = 0;
     private long timeStmp = 0;
     private View mEmptyView,mNetErrorView;
