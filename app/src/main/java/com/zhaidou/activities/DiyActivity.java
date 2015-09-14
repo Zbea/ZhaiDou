@@ -65,14 +65,15 @@ public class DiyActivity extends FragmentActivity implements ContainerFragment.O
         Log.i("onFragmentInteraction--->",uri.toString());
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();
         MobclickAgent.onResume(this);
     }
 
-    @Override
-    protected void onPause() {
+        @Override
+        protected void onPause() {
         super.onPause();
         MobclickAgent.onPause(this);
     }

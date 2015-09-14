@@ -1,6 +1,8 @@
 package com.zhaidou.fragments;
 
+
 import android.app.Activity;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -76,6 +78,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
             }
         }
     };
+
 
     public static HomeCategoryFragment newInstance(String param1, String param2) {
         HomeCategoryFragment fragment = new HomeCategoryFragment();

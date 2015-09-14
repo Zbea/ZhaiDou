@@ -20,7 +20,6 @@ import com.zhaidou.fragments.HomeCategoryFragment;
 import com.zhaidou.fragments.HomeFragment;
 import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.PersonalFragment;
-import com.zhaidou.fragments.PersonalMainFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.fragments.ShopPaymentFailFragment;
 import com.zhaidou.fragments.ShopPaymentFragment;
@@ -79,7 +78,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         StrategyFragment.OnFragmentInteractionListener,
         ElementListFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
         HomeFragment.OnFragmentInteractionListener, CategoryFragment1.OnFragmentInteractionListener,
-        PersonalMainFragment.OnFragmentInteractionListener, RegisterFragment.RegisterOrLoginListener {
+        RegisterFragment.RegisterOrLoginListener {
 
     private Fragment utilityFragment;
     private Fragment beautyHomeFragment;
@@ -661,6 +660,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         });
         mRequestQueue.add(request);
     }
+
 
     @Override
     protected void onResume() {

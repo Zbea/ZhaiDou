@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 
+
 import com.umeng.analytics.MobclickAgent;
 import com.viewpagerindicator.TabPageIndicator;
 import com.zhaidou.R;

@@ -87,13 +87,11 @@ public class PersonalMainFragment extends Fragment implements View.OnClickListen
         id=mSharedPreferences.getInt("userId",-1);
 
         if (TextUtils.isEmpty(token)){
-            Toast.makeText(getActivity(),"VISIBLE",0).show();
             mLoginFragment=LoginFragment.newInstance("","");
             addToStack(mLoginFragment);
             mChildContainer.setVisibility(View.VISIBLE);
 
         }else {
-            Toast.makeText(getActivity(),"GONE",0).show();
             mChildContainer.setVisibility(View.GONE);
         }
 
