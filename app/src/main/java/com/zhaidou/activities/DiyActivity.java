@@ -51,8 +51,8 @@ public class DiyActivity extends FragmentActivity implements ContainerFragment.O
     }
     public void addToStack(Fragment fragment){
         FragmentTransaction transaction =getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.right_drawer,fragment,fragment.getClass().getSimpleName());
-        transaction.addToBackStack(fragment.getClass().getSimpleName());
+        transaction.add(R.id.right_drawer,fragment,((Object) fragment).getClass().getSimpleName());
+        transaction.addToBackStack(((Object) fragment).getClass().getSimpleName());
         transaction.commit();
     }
     public void popToStack(){
