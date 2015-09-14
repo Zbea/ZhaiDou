@@ -13,15 +13,16 @@ android {
     }
 
     productFlavors {
-        default_channel{"default_channel"}
+        default_channel { "default_channel" }
         wandoujiaAD{"wandoujiaAD"}
-        wandoujia{"wandoujia"}
-        _360{"_360"}
-        yingyongbao{"yingyongbao"}
-        xiaomi{"xiaomi"}
-        baidu{"baidu"}
-        huawei{"huawei"}
-        jifeng{"jifeng"}
+        wandoujia { "wandoujia" }
+        _360 { "360" }
+        yingyongbao { "yingyongbao" }
+        xiaomi { "xiaomi" }
+        baidu { "baidu" }
+        huawei { "huawei" }
+        jifeng { "jifeng" }
+        Android360 { "Android360" }
     }
     productFlavors.all { flavor ->
         flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
@@ -59,9 +60,6 @@ dependencies {
     compile files('libs/libammsdk.jar')
     compile files('libs/alipaySDK-20150610.jar')
     compile files('libs/utdid4all-1.0.4.jar')
-
     compile 'com.umeng.analytics:analytics:latest.integration'
     compile files('libs/bugly_1.2.3.8__release.jar')
-
-
 }
