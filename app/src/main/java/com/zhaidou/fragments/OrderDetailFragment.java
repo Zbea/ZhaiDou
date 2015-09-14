@@ -284,7 +284,7 @@ public class OrderDetailFragment extends BaseFragment {
         switch (view.getId()) {
             case R.id.tv_cancel_order:
                 if (("" + ZhaiDou.STATUS_DEAL_SUCCESS).equalsIgnoreCase(mOrder.getStatus())) {
-                    LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "");
+                    LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "",order);
                     ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
                     return;
                 } else if (mContext.getResources().getString(R.string.order_return_money).equalsIgnoreCase(mCancelOrder.getText().toString())) {
@@ -346,7 +346,7 @@ public class OrderDetailFragment extends BaseFragment {
 //                    ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
                     return;
                 } else if (mContext.getResources().getString(R.string.order_logistics).equalsIgnoreCase(mCancelOrder.getText().toString())) {
-                    LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "");
+                    LogisticsMsgFragment logisticsMsgFragment = LogisticsMsgFragment.newInstance("", "",order);
                     ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
                     return;
                 }
@@ -437,6 +437,7 @@ public class OrderDetailFragment extends BaseFragment {
 
                     JSONObject receiverObj = orderObj.optJSONObject("receiver");
                     int receiverId = receiverObj.optInt("id");
+                    String logNum = orderObj.optString("deliver_number");
 //                    String address = receiverObj.optString("address");
 //                    String phone = receiverObj.optString("phone");
 //                    String name = receiverObj.optString("name");
@@ -464,6 +465,7 @@ public class OrderDetailFragment extends BaseFragment {
                         }
                     }
                     Order order = new Order("", id, number, amount, status, status_ch, created_at_for, created_at, receiver, orderItems, receiver_address, receiver_phone, deliver_number, receiver_name);
+                    order.logisticsNum=logNum;
                     order.setNode(node);
                     order.setParent_name(parent_name);
                     order.setCity_name(city_name);
