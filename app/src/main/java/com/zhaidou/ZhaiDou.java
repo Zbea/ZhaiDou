@@ -15,7 +15,7 @@ public class ZhaiDou {
     //0元特卖页面：status=0,普通特卖页面：status=1,首页：status=2
     public static String BannerUrl=HOME_BASE_URL+"special_mall/api/sales/sale_banner?status=";
     //APP换量
-    public static String settingRecommendAppUrl=HOME_BASE_URL+"/api/v1/app_exchanges?sys=2";
+    public static String settingRecommendAppUrl=HOME_BASE_URL+"api/v1/app_exchanges?sys=2";
 
     public static String HOT_SEARCH_URL=HOME_BASE_URL+"article/api/articles/hot_search";
     public static String INDEX_CATEGORY_FILTER=HOME_BASE_URL+"article/api/article_categories";
