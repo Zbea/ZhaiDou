@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -50,8 +51,8 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
         TypeFaceTextView itemName;
         ImageView itemImage,itemNull;
         TypeFaceTextView itemBuy;
-        TypeFaceTextView itemCurrentPrice;
-        TypeFaceTextView itemFormerPrice;
+        TextView itemCurrentPrice;
+        TextView itemFormerPrice;
         TypeFaceTextView itemSales;
     }
 
@@ -83,8 +84,8 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
             viewHolder.itemName = (TypeFaceTextView) convertView.findViewById(R.id.shopNameItem);
             viewHolder.itemSales= (TypeFaceTextView) convertView.findViewById(R.id.shopSaleTv);
             viewHolder.itemIntorduce = (TypeFaceTextView) convertView.findViewById(R.id.shopIntroduceItem);
-            viewHolder.itemCurrentPrice = (TypeFaceTextView) convertView.findViewById(R.id.shopCurrentPrice);
-            viewHolder.itemFormerPrice = (TypeFaceTextView) convertView.findViewById(R.id.shopFormerPrice);
+            viewHolder.itemCurrentPrice = (TextView) convertView.findViewById(R.id.shopCurrentPrice);
+            viewHolder.itemFormerPrice = (TextView) convertView.findViewById(R.id.shopFormerPrice);
             viewHolder.itemBuy = (TypeFaceTextView) convertView.findViewById(R.id.buyGoodsBtn);
             viewHolder.itemImage = (ImageView) convertView.findViewById(R.id.shopGoodsImage);
             viewHolder.itemNull= (ImageView) convertView.findViewById(R.id.shopGoodsImageNo);
@@ -100,9 +101,9 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
 
         viewHolder.itemName.setText(todayShopItem.title);
         viewHolder.itemIntorduce.setText("                        "+todayShopItem.designer);
-        viewHolder.itemCurrentPrice.setText("￥ "+todayShopItem.currentPrice);
+        viewHolder.itemCurrentPrice.setText("￥"+todayShopItem.currentPrice);
         viewHolder.itemFormerPrice.getPaint().setAntiAlias(true);//去锯齿
-        viewHolder.itemFormerPrice.setText("￥ "+todayShopItem.formerPrice);
+        viewHolder.itemFormerPrice.setText("￥"+todayShopItem.formerPrice);
         if(todayShopItem.formerPrice!=0)
         {
             DecimalFormat df = new DecimalFormat("##.0");

@@ -72,7 +72,7 @@ import cn.sharesdk.wechat.friends.Wechat;
 /**
  * Created by wangclark on 15/7/16.
  */
-        public class LoginActivity extends FragmentActivity implements View.OnClickListener,PlatformActionListener,RegisterFragment.RegisterOrLoginListener{
+public class LoginActivity extends FragmentActivity implements View.OnClickListener,PlatformActionListener,RegisterFragment.RegisterOrLoginListener{
 
     private TextView mRegisterView,mResetView;
     private CustomEditText mEmailView;

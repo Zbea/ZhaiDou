@@ -134,7 +134,7 @@
                     android:textSize="16sp"
                     android:text="实付款："/>
 
-                <com.zhaidou.view.TypeFaceTextView
+                <TextView
                     android:id="@+id/successTotalNum"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

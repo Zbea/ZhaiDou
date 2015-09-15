@@ -6,10 +6,11 @@
     tools:context=".MyActivity">
 
     <View
+        android:id="@+id/aa"
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_above="@+id/tab_container"
-        android:background="@color/line_color"></View>
+        android:background="@color/click_gray"></View>
     <LinearLayout
         android:id="@+id/tab_container"
         android:layout_width="match_parent"
@@ -104,7 +105,7 @@
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/tab_container"
+        android:layout_above="@id/aa"
         android:orientation="horizontal">
     </LinearLayout>
     <FrameLayout

@@ -283,13 +283,13 @@
                         android:ellipsize="end"
                         android:marqueeRepeatLimit="marquee_forever"/>
 
-                    <com.zhaidou.view.TypeFaceTextView
+                    <TextView
                         android:id="@+id/jsPriceTotalTv"
                         android:layout_width="100dp"
                         android:gravity="right|center_vertical"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.000001"
-                        android:textSize="14sp"
+                        android:textSize="16sp"
                         android:textColor="@color/red"
                         android:singleLine="true"
                         android:text="￥ 555.5"/>
@@ -320,13 +320,13 @@
                         android:ellipsize="end"
                         android:marqueeRepeatLimit="marquee_forever"/>
 
-                    <com.zhaidou.view.TypeFaceTextView
+                    <TextView
                         android:id="@+id/jsPriceYfTv"
                         android:layout_width="100dp"
                         android:gravity="right|center_vertical"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.000001"
-                        android:textSize="14sp"
+                        android:textSize="16sp"
                         android:textColor="@color/red"
                         android:singleLine="true"
                         android:text="￥ 10"/>
@@ -338,71 +338,32 @@
                     android:layout_height="1dp"
                     android:background="@color/line_color"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/default_margin"
-                    android:gravity="center_vertical|right">
+
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:gravity="center_vertical|right"
+                        android:paddingRight="10dp"
                         android:orientation="horizontal">
 
                         <com.zhaidou.view.TypeFaceTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/text_main_color"
-                            android:textSize="16sp"
-                            android:text="共"/>
-
-                        <com.zhaidou.view.TypeFaceTextView
-                            android:id="@+id/jsTotalNum"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:textColor="@color/text_gary_color"
-                            android:textSize="16sp"
-                            android:layout_marginLeft="2dp"
-                            android:layout_marginRight="2dp"
-                            android:text="1"/>
-
-                        <com.zhaidou.view.TypeFaceTextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/text_main_color"
-                            android:textSize="16sp"
-                            android:text="件商品"/>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <com.zhaidou.view.TypeFaceTextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_marginTop="1.5dp"
                             android:textColor="@color/text_main_color"
                             android:textSize="16sp"
                             android:text="总计："/>
 
-                        <com.zhaidou.view.TypeFaceTextView
+                        <TextView
                             android:id="@+id/jsTotalMoney"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:textColor="@color/red"
-                            android:textSize="16sp"
+                            android:textSize="18sp"
                             android:text="￥ 4000"/>
 
                     </LinearLayout>
-
-
-                </LinearLayout>
 
             </LinearLayout>
 

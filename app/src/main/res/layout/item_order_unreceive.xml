@@ -72,7 +72,7 @@
                     android:text="订单编号:"/>
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_order_number"
-                    android:textColor="@color/text_gary_color"
+                    android:textColor="@color/text_normal_color"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
@@ -84,6 +84,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="7dp"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
                 <com.zhaidou.view.TypeFaceTextView
                     android:textColor="@color/text_main_color"
@@ -91,13 +92,13 @@
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
                     android:text="订单金额:"/>
-                <com.zhaidou.view.TypeFaceTextView
+                <TextView
                     android:id="@+id/tv_order_amount"
                     android:textColor="@color/red"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:text="￥432"/>
             </LinearLayout>
             <LinearLayout
@@ -114,7 +115,7 @@
                     android:text="订单状态:"/>
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_order_status"
-                    android:textColor="@color/text_gary_color"
+                    android:textColor="@color/text_normal_color"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"

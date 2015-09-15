@@ -82,7 +82,7 @@ public class ShopOrderOkFragment extends BaseFragment
     private LinearLayout orderAddressInfoLine, orderAddressNullLine, orderAddressEditLine;
     private LinearLayout orderGoodsListLine;
     private TypeFaceEditText bzInfo;
-    private TypeFaceTextView moneyTv, moneyYfTv, moneyTotalTv, moneyNumTv;
+    private TextView moneyTv, moneyYfTv, moneyTotalTv;
     private TextView addressNameTv, addressPhoneTv, addressinfoTv;
     private ArrayList<CartItem> items;
     private List<CartItem> erroritems = new ArrayList<CartItem>();
@@ -428,10 +428,9 @@ public class ShopOrderOkFragment extends BaseFragment
                 isNoFree=true;
             }
         }
-        moneyTv = (TypeFaceTextView) mView.findViewById(R.id.jsPriceTotalTv);
-        moneyYfTv = (TypeFaceTextView) mView.findViewById(R.id.jsPriceYfTv);
-        moneyTotalTv = (TypeFaceTextView) mView.findViewById(R.id.jsTotalMoney);
-        moneyNumTv = (TypeFaceTextView) mView.findViewById(R.id.jsTotalNum);
+        moneyTv = (TextView) mView.findViewById(R.id.jsPriceTotalTv);
+        moneyYfTv = (TextView) mView.findViewById(R.id.jsPriceYfTv);
+        moneyTotalTv = (TextView) mView.findViewById(R.id.jsTotalMoney);
 
         addressinfoTv = (TextView) mView.findViewById(R.id.jsAddressinfoTv);
         addressNameTv = (TextView) mView.findViewById(R.id.jsAddressNameTv);
@@ -466,7 +465,7 @@ public class ShopOrderOkFragment extends BaseFragment
         if(isNoFree)
         {
             moneyYF =mm;
-            moneyYfTv.setText("￥" + moneyYF);
+            moneyYfTv.setText("￥" + (int)moneyYF);
         }
         else
         {
@@ -479,14 +478,6 @@ public class ShopOrderOkFragment extends BaseFragment
         DecimalFormat df = new DecimalFormat("###.00");
         totalMoney = Double.parseDouble(df.format(money + moneyYF));
         moneyTotalTv.setText("￥" + totalMoney);
-    }
-
-    /**
-     * 判断是否免邮
-     */
-    private void setYFIsFree(double mm)
-    {
-
     }
 
     /**
@@ -505,7 +496,6 @@ public class ShopOrderOkFragment extends BaseFragment
             num = num + cartItem.num;
             money = money + cartItem.num * cartItem.currentPrice;
         }
-        moneyNumTv.setText("" + num);
 
         DecimalFormat df = new DecimalFormat("###.00");
         money = Double.parseDouble(df.format(money));
@@ -554,9 +544,9 @@ public class ShopOrderOkFragment extends BaseFragment
 
             itemName.setText(cartItem.name);
             itemSize.setText(cartItem.size);
-            itemCurrentPrice.setText("￥ " + cartItem.currentPrice);
+            itemCurrentPrice.setText("￥" + cartItem.currentPrice);
             itemFormalPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
-            itemFormalPrice.setText("￥ " + cartItem.formalPrice);
+            itemFormalPrice.setText("￥" + cartItem.formalPrice);
             itemNum.setText("" + cartItem.num);
             ToolUtils.setImageCacheUrl(cartItem.imageUrl, itemImage);
 

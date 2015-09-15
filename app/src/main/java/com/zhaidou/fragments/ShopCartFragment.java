@@ -569,9 +569,9 @@ public class ShopCartFragment extends BaseFragment
 
             itemName.setText(cartItem.name);
             itemSize.setText(cartItem.size);
-            itemCurrentPrice.setText("￥ " + cartItem.currentPrice);
+            itemCurrentPrice.setText("￥" + cartItem.currentPrice);
             itemFormalPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
-            itemFormalPrice.setText("￥ " + cartItem.formalPrice);
+            itemFormalPrice.setText("￥" + cartItem.formalPrice);
             itemNum.setText("" + cartItem.num);
             itemLoseNum.setText("" + cartItem.num);
             ToolUtils.setImageCacheUrl(cartItem.imageUrl, itemImage);
@@ -642,8 +642,8 @@ public class ShopCartFragment extends BaseFragment
         saveMoney = Double.parseDouble(df.format(saveMoney));
         totalMoney = Double.parseDouble(df.format(totalMoney));
 
-        totalMoneyTv.setText("￥" + totalMoney);
-        saveMoneyTv.setText("￥" + saveMoney);
+        totalMoneyTv.setText("  ￥" + totalMoney);
+        saveMoneyTv.setText("  ￥" + saveMoney);
 
     }
 

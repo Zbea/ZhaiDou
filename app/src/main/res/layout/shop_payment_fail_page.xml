@@ -130,12 +130,12 @@
                     android:ellipsize="end"
                     android:marqueeRepeatLimit="marquee_forever"/>
 
-                <com.zhaidou.view.TypeFaceTextView
+                <TextView
                     android:id="@+id/failPriceTotalTv"
                     android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.000001"
-                    android:textSize="14sp"
+                    android:textSize="16sp"
                     android:textColor="@color/red"
                     android:singleLine="true"
                     android:text="￥0.0"/>
@@ -166,12 +166,12 @@
                     android:ellipsize="end"
                     android:marqueeRepeatLimit="marquee_forever"/>
 
-                <com.zhaidou.view.TypeFaceTextView
+                <TextView
                     android:id="@+id/failPriceYfTv"
                     android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.000001"
-                    android:textSize="14sp"
+                    android:textSize="16sp"
                     android:textColor="@color/red"
                     android:singleLine="true"
                     android:text="￥0"/>
@@ -235,13 +235,13 @@
                         android:textSize="16sp"
                         android:text="总计："/>
 
-                    <com.zhaidou.view.TypeFaceTextView
+                    <TextView
                         android:id="@+id/failTotalMoney"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textColor="@color/red"
-                        android:textSize="16sp"
+                        android:textSize="18sp"
                         android:text="￥0.0"/>
 
                 </LinearLayout>

@@ -65,8 +65,8 @@
                     android:background="#aa39495D"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:paddingBottom="5dp"
-                    android:paddingTop="5dp">
+                    android:paddingBottom="3dp"
+                    android:paddingTop="3dp">
 
                     <ImageView
                         android:layout_width="13dp"
@@ -135,18 +135,19 @@
                     android:paddingRight="@dimen/default_margin"
                     android:paddingTop="5dp">
 
-                    <com.zhaidou.view.TypeFaceTextView
+                    <TextView
                         android:id="@+id/goodsCurrentPrice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/red"
-                        android:textSize="18sp"/>
+                        android:textSize="20sp"/>
 
-                    <com.zhaidou.view.TypeFaceTextView
+                    <TextView
                         android:id="@+id/goodsFormerPrice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/default_margin"
+                        android:layout_marginTop="1.5dp"
                         android:textColor="@color/text_gary_color"
                         android:textSize="14sp"/>
 

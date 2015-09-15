@@ -126,8 +126,8 @@
 
         <ImageView
             android:id="@+id/myCartBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
             android:clickable="true"
             android:layout_centerInParent="true"
             android:src="@drawable/shop_goods_my_cart_selector"/>
@@ -139,8 +139,9 @@
             android:textColor="@color/white"
             android:layout_alignParentRight="true"
             android:text=""
-            android:visibility="gone"
+            android:layout_margin="3dp"
             android:gravity="center"
+            android:visibility="gone"
             android:background="@drawable/shop_goods_my_cart_tips_red_bg"
             android:textSize="12sp"/>
     </RelativeLayout>

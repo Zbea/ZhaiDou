@@ -40,8 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingLeft="10dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp">
+            android:paddingTop="6dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -96,7 +95,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:scaleType="centerInside"
-                        android:layout_marginTop="1dp"
+                        android:layout_marginTop="0.5dp"
                         android:src="@drawable/shop_special_subclass_dester_icon"/>
 
                 <TextView
@@ -104,6 +103,8 @@
                     android:layout_height="wrap_content"
                     android:text="豆豆点评:"
                     android:layout_marginLeft="4dp"
+                    android:layout_marginTop="1dp"
+                    android:textSize="13sp"
                     android:textColor="@color/green_color"/>
                 </LinearLayout>
                 <com.zhaidou.view.TypeFaceTextView
@@ -132,20 +133,20 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.00001"
                 android:gravity="center_vertical">
-                <com.zhaidou.view.TypeFaceTextView
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.0001"
-                    android:textSize="14sp"
-                    android:textColor="@color/sale_color"
+                    android:textSize="16sp"
+                    android:textColor="@color/red"
                     android:text="$ 1396"
                     android:id="@+id/shopCurrentPrice"/>
-                <com.zhaidou.view.TypeFaceTextView
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textSize="12sp"
-                    android:layout_marginTop="2dp"
+                    android:textSize="13sp"
+                    android:layout_marginTop="2.5dp"
                     android:layout_marginLeft="5dp"
                     android:singleLine="true"
                     android:ellipsize="marquee"
