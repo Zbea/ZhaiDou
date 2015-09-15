@@ -739,8 +739,7 @@ public class GoodsDetailsFragment extends BaseFragment {
 //                        .cacheInMemory(true) // default
                         .build();
         if (detail.getImgs() != null) {
-            for (int i = 0; i < detail.getImgs().size(); i++)
-            {
+            for (int i = 0; i < detail.getImgs().size(); i++) {
                 LargeImgView imageView = new LargeImgView(getActivity());
                 imageView.setScaleType(ImageView.ScaleType.MATRIX);
                 ImageLoader.getInstance().displayImage(detail.getImgs().get(i),imageView,new ImageLoadingListener() {

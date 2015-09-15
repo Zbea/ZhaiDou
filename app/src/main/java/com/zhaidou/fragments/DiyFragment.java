@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.zhaidou.R;
 import com.zhaidou.activities.DiyActivity;
@@ -48,7 +49,9 @@ public class DiyFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_diy, container, false);
+        View view = inflater.inflate(R.layout.fragment_diy, container, false);
+//        (ImageView)view.findViewById(R.id)
+        return view;
     }
 
     public void onButtonPressed(Uri uri) {

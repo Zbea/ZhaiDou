@@ -79,6 +79,10 @@ public class ZhaiDou {
     //用户豆搭
     public static String USER_COLLOCATION_ITEM_URL=HOME_BASE_URL+"api/v1/users/";
 
+
+    //后台统计
+    public static String URL_STATISTICS=HOME_BASE_URL+"api/v1/device_tokens";
+
     //搜索单品列表
     public static String SEARCH_PRODUCT_URL=HOME_BASE_URL+"article/api/article_items/search";
     //

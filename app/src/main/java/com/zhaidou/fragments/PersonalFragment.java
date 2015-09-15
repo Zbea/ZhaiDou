@@ -134,7 +134,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             switch (msg.what) {
                 case UPDATE_USER_INFO:
                     User user = (User) msg.obj;
-                    ToolUtils.setImageCacheUrl("http://" + user.getAvatar(), iv_header);
+                    ToolUtils.setImageCacheUrl("http://" + user.getAvatar(), iv_header,R.drawable.icon_header_default);
                     if (!TextUtils.isEmpty(user.getNickName()))
                         tv_nickname.setText(user.getNickName());
                     break;

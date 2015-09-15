@@ -96,7 +96,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     private PhotoMenuFragment menuFragment;
 
     RequestQueue mRequestQueue;
-    private AsyncImageLoader1 imageLoader;
 
     private SharedPreferences mSharedPreferences;
     private String token;
@@ -138,7 +137,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 case UPDATE_USER_INFO:
                     User user1 = (User) msg.obj;
                     ToolUtils.setImageUrl("http://" + user1.getAvatar(), iv_header);
-                    //imageLoader.LoadImage("http://"+user1.getAvatar(),iv_header);
                     tv_email.setText(user1.getEmail());
                     tv_nick.setText(TextUtils.isEmpty(user1.getNickName()) ? "" : user1.getNickName());
 
@@ -231,7 +229,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
         mSharedPreferences = getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         mRequestQueue = Volley.newRequestQueue(getActivity());
-        imageLoader = new AsyncImageLoader1(getActivity());
         id = mSharedPreferences.getInt("userId", -1);
         menuFragment = PhotoMenuFragment.newInstance("", "");
         if (menuFragment != null)

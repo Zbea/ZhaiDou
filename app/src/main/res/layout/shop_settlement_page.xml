@@ -347,7 +347,7 @@
                         android:paddingRight="10dp"
                         android:orientation="horizontal">
 
-                        <com.zhaidou.view.TypeFaceTextView
+                        <!--<com.zhaidou.view.TypeFaceTextView-->
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="1.5dp"

@@ -17,6 +17,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
+import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.utils.StorageUtils;
@@ -39,13 +40,12 @@ public class ZDApplication extends Application{
     public static String localVersionName;
 
     private Typeface mTypeFace;
-    private RequestQueue mRequestQueue;
     @Override
     public void onCreate() {
 
+
         super.onCreate();
         CrashReport.initCrashReport(this, "900008762", false);
-        mRequestQueue= Volley.newRequestQueue(this);
         initTypeFace();
         try
         {
@@ -75,7 +75,8 @@ public class ZDApplication extends Application{
                 .diskCacheFileCount(50)//最大缓存数量
                 .diskCacheSize(50 * 1024 * 1024) // 50 Mb sd卡(本地)缓存的最大值
                 .diskCache(new UnlimitedDiscCache(cacheDir))//设置缓存路径
-                .memoryCache(new UsingFreqLimitedMemoryCache(2* 1024 * 1024))
+//                .memoryCache(new UsingFreqLimitedMemoryCache(2* 1024 * 1024))
+                .memoryCache(new WeakMemoryCache())
                 .build();
         ImageLoader.getInstance().init(configuration);
     }
@@ -114,5 +115,13 @@ public class ZDApplication extends Application{
         return "ZDApplication{" +
                 "mTypeFace=" + mTypeFace +
                 '}';
+    }
+
+    @Override
+    public void onLowMemory() {
+        ImageLoader.getInstance().clearMemoryCache();
+        ImageLoader.getInstance().clearDiskCache();
+        System.gc();
+        super.onLowMemory();
     }
 }
