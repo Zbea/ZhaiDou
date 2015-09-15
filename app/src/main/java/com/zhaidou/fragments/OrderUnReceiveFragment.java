@@ -383,6 +383,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
             if ("1".equalsIgnoreCase(item.getStatus())) {
                 bt_received.setVisibility(View.GONE);
                 bt_logistics.setText("申请退款");
+                bt_logistics.setVisibility(item.isZero()?View.GONE:View.VISIBLE);
             } else if ("4".equalsIgnoreCase(item.getStatus())) {
                 bt_received.setVisibility(View.VISIBLE);
                 bt_logistics.setText("查看物流");

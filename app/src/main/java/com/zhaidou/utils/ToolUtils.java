@@ -107,8 +107,8 @@ public class ToolUtils
     {
         DisplayImageOptions options=new DisplayImageOptions.Builder()
                 .showImageOnLoading(resId)
-                .showImageForEmptyUri(R.drawable.icon_loading_defalut)
-                .showImageOnFail(R.drawable.icon_loading_defalut)
+                .showImageForEmptyUri(resId)
+                .showImageOnFail(resId)
                 .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
                 .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
                 .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中

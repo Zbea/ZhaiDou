@@ -21,6 +21,7 @@
             android:text="DIY"/>
     </RelativeLayout>
     <ImageView
+        android:id="@+id/iv_hint"
         android:layout_below="@id/common_actionbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

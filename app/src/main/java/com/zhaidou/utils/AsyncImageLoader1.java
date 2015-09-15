@@ -168,7 +168,7 @@ public class AsyncImageLoader1 {
     public void LoadImage(final String url, final ImageView iv) {
         if (iv.getImageMatrix() == null) {
             // 默认的加载图片
-            iv.setImageResource(R.drawable.cover);
+            iv.setImageResource(R.drawable.icon_loading_defalut);
         }
 		/*
 		 * 如果缓存过就会从缓存中取出图像，ImageCallback接口中方法也不会被执行
@@ -197,7 +197,7 @@ public class AsyncImageLoader1 {
         // TODO: 下载大图片，生成小图片， 显示小图片，保证手机内存
         if (iv.getImageMatrix() == null) {
             // 默认的加载图片
-            iv.setImageResource(R.drawable.cover);
+            iv.setImageResource(R.drawable.icon_loading_defalut);
         }
         // 如果缓存过就会从缓存中取出图像，ImageCallback接口中方法也不会被执行
         Drawable cacheImage = loadSmallDrawable(url,

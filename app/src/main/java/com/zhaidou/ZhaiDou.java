@@ -13,7 +13,7 @@ public class ZhaiDou {
 
     public static String ApkUrl = "http://192.168.199.160:3000/api/v1/app_versions?os=2";
     //0元特卖页面：status=0,普通特卖页面：status=1,首页：status=2
-    public static String BannerUrl="http://192.168.199.160:3000/special_mall/api/sales/sale_banner?status=";
+    public static String BannerUrl=HOME_BASE_URL+"special_mall/api/sales/sale_banner?status=";
     //APP换量
     public static String settingRecommendAppUrl=HOME_BASE_URL+"/api/v1/app_exchanges?sys=2";
 
@@ -82,6 +82,10 @@ public class ZhaiDou {
     public static String USER_DELETE_COLLECT_ITEM_URL=HOME_BASE_URL+"article/api/article_items/like";
     //用户豆搭
     public static String USER_COLLOCATION_ITEM_URL=HOME_BASE_URL+"api/v1/users/";
+
+
+    //后台统计
+    public static String URL_STATISTICS=HOME_BASE_URL+"api/v1/device_tokens";
 
     //搜索单品列表
     public static String SEARCH_PRODUCT_URL=HOME_BASE_URL+"article/api/article_items/search";

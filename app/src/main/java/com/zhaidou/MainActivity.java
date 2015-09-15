@@ -203,12 +203,12 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         iv_dot = (ImageView) findViewById(R.id.iv_dot);
         viewLayout=(LinearLayout)findViewById(R.id.content);
         mContext = this;
+        init();
         initBroadcastReceiver();
 
         getVersionServer();
 
 
-        init();
         commitActiveData();
         AlibabaSDK.asyncInit(this, new InitResultCallback() {
             @Override
@@ -240,7 +240,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 .getDeviceId();
         Map<String,String> map=new HashMap<String, String>();
         map.put("device_token[device_token]",imei);
-        ZhaiDouRequest request=new ZhaiDouRequest(Request.Method.POST,"http://192.168.199.173/api/v1/device_tokens",map,new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request=new ZhaiDouRequest(Request.Method.POST,ZhaiDou.URL_STATISTICS,map,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 System.out.println("ZDApplication.onResponse---->"+jsonObject.toString());

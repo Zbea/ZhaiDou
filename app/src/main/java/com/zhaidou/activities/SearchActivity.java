@@ -1,6 +1,5 @@
 package com.zhaidou.activities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -21,7 +20,6 @@ import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Adapter;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,7 +34,6 @@ import com.zhaidou.adapter.SearchAdapter;
 import com.zhaidou.fragments.SingleFragment;
 import com.zhaidou.fragments.SortFragment;
 import com.zhaidou.fragments.StrategyFragment1;
-import com.zhaidou.utils.CollectionUtils;
 import com.zhaidou.utils.HtmlFetcher;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.view.AutoGridView;

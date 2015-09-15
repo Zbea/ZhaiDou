@@ -567,7 +567,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     iv_delete.setVisibility(View.GONE);
                     tv_order_status.setText("已付款");
                     btn2.setVisibility(View.GONE);
-                    btn1.setVisibility(View.VISIBLE);
+                    btn1.setVisibility(order.isZero()?View.GONE:View.VISIBLE);
                     btn1.setText("申请退款");
                     btn1.setBackgroundResource(R.drawable.btn_green_click_bg);
                     break;
@@ -597,7 +597,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     tv_order_status.setText("交易完成");
                     ll_btn.setVisibility(View.VISIBLE);
                     btn1.setVisibility(View.VISIBLE);
-                    btn2.setVisibility(View.VISIBLE);
+                    btn2.setVisibility(order.isZero()?View.GONE:View.VISIBLE);
                     btn2.setText("申请退货");
                     btn2.setBackgroundResource(R.drawable.btn_green_click_bg);
                     btn1.setText("查看物流");

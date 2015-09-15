@@ -79,7 +79,6 @@ public class ElementListFragment extends BaseFragment implements PullToRefreshBa
     private int currentPage;
     private boolean loadedAll;
     private final int LOADED = 1;
-    private AsyncImageLoader1 imageLoader;
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     /* Data Definition*/
     List<JSONObject> listItem;
