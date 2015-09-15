@@ -43,6 +43,7 @@ public class ZDApplication extends Application{
     @Override
     public void onCreate() {
 
+
         super.onCreate();
         CrashReport.initCrashReport(this, "900008762", false);
         initTypeFace();
