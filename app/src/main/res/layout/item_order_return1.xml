@@ -57,16 +57,16 @@
                     android:paddingRight="5dp"
                     android:textColor="@color/text_main_color"
                     android:textSize="15sp" />
-                <com.zhaidou.view.TypeFaceTextView
+                <TextView
                     android:id="@+id/orderItemCurrentPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
                     android:layout_gravity="right|center"
                     android:text="￥123.5"
+                    android:layout_marginTop="3dp"
                     android:layout_alignParentRight="true"
                     android:textColor="@color/red"
-                    android:textSize="14sp" />
+                    android:textSize="16sp" />
 
             </LinearLayout>
             <RelativeLayout
@@ -97,15 +97,15 @@
                         android:textColor="@color/text_gary_color"
                         android:textSize="13sp" />
                 </LinearLayout>
-                <com.zhaidou.view.TypeFaceTextView
+                <TextView
                     android:id="@+id/orderItemFormalPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="1dp"
                     android:text="￥123.5"
                     android:textColor="@color/text_gary_color"
                     android:layout_alignParentRight="true"
-                    android:textSize="12sp" />
+                    android:textSize="13sp" />
 
             </RelativeLayout>
 

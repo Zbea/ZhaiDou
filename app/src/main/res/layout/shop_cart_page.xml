@@ -195,6 +195,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <com.zhaidou.view.TypeFaceTextView
@@ -205,14 +206,15 @@
                         android:textSize="16sp"
                         android:singleLine="true"
                         android:ellipsize="end"
+                        android:layout_marginTop="1.5dp"
                         android:marqueeRepeatLimit="marquee_forever"/>
 
-                    <com.zhaidou.view.TypeFaceTextView
+                    <TextView
                         android:id="@+id/moneyTotalTv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/red"
-                        android:textSize="16sp"
+                        android:textSize="18sp"
                         android:text="￥0.0"
                         android:singleLine="true"
                         android:ellipsize="end"
@@ -224,23 +226,25 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="3dp"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="13sp"
+                        android:layout_marginTop="0.5dp"
                         android:textColor="@color/text_gary_color"
                         android:text="已省"
                         android:singleLine="true"
                         android:ellipsize="end"
                         android:marqueeRepeatLimit="marquee_forever"/>
 
-                    <com.zhaidou.view.TypeFaceTextView
+                    <TextView
                         android:id="@+id/moneySaveTv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="13sp"
+                        android:textSize="14sp"
                         android:textColor="@color/text_gary_color"
                         android:text="￥0.0"
                         android:singleLine="true"

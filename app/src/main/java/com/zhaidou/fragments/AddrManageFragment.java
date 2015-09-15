@@ -67,6 +67,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     private String mProfileId;
     private int mStatus;
 
+
     private LinearLayout ll_edit_addr;
     private LinearLayout ll_manage_address;
     private EditText et_mobile, et_addr, et_name;

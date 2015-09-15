@@ -6,8 +6,8 @@ package com.zhaidou;
 public class ZhaiDou {
 
     public static String HOME_PAGE_URL = "http://buy.zhaidou.com/?json=get_category_posts&slug=%E5%AE%B6%E9%A5%B0%E4%BC%98%E9%80%89&status=publish";
-    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
-//    public static String HOME_BASE_URL = "http://www.zhaidou.com/";
+//    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
+    public static String HOME_BASE_URL = "http://www.zhaidou.com/";
 //    public static String HOME_BASE_URL = "http://192.168.199.173/";
     public static String TAG_BASE_URL = "http://buy.zhaidou.com/?tag=%s&json=1";
 
@@ -26,8 +26,6 @@ public class ZhaiDou {
     public static String PRIZE_SCRAPING_URL=HOME_BASE_URL+"lotteries";
     //获取0元特卖数据
     public static String SPECIAL_SALE_URL=HOME_BASE_URL+"special_mall/api/sales/zero_sale";
-    //0元特卖banner
-    public static String SPECIAL_SALE_BANNER_URL=HOME_BASE_URL+"special_mall/api/sales/sale_banner?status=0";
     //首页分类文章
     public static String HOME_CATEGORY_URL=HOME_BASE_URL+"article/api/articles?page=";
     //首页轮播图
@@ -38,8 +36,6 @@ public class ZhaiDou {
 
     //特卖首页
     public static String shopHomeSpecialUrl=HOME_BASE_URL+"special_mall/api/sales/new_sale";
-    //特卖banner
-    public static String shopSpecialBannerUrl=HOME_BASE_URL+"/special_mall/api/sales/sale_banner?status=";
     //特卖列表share
     public static String shopSpecialListShareUrl=HOME_BASE_URL+"mall/list.html?id=";
     //特卖列表

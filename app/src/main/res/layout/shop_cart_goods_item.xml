@@ -220,22 +220,22 @@
             android:gravity="right"
             >
 
-            <com.zhaidou.view.TypeFaceTextView
+            <TextView
                 android:id="@+id/cartItemCurrentPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:textSize="14sp"
+                android:layout_marginTop="3dp"
+                android:textSize="16sp"
                 android:textColor="@color/red"
                 android:text="$123.5"
                 />
 
-            <com.zhaidou.view.TypeFaceTextView
+            <TextView
                 android:id="@+id/cartItemFormalPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:textSize="12sp"
+                android:layout_marginTop="1dp"
+                android:textSize="13sp"
                 android:textColor="@color/text_gary_color"
                 android:text="$ 123.5"
                 />

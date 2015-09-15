@@ -51,8 +51,8 @@ public class DiyActivity extends FragmentActivity implements ContainerFragment.O
     }
     public void addToStack(Fragment fragment){
         FragmentTransaction transaction =getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.right_drawer,fragment,fragment.getClass().getSimpleName());
-        transaction.addToBackStack(fragment.getClass().getSimpleName());
+        transaction.add(R.id.right_drawer,fragment,((Object) fragment).getClass().getSimpleName());
+        transaction.addToBackStack(((Object) fragment).getClass().getSimpleName());
         transaction.commit();
     }
     public void popToStack(){
@@ -65,14 +65,15 @@ public class DiyActivity extends FragmentActivity implements ContainerFragment.O
         Log.i("onFragmentInteraction--->",uri.toString());
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();
         MobclickAgent.onResume(this);
     }
 
-    @Override
-    protected void onPause() {
+        @Override
+        protected void onPause() {
         super.onPause();
         MobclickAgent.onPause(this);
     }

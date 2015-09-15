@@ -135,10 +135,10 @@
                     android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.000001"
-                    android:textSize="14sp"
+                    android:textSize="16sp"
                     android:textColor="@color/red"
                     android:singleLine="true"
-                    android:text="￥555.5"/>
+                    android:text="￥0.0"/>
 
             </LinearLayout>
 
@@ -171,10 +171,10 @@
                     android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.000001"
-                    android:textSize="14sp"
+                    android:textSize="16sp"
                     android:textColor="@color/red"
                     android:singleLine="true"
-                    android:text="￥10"/>
+                    android:text="￥0"/>
 
             </LinearLayout>
 
@@ -241,8 +241,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textColor="@color/red"
-                        android:textSize="16sp"
-                        android:text="￥4000"/>
+                        android:textSize="18sp"
+                        android:text="￥0.0"/>
 
                 </LinearLayout>
 

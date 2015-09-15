@@ -82,7 +82,7 @@ public class ShopOrderOkFragment extends BaseFragment
     private LinearLayout orderAddressInfoLine, orderAddressNullLine, orderAddressEditLine;
     private LinearLayout orderGoodsListLine;
     private TypeFaceEditText bzInfo;
-    private TypeFaceTextView moneyTv, moneyYfTv, moneyTotalTv, moneyNumTv;
+    private TextView moneyTv, moneyYfTv, moneyTotalTv;
     private TextView addressNameTv, addressPhoneTv, addressinfoTv;
     private ArrayList<CartItem> items;
     private List<CartItem> erroritems = new ArrayList<CartItem>();
@@ -100,6 +100,7 @@ public class ShopOrderOkFragment extends BaseFragment
     private boolean isOSaleBuy;//是否已经购买过零元特卖
     private boolean isOSale;//是否含有零元特卖
     private boolean isljOsale;//是否是来自立即购买的零元特卖
+    private boolean isNoFree;//是否不免邮，当只有一个商品且为零元特卖时为真
 
     private Address address;
     private CreatCartDB creatCartDB;
@@ -122,7 +123,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     orderAddressNullLine.setVisibility(View.GONE);
 
                     address = addressList.get(0);
-                    setYFMoney(address);
+                    setYFMoney(address.getPrice());
                     addressPhoneTv.setText("收件人：" + address.getPhone());
                     addressNameTv.setText("电话：" + address.getName());
                     addressinfoTv.setText(address.getProvince() + address.getCity() + address.getArea() + address.getAddress());
@@ -186,10 +187,6 @@ public class ShopOrderOkFragment extends BaseFragment
                         double fare = moneyYF;
                         ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId, amount, fare, 15 * 60, null, 1);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
-//                        Intent intent1=new Intent(getActivity(), PayDemoActivity.class);
-//                        intent1.putExtra("id",orderId);
-//                        intent1.putExtra("amount",amount);
-//                        startAnimActivity(intent1);
                     } catch (Exception e)
                     {
 
@@ -302,7 +299,7 @@ public class ShopOrderOkFragment extends BaseFragment
                         {
                             ToolUtils.setLog(maddress.toString());
                             address = maddress;
-                            setYFMoney(address);
+                            setYFMoney(address.getPrice());
                             addressPhoneTv.setText("收件人：" + address.getPhone());
                             addressNameTv.setText("电话：" + address.getName());
                             addressinfoTv.setText(address.getProvince() + address.getCity() + address.getArea() + address.getAddress());
@@ -338,7 +335,7 @@ public class ShopOrderOkFragment extends BaseFragment
                             addr.setCity(city);
                             addr.setArea(area);
                             address = addr;
-                            setYFMoney(addr);
+                            setYFMoney(addr.getPrice());
                             orderAddressInfoLine.setVisibility(View.VISIBLE);
                             orderAddressNullLine.setVisibility(View.GONE);
                             orderAddressEditLine.setVisibility(View.VISIBLE);
@@ -420,15 +417,20 @@ public class ShopOrderOkFragment extends BaseFragment
         {
             if (items.get(0).isOSale.equals("true"))
             {
-
                 isljOsale=true;
             }
-
         }
-        moneyTv = (TypeFaceTextView) mView.findViewById(R.id.jsPriceTotalTv);
-        moneyYfTv = (TypeFaceTextView) mView.findViewById(R.id.jsPriceYfTv);
-        moneyTotalTv = (TypeFaceTextView) mView.findViewById(R.id.jsTotalMoney);
-        moneyNumTv = (TypeFaceTextView) mView.findViewById(R.id.jsTotalNum);
+
+        if(items.size()==1)
+        {
+            if (items.get(0).isOSale.equals("true"))
+            {
+                isNoFree=true;
+            }
+        }
+        moneyTv = (TextView) mView.findViewById(R.id.jsPriceTotalTv);
+        moneyYfTv = (TextView) mView.findViewById(R.id.jsPriceYfTv);
+        moneyTotalTv = (TextView) mView.findViewById(R.id.jsTotalMoney);
 
         addressinfoTv = (TextView) mView.findViewById(R.id.jsAddressinfoTv);
         addressNameTv = (TextView) mView.findViewById(R.id.jsAddressNameTv);
@@ -458,12 +460,20 @@ public class ShopOrderOkFragment extends BaseFragment
     /**
      * 设置运费
      */
-    private void setYFMoney(Address area)
+    private void setYFMoney(double mm)
     {
-        moneyYF = area.getPrice();
-        moneyYfTv.setText("￥" + moneyYF);
+        if(isNoFree)
+        {
+            moneyYF =mm;
+            moneyYfTv.setText("￥" + (int)moneyYF);
+        }
+        else
+        {
+            moneyYF =0;
+            moneyYfTv.setText("￥" + 0);
+        }
 
-        ToolUtils.setLog("运费：" + area.getPrice());
+        ToolUtils.setLog("运费：" + moneyYF);
 
         DecimalFormat df = new DecimalFormat("###.00");
         totalMoney = Double.parseDouble(df.format(money + moneyYF));
@@ -486,7 +496,6 @@ public class ShopOrderOkFragment extends BaseFragment
             num = num + cartItem.num;
             money = money + cartItem.num * cartItem.currentPrice;
         }
-        moneyNumTv.setText("" + num);
 
         DecimalFormat df = new DecimalFormat("###.00");
         money = Double.parseDouble(df.format(money));
@@ -535,9 +544,9 @@ public class ShopOrderOkFragment extends BaseFragment
 
             itemName.setText(cartItem.name);
             itemSize.setText(cartItem.size);
-            itemCurrentPrice.setText("￥ " + cartItem.currentPrice);
+            itemCurrentPrice.setText("￥" + cartItem.currentPrice);
             itemFormalPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
-            itemFormalPrice.setText("￥ " + cartItem.formalPrice);
+            itemFormalPrice.setText("￥" + cartItem.formalPrice);
             itemNum.setText("" + cartItem.num);
             ToolUtils.setImageCacheUrl(cartItem.imageUrl, itemImage);
 

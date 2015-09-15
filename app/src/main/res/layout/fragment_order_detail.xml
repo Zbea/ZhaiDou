@@ -107,7 +107,7 @@
                         android:id="@+id/tv_order_number"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/text_gary_color" />
+                        android:textColor="@color/text_normal_color" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -128,7 +128,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingTop="5dp"
-                        android:textColor="@color/text_gary_color" />
+                        android:textColor="@color/text_normal_color" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -149,7 +149,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingTop="5dp"
-                        android:textColor="@color/text_gary_color" />
+                        android:textColor="@color/text_normal_color" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -275,7 +275,7 @@
                             android:id="@+id/tv_receiver_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/text_gary_color" />
+                            android:textColor="@color/text_normal_color" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -297,7 +297,7 @@
                             android:id="@+id/tv_receiver_phone"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/text_gary_color" />
+                            android:textColor="@color/text_normal_color" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -318,7 +318,7 @@
                             android:id="@+id/tv_receiver_address"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/text_gary_color" />
+                            android:textColor="@color/text_normal_color" />
                     </LinearLayout>
                 </LinearLayout>
 

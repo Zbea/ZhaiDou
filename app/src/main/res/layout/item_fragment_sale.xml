@@ -10,7 +10,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -20,14 +19,14 @@
                 android:scaleType="fitXY"
                 android:id="@+id/iv_single_item"
                 android:background="@drawable/icon_loading_defalut"/>
-            <LinearLayout
+            <ImageView
                 android:id="@+id/ll_sale_out"
                 android:layout_width="match_parent"
                 android:visibility="gone"
-                android:orientation="horizontal"
-                android:background="@drawable/icon_sale_out"
+                android:scaleType="centerInside"
+                android:src="@drawable/icon_sale_out"
                 android:layout_height="match_parent">
-            </LinearLayout>
+            </ImageView>
         </RelativeLayout>
 
     <com.zhaidou.view.TypeFaceTextView
@@ -40,7 +39,7 @@
         android:marqueeRepeatLimit="marquee_forever"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        android:paddingTop="5dp"
+        android:paddingTop="7dp"
         android:paddingBottom="5dp"
         android:text="天然环保彩色椅啊斯"/>
     <RelativeLayout
@@ -48,30 +47,32 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp">
+        android:layout_marginBottom="7dp">
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
-            <com.zhaidou.view.TypeFaceTextView
+            <TextView
                 android:paddingLeft="5dp"
                 android:layout_width="wrap_content"
                 android:textColor="@color/red"
                 android:text="￥0"
+                android:textSize="16sp"
                 android:id="@+id/tv_money"
                 android:layout_height="wrap_content" />
             <FrameLayout
                 android:layout_marginLeft="5dp"
-                android:layout_marginTop="3dp"
+                android:layout_marginTop="2.5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
-                <com.zhaidou.view.TypeFaceTextView
+                <TextView
                     android:id="@+id/tv_price"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    android:textSize="10sp"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_gary_color"
                     android:text="￥88元"/>
             </FrameLayout>
 
@@ -79,6 +80,7 @@
         <LinearLayout
             android:layout_alignParentRight="true"
             android:paddingRight="5dp"
+            android:layout_marginTop="6dp"
             android:layout_width="wrap_content"
             android:background="@color/white"
             android:layout_height="wrap_content">
@@ -87,8 +89,9 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:id="@+id/tv_count"
-                android:textColor="#55000000"
-                android:text=""/>
+                android:textSize="12sp"
+                android:textColor="@color/text_normal_color"
+                android:text="55555"/>
         </LinearLayout>
     </RelativeLayout>
     </LinearLayout>

@@ -143,13 +143,14 @@ public class ShopPaymentFailFragment extends BaseFragment {
                     double amount=order.getAmount();
                     List<OrderItem> items = order.getOrderItems();
                     double price=0;
-                    for (OrderItem item:items) {
+                    for (OrderItem item:items)
+                    {
                         price+=item.getPrice()*item.getCount();
                     }
                     DecimalFormat df = new DecimalFormat("###.00");
                     price = Double.parseDouble(df.format(price));
                     tv_amount.setText("￥" + price);
-                    tv_fare.setText("￥" + Double.parseDouble(df.format((amount-price))));
+                    tv_fare.setText("￥" + Integer.parseInt(df.format((amount-price))));
                     tv_total.setText("￥" + amount);
                     break;
             }

@@ -137,7 +137,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
 
     private Handler handler = new Handler()
     {
-        public void handleMessage(Message msg)
+        public void handleMessage(final Message msg)
         {
             switch (msg.what)
             {

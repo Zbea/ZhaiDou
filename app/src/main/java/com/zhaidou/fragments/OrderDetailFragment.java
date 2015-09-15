@@ -283,8 +283,9 @@ public class OrderDetailFragment extends BaseFragment {
         switch (view.getId()) {
             case R.id.tv_cancel_order:
                 if (("" + ZhaiDou.STATUS_DEAL_SUCCESS).equalsIgnoreCase(mOrder.getStatus())) {
-                    OrderLogisticsMsgFragment orderLogisticsMsgFragment = OrderLogisticsMsgFragment.newInstance("", "");
-                    ((MainActivity) getActivity()).navigationToFragment(orderLogisticsMsgFragment);
+
+                    OrderLogisticsMsgFragment logisticsMsgFragment = OrderLogisticsMsgFragment.newInstance("", "",order);
+                    ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
                     return;
                 } else if (mContext.getResources().getString(R.string.order_return_money).equalsIgnoreCase(mCancelOrder.getText().toString())) {
                     final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
@@ -345,8 +346,9 @@ public class OrderDetailFragment extends BaseFragment {
 //                    ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
                     return;
                 } else if (mContext.getResources().getString(R.string.order_logistics).equalsIgnoreCase(mCancelOrder.getText().toString())) {
-                    OrderLogisticsMsgFragment orderLogisticsMsgFragment = OrderLogisticsMsgFragment.newInstance("", "");
-                    ((MainActivity) getActivity()).navigationToFragment(orderLogisticsMsgFragment);
+
+                    OrderLogisticsMsgFragment logisticsMsgFragment = OrderLogisticsMsgFragment.newInstance("", "",order);
+                    ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
                     return;
                 }
                 if (mOrder != null && "3678".contains(mOrder.getStatus())) {
@@ -436,12 +438,7 @@ public class OrderDetailFragment extends BaseFragment {
 
                     JSONObject receiverObj = orderObj.optJSONObject("receiver");
                     int receiverId = receiverObj.optInt("id");
-//                    String address = receiverObj.optString("address");
-//                    String phone = receiverObj.optString("phone");
-//                    String name = receiverObj.optString("name");
-//                    String city_name = receiverObj.optString("city_name");
-//                    String parent_name = receiverObj.optString("parent_name");
-//                    String provider_name = receiverObj.optString("provider_name");
+                    String logNum = orderObj.optString("deliver_number");
                     Receiver receiver = new Receiver(receiverId, null, parent_name, null, null, null, null);
 
                     JSONArray order_items = orderObj.optJSONArray("order_items");
@@ -463,6 +460,7 @@ public class OrderDetailFragment extends BaseFragment {
                         }
                     }
                     Order order = new Order("", id, number, amount, status, status_ch, created_at_for, created_at, receiver, orderItems, receiver_address, receiver_phone, deliver_number, receiver_name);
+                    order.logisticsNum=logNum;
                     order.setNode(node);
                     order.setParent_name(parent_name);
                     order.setCity_name(city_name);

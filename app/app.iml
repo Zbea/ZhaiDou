@@ -110,6 +110,7 @@
     <orderEntry type="library" exported="" name="libammsdk" level="project" />
     <orderEntry type="library" exported="" name="rpc-core-1.0_06101606" level="project" />
     <orderEntry type="library" exported="" name="alisdk-system-6" level="project" />
+    <orderEntry type="library" exported="" name="testinagent" level="project" />
     <orderEntry type="library" exported="" name="UTMini-4.3.8" level="project" />
   </component>
 </module>

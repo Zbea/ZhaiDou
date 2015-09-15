@@ -68,7 +68,9 @@
 -keep class **.R$* {
     *;
 }
-
+-keep public class com.zhaidou.R$*{
+public static final int *;
+}
 -keep class * implements android.os.Parcelable {
   public static final android.os.Parcelable$Creator *;
 }
@@ -76,7 +78,13 @@
 -keepclassmembers class fqcn.of.javascript.interface.for.webview {
    public *;
 }
+
 -keep public class com.tencent.bugly.**{*;}
+
+-keepclassmembers class * {
+   public <init>(org.json.JSONObject);
+}
+
 ##淘宝
 -keepattributes Signature
 -keep class sun.misc.Unsafe { *; }
