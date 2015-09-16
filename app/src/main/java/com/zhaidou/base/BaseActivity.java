@@ -1,7 +1,6 @@
 package com.zhaidou.base;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -11,9 +10,9 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
-import com.zhaidou.ZhaiDou;
 import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.PersonalFragment;
 import com.zhaidou.fragments.RegisterFragment;
@@ -21,7 +20,6 @@ import com.zhaidou.fragments.ShopPaymentFailFragment;
 import com.zhaidou.fragments.ShopPaymentSuccessFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.SharedPreferencesUtil;
-import com.zhaidou.utils.ToolUtils;
 
 /**
  * Created by wangclark on 15/7/3.
@@ -48,11 +46,24 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
                 .addToBackStack(null).commitAllowingStateLoss();
     }
 
+    public void navigationToFragmentWithAnim(Fragment fragment) {
+        if (fragment != null && fragment instanceof RegisterFragment) {
+            RegisterFragment registerFragment = (RegisterFragment) fragment;
+            registerFragment.setRegisterOrLoginListener(this);
+        }
+        if ("MainActivity".equalsIgnoreCase(((Object) this).getClass().getSimpleName())) {
+            mChildContainer.setVisibility(View.VISIBLE);
+        }
+        //.setCustomAnimations(R.anim.page_enter_into_the,R.anim.page_enter_out_the,R.anim.page_out_into_the,R.anim.page_out_out_the)
+        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.page_enter_into_the,R.anim.page_enter_out_the,R.anim.page_out_into_the,R.anim.page_out_out_the)
+                .replace(R.id.fl_child_container, fragment, ((Object) fragment).getClass().getSimpleName())
+                .addToBackStack(null).commitAllowingStateLoss();
+    }
     public void popToStack(Fragment fragment) {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         //.setCustomAnimations(R.anim.page_out_into_the,R.anim.page_out_out_the)
-        fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
+        fragmentManager.beginTransaction().setCustomAnimations(R.anim.page_out_into_the,R.anim.page_out_out_the).remove(fragment).commitAllowingStateLoss();
         fragmentManager.popBackStack();
         if (fragment instanceof ShopPaymentFailFragment || fragment instanceof ShopPaymentSuccessFragment)
         fragmentManager.popBackStack();

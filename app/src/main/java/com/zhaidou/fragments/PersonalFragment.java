@@ -284,11 +284,11 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         switch (view.getId()) {
             case R.id.tv_shopping_cart:
                 ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
-                ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopCartFragment);
                 break;
             case R.id.all_order:
                 OrderAllOrdersFragment allOrdersFragment = OrderAllOrdersFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragment(allOrdersFragment);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(allOrdersFragment);
                 break;
             case R.id.rl_taobao_order:
                 Intent intent1 = new Intent(getActivity(), WebViewActivity.class);
