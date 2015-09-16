@@ -682,14 +682,10 @@ public class HomeFragment extends BaseFragment implements
         {
             mCategoryView.setImageResource(R.drawable.icon_close);
             fl_category_menu.setVisibility(View.VISIBLE);
-<<<<<<< HEAD
-            getChildFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_from_top, R.anim.slide_out_to_top).show(homeCategoryFragment).commit();
-        } else {
-=======
+
             getChildFragmentManager().beginTransaction().show(homeCategoryFragment).commit();
         } else
         {
->>>>>>> origin/fixbug-1.0
             mCategoryView.setImageResource(R.drawable.icon_category);
             fl_category_menu.setVisibility(View.GONE);
             getChildFragmentManager().beginTransaction().hide(homeCategoryFragment).commit();
