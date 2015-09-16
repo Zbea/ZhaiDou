@@ -49,7 +49,6 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
 import com.zhaidou.model.OrderItem;
 import com.zhaidou.model.Receiver;
-import com.zhaidou.utils.CollectionUtils;
 import com.zhaidou.utils.PhotoUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;

@@ -2,23 +2,16 @@ package com.zhaidou.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
-import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
-import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.zhaidou.R;
 
-import java.net.URI;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

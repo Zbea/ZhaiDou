@@ -690,6 +690,7 @@ public class HomeFragment extends BaseFragment implements
         {
             mCategoryView.setImageResource(R.drawable.icon_close);
             fl_category_menu.setVisibility(View.VISIBLE);
+
             getChildFragmentManager().beginTransaction().show(homeCategoryFragment).commit();
         } else
         {

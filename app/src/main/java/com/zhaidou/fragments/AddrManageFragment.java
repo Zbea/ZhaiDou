@@ -34,6 +34,7 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Address;
+import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
@@ -76,6 +77,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     private SharedPreferences mSharedPreferences;
 
     private AddressListener addressListener;
+    private DialogUtils mDialogUtil;
 
     private Dialog mDialog;
     private RequestQueue mRequestQueue;
@@ -97,8 +99,6 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case UPDATE_ADDRESS_LIST:
-                    if (mDialog!=null)
-                    mDialog.dismiss();
                     loadingView.setVisibility(View.GONE);
                     addressAdapter.notifyDataSetChanged();
                     break;
@@ -151,6 +151,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     private void initView(View view) {
 
         mDialog=CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
+        mDialogUtil=new DialogUtils(mContext);
         loadingView=(LinearLayout)view.findViewById(R.id.loadingView);
         mListview = (ListView) view.findViewById(R.id.lv_addresses);
         addressAdapter = new AddressAdapter(getActivity(), addressList);
@@ -176,25 +177,10 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             public void OnClickListener(View parentV, View v, final Integer position, Object values) {
                 final Address address = (Address) values;
                 final int id = address.getId();
-                final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
 
-                View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
-                TextView textView = (TextView) view.findViewById(R.id.tv_msg);
-                textView.setText("是否删除地址?");
-                TextView cancelTv = (TextView) view.findViewById(R.id.cancelTv);
-                cancelTv.setOnClickListener(new View.OnClickListener() {
+                mDialogUtil.showDialog("是否删除地址?",new DialogUtils.PositiveListener() {
                     @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                    }
-                });
-
-                TextView okTv = (TextView) view.findViewById(R.id.okTv);
-                okTv.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                        mDialog.show();
+                    public void onPositive() {
                         String url =ZhaiDou.ORDER_RECEIVER_URL + id;
                         JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, new Response.Listener<JSONObject>() {
                             @Override
@@ -228,12 +214,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                         };
                         mRequestQueue.add(request);
                     }
-                });
-                dialog.setCanceledOnTouchOutside(true);
-                dialog.setCancelable(true);
-                dialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                dialog.show();
-
+                },null);
             }
         });
         addressAdapter.setOnInViewClickListener(R.id.tv_edit, new BaseListAdapter.onInternalClickListener() {
@@ -475,6 +456,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                         address.setPrice(price);
                         addressList.add(address);
                     }
+//                    addressAdapter.notifyDataSetChanged();
                     handler.sendEmptyMessage(UPDATE_ADDRESS_LIST);
                 }else {
                     loadingView.setVisibility(View.GONE);
