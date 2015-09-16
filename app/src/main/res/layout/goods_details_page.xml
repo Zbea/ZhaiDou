@@ -381,13 +381,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="#EEEEEE"/>
-
                 <LinearLayout
                     android:id="@+id/ll_img_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
                     android:orientation="vertical"></LinearLayout>
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/img_null"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:gravity="center"
+                    android:textColor="@color/text_gary_color"
+                    android:text="暂无图文详情"/>
+
             </LinearLayout>
 
             <LinearLayout

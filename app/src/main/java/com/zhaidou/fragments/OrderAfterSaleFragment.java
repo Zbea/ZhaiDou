@@ -49,7 +49,6 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
 import com.zhaidou.model.OrderItem;
 import com.zhaidou.model.Receiver;
-import com.zhaidou.utils.CollectionUtils;
 import com.zhaidou.utils.PhotoUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -429,8 +428,8 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
             tv_name.setText(item.getMerchandise());
             tv_specification.setText(item.getSpecification());
             tv_count.setText(item.getCount() + "");
-            tv_price.setText("￥" + item.getPrice());
-            tv_old_price.setText("￥" + item.getCost_price());
+            tv_price.setText("￥" + ToolUtils.isIntPrice("" +item.getPrice()));
+            tv_old_price.setText("￥" + ToolUtils.isIntPrice("" +item.getCost_price()));
             TextPaint textPaint = tv_old_price.getPaint();
             textPaint.setAntiAlias(true);
             textPaint.setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);

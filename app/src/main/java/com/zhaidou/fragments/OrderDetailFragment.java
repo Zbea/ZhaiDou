@@ -639,8 +639,8 @@ public class OrderDetailFragment extends BaseFragment {
             tv_specification.setText(item.getSpecification());
             tv_count.setText(item.getCount() + "");
             ToolUtils.setImageCacheUrl(item.getMerch_img(), iv_order_img);
-            mPrice.setText("￥" + item.getPrice());
-            mOldPrice.setText("￥" + item.getCost_price());
+            mPrice.setText("￥" + ToolUtils.isIntPrice("" +item.getPrice()));
+            mOldPrice.setText("￥" + ToolUtils.isIntPrice("" +item.getCost_price()));
             mOldPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
             return convertView;
         }

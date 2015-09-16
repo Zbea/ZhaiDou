@@ -1,19 +1,16 @@
 package com.zhaidou.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.zhaidou.R;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Product;
-import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.ToolUtils;
 
 import java.util.List;
@@ -50,7 +47,7 @@ public class ProductAdapter extends BaseListAdapter<Product>{
 
         Product product = getList().get(position);
         tv_name.setText(product.getTitle());
-        tv_money.setText("￥"+product.getPrice());
+        tv_money.setText("￥"+ToolUtils.isIntPrice("" +product.getPrice()));
         tv_count.setText(product.getBean_like_count()+"");
         ToolUtils.setImageCacheUrl("http://"+product.getImage(),image,R.drawable.icon_loading_defalut);
 

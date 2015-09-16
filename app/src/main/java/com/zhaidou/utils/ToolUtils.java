@@ -27,6 +27,44 @@ import java.util.regex.Pattern;
  */
 public class ToolUtils
 {
+
+    /**
+     * 处理价格为.0或者.00时取整数
+     * @return
+     */
+    public static String isIntPrice(String price)
+    {
+        String mPrice=null;
+        for (int i=0 ;i<price.length(); i++)
+        {
+            char c = price.charAt(i);
+            //当不为整数的时候
+            if ('.' == c)
+            {
+                //当存在小数点一位的时候
+                if (price.length() == (i + 2))
+                {
+                    if (String.valueOf(price.charAt(i+1)).equals(""+0))
+                    {
+                        mPrice=price.substring(0,i);
+                        return mPrice;
+                    }
+                }
+                //当存在小数点两位时候
+               if (price.length()==(i+3))
+               {
+                   if (String.valueOf(price.charAt(i+1)).equals(""+0)&&String.valueOf(price.charAt(i+2)).equals(""+0))
+                   {
+                       mPrice=price.substring(0,i);
+                       return mPrice;
+                   }
+               }
+            }
+        }
+        mPrice=price;
+        return mPrice;
+    }
+
     /**
      * 是否存在sdcard
      * @return

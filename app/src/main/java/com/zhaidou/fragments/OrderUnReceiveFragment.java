@@ -383,7 +383,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
             Order item = getList().get(position);
             tv_order_time.setText(item.getCreated_at_for());
             tv_order_number.setText(item.getNumber());
-            tv_order_amount.setText("￥" + item.getAmount() + "");
+            tv_order_amount.setText("￥" + ToolUtils.isIntPrice("" +item.getAmount() + ""));
             tv_order_status.setText(item.getStatus_ch());
             if ("1".equalsIgnoreCase(item.getStatus())) {
                 bt_received.setVisibility(View.GONE);

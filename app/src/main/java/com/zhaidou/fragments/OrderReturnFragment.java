@@ -234,7 +234,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
             Order item = getList().get(position);
             tv_order_time.setText(item.getCreated_at_for());
             tv_order_number.setText(item.getNumber());
-            tv_order_amount.setText("￥"+item.getAmount()+"");
+            tv_order_amount.setText("￥"+ToolUtils.isIntPrice("" +item.getAmount()+""));
             tv_order_status.setText(item.getStatus_ch());
             ToolUtils.setImageCacheUrl(item.getImg(), iv_order_img);
             mBottomLayout.setVisibility(View.GONE);

@@ -465,7 +465,7 @@ public class ShopOrderOkFragment extends BaseFragment
         if(isNoFree)
         {
             moneyYF =mm;
-            moneyYfTv.setText("￥" + (int)moneyYF);
+            moneyYfTv.setText("￥" + ToolUtils.isIntPrice(""+moneyYF));
         }
         else
         {
@@ -477,7 +477,7 @@ public class ShopOrderOkFragment extends BaseFragment
 
         DecimalFormat df = new DecimalFormat("###.00");
         totalMoney = Double.parseDouble(df.format(money + moneyYF));
-        moneyTotalTv.setText("￥" + totalMoney);
+        moneyTotalTv.setText("￥" +ToolUtils.isIntPrice(""+ totalMoney));
     }
 
     /**
@@ -500,8 +500,8 @@ public class ShopOrderOkFragment extends BaseFragment
         DecimalFormat df = new DecimalFormat("###.00");
         money = Double.parseDouble(df.format(money));
         totalMoney = Double.parseDouble(df.format(money + 0));
-        moneyTv.setText("￥" + money);
-        moneyTotalTv.setText("￥" + totalMoney);
+        moneyTv.setText("￥" +ToolUtils.isIntPrice(""+ money));
+        moneyTotalTv.setText("￥" + ToolUtils.isIntPrice(""+totalMoney));
         moneyYfTv.setText("￥" + 0);
 
     }
@@ -544,9 +544,9 @@ public class ShopOrderOkFragment extends BaseFragment
 
             itemName.setText(cartItem.name);
             itemSize.setText(cartItem.size);
-            itemCurrentPrice.setText("￥" + cartItem.currentPrice);
+            itemCurrentPrice.setText("￥" + ToolUtils.isIntPrice(""+cartItem.currentPrice));
             itemFormalPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
-            itemFormalPrice.setText("￥" + cartItem.formalPrice);
+            itemFormalPrice.setText("￥" + ToolUtils.isIntPrice(""+cartItem.formalPrice));
             itemNum.setText("" + cartItem.num);
             ToolUtils.setImageCacheUrl(cartItem.imageUrl, itemImage);
 
@@ -565,7 +565,6 @@ public class ShopOrderOkFragment extends BaseFragment
             public void run()
             {
                 String result = FetchRequset();
-                Log.i("commit----------->",result);
                 if (result != null&&result.length()>10)
                 {
                     try

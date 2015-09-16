@@ -535,7 +535,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             Order order = getList().get(position);
             tv_order_time.setText(order.getCreated_at_for());
             tv_order_number.setText(order.getNumber());
-            tv_order_amount.setText("￥" + order.getAmount());
+            tv_order_amount.setText("￥" + ToolUtils.isIntPrice("" +order.getAmount()));
             tv_order_status.setText(order.getStatus_ch());
             ToolUtils.setImageCacheUrl(order.getImg(), iv_order_img);
             switch (Integer.parseInt(order.getStatus())) {
