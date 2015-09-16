@@ -165,7 +165,7 @@ public class GoodsDetailsFragment extends BaseFragment {
     //是否完成清理
     private boolean isClean = false;
     private MyTimer mTimer;
-    private TextView mTimerView;
+    private TextView mTimerView,imageNull;
 
     private boolean isOSaleBuy;
     private boolean isClick;
@@ -232,8 +232,8 @@ public class GoodsDetailsFragment extends BaseFragment {
                     detail = (GoodDetail) msg.obj;
                     setChildFargment(detail, goodInfos);
 
-                    mCurrentPrice.setText("￥" + detail.getPrice() + "");
-                    mOldPrice.setText("￥" + detail.getCost_price() + "");
+                    mCurrentPrice.setText("￥" + ToolUtils.isIntPrice(""+detail.getPrice() + ""));
+                    mOldPrice.setText("￥" + ToolUtils.isIntPrice(""+detail.getCost_price() + ""));
                     tv_comment.setText(detail.getDesigner());
                     mTitle.setText(detail.getTitle());
                     setDiscount(detail.getPrice(), detail.getCost_price());
@@ -258,9 +258,12 @@ public class GoodsDetailsFragment extends BaseFragment {
 
                     }
 
-                    initData(detail.getImgs());
+                    ToolUtils.setLog(detail.getImageUrl());
+                    ToolUtils.setImageCacheUrl(detail.getImageUrl(),goodsImage,R.drawable.icon_loading_defalut);
+                    initImageData(detail.getImgs());
 
-                    if (detail.getImgs().size() < 1 && detail.getSpecifications().size() < 1 && detail.getEnd_time() == null) {
+                    if (detail.getImgs()==null&&detail.getSpecifications()==null&&detail.getEnd_time()==null)
+                    {
                         setAddOrBuyShow("此商品已下架");
                     }
 
@@ -451,6 +454,64 @@ public class GoodsDetailsFragment extends BaseFragment {
     public GoodsDetailsFragment() {
     }
 
+    /**
+     * 加载子fargment信息
+     *
+     * @param detail
+     * @param goodInfos
+     */
+    private void setChildFargment(GoodDetail detail, ArrayList<GoodInfo> goodInfos) {
+        mAdapter = new GoodInfoAdapter(mContext, goodInfos);
+        mListView.setAdapter(mAdapter);
+        mImageContainer.removeAllViews();
+        DisplayImageOptions options=new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.icon_loading_osale)
+//                        .showImageForEmptyUri(R.drawable.icon_loading_osale)
+//                        .showImageOnFail(R.drawable.icon_loading_osale)
+//                        .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
+//                        .bitmapConfig(Bitmap.Config.RGB_565)
+//                        .imageScaleType(ImageScaleType.NONE)
+//                        .cacheInMemory(true) // default
+                .build();
+        if (detail.getImgs() != null) {
+            for (int i = 0; i < detail.getImgs().size(); i++) {
+                LargeImgView imageView = new LargeImgView(getActivity());
+                imageView.setScaleType(ImageView.ScaleType.MATRIX);
+                ImageLoader.getInstance().displayImage(detail.getImgs().get(i),imageView,new ImageLoadingListener() {
+                    @Override
+                    public void onLoadingStarted(String s, View view) {
+                    }
+                    @Override
+                    public void onLoadingFailed(String s, View view, FailReason failReason) {
+                    }
+                    @Override
+                    public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+                        if (bitmap!=null){
+                            LargeImgView imageView1=(LargeImgView)view;
+                            imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+                            if (bitmap.getHeight()<4000){
+                                imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
+                                imageView1.setImageBitmap(bitmap);
+                            } else {
+                                imageView1.setImageBitmapLarge(bitmap);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onLoadingCancelled(String s, View view) {
+
+                    }
+                });
+                mImageContainer.addView(imageView);
+            }
+        }
+        else
+        {
+            imageNull.setVisibility(View.VISIBLE);
+        }
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -460,6 +521,7 @@ public class GoodsDetailsFragment extends BaseFragment {
             flags = getArguments().getInt("flags");
         }
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -478,7 +540,6 @@ public class GoodsDetailsFragment extends BaseFragment {
         }
         return mView;
     }
-
 
     private void initView() {
         shareUrl = shareUrl + mIndex;
@@ -627,6 +688,8 @@ public class GoodsDetailsFragment extends BaseFragment {
 
         mListView = (ListView) mView.findViewById(R.id.lv_good_info);
         mImageContainer = (LinearLayout) mView.findViewById(R.id.ll_img_container);
+        imageNull=(TextView)mView.findViewById(R.id.img_null);
+        imageNull.setVisibility(View.GONE);
 
         mView.findViewById(R.id.rl_qq_contact).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -690,8 +753,8 @@ public class GoodsDetailsFragment extends BaseFragment {
     private void sizeEvent(int position) {
         if (detail != null & specificationList.size() > 0) {
             mSpecification = specificationList.get(position);
-            mCurrentPrice.setText("￥" + mSpecification.price);
-            mOldPrice.setText("￥" + mSpecification.oldPrice);
+            mCurrentPrice.setText("￥" + ToolUtils.isIntPrice(""+mSpecification.price));
+            mOldPrice.setText("￥" + ToolUtils.isIntPrice(""+mSpecification.oldPrice));
             setDiscount(mSpecification.price, mSpecification.oldPrice);
         }
     }
@@ -720,60 +783,6 @@ public class GoodsDetailsFragment extends BaseFragment {
     }
 
     /**
-     * 加载子fargment信息
-     *
-     * @param detail
-     * @param goodInfos
-     */
-    private void setChildFargment(GoodDetail detail, ArrayList<GoodInfo> goodInfos) {
-        mAdapter = new GoodInfoAdapter(mContext, goodInfos);
-        mListView.setAdapter(mAdapter);
-        mImageContainer.removeAllViews();
-                DisplayImageOptions options=new DisplayImageOptions.Builder()
-                        .showImageOnLoading(R.drawable.icon_loading_osale)
-//                        .showImageForEmptyUri(R.drawable.icon_loading_osale)
-//                        .showImageOnFail(R.drawable.icon_loading_osale)
-//                        .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
-//                        .bitmapConfig(Bitmap.Config.RGB_565)
-//                        .imageScaleType(ImageScaleType.NONE)
-//                        .cacheInMemory(true) // default
-                        .build();
-        if (detail.getImgs() != null) {
-            for (int i = 0; i < detail.getImgs().size(); i++) {
-                LargeImgView imageView = new LargeImgView(getActivity());
-                imageView.setScaleType(ImageView.ScaleType.MATRIX);
-                ImageLoader.getInstance().displayImage(detail.getImgs().get(i),imageView,new ImageLoadingListener() {
-                    @Override
-                    public void onLoadingStarted(String s, View view) {
-                    }
-                    @Override
-                    public void onLoadingFailed(String s, View view, FailReason failReason) {
-                    }
-                    @Override
-                    public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-                        if (bitmap!=null){
-                            LargeImgView imageView1=(LargeImgView)view;
-                                imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
-                            if (bitmap.getHeight()<4000){
-                                imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
-                                imageView1.setImageBitmap(bitmap);
-                            } else {
-                                imageView1.setImageBitmapLarge(bitmap);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onLoadingCancelled(String s, View view) {
-
-                    }
-                });
-                mImageContainer.addView(imageView);
-            }
-        }
-    }
-
-    /**
      * 分享
      */
     private void share() {
@@ -789,7 +798,7 @@ public class GoodsDetailsFragment extends BaseFragment {
         oks.setText(mPage + "   " + shareUrl);
         // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
         if (detail != null) {
-            oks.setImageUrl(detail.getImgs().get(0));//确保SDcard下面存在此张图片
+            oks.setImageUrl(detail.getImageUrl());//确保SDcard下面存在此张图片
         }
         // url仅在微信（包括好友和朋友圈）中使用
         oks.setUrl(shareUrl);
@@ -884,6 +893,53 @@ public class GoodsDetailsFragment extends BaseFragment {
         shopOrderOkFragment.setArguments(bundle);
         ((MainActivity) getActivity()).navigationToFragment(shopOrderOkFragment);
 
+    }
+
+    /**
+     ** 设置头部相片
+     */
+    private void initImageData(List<String> urls) {
+        if (CollectionUtils.isNotNull(urls)) {
+
+            for (String url : urls) {
+                ImageView imageView = new ImageView(mContext);
+                imageView.setImageResource(R.drawable.icon_loading_defalut);
+                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                imageView.setBackgroundColor(Color.parseColor("#ffffff"));
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                imageView.setLayoutParams(params);
+                ToolUtils.setImageCacheUrl(url, imageView,R.drawable.icon_loading_osale);
+                adPics.add(imageView);
+            }
+            dots = new ImageView[adPics.size()];
+
+            for (int i = 0; i < adPics.size(); i++) {
+                ImageView dot_iv = new ImageView(mContext);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                params.bottomMargin = 10;
+                if (i == 0) {
+                    params.leftMargin = 0;
+                } else {
+                    params.leftMargin = 20;
+                }
+
+                dot_iv.setLayoutParams(params);
+                dots[i] = dot_iv;
+                viewGroupe.addView(dot_iv);
+                if (i == 0) {
+                    dots[i].setBackgroundResource(R.drawable.home_tips_foucs_icon);
+                } else {
+                    dots[i].setBackgroundResource(R.drawable.home_tips_icon);
+                }
+            }
+            viewPager = (ViewPager) mView.findViewById(R.id.goods_adv_pager);
+            viewPager.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 630 / 720));
+            imageAdapter = new GoodsImageAdapter(mContext, adPics);
+            viewPager.setAdapter(imageAdapter);
+            viewPager.setOnPageChangeListener(onPageChangeListener);
+            viewPager.setCurrentItem(0);
+        }
+        viewGroupe.removeAllViews();
     }
 
     /**
@@ -994,54 +1050,6 @@ public class GoodsDetailsFragment extends BaseFragment {
     }
 
     /**
-     * 初始化数据
-     */
-    private void initData(List<String> urls) {
-        viewGroupe.removeAllViews();
-        if (CollectionUtils.isNotNull(urls)) {
-            ToolUtils.setImageCacheUrl(detail.getImageUrl(), goodsImage);
-
-            for (String url : urls) {
-                ImageView imageView = new ImageView(mContext);
-                imageView.setImageResource(R.drawable.icon_loading_defalut);
-                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                imageView.setBackgroundColor(Color.parseColor("#ffffff"));
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                imageView.setLayoutParams(params);
-                ToolUtils.setImageCacheUrl(url, imageView,R.drawable.icon_loading_osale);
-                adPics.add(imageView);
-            }
-            dots = new ImageView[adPics.size()];
-
-            for (int i = 0; i < adPics.size(); i++) {
-                ImageView dot_iv = new ImageView(mContext);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                params.bottomMargin = 10;
-                if (i == 0) {
-                    params.leftMargin = 0;
-                } else {
-                    params.leftMargin = 20;
-                }
-
-                dot_iv.setLayoutParams(params);
-                dots[i] = dot_iv;
-                viewGroupe.addView(dot_iv);
-                if (i == 0) {
-                    dots[i].setBackgroundResource(R.drawable.home_tips_foucs_icon);
-                } else {
-                    dots[i].setBackgroundResource(R.drawable.home_tips_icon);
-                }
-            }
-            viewPager = (ViewPager) mView.findViewById(R.id.goods_adv_pager);
-            viewPager.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 630 / 720));
-            imageAdapter = new GoodsImageAdapter(mContext, adPics);
-            viewPager.setAdapter(imageAdapter);
-            viewPager.setOnPageChangeListener(onPageChangeListener);
-            viewPager.setCurrentItem(0);
-        }
-    }
-
-    /**
      * 设置指示器
      */
     private void setImageBackground(int position) {
@@ -1085,16 +1093,21 @@ public class GoodsDetailsFragment extends BaseFragment {
                             String url = imgObj.optString("url");
                             imgsList.add(url);
                         }
-                        detail.setImgs(imgsList);
+                        if (imgsList!=null&&imgsList.size()!=0)
+                        {
+                            detail.setImageUrl(imgsList.get(0));
+                        }
                     }
 
                     JSONArray imgArray = merchandise.optJSONArray("desc_images");
                     if (imgArray != null && imgArray.length() > 0) {
+                        ArrayList<String> imgsList = new ArrayList<String>();
                         for (int i = 0; i < imgArray.length(); i++) {
                             JSONObject imgObj = imgArray.optJSONObject(i);
                             String url = imgObj.optString("url");
-                            detail.setImageUrl(url);
+                            imgsList.add(url);
                         }
+                        detail.setImgs(imgsList);
                     }
 
                     JSONArray specifications = merchandise.optJSONArray("specifications");
@@ -1426,7 +1439,9 @@ public class GoodsDetailsFragment extends BaseFragment {
         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_goods_detail));
     }
 
-
+    /**
+     * 规格适配器
+     */
     public class GoodInfoAdapter extends BaseListAdapter<GoodInfo> {
         public GoodInfoAdapter(Context context, List<GoodInfo> list) {
             super(context, list);

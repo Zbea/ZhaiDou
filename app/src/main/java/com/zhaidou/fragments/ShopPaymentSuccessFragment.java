@@ -69,7 +69,7 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
                     tv_address.setText("地址："+order.getReceiver().getProvince()+","+ order.getReceiver().getCity()+","+ order.getReceiver().getArea()+","+order.getReceiver().getAddress());
                     tv_mobile.setText("电话："+order.getReceiver().getPhone());
                     Receiver receiver=order.getReceiver();
-                    tv_amount.setText("￥"+order.getAmount()+"");
+                    tv_amount.setText("￥"+ToolUtils.isIntPrice("" +order.getAmount()+""));
                     mOrder=order;
                     break;
                 case UPDATE_PAY_FAIL_PAG:

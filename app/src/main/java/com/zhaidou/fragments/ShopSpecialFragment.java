@@ -42,6 +42,7 @@ import com.zhaidou.adapter.GoodsImageAdapter;
 import com.zhaidou.adapter.ShopSpecialAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.model.Category;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.SwitchImage;
 import com.zhaidou.utils.NetworkUtils;
@@ -404,7 +405,9 @@ public class ShopSpecialFragment extends BaseFragment
                             ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
                         }else
                         {
-                            ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title, Integer.valueOf(item.typeValue),item.imageUrl);
+                            Category category=new Category();
+                            category.setId(Integer.parseInt(item.typeValue));
+                            SpecialFragment shopTodaySpecialFragment = SpecialFragment.newInstance("",category);
                             ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
                         }
 
@@ -528,7 +531,9 @@ public class ShopSpecialFragment extends BaseFragment
                             ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
                         }else
                         {
-                            ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title, Integer.valueOf(item.typeValue),item.imageUrl);
+                            Category category=new Category();
+                            category.setId(Integer.parseInt(item.typeValue));
+                            SpecialFragment shopTodaySpecialFragment = SpecialFragment.newInstance("",category);
                             ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
                         }
                     }

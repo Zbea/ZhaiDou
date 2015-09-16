@@ -280,7 +280,9 @@ public class HomeFragment extends BaseFragment implements
                             ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
                         }else
                         {
-                            ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title, Integer.valueOf(item.typeValue),item.imageUrl);
+                            Category category=new Category();
+                            category.setId(Integer.parseInt(item.typeValue));
+                            SpecialFragment shopTodaySpecialFragment = SpecialFragment.newInstance("",category);
                             ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
                         }
                     }

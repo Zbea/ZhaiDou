@@ -50,7 +50,7 @@ public class ProductAdapter extends BaseListAdapter<Product>{
 
         Product product = getList().get(position);
         tv_name.setText(product.getTitle());
-        tv_money.setText("￥"+product.getPrice());
+        tv_money.setText("￥"+ToolUtils.isIntPrice("" +product.getPrice()));
         tv_count.setText(product.getBean_like_count()+"");
         ToolUtils.setImageCacheUrl("http://"+product.getImage(),image,R.drawable.icon_loading_defalut);
 

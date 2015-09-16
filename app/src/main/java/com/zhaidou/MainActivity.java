@@ -208,7 +208,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         getVersionServer();
 
 
-        commitActiveData();
+       // commitActiveData();
         AlibabaSDK.asyncInit(this, new InitResultCallback() {
             @Override
             public void onSuccess() {
@@ -288,7 +288,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         mContext.registerReceiver(broadcastReceiver, intentFilter);
     }
 
-    public void init() {
+    public void init()
+    {
         creatCartDB = new CreatCartDB(mContext);
         initCartTips();
         mRequestQueue = Volley.newRequestQueue(this, new HttpClientStack(new DefaultHttpClient()));

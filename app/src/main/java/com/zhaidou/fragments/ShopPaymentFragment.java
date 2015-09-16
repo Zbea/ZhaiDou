@@ -241,8 +241,6 @@ public class ShopPaymentFragment extends BaseFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        Log.i("ShopPaymentFailFragment-------------------->", "onCreateView----->--------------" + mAmount);
-
         if (mView == null)
         {
             mView = inflater.inflate(R.layout.shop_payment_page, container, false);

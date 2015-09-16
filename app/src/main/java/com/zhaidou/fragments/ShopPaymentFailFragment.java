@@ -37,6 +37,7 @@ import com.zhaidou.model.Order;
 import com.zhaidou.model.OrderItem;
 import com.zhaidou.model.Receiver;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
@@ -149,9 +150,9 @@ public class ShopPaymentFailFragment extends BaseFragment {
                     }
                     DecimalFormat df = new DecimalFormat("###.00");
                     price = Double.parseDouble(df.format(price));
-                    tv_amount.setText("￥" + price);
+                    tv_amount.setText("￥" + ToolUtils.isIntPrice("" + price));
                     tv_fare.setText("￥" + Integer.parseInt(df.format((amount-price))));
-                    tv_total.setText("￥" + amount);
+                    tv_total.setText("￥" + ToolUtils.isIntPrice("" +amount));
                     break;
             }
         }

@@ -11,9 +11,11 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
@@ -33,14 +35,18 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.activities.WebViewActivity;
+import com.zhaidou.adapter.AdViewAdpater;
+import com.zhaidou.adapter.GoodsImageAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.model.Category;
 import com.zhaidou.model.CountTime;
 import com.zhaidou.model.Coupon;
 import com.zhaidou.model.Product;
+import com.zhaidou.model.SwitchImage;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.NetworkUtils;
@@ -68,7 +74,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 
     private GridView mGridView;
     private TextView mTimerView;
-    private ImageView iv_banner;
     private ProductAdapter mAdapter;
     private Map<Integer, View> mHashMap = new HashMap<Integer, View>();
     private MyTimer mTimer;
@@ -88,13 +93,23 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 
     private TextView cartTipsTv;
     private ImageView myCartBtn;
-    private String imgs;
 
     private View rootView;
     private boolean isLogin;
     private long time;
     private long currentTime;
     private Context mContext;
+
+    private ViewPager viewPager;
+    private LinearLayout tipsLine;//轮播指示标志
+    private List<SwitchImage> banners;
+    private ImageView[] dots;
+    private List<View> adPics = new ArrayList<View>();
+    private AdViewAdpater adpaters;
+    private GoodsImageAdapter adapter;
+    private int currentItem = 5000;
+    boolean nowAction = false;
+    boolean isStop = true;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -159,15 +174,10 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     }
                     break;
                 case UPDATE_BANNER:
-                    JSONObject jsonObject = (JSONObject) msg.obj;
-                    if (jsonObject != null)
-                    {
-                        if (jsonObject.optJSONArray("sale_banners") != null && jsonObject.optJSONArray("sale_banners").length() > 0)
-                        {
-                            imgs = jsonObject.optJSONArray("sale_banners").optJSONObject(0).optString("imgs");
-                            ToolUtils.setImageCacheUrl(imgs, iv_banner,R.drawable.icon_loading_osale);
-                        }
-                    }
+                    setAdView();
+                    break;
+                case 1002:
+                    viewPager.setCurrentItem(currentItem);
                     break;
             }
         }
@@ -232,8 +242,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             mGridView = (GridView) rootView.findViewById(R.id.gv_sale);
             mGridView.setEmptyView(mEmptyView);
             mTimerView = (TextView) rootView.findViewById(R.id.tv_count_time);
-            iv_banner = (ImageView) rootView.findViewById(R.id.iv_special_banner);
-            iv_banner.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 400 / 750));
 
             mAdapter = new ProductAdapter(getActivity(), products);
             mGridView.setAdapter(mAdapter);
@@ -251,6 +259,9 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             myCartBtn = (ImageView) rootView.findViewById(R.id.myCartBtn);
             myCartBtn.setOnClickListener(this);
             cartTipsTv = (TextView) rootView.findViewById(R.id.myCartTipsTv);
+
+            viewPager = (ViewPager) rootView.findViewById(R.id.home_adv_pager);
+            viewPager.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth*400 / 750));
 
             isLogin = checkLogin();
 
@@ -310,7 +321,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
         if (NetworkUtils.isNetworkAvailable(getActivity()))
         {
-            getBanner();
+            getBannerData();
             FetchData();
         } else
         {
@@ -318,6 +329,215 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 mDialog.dismiss();
             nullView.setVisibility(View.GONE);
             nullNetView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /**
+     * 广告轮播设置
+     */
+    private void setAdView()
+    {
+        tipsLine = (LinearLayout) rootView.findViewById(R.id.home_viewGroup);
+        tipsLine.removeAllViews();
+        if (banners.size() > 1)
+        {
+            for (int i = 0; i < banners.size(); i++)
+            {
+                final int tag = i;
+                final ImageView img = new ImageView(mContext);
+                img.setImageResource(R.drawable.icon_loading_item);
+                img.setScaleType(ImageView.ScaleType.FIT_XY);
+                img.setLayoutParams(new ViewGroup.LayoutParams(screenWidth, screenWidth * 300 / 750));
+                img.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+//                            r_type=0：0元特卖商城
+//                            r_type=1：H5页面
+//                            r_type=2：文章
+//                            r_type=3：单品
+//                            r_type=4：分类
+                        SwitchImage item=banners.get(tag);
+                        if (item.type==0)
+                        {
+                            SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", "");
+                            ((MainActivity) getActivity()).navigationToFragment(specialSaleFragment);
+                        }
+                        else if (item.type==1)
+                        {
+                            Intent intent = new Intent();
+                            intent.putExtra("url", item.typeValue);
+                            intent.setClass(getActivity(), WebViewActivity.class);
+                            getActivity().startActivity(intent);
+                        }
+                        else if (item.type==2)
+                        {
+                            Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
+                            detailIntent.putExtra("id", item.id + "");
+                            detailIntent.putExtra("from", "product");
+                            detailIntent.putExtra("title", item.title);
+                            detailIntent.putExtra("cover_url", item.imageUrl);
+                            detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+item.id);
+                            mContext.startActivity(detailIntent);
+                        }
+                        else if (item.type==3)
+                        {
+                            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0);
+                            Bundle bundle = new Bundle();
+                            bundle.putInt("flags", 1);
+                            bundle.putInt("index", Integer.valueOf(item.typeValue));
+                            bundle.putString("page", item.title);
+                            goodsDetailsFragment.setArguments(bundle);
+                            ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
+                        }else
+                        {
+                            Category category=new Category();
+                            category.setId(Integer.parseInt(item.typeValue));
+                            SpecialFragment shopTodaySpecialFragment = SpecialFragment.newInstance("",category);
+                            ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
+                        }
+
+                    }
+                });
+                ToolUtils.setImageCacheUrl(banners.get(i).imageUrl, img);
+                adPics.add(img);
+            }
+            dots = new ImageView[adPics.size()];
+            for (int i = 0; i < adPics.size(); i++)
+            {
+                ImageView dot_iv = new ImageView(mContext);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                params.bottomMargin = 10;
+                if (i == 0)
+                {
+                    params.leftMargin = 0;
+                } else
+                {
+                    params.leftMargin = 20;
+                }
+                dot_iv.setLayoutParams(params);
+                dots[i] = dot_iv;
+                tipsLine.addView(dot_iv);
+                if (i == 0)
+                {
+                    dots[i].setBackgroundResource(R.drawable.home_tips_foucs_icon);
+                } else
+                {
+                    dots[i].setBackgroundResource(R.drawable.home_tips_icon);
+                }
+            }
+            if(adpaters==null)
+            {
+                adpaters = new AdViewAdpater(mContext, adPics);
+                viewPager.setAdapter(adpaters);
+                viewPager.setOnPageChangeListener(new MyPageChangeListener());
+                viewPager.setOnTouchListener(new View.OnTouchListener()
+                {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event)
+                    {
+                        v.getParent().requestDisallowInterceptTouchEvent(true);
+                        return false;
+                    }
+                });
+                new Thread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        while (isStop)
+                        {
+                            try
+                            {
+                                Thread.sleep(5000);
+                            } catch (InterruptedException e)
+                            {
+                                e.printStackTrace();
+                            }
+                            if (!nowAction)
+                            {
+                                currentItem = currentItem + 1;
+                                mHandler.sendEmptyMessage(1002);
+                            }
+                        }
+                    }
+                }).start();
+            }
+            else
+            {
+                adpaters.notifyDataSetChanged();
+            }
+
+        } else if (banners.size() == 1)
+        {
+            isStop = false;
+            for (int i = 0; i < banners.size(); i++)
+            {
+                final int tag = i;
+                final ImageView img = new ImageView(mContext);
+                img.setImageResource(R.drawable.icon_loading_item);
+                img.setScaleType(ImageView.ScaleType.FIT_XY);
+                img.setLayoutParams(new ViewGroup.LayoutParams(screenWidth, screenWidth * 300 / 750));
+                img.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        SwitchImage item=banners.get(tag);
+                        if (item.type==0)
+                        {
+                            SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", "");
+                            ((MainActivity) getActivity()).navigationToFragment(specialSaleFragment);
+                        }
+                        else if (item.type==1)
+                        {
+                            Intent intent = new Intent();
+                            intent.putExtra("url", item.typeValue);
+                            intent.setClass(getActivity(), WebViewActivity.class);
+                            getActivity().startActivity(intent);
+                        }
+                        else if (item.type==2)
+                        {
+                            Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
+                            detailIntent.putExtra("id", item.id + "");
+                            detailIntent.putExtra("from", "product");
+                            detailIntent.putExtra("title", item.title);
+                            detailIntent.putExtra("cover_url", item.imageUrl);
+                            detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+item.id);
+                            mContext.startActivity(detailIntent);
+                        }
+                        else if (item.type==3)
+                        {
+                            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0);
+                            Bundle bundle = new Bundle();
+                            bundle.putInt("flags", 1);
+                            bundle.putInt("index", Integer.valueOf(item.typeValue));
+                            bundle.putString("page", item.title);
+                            goodsDetailsFragment.setArguments(bundle);
+                            ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
+                        }else
+                        {
+                            Category category=new Category();
+                            category.setId(Integer.parseInt(item.typeValue));
+                            SpecialFragment shopTodaySpecialFragment = SpecialFragment.newInstance("",category);
+                            ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
+                        }
+                    }
+                });
+                ToolUtils.setImageCacheUrl(banners.get(i).imageUrl, img,R.drawable.icon_loading_item);
+                adPics.add(img);
+            }
+            if(adapter==null)
+            {
+                adapter = new GoodsImageAdapter(mContext, adPics);
+                viewPager.setAdapter(adapter);
+            }
+            else
+            {
+                adapter.notifyDataSetChanged();
+            }
+
         }
     }
 
@@ -436,17 +656,44 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         requestQueue.add(request);
     }
 
-    public void getBanner()
+    /**
+     * 获得广告数据
+     */
+    private void getBannerData()
     {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.BannerUrl+0, new Response.Listener<JSONObject>()
+        String url = ZhaiDou.BannerUrl + 0;
+        ToolUtils.setLog(url);
+        banners = new ArrayList<SwitchImage>();
+        JsonObjectRequest bannerRequest = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
             {
-                Message message = new Message();
-                message.obj = jsonObject;
-                message.what = UPDATE_BANNER;
-                mHandler.sendMessage(message);
+                JSONArray jsonArray = jsonObject.optJSONArray("sale_banners");
+                if (jsonArray != null && jsonArray.length() > 0)
+                {
+                    for (int i = 0; i < jsonArray.length(); i++)
+                    {
+                        JSONObject obj = jsonArray.optJSONObject(i);
+                        int id = obj.optInt("id");
+                        int type = obj.optInt("r_type");
+                        String typeValue = obj.optString("r_value");
+                        String imageUrl =obj.optString("imgs");
+                        String title = obj.optString("title");
+                        SwitchImage switchImage = new SwitchImage();
+                        switchImage.id=id;
+                        switchImage.type=type;
+                        switchImage.typeValue=typeValue;
+                        switchImage.imageUrl=imageUrl;
+                        switchImage.title=title;
+                        banners.add(switchImage);
+                    }
+                    Message message = new Message();
+                    message.what = UPDATE_BANNER;
+                    message.obj = banners;
+                    mHandler.sendMessage(message);
+                }
+
             }
         }, new Response.ErrorListener()
         {
@@ -455,7 +702,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             {
             }
         });
-        requestQueue.add(request);
+        requestQueue.add(bannerRequest);
     }
 
     public class ProductAdapter extends BaseListAdapter<Product>
@@ -482,7 +729,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             tv_name.setText(product.getTitle());
             ToolUtils.setImageCacheUrl(product.getImage(), image,R.drawable.icon_loading_defalut);
             tv_price.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
-            tv_price.setText("￥" + product.getCost_price());
+            tv_price.setText("￥" + ToolUtils.isIntPrice("" + product.getCost_price()));
             tv_count.setText("剩余 " + product.getRemaining() + "%");
 
             ll_sale_out.setVisibility(product.getRemaining() == 0 ? View.VISIBLE : View.GONE);
@@ -568,5 +815,54 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     {
         getActivity().unregisterReceiver(broadcastReceiver);
         super.onDestroy();
+    }
+
+    /**
+     * 广告轮播指示器
+     */
+    private class MyPageChangeListener implements ViewPager.OnPageChangeListener
+    {
+        public void onPageSelected(int position)
+        {
+            currentItem = position;
+            if (adPics.size() != 0)
+            {
+                changeDotsBg(currentItem % adPics.size());
+            }
+        }
+
+        public void onPageScrollStateChanged(int arg0)
+        {
+            if (arg0 == 0)
+            {
+                nowAction = false;
+            }
+            if (arg0 == 1)
+            {
+                nowAction = true;
+            }
+            if (arg0 == 2)
+            {
+            }
+        }
+
+        public void onPageScrolled(int arg0, float arg1, int arg2)
+        {
+            viewPager.getParent().requestDisallowInterceptTouchEvent(true);
+        }
+
+        private void changeDotsBg(int currentitem)
+        {
+            for (int i = 0; i < dots.length; i++)
+            {
+                if (currentitem == i)
+                {
+                    dots[currentitem].setBackgroundResource(R.drawable.home_tips_foucs_icon);
+                } else
+                {
+                    dots[i].setBackgroundResource(R.drawable.home_tips_icon);
+                }
+            }
+        }
     }
 }

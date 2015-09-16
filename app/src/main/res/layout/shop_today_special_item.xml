@@ -103,7 +103,7 @@
                     android:layout_height="wrap_content"
                     android:text="豆豆点评:"
                     android:layout_marginLeft="4dp"
-                    android:layout_marginTop="1dp"
+                    android:layout_marginTop="0.5dp"
                     android:textSize="13sp"
                     android:textColor="@color/green_color"/>
                 </LinearLayout>
@@ -112,7 +112,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="3"
                     android:textSize="12sp"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="3.5dp"
                     android:gravity="center_vertical"
                     android:ellipsize="end"
                     android:textColor="@color/text_gary_color"
