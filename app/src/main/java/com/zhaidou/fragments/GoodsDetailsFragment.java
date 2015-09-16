@@ -740,6 +740,7 @@ public class GoodsDetailsFragment extends BaseFragment {
     }
 
     public boolean checkLogin() {
+
         token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
         boolean isLogin = !TextUtils.isEmpty(token) && userId > -1;
