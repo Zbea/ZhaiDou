@@ -39,6 +39,8 @@ public class ZDApplication extends Application{
     public static int localVersionCode;
     public static String localVersionName;
 
+    public static RequestQueue mRequestQueue;
+
     private Typeface mTypeFace;
     @Override
     public void onCreate() {
@@ -60,7 +62,7 @@ public class ZDApplication extends Application{
 
         creatFile();
         setImageLoad();
-
+        mRequestQueue=Volley.newRequestQueue(this);
     }
 
 
