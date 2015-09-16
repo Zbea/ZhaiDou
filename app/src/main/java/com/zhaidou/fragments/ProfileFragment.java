@@ -37,7 +37,6 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.User;
-import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.NativeHttpUtil;
 import com.zhaidou.utils.PhotoUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -276,9 +275,18 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 String name = tv_addr_username.getText().toString();
                 String mobile = tv_addr_mobile.getText().toString();
                 String address = tv_addr.getText().toString();
-                AddrManageFragment addressFragment = AddrManageFragment.newInstance(name, mobile, address, profileId, 0);
-                getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container, addressFragment).addToBackStack(null).commit();
-                mChildContainer.setVisibility(View.VISIBLE);
+                ProfileAddrFragment fragment=ProfileAddrFragment.newInstance(name, mobile, address, profileId);
+                ((MainActivity)getActivity()).navigationToFragmentWithAnim(fragment);
+                fragment.setAddressListener(new ProfileAddrFragment.AddressListener() {
+                    @Override
+                    public void onAddressDataChange(String name, String mobile, String address) {
+                        ll_addr_info.setVisibility(TextUtils.isEmpty(address)?View.GONE:View.VISIBLE);
+                        System.out.println("name = [" + name + "], mobile = [" + mobile + "], address = [" + address + "]");
+                        tv_addr_username.setText(name);
+                        tv_addr_mobile.setText(mobile);
+                        tv_addr.setText(address);
+                    }
+                });
                 break;
             case R.id.tv_edit:
                 AddrManageFragment editFragment = AddrManageFragment.newInstance(tv_addr_username.getText().toString(), tv_addr_mobile.getText().toString(), tv_addr.getText().toString(), profileId, 1);

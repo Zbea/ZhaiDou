@@ -1,20 +1,14 @@
 package com.zhaidou.fragments;
 
-
-import android.app.Activity;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.RotateAnimation;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -23,19 +17,16 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Category;
-import com.zhaidou.utils.NetworkUtils;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class HomeCategoryFragment extends BaseFragment implements  View.OnClickListener{
@@ -126,7 +117,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
         mAllCategory=(TextView)view.findViewById(R.id.tv_category_all);
         mAllCategory.setPressed(true);
         mRelativeLayout.setOnClickListener(this);
-        mRequestQueue = Volley.newRequestQueue(getActivity());
+        mRequestQueue = ZDApplication.mRequestQueue;
 
         refreshBtn= (ImageView)view.findViewById(R.id.categoryRefresh);
         refreshBtn.setOnClickListener(this);
@@ -162,7 +153,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
     }
 
     private void FetchCategoryData(){
-        JsonObjectRequest jr = new JsonObjectRequest(ZhaiDou.INDEX_CATEGORY_FILTER,null,new Response.Listener<JSONObject>() {
+        JsonObjectRequest jr = new JsonObjectRequest(ZhaiDou.INDEX_CATEGORY_FILTER,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 mCategoryList.clear();

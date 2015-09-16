@@ -5,10 +5,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.RotateAnimation;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -27,6 +24,7 @@ public class CustomLoadingDialog
         Dialog mDialog=new Dialog(mContext, R.style.custom_dialog_no);
         mDialog.setCanceledOnTouchOutside(false);
         mDialog.setCancelable(true);
+        view.setAnimation(AnimationUtils.loadAnimation(mContext,R.anim.page_enter_into_the));
         mDialog.addContentView(view,new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         mDialog.show();
         return mDialog;
