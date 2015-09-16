@@ -24,7 +24,7 @@ public class CustomLoadingDialog
         Dialog mDialog=new Dialog(mContext, R.style.custom_dialog_no);
         mDialog.setCanceledOnTouchOutside(false);
         mDialog.setCancelable(true);
-        view.setAnimation(AnimationUtils.loadAnimation(mContext,R.anim.page_enter_into_the));
+//        view.setAnimation(AnimationUtils.loadAnimation(mContext,R.anim.page_enter_into_the));
         mDialog.addContentView(view,new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         mDialog.show();
         return mDialog;

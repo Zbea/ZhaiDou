@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
@@ -97,7 +98,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private ImageView shareBtn;
     private TypeFaceTextView backBtn,titleTv,introduceTv,timeTv;
     private PullToRefreshScrollView mScrollView;
-    private ListViewForScrollView mListView;
+    private ListView mListView;
     private LinearLayout loadingView,nullNetView,nullView;
     private TextView  reloadBtn,reloadNetBtn;
 
@@ -353,11 +354,11 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         titleTv.setText(mTitle);
         timeTv=(TypeFaceTextView)mView.findViewById(R.id.shopTimeTv);
 
-        mScrollView = (PullToRefreshScrollView)mView.findViewById(R.id.sv_shop_today_special_scrollview);
-        mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
-        mScrollView.setOnRefreshListener(refreshListener);
+//        mScrollView = (PullToRefreshScrollView)mView.findViewById(R.id.sv_shop_today_special_scrollview);
+//        mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+//        mScrollView.setOnRefreshListener(refreshListener);
 
-        mListView=(ListViewForScrollView)mView.findViewById(R.id.shopListView);
+        mListView=(ListView)mView.findViewById(R.id.shopListView);
         mListView.setOnItemClickListener(onItemClickListener);
         adapter=new ShopTodaySpecialAdapter(mContext,items);
         mListView.setAdapter(adapter);

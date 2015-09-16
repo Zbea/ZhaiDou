@@ -666,8 +666,8 @@ public class GoodsDetailsFragment extends BaseFragment {
                             specificationAdapter.notifyDataSetChanged();
                             mSpecification = null;
 
-                            mCurrentPrice.setText("￥" + detail.getPrice() + "");
-                            mOldPrice.setText("￥" + detail.getCost_price() + "");
+                            mCurrentPrice.setText("￥" + ToolUtils.isIntPrice(detail.getPrice() + ""));
+                            mOldPrice.setText("￥" + ToolUtils.isIntPrice(detail.getCost_price() + ""));
                             setDiscount(detail.getPrice(), detail.getCost_price());
                         }
                     } else {

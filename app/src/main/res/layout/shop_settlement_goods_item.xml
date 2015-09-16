@@ -94,7 +94,7 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:gravity="center"
-                    android:textColor="@color/text_gary_color"
+                    android:textColor="@color/text_main_color"
                     android:text="1"/>
 
             </LinearLayout>

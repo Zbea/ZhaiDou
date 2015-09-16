@@ -82,15 +82,15 @@
 
         <ImageView
             android:id="@+id/cartImageItemTv"
-            android:layout_width="100dp"
-            android:layout_height="96dp"
+            android:layout_width="94dp"
+            android:layout_height="90dp"
             android:scaleType="fitXY"
             android:src="@drawable/icon_loading_defalut"/>
 
             <TextView
                 android:id="@+id/cartItemIsFlags"
-                android:layout_width="100dp"
-                android:layout_height="96dp"
+                android:layout_width="94dp"
+                android:layout_height="90dp"
                 android:visibility="gone"
                 android:background="#99333333"/>
 

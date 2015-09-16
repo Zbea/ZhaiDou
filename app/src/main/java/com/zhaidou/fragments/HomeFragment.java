@@ -179,6 +179,14 @@ public class HomeFragment extends BaseFragment implements
                 {
                     mListAdapter = new HomeListAdapter(mContext, articleList,screenWidth);
                     listView.setAdapter(mListAdapter);
+                    if (banners==null||banners.size()<1)
+                    {
+                        getBannerData();
+                    }
+                    if (shopSpecialItem==null)
+                    {
+                        FetchShopData();
+                    }
                 }
                 mScrollView.onRefreshComplete();
                 mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
@@ -804,7 +812,6 @@ public class HomeFragment extends BaseFragment implements
             public void onErrorResponse(VolleyError error)
             {
                 mDialog.dismiss();
-                Toast.makeText(mContext, "加载失败", Toast.LENGTH_SHORT).show();
                 mScrollView.onRefreshComplete();
                 mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
             }

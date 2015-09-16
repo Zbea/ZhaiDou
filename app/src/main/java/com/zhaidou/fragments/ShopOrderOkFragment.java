@@ -124,8 +124,8 @@ public class ShopOrderOkFragment extends BaseFragment
 
                     address = addressList.get(0);
                     setYFMoney(address.getPrice());
-                    addressPhoneTv.setText("收件人：" + address.getPhone());
-                    addressNameTv.setText("电话：" + address.getName());
+                    addressPhoneTv.setText("电话：" + address.getPhone());
+                    addressNameTv.setText("收件人：" + address.getName());
                     addressinfoTv.setText(address.getProvince() + address.getCity() + address.getArea() + address.getAddress());
                     break;
                 case 2:
@@ -300,8 +300,8 @@ public class ShopOrderOkFragment extends BaseFragment
                             ToolUtils.setLog(maddress.toString());
                             address = maddress;
                             setYFMoney(address.getPrice());
-                            addressPhoneTv.setText("收件人：" + address.getPhone());
-                            addressNameTv.setText("电话：" + address.getName());
+                            addressPhoneTv.setText("电话：" + address.getPhone());
+                            addressNameTv.setText("收件人：" + address.getName());
                             addressinfoTv.setText(address.getProvince() + address.getCity() + address.getArea() + address.getAddress());
                         }
 
@@ -339,8 +339,8 @@ public class ShopOrderOkFragment extends BaseFragment
                             orderAddressInfoLine.setVisibility(View.VISIBLE);
                             orderAddressNullLine.setVisibility(View.GONE);
                             orderAddressEditLine.setVisibility(View.VISIBLE);
-                            addressPhoneTv.setText("收件人：" + addr.getPhone());
-                            addressNameTv.setText("电话：" + addr.getName());
+                            addressPhoneTv.setText("电话：" + addr.getPhone());
+                            addressNameTv.setText("收件人：" + addr.getName());
                             addressinfoTv.setText(address.getProvince() + address.getCity() + address.getArea() + addr.getAddress());
                             ((MainActivity) getActivity()).popToStack(newAddrFragment);
                         }

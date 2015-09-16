@@ -35,6 +35,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/red"
             android:layout_weight="0.000001"
+            android:textSize="16sp"
             android:text="3折起"
             />
 
@@ -49,6 +50,7 @@
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"
             android:textColor="@color/text_main_color"
+            android:textSize="16sp"
             android:text="item的名称"
             />
 
@@ -69,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:textColor="@color/text_main_color"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 android:text="剩余"
                 />
             <com.zhaidou.view.TypeFaceTextView
@@ -78,14 +80,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="2dp"
                 android:textColor="@color/text_main_color"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 android:text="1"
                 />
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/text_main_color"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 android:text="天"
                 />
         </LinearLayout>

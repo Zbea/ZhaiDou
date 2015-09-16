@@ -140,14 +140,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/red"
-                        android:textSize="20sp"/>
+                        android:textSize="22sp"/>
 
                     <TextView
                         android:id="@+id/goodsFormerPrice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/default_margin"
-                        android:layout_marginTop="1.5dp"
+                        android:layout_marginTop="2dp"
                         android:textColor="@color/text_gary_color"
                         android:textSize="14sp"/>
 
