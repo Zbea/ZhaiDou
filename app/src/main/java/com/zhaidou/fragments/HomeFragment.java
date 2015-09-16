@@ -597,7 +597,7 @@ public class HomeFragment extends BaseFragment implements
         if (homeCategoryFragment.isHidden()) {
             mCategoryView.setImageResource(R.drawable.icon_close);
             fl_category_menu.setVisibility(View.VISIBLE);
-            getChildFragmentManager().beginTransaction().show(homeCategoryFragment).commit();
+            getChildFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_from_top, R.anim.slide_out_to_top).show(homeCategoryFragment).commit();
         } else {
             mCategoryView.setImageResource(R.drawable.icon_category);
             fl_category_menu.setVisibility(View.GONE);

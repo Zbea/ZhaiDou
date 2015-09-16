@@ -268,7 +268,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             case R.id.rl_job:
                 if ("未认证设计师".equalsIgnoreCase(tv_job.getText().toString())) {
                     ImageBgFragment addVFragment = ImageBgFragment.newInstance("如何加V");
-                    ((MainActivity) getActivity()).navigationToFragment(addVFragment);
+                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(addVFragment);
                 }
                 break;
             case R.id.rl_manage_address:

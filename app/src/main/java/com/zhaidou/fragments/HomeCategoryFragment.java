@@ -235,7 +235,13 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
     @Override
     public void onHiddenChanged(boolean hidden) {
         if (!hidden&&mCategoryList.size()==0){
-            FetchCategoryData();
+//            FetchCategoryData();
         }
+    }
+
+    @Override
+    public void onResume() {
+//        view.findViewById(R.id.ll_popup).setAnimation(AnimationUtils.loadAnimation(mContext,R.anim.slide_in_from_top));
+        super.onResume();
     }
 }

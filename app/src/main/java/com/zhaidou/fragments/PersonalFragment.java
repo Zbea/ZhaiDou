@@ -298,7 +298,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             case R.id.tv_pre_pay:
                 ToolUtils.setLog("count:"+count);
                 OrderUnPayFragment unPayFragment = OrderUnPayFragment.newInstance("", "",count);
-                ((MainActivity) getActivity()).navigationToFragment(unPayFragment);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(unPayFragment);
                 unPayFragment.setBackClickListener(new OrderUnPayFragment.BackCountListener()
                 {
                     @Override
@@ -318,19 +318,19 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 break;
             case R.id.tv_pre_received:
                 OrderUnReceiveFragment unReceiveFragment = OrderUnReceiveFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragment(unReceiveFragment);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(unReceiveFragment);
                 break;
             case R.id.tv_return:
                 OrderReturnFragment returnFragment = OrderReturnFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragment(returnFragment);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(returnFragment);
                 break;
             case R.id.rl_addr_manage:
                 AddrManageFragment addrManageFragment = AddrManageFragment.newInstance("", "", "", "", 0);
-                ((MainActivity) getActivity()).navigationToFragment(addrManageFragment);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(addrManageFragment);
                 break;
             case R.id.rl_setting:
                 SettingFragment mSettingFragment=SettingFragment.newInstance("","");
-                ((MainActivity) getActivity()).navigationToFragment(mSettingFragment);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(mSettingFragment);
                 mSettingFragment.setProfileListener(new SettingFragment.ProfileListener() {
                     @Override
                     public void onProfileChange(User user) {
@@ -346,7 +346,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 break;
             case R.id.rl_contact:
                 ContactUsFragment contactUsFragment = ContactUsFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragment(contactUsFragment);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(contactUsFragment);
                 break;
             case R.id.accountInfoBtn:
                 mProfileFragment=ProfileFragment.newInstance("","");
@@ -364,7 +364,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                         }
                     }
                 });
-                ((MainActivity)getActivity()).navigationToFragment(mProfileFragment);
+                ((MainActivity)getActivity()).navigationToFragmentWithAnim(mProfileFragment);
                 break;
             case R.id.rl_competition:
                 Intent intent = new Intent(getActivity(), HomePTActivity.class);
@@ -376,7 +376,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 break;
             case R.id.ll_collect:
                 CollectFragment collectFragment = CollectFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragment(collectFragment);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(collectFragment);
                 collectFragment.setCollectCountChangeListener(new CollectFragment.CollectCountChangeListener() {
                     @Override
                     public void onCountChange(int count, Fragment fragment) {
@@ -392,7 +392,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 break;
             case R.id.ll_collocation:
                 CollocationFragment collocationFragment = CollocationFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragment(collocationFragment);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(collocationFragment);
                 break;
         }
 

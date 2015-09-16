@@ -138,31 +138,31 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
             case R.id.ll_profile:
                 mProfileFragment=ProfileFragment.newInstance("","");
                 mProfileFragment.setProfileListener(this);
-                ((MainActivity)getActivity()).navigationToFragment(mProfileFragment);
+                ((MainActivity)getActivity()).navigationToFragmentWithAnim(mProfileFragment);
                 break;
             case R.id.ll_competition:
                 WebViewFragment webViewFragment=WebViewFragment.newInstance("http://www.zhaidou.com/competitions/current?zdclient=ios",true);
-                ((MainActivity)getActivity()).navigationToFragment(webViewFragment);
+                ((MainActivity)getActivity()).navigationToFragmentWithAnim(webViewFragment);
                 break;
             case R.id.ll_bbs_question:
                 break;
             case R.id.ll_collocation:
                 ImageBgFragment fragment= ImageBgFragment.newInstance("豆搭教程");
-                ((MainActivity)getActivity()).navigationToFragment(fragment);
+                ((MainActivity)getActivity()).navigationToFragmentWithAnim(fragment);
                 break;
             case R.id.ll_recommend:
                 SettingRecommendFragment settingRecommendFragment= SettingRecommendFragment.newInstance("","");
-                ((MainActivity)getActivity()).navigationToFragment(settingRecommendFragment);
+                ((MainActivity)getActivity()).navigationToFragmentWithAnim(settingRecommendFragment);
                 break;
             case R.id.ll_add_v:
                 ImageBgFragment addVFragment= ImageBgFragment.newInstance("如何加V");
-                ((MainActivity)getActivity()).navigationToFragment(addVFragment);
+                ((MainActivity)getActivity()).navigationToFragmentWithAnim(addVFragment);
                 break;
             case R.id.ll_award_history:
                 break;
             case R.id.ll_about:
                 AboutFragment aboutFragment = AboutFragment.newInstance("","");
-                ((MainActivity)getActivity()).navigationToFragment(aboutFragment);
+                ((MainActivity)getActivity()).navigationToFragmentWithAnim(aboutFragment);
                 break;
             case R.id.bt_logout:
                 mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"注销中");
