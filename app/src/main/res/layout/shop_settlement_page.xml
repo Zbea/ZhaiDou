@@ -285,7 +285,7 @@
 
                     <TextView
                         android:id="@+id/jsPriceTotalTv"
-                        android:layout_width="100dp"
+                        android:layout_width="150dp"
                         android:gravity="right|center_vertical"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.000001"
@@ -311,18 +311,28 @@
                     android:gravity="center_vertical">
 
                     <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.000001"
+                        android:textColor="@color/text_main_color"
+                        android:text="宅豆发货运费"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:marqueeRepeatLimit="marquee_forever"/>
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:id="@+id/jsNofree"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:textColor="@color/text_main_color"
-                        android:text="宅豆发货运费"
+                        android:textColor="@color/green_color"
+                        android:text="(包邮)"
                         android:singleLine="true"
                         android:ellipsize="end"
                         android:marqueeRepeatLimit="marquee_forever"/>
 
                     <TextView
                         android:id="@+id/jsPriceYfTv"
-                        android:layout_width="100dp"
+                        android:layout_width="150dp"
                         android:gravity="right|center_vertical"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.000001"

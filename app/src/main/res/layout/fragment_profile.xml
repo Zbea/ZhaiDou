@@ -433,7 +433,7 @@
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/tv_intro"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="wrap_content"
                 android:background="@color/white"
                 android:paddingLeft="20dp"
                 android:paddingTop="5dp"
@@ -443,7 +443,7 @@
                 android:id="@+id/rl_manage_address"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:background="@color/white">
 
                 <com.zhaidou.view.TypeFaceTextView
@@ -451,8 +451,8 @@
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
                     android:paddingLeft="20dp"
-                    android:text="管理收货地址"
-                    android:textColor="#666666" />
+                    android:text="管理中奖收货地址"
+                    android:textColor="@color/text_main_color" />
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -461,13 +461,14 @@
                     android:layout_centerVertical="true"
                     android:paddingRight="10dp"
                     android:src="@drawable/icon_arrow_right" />
-            </RelativeLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginLeft="20dp"
-                android:background="#eeeeee" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="20dp"
+                    android:background="#f1f1f1" />
+            </RelativeLayout>
 
             <LinearLayout
                 android:id="@+id/ll_addr_info"

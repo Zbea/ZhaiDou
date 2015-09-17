@@ -83,7 +83,7 @@ public class ShopOrderOkFragment extends BaseFragment
     private LinearLayout orderGoodsListLine;
     private TypeFaceEditText bzInfo;
     private TextView moneyTv, moneyYfTv, moneyTotalTv;
-    private TextView addressNameTv, addressPhoneTv, addressinfoTv;
+    private TextView addressNameTv, addressPhoneTv, addressinfoTv,noFreeTv;
     private ArrayList<CartItem> items;
     private List<CartItem> erroritems = new ArrayList<CartItem>();
     private List<Address> addressList = new ArrayList<Address>();
@@ -410,6 +410,8 @@ public class ShopOrderOkFragment extends BaseFragment
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(R.string.shop_order_ok_text);
 
+        noFreeTv= (TextView) mView.findViewById(R.id.jsNofree);
+
         okBtn = (Button) mView.findViewById(R.id.jsOkBtn);
         okBtn.setOnClickListener(onClickListener);
 
@@ -466,11 +468,13 @@ public class ShopOrderOkFragment extends BaseFragment
         {
             moneyYF =mm;
             moneyYfTv.setText("￥" + ToolUtils.isIntPrice(""+moneyYF));
+            noFreeTv.setVisibility(View.GONE);
         }
         else
         {
             moneyYF =0;
             moneyYfTv.setText("￥" + 0);
+            noFreeTv.setVisibility(View.VISIBLE);
         }
 
         ToolUtils.setLog("运费：" + moneyYF);
