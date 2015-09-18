@@ -29,6 +29,8 @@ import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.AccountFindPwdActivity;
+import com.zhaidou.activities.AccountSetPwdActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
@@ -79,6 +81,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     private Context mContext;
 
     private TextView mLoginView;
+    private TextView headTitle;
     public static final String TAG=LoginFragment.class.getSimpleName();
 
     private RegisterFragment.RegisterOrLoginListener mRegisterOrLoginListener;
@@ -144,6 +147,9 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         mContext=getActivity();
         strEmail=getEmail();
 
+        headTitle=(TextView)findViewById(R.id.title_tv);
+        headTitle.setText(R.string.title_login);
+
         mEmailView=(CustomEditText)view.findViewById(R.id.tv_email);
         mEmailView.setText(strEmail);
         mEmailView.addTextChangedListener(textWatcher);
@@ -156,7 +162,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         mLoginView.setOnClickListener(this);
         mRegisterView.setOnClickListener(this);
         mResetView.setOnClickListener(this);
-        view.findViewById(R.id.ll_back).setOnClickListener(this);
+        view.findViewById(R.id.back_btn).setOnClickListener(this);
         view.findViewById(R.id.ll_qq).setOnClickListener(this);
         view.findViewById(R.id.ll_weixin).setOnClickListener(this);
         view.findViewById(R.id.ll_weibo).setOnClickListener(this);
@@ -215,8 +221,10 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                 ((BaseActivity)getActivity()).navigationToFragment(fragment);
                 break;
             case R.id.tv_reset_psw:
+                Intent intent=new Intent(mContext,AccountFindPwdActivity.class);
+                startActivity(intent);
                 break;
-            case R.id.ll_back:
+            case R.id.back_btn:
                 ((BaseActivity)getActivity()).popToStack(this);
                 break;
             case R.id.ll_weixin:

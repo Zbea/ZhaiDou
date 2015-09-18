@@ -15,6 +15,7 @@
     <color name="red">#ff6262</color>
     <color name="oldprice">#88999999</color>
     <color name="click_gray">#d5d5d5</color>
+    <color name="edit_hint_gray">#88999999</color>
 
     <color name="tab_line">#CCCCCCCC</color>
     <color name="tab_transparent_highlight">#28FFFFFF</color>

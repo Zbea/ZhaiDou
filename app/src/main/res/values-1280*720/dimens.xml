@@ -11,7 +11,9 @@
     <!--list高度-->
     <dimen name="list_height_dimen">40dp</dimen>
     <!--按钮高度-->
-    <dimen name="btn_height_dimen">42dp</dimen>
+    <dimen name="login_height_dimen">42dp</dimen>
+    <!--按钮高度-->
+    <dimen name="btn_height_dimen">36dp</dimen>
     <!--我页面顶部高度-->
     <dimen name="account_height_dimen">200dp</dimen>
     <dimen name="account_image_width_dimen">75dp</dimen>

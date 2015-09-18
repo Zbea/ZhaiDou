@@ -79,6 +79,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     private CustomEditText mEmailView;
     private CustomEditText mPswView;
     private String strEmail;
+    private TextView headTitle;
 
     private TextView mLoginView;
 
@@ -166,6 +167,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 
         strEmail=getEmail();
 
+        headTitle=(TextView)findViewById(R.id.title_tv);
+        headTitle.setText(R.string.title_login);
 
         mEmailView=(CustomEditText)findViewById(R.id.tv_email);
         mEmailView.setText(strEmail);
@@ -179,7 +182,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         mLoginView.setOnClickListener(this);
         mRegisterView.setOnClickListener(this);
         mResetView.setOnClickListener(this);
-        findViewById(R.id.ll_back).setOnClickListener(this);
+        findViewById(R.id.back_btn).setOnClickListener(this);
         findViewById(R.id.ll_qq).setOnClickListener(this);
         findViewById(R.id.ll_weixin).setOnClickListener(this);
         findViewById(R.id.ll_weibo).setOnClickListener(this);
@@ -270,8 +273,10 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 startActivityForResult(new Intent(LoginActivity.this,RegisterActivity.class),200);
                 break;
             case R.id.tv_reset_psw:
+                Intent intent=new Intent(getApplicationContext(),AccountFindPwdActivity.class);
+                startActivity(intent);
                 break;
-            case R.id.ll_back:
+            case R.id.back_btn:
                 finish();
                 break;
             case R.id.ll_weixin:

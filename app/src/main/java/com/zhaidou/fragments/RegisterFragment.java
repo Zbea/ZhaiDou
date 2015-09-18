@@ -15,7 +15,8 @@ import android.app.Dialog;
  import android.view.View;
  import android.view.ViewGroup;
  import android.widget.EditText;
- import android.widget.TextView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
  import android.widget.Toast;
  import com.android.volley.RequestQueue;
  import com.android.volley.toolbox.Volley;
@@ -23,7 +24,8 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
  import com.zhaidou.ZhaiDou;
  import com.zhaidou.activities.ItemDetailActivity;
- import com.zhaidou.base.BaseActivity;
+import com.zhaidou.activities.RegisterSetPwdActivity;
+import com.zhaidou.base.BaseActivity;
  import com.zhaidou.base.BaseFragment;
  import com.zhaidou.dialog.CustomLoadingDialog;
  import com.zhaidou.model.User;
@@ -57,9 +59,10 @@ import org.apache.http.HttpResponse;
 
      private String mParam1;
      private String mParam2;
+     private TextView headTitle;
 
-     private CustomEditText mEmailView, mNickView, mPswView, mConfirmPsw;
-     private TextView mLogin;
+     private CustomEditText mEmailView;
+     private LinearLayout mLogin;
      private TextView mRegister;
      private RequestQueue mRequestQueue;
      SharedPreferences mSharedPreferences;
@@ -98,11 +101,12 @@ import org.apache.http.HttpResponse;
      public View onCreateView(LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState) {
          View view = inflater.inflate(R.layout.fragment_register, container, false);
+
+         headTitle=(TextView)findViewById(R.id.title_tv);
+         headTitle.setText(R.string.title_register);
+
          mEmailView = (CustomEditText) view.findViewById(R.id.tv_email);
-         mNickView = (CustomEditText) view.findViewById(R.id.tv_nick);
-         mPswView = (CustomEditText) view.findViewById(R.id.tv_password);
-         mConfirmPsw = (CustomEditText) view.findViewById(R.id.tv_password_confirm);
-         mLogin = (TextView) view.findViewById(R.id.tv_login);
+         mLogin = (LinearLayout) view.findViewById(R.id.tv_login);
          mRegister = (TextView) view.findViewById(R.id.bt_register);
 
          mSharedPreferences = getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
@@ -110,7 +114,7 @@ import org.apache.http.HttpResponse;
          mRequestQueue = Volley.newRequestQueue(getActivity());
          mRegister.setOnClickListener(this);
          mLogin.setOnClickListener(this);
-         view.findViewById(R.id.ll_back).setOnClickListener(this);
+         view.findViewById(R.id.back_btn).setOnClickListener(this);
 
          return view;
      }
@@ -121,41 +125,26 @@ import org.apache.http.HttpResponse;
              case R.id.bt_register:
                  hideInputMethod();
                  String email = mEmailView.getText().toString();
-                 String password = mPswView.getText().toString();
-                 String psw_confirm = mConfirmPsw.getText().toString();
-                 String nick = mNickView.getText().toString();
                  if (TextUtils.isEmpty(email)) {
                      mEmailView.setShakeAnimation();
                      return;
-                 } else if (TextUtils.isEmpty(nick)) {
-                     mNickView.setShakeAnimation();
-                     return;
-                 } else if (TextUtils.isEmpty(password)) {
-                     mPswView.setShakeAnimation();
-                     return;
                  }
-                 else if (TextUtils.isEmpty(psw_confirm)) {
-                     mConfirmPsw.setShakeAnimation();
-                     return;
-                 }
-                 if (ToolUtils.isEmailOK(email) && email.length() > 0)
+                 if (ToolUtils.isPhoneOk(email) && email.length() > 0)
                  {
-                     if (!password.equals(psw_confirm)) {
-                         ToolUtils.setToast(getActivity(),"两次填写的密码不一致");
-                         return;
-                     }
-                     doRegister();
+                     Intent intent=new Intent(mContext,RegisterSetPwdActivity.class);
+                     startActivity(intent);
+//                     doRegister();
                  }
                  else
                  {
                      mEmailView.setShakeAnimation();
-                     ToolUtils.setToast(getActivity(),"抱歉,无效邮箱");
+                     ToolUtils.setToast(getActivity(),"抱歉,无效手机号码");
                  }
                  break;
              case R.id.tv_login:
                  ((BaseActivity) getActivity()).popToStack(this);
                  break;
-             case R.id.ll_back:
+             case R.id.back_btn:
                  ((BaseActivity) getActivity()).popToStack(this);
                  break;
              default:
@@ -180,16 +169,10 @@ import org.apache.http.HttpResponse;
              String str = null;
              try {
                  String email = mEmailView.getText().toString();
-                 String password = mPswView.getText().toString();
-                 String psw_confirm = mConfirmPsw.getText().toString();
-                 String nick = mNickView.getText().toString();
 
                  Map<String, String> valueParams = new HashMap<String, String>();
                  valueParams.put("user[email]", email);
-                 valueParams.put("user[password]", password);
-                 valueParams.put("user[password_confirmations]", psw_confirm);
-                 valueParams.put("user[nick_name]", nick);
-                 str = executeHttpPost(email, password, psw_confirm, nick);
+                 str = executeHttpPost(email);
              } catch (Exception e) {
 
              }
@@ -236,7 +219,7 @@ import org.apache.http.HttpResponse;
          }
      }
 
-     public String executeHttpPost(String email, String psw, String psw2, String nick) throws Exception {
+     public String executeHttpPost(String email) throws Exception {
          BufferedReader in = null;
          try {
              // 定义HttpClient
@@ -251,9 +234,6 @@ import org.apache.http.HttpResponse;
 
 
              parameters.add(new BasicNameValuePair("user[email]", email));
-             parameters.add(new BasicNameValuePair("user[password]", psw));
-             parameters.add(new BasicNameValuePair("user[password_confirmations]", psw2));
-             parameters.add(new BasicNameValuePair("user[nick_name]", nick));
 
              // 创建UrlEncodedFormEntity对象
              UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(

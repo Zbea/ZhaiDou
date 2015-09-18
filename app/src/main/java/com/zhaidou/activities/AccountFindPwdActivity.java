@@ -9,11 +9,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,18 +34,22 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
- * Created by wangclark on 15/7/16.
+ * Created by roy on 15/9/16.
  */
-public class RegisterActivity extends FragmentActivity implements View.OnClickListener{
-    private CustomEditText mEmailView;
+public class AccountFindPwdActivity extends FragmentActivity {
+    private CustomEditText mCodeView,mPhoneView;
     private TextView headTitle;
-    private LinearLayout mLogin;
-    private TextView mRegister;
+    private TextView mNext,mGetCode;
     private RequestQueue mRequestQueue;
-    SharedPreferences mSharedPreferences;
+    private SharedPreferences mSharedPreferences;
     private Dialog mDialog;
+    private int initTime=60;
+    private Timer mTimer;
+
     private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -68,64 +69,123 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
         }
     };
 
+    private View.OnClickListener onClickListener=new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()){
+                case R.id.bt_next:
+                    String code = mCodeView.getText().toString();
+                    String phone = mPhoneView.getText().toString();
+                    if (TextUtils.isEmpty(code)) {
+                        mCodeView.setShakeAnimation();
+                        return;
+                    }
+                    if (TextUtils.isEmpty(phone)) {
+                        mPhoneView.setShakeAnimation();
+                        return;
+                    }
+                    if (ToolUtils.isPhoneOk(phone))
+                    {
+                        Intent intent=new Intent(getApplicationContext(),AccountSetPwdActivity.class);
+                        startActivity(intent);
+//                        doRegister();
+                    }
+                    else
+                    {
+                        ToolUtils.setToast(getApplicationContext(),"抱歉,无效手机号码");
+                    }
+                    break;
+                case R.id.back_btn:
+                    finish();
+                    break;
+                case R.id.bt_getCode:
+                    getCode();
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.fragment_register);
+        setContentView(R.layout.act_account_find_pwd_page);
 
         headTitle=(TextView)findViewById(R.id.title_tv);
-        headTitle.setText(R.string.title_register);
+        headTitle.setText(R.string.title_find_psd);
 
-        mEmailView=(CustomEditText)findViewById(R.id.tv_email);
-        mLogin=(LinearLayout)findViewById(R.id.tv_login);
-        mRegister=(TextView)findViewById(R.id.bt_register);
+        mCodeView=(CustomEditText)findViewById(R.id.tv_code);
+        mPhoneView=(CustomEditText)findViewById(R.id.tv_phone);
+        mNext=(TextView)findViewById(R.id.bt_next);
+        mNext.setOnClickListener(onClickListener);
+        mGetCode=(TextView)findViewById(R.id.bt_getCode);
+        mGetCode.setOnClickListener(onClickListener);
 
         mSharedPreferences=getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
 
         mRequestQueue= Volley.newRequestQueue(this);
-        mRegister.setOnClickListener(this);
-        mLogin.setOnClickListener(this);
-        findViewById(R.id.back_btn).setOnClickListener(this);
+        findViewById(R.id.back_btn).setOnClickListener(onClickListener);
+
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.bt_register:
-                String email = mEmailView.getText().toString();
-                if (TextUtils.isEmpty(email)) {
-                    mEmailView.setShakeAnimation();
-                    return;
-                }
-                if (ToolUtils.isPhoneOk(email) && email.length() > 0)
+    /**
+     * 获得验证码
+     */
+    private void getCode()
+    {
+        codeTimer();
+    }
+
+    /**
+     * 验证码倒计时
+     */
+    private void codeTimer()
+    {
+        initTime=60;
+        mGetCode.setBackgroundResource(R.drawable.btn_no_click_selector);
+        mGetCode.setText("重新获取("+initTime+")");
+        mGetCode.setClickable(false);
+        mTimer=new Timer();
+        mTimer.schedule(new MyTimer(), 1000, 1000);
+    }
+
+    /**
+     * 倒计时
+     */
+    class MyTimer extends TimerTask
+    {
+        @Override
+        public void run()
+        {
+            runOnUiThread(new Runnable()
+            {
+                @Override
+                public void run()
                 {
-                    Intent intent=new Intent(this,RegisterSetPwdActivity.class);
-                    startActivity(intent);
-//                    doRegister();
+                    initTime = initTime - 1;
+                    mGetCode.setText("重新获取("+initTime+")");
+                    if (initTime <= 0)
+                    {
+                        mTimer.cancel();
+                        mGetCode.setText("获取验证码");
+                        mGetCode.setBackgroundResource(R.drawable.btn_green_click_bg);
+                        mGetCode.setClickable(true);
+                    }
                 }
-                else
-                {
-                    mEmailView.setShakeAnimation();
-                    ToolUtils.setToast(this,"抱歉,无效手机号码");
-                }
-                break;
-            case R.id.tv_login:
-                finish();
-                break;
-            case R.id.back_btn:
-                finish();
-                break;
-            default:
-                break;
+            });
         }
     }
+
+
     private void doRegister(){
 
-        mDialog= CustomLoadingDialog.setLoadingDialog(RegisterActivity.this, "注册中");
-        String email = mEmailView.getText().toString();
+        mDialog= CustomLoadingDialog.setLoadingDialog(AccountFindPwdActivity.this, "注册中");
+        String code = mCodeView.getText().toString();
         Map<String, String> valueParams = new HashMap<String,String>();
-        valueParams.put("user[email]", email);
+        valueParams.put("user[email]", code);
         ZhaiDouRequest request=new ZhaiDouRequest(Request.Method.POST,ZhaiDou.USER_REGISTER_URL,valueParams,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -134,7 +194,7 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
                 Object obj = jsonObject.opt("message");
                 if (obj!=null){
                     JSONArray errMsg =  jsonObject.optJSONArray("message");
-                    Toast.makeText(RegisterActivity.this,errMsg.optString(0),Toast.LENGTH_LONG).show();
+                    Toast.makeText(AccountFindPwdActivity.this,errMsg.optString(0),Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -163,14 +223,25 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
     @Override
     protected void onResume() {
         super.onResume();
-        MobclickAgent.onPageStart(getResources().getString(R.string.title_register));
+        MobclickAgent.onPageStart(getResources().getString(R.string.title_find_psd));
         MobclickAgent.onResume(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        MobclickAgent.onPageEnd(getResources().getString(R.string.title_register));
+        MobclickAgent.onPageEnd(getResources().getString(R.string.title_find_psd));
         MobclickAgent.onPause(this);
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        if (mTimer!=null)
+        {
+            mTimer.cancel();
+            mTimer=null;
+        }
+        super.onDestroy();
     }
 }
