@@ -257,10 +257,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                         }
 
                     }
-
-                    ToolUtils.setLog(detail.getImageUrl());
-                    ToolUtils.setImageCacheUrl(detail.getImageUrl(),goodsImage,R.drawable.icon_loading_defalut);
-                    initImageData(detail.getImgs());
+                    initImageData(detail.getImageUrl());
 
                     if (detail.getImgs()==null&&detail.getSpecifications()==null&&detail.getEnd_time()==null)
                     {
@@ -799,7 +796,7 @@ public class GoodsDetailsFragment extends BaseFragment {
         oks.setText(mPage + "   " + shareUrl);
         // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
         if (detail != null) {
-            oks.setImageUrl(detail.getImageUrl());//确保SDcard下面存在此张图片
+            oks.setImageUrl(detail.getImageUrl().get(0));//确保SDcard下面存在此张图片
         }
         // url仅在微信（包括好友和朋友圈）中使用
         oks.setUrl(shareUrl);
@@ -900,17 +897,32 @@ public class GoodsDetailsFragment extends BaseFragment {
      ** 设置头部相片
      */
     private void initImageData(List<String> urls) {
-        if (CollectionUtils.isNotNull(urls)) {
-
-            for (String url : urls) {
-                ImageView imageView = new ImageView(mContext);
-                imageView.setImageResource(R.drawable.icon_loading_defalut);
-                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                imageView.setBackgroundColor(Color.parseColor("#ffffff"));
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                imageView.setLayoutParams(params);
-                ToolUtils.setImageCacheUrl(url, imageView,R.drawable.icon_loading_osale);
-                adPics.add(imageView);
+        viewGroupe.removeAllViews();
+        if (CollectionUtils.isNotNull(urls))
+        {
+            if (urls.size()>=4)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    ImageView imageView = new ImageView(mContext);
+                    imageView.setImageResource(R.drawable.icon_loading_defalut);
+                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                    imageView.setBackgroundColor(Color.parseColor("#ffffff"));
+                    ToolUtils.setImageCacheUrl(urls.get(i), imageView,R.drawable.icon_loading_defalut);
+                    adPics.add(imageView);
+                }
+            }
+            else
+            {
+                for (String url : urls)
+                {
+                    ImageView imageView = new ImageView(mContext);
+                    imageView.setImageResource(R.drawable.icon_loading_defalut);
+                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                    imageView.setBackgroundColor(Color.parseColor("#ffffff"));
+                    ToolUtils.setImageCacheUrl(url, imageView,R.drawable.icon_loading_defalut);
+                    adPics.add(imageView);
+                }
             }
             dots = new ImageView[adPics.size()];
 
@@ -940,7 +952,6 @@ public class GoodsDetailsFragment extends BaseFragment {
             viewPager.setOnPageChangeListener(onPageChangeListener);
             viewPager.setCurrentItem(0);
         }
-        viewGroupe.removeAllViews();
     }
 
     /**
@@ -1094,10 +1105,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                             String url = imgObj.optString("url");
                             imgsList.add(url);
                         }
-                        if (imgsList!=null&&imgsList.size()!=0)
-                        {
-                            detail.setImageUrl(imgsList.get(0));
-                        }
+                        detail.setImageUrl(imgsList);
                     }
 
                     JSONArray imgArray = merchandise.optJSONArray("desc_images");

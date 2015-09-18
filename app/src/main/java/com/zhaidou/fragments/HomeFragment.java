@@ -120,7 +120,7 @@ public class HomeFragment extends BaseFragment implements
     public HomeListAdapter mListAdapter;
     private ViewPager viewPager;
     private LinearLayout tipsLine;//轮播指示标志
-    private List<SwitchImage> banners;
+    private List<SwitchImage> banners=new ArrayList<SwitchImage>();;
     private ImageView[] dots;
     private List<View> adPics = new ArrayList<View>();
     private AdViewAdpater adpaters;
@@ -179,14 +179,6 @@ public class HomeFragment extends BaseFragment implements
                 {
                     mListAdapter = new HomeListAdapter(mContext, articleList,screenWidth);
                     listView.setAdapter(mListAdapter);
-                    if (banners==null||banners.size()<1)
-                    {
-                        getBannerData();
-                    }
-                    if (shopSpecialItem==null)
-                    {
-                        FetchShopData();
-                    }
                 }
                 mScrollView.onRefreshComplete();
                 mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
@@ -628,7 +620,6 @@ public class HomeFragment extends BaseFragment implements
             mScrollView.onRefreshComplete();
             return;
         }
-
         String categoryId = (category == null ? "" : category.getId() + "");
         final String url;
         url = ZhaiDou.HOME_CATEGORY_URL + page + ((category == null) ? "&catetory_id" : "&catetory_id=" + categoryId);
@@ -726,7 +717,7 @@ public class HomeFragment extends BaseFragment implements
     private void getBannerData()
     {
         String url = ZhaiDou.BannerUrl+2;
-        banners = new ArrayList<SwitchImage>();
+        banners.removeAll(banners);
         JsonObjectRequest bannerRequest = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
@@ -762,7 +753,6 @@ public class HomeFragment extends BaseFragment implements
             @Override
             public void onErrorResponse(VolleyError volleyError)
             {
-
             }
         });
         mRequestQueue.add(bannerRequest);
