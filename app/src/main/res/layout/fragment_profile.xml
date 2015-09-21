@@ -436,8 +436,11 @@
                 android:layout_height="wrap_content"
                 android:background="@color/white"
                 android:paddingLeft="20dp"
-                android:paddingTop="5dp"
-                android:textColor="#666666" />
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:paddingRight="10dp"
+                android:minHeight="40dp"
+                android:textColor="#a8a8a8" />
 
             <RelativeLayout
                 android:id="@+id/rl_manage_address"
@@ -488,12 +491,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingLeft="20dp"
-                        android:textColor="#666666" />
+                        android:textColor="#a8a8a8" />
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:id="@+id/tv_addr_mobile"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textSize="13sp"
+                        android:textColor="#a8a8a8"
                         android:layout_marginLeft="20dp" />
                 </LinearLayout>
 
@@ -506,7 +511,7 @@
                     android:paddingBottom="10dp"
                     android:paddingLeft="20dp"
                     android:paddingTop="10dp"
-                    android:textColor="#666666" />
+                    android:textColor="#a8a8a8" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"

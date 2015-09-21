@@ -167,6 +167,7 @@ public class GoodsDetailsFragment extends BaseFragment {
     private boolean isClean = false;
     private MyTimer mTimer;
     private TextView mTimerView,imageNull;
+    private ArrayList<String> listUrls = new ArrayList<String>();
 
     private boolean isOSaleBuy;
     private boolean isClick;
@@ -899,6 +900,13 @@ public class GoodsDetailsFragment extends BaseFragment {
      */
     private void initImageData(List<String> urls) {
         viewGroupe.removeAllViews();
+        if (urls==null||urls.size()<1)
+        {
+            if (listUrls!=null&&listUrls.size()>0)
+            {
+                urls=listUrls;
+            }
+        }
         if (CollectionUtils.isNotNull(urls))
         {
             if (urls.size()>=4)
@@ -1074,6 +1082,7 @@ public class GoodsDetailsFragment extends BaseFragment {
     }
 
     public void FetchDetailData(int id) {
+        listUrls.clear();
         String url = ZhaiDou.goodsDetailsUrlUrl + id;
         Log.i("url---------------------->", url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
@@ -1095,6 +1104,16 @@ public class GoodsDetailsFragment extends BaseFragment {
                     String end_time = merchandise.optString("end_time");
                     detail = new GoodDetail(id, title, designer, total_count, price, cost_price, discount);
                     detail.setEnd_time(end_time);
+
+                    JSONArray imgArrays = merchandise.optJSONArray("top_images");
+                    if (imgArrays != null && imgArrays.length() > 0) {
+                        for (int i = 0; i < imgArrays.length(); i++) {
+                            JSONObject imgObj = imgArrays.optJSONObject(i);
+                            String url = imgObj.optString("url");
+                            listUrls.add(url);
+                        }
+
+                    }
 
                     JSONArray imgsArray = merchandise.optJSONArray("top_images");
                     if (imgsArray != null && imgsArray.length() > 0) {
