@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,6 +40,7 @@ import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.CustomEditText;
 import com.zhaidou.view.TypeFaceEditText;
 import com.zhaidou.view.TypeFaceTextView;
 
@@ -60,6 +62,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 /**
@@ -94,6 +98,12 @@ public class ShopOrderOkFragment extends BaseFragment
     private double moneyYF = 0;
     private double totalMoney = 0;
 
+    private LinearLayout verifyView;
+    private CustomEditText mCodeView,mPhoneView;
+    private TextView mGetCode;
+    private int initTime=0;
+    private Timer mTimer;
+
     private RequestQueue mRequestQueue;
     private int STATUS_FROM_ORDER = 3;
     private final int UPDATE_DEFALUE_ADDRESS_INFO = 0;
@@ -101,6 +111,7 @@ public class ShopOrderOkFragment extends BaseFragment
     private boolean isOSale;//是否含有零元特卖
     private boolean isljOsale;//是否是来自立即购买的零元特卖
     private boolean isNoFree;//是否不免邮，当只有一个商品且为零元特卖时为真
+    private boolean isVerify;//帐号是否需要验证
 
     private Address address;
     private CreatCartDB creatCartDB;
@@ -254,28 +265,33 @@ public class ShopOrderOkFragment extends BaseFragment
                     break;
 
                 case R.id.jsOkBtn:
-                    if (address != null)
+                    //当需要验证手机号码时候，需要先判断
+                    if (isVerify)
                     {
-                        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "提交中");
-                        for (int i = 0; i < items.size(); i++)
-                        {
-                            if (items.get(i).isOSale.equals("true"))
-                            {
-                                isOSale = true;
-                            }
+                        String code = mCodeView.getText().toString();
+                        String phone = mPhoneView.getText().toString();
+                        if (TextUtils.isEmpty(phone)) {
+                            mPhoneView.setShakeAnimation();
+                            return;
                         }
-                        if (isOSale)
-                        {
-                            FetchOSaleData(5);//判断零元特卖是否已经当天购买过
-                        } else
-                        {
-                            commit();
+                        if (TextUtils.isEmpty(code)) {
+                            mCodeView.setShakeAnimation();
+                            return;
                         }
-                    } else
-                    {
-                        ToolUtils.setToast(mContext, "抱歉,您未填写收货地址");
-                    }
+                        if (ToolUtils.isPhoneOk(phone))
+                        {
+                            mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "提交中");
 
+                        }
+                        else
+                        {
+                            ToolUtils.setToast(mContext,"抱歉,无效手机号码");
+                        }
+                    }
+                    else
+                    {
+                        judageCommit();
+                    }
                     break;
                 case R.id.jsEditAddressBtn:
                     AddrSelectFragment addrManageFragment = AddrSelectFragment.newInstance("", STATUS_FROM_ORDER, address);
@@ -334,6 +350,10 @@ public class ShopOrderOkFragment extends BaseFragment
                         }
                     });
                     break;
+                case R.id.bt_getCode:
+                    codeTimer();
+                    break;
+
             }
         }
     };
@@ -436,6 +456,12 @@ public class ShopOrderOkFragment extends BaseFragment
         orderAddressEditLine.setOnClickListener(onClickListener);
 
         orderGoodsListLine = (LinearLayout) mView.findViewById(R.id.orderGoodsList);
+
+        verifyView= (LinearLayout) mView.findViewById(R.id.jsVerifyView);
+        mCodeView=(CustomEditText)mView.findViewById(R.id.tv_code);
+        mPhoneView=(CustomEditText)mView.findViewById(R.id.tv_phone);
+        mGetCode=(TextView)mView.findViewById(R.id.bt_getCode);
+        mGetCode.setOnClickListener(onClickListener);
 
         token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
@@ -544,6 +570,74 @@ public class ShopOrderOkFragment extends BaseFragment
 
             orderGoodsListLine.addView(childeView);
         }
+    }
+
+    /**
+     * 验证码倒计时事件处理
+     */
+    private void codeTimer()
+    {
+        initTime=ZhaiDou.VERFIRY_TIME;
+        mGetCode.setBackgroundResource(R.drawable.btn_no_click_selector);
+        mGetCode.setText("重新获取("+initTime+")");
+        mGetCode.setClickable(false);
+        mTimer=new Timer();
+        mTimer.schedule(new MyTimer(), 1000, 1000);
+    }
+    /**
+     * 倒计时
+     */
+    class MyTimer extends TimerTask
+    {
+        @Override
+        public void run()
+        {
+            runOnUiThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    initTime = initTime - 1;
+                    mGetCode.setText("重新获取("+initTime+")");
+                    if (initTime <= 0)
+                    {
+                        mTimer.cancel();
+                        mGetCode.setText("获取验证码");
+                        mGetCode.setBackgroundResource(R.drawable.btn_green_click_bg);
+                        mGetCode.setClickable(true);
+                    }
+                }
+            });
+        }
+    }
+
+    /**
+     * 提交前判断地址等信息
+     */
+    private void judageCommit()
+    {
+        if (address != null)
+        {
+            mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "提交中");
+            for (int i = 0; i < items.size(); i++)
+            {
+                if (items.get(i).isOSale.equals("true"))
+                {
+                    isOSale = true;
+                }
+            }
+            if (isOSale)
+            {
+                FetchOSaleData(5);//判断零元特卖是否已经当天购买过
+            } else
+            {
+                commit();
+            }
+        } else
+        {
+            ToolUtils.setToast(mContext, "抱歉,您未填写收货地址");
+        }
+
     }
 
     /**

@@ -77,12 +77,12 @@ public class AccountFindPwdActivity extends FragmentActivity {
                 case R.id.bt_next:
                     String code = mCodeView.getText().toString();
                     String phone = mPhoneView.getText().toString();
-                    if (TextUtils.isEmpty(code)) {
-                        mCodeView.setShakeAnimation();
-                        return;
-                    }
                     if (TextUtils.isEmpty(phone)) {
                         mPhoneView.setShakeAnimation();
+                        return;
+                    }
+                    if (TextUtils.isEmpty(code)) {
+                        mCodeView.setShakeAnimation();
                         return;
                     }
                     if (ToolUtils.isPhoneOk(phone))

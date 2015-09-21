@@ -82,7 +82,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     private TextView tv_mobile;
     private TextView tv_addr_username;
     private TextView tv_addr_mobile;
-    private TextView tv_addr, tv_delete, tv_edit;
+    private TextView tv_addr, tv_delete, tv_edit,tv_addr_null;
 
     private RelativeLayout mWorkLayout;
 
@@ -113,24 +113,26 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     private ProfileListener profileListener;
 
     private Dialog mDialog;
+    private User user;
 
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case UPDATE_PROFILE_INFO:
-                    User user = (User) msg.obj;
+                    user = (User) msg.obj;
                     tv_intro.setText(TextUtils.isEmpty(user.getDescription()) ? "" : user.getDescription());
                     tv_mobile.setText(TextUtils.isEmpty(user.getMobile()) ? "" : user.getMobile());
                     tv_job.setText(user.isVerified() ? "宅豆认证设计师" : "未认证设计师");
-                    tv_addr_mobile.setText(TextUtils.isEmpty(user.getMobile()) ? "" : user.getMobile());
-                    tv_addr.setText(TextUtils.isEmpty(user.getAddress2()) ? "" : user.getAddress2());
-                    tv_addr_username.setText(TextUtils.isEmpty(user.getFirst_name()) ? "" : user.getFirst_name());
+                    tv_addr_mobile.setText(TextUtils.isEmpty(user.getMobile()) ? "" : "电话："+user.getMobile());
+                    tv_addr.setText(TextUtils.isEmpty(user.getAddress2()) ? "" : "地址："+user.getAddress2());
+                    tv_addr_username.setText("姓名："+user.getFirst_name());
                     if (TextUtils.isEmpty(user.getAddress2()) || "null".equals(user.getAddress2())) {
                         ll_addr_info.setVisibility(View.GONE);
+                        tv_addr_null.setVisibility(View.VISIBLE);
                     } else {
                         ll_addr_info.setVisibility(View.VISIBLE);
-                        tv_addr.setText(user.getAddress2());
+                        tv_addr_null.setVisibility(View.GONE);
                     }
                     break;
                 case UPDATE_USER_INFO:
@@ -212,6 +214,8 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         tv_delete = (TextView) view.findViewById(R.id.tv_delete);
         tv_edit = (TextView) view.findViewById(R.id.tv_edit);
 
+        tv_addr_null= (TextView) view.findViewById(R.id.tv_addr_null);
+
         mWorkLayout = (RelativeLayout) view.findViewById(R.id.rl_job);
         mWorkLayout.setOnClickListener(this);
         tv_edit.setOnClickListener(this);
@@ -272,24 +276,23 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 }
                 break;
             case R.id.rl_manage_address:
-                String name = tv_addr_username.getText().toString();
-                String mobile = tv_addr_mobile.getText().toString();
-                String address = tv_addr.getText().toString();
-                ProfileAddrFragment fragment=ProfileAddrFragment.newInstance(name, mobile, address, profileId);
+                ProfileAddrFragment fragment=ProfileAddrFragment.newInstance(user.getFirst_name(), user.getMobile(), user.getAddress2(), profileId);
                 ((MainActivity)getActivity()).navigationToFragmentWithAnim(fragment);
                 fragment.setAddressListener(new ProfileAddrFragment.AddressListener() {
                     @Override
                     public void onAddressDataChange(String name, String mobile, String address) {
+                        user.setFirst_name(name);user.setMobile(mobile);user.setAddress2(address);
                         ll_addr_info.setVisibility(TextUtils.isEmpty(address)?View.GONE:View.VISIBLE);
+                        tv_addr_null.setVisibility(TextUtils.isEmpty(address)?View.VISIBLE:View.GONE);
                         System.out.println("name = [" + name + "], mobile = [" + mobile + "], address = [" + address + "]");
-                        tv_addr_username.setText(name);
-                        tv_addr_mobile.setText(mobile);
-                        tv_addr.setText(address);
+                        tv_addr_username.setText("姓名：" + name);
+                        tv_addr_mobile.setText("电话："+mobile);
+                        tv_addr.setText("地址："+address);
                     }
                 });
                 break;
             case R.id.tv_edit:
-                AddrManageFragment editFragment = AddrManageFragment.newInstance(tv_addr_username.getText().toString(), tv_addr_mobile.getText().toString(), tv_addr.getText().toString(), profileId, 1);
+                AddrManageFragment editFragment = AddrManageFragment.newInstance(user.getFirst_name(), user.getMobile(), user.getAddress2(), profileId, 1);
                getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container, editFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
                 break;
@@ -386,7 +389,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 profileId = userObj.optString("id");
                 boolean verified = userObj.optBoolean("verified");
                 String first_name = userObj.optString("first_name");
-                first_name = "null".equalsIgnoreCase(first_name) ? "" : first_name;
 
                 String address2 = userObj.optString("address2");
                 User user = new User(null, null, null, verified, mobile, description);
@@ -652,9 +654,9 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     private class DeleteAddressTask extends AsyncTask<Void, Void, String> {
         @Override
         protected String doInBackground(Void... voids) {
-            String name = tv_addr_username.getText().toString();
-            String mobile = tv_addr_mobile.getText().toString();
-            String address = tv_addr.getText().toString();
+            String name = user.getFirst_name();
+            String mobile = user.getMobile();
+            String address = user.getAddress2();
 
             Map<String, String> map = new HashMap<String, String>();
             map.put("_method", "PUT");

@@ -139,46 +139,79 @@
         <LinearLayout
             android:id="@+id/ll_taobao"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:gravity="center"
+            android:orientation="vertical"
             android:layout_weight="1">
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/icon_taobao"/>
+                android:orientation="vertical"
+                android:src="@drawable/icon_login_taobao"/>
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textSize="12sp"
+                android:textColor="@color/text_main_color"
+                android:text="淘宝"/>
         </LinearLayout>
         <LinearLayout
             android:id="@+id/ll_weixin"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:gravity="center"
+            android:orientation="vertical"
             android:layout_weight="1">
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/icon_weixin"/>
+                android:src="@drawable/icon_login_weixin"/>
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textSize="12sp"
+                android:textColor="@color/text_main_color"
+                android:text="微信"/>
         </LinearLayout>
         <LinearLayout
             android:id="@+id/ll_qq"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:gravity="center"
+            android:orientation="vertical"
             android:layout_weight="1">
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/icon_qq"/>
+                android:src="@drawable/icon_login_qq"/>
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textSize="12sp"
+                android:textColor="@color/text_main_color"
+                android:text="QQ"/>
         </LinearLayout>
         <LinearLayout
             android:id="@+id/ll_weibo"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:gravity="center"
+            android:orientation="vertical"
             android:layout_weight="1">
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/icon_weibo"/>
+                android:src="@drawable/icon_login_weibo"/>
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textSize="12sp"
+                android:textColor="@color/text_main_color"
+                android:text="新浪微博"/>
         </LinearLayout>
 
     </LinearLayout>

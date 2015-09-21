@@ -436,8 +436,11 @@
                 android:layout_height="wrap_content"
                 android:background="@color/white"
                 android:paddingLeft="20dp"
-                android:paddingTop="5dp"
-                android:textColor="#666666" />
+                android:paddingTop="10dp"
+                android:minHeight="40dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="10dp"
+                android:textColor="#a8a8a8" />
 
             <RelativeLayout
                 android:id="@+id/rl_manage_address"
@@ -474,6 +477,7 @@
                 android:id="@+id/ll_addr_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -481,19 +485,23 @@
                     android:layout_height="wrap_content"
                     android:background="@color/white"
                     android:orientation="horizontal"
+                    android:gravity="center_vertical"
                     android:paddingTop="10dp">
+
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:id="@+id/tv_addr_username"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingLeft="20dp"
-                        android:textColor="#666666" />
+                        android:textColor="#a8a8a8" />
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:id="@+id/tv_addr_mobile"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textSize="13sp"
+                        android:textColor="#a8a8a8"
                         android:layout_marginLeft="20dp" />
                 </LinearLayout>
 
@@ -506,7 +514,7 @@
                     android:paddingBottom="10dp"
                     android:paddingLeft="20dp"
                     android:paddingTop="10dp"
-                    android:textColor="#666666" />
+                    android:textColor="#a8a8a8" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -516,7 +524,8 @@
                     android:paddingBottom="10dp"
                     android:paddingLeft="20dp"
                     android:paddingTop="10dp"
-                    android:visibility="gone">
+                    android:visibility="gone"
+                    >
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:layout_width="wrap_content"
@@ -553,6 +562,17 @@
                         android:textColor="#666666" />
                 </RelativeLayout>
             </LinearLayout>
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/tv_addr_null"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@color/white"
+                android:paddingLeft="20dp"
+                android:paddingTop="10dp"
+                android:textColor="@color/text_gary_color"
+                android:text="暂无地址"
+                />
+
         </LinearLayout>
     </ScrollView>
 

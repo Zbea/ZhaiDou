@@ -156,7 +156,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         mContext=getActivity();
         strEmail=getEmail();
 
-        headTitle=(TextView)findViewById(R.id.title_tv);
+        headTitle=(TextView)view.findViewById(R.id.title_tv);
         headTitle.setText(R.string.title_login);
 
         mEmailView=(CustomEditText)view.findViewById(R.id.tv_email);

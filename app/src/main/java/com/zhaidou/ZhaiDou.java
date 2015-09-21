@@ -11,7 +11,7 @@ public class ZhaiDou {
 //    public static String HOME_BASE_URL = "http://192.168.199.173/";
     public static String TAG_BASE_URL = "http://buy.zhaidou.com/?tag=%s&json=1";
 
-    public static String ApkUrl = "http://192.168.199.160:3000/api/v1/app_versions?os=2";
+    public static String ApkUrl = HOME_BASE_URL+"api/v1/app_versions?os=2";
     //0元特卖页面：status=0,普通特卖页面：status=1,首页：status=2
     public static String BannerUrl=HOME_BASE_URL+"special_mall/api/sales/sale_banner?status=";
     //APP换量
@@ -102,6 +102,11 @@ public class ZhaiDou {
         HOME,
         TAG,
     }
+
+    /**
+     * 短信验证时间
+     */
+    public final static int VERFIRY_TIME=60;
 
     /** 未付款*/
     public final static int STATUS_UNPAY=0;

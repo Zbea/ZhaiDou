@@ -93,7 +93,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     //dialog相关
     private CustomEditText mCodeView,mPhoneView;
     private TextView mGetCode;
-    private int initTime=60;
+    private int initTime=0;
     private Timer mTimer;
 
     private static final int SHOW_DIALOG=1;
@@ -443,7 +443,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
      */
     private void codeTimer()
     {
-        initTime=60;
+        initTime=ZhaiDou.VERFIRY_TIME;
         mGetCode.setBackgroundResource(R.drawable.btn_no_click_selector);
         mGetCode.setText("重新获取("+initTime+")");
         mGetCode.setClickable(false);
@@ -599,7 +599,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 User user=new User(id,email,token,nick,avatar);
                 mRegisterOrLoginListener.onRegisterOrLoginSuccess(user,null);
             }catch (Exception e){
-//                Log.i("e--------->",e.getMessage());
             }
         }
     }

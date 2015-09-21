@@ -54,7 +54,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:scaleType="centerInside"
-                    android:src="@drawable/heart_pressed"/>
+                    android:src="@drawable/icon_login_phone"/>
                 <com.zhaidou.view.CustomEditText
                     android:id="@+id/tv_phone"
                     android:layout_width="match_parent"
@@ -83,7 +83,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:scaleType="centerInside"
-                    android:src="@drawable/heart_pressed"/>
+                    android:src="@drawable/icon_login_code"/>
                 <com.zhaidou.view.CustomEditText
                     android:id="@+id/tv_code"
                     android:layout_width="match_parent"

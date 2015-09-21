@@ -175,7 +175,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="收货人"/>
+                android:textSize="16sp"
+                android:text="收货人："/>
             <com.zhaidou.view.TypeFaceEditText
                 android:id="@+id/et_addr_name"
                 android:layout_width="0dp"
@@ -194,7 +195,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="联系方式"/>
+                android:textSize="16sp"
+                android:text="联系方式："/>
             <com.zhaidou.view.TypeFaceEditText
                 android:id="@+id/et_mobile"
                 android:layout_width="0dp"
@@ -214,7 +216,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="收货地址"/>
+                android:textSize="16sp"
+                android:text="收货地址："/>
             <com.zhaidou.view.TypeFaceEditText
                 android:id="@+id/et_addr"
                 android:layout_width="0dp"

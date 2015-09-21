@@ -210,10 +210,24 @@ public class ToolUtils
         Log.i("zhaidou",msg);
     }
 
-
+    /**
+     * Toast显示短时间
+     * @param mContext
+     * @param msg
+     */
     public static final void setToast(Context mContext,String msg)
     {
         Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Toast显示长时间
+     * @param mContext
+     * @param msg
+     */
+    public static final void setToastLong(Context mContext,String msg)
+    {
+        Toast.makeText(mContext, msg, Toast.LENGTH_LONG).show();
     }
 
 }
