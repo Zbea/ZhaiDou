@@ -370,6 +370,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         }
     }
 
+
     /**
      * 分享
      */
