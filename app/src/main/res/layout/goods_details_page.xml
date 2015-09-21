@@ -36,6 +36,7 @@
                     android:layout_centerInParent="true"
                     android:background="@color/white"
                     android:scaleType="fitXY"
+                    android:visibility="gone"
                     android:src="@drawable/icon_loading_defalut"/>
 
                 <com.zhaidou.view.CustomViewPager
@@ -44,7 +45,7 @@
                     android:layout_height="240dp"
                     android:layout_centerInParent="true"
                     android:background="@color/white"
-                    android:visibility="gone"/>
+                    />
 
                 <LinearLayout
                     android:id="@+id/goods_viewGroup"
@@ -55,7 +56,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="22dp"
                     android:orientation="horizontal"
-                    android:visibility="gone"></LinearLayout>
+                    ></LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/timeLine"
@@ -140,14 +141,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/red"
-                        android:textSize="20sp"/>
+                        android:textSize="22sp"/>
 
                     <TextView
                         android:id="@+id/goodsFormerPrice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/default_margin"
-                        android:layout_marginTop="1.5dp"
+                        android:layout_marginTop="2dp"
                         android:textColor="@color/text_gary_color"
                         android:textSize="14sp"/>
 
@@ -460,6 +461,15 @@
                         android:layout_marginTop="10dp"
                         android:text="普通特卖退货、退款，在订单管理中申请售后，确定是退款还是退货，联系客服确认商品有无损伤，说明退货原因，用户用快递退回商品，没有质量问题的退货需用户承担运费，有质量问题或者物流造成货品损伤的运费由宅豆承担。"
                         android:textColor="@color/text_gary_color"/>
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginTop="10dp"
+                        android:text="客服时间：9:00 ~ 23:00"
+                        android:textColor="@color/text_normal_color"/>
 
 
                     <TextView

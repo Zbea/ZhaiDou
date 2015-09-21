@@ -14,8 +14,8 @@
 
         <ImageView
             android:id="@+id/pull_to_refresh_image"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:scaleType="center"
             android:layout_gravity="center" />
 

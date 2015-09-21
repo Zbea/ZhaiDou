@@ -1,6 +1,5 @@
 package com.zhaidou.fragments;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -48,7 +47,7 @@ import com.android.volley.toolbox.Volley;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+listener.ImageLoadingListener;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
@@ -59,6 +58,7 @@ import com.zhaidou.adapter.SpecificationAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.dialog.CustomToastDialog;
 import com.zhaidou.model.CartItem;
 import com.zhaidou.model.CountTime;
@@ -77,7 +77,6 @@ import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -104,6 +103,7 @@ public class GoodsDetailsFragment extends BaseFragment {
     private ImageView[] dots;
     private List<View> adPics = new ArrayList<View>();
     private ViewPager viewPager;
+    private RelativeLayout relativeLayout;
     private LinearLayout viewGroupe;//指示器容器
     private LinearLayout ljBtn;
     private LinearLayout addCartBtn;
@@ -135,7 +135,7 @@ public class GoodsDetailsFragment extends BaseFragment {
     private int num;
     private ScrollView scrollView;
     private ImageView topBtn;
-    private LinearLayout iconView, iconOSaleView, commentView;
+    private LinearLayout iconView, iconOSaleView,commentView;
 
     private LinearLayout loadingView, nullNetView, nullView;
     private TextView reloadBtn, reloadNetBtn;
@@ -162,7 +162,8 @@ public class GoodsDetailsFragment extends BaseFragment {
     //是否完成清理
     private boolean isClean = false;
     private MyTimer mTimer;
-    private TextView mTimerView, imageNull;
+    private TextView mTimerView,imageNull;
+    private ArrayList<String> listUrls = new ArrayList<String>();
 
     private boolean isOSaleBuy;
     private boolean isClick;
@@ -230,8 +231,8 @@ public class GoodsDetailsFragment extends BaseFragment {
                     detail = (GoodDetail) msg.obj;
                     setChildFargment(detail, goodInfos);
 
-                    mCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + detail.getPrice() + ""));
-                    mOldPrice.setText("￥" + ToolUtils.isIntPrice("" + detail.getCost_price() + ""));
+                    mCurrentPrice.setText("￥" + ToolUtils.isIntPrice(""+detail.getPrice() + ""));
+                    mOldPrice.setText("￥" + ToolUtils.isIntPrice(""+detail.getCost_price() + ""));
                     tv_comment.setText(detail.getDesigner());
                     mTitle.setText(detail.getTitle());
                     setDiscount(detail.getPrice(), detail.getCost_price());
@@ -255,12 +256,12 @@ public class GoodsDetailsFragment extends BaseFragment {
                         }
 
                     }
+                    initImageData(detail.getImageUrl());
 
-                    ToolUtils.setLog(detail.getImageUrl());
-                    ToolUtils.setImageCacheUrl(detail.getImageUrl(), goodsImage, R.drawable.icon_loading_defalut);
-                    initImageData(detail.getImgs());
+                   
 
-                    if (detail.getImgs() == null && detail.getSpecifications() == null && detail.getEnd_time() == null) {
+                    if (detail.getImgs()==null&&detail.getSpecifications()==null&&detail.getEnd_time()==null)
+                    {
                         setAddOrBuyShow("此商品已下架");
                     }
 
@@ -373,7 +374,7 @@ public class GoodsDetailsFragment extends BaseFragment {
         @Override
         public void onCheckedChanged(RadioGroup radioGroup, int i) {
             if (i == R.id.infoRb) {
-                goodsImagesView.setVisibility(View.VISIBLE);
+               goodsImagesView.setVisibility(View.VISIBLE);
                 goodsInfoView.setVisibility(View.GONE);
             }
             if (i == R.id.afterSaleRb) {
@@ -416,7 +417,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                                 }
 
                             } else {
-                                scrollView.scrollTo(0, goodsImage.getHeight());
+                                scrollView.scrollTo(0, 405);
                                 Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
                             }
                     } else {
@@ -467,7 +468,7 @@ public class GoodsDetailsFragment extends BaseFragment {
         mAdapter = new GoodInfoAdapter(mContext, goodInfos);
         mListView.setAdapter(mAdapter);
         mImageContainer.removeAllViews();
-        DisplayImageOptions options = new DisplayImageOptions.Builder()
+        DisplayImageOptions options=new DisplayImageOptions.Builder()
                 .showImageOnLoading(R.drawable.icon_loading_osale)
 //                        .showImageForEmptyUri(R.drawable.icon_loading_osale)
 //                        .showImageOnFail(R.drawable.icon_loading_osale)
@@ -480,21 +481,19 @@ public class GoodsDetailsFragment extends BaseFragment {
             for (int i = 0; i < detail.getImgs().size(); i++) {
                 LargeImgView imageView = new LargeImgView(getActivity());
                 imageView.setScaleType(ImageView.ScaleType.MATRIX);
-                ImageLoader.getInstance().displayImage(detail.getImgs().get(i), imageView, new ImageLoadingListener() {
+                ImageLoader.getInstance().displayImage(detail.getImgs().get(i),imageView,new ImageLoadingListener() {
                     @Override
                     public void onLoadingStarted(String s, View view) {
                     }
-
                     @Override
                     public void onLoadingFailed(String s, View view, FailReason failReason) {
                     }
-
                     @Override
                     public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-                        if (bitmap != null) {
-                            LargeImgView imageView1 = (LargeImgView) view;
+                        if (bitmap!=null){
+                            LargeImgView imageView1=(LargeImgView)view;
                             imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
-                            if (bitmap.getHeight() < 4000) {
+                            if (bitmap.getHeight()<4000){
                                 imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
                                 imageView1.setImageBitmap(bitmap);
                             } else {
@@ -510,7 +509,9 @@ public class GoodsDetailsFragment extends BaseFragment {
                 });
                 mImageContainer.addView(imageView);
             }
-        } else {
+        }
+        else
+        {
             imageNull.setVisibility(View.VISIBLE);
         }
     }
@@ -589,14 +590,14 @@ public class GoodsDetailsFragment extends BaseFragment {
         publishBtn = (TextView) mView.findViewById(R.id.goodsPublish);
 
         goodsImage = (ImageView) mView.findViewById(R.id.goodsImageView);
-        goodsImage.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 630 / 720));
+//        goodsImage.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 678 / 720));
 
-        RelativeLayout relativeLayout = (RelativeLayout) mView.findViewById(R.id.imageRl);
-        relativeLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 630 / 720));
+        relativeLayout = (RelativeLayout) mView.findViewById(R.id.imageRl);
+        relativeLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 678 / 720));
 
         iconView = (LinearLayout) mView.findViewById(R.id.iconView);
         iconOSaleView = (LinearLayout) mView.findViewById(R.id.iconOSaleView);
-        commentView = (LinearLayout) mView.findViewById(R.id.commentView);
+        commentView= (LinearLayout) mView.findViewById(R.id.commentView);
         if (flags == 1) {
             iconView.setVisibility(View.GONE);
             iconOSaleView.setVisibility(View.VISIBLE);
@@ -629,17 +630,22 @@ public class GoodsDetailsFragment extends BaseFragment {
         topBtn.setOnClickListener(onClickListener);
 
         scrollView = (ScrollView) mView.findViewById(R.id.sv_goods_detail);
-        scrollView.setOnTouchListener(new View.OnTouchListener() {
+        scrollView.setOnTouchListener(new View.OnTouchListener()
+        {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
+            public boolean onTouch(View view, MotionEvent motionEvent)
+            {
                 scrollView.getParent().requestDisallowInterceptTouchEvent(true);
-                if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_MOVE)
+                {
                     int scrollY = view.getScrollY();
-                    if (scrollY > goodsImage.getHeight()) {
+                    if (scrollY > goodsImage.getHeight())
+                    {
                         topBtn.setVisibility(View.VISIBLE);
                     }
 
-                    if (scrollY < goodsImage.getHeight()) {
+                    if (scrollY < goodsImage.getHeight())
+                    {
                         topBtn.setVisibility(View.GONE);
                     }
                 }
@@ -673,8 +679,8 @@ public class GoodsDetailsFragment extends BaseFragment {
                             specificationAdapter.notifyDataSetChanged();
                             mSpecification = null;
 
-                            mCurrentPrice.setText("￥" + detail.getPrice() + "");
-                            mOldPrice.setText("￥" + detail.getCost_price() + "");
+                            mCurrentPrice.setText("￥" + ToolUtils.isIntPrice(detail.getPrice() + ""));
+                            mOldPrice.setText("￥" + ToolUtils.isIntPrice(detail.getCost_price() + ""));
                             setDiscount(detail.getPrice(), detail.getCost_price());
                         }
                     } else {
@@ -690,24 +696,25 @@ public class GoodsDetailsFragment extends BaseFragment {
             }
         });
 
-        goodsImagesView = (LinearLayout) mView.findViewById(R.id.goodInfoView);
-        goodsInfoView = (LinearLayout) mView.findViewById(R.id.goodInfo1View);
+        goodsImagesView=(LinearLayout)mView.findViewById(R.id.goodInfoView);
+        goodsInfoView=(LinearLayout)mView.findViewById(R.id.goodInfo1View);
 
         mListView = (ListView) mView.findViewById(R.id.lv_good_info);
         mImageContainer = (LinearLayout) mView.findViewById(R.id.ll_img_container);
-        imageNull = (TextView) mView.findViewById(R.id.img_null);
+        imageNull=(TextView)mView.findViewById(R.id.img_null);
         imageNull.setVisibility(View.GONE);
 
         mView.findViewById(R.id.rl_qq_contact).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_Number);
+                String url="mqqwpa://im/chat?chat_type=wpa&uin="+mContext.getResources().getString(R.string.QQ_Number);
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
             }
         });
 
         creatCartDB = new CreatCartDB(mContext);
         initCartTips();
+
         initData();
 
     }
@@ -767,8 +774,8 @@ public class GoodsDetailsFragment extends BaseFragment {
     private void sizeEvent(int position) {
         if (detail != null & specificationList.size() > 0) {
             mSpecification = specificationList.get(position);
-            mCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + mSpecification.price));
-            mOldPrice.setText("￥" + ToolUtils.isIntPrice("" + mSpecification.oldPrice));
+            mCurrentPrice.setText("￥" + ToolUtils.isIntPrice(""+mSpecification.price));
+            mOldPrice.setText("￥" + ToolUtils.isIntPrice(""+mSpecification.oldPrice));
             setDiscount(mSpecification.price, mSpecification.oldPrice);
         }
     }
@@ -812,7 +819,7 @@ public class GoodsDetailsFragment extends BaseFragment {
         oks.setText(mPage + "   " + shareUrl);
         // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
         if (detail != null) {
-            oks.setImageUrl(detail.getImageUrl());//确保SDcard下面存在此张图片
+            oks.setImageUrl(detail.getImageUrl().get(0));//确保SDcard下面存在此张图片
         }
         // url仅在微信（包括好友和朋友圈）中使用
         oks.setUrl(shareUrl);
@@ -918,20 +925,40 @@ public class GoodsDetailsFragment extends BaseFragment {
     }
 
     /**
-     * * 设置头部相片
+     ** 设置头部相片
      */
     private void initImageData(List<String> urls) {
-        if (CollectionUtils.isNotNull(urls)) {
-
-            for (String url : urls) {
-                ImageView imageView = new ImageView(mContext);
-                imageView.setImageResource(R.drawable.icon_loading_defalut);
-                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                imageView.setBackgroundColor(Color.parseColor("#ffffff"));
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                imageView.setLayoutParams(params);
-                ToolUtils.setImageCacheUrl(url, imageView, R.drawable.icon_loading_osale);
-                adPics.add(imageView);
+        viewGroupe.removeAllViews();
+        if (urls==null||urls.size()<1)
+        {
+            if (listUrls!=null&&listUrls.size()>0)
+            {
+                urls=listUrls;
+            }
+        }
+        if (CollectionUtils.isNotNull(urls))
+        {
+            if (urls.size()>=4)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    ImageView imageView = new ImageView(mContext);
+                    imageView.setImageResource(R.drawable.icon_loading_goods_details);
+                    imageView.setScaleType(ImageView.ScaleType.CENTER);
+                    ToolUtils.setImageCacheUrl(urls.get(i), imageView);
+                    adPics.add(imageView);
+                }
+            }
+            else
+            {
+                for (String url : urls)
+                {
+                    ImageView imageView = new ImageView(mContext);
+                    imageView.setImageResource(R.drawable.icon_loading_goods_details);
+                    imageView.setScaleType(ImageView.ScaleType.CENTER);
+                    ToolUtils.setImageCacheUrl(url, imageView);
+                    adPics.add(imageView);
+                }
             }
             dots = new ImageView[adPics.size()];
 
@@ -955,13 +982,12 @@ public class GoodsDetailsFragment extends BaseFragment {
                 }
             }
             viewPager = (ViewPager) mView.findViewById(R.id.goods_adv_pager);
-            viewPager.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 630 / 720));
+            viewPager.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 678 / 720));
             imageAdapter = new GoodsImageAdapter(mContext, adPics);
             viewPager.setAdapter(imageAdapter);
             viewPager.setOnPageChangeListener(onPageChangeListener);
             viewPager.setCurrentItem(0);
         }
-        viewGroupe.removeAllViews();
     }
 
     /**
@@ -984,7 +1010,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                         addCartGoods();
                     }
                 } else {
-                    scrollView.scrollTo(0, 600);
+                    scrollView.scrollTo(0, 405);
                     Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
                 }
             } else {
@@ -1066,7 +1092,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                 }
 
             } else {
-                scrollView.scrollTo(0, 600);
+                scrollView.scrollTo(0,405);
                 Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
             }
         }
@@ -1086,6 +1112,7 @@ public class GoodsDetailsFragment extends BaseFragment {
     }
 
     public void FetchDetailData(int id) {
+        listUrls.clear();
         String url = ZhaiDou.goodsDetailsUrlUrl + id;
         Log.i("url---------------------->", url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
@@ -1108,7 +1135,17 @@ public class GoodsDetailsFragment extends BaseFragment {
                     detail = new GoodDetail(id, title, designer, total_count, price, cost_price, discount);
                     detail.setEnd_time(end_time);
 
-                    JSONArray imgsArray = merchandise.optJSONArray("imgs");
+                    JSONArray imgArrays = merchandise.optJSONArray("top_images");
+                    if (imgArrays != null && imgArrays.length() > 0) {
+                        for (int i = 0; i < imgArrays.length(); i++) {
+                            JSONObject imgObj = imgArrays.optJSONObject(i);
+                            String url = imgObj.optString("url");
+                            listUrls.add(url);
+                        }
+
+                    }
+
+                    JSONArray imgsArray = merchandise.optJSONArray("top_images");
                     if (imgsArray != null && imgsArray.length() > 0) {
                         ArrayList<String> imgsList = new ArrayList<String>();
                         for (int i = 0; i < imgsArray.length(); i++) {
@@ -1116,9 +1153,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                             String url = imgObj.optString("url");
                             imgsList.add(url);
                         }
-                        if (imgsList != null && imgsList.size() != 0) {
-                            detail.setImageUrl(imgsList.get(0));
-                        }
+                        detail.setImageUrl(imgsList);
                     }
 
                     JSONArray imgArray = merchandise.optJSONArray("desc_images");

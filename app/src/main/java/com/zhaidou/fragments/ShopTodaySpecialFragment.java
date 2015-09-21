@@ -2,10 +2,8 @@ package com.zhaidou.fragments;
 
 
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -38,7 +36,6 @@ import com.zhaidou.model.CartItem;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.ShopTodayItem;
 import com.zhaidou.sqlite.CreatCartDB;
-import com.zhaidou.sqlite.CreatCartTools;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -499,7 +496,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     public void onDestroy() {
 //        if (broadcastReceiver != null)
 //            mContext.unregisterReceiver(broadcastReceiver);
-            isTimerStart = false;
+        isTimerStart = false;
         mRequestQueue.stop();
         if (mTimer != null) {
             mTimer.cancel();
