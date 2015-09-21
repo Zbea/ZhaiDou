@@ -108,6 +108,7 @@ public class GoodsDetailsFragment extends BaseFragment {
     private ImageView[] dots;
     private List<View> adPics = new ArrayList<View>();
     private ViewPager viewPager;
+    private RelativeLayout relativeLayout;
     private LinearLayout viewGroupe;//指示器容器
     private LinearLayout ljBtn;
     private LinearLayout addCartBtn;
@@ -410,7 +411,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                                 }
 
                             } else {
-                                scrollView.scrollTo(0, goodsImage.getHeight());
+                                scrollView.scrollTo(0, 380);
                                 Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
                             }
                     } else {
@@ -574,10 +575,10 @@ public class GoodsDetailsFragment extends BaseFragment {
         publishBtn = (TextView) mView.findViewById(R.id.goodsPublish);
 
         goodsImage = (ImageView) mView.findViewById(R.id.goodsImageView);
-        goodsImage.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 630 / 720));
+//        goodsImage.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 678 / 720));
 
-        RelativeLayout relativeLayout = (RelativeLayout) mView.findViewById(R.id.imageRl);
-        relativeLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 630 / 720));
+        relativeLayout = (RelativeLayout) mView.findViewById(R.id.imageRl);
+        relativeLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 678 / 720));
 
         iconView = (LinearLayout) mView.findViewById(R.id.iconView);
         iconOSaleView = (LinearLayout) mView.findViewById(R.id.iconOSaleView);
@@ -905,10 +906,9 @@ public class GoodsDetailsFragment extends BaseFragment {
                 for (int i = 0; i < 4; i++)
                 {
                     ImageView imageView = new ImageView(mContext);
-                    imageView.setImageResource(R.drawable.icon_loading_defalut);
-                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                    imageView.setBackgroundColor(Color.parseColor("#ffffff"));
-                    ToolUtils.setImageCacheUrl(urls.get(i), imageView,R.drawable.icon_loading_defalut);
+                    imageView.setImageResource(R.drawable.icon_loading_goods_details);
+                    imageView.setScaleType(ImageView.ScaleType.CENTER);
+                    ToolUtils.setImageCacheUrl(urls.get(i), imageView);
                     adPics.add(imageView);
                 }
             }
@@ -917,10 +917,9 @@ public class GoodsDetailsFragment extends BaseFragment {
                 for (String url : urls)
                 {
                     ImageView imageView = new ImageView(mContext);
-                    imageView.setImageResource(R.drawable.icon_loading_defalut);
-                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                    imageView.setBackgroundColor(Color.parseColor("#ffffff"));
-                    ToolUtils.setImageCacheUrl(url, imageView,R.drawable.icon_loading_defalut);
+                    imageView.setImageResource(R.drawable.icon_loading_goods_details);
+                    imageView.setScaleType(ImageView.ScaleType.CENTER);
+                    ToolUtils.setImageCacheUrl(url, imageView);
                     adPics.add(imageView);
                 }
             }
@@ -946,7 +945,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                 }
             }
             viewPager = (ViewPager) mView.findViewById(R.id.goods_adv_pager);
-            viewPager.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 630 / 720));
+            viewPager.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 678 / 720));
             imageAdapter = new GoodsImageAdapter(mContext, adPics);
             viewPager.setAdapter(imageAdapter);
             viewPager.setOnPageChangeListener(onPageChangeListener);
@@ -974,7 +973,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                         addCartGoods();
                     }
                 } else {
-                    scrollView.scrollTo(0, 600);
+                    scrollView.scrollTo(0, 380);
                     Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
                 }
             } else {
@@ -1055,7 +1054,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                 }
 
             } else {
-                scrollView.scrollTo(0, 600);
+                scrollView.scrollTo(0,380);
                 Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
             }
         }
@@ -1097,7 +1096,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                     detail = new GoodDetail(id, title, designer, total_count, price, cost_price, discount);
                     detail.setEnd_time(end_time);
 
-                    JSONArray imgsArray = merchandise.optJSONArray("imgs");
+                    JSONArray imgsArray = merchandise.optJSONArray("top_images");
                     if (imgsArray != null && imgsArray.length() > 0) {
                         ArrayList<String> imgsList = new ArrayList<String>();
                         for (int i = 0; i < imgsArray.length(); i++) {

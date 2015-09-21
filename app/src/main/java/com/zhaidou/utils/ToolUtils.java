@@ -177,8 +177,8 @@ public class ToolUtils
     {
         DisplayImageOptions options=new DisplayImageOptions.Builder()
                 .showImageOnLoading(resId)
-                .showImageForEmptyUri(R.drawable.icon_loading_osale)
-                .showImageOnFail(R.drawable.icon_loading_osale)
+                .showImageForEmptyUri(resId)
+                .showImageOnFail(resId)
                 .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .imageScaleType(ImageScaleType.EXACTLY)
