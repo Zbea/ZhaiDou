@@ -9,10 +9,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -100,7 +98,7 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
                 }
                 if (ToolUtils.isPhoneOk(email) && email.length() > 0)
                 {
-                    Intent intent=new Intent(this,RegisterSetPwdActivity.class);
+                    Intent intent=new Intent(this,AccountRegisterSetPwdActivity.class);
                     startActivity(intent);
 //                    doRegister();
                 }

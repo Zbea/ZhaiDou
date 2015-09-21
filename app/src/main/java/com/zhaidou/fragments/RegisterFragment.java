@@ -14,7 +14,6 @@ import android.app.Dialog;
  import android.view.LayoutInflater;
  import android.view.View;
  import android.view.ViewGroup;
- import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
  import android.widget.Toast;
@@ -23,8 +22,8 @@ import android.widget.TextView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
  import com.zhaidou.ZhaiDou;
- import com.zhaidou.activities.ItemDetailActivity;
-import com.zhaidou.activities.RegisterSetPwdActivity;
+import com.zhaidou.activities.AccountRegisterSetPwdActivity;
+import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseActivity;
  import com.zhaidou.base.BaseFragment;
  import com.zhaidou.dialog.CustomLoadingDialog;
@@ -131,7 +130,7 @@ import org.apache.http.HttpResponse;
                  }
                  if (ToolUtils.isPhoneOk(email) && email.length() > 0)
                  {
-                     Intent intent=new Intent(mContext,RegisterSetPwdActivity.class);
+                     Intent intent=new Intent(mContext,AccountRegisterSetPwdActivity.class);
                      startActivity(intent);
 //                     doRegister();
                  }

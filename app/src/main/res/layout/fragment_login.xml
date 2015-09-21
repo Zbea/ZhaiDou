@@ -192,20 +192,20 @@
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_marginLeft="15dp"
-            android:background="#d2d2d2"
+            android:background="#ccd2d2d2"
             android:layout_weight="1"/>
         <com.zhaidou.view.TypeFaceTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:textColor="@color/text_normal_color"
+            android:textColor="@color/edit_hint_gray"
             android:text="第三方登录"/>
         <View
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_weight="1"
             android:layout_marginRight="15dp"
-            android:background="#d2d2d2"/>
+            android:background="#ccd2d2d2"/>
     </LinearLayout>
 </RelativeLayout>

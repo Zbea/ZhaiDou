@@ -149,18 +149,6 @@ public class ShopOrderOkFragment extends BaseFragment
                         }
                     }
 
-//                    if (isljOsale)//清除购物车中的零元特卖
-//                    {
-//                        List<CartItem> itemsAll = CreatCartTools.selectByAll(creatCartDB, userId);
-//                        for (int i = 0; i < itemsAll.size(); i++)
-//                        {
-//                            if (itemsAll.get(i).isOSale.equals("true"))
-//                            {
-//                                CreatCartTools.deleteByData(creatCartDB, itemsAll.get(i));
-//                            }
-//                        }
-//                    }
-
                     if (isljOsale)
                     {
                         //发送刷新商品详情广播

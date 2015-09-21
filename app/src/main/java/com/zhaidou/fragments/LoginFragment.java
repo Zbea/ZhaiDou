@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.alibaba.sdk.android.callback.CallbackContext;
@@ -52,6 +53,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import cn.sharesdk.framework.Platform;
 import cn.sharesdk.framework.PlatformActionListener;
@@ -79,6 +82,12 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     private CustomEditText mPswView;
     private String strEmail;
     private Context mContext;
+
+    //dialog相关
+    private CustomEditText mCodeView,mPhoneView;
+    private TextView mGetCode;
+    private int initTime=60;
+    private Timer mTimer;
 
     private TextView mLoginView;
     private TextView headTitle;
@@ -205,16 +214,22 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                     mPswView.setShakeAnimation();
                     return;
                 }
-                if (ToolUtils.isEmailOK(strEmail) && strEmail.length() > 0)
+                else if (password.length()>16)
                 {
-                    saveEmail();
-                    new MyTask().execute();
+                    ToolUtils.setToast(mContext, "抱歉,您输入的密码过长");
+                    mPswView.setShakeAnimation();
+                    return;
                 }
-                else
+                else if (password.length()<6)
                 {
-                    mEmailView.setShakeAnimation();
-                    Toast.makeText(mContext,"抱歉,无效邮箱",Toast.LENGTH_SHORT).show();
+                    ToolUtils.setToast(mContext,"抱歉,您输入的密码过短");
+                    mPswView.setShakeAnimation();
                 }
+
+                saveEmail();
+                showVerifyDialog();
+//                new MyTask().execute();
+
                 break;
             case R.id.tv_register:
                 RegisterFragment fragment = RegisterFragment.newInstance(mParam1,"");
@@ -433,6 +448,98 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         plat.showUser(null);
     }
 
+
+    /**
+     * 验证手机号
+     */
+    private void showVerifyDialog()
+    {
+        View view= LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_phone_verify, null);
+        Dialog mDialog=new Dialog(mContext, R.style.custom_dialog);
+        mDialog.setCanceledOnTouchOutside(false);
+        mDialog.setCancelable(false);
+        mDialog.addContentView(view,new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mDialog.show();
+
+        mCodeView=(CustomEditText)view.findViewById(R.id.tv_code);
+        mPhoneView=(CustomEditText)view.findViewById(R.id.tv_phone);
+        mGetCode=(TextView)view.findViewById(R.id.bt_getCode);
+        mGetCode.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                codeTimer();
+            }
+        });
+        TextView okTv=(TextView)view.findViewById(R.id.bt_ok);
+        okTv.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                String code = mCodeView.getText().toString();
+                String phone = mPhoneView.getText().toString();
+                if (TextUtils.isEmpty(phone)) {
+                    mPhoneView.setShakeAnimation();
+                    return;
+                }
+                if (TextUtils.isEmpty(code)) {
+                    mCodeView.setShakeAnimation();
+                    return;
+                }
+                if (ToolUtils.isPhoneOk(phone))
+                {
+
+                }
+                else
+                {
+                    ToolUtils.setToast(mContext,"抱歉,无效手机号码");
+                }
+            }
+        });
+
+
+    }
+    /**
+     * 验证码倒计时事件处理
+     */
+    private void codeTimer()
+    {
+        initTime=60;
+        mGetCode.setBackgroundResource(R.drawable.btn_no_click_selector);
+        mGetCode.setText("重新获取("+initTime+")");
+        mGetCode.setClickable(false);
+        mTimer=new Timer();
+        mTimer.schedule(new MyTimer(), 1000, 1000);
+    }
+    /**
+     * 倒计时
+     */
+    class MyTimer extends TimerTask
+    {
+        @Override
+        public void run()
+        {
+            runOnUiThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    initTime = initTime - 1;
+                    mGetCode.setText("重新获取("+initTime+")");
+                    if (initTime <= 0)
+                    {
+                        mTimer.cancel();
+                        mGetCode.setText("获取验证码");
+                        mGetCode.setBackgroundResource(R.drawable.btn_green_click_bg);
+                        mGetCode.setClickable(true);
+                    }
+                }
+            });
+        }
+    }
+
     @Override
     public void onComplete(final Platform platform, int i,final HashMap<String, Object> stringObjectHashMap) {
         String plat =platform.getName();
@@ -578,5 +685,16 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_login));
+    }
+
+    @Override
+    public void onDestroyView()
+    {
+        if (mTimer!=null)
+        {
+            mTimer.cancel();
+            mTimer=null;
+        }
+        super.onDestroyView();
     }
 }

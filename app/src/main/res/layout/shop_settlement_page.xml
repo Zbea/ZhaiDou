@@ -89,6 +89,7 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
+
                             <com.zhaidou.view.TypeFaceTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -96,15 +97,16 @@
                                 android:textSize="13sp"
                                 android:textColor="@color/white"
                                 android:text="地址:"/>
-                        <com.zhaidou.view.TypeFaceTextView
-                            android:id="@+id/jsAddressinfoTv"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="13dp"
-                            android:layout_marginLeft="5dp"
-                            android:textSize="13sp"
-                            android:textColor="@color/white"
-                            android:text=""/>
+
+                            <com.zhaidou.view.TypeFaceTextView
+                                android:id="@+id/jsAddressinfoTv"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="13dp"
+                                android:layout_marginLeft="5dp"
+                                android:textSize="13sp"
+                                android:textColor="@color/white"
+                                android:text=""/>
                         </LinearLayout>
 
                     </LinearLayout>
@@ -169,6 +171,7 @@
                         android:src="@drawable/icon_arrow_right"/>
 
                 </LinearLayout>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
@@ -177,13 +180,13 @@
             </LinearLayout>
 
 
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginTop="@dimen/default_margin"
                 android:background="@drawable/content_part_bg">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -211,6 +214,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical">
                 </LinearLayout>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
@@ -221,6 +225,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/text_main_color"
+                    android:textColorHint="@color/edit_hint_gray"
                     android:gravity="center_vertical"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
@@ -231,7 +236,7 @@
                     android:background="@color/transparent"
                     android:hint="备注："></com.zhaidou.view.TypeFaceEditText>
 
-                </LinearLayout>
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -319,6 +324,7 @@
                         android:singleLine="true"
                         android:ellipsize="end"
                         android:marqueeRepeatLimit="marquee_forever"/>
+
                     <com.zhaidou.view.TypeFaceTextView
                         android:id="@+id/jsNofree"
                         android:layout_width="match_parent"
@@ -348,32 +354,128 @@
                     android:layout_height="1dp"
                     android:background="@color/line_color"/>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:gravity="center_vertical|right"
+                    android:paddingRight="10dp"
+                    android:orientation="horizontal">
 
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:textColor="@color/text_main_color"
+                        android:textSize="16sp"
+                        android:text="总计："/>
 
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/jsTotalMoney"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/red"
+                        android:textSize="18sp"
+                        android:text="￥ 4000"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/jsVerifyView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="@dimen/default_margin"
+                android:background="@drawable/content_part_bg"
+                >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/default_margin"
+                    android:gravity="center_vertical">
+
+                    <com.zhaidou.view.TypeFaceTextView
                         android:layout_width="match_parent"
-                        android:layout_height="45dp"
-                        android:gravity="center_vertical|right"
-                        android:paddingRight="10dp"
-                        android:orientation="horizontal">
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.0001"
+                        android:textColor="@color/text_main_color"
+                        android:textSize="16sp"
+                        android:text="验证手机"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:marqueeRepeatLimit="marquee_forever"/>
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/text_gary_color"
+                        android:textSize="13sp"
+                        android:layout_marginTop="1.5dp"
+                        android:text="(您的帐号还没有绑定手机,请绑定后完成支付)"
+                        android:singleLine="true"/>
+                </LinearLayout>
 
-                        <com.zhaidou.view.TypeFaceTextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="1.5dp"
-                            android:textColor="@color/text_main_color"
-                            android:textSize="16sp"
-                            android:text="总计："/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/line_color"/>
 
-                        <TextView
-                            android:id="@+id/jsTotalMoney"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/red"
-                            android:textSize="18sp"
-                            android:text="￥ 4000"/>
-
-                    </LinearLayout>
+                <com.zhaidou.view.CustomEditText
+                    android:id="@+id/tv_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/icon_edit_bg"
+                    android:textSize="14sp"
+                    android:singleLine="true"
+                    android:drawableRight="@drawable/cancel"
+                    android:paddingRight="@dimen/default_margin"
+                    android:drawablePadding="10dp"
+                    android:inputType="phone"
+                    android:maxLength="11"
+                    android:textColor="@color/text_main_color"
+                    android:textColorHint="@color/edit_hint_gray"
+                    android:hint="输入手机号"/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginLeft="@dimen/default_margin"
+                    android:background="@color/line_color"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    >
+                <com.zhaidou.view.CustomEditText
+                    android:id="@+id/tv_code"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/icon_edit_bg"
+                    android:textSize="14sp"
+                    android:singleLine="true"
+                    android:drawableRight="@drawable/cancel"
+                    android:paddingRight="@dimen/default_margin"
+                    android:drawablePadding="10dp"
+                    android:textColor="@color/text_main_color"
+                    android:textColorHint="@color/edit_hint_gray"
+                    android:hint="输入验证码"/>
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:clickable="true"
+                        android:id="@+id/bt_getCode"
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="85dp"
+                        android:layout_height="28dp"
+                        android:text="获取验证码"
+                        android:gravity="center"
+                        android:textColor="@color/white"
+                        android:textSize="13sp"
+                        android:background="@drawable/btn_green_click_bg"/>
+                </LinearLayout>
 
             </LinearLayout>
 

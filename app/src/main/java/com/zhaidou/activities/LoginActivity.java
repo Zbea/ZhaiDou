@@ -13,11 +13,14 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,6 +65,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import cn.sharesdk.framework.Platform;
 import cn.sharesdk.framework.PlatformActionListener;
@@ -80,13 +85,16 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     private CustomEditText mPswView;
     private String strEmail;
     private TextView headTitle;
-
     private TextView mLoginView;
-
     private Dialog mDialog;
-
     private RegisterFragment.RegisterOrLoginListener mRegisterOrLoginListener;
     private BackClickListener backClickListener;
+
+    //dialog相关
+    private CustomEditText mCodeView,mPhoneView;
+    private TextView mGetCode;
+    private int initTime=60;
+    private Timer mTimer;
 
     private static final int SHOW_DIALOG=1;
     private static final int CLOSE_DIALOG=2;
@@ -137,25 +145,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         }
     };
 
-    /**
-     * 输入邮箱改变事件
-     */
-    private TextWatcher textWatcher=new TextWatcher()
-    {
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3)
-        {
-        }
-        @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i2, int i3)
-        {
-            strEmail=charSequence.toString();
-        }
-        @Override
-        public void afterTextChanged(Editable editable)
-        {
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -172,7 +161,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 
         mEmailView=(CustomEditText)findViewById(R.id.tv_email);
         mEmailView.setText(strEmail);
-        mEmailView.addTextChangedListener(textWatcher);
         mPswView=(CustomEditText)findViewById(R.id.tv_password);
         mLoginView=(TextView)findViewById(R.id.bt_login);
         mRegisterView=(TextView)findViewById(R.id.tv_register);
@@ -216,7 +204,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         ShareSDK.initSDK(this);
         switch (view.getId()){
             case R.id.bt_login:
-                String email = mEmailView.getText().toString();
+                strEmail= mEmailView.getText().toString();
                 String password =mPswView.getText().toString();
                 if (TextUtils.isEmpty(strEmail)){
                     mEmailView.setShakeAnimation();
@@ -225,49 +213,54 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     mPswView.setShakeAnimation();
                     return;
                 }
-                if (ToolUtils.isEmailOK(strEmail))
+                else if (password.length()>16)
                 {
-                    saveEmail();
-                    final Map<String, String> params = new HashMap<String, String>();
-                    params.put("user_token[email]", email);
-                    params.put("user_token[password]", password);
-                    mDialog = CustomLoadingDialog.setLoadingDialog(LoginActivity.this, "登陆中");
-                    ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_URL, params, new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject jsonObject) {
-                            if (mDialog != null)
-                                mDialog.dismiss();
-                            if (jsonObject != null) {
-                                String msg = jsonObject.optString("message");
-                                if (!TextUtils.isEmpty(msg)) {
-                                    Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_LONG).show();
-                                    return;
-                                }
-                                JSONArray userArr = jsonObject.optJSONArray("users");
-                                for (int i = 0; i < userArr.length(); i++) {
-                                    JSONObject userObj = userArr.optJSONObject(i);
-                                    int id = userObj.optInt("id");
-                                    String email = userObj.optString("email");
-                                    String nick = userObj.optString("nick_name");
-                                    String token = jsonObject.optJSONObject("user_tokens").optString("token");
-                                    User user = new User(id, email, token, nick, null);
-                                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
-                                }
-                            }
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError volleyError) {
+                    ToolUtils.setToast(getApplicationContext(), "抱歉,您输入的密码过长");
+                    mPswView.setShakeAnimation();
+                    return;
+                }
+                else if (password.length()<6)
+                {
+                    ToolUtils.setToast(getApplicationContext(),"抱歉,您输入的密码过短");
+                    mPswView.setShakeAnimation();
+                }
+                saveEmail();
+                showVerifyDialog();
+//                    final Map<String, String> params = new HashMap<String, String>();
+//                    params.put("user_token[email]", email);
+//                    params.put("user_token[password]", password);
+//                    mDialog = CustomLoadingDialog.setLoadingDialog(LoginActivity.this, "登陆中");
+//                    ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_URL, params, new Response.Listener<JSONObject>() {
+//                        @Override
+//                        public void onResponse(JSONObject jsonObject) {
+//                            if (mDialog != null)
+//                                mDialog.dismiss();
+//                            if (jsonObject != null) {
+//                                String msg = jsonObject.optString("message");
+//                                if (!TextUtils.isEmpty(msg)) {
+//                                    Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_LONG).show();
+//                                    return;
+//                                }
+//                                JSONArray userArr = jsonObject.optJSONArray("users");
+//                                for (int i = 0; i < userArr.length(); i++) {
+//                                    JSONObject userObj = userArr.optJSONObject(i);
+//                                    int id = userObj.optInt("id");
+//                                    String email = userObj.optString("email");
+//                                    String nick = userObj.optString("nick_name");
+//                                    String token = jsonObject.optJSONObject("user_tokens").optString("token");
+//                                    User user = new User(id, email, token, nick, null);
+//                                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+//                                }
+//                            }
+//                        }
+//                    }, new Response.ErrorListener() {
+//                        @Override
+//                        public void onErrorResponse(VolleyError volleyError) {
+//
+//                        }
+//                    });
+//                    requestQueue.add(request);
 
-                        }
-                    });
-                    requestQueue.add(request);
-                }
-                else
-                {
-                    mEmailView.setShakeAnimation();
-                    Toast.makeText(this,"抱歉,无效邮箱",Toast.LENGTH_SHORT).show();
-                }
                 break;
             case R.id.tv_register:
                 startActivityForResult(new Intent(LoginActivity.this,RegisterActivity.class),200);
@@ -392,6 +385,98 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         }
         plat.showUser(null);
     }
+
+    /**
+     * 验证手机号
+     */
+    private void showVerifyDialog()
+    {
+        View view= LayoutInflater.from(this).inflate(R.layout.dialog_custom_phone_verify, null);
+        Dialog mDialog=new Dialog(this, R.style.custom_dialog);
+        mDialog.setCanceledOnTouchOutside(false);
+        mDialog.setCancelable(false);
+        mDialog.addContentView(view,new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mDialog.show();
+
+        mCodeView=(CustomEditText)view.findViewById(R.id.tv_code);
+        mPhoneView=(CustomEditText)view.findViewById(R.id.tv_phone);
+        mGetCode=(TextView)view.findViewById(R.id.bt_getCode);
+        mGetCode.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                codeTimer();
+            }
+        });
+        TextView okTv=(TextView)view.findViewById(R.id.bt_ok);
+        okTv.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                String code = mCodeView.getText().toString();
+                String phone = mPhoneView.getText().toString();
+                if (TextUtils.isEmpty(phone)) {
+                    mPhoneView.setShakeAnimation();
+                    return;
+                }
+                if (TextUtils.isEmpty(code)) {
+                    mCodeView.setShakeAnimation();
+                    return;
+                }
+                if (ToolUtils.isPhoneOk(phone))
+                {
+
+                }
+                else
+                {
+                    ToolUtils.setToast(getApplicationContext(),"抱歉,无效手机号码");
+                }
+            }
+        });
+
+
+    }
+    /**
+     * 验证码倒计时事件处理
+     */
+    private void codeTimer()
+    {
+        initTime=60;
+        mGetCode.setBackgroundResource(R.drawable.btn_no_click_selector);
+        mGetCode.setText("重新获取("+initTime+")");
+        mGetCode.setClickable(false);
+        mTimer=new Timer();
+        mTimer.schedule(new MyTimer(), 1000, 1000);
+    }
+    /**
+     * 倒计时
+     */
+    class MyTimer extends TimerTask
+    {
+        @Override
+        public void run()
+        {
+            runOnUiThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    initTime = initTime - 1;
+                    mGetCode.setText("重新获取("+initTime+")");
+                    if (initTime <= 0)
+                    {
+                        mTimer.cancel();
+                        mGetCode.setText("获取验证码");
+                        mGetCode.setBackgroundResource(R.drawable.btn_green_click_bg);
+                        mGetCode.setClickable(true);
+                    }
+                }
+            });
+        }
+    }
+
 
     @Override
     public void onComplete(final Platform platform, int i, final HashMap<String, Object> stringObjectHashMap) {
@@ -554,6 +639,11 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         if (mDialog!=null){
             mDialog.dismiss();
             mDialog=null;
+        }
+        if (mTimer!=null)
+        {
+            mTimer.cancel();
+            mTimer=null;
         }
         super.onDestroy();
     }

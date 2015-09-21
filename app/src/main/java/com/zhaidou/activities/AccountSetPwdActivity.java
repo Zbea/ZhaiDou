@@ -26,6 +26,7 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.User;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomEditText;
 
 import org.json.JSONArray;
@@ -76,6 +77,17 @@ public class AccountSetPwdActivity extends FragmentActivity {
                     if (TextUtils.isEmpty(pwd)) {
                         mPwdView.setShakeAnimation();
                         return;
+                    }
+                    else if (pwd.length()>16)
+                    {
+                        ToolUtils.setToast(getApplicationContext(), "抱歉,设置的密码过长");
+                        mPwdView.setShakeAnimation();
+                        return;
+                    }
+                    else if (pwd.length()<6)
+                    {
+                        ToolUtils.setToast(getApplicationContext(),"抱歉,设置的密码过短");
+                        mPwdView.setShakeAnimation();
                     }
                     doRegister();
                     break;

@@ -43,7 +43,8 @@
                 android:paddingRight="10dp"
                 android:drawablePadding="10dp"
                 android:layout_marginLeft="10dp"
-                android:inputType="textEmailAddress"
+                android:inputType="phone"
+                android:maxLength="11"
                 android:textColor="@color/text_main_color"
                 android:textColorHint="@color/edit_hint_gray"
                 android:hint="输入手机号"/>

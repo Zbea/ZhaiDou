@@ -26,6 +26,7 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.User;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomEditText;
 
 import org.json.JSONArray;
@@ -39,7 +40,7 @@ import java.util.TimerTask;
 /**
  * Created by roy on 15/9/16.
  */
-public class RegisterSetPwdActivity extends FragmentActivity {
+public class AccountRegisterSetPwdActivity extends FragmentActivity {
     private CustomEditText mCodeView,mPwdView;
     private TextView headTitle;
     private TextView mRegister,mGetCode;
@@ -83,6 +84,17 @@ public class RegisterSetPwdActivity extends FragmentActivity {
                     if (TextUtils.isEmpty(pwd)) {
                         mPwdView.setShakeAnimation();
                         return;
+                    }
+                    else if (pwd.length()>16)
+                    {
+                        ToolUtils.setToast(getApplicationContext(),"抱歉,设置的密码过长");
+                        mPwdView.setShakeAnimation();
+                        return;
+                    }
+                    else if (pwd.length()<6)
+                    {
+                        ToolUtils.setToast(getApplicationContext(),"抱歉,设置的密码过短");
+                        mPwdView.setShakeAnimation();
                     }
                     doRegister();
                     break;
@@ -173,7 +185,7 @@ public class RegisterSetPwdActivity extends FragmentActivity {
 
     private void doRegister(){
 
-        mDialog= CustomLoadingDialog.setLoadingDialog(RegisterSetPwdActivity.this, "注册中");
+        mDialog= CustomLoadingDialog.setLoadingDialog(AccountRegisterSetPwdActivity.this, "注册中");
         String code = mCodeView.getText().toString();
         Map<String, String> valueParams = new HashMap<String,String>();
         valueParams.put("user[email]", code);
@@ -185,7 +197,7 @@ public class RegisterSetPwdActivity extends FragmentActivity {
                 Object obj = jsonObject.opt("message");
                 if (obj!=null){
                     JSONArray errMsg =  jsonObject.optJSONArray("message");
-                    Toast.makeText(RegisterSetPwdActivity.this,errMsg.optString(0),Toast.LENGTH_LONG).show();
+                    Toast.makeText(AccountRegisterSetPwdActivity.this,errMsg.optString(0),Toast.LENGTH_LONG).show();
                     return;
                 }
 

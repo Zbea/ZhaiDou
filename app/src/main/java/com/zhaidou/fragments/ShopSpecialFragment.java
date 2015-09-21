@@ -90,7 +90,7 @@ public class ShopSpecialFragment extends BaseFragment
 
     private ViewPager viewPager;
     private LinearLayout tipsLine;//轮播指示标志
-    private List<SwitchImage> banners;
+    private List<SwitchImage> banners= new ArrayList<SwitchImage>();
     private ImageView[] dots;
     private List<View> adPics = new ArrayList<View>();
     private AdViewAdpater adpaters;
@@ -582,7 +582,7 @@ public class ShopSpecialFragment extends BaseFragment
     {
         String url = ZhaiDou.BannerUrl + 1;
         ToolUtils.setLog(url);
-        banners = new ArrayList<SwitchImage>();
+        banners.removeAll(banners);
         JsonObjectRequest bannerRequest = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
