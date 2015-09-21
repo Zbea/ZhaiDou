@@ -411,7 +411,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                                 }
 
                             } else {
-                                scrollView.scrollTo(0, 380);
+                                scrollView.scrollTo(0, 405);
                                 Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
                             }
                     } else {
@@ -973,7 +973,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                         addCartGoods();
                     }
                 } else {
-                    scrollView.scrollTo(0, 380);
+                    scrollView.scrollTo(0, 405);
                     Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
                 }
             } else {
@@ -1054,7 +1054,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                 }
 
             } else {
-                scrollView.scrollTo(0,380);
+                scrollView.scrollTo(0,405);
                 Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
             }
         }
