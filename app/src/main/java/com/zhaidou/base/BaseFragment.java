@@ -1,6 +1,5 @@
 package com.zhaidou.base;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -14,12 +13,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.activities.ItemDetailActivity;
@@ -62,7 +58,7 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     public static NetStateUtils netStateUtils;
     public static boolean isNetState;
     protected Context mContext;
-
+    protected boolean isDialogFirstVisible=true;
 
 
     @Override

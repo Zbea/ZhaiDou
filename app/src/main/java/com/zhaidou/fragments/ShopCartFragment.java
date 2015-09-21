@@ -1,6 +1,7 @@
 package com.zhaidou.fragments;
 
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -94,6 +95,7 @@ public class ShopCartFragment extends BaseFragment
     private List<View> views=new ArrayList<View>();
     private CartItem mCartItem;
     private boolean isBuySuccess;
+    private OnCartNumChangeListener mListener;
 
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
@@ -162,6 +164,7 @@ public class ShopCartFragment extends BaseFragment
                             {
                                 mCartItem.num = mCartItem.num + 1;
                                 CreatCartTools.editNumByData(creatCartDB, mCartItem);
+                                mListener.onCartNumIncrease(1);
                                 sendBroadCastEditAll();
                                 textNumView.setText("" + mCartItem.num);
                             } else
@@ -185,6 +188,7 @@ public class ShopCartFragment extends BaseFragment
                                 mCartItem.num = mCartItem.num - 1;
                             }
                             CreatCartTools.editNumByData(creatCartDB, mCartItem);
+                            mListener.onCartNumDecrease(1);
                             sendBroadCastEditAll();
                             textNumView.setText("" + mCartItem.num);
 
@@ -317,7 +321,16 @@ public class ShopCartFragment extends BaseFragment
         return mView;
     }
 
-
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnCartNumChangeListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnCartNumChangeListener");
+        }
+    }
     /**
      * 初始化数据
      */
@@ -372,6 +385,7 @@ public class ShopCartFragment extends BaseFragment
     {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsSubTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
         mContext.registerReceiver(broadcastReceiver, intentFilter);
     }
@@ -408,6 +422,7 @@ public class ShopCartFragment extends BaseFragment
                             ToolUtils.setLog("修改是否下架");
                             ToolUtils.setLog(itemServer.isPublish);
                             CreatCartTools.editIsLoseByData(creatCartDB, itemServer);//修改本地数据
+                            mListener.onCartNumDecrease(itemLocal.num);
                         }
                         if (!itemServer.isOver.equals(itemLocal.isOver))
                         {
@@ -415,6 +430,7 @@ public class ShopCartFragment extends BaseFragment
                             ToolUtils.setLog("修改是否卖光");
                             ToolUtils.setLog(itemServer.isPublish);
                             CreatCartTools.editIsOverByData(creatCartDB, itemServer);//修改本地数据
+                            mListener.onCartNumDecrease(itemLocal.num);
                         }
                         if (!itemServer.isDate.equals(itemLocal.isDate))
                         {
@@ -426,10 +442,11 @@ public class ShopCartFragment extends BaseFragment
                 }
             }
         }
-        sendBroadCastEditAll();
+        sendBroadCastEditSub();
         addCartGoods();
 
     }
+
 
     /**
      * 添加商品信息
@@ -619,6 +636,13 @@ public class ShopCartFragment extends BaseFragment
     {
         //发送数量修改广播
         Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
+        mContext.sendBroadcast(intent);
+    }
+
+    public void sendBroadCastEditSub()
+    {
+        //发送数量修改广播
+        Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsSubTag);
         mContext.sendBroadcast(intent);
     }
 
@@ -822,6 +846,9 @@ public class ShopCartFragment extends BaseFragment
         mContext.unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
+    public interface OnCartNumChangeListener{
+        public void onCartNumIncrease(int num);
 
-
+        public void onCartNumDecrease(int num);
+    }
 }

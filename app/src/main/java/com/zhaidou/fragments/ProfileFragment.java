@@ -58,7 +58,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class ProfileFragment extends BaseFragment implements View.OnClickListener, PhotoMenuFragment.MenuSelectListener,
         ProfileEditFragment.RefreshDataListener {
     private static final String ARG_PARAM1 = "param1";
@@ -123,14 +122,14 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     tv_intro.setText(TextUtils.isEmpty(user.getDescription()) ? "" : user.getDescription());
                     tv_mobile.setText(TextUtils.isEmpty(user.getMobile()) ? "" : user.getMobile());
                     tv_job.setText(user.isVerified() ? "宅豆认证设计师" : "未认证设计师");
-                    tv_addr_mobile.setText(TextUtils.isEmpty(user.getMobile()) ? "" : user.getMobile());
-                    tv_addr.setText(TextUtils.isEmpty(user.getAddress2()) ? "" : user.getAddress2());
-                    tv_addr_username.setText(TextUtils.isEmpty(user.getFirst_name()) ? "" : user.getFirst_name());
+                    tv_addr_mobile.setText(TextUtils.isEmpty(user.getMobile()) ? "" :user.getMobile());
+                    tv_addr.setText(TextUtils.isEmpty(user.getAddress2()) ? "" :user.getAddress2());
+                    tv_addr_username.setText(TextUtils.isEmpty(user.getFirst_name()) ? "" :user.getFirst_name());
                     if (TextUtils.isEmpty(user.getAddress2()) || "null".equals(user.getAddress2())) {
                         ll_addr_info.setVisibility(View.GONE);
                     } else {
                         ll_addr_info.setVisibility(View.VISIBLE);
-                        tv_addr.setText(user.getAddress2());
+                        tv_addr.setText(TextUtils.isEmpty(user.getAddress2()) ? "" :user.getAddress2());
                     }
                     break;
                 case UPDATE_USER_INFO:
@@ -309,7 +308,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
      * 设置开始加载进度
      */
     private void setStartLoading() {
-        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
+        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading",true);
     }
 
     /**

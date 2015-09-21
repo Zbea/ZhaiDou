@@ -86,30 +86,68 @@
             android:layout_marginTop="10dp"
             android:background="@color/white"
             android:orientation="horizontal">
-            <com.zhaidou.view.TypeFaceTextView
-                android:id="@+id/tv_addr_username"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="20dp"
-                android:textColor="#666666"
-                android:text="Scoield"/>
-            <com.zhaidou.view.TypeFaceTextView
-                android:id="@+id/tv_addr_mobile"
+                android:orientation="horizontal">
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="20dp"
+                    android:text="姓名:"
+                    android:textColor="#666666" />
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/tv_addr_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#666666" />
+            </LinearLayout>
+
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
-                android:text="185*****123"/>
+                android:orientation="horizontal">
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="手机:"
+                    android:textColor="#666666" />
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/tv_addr_mobile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#666666" />
+            </LinearLayout>
         </LinearLayout>
-        <com.zhaidou.view.TypeFaceTextView
-            android:id="@+id/tv_addr"
-            android:background="@color/white"
-            android:textColor="#666666"
-            android:paddingLeft="20dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:text="广东省,深圳市,福田区,卓越世纪中心,3栋B座1518室"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="horizontal"
+            android:paddingBottom="10dp"
+            android:paddingLeft="20dp"
+            android:paddingTop="10dp">
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:text="地址:"
+                android:textColor="#666666" />
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/tv_addr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:textColor="#666666" />
+        </LinearLayout>
         <RelativeLayout
             android:layout_width="match_parent"
             android:paddingTop="10dp"

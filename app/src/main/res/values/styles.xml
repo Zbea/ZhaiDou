@@ -74,11 +74,13 @@
     </style>
 
     <style name="CustomTabPageIndicator" parent="Widget.TabPageIndicator">
-        <item name="android:background">@drawable/custom_tab_indicator</item>
+        <!--<item name="android:background">@drawable/custom_tab_indicator</item>-->
+        <item name="android:background">@drawable/goods_options_selector</item>
         <item name="android:textAppearance">@style/CustomTabPageIndicator.Text</item>
-        <item name="android:textColor">@drawable/tab_title_selector</item>
+        <item name="android:textColor">@color/search_tab_title</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:divider">@drawable/custom_tab_indicator_divider</item>
+        <item name="android:divider">@null</item>
+        <!--<item name="android:divider">@drawable/custom_tab_indicator_divider</item>-->
         <!--<item name="android:dividerPadding">10dp</item>-->
         <item name="android:showDividers">middle</item>
         <!--<item name="android:paddingLeft">8dp</item>-->
@@ -141,5 +143,8 @@
         <item name="android:windowExitAnimation">@anim/bottom_down</item>
         <item name="android:backgroundDimEnabled">true</item>
     </style>
-
+    <style name="anim_slide_in_from_right">
+        <item name="android:windowEnterAnimation">@anim/page_enter_into_the</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
 </resources>

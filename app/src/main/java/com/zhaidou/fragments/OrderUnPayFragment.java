@@ -49,7 +49,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-
 public class OrderUnPayFragment extends BaseFragment implements View.OnClickListener{
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -75,7 +74,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
     private MyTimer timer;
     private String token;
     private Context mContext;
-    private boolean isTimerStart = false;
+    private boolean isTimerStart = true;
     private boolean isNoFree;//是否不免邮，当只有一个商品且为零元特卖时为真
     private long preTime = 0;
     private long timeStmp = 0;
@@ -241,7 +240,8 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
     }
 
     private void initData() {
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading",isDialogFirstVisible);
+        isDialogFirstVisible=false;
         if (NetworkUtils.isNetworkAvailable(mContext)) {
             mNetErrorView.setVisibility(View.GONE);
             loadingView.setVisibility(View.GONE);

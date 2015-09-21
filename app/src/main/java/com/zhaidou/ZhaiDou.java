@@ -153,6 +153,10 @@ public class ZhaiDou {
      */
     public static String IntentRefreshCartGoodsTag="com.zhaidou.home.refesh.cart.goods";
     /**
+     *  购物车商品减一
+     */
+    public static String IntentRefreshCartGoodsSubTag="com.zhaidou.home.refesh.cart.goods.sub";
+    /**
      * 购物车选中商品刷新
      */
     public static String IntentRefreshCartGoodsCheckTag="com.zhaidou.home.refesh.cart.goods.check";

@@ -569,12 +569,12 @@ public class HomeFragment extends BaseFragment implements
 
             case R.id.ll_special_shop:
                 ShopSpecialFragment shopSpecialFragment = ShopSpecialFragment.newInstance("", 0);
-                ((MainActivity) getActivity()).navigationToFragment(shopSpecialFragment);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopSpecialFragment);
                 break;
 
             case R.id.ll_sale:
                 SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragment(specialSaleFragment);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment);
                 break;
             case R.id.ll_forward:
                 Intent intent1 = new Intent();
@@ -683,7 +683,8 @@ public class HomeFragment extends BaseFragment implements
             mCategoryView.setImageResource(R.drawable.icon_close);
             fl_category_menu.setVisibility(View.VISIBLE);
 
-            getChildFragmentManager().beginTransaction().show(homeCategoryFragment).commit();
+            getChildFragmentManager().beginTransaction().setCustomAnimations(R.anim
+            .slide_in_from_top,R.anim.slide_out_to_top).show(homeCategoryFragment).commit();
         } else
         {
             mCategoryView.setImageResource(R.drawable.icon_category);

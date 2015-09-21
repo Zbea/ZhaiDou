@@ -30,6 +30,8 @@
 
 
 
+    <color name="search_tab_title">#3fcccb</color>
+
 
     <color name="text_sort_selected">#ff6f6f</color>
     <color name="text_sort_normal">#7f7f7f</color>

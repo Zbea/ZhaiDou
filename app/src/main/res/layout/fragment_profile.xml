@@ -482,30 +482,70 @@
                     android:orientation="horizontal"
                     android:paddingTop="10dp">
 
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:id="@+id/tv_addr_username"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingLeft="20dp"
+                        android:orientation="horizontal">
+
+                        <com.zhaidou.view.TypeFaceTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="20dp"
+                            android:text="姓名:"
+                            android:textColor="#666666" />
+
+                        <com.zhaidou.view.TypeFaceTextView
+                            android:id="@+id/tv_addr_username"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#666666" />
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:orientation="horizontal">
+
+                        <com.zhaidou.view.TypeFaceTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="手机:"
+                            android:textColor="#666666" />
+
+                        <com.zhaidou.view.TypeFaceTextView
+                            android:id="@+id/tv_addr_mobile"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#666666" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:orientation="horizontal"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="20dp"
+                    android:paddingTop="10dp">
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        android:text="地址:"
                         android:textColor="#666666" />
 
                     <com.zhaidou.view.TypeFaceTextView
-                        android:id="@+id/tv_addr_mobile"
+                        android:id="@+id/tv_addr"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp" />
+                        android:background="@color/white"
+                        android:textColor="#666666" />
                 </LinearLayout>
-
-                <com.zhaidou.view.TypeFaceTextView
-                    android:id="@+id/tv_addr"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
-                    android:background="@color/white"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="20dp"
-                    android:paddingTop="10dp"
-                    android:textColor="#666666" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"

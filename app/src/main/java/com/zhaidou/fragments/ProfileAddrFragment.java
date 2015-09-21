@@ -111,7 +111,7 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
         tv_save.setOnClickListener(this);
         tv_edit.setOnClickListener(this);
         tv_delete.setOnClickListener(this);
-        if (TextUtils.isEmpty(mNickName)||TextUtils.isEmpty(mMobile)||TextUtils.isEmpty(mAddress)){
+        if (TextUtils.isEmpty(mNickName)&&TextUtils.isEmpty(mMobile)&&TextUtils.isEmpty(mAddress)){
             ll_edit_addr.setVisibility(View.VISIBLE);
             ll_manage_address.setVisibility(View.GONE);
         }else {
@@ -154,9 +154,9 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
             case R.id.tv_edit:
                 ll_edit_addr.setVisibility(View.VISIBLE);
                 ll_manage_address.setVisibility(View.GONE);
-                et_addr.setHint(mAddress);
-                et_mobile.setHint(mMobile);
-                et_name.setHint(mNickName);
+                et_addr.setText(mAddress);
+                et_mobile.setText(mMobile);
+                et_name.setText(mNickName);
                 break;
             case R.id.tv_delete:
                 Log.i("tv_addr_username.getText().toString()--->",tv_addr_username.getText().toString());

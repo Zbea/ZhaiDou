@@ -4,8 +4,6 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,8 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -23,9 +19,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
@@ -33,26 +26,15 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomeCompetitionActivity;
 import com.zhaidou.adapter.RecommendAdapter;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.base.BaseListAdapter;
-import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.model.GoodDetail;
-import com.zhaidou.model.GoodInfo;
 import com.zhaidou.model.RecommendItem;
-import com.zhaidou.model.ShopSpecialItem;
-import com.zhaidou.model.ShopTodayItem;
-import com.zhaidou.sqlite.CreatCartTools;
-import com.zhaidou.utils.PixelUtil;
 import com.zhaidou.utils.ToolUtils;
-import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * Created by roy on 15/8/28.
@@ -158,7 +140,7 @@ public class SettingRecommendFragment extends BaseFragment {
      * 初始化
      */
     private void initView() {
-        mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"loading");
+        mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"loading",true);
         backBtn = (TextView) mView.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(onClickListener);
         headTitle = (TextView) mView.findViewById(R.id.title_tv);
@@ -205,7 +187,7 @@ public class SettingRecommendFragment extends BaseFragment {
                     lists.add(recommendItem);
 
                 }
-                mHandler.obtainMessage(1).sendToTarget();
+                mHandler.sendEmptyMessage(1);
             }
         }, new Response.ErrorListener()
         {

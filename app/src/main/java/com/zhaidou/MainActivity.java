@@ -1,52 +1,11 @@
 package com.zhaidou;
 
-import com.alibaba.sdk.android.AlibabaSDK;
-import com.alibaba.sdk.android.callback.CallbackContext;
-import com.alibaba.sdk.android.callback.InitResultCallback;
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpClientStack;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.activities.LoginActivity;
-import com.zhaidou.base.BaseActivity;
-import com.zhaidou.dialog.CustomVersionUpdateDialog;
-import com.zhaidou.fragments.CategoryFragment1;
-import com.zhaidou.fragments.DiyFragment;
-import com.zhaidou.fragments.ElementListFragment;
-import com.zhaidou.fragments.HomeCategoryFragment;
-import com.zhaidou.fragments.HomeFragment;
-import com.zhaidou.fragments.LoginFragment;
-import com.zhaidou.fragments.PersonalFragment;
-import com.zhaidou.fragments.RegisterFragment;
-import com.zhaidou.fragments.ShopPaymentFailFragment;
-import com.zhaidou.fragments.ShopPaymentFragment;
-import com.zhaidou.fragments.ShopPaymentSuccessFragment;
-import com.zhaidou.fragments.StrategyFragment;
-import com.zhaidou.fragments.WebViewFragment;
-import com.zhaidou.model.Area;
-import com.zhaidou.model.CartItem;
-import com.zhaidou.model.City;
-import com.zhaidou.model.Province;
-import com.zhaidou.model.User;
-import com.zhaidou.model.ZhaiDouRequest;
-import com.zhaidou.sqlite.CreatCartDB;
-import com.zhaidou.sqlite.CreatCartTools;
-import com.zhaidou.utils.NetService;
-import com.zhaidou.utils.SharedPreferencesUtil;
-import com.zhaidou.utils.ToolUtils;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -71,6 +30,48 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.sdk.android.AlibabaSDK;
+import com.alibaba.sdk.android.callback.CallbackContext;
+import com.alibaba.sdk.android.callback.InitResultCallback;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpClientStack;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.umeng.analytics.MobclickAgent;
+import com.zhaidou.activities.LoginActivity;
+import com.zhaidou.base.BaseActivity;
+import com.zhaidou.dialog.CustomVersionUpdateDialog;
+import com.zhaidou.fragments.CategoryFragment1;
+import com.zhaidou.fragments.DiyFragment;
+import com.zhaidou.fragments.ElementListFragment;
+import com.zhaidou.fragments.GoodsDetailsFragment;
+import com.zhaidou.fragments.HomeCategoryFragment;
+import com.zhaidou.fragments.HomeFragment;
+import com.zhaidou.fragments.LoginFragment;
+import com.zhaidou.fragments.PersonalFragment;
+import com.zhaidou.fragments.RegisterFragment;
+import com.zhaidou.fragments.ShopCartFragment;
+import com.zhaidou.fragments.ShopPaymentFailFragment;
+import com.zhaidou.fragments.ShopPaymentFragment;
+import com.zhaidou.fragments.ShopPaymentSuccessFragment;
+import com.zhaidou.fragments.StrategyFragment;
+import com.zhaidou.fragments.WebViewFragment;
+import com.zhaidou.model.Area;
+import com.zhaidou.model.CartItem;
+import com.zhaidou.model.City;
+import com.zhaidou.model.Province;
+import com.zhaidou.model.User;
+import com.zhaidou.model.ZhaiDouRequest;
+import com.zhaidou.sqlite.CreatCartDB;
+import com.zhaidou.sqlite.CreatCartTools;
+import com.zhaidou.utils.NetService;
+import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
+
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -86,7 +87,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         StrategyFragment.OnFragmentInteractionListener,
         ElementListFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
         HomeFragment.OnFragmentInteractionListener, CategoryFragment1.OnFragmentInteractionListener,
-        RegisterFragment.RegisterOrLoginListener {
+        RegisterFragment.RegisterOrLoginListener,GoodsDetailsFragment.OnCartNumChangeListener,ShopCartFragment.OnCartNumChangeListener{
 
     private Fragment utilityFragment;
     private Fragment beautyHomeFragment;
@@ -126,22 +127,22 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private final int WX_PAY_CANCEL = -2;
     public static List<Province> provinceList = new ArrayList<Province>();
 
-    public static int num = 0;
+    public int num = 0;
     private List<CartItem> items = new ArrayList<CartItem>();
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag)) {
-                initCartTips();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
-                initCartTips();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag)) {
-                initCartTips();
-            }
+//            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag)) {
+//                initCartTips();
+//            }
+//            if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
+//                initCartTips();
+//            }
+//            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag)) {
+//                initCartTips();
+//            }
             if (action.equalsIgnoreCase(ZhaiDou.BROADCAST_WXAPI_FILTER)) {
                 System.out.println("MainActivity.onReceive");
                 List<Fragment> fragments = getSupportFragmentManager().getFragments();
@@ -149,18 +150,18 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 Log.i("result---------------->", result + "------" + fragments.size());
                 if (fragments.size() > 1) {
                     Fragment fragment = fragments.get(fragments.size() - 1);
-                    Fragment shopPaymentFragment=getSupportFragmentManager().findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
-                    Fragment shopPaymentFailFragment=getSupportFragmentManager().findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
+                    Fragment shopPaymentFragment = getSupportFragmentManager().findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
+                    Fragment shopPaymentFailFragment = getSupportFragmentManager().findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
 
-                    if (shopPaymentFragment!=null){
+                    if (shopPaymentFragment != null) {
                         ((ShopPaymentFragment) shopPaymentFragment).setPayment();
                     }
                     if (shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment) {
                         ((ShopPaymentFailFragment) shopPaymentFailFragment).handleWXPayResult(result);
-                    }else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment) {
+                    } else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment) {
                         ((ShopPaymentFragment) shopPaymentFragment).setPayment();
                         ((ShopPaymentFragment) shopPaymentFragment).handleWXPayResult(result);
-                    }else {
+                    } else {
                         System.out.println("MainActivity.onReceive--------->null------------>");
                     }
                 }
@@ -186,7 +187,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 case 1:
                     serverCode = parseJosn(msg.obj.toString());
                     if (serverCode > ZDApplication.localVersionCode) {
-                        CustomVersionUpdateDialog customVersionUpdateDialog = new CustomVersionUpdateDialog(mContext, serverName,serverUrl);
+                        CustomVersionUpdateDialog customVersionUpdateDialog = new CustomVersionUpdateDialog(mContext, serverName, serverUrl);
                         customVersionUpdateDialog.checkUpdateInfo();
                     }
 
@@ -200,7 +201,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main_layout);
         iv_dot = (ImageView) findViewById(R.id.iv_dot);
-        viewLayout=(LinearLayout)findViewById(R.id.content);
+        viewLayout = (LinearLayout) findViewById(R.id.content);
         mContext = this;
         init();
         initBroadcastReceiver();
@@ -233,27 +234,27 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-        final String channel=appInfo.metaData.getString("UMENG_CHANNEL");
+        final String channel = appInfo.metaData.getString("UMENG_CHANNEL");
         Log.d("appInfo---", " msg == " + channel);
         String imei = ((TelephonyManager) getSystemService(TELEPHONY_SERVICE))
                 .getDeviceId();
-        Map<String,String> map=new HashMap<String, String>();
-        map.put("device_token[device_token]",imei);
-        ZhaiDouRequest request=new ZhaiDouRequest(Request.Method.POST,ZhaiDou.URL_STATISTICS,map,new Response.Listener<JSONObject>() {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("device_token[device_token]", imei);
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.URL_STATISTICS, map, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                System.out.println("ZDApplication.onResponse---->"+jsonObject.toString());
+                System.out.println("ZDApplication.onResponse---->" + jsonObject.toString());
             }
-        },new Response.ErrorListener() {
+        }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
 
             }
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> header=new HashMap<String, String>();
-                header.put("Zd_Client",channel);
+                Map<String, String> header = new HashMap<String, String>();
+                header.put("Zd_Client", channel);
                 return header;
             }
         };
@@ -281,9 +282,9 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
      */
     private void initBroadcastReceiver() {
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+//        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
+//        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
+//        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
         intentFilter.addAction(ZhaiDou.BROADCAST_WXAPI_FILTER);
         mContext.registerReceiver(broadcastReceiver, intentFilter);
     }
@@ -299,16 +300,22 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
      * 红色标识提示显示数量
      */
     private void initCartTips() {
-        num = 0;
-        if (checkLogin()) {
-            getGoodsItems();
-            for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).isPublish.equals("false") && items.get(i).isOver.equals("false")) {
-                    num = num + items.get(i).num;
+        num=0;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                if (checkLogin()) {
+                    getGoodsItems();
+                    for (int i = 0; i < items.size(); i++) {
+                        if (items.get(i).isPublish.equals("false") && items.get(i).isOver.equals("false")) {
+                            num = num + items.get(i).num;
+                        }
+                        System.out.println("MainActivity.run--------->"+num);
+                    }
                 }
             }
-        }
-
+        }).start();
     }
 
     /**
@@ -319,6 +326,10 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         //遍历获得这个当前uesrId的所有商品
         items = CreatCartTools.selectByAll(creatCartDB, id);
 
+    }
+
+    public int getNum() {
+        return num;
     }
 
     public void initComponents() {
@@ -435,8 +446,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             currentFragment = to;
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
-            if (!to.isAdded())
-            {
+            if (!to.isAdded()) {
                 transaction.hide(from).add(R.id.content, to).commit();
             } else {
                 transaction.hide(from).show(to).commit();
@@ -507,6 +517,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         return serverCode;
     }
 
+
     @Override
     protected void onDestroy() {
         unregisterReceiver(broadcastReceiver);
@@ -528,13 +539,10 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         int num = manager.getBackStackEntryCount();
         List<Fragment> fragments = manager.getFragments();
         //当分类显示时候，返回先隐藏
-        for (Fragment fragment:fragments)
-        {
-            if (fragment instanceof HomeFragment)
-            {
-                Fragment homeCategoryFragment=fragment.getChildFragmentManager().findFragmentByTag(HomeCategoryFragment.class.getSimpleName());
-                if (!homeCategoryFragment.isHidden())
-                {
+        for (Fragment fragment : fragments) {
+            if (fragment instanceof HomeFragment) {
+                Fragment homeCategoryFragment = fragment.getChildFragmentManager().findFragmentByTag(HomeCategoryFragment.class.getSimpleName());
+                if (!homeCategoryFragment.isHidden()) {
                     ((HomeFragment) fragment).getHomeCategory();
                     fragment.getChildFragmentManager().beginTransaction().hide(homeCategoryFragment).commit();
                     return true;
@@ -553,20 +561,18 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         } else {
             if (fragments.size() > 0) {
-                Fragment shopPaymentSuccessFragmen=manager.findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
-                Fragment shopPaymentFailFragment=manager.findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
-                Fragment shopPaymentFragment=manager.findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
-                if ((shopPaymentSuccessFragmen != null && shopPaymentSuccessFragmen instanceof ShopPaymentSuccessFragment )) {
+                Fragment shopPaymentSuccessFragmen = manager.findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
+                Fragment shopPaymentFailFragment = manager.findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
+                Fragment shopPaymentFragment = manager.findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
+                if ((shopPaymentSuccessFragmen != null && shopPaymentSuccessFragmen instanceof ShopPaymentSuccessFragment)) {
                     //ShopPaymentSuccessFragment关闭
                     popToStack(shopPaymentSuccessFragmen);
                     return true;
-                }else if (shopPaymentFailFragment!=null&& shopPaymentFailFragment instanceof ShopPaymentFailFragment){
+                } else if (shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment) {
                     //ShopPaymentFailFragment关闭
                     popToStack(shopPaymentFailFragment);
                     return true;
-                }
-                else if(shopPaymentFragment!=null&& shopPaymentFragment instanceof ShopPaymentFragment)
-                {
+                } else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment) {
                     //ShopPaymentFragment返回弹出提示
                     BackPaymentDialog(shopPaymentFragment);
                     return true;
@@ -580,10 +586,10 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     /**
      * 收银台返回弹窗处理
+     *
      * @param shopPaymentFragment
      */
-    private void BackPaymentDialog(final Fragment shopPaymentFragment)
-    {
+    private void BackPaymentDialog(final Fragment shopPaymentFragment) {
         final Dialog dialog = new Dialog(this, R.style.custom_dialog);
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_custom_collect_hint, null);
         TextView textView = (TextView) dialogView.findViewById(R.id.tv_msg);
@@ -596,8 +602,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         });
         TextView okTv = (TextView) dialogView.findViewById(R.id.okTv);
-        okTv.setOnClickListener(new View.OnClickListener()
-        {
+        okTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
@@ -611,15 +616,12 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     }
 
     public void toHomeFragment() {
-        if (currentFragment instanceof HomeFragment)
-        {
+        if (currentFragment instanceof HomeFragment) {
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
             transaction.show(currentFragment).commit();
-        }
-        else
-        {
-            if (utilityFragment!=null)
+        } else {
+            if (utilityFragment != null)
                 selectFragment(currentFragment, utilityFragment);
             setButton(homeButton);
         }
@@ -628,17 +630,12 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     /**
      * 清除除开首页的全部fragment
      */
-    public void allfragment()
-    {
-        FragmentManager manager=getSupportFragmentManager();
+    public void allfragment() {
+        FragmentManager manager = getSupportFragmentManager();
         List<Fragment> fragments = manager.getFragments();
-        for (Fragment fragment:fragments)
-        {
-            if (fragment instanceof HomeFragment ||fragment instanceof PersonalFragment||fragment instanceof StrategyFragment||fragment instanceof CategoryFragment1||fragment instanceof DiyFragment)
-            {
-            }
-            else
-            {
+        for (Fragment fragment : fragments) {
+            if (fragment instanceof HomeFragment || fragment instanceof PersonalFragment || fragment instanceof StrategyFragment || fragment instanceof CategoryFragment1 || fragment instanceof DiyFragment) {
+            } else {
                 manager.popBackStack();
                 manager.beginTransaction().remove(fragment).commit();
             }
@@ -718,4 +715,17 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         super.onPause();
         MobclickAgent.onPause(this);
     }
+
+    @Override
+    public void onCartNumIncrease(int count) {
+        System.out.println("MainActivity.onCartNumIncrease---------->"+num);
+        num+=count;
+    }
+
+    @Override
+    public void onCartNumDecrease(int count) {
+        System.out.println("MainActivity.onCartNumDecrease-------->"+num);
+        num-=count;
+    }
+
 }

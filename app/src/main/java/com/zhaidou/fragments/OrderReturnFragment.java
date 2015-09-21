@@ -193,7 +193,8 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
         });
     }
     private void initData() {
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading",isDialogFirstVisible);
+        isDialogFirstVisible=false;
         if (NetworkUtils.isNetworkAvailable(mContext)) {
             mNetErrorView.setVisibility(View.GONE);
             loadingView.setVisibility(View.GONE);

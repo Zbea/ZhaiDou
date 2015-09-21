@@ -187,7 +187,7 @@ public class OrderDetailFragment extends BaseFragment {
 
     private void initView(View view) {
         mContext = getActivity();
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading",true);
         loadingView= (LinearLayout) view.findViewById(R.id.loadingView);
         mOrderNumber = (TextView) view.findViewById(R.id.tv_order_number);
         mOrderTime = (TextView) view.findViewById(R.id.tv_order_time);
@@ -208,7 +208,13 @@ public class OrderDetailFragment extends BaseFragment {
         mListView.setAdapter(orderItemAdapter);
         mListView.setOnItemClickListener(onItemClickListener);
         requestQueue = Volley.newRequestQueue(getActivity());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
         FetchOrderDetail(mOrderId);
+            }
+        },300);
 
         mCancelOrder.setOnClickListener(this);
 //        if (mOrder != null && "678".contains(mOrder.getStatus())) {

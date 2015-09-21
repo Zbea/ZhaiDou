@@ -431,7 +431,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     }
 
     private void initData() {
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading",true);
         if (NetworkUtils.isNetworkAvailable(mContext)) {
             mNetErrorView.setVisibility(View.GONE);
             loadingView.setVisibility(View.GONE);

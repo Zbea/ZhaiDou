@@ -80,6 +80,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     private DialogUtils mDialogUtil;
 
     private Dialog mDialog;
+    boolean isDialogFirstVisible=true;
     private RequestQueue mRequestQueue;
     private ListView mListview;
     private AddressAdapter addressAdapter;
@@ -150,7 +151,8 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
 
     private void initView(View view) {
 
-        mDialog=CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading",true);
+        isDialogFirstVisible=false;
         mDialogUtil=new DialogUtils(mContext);
         loadingView=(LinearLayout)view.findViewById(R.id.loadingView);
         mListview = (ListView) view.findViewById(R.id.lv_addresses);

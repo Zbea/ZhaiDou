@@ -20,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -33,7 +32,6 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.activities.WebViewActivity;
@@ -42,9 +40,12 @@ import com.zhaidou.adapter.GoodsImageAdapter;
 import com.zhaidou.adapter.ShopSpecialAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.model.CartItem;
 import com.zhaidou.model.Category;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.SwitchImage;
+import com.zhaidou.sqlite.CreatCartDB;
+import com.zhaidou.sqlite.CreatCartTools;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -98,30 +99,33 @@ public class ShopSpecialFragment extends BaseFragment
     private int currentItem = 5000;
     boolean nowAction = false;
     boolean isStop = true;
+    private int num;
+    private List<CartItem> cartItems = new ArrayList<CartItem>();
+    private CreatCartDB creatCartDB;
+    private final int UPDATE_CARTCAR_DATA=4;
 
-
-    private BroadcastReceiver broadcastReceiver=new BroadcastReceiver()
-    {
-        @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            String action=intent.getAction();
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
-            {
-                initCartTips();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshLoginTag))
-            {
-                checkLogin();
-                initCartTips();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
-            {
-                checkLogin();
-                initCartTips();
-            }
-        }
-    };
+//    private BroadcastReceiver broadcastReceiver=new BroadcastReceiver()
+//    {
+//        @Override
+//        public void onReceive(Context context, Intent intent)
+//        {
+//            String action=intent.getAction();
+//            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
+//            {
+//                initCartTips();
+//            }
+//            if (action.equals(ZhaiDou.IntentRefreshLoginTag))
+//            {
+//                checkLogin();
+//                initCartTips();
+//            }
+//            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
+//            {
+//                checkLogin();
+//                initCartTips();
+//            }
+//        }
+//    };
 
 
     private Handler handler = new Handler()
@@ -142,7 +146,12 @@ public class ShopSpecialFragment extends BaseFragment
                 case UPDATE_BANNER:
                     setAdView();
                     break;
-
+                case UPDATE_CARTCAR_DATA:
+                    int visible=msg.arg1;
+                    int num=msg.arg2;
+                    cartTipsTv.setVisibility(visible);
+                    cartTipsTv.setText("" + num);
+                    break;
             }
         }
     };
@@ -182,7 +191,7 @@ public class ShopSpecialFragment extends BaseFragment
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
         {
             ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(items.get(i).title, items.get(i).id,items.get(i).imageUrl);
-            ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
+            ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
         }
     };
 
@@ -214,10 +223,10 @@ public class ShopSpecialFragment extends BaseFragment
                     break;
 
                 case R.id.nullReload:
-                    initDate();
+                    initData();
                     break;
                 case R.id.netReload:
-                    initDate();
+                    initData();
                     break;
             }
         }
@@ -252,13 +261,13 @@ public class ShopSpecialFragment extends BaseFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        mContext = getActivity();
-        initBroadcastReceiver();
+            mContext = getActivity();
+//        initBroadcastReceiver();
         if(mView==null)
         {
             mView = inflater.inflate(R.layout.shop_special_page, container, false);
             initView();
-            initDate();
+            initData();
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
         ViewGroup parent = (ViewGroup) mView.getParent();
@@ -272,14 +281,14 @@ public class ShopSpecialFragment extends BaseFragment
     /**
      * 注册广播
      */
-    private void initBroadcastReceiver()
-    {
-        IntentFilter intentFilter=new IntentFilter();
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
-        mContext.registerReceiver(broadcastReceiver,intentFilter);
-    }
+//    private void initBroadcastReceiver()
+//    {
+//        IntentFilter intentFilter=new IntentFilter();
+//        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+//        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
+//        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
+//        mContext.registerReceiver(broadcastReceiver,intentFilter);
+//    }
 
     /**
      * 初始化数据
@@ -316,8 +325,7 @@ public class ShopSpecialFragment extends BaseFragment
         viewPager.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth*300/750));
 
         mRequestQueue = Volley.newRequestQueue(mContext);
-        initCartTips();
-
+        creatCartDB = new CreatCartDB(mContext);
 
     }
 
@@ -334,10 +342,10 @@ public class ShopSpecialFragment extends BaseFragment
      */
     private void initCartTips()
     {
-        if (MainActivity.num>0)
+        if (((MainActivity)getActivity()).getNum()>0)
         {
             cartTipsTv.setVisibility(View.VISIBLE);
-            cartTipsTv.setText(""+MainActivity.num);
+            cartTipsTv.setText(""+((MainActivity)getActivity()).getNum());
         }
         else
         {
@@ -557,13 +565,20 @@ public class ShopSpecialFragment extends BaseFragment
     /**
      * 初始化数据
      */
-    private void initDate()
+    private void initData()
     {
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading",isDialogFirstVisible);
+        isDialogFirstVisible=false;
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
             getBannerData();
             FetchData(page);
+                }
+            },300);
         }
         else
         {
@@ -645,7 +660,7 @@ public class ShopSpecialFragment extends BaseFragment
                     return;
                 }
                     JSONArray jsonArray = response.optJSONArray("sales");
-                    for (int i = 0; i < jsonArray.length(); i++)
+                    for (int i = 0; i < 2; i++)
                     {
                         JSONObject obj = jsonArray.optJSONObject(i);
                         int id = obj.optInt("id");
@@ -730,6 +745,7 @@ public class ShopSpecialFragment extends BaseFragment
     }
     public void onResume() {
         super.onResume();
+        initCartTips();
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.home_shop_special_text));
     }
     public void onPause() {
@@ -740,7 +756,7 @@ public class ShopSpecialFragment extends BaseFragment
     public void onDestroy()
     {
         isStop = false;
-        mContext.unregisterReceiver(broadcastReceiver);
+//        mContext.unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 
