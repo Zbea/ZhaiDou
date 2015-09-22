@@ -147,9 +147,8 @@ public class ShopSpecialFragment extends BaseFragment
                     setAdView();
                     break;
                 case UPDATE_CARTCAR_DATA:
-                    int visible=msg.arg1;
                     int num=msg.arg2;
-                    cartTipsTv.setVisibility(visible);
+                    cartTipsTv.setVisibility(num>0?View.GONE:View.VISIBLE);
                     cartTipsTv.setText("" + num);
                     break;
             }
@@ -655,11 +654,15 @@ public class ShopSpecialFragment extends BaseFragment
                 {
                     if (mDialog!=null)
                     mDialog.dismiss();
+                    mScrollView.onRefreshComplete();
+                    mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
                     nullView.setVisibility(View.VISIBLE);
                     nullNetView.setVisibility(View.GONE);
                     return;
                 }
                     JSONArray jsonArray = response.optJSONArray("sales");
+
+                if (jsonArray!=null)
                     for (int i = 0; i < jsonArray.length(); i++)
                     {
                         JSONObject obj = jsonArray.optJSONObject(i);

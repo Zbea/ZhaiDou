@@ -145,9 +145,8 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     }
                     break;
                 case UPDATE_CARTCAR_DATA:
-                    int visible=msg.arg1;
                     int num=msg.arg2;
-                    myCartTips.setVisibility(visible);
+                    myCartTips.setVisibility(num>0?View.GONE:View.VISIBLE);
                     myCartTips.setText("" + num);
                     break;
             }

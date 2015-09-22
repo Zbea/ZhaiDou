@@ -161,9 +161,8 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                     tv_unpay_count.setText(count + "");
                     break;
                 case UPDATE_CARTCAR_DATA:
-                    int visible=msg.arg1;
                     int num=msg.arg2;
-                    mCartCount.setVisibility(View.VISIBLE);
+                    mCartCount.setVisibility(num>0?View.GONE:View.VISIBLE);
                     mCartCount.setText("" + num);
                     break;
             }

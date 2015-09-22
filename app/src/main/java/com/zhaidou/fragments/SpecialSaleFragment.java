@@ -115,12 +115,10 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
                 isLogin = true;
-                checkLogin();
                 initCartTips();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginExitTag)) {
                 isLogin = false;
-                checkLogin();
                 initCartTips();
             }
         }
@@ -295,15 +293,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading", true);
         if (NetworkUtils.isNetworkAvailable(getActivity())) {
 
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-
-                    getBannerData();
-                    FetchData();
-                }
-            }, 300);
-
+            getBannerData();
+            FetchData();
         } else {
             if (mDialog != null)
                 mDialog.dismiss();

@@ -216,4 +216,14 @@ public class ToolUtils
         Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * 长显示
+     * @param mContext
+     * @param msg
+     */
+    public static final void setToastLong(Context mContext,String msg)
+    {
+        Toast.makeText(mContext, msg, Toast.LENGTH_LONG).show();
+    }
+
 }

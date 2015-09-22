@@ -23,7 +23,6 @@ public class CustomLoadingDialog {
         Dialog mDialog = new Dialog(mContext, R.style.custom_dialog_no);
         mDialog.setCanceledOnTouchOutside(false);
         mDialog.setCancelable(true);
-//        view.setAnimation(AnimationUtils.loadAnimation(mContext,R.anim.page_enter_into_the));
         mDialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         mDialog.show();
         return mDialog;
@@ -45,15 +44,13 @@ public class CustomLoadingDialog {
         mDialog.setCancelable(true);
         mDialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         mDialog.show();
-        if (isNeedAnim) {
-            Window window = mDialog.getWindow();
-            window.setWindowAnimations(R.style.anim_slide_in_from_right);
-            WindowManager.LayoutParams wl = window.getAttributes();
-            window.setAttributes(wl);
-        }
+//        if (isNeedAnim) {
+//            Window window = mDialog.getWindow();
+//            window.setWindowAnimations(R.style.anim_slide_in_from_right);
+//            WindowManager.LayoutParams wl = window.getAttributes();
+//            window.setAttributes(wl);
+//        }
         return mDialog;
-    }
-
-    ;
+    };
 
 }
