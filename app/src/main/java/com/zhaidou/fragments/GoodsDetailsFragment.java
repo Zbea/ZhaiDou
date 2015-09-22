@@ -1199,7 +1199,6 @@ public class GoodsDetailsFragment extends BaseFragment
                 Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
                 mContext.sendBroadcast(intent);
 
-
             } else
             {
                 CustomToastDialog.setToastDialog(mContext, "抱歉,商品数量不足,请勿继续添加");
