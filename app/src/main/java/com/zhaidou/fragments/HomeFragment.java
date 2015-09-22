@@ -677,6 +677,7 @@ public class HomeFragment extends BaseFragment implements
      */
     public void toggleMenu()
     {
+
         if (homeCategoryFragment.isHidden())
         {
             mCategoryView.setImageResource(R.drawable.icon_close);
