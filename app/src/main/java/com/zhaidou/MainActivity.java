@@ -137,12 +137,12 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 //            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag)) {
 //                initCartTips();
 //            }
-//            if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
-//                initCartTips();
-//            }
-//            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag)) {
-//                initCartTips();
-//            }
+            if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
+                initCartTips();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag)) {
+                initCartTips();
+            }
             if (action.equalsIgnoreCase(ZhaiDou.BROADCAST_WXAPI_FILTER)) {
                 System.out.println("MainActivity.onReceive");
                 List<Fragment> fragments = getSupportFragmentManager().getFragments();
@@ -282,8 +282,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
      */
     private void initBroadcastReceiver() {
         IntentFilter intentFilter = new IntentFilter();
-//        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
-//        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
 //        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
         intentFilter.addAction(ZhaiDou.BROADCAST_WXAPI_FILTER);
         mContext.registerReceiver(broadcastReceiver, intentFilter);
