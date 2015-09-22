@@ -183,11 +183,9 @@ public class GoodsDetailsFragment extends BaseFragment {
                 initCartTips();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
-                checkLogin();
                 initCartTips();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginExitTag)) {
-                checkLogin();
                 initCartTips();
             }
             if (action.equals(ZhaiDou.IntentRefreshGoodsDetailsTag)) {
@@ -319,7 +317,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                 case UPDATE_CARTCAR_DATA:
                     int visible=msg.arg1;
                     int num=msg.arg2;
-                    mCartCount.setVisibility(View.VISIBLE);
+                    mCartCount.setVisibility(visible);
                     mCartCount.setText("" + num);
                     break;
             }
@@ -454,7 +452,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                 .build();
         if (detail.getImgs() != null) {
             for (int i = 0; i < detail.getImgs().size(); i++) {
-                LargeImgView imageView = new LargeImgView(getActivity());
+                LargeImgView imageView = new LargeImgView(mContext);
                 imageView.setScaleType(ImageView.ScaleType.MATRIX);
                 ImageLoader.getInstance().displayImage(detail.getImgs().get(i),imageView,new ImageLoadingListener() {
                     @Override
@@ -619,7 +617,6 @@ public class GoodsDetailsFragment extends BaseFragment {
                     {
                         topBtn.setVisibility(View.VISIBLE);
                     }
-
                     if (scrollY <600)
                     {
                         topBtn.setVisibility(View.GONE);
@@ -699,13 +696,15 @@ public class GoodsDetailsFragment extends BaseFragment {
      * 数据加载
      */
     private void initData() {
+        mDialog=CustomLoadingDialog.setLoadingDialog(mContext,"");
         if (NetworkUtils.isNetworkAvailable(mContext)) {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
 
                     FetchDetailData(mIndex);
-                    if (checkLogin()) {
+                    if (checkLogin())
+                    {
                         if (flags == 1) {
                             FetchOSaleData(UPDATE_ISOSALEBUY);
                         }
@@ -734,11 +733,9 @@ public class GoodsDetailsFragment extends BaseFragment {
     }
 
     public boolean checkLogin() {
-
         token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
         boolean isLogin = !TextUtils.isEmpty(token) && userId > -1;
-        ToolUtils.setLog("" + isLogin);
         return isLogin;
     }
 
@@ -1186,7 +1183,6 @@ public class GoodsDetailsFragment extends BaseFragment {
 
                 if (jsonObject != null) {
                     isOSaleBuy = jsonObject.optBoolean("flag");
-                    Log.i("isOSaleBuy---------------------->", "" + isOSaleBuy);
                 }
                 if (i == UPDATE_LJBUY_ISOSALEBUY) {
                     handler.sendEmptyMessage(UPDATE_LJBUY_ISOSALEBUY);

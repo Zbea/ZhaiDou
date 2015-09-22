@@ -135,6 +135,7 @@ public class ShopSpecialFragment extends BaseFragment
             switch (msg.what)
             {
                 case 1001:
+                    mScrollView.onRefreshComplete();
                     adapterList.notifyDataSetChanged();
                     if (mDialog != null)
                         mDialog.dismiss();
@@ -149,7 +150,7 @@ public class ShopSpecialFragment extends BaseFragment
                 case UPDATE_CARTCAR_DATA:
                     int visible=msg.arg1;
                     int num=msg.arg2;
-                    cartTipsTv.setVisibility(View.VISIBLE);
+                    cartTipsTv.setVisibility(visible);
                     cartTipsTv.setText("" + num);
                     break;
             }
@@ -655,6 +656,8 @@ public class ShopSpecialFragment extends BaseFragment
                 {
                     if (mDialog!=null)
                     mDialog.dismiss();
+                    mScrollView.onRefreshComplete();
+                    mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
                     nullView.setVisibility(View.VISIBLE);
                     nullNetView.setVisibility(View.GONE);
                     return;
@@ -662,7 +665,7 @@ public class ShopSpecialFragment extends BaseFragment
                     JSONArray jsonArray = response.optJSONArray("sales");
 
                 if (jsonArray!=null)
-                    for (int i = 0; i < 2; i++)
+                    for (int i = 0; i < jsonArray.length(); i++)
                     {
                         JSONObject obj = jsonArray.optJSONObject(i);
                         int id = obj.optInt("id");
