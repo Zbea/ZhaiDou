@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -319,7 +318,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                 case UPDATE_CARTCAR_DATA:
                     int visible=msg.arg1;
                     int num=msg.arg2;
-                    mCartCount.setVisibility(View.VISIBLE);
+                    mCartCount.setVisibility(visible);
                     mCartCount.setText("" + num);
                     break;
             }

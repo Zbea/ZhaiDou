@@ -234,8 +234,14 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         menuFragment.setMenuSelectListener(this);
 
         if (id != -1) {
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
             getUserData();
             getUserInfo();
+                }
+            },300);
         }
         token = mSharedPreferences.getString("token", null);
     }

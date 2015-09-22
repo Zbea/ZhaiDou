@@ -303,6 +303,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     FetchData();
                 }
             }, 300);
+
         } else {
             if (mDialog != null)
                 mDialog.dismiss();
