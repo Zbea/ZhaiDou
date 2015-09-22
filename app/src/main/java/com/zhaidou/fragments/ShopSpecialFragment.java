@@ -651,7 +651,6 @@ public class ShopSpecialFragment extends BaseFragment
             @Override
             public void onResponse(JSONObject response)
             {
-                System.out.println("ShopSpecialFragment.onResponse------>"+response);
                 if (response==null)
                 {
                     if (mDialog!=null)

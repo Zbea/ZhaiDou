@@ -90,7 +90,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
 
     private ImageView shareBtn;
     private TypeFaceTextView backBtn, titleTv, introduceTv, timeTv;
-    private PullToRefreshScrollView mScrollView;
     private ListViewForScrollView mListView;
     private LinearLayout loadingView, nullNetView, nullView;
     private TextView reloadBtn, reloadNetBtn;
@@ -139,7 +138,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
                     try {
                         long millionSeconds = sdf.parse(date).getTime();//毫秒
-                        System.out.println("ShopTodaySpecialFragment.handleMessage--------->" + millionSeconds);
                         long temp = millionSeconds - System.currentTimeMillis();
                         initTime = temp;
                     } catch (Exception e) {
@@ -153,29 +151,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     myCartTips.setText("" + num);
                     break;
             }
-        }
-    };
-
-    /**
-     * 下拉刷新
-     */
-    private PullToRefreshBase.OnRefreshListener2 refreshListener = new PullToRefreshBase.OnRefreshListener2() {
-        @Override
-        public void onPullDownToRefresh(PullToRefreshBase refreshView) {
-            mScrollView.onRefreshComplete();
-
-            items.removeAll(items);
-            if (mTimer != null) {
-                mTimer.cancel();
-                mTimer = null;
-            }
-            FetchData(id);
-            adapter.notifyDataSetChanged();
-            loadingView.setVisibility(View.GONE);
-        }
-
-        @Override
-        public void onPullUpToRefresh(PullToRefreshBase refreshView) {
         }
     };
 
@@ -323,10 +298,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(mTitle);
         timeTv = (TypeFaceTextView) mView.findViewById(R.id.shopTimeTv);
-//
-//        mScrollView = (PullToRefreshScrollView) mView.findViewById(R.id.sv_shop_today_special_scrollview);
-//        mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
-//        mScrollView.setOnRefreshListener(refreshListener);
+
 
         mListView = (ListViewForScrollView) mView.findViewById(R.id.shopListView);
         mListView.setOnItemClickListener(onItemClickListener);
@@ -361,7 +333,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
      * 红色标识提示显示数量
      */
     private void initCartTips() {
-        System.out.println("ShopTodaySpecialFragment.initCartTips-------->"+((MainActivity) getActivity()).getNum());
         if (((MainActivity) getActivity()).getNum() > 0) {
             myCartTips.setVisibility(View.VISIBLE);
             myCartTips.setText("" + ((MainActivity) getActivity()).getNum());
@@ -453,7 +424,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     mDialog.dismiss();
                 nullView.setVisibility(View.VISIBLE);
                 nullNetView.setVisibility(View.GONE);
-//                mScrollView.onRefreshComplete();
             }
         });
         mRequestQueue.add(jr);

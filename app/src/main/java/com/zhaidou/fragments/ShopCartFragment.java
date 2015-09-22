@@ -591,7 +591,7 @@ public class ShopCartFragment extends BaseFragment
             itemFormalPrice.setText("￥" + ToolUtils.isIntPrice(""+cartItem.formalPrice));
             itemNum.setText("" + cartItem.num);
             itemLoseNum.setText("" + cartItem.num);
-            ToolUtils.setImageCacheUrl(cartItem.imageUrl, itemImage);
+            ToolUtils.setImageCacheUrl(cartItem.imageUrl, itemImage,R.drawable.icon_loading_defalut);
 
             itemDeleteBtn.setOnClickListener(new View.OnClickListener()
             {
