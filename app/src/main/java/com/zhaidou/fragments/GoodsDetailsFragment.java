@@ -1,5 +1,6 @@
 package com.zhaidou.fragments;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -47,7 +48,7 @@ import com.android.volley.toolbox.Volley;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
-listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
@@ -58,7 +59,6 @@ import com.zhaidou.adapter.SpecificationAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
-import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.dialog.CustomToastDialog;
 import com.zhaidou.model.CartItem;
 import com.zhaidou.model.CountTime;
@@ -77,6 +77,7 @@ import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

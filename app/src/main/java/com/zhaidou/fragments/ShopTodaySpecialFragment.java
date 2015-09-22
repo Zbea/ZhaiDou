@@ -323,10 +323,10 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(mTitle);
         timeTv = (TypeFaceTextView) mView.findViewById(R.id.shopTimeTv);
-
-        mScrollView = (PullToRefreshScrollView) mView.findViewById(R.id.sv_shop_today_special_scrollview);
-        mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
-        mScrollView.setOnRefreshListener(refreshListener);
+//
+//        mScrollView = (PullToRefreshScrollView) mView.findViewById(R.id.sv_shop_today_special_scrollview);
+//        mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+//        mScrollView.setOnRefreshListener(refreshListener);
 
         mListView = (ListViewForScrollView) mView.findViewById(R.id.shopListView);
         mListView.setOnItemClickListener(onItemClickListener);
@@ -453,7 +453,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     mDialog.dismiss();
                 nullView.setVisibility(View.VISIBLE);
                 nullNetView.setVisibility(View.GONE);
-                mScrollView.onRefreshComplete();
+//                mScrollView.onRefreshComplete();
             }
         });
         mRequestQueue.add(jr);
@@ -480,7 +480,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     @Override
     public void onPause() {
         currentTime = System.currentTimeMillis();
-        System.out.println("ShopTodaySpecialFragment.onPause------------>" + currentTime);
         if (isTimerStart) {
             isTimerStart = false;
             if (mTimer != null) {

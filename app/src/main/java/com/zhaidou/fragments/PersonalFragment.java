@@ -508,30 +508,12 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
      * 红色标识提示显示数量
      */
     private void initCartTips() {
-//        if (((MainActivity)getActivity()).getNum() > 0) {
-//            mCartCount.setVisibility(View.VISIBLE);
-//            mCartCount.setText("" + ((MainActivity)getActivity()).getNum());
-//        } else {
-//            mCartCount.setVisibility(View.GONE);
-//        }
-        final int userId=(Integer)SharedPreferencesUtil.getData(mContext,"userId",-1);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                    num = 0;
-                cartItems = CreatCartTools.selectByAll(creatCartDB, userId);
-                    for (int i = 0; i < items.size(); i++) {
-                        if (items.get(i).isPublish.equals("false") && items.get(i).isOver.equals("false")) {
-                            num = num + items.get(i).num;
-                        }
-                    }
-                    Message message=new Message();
-                    message.arg1=(num>0?View.VISIBLE:View.GONE);
-                    message.arg2=num;
-                    message.what=UPDATE_CARTCAR_DATA;
-                    mHandler.sendMessage(message);
-            }
-        }).start();
+        if (((MainActivity)getActivity()).getNum() > 0) {
+            mCartCount.setVisibility(View.VISIBLE);
+            mCartCount.setText("" + ((MainActivity)getActivity()).getNum());
+        } else {
+            mCartCount.setVisibility(View.GONE);
+        }
     }
 
     @Override

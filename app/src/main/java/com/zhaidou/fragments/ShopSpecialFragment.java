@@ -651,6 +651,7 @@ public class ShopSpecialFragment extends BaseFragment
             @Override
             public void onResponse(JSONObject response)
             {
+                System.out.println("ShopSpecialFragment.onResponse------>"+response);
                 if (response==null)
                 {
                     if (mDialog!=null)
@@ -660,7 +661,7 @@ public class ShopSpecialFragment extends BaseFragment
                     return;
                 }
                     JSONArray jsonArray = response.optJSONArray("sales");
-                    for (int i = 0; i < 2; i++)
+                    for (int i = 0; i < jsonArray.length(); i++)
                     {
                         JSONObject obj = jsonArray.optJSONObject(i);
                         int id = obj.optInt("id");
