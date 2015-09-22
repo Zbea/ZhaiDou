@@ -429,6 +429,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         mRequestQueue.add(jr);
     }
 
+
     @Override
     public void onResume() {
         long temp = System.currentTimeMillis() - currentTime;
@@ -450,7 +451,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     @Override
     public void onPause() {
         currentTime = System.currentTimeMillis();
-        System.out.println("ShopTodaySpecialFragment.onPause------------>" + currentTime);
         if (isTimerStart) {
             isTimerStart = false;
             if (mTimer != null) {

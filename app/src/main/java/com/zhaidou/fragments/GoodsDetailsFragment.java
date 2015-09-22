@@ -59,7 +59,6 @@ import com.zhaidou.adapter.SpecificationAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
-import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.dialog.CustomToastDialog;
 import com.zhaidou.model.CartItem;
 import com.zhaidou.model.CountTime;
@@ -78,6 +77,7 @@ import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

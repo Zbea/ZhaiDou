@@ -135,7 +135,6 @@ public class ShopSpecialFragment extends BaseFragment
             switch (msg.what)
             {
                 case 1001:
-                    mScrollView.onRefreshComplete();
                     adapterList.notifyDataSetChanged();
                     if (mDialog != null)
                         mDialog.dismiss();
