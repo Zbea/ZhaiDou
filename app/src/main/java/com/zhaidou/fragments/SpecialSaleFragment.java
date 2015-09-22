@@ -472,7 +472,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
      * 红色标识提示显示数量
      */
     private void initCartTips() {
-        if (((MainActivity)getActivity()).getNum() > 0) {
+        if (((MainActivity)getActivity()).getNum() > 0)
+        {
             cartTipsTv.setVisibility(View.VISIBLE);
             cartTipsTv.setText("" + ((MainActivity)getActivity()).getNum());
         } else {

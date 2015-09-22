@@ -2,8 +2,10 @@ package com.zhaidou.fragments;
 
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -106,23 +108,23 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private ShopTodaySpecialAdapter adapter;
     private ShopSpecialItem shopSpecialItem;
 
-//    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            String action = intent.getAction();
-//            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag)) {
-//                initCartTips();
-//            }
-//            if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
-//                checkLogin();
-//                initCartTips();
-//            }
-//            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag)) {
-//                checkLogin();
-//                initCartTips();
-//            }
-//        }
-//    };
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag)) {
+                initCartTips();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
+                checkLogin();
+                initCartTips();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag)) {
+                checkLogin();
+                initCartTips();
+            }
+        }
+    };
 
 
     private Handler handler = new Handler() {
@@ -228,7 +230,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                              Bundle savedInstanceState) {
 
         mContext = getActivity();
-//        initBroadcastReceiver();
+        initBroadcastReceiver();
         if (mView == null) {
             mView = inflater.inflate(R.layout.shop_today_special_page, container, false);
             initView();
@@ -244,14 +246,14 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     /**
      * 注册广播
      */
-//    private void initBroadcastReceiver() {
-//        IntentFilter intentFilter = new IntentFilter();
-//        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
-//        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsSubTag);
-//        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
-//        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
-//        mContext.registerReceiver(broadcastReceiver, intentFilter);
-//    }
+    private void initBroadcastReceiver() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsSubTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
+        mContext.registerReceiver(broadcastReceiver, intentFilter);
+    }
 
     /**
      * 初始化数据
@@ -464,8 +466,8 @@ public class ShopTodaySpecialFragment extends BaseFragment {
 
     @Override
     public void onDestroy() {
-//        if (broadcastReceiver != null)
-//            mContext.unregisterReceiver(broadcastReceiver);
+        if (broadcastReceiver != null)
+            mContext.unregisterReceiver(broadcastReceiver);
         isTimerStart = false;
         mRequestQueue.stop();
         if (mTimer != null) {

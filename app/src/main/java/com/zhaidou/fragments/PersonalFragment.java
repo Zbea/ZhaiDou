@@ -98,6 +98,12 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 initCartTips();
                 exitLoginEvent();
             }
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag)) {
+                initCartTips();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
+                initCartTips();
+            }
 
             if (action.equals(ZhaiDou.IntentRefreshUnPayAddTag)) {
                 ToolUtils.setLog("开始好刷新count加一");
@@ -285,13 +291,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             case R.id.tv_shopping_cart:
                 ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopCartFragment);
-                shopCartFragment.setOnCartNumStateChangeListener(new ShopCartFragment.OnCartNumStateChangeListener() {
-                    @Override
-                    public void onStateChange() {
-                        System.out.println("PersonalFragment.onStateChange");
-                        initCartTips();
-                    }
-                });
                 break;
             case R.id.all_order:
                 OrderAllOrdersFragment allOrdersFragment = OrderAllOrdersFragment.newInstance("", "");

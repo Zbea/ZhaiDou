@@ -95,8 +95,6 @@ public class ShopCartFragment extends BaseFragment
     private List<View> views=new ArrayList<View>();
     private CartItem mCartItem;
     private boolean isBuySuccess;
-    private OnCartNumChangeListener mListener;
-    private OnCartNumStateChangeListener onCartNumStateChangeListener;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -107,7 +105,8 @@ public class ShopCartFragment extends BaseFragment
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
             {
                 items.removeAll(items);
-                items = CreatCartTools.selectByAll(creatCartDB, userId);
+                getGoodsItems();
+//                items = CreatCartTools.selectByAll(creatCartDB, userId);
                 if (items.size() > 0)
                 {
                     setGoodsCheckChange();
@@ -120,12 +119,11 @@ public class ShopCartFragment extends BaseFragment
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
             {
                 isBuySuccess=true;
-                items = CreatCartTools.selectByAll(creatCartDB, userId);
-                ToolUtils.setLog("开始刷新购物车");
+                getGoodsItems();
+//                items = CreatCartTools.selectByAll(creatCartDB, userId);
                 if (items.size() > 0)
                 {
                     addCartGoods();
-
                 } else
                 {
                     mDialog.dismiss();
@@ -164,7 +162,6 @@ public class ShopCartFragment extends BaseFragment
                             {
                                 mCartItem.num = mCartItem.num + 1;
                                 CreatCartTools.editNumByData(creatCartDB, mCartItem);
-                                mListener.onCartNumIncrease(1,mCartItem,null);
                                 sendBroadCastEditAll();
                                 textNumView.setText("" + mCartItem.num);
                             } else
@@ -188,7 +185,6 @@ public class ShopCartFragment extends BaseFragment
                                 mCartItem.num = mCartItem.num - 1;
                             }
                             CreatCartTools.editNumByData(creatCartDB, mCartItem);
-                            mListener.onCartNumDecrease(1,mCartItem,null);
                             sendBroadCastEditAll();
                             textNumView.setText("" + mCartItem.num);
 
@@ -196,24 +192,6 @@ public class ShopCartFragment extends BaseFragment
                     }
                     break;
             }
-        }
-    };
-
-    /**
-     * 下拉刷新
-     */
-    private PullToRefreshBase.OnRefreshListener2 refreshListener = new PullToRefreshBase.OnRefreshListener2()
-    {
-        @Override
-        public void onPullDownToRefresh(PullToRefreshBase refreshView)
-        {
-
-        }
-
-        @Override
-        public void onPullUpToRefresh(PullToRefreshBase refreshView)
-        {
-
         }
     };
 
@@ -321,16 +299,6 @@ public class ShopCartFragment extends BaseFragment
         return mView;
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnCartNumChangeListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnCartNumChangeListener");
-        }
-    }
     /**
      * 初始化数据
      */
@@ -362,7 +330,7 @@ public class ShopCartFragment extends BaseFragment
         cartGoodsLine = (LinearLayout) mView.findViewById(R.id.cartGoodsLine);
         creatCartDB = new CreatCartDB(mContext);
         checkLogin();
-        items = CreatCartTools.selectByAll(creatCartDB, userId);
+        getGoodsItems();
 
         if (items.size() > 0)
         {
@@ -396,6 +364,15 @@ public class ShopCartFragment extends BaseFragment
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
         boolean isLogin = !TextUtils.isEmpty(token) && userId > -1;
         return isLogin;
+    }
+
+    /**
+     * 获得当前userId的所有商品
+     */
+    private void getGoodsItems()
+    {
+//        items=((MainActivity)mContext).getItems();
+        items = CreatCartTools.selectByAll(creatCartDB, userId);
     }
 
     /**
@@ -441,9 +418,8 @@ public class ShopCartFragment extends BaseFragment
                     }
                 }
             }
-            mListener.onCartNumDecrease(deprecated,null,items);
         }
-        sendBroadCastEditSub();
+        sendBroadCastEditAll();
         addCartGoods();
 
     }
@@ -545,7 +521,6 @@ public class ShopCartFragment extends BaseFragment
                     {
                         if (b)
                         {
-                            ToolUtils.setLog("itemCheck"+""+tag+":"+b);
                             cartItem.isCheck = true;
                             itemsCheck.add(cartItem);
                         } else
@@ -570,7 +545,6 @@ public class ShopCartFragment extends BaseFragment
                 islose.setVisibility(View.VISIBLE);
                 isDate.setVisibility(View.GONE);
             }
-            ToolUtils.setLog("是否已过期:"+cartItem.isDate);
             if (cartItem.isDate.equals("true"))
             {
                 isOver.setVisibility(View.GONE);
@@ -599,7 +573,7 @@ public class ShopCartFragment extends BaseFragment
                     itemsCheck.remove(cartItem);
                     boxs.remove(itemCheck);
                     CustomShopCartDeleteDialog.setDelateDialog(mContext, cartItem, cartGoodsLine, childeView);
-                    mListener.onCartNumDecrease(cartItem.num,cartItem,null);
+
                 }
             });
             itemSubBtn.setOnClickListener(new View.OnClickListener()
@@ -634,13 +608,6 @@ public class ShopCartFragment extends BaseFragment
     {
         //发送数量修改广播
         Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
-        mContext.sendBroadcast(intent);
-    }
-
-    public void sendBroadCastEditSub()
-    {
-        //发送数量修改广播
-        Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsSubTag);
         mContext.sendBroadcast(intent);
     }
 
@@ -841,23 +808,9 @@ public class ShopCartFragment extends BaseFragment
     @Override
     public void onDestroy()
     {
-        if (onCartNumStateChangeListener!=null)
-            onCartNumStateChangeListener.onStateChange();
         mContext.unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 
-    public interface OnCartNumChangeListener{
-        public void onCartNumIncrease(int num,CartItem cartItem,List<CartItem> cartItemList);
 
-        public void onCartNumDecrease(int num,CartItem cartItem,List<CartItem> cartItemList);
-    }
-
-    public void setOnCartNumStateChangeListener(OnCartNumStateChangeListener onCartNumStateChangeListener) {
-        this.onCartNumStateChangeListener = onCartNumStateChangeListener;
-    }
-
-    public interface OnCartNumStateChangeListener{
-        public void onStateChange();
-    }
 }
