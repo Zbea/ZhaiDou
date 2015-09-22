@@ -1,5 +1,6 @@
 package com.zhaidou.fragments;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -47,7 +48,7 @@ import com.android.volley.toolbox.Volley;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
-listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
@@ -113,7 +114,6 @@ public class GoodsDetailsFragment extends BaseFragment {
     private Dialog mDialog;
     private GridView mGridView;
     private RequestQueue mRequestQueue;
-    private List<Fragment> fragments = new ArrayList<Fragment>();
 
     private ArrayList<GoodInfo> goodInfos = new ArrayList<GoodInfo>();
     private int mSpecificationSelectPosition = -1;
@@ -208,7 +208,6 @@ public class GoodsDetailsFragment extends BaseFragment {
                     } catch (Exception e) {
 
                     }
-
                     isClean = false;
 
                     break;
@@ -256,9 +255,8 @@ public class GoodsDetailsFragment extends BaseFragment {
                         }
 
                     }
-                    initImageData(detail.getImageUrl());
-
-                   
+//                    initImageData(detail.getImageUrl());
+                    ToolUtils.setImageCacheUrl(detail.getImageUrl(),goodsImage,R.drawable.icon_loading_goods_details);
 
                     if (detail.getImgs()==null&&detail.getSpecifications()==null&&detail.getEnd_time()==null)
                     {
@@ -321,7 +319,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                 case UPDATE_CARTCAR_DATA:
                     int visible=msg.arg1;
                     int num=msg.arg2;
-                    mCartCount.setVisibility(visible);
+                    mCartCount.setVisibility(View.VISIBLE);
                     mCartCount.setText("" + num);
                     break;
             }
@@ -341,29 +339,6 @@ public class GoodsDetailsFragment extends BaseFragment {
         @Override
         public void onPageScrollStateChanged(int i) {
 
-        }
-    };
-
-    /**
-     * 商品信息和售后选择
-     */
-    private ViewPager.OnPageChangeListener onPageChange = new ViewPager.OnPageChangeListener() {
-        @Override
-        public void onPageScrolled(int i, float v, int i2) {
-        }
-
-        @Override
-        public void onPageSelected(int i) {
-            if (i == 0) {
-                radioGroup.check(R.id.infoRb);
-            }
-            if (i == 1) {
-                radioGroup.check(R.id.afterSaleRb);
-            }
-        }
-
-        @Override
-        public void onPageScrollStateChanged(int i) {
         }
     };
 
@@ -501,7 +476,6 @@ public class GoodsDetailsFragment extends BaseFragment {
                             }
                         }
                     }
-
                     @Override
                     public void onLoadingCancelled(String s, View view) {
 
@@ -544,6 +518,7 @@ public class GoodsDetailsFragment extends BaseFragment {
         }
         return mView;
     }
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -554,6 +529,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                     + " must implement OnCartNumChangeListener");
         }
     }
+
     private void initView() {
         shareUrl = shareUrl + mIndex;
 
@@ -590,7 +566,7 @@ public class GoodsDetailsFragment extends BaseFragment {
         publishBtn = (TextView) mView.findViewById(R.id.goodsPublish);
 
         goodsImage = (ImageView) mView.findViewById(R.id.goodsImageView);
-//        goodsImage.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 678 / 720));
+        goodsImage.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 678 / 720));
 
         relativeLayout = (RelativeLayout) mView.findViewById(R.id.imageRl);
         relativeLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 678 / 720));
@@ -644,7 +620,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                         topBtn.setVisibility(View.VISIBLE);
                     }
 
-                    if (scrollY < goodsImage.getHeight())
+                    if (scrollY <600)
                     {
                         topBtn.setVisibility(View.GONE);
                     }
@@ -724,8 +700,6 @@ public class GoodsDetailsFragment extends BaseFragment {
      */
     private void initData() {
         if (NetworkUtils.isNetworkAvailable(mContext)) {
-//        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading", isDialogFirstVisible);
-//        isDialogFirstVisible=false;
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -819,7 +793,7 @@ public class GoodsDetailsFragment extends BaseFragment {
         oks.setText(mPage + "   " + shareUrl);
         // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
         if (detail != null) {
-            oks.setImageUrl(detail.getImageUrl().get(0));//确保SDcard下面存在此张图片
+            oks.setImageUrl(detail.getImageUrl());//确保SDcard下面存在此张图片
         }
         // url仅在微信（包括好友和朋友圈）中使用
         oks.setUrl(shareUrl);
@@ -1135,35 +1109,17 @@ public class GoodsDetailsFragment extends BaseFragment {
                     detail = new GoodDetail(id, title, designer, total_count, price, cost_price, discount);
                     detail.setEnd_time(end_time);
 
-                    JSONArray imgArrays = merchandise.optJSONArray("top_images");
-                    if (imgArrays != null && imgArrays.length() > 0) {
+                    JSONArray imgArrays = merchandise.optJSONArray("imgs");
+                    if (imgArrays != null && imgArrays.length() > 0)
+                    {
+                        ArrayList<String> imgsList = new ArrayList<String>();
                         for (int i = 0; i < imgArrays.length(); i++) {
                             JSONObject imgObj = imgArrays.optJSONObject(i);
                             String url = imgObj.optString("url");
-                            listUrls.add(url);
-                        }
-
-                    }
-
-                    JSONArray imgsArray = merchandise.optJSONArray("top_images");
-                    if (imgsArray != null && imgsArray.length() > 0) {
-                        ArrayList<String> imgsList = new ArrayList<String>();
-                        for (int i = 0; i < imgsArray.length(); i++) {
-                            JSONObject imgObj = imgsArray.optJSONObject(i);
-                            String url = imgObj.optString("url");
                             imgsList.add(url);
                         }
-                        detail.setImageUrl(imgsList);
-                    }
-
-                    JSONArray imgArray = merchandise.optJSONArray("desc_images");
-                    if (imgArray != null && imgArray.length() > 0) {
-                        ArrayList<String> imgsList = new ArrayList<String>();
-                        for (int i = 0; i < imgArray.length(); i++) {
-                            JSONObject imgObj = imgArray.optJSONObject(i);
-                            String url = imgObj.optString("url");
-                            imgsList.add(url);
-                        }
+                        detail.setImageUrl(imgsList.get(0));
+                        imgsList.remove(0);
                         detail.setImgs(imgsList);
                     }
 

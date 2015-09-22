@@ -96,13 +96,15 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="20dp"
                     android:text="姓名:"
-                    android:textColor="#666666" />
+                    android:textSize="15sp"
+                    android:textColor="@color/text_main_color" />
 
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_addr_username"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#666666" />
+                    android:textSize="15sp"
+                    android:textColor="@color/text_normal_color" />
             </LinearLayout>
 
 
@@ -116,13 +118,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="手机:"
-                    android:textColor="#666666" />
+                    android:textSize="15sp"
+                    android:textColor="@color/text_main_color" />
 
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_addr_mobile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#666666" />
+                    android:textSize="15sp"
+                    android:textColor="@color/text_normal_color" />
             </LinearLayout>
         </LinearLayout>
         <LinearLayout
@@ -148,6 +152,11 @@
                 android:background="@color/white"
                 android:textColor="#666666" />
         </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="20dp"
+            android:background="@color/line_color"></View>
         <RelativeLayout
             android:layout_width="match_parent"
             android:paddingTop="10dp"
@@ -161,32 +170,60 @@
                 android:textColor="#666666"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:drawableLeft="@drawable/icon_addr_checked"
+                android:textSize="14sp"
+                android:drawableLeft="@drawable/icon_address_checked"
                 android:drawablePadding="5dp"
                 android:text="默认地址"/>
-            <com.zhaidou.view.TypeFaceTextView
+            <LinearLayout
                 android:id="@+id/tv_delete"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="删除"
-                android:textColor="#666666"
-                android:paddingRight="10dp"
-                android:drawableLeft="@drawable/delete"
-                android:drawablePadding="5dp"
-                android:gravity="center_vertical"
-                android:layout_alignParentRight="true"/>
-            <com.zhaidou.view.TypeFaceTextView
+                android:layout_marginTop="2dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:clickable="true"
+                android:layout_marginRight="10dp"
+                android:gravity="center_vertical">
+                <ImageView
+                    android:layout_width="17dp"
+                    android:layout_height="17dp"
+                    android:src="@drawable/delete"/>
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="删除"
+                    android:textSize="14sp"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="@color/text_normal_color" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
                 android:id="@+id/tv_edit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="编辑"
-                android:textColor="#666666"
-                android:paddingRight="10dp"
-                android:drawablePadding="5dp"
-                android:layout_marginRight="10dp"
-                android:drawableLeft="@drawable/icon_edit"
-                android:gravity="center_vertical"
-                android:layout_toLeftOf="@id/tv_delete"/>
+                android:clickable="true"
+                android:layout_marginTop="2dp"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@id/tv_delete"
+                android:layout_marginRight="15dp"
+                android:gravity="center_vertical">
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/icon_edit"/>
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="编辑"
+                    android:textSize="14sp"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="@color/text_normal_color" />
+
+            </LinearLayout>
         </RelativeLayout>
         <!--<Button-->
         <!--android:layout_margin="20dp"-->
@@ -213,7 +250,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="收货人"/>
+                android:textSize="16sp"
+                android:textColor="@color/text_main_color"
+                android:text="收货人："/>
             <com.zhaidou.view.TypeFaceEditText
                 android:id="@+id/et_addr_name"
                 android:layout_width="0dp"
@@ -221,6 +260,7 @@
                 android:layout_weight="1"
                 android:paddingLeft="10dp"
                 android:textSize="16sp"
+                android:textColor="@color/text_main_color"
                 android:background="@color/white"/>
         </LinearLayout>
         <LinearLayout
@@ -232,6 +272,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
+                android:textSize="16sp"
+                android:textColor="@color/text_main_color"
                 android:text="联系方式"/>
             <com.zhaidou.view.TypeFaceEditText
                 android:id="@+id/et_mobile"
@@ -241,6 +283,7 @@
                 android:paddingLeft="10dp"
                 android:inputType="phone"
                 android:textSize="16sp"
+                android:textColor="@color/text_main_color"
                 android:background="@color/white"/>
         </LinearLayout>
         <LinearLayout
@@ -252,6 +295,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
+                android:textSize="16sp"
+                android:textColor="@color/text_main_color"
                 android:text="收货地址"/>
             <com.zhaidou.view.TypeFaceEditText
                 android:id="@+id/et_addr"
@@ -259,6 +304,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:textSize="16sp"
+                android:textColor="@color/text_main_color"
                 android:paddingLeft="10dp"
                 android:background="@color/white"/>
         </LinearLayout>

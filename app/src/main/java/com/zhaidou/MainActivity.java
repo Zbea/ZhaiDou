@@ -718,13 +718,11 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     @Override
     public void onCartNumIncrease(int count) {
-        System.out.println("MainActivity.onCartNumIncrease---------->"+num);
         num+=count;
     }
 
     @Override
     public void onCartNumDecrease(int count) {
-        System.out.println("MainActivity.onCartNumDecrease-------->"+num);
         num-=count;
     }
 

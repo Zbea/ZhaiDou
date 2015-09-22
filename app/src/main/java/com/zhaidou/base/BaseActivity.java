@@ -42,7 +42,7 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
             mChildContainer.setVisibility(View.VISIBLE);
         }
         //.setCustomAnimations(R.anim.page_enter_into_the,R.anim.page_enter_out_the,R.anim.page_out_into_the,R.anim.page_out_out_the)
-        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, fragment, ((Object) fragment).getClass().getSimpleName())
+        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.page_enter_into_the,R.anim.page_enter_out_the,R.anim.page_out_into_the,R.anim.page_out_out_the).replace(R.id.fl_child_container, fragment, ((Object) fragment).getClass().getSimpleName())
                 .addToBackStack(null).commitAllowingStateLoss();
     }
 
@@ -55,7 +55,7 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
             mChildContainer.setVisibility(View.VISIBLE);
         }
         //.setCustomAnimations(R.anim.page_enter_into_the,R.anim.page_enter_out_the,R.anim.page_out_into_the,R.anim.page_out_out_the)
-        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.page_enter_into_the,R.anim.page_enter_out_the,R.anim.hold,R.anim.page_enter_out_the)
+        getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.page_enter_into_the,R.anim.page_enter_out_the,R.anim.page_out_into_the,R.anim.page_out_out_the)
                 .replace(R.id.fl_child_container, fragment, ((Object) fragment).getClass().getSimpleName())
                 .addToBackStack(null).commitAllowingStateLoss();
     }
@@ -63,19 +63,17 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         //.setCustomAnimations(R.anim.page_out_into_the,R.anim.page_out_out_the)
-        fragmentManager.beginTransaction().setCustomAnimations(R.anim.page_enter_into_the,R.anim.page_out_out_the).remove(fragment).commitAllowingStateLoss();
+        fragmentManager.beginTransaction().setCustomAnimations(R.anim.page_out_into_the,R.anim.page_out_out_the).remove(fragment).commitAllowingStateLoss();
         fragmentManager.popBackStack();
         if (fragment instanceof ShopPaymentFailFragment || fragment instanceof ShopPaymentSuccessFragment)
         fragmentManager.popBackStack();
         fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
 
-        Log.i("fragment---->", ((Object)fragment).getClass().getSimpleName());
         if (fragment != null && fragment instanceof LoginFragment) {
             if ("MainActivity".equalsIgnoreCase(((Object)this).getClass().getSimpleName())) {
                 mChildContainer.setVisibility(View.GONE);
             }
         }
-//            mChildContainer.setVisibility(View.GONE);
     }
 
     @Override
@@ -98,16 +96,11 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
             mainActivity.selectFragment(currentFragment, persoanlFragment);
             mainActivity.setButton(personalButton);
         } else if ("ItemDetailActivity".equalsIgnoreCase(((Object)this).getClass().getSimpleName())) {
-            Log.i("ItemDetailActivity-------------->", ((Object)this).getClass().getSimpleName());
             this.user = user;
-            Log.i("from-------------->", from);
             if ("lottery".equalsIgnoreCase(from)) {
                 return;
-//                Log.i("onRegisterOrLoginSuccess--lottery----------->", "onPageFinished" + "------" + user.getAuthentication_token());
-//                webView.loadUrl("javascript:ReceiveUserInfo(" + user.getId() + ", '" + user.getAuthentication_token() + "','" + getDeviceId() + "','" + user.getNickName() + "')");
             } else if ("product".equalsIgnoreCase(from)) {
                 return;
-//                webView.loadUrl("javascript:ReceiveUserInfo(" + user.getId() + ", '" + user.getAuthentication_token() + "')");
             }
             fragmentManager.beginTransaction().hide(fragment).commit();
         }

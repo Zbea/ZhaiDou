@@ -11,17 +11,6 @@
         android:layout_height="wrap_content"
         layout="@layout/head_style_share_page"
         />
-
-    <!--<com.pulltorefresh.PullToRefreshScrollView-->
-        <!--xmlns:ptr="http://schemas.android.com/apk/res-auto"-->
-        <!--android:id="@+id/sv_shop_today_special_scrollview"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:scrollbars="none"-->
-        <!--android:focusable="true"-->
-        <!--android:focusableInTouchMode="true"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_below="@+id/headLine"-->
-        <!--ptr:ptrHeaderTextColor="@color/gray_9">-->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -114,7 +103,6 @@
 
         </LinearLayout>
 </ScrollView>
-    <!--</com.pulltorefresh.PullToRefreshScrollView>-->
 
     <RelativeLayout
         android:layout_width="50dp"
