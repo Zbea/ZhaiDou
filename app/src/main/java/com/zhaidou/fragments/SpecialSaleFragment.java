@@ -131,10 +131,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 case UPDATE_ADAPTER:
                     loadingView.setVisibility(View.GONE);
                     mAdapter.notifyDataSetChanged();
-                    if (banners!=null&&banners.size()<1)
-                    {
-                        getBannerData();
-                    }
                     break;
                 case UPDATE_COUNT_DOWN_TIME:
                     CountTime time = (CountTime) msg.obj;

@@ -433,7 +433,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
             TextPaint textPaint = tv_old_price.getPaint();
             textPaint.setAntiAlias(true);
             textPaint.setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
-            ToolUtils.setImageCacheUrl(item.getMerch_img(), iv_order_img);
+            ToolUtils.setImageCacheUrl(item.getMerch_img(), iv_order_img,R.drawable.icon_loading_defalut);
             return convertView;
         }
     }

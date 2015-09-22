@@ -601,6 +601,7 @@
                 android:paddingLeft="20dp"
                 android:paddingTop="10dp"
                 android:text="暂无地址"
+                android:background="@color/white"
                 android:textColor="#a8a8a8"
                 android:paddingBottom="20dp"/>
         </LinearLayout>

@@ -1053,6 +1053,11 @@ public class GoodsDetailsFragment extends BaseFragment
         {
             if (mSpecification != null)
             {
+                if (isAdd())
+                {
+                    ToolUtils.setToastLong(mContext, "抱歉,已经添加了该商品");
+                    return;
+                }
                 if (flags == 1)
                 {
                     if (isOSaleBuy)
@@ -1135,11 +1140,6 @@ public class GoodsDetailsFragment extends BaseFragment
     {
         if (detail != null)
         {
-            if (isAdd())
-            {
-                ToolUtils.setToastLong(mContext, "抱歉,已经添加了该商品");
-                return;
-            }
             if (isOver())
             {
                 int[] location = new int[2];
