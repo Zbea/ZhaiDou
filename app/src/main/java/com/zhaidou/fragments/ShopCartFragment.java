@@ -602,6 +602,7 @@ public class ShopCartFragment extends BaseFragment
                     itemsCheck.remove(cartItem);
                     boxs.remove(itemCheck);
                     CustomShopCartDeleteDialog.setDelateDialog(mContext, cartItem, cartGoodsLine, childeView);
+                    mListener.onCartNumDecrease(cartItem.num);
                 }
             });
             itemSubBtn.setOnClickListener(new View.OnClickListener()
