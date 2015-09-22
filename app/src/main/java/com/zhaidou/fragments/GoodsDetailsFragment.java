@@ -59,6 +59,7 @@ import com.zhaidou.adapter.SpecificationAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.dialog.CustomToastDialog;
 import com.zhaidou.model.CartItem;
 import com.zhaidou.model.CountTime;
@@ -696,7 +697,7 @@ public class GoodsDetailsFragment extends BaseFragment {
      * 数据加载
      */
     private void initData() {
-        mDialog=CustomLoadingDialog.setLoadingDialog(mContext,"");
+        mDialog= CustomLoadingDialog.setLoadingDialog(mContext, "");
         if (NetworkUtils.isNetworkAvailable(mContext)) {
             handler.postDelayed(new Runnable() {
                 @Override
