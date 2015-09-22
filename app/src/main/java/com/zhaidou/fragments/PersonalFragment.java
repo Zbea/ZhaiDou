@@ -32,11 +32,9 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.base.BaseFragment;
-
 import com.zhaidou.model.CartItem;
 import com.zhaidou.model.User;
 import com.zhaidou.sqlite.CreatCartDB;
-import com.zhaidou.sqlite.CreatCartTools;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
@@ -87,6 +85,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     private String token;
     private int count=0;
     private int collectNum=0;
+    private int cartNum=0;
 //    private int num;
     private List<CartItem> cartItems = new ArrayList<CartItem>();
 
@@ -286,6 +285,13 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             case R.id.tv_shopping_cart:
                 ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopCartFragment);
+                shopCartFragment.setOnCartNumStateChangeListener(new ShopCartFragment.OnCartNumStateChangeListener() {
+                    @Override
+                    public void onStateChange() {
+                        System.out.println("PersonalFragment.onStateChange");
+                        initCartTips();
+                    }
+                });
                 break;
             case R.id.all_order:
                 OrderAllOrdersFragment allOrdersFragment = OrderAllOrdersFragment.newInstance("", "");
@@ -507,9 +513,10 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
      * 红色标识提示显示数量
      */
     private void initCartTips() {
-        if (((MainActivity)getActivity()).getNum() > 0) {
+        cartNum=((MainActivity)getActivity()).getNum();
+        if (cartNum> 0) {
             mCartCount.setVisibility(View.VISIBLE);
-            mCartCount.setText("" + ((MainActivity)getActivity()).getNum());
+            mCartCount.setText("" +cartNum);
         } else {
             mCartCount.setVisibility(View.GONE);
         }
@@ -625,6 +632,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         mRequestQueue.add(request);
     }
     public void onResume() {
+        System.out.println("PersonalFragment.onResume");
         super.onResume();
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_personal));
     }

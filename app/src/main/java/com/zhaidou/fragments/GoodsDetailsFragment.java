@@ -1079,7 +1079,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                         cartItem.isOSale = "false";
                     }
                     CreatCartTools.insertByData(creatCartDB, items, cartItem);
-                    mListener.onCartNumIncrease(1);
+                    mListener.onCartNumIncrease(1,cartItem,null);
 
                     Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
                     mContext.sendBroadcast(intent);
@@ -1493,8 +1493,8 @@ public class GoodsDetailsFragment extends BaseFragment {
     }
 
     public interface OnCartNumChangeListener{
-        public void onCartNumIncrease(int num);
+        public void onCartNumIncrease(int num,CartItem cartItem,List<CartItem> cartItemList);
 
-        public void onCartNumDecrease(int num);
+        public void onCartNumDecrease(int num,CartItem cartItem,List<CartItem> cartItemList);
     }
 }

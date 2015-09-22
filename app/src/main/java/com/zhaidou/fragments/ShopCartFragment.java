@@ -96,7 +96,7 @@ public class ShopCartFragment extends BaseFragment
     private CartItem mCartItem;
     private boolean isBuySuccess;
     private OnCartNumChangeListener mListener;
-
+    private OnCartNumStateChangeListener onCartNumStateChangeListener;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -164,7 +164,7 @@ public class ShopCartFragment extends BaseFragment
                             {
                                 mCartItem.num = mCartItem.num + 1;
                                 CreatCartTools.editNumByData(creatCartDB, mCartItem);
-                                mListener.onCartNumIncrease(1);
+                                mListener.onCartNumIncrease(1,mCartItem,null);
                                 sendBroadCastEditAll();
                                 textNumView.setText("" + mCartItem.num);
                             } else
@@ -188,7 +188,7 @@ public class ShopCartFragment extends BaseFragment
                                 mCartItem.num = mCartItem.num - 1;
                             }
                             CreatCartTools.editNumByData(creatCartDB, mCartItem);
-                            mListener.onCartNumDecrease(1);
+                            mListener.onCartNumDecrease(1,mCartItem,null);
                             sendBroadCastEditAll();
                             textNumView.setText("" + mCartItem.num);
 
@@ -408,6 +408,7 @@ public class ShopCartFragment extends BaseFragment
         items = CreatCartTools.selectByAll(creatCartDB, userId);
         if (itemsServer.size() > 0)
         {
+            int deprecated=0;
             for (int i = 0; i < itemsServer.size(); i++)
             {
                 CartItem itemServer = itemsServer.get(i);
@@ -422,7 +423,7 @@ public class ShopCartFragment extends BaseFragment
                             ToolUtils.setLog("修改是否下架");
                             ToolUtils.setLog(itemServer.isPublish);
                             CreatCartTools.editIsLoseByData(creatCartDB, itemServer);//修改本地数据
-                            mListener.onCartNumDecrease(itemLocal.num);
+                            deprecated=deprecated+itemLocal.num;
                         }
                         if (!itemServer.isOver.equals(itemLocal.isOver))
                         {
@@ -430,17 +431,17 @@ public class ShopCartFragment extends BaseFragment
                             ToolUtils.setLog("修改是否卖光");
                             ToolUtils.setLog(itemServer.isPublish);
                             CreatCartTools.editIsOverByData(creatCartDB, itemServer);//修改本地数据
-                            mListener.onCartNumDecrease(itemLocal.num);
+                            deprecated=deprecated+itemLocal.num;
                         }
                         if (!itemServer.isDate.equals(itemLocal.isDate))
                         {
                             items.get(j).isDate=itemServer.isDate;
                             ToolUtils.setLog("修改是否已过期");
-
                         }
                     }
                 }
             }
+            mListener.onCartNumDecrease(deprecated,null,items);
         }
         sendBroadCastEditSub();
         addCartGoods();
@@ -598,7 +599,7 @@ public class ShopCartFragment extends BaseFragment
                     itemsCheck.remove(cartItem);
                     boxs.remove(itemCheck);
                     CustomShopCartDeleteDialog.setDelateDialog(mContext, cartItem, cartGoodsLine, childeView);
-                    mListener.onCartNumDecrease(cartItem.num);
+                    mListener.onCartNumDecrease(cartItem.num,cartItem,null);
                 }
             });
             itemSubBtn.setOnClickListener(new View.OnClickListener()
@@ -840,12 +841,23 @@ public class ShopCartFragment extends BaseFragment
     @Override
     public void onDestroy()
     {
+        if (onCartNumStateChangeListener!=null)
+            onCartNumStateChangeListener.onStateChange();
         mContext.unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
-    public interface OnCartNumChangeListener{
-        public void onCartNumIncrease(int num);
 
-        public void onCartNumDecrease(int num);
+    public interface OnCartNumChangeListener{
+        public void onCartNumIncrease(int num,CartItem cartItem,List<CartItem> cartItemList);
+
+        public void onCartNumDecrease(int num,CartItem cartItem,List<CartItem> cartItemList);
+    }
+
+    public void setOnCartNumStateChangeListener(OnCartNumStateChangeListener onCartNumStateChangeListener) {
+        this.onCartNumStateChangeListener = onCartNumStateChangeListener;
+    }
+
+    public interface OnCartNumStateChangeListener{
+        public void onStateChange();
     }
 }

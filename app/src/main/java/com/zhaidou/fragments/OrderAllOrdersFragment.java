@@ -208,7 +208,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
                         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
                         TextView textView1 = (TextView) view.findViewById(R.id.tv_msg);
-                        textView1.setText("是否申请退款?");
+                        textView1.setText(mContext.getResources().getString(R.string.order_apply_return_money));
                         TextView cancelTv = (TextView) view.findViewById(R.id.cancelTv);
                         cancelTv.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -317,7 +317,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
                     View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
                     TextView textView = (TextView) view.findViewById(R.id.tv_msg);
-                    textView.setText("是否确认收货?");
+                    textView.setText(mContext.getResources().getString(R.string.order_apply_return_goods));
                     TextView cancelTv = (TextView) view.findViewById(R.id.cancelTv);
                     cancelTv.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -374,7 +374,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
                     View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
                     TextView textView = (TextView) view.findViewById(R.id.tv_msg);
-                    textView.setText("是否删除订单?");
+                    textView.setText(mContext.getResources().getString(R.string.order_delete));
                     TextView cancelTv = (TextView) view.findViewById(R.id.cancelTv);
                     cancelTv.setOnClickListener(new View.OnClickListener() {
                         @Override

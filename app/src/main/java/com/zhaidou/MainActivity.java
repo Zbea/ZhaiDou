@@ -717,13 +717,34 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     }
 
     @Override
-    public void onCartNumIncrease(int count) {
+    public void onCartNumIncrease(int count,CartItem cartItem,List<CartItem> cartItemList) {
         num+=count;
+        if (cartItemList!=null){
+            items=cartItemList;
+            System.out.println("MainActivity.onCartNumIncrease--------->items=cartItemList");
+        }else {
+            for (CartItem item:items){
+                if (item.id==cartItem.id){
+                    item.num=item.num+count;
+                }
+            }
+            System.out.println("MainActivity.onCartNumIncrease---------->item.num+count---->"+count);
+        }
     }
 
     @Override
-    public void onCartNumDecrease(int count) {
+    public void onCartNumDecrease(int count,CartItem cartItem,List<CartItem> cartItemList) {
         num-=count;
+        if (cartItemList!=null){
+            items=cartItemList;
+            System.out.println("MainActivity.onCartNumDecrease--------->items=cartItemList");
+        }else {
+            for (CartItem item:items){
+                if (item.id==cartItem.id){
+                    item.num=item.num-count;
+                }
+            }
+            System.out.println("MainActivity.onCartNumDecrease---------->item.num-count---->"+count);
+        }
     }
-
 }
