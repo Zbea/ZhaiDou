@@ -147,9 +147,8 @@ public class ShopSpecialFragment extends BaseFragment
                     setAdView();
                     break;
                 case UPDATE_CARTCAR_DATA:
-                    int visible=msg.arg1;
                     int num=msg.arg2;
-                    cartTipsTv.setVisibility(visible);
+                    cartTipsTv.setVisibility(num>0?View.GONE:View.VISIBLE);
                     cartTipsTv.setText("" + num);
                     break;
             }

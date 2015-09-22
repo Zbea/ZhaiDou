@@ -577,12 +577,8 @@ public class ShopCartFragment extends BaseFragment
                 isDate.setVisibility(View.VISIBLE);
             }
 
-            //零元特卖不给修改数量
-            if(cartItem.isOSale.equals("true"))
-            {
-                cartNumView.setVisibility(View.GONE);
-                cartNumLoseView.setVisibility(View.VISIBLE);
-            }
+            cartNumView.setVisibility(View.GONE);
+            cartNumLoseView.setVisibility(View.VISIBLE);
 
             itemName.setText(cartItem.name);
             itemSize.setText(cartItem.size);

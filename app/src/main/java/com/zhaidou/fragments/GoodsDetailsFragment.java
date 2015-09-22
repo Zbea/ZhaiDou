@@ -315,9 +315,8 @@ public class GoodsDetailsFragment extends BaseFragment {
                     }
                     break;
                 case UPDATE_CARTCAR_DATA:
-                    int visible=msg.arg1;
                     int num=msg.arg2;
-                    mCartCount.setVisibility(visible);
+                    mCartCount.setVisibility(num>0?View.GONE:View.VISIBLE);
                     mCartCount.setText("" + num);
                     break;
             }
@@ -400,7 +399,12 @@ public class GoodsDetailsFragment extends BaseFragment {
                     }
                     break;
                 case R.id.goodsAddBuyBtn:
-                    addGoods();
+                    long mTime=0;
+                    if ((System.currentTimeMillis()-mTime)>1000)
+                    {
+                        mTime=System.currentTimeMillis();
+                        addGoods();
+                    }
                     break;
                 case R.id.goodsTop:
                     scrollView.scrollTo(0, 0);
@@ -969,7 +973,7 @@ public class GoodsDetailsFragment extends BaseFragment {
             if (flags == 1) {
                 if (mSpecification != null) {
                     if (isOSaleBuy) {
-                        Toast.makeText(mContext, "抱歉,您已经购买了零元特卖商品,今天不能再添加了", Toast.LENGTH_LONG).show();
+                        ToolUtils.setToastLong(mContext,"抱歉,您已经购买了零元特卖商品,今天不能再添加了");
                         return;
                     } else {
                         for (int i = 0; i < items.size(); i++) {
@@ -982,7 +986,7 @@ public class GoodsDetailsFragment extends BaseFragment {
                     }
                 } else {
                     scrollView.scrollTo(0, 405);
-                    Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
+                    ToolUtils.setToast(mContext,"抱歉,先选择规格");
                 }
             } else {
                 addCartGoods();
@@ -1002,11 +1006,12 @@ public class GoodsDetailsFragment extends BaseFragment {
      * @return true 库存足
      */
     private boolean isOver() {
-        items = CreatCartTools.selectByAll(creatCartDB, userId);
-
-        for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).sizeId == mSpecification.getId()) {
-                if (mSpecification.num >= items.get(i).num + 1) {
+        for (int i = 0; i < items.size(); i++)
+        {
+            if (items.get(i).sizeId == mSpecification.getId())
+            {
+                if (mSpecification.num >= items.get(i).num + 1)
+                {
                     return true;
                 } else {
                     return false;
@@ -1016,16 +1021,36 @@ public class GoodsDetailsFragment extends BaseFragment {
         return true;
     }
 
+    /**
+     * 是否已经添加过该规格的商品
+     * @return
+     */
+    private boolean isAdd()
+    {
+        for (int i = 0; i <items.size(); i++)
+        {
+            if (items.get(i).sizeId == mSpecification.getId())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void addCartGoods() {
         if (detail != null) {
-            if (mSpecification != null) {
-                if (isOver()) {
+
+                if (isAdd())
+                {
+                    ToolUtils.setToastLong(mContext,"抱歉,已经添加了该商品");
+                    return;
+                }
+                if (isOver())
+                {
                     int[] location = new int[2];
                     mTipView.getLocationInWindow(location);
                     Drawable drawable = mTipView.getDrawable();
                     doAnim(drawable, location);
-
-                    getGoodsItems();
 
                     CartItem cartItem = new CartItem();
                     cartItem.userId = userId;
@@ -1058,14 +1083,11 @@ public class GoodsDetailsFragment extends BaseFragment {
 
                     Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
                     mContext.sendBroadcast(intent);
+
+
                 } else {
                     CustomToastDialog.setToastDialog(mContext, "抱歉,商品数量不足,请勿继续添加");
                 }
-
-            } else {
-                scrollView.scrollTo(0,405);
-                Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
-            }
         }
     }
 
