@@ -284,7 +284,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
-//        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
         intentFilter.addAction(ZhaiDou.BROADCAST_WXAPI_FILTER);
         mContext.registerReceiver(broadcastReceiver, intentFilter);
     }

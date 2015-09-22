@@ -471,13 +471,11 @@
                     android:layout_alignParentBottom="true"
                     android:background="#eeeeee" />
             </RelativeLayout>
-
-
-
             <LinearLayout
                 android:id="@+id/ll_addr_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -496,7 +494,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingLeft="20dp"
-                            android:text="姓名:"
+                            android:text="姓名："
                             android:textColor="#a8a8a8" />
 
                         <com.zhaidou.view.TypeFaceTextView
@@ -516,7 +514,7 @@
                         <com.zhaidou.view.TypeFaceTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="手机:"
+                            android:text="手机："
                             android:textColor="#a8a8a8" />
 
                         <com.zhaidou.view.TypeFaceTextView
@@ -541,7 +539,7 @@
                     <com.zhaidou.view.TypeFaceTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="地址:"
+                        android:text="地址："
                         android:textColor="#a8a8a8" />
 
                     <com.zhaidou.view.TypeFaceTextView
@@ -596,6 +594,15 @@
                         android:textColor="#666666" />
                 </RelativeLayout>
             </LinearLayout>
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/tv_addr_null"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:paddingTop="10dp"
+                android:text="暂无地址"
+                android:textColor="#a8a8a8"
+                android:paddingBottom="20dp"/>
         </LinearLayout>
     </ScrollView>
 

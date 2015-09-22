@@ -677,13 +677,14 @@ public class HomeFragment extends BaseFragment implements
      */
     public void toggleMenu()
     {
+
         if (homeCategoryFragment.isHidden())
         {
             mCategoryView.setImageResource(R.drawable.icon_close);
             fl_category_menu.setVisibility(View.VISIBLE);
 
             getChildFragmentManager().beginTransaction().setCustomAnimations(R.anim
-            .slide_in_from_top,R.anim.slide_out_to_top).show(homeCategoryFragment).commit();
+            .slide_in_from_top,R.anim.slide_out_to_top,R.anim.slide_in_from_bottom,R.anim.slide_out_to_bottom).show(homeCategoryFragment).commit();
         } else
         {
             mCategoryView.setImageResource(R.drawable.icon_category);
