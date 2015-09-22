@@ -95,7 +95,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingLeft="20dp"
-                    android:text="姓名:"
+                    android:text="姓名："
                     android:textSize="15sp"
                     android:textColor="@color/text_main_color" />
 
@@ -117,7 +117,7 @@
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="手机:"
+                    android:text="手机："
                     android:textSize="15sp"
                     android:textColor="@color/text_main_color" />
 
@@ -142,7 +142,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
-                android:text="地址:"
+                android:text="地址："
                 android:textColor="#666666" />
 
             <com.zhaidou.view.TypeFaceTextView
@@ -250,7 +250,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:textColor="@color/text_main_color"
                 android:text="收货人："/>
             <com.zhaidou.view.TypeFaceEditText
@@ -258,8 +258,8 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:paddingLeft="10dp"
-                android:textSize="16sp"
+                android:paddingLeft="5dp"
+                android:textSize="15sp"
                 android:textColor="@color/text_main_color"
                 android:background="@color/white"/>
         </LinearLayout>
@@ -272,7 +272,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:textColor="@color/text_main_color"
                 android:text="联系方式："/>
             <com.zhaidou.view.TypeFaceEditText
@@ -280,9 +280,9 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:paddingLeft="10dp"
+                android:paddingLeft="5dp"
                 android:inputType="phone"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:textColor="@color/text_main_color"
                 android:background="@color/white"/>
         </LinearLayout>
@@ -295,7 +295,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:textColor="@color/text_main_color"
                 android:text="收货地址："/>
             <com.zhaidou.view.TypeFaceEditText
@@ -303,7 +303,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:textColor="@color/text_main_color"
                 android:paddingLeft="10dp"
                 android:background="@color/white"/>

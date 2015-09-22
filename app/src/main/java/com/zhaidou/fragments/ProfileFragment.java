@@ -88,6 +88,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     private RelativeLayout rl_nickname;
     private RelativeLayout rl_mobile, mIntroLayout;
     private LinearLayout ll_addr_info;
+    private TextView tv_addr_null;
 
     private FrameLayout mMenuContainer;
     private FrameLayout mChildContainer;
@@ -127,8 +128,10 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     tv_addr_username.setText(TextUtils.isEmpty(user.getFirst_name()) ? "" :user.getFirst_name());
                     if (TextUtils.isEmpty(user.getAddress2()) || "null".equals(user.getAddress2())) {
                         ll_addr_info.setVisibility(View.GONE);
+                        tv_addr_null.setVisibility(View.VISIBLE);
                     } else {
                         ll_addr_info.setVisibility(View.VISIBLE);
+                        tv_addr_null.setVisibility(View.GONE);
                         tv_addr.setText(TextUtils.isEmpty(user.getAddress2()) ? "" :user.getAddress2());
                     }
                     break;
@@ -208,6 +211,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         tv_addr_username = (TextView) view.findViewById(R.id.tv_addr_username);
         tv_addr = (TextView) view.findViewById(R.id.tv_addr);
         ll_addr_info = (LinearLayout) view.findViewById(R.id.ll_addr_info);
+        tv_addr_null= (TextView) view.findViewById(R.id.tv_addr_null);
         tv_delete = (TextView) view.findViewById(R.id.tv_delete);
         tv_edit = (TextView) view.findViewById(R.id.tv_edit);
 
@@ -286,6 +290,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     @Override
                     public void onAddressDataChange(String name, String mobile, String address) {
                         ll_addr_info.setVisibility(TextUtils.isEmpty(address)?View.GONE:View.VISIBLE);
+                        tv_addr_null.setVisibility(TextUtils.isEmpty(address)?View.VISIBLE:View.GONE);
                         System.out.println("name = [" + name + "], mobile = [" + mobile + "], address = [" + address + "]");
                         tv_addr_username.setText(name);
                         tv_addr_mobile.setText(mobile);
