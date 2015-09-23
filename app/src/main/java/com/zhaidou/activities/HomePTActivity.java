@@ -1,13 +1,8 @@
 package com.zhaidou.activities;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.webkit.WebChromeClient;
@@ -15,18 +10,17 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
-import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.view.CustomProgressWebview;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by roy on 15/7/17.
@@ -161,6 +155,8 @@ public class HomePTActivity extends Activity
         });
 
      //   url=url+"?open=app";
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("ZhaidouVesion", getResources().getString(R.string.app_versionName));
         webView.loadUrl(url);
         mTitleView.setText(title);
 
