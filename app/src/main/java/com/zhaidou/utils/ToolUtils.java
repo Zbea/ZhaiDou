@@ -82,7 +82,8 @@ public class ToolUtils
      */
     public static boolean isPhoneOk(String phone)
     {
-        Pattern p=Pattern.compile("(1[358]\\d{9})|(14[57]\\d{8})|(17[0678]\\d{8})");
+        Pattern p=Pattern.compile("(1[3456789]\\d{9})");
+//        Pattern p=Pattern.compile("(1[358]\\d{9})|(14[57]\\d{8})|(17[0678]\\d{8})");
         Matcher m=p.matcher(phone);
         return m.matches();
     }

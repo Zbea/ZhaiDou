@@ -314,30 +314,34 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 img.setLayoutParams(new ViewGroup.LayoutParams(screenWidth, screenWidth * 300 / 750));
                 img.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
-//                            r_type=0：0元特卖商城
-//                            r_type=1：H5页面
-//                            r_type=2：文章
-//                            r_type=3：单品
-//                            r_type=4：分类
-                        SwitchImage item = banners.get(tag);
-                        if (item.type == 0) {
+                    public void onClick(View v)
+                    {
+//                      r_type=0：0元特卖商城r_type=1：H5页面r_type=2：文章r_type=3：单品r_type=4：分类
+                        SwitchImage item=banners.get(tag);
+                        if (item.type==0)
+                        {
                             SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", "");
                             ((MainActivity) getActivity()).navigationToFragment(specialSaleFragment);
-                        } else if (item.type == 1) {
+                        }
+                        else if (item.type==1)
+                        {
                             Intent intent = new Intent();
                             intent.putExtra("url", item.typeValue);
                             intent.setClass(getActivity(), WebViewActivity.class);
                             getActivity().startActivity(intent);
-                        } else if (item.type == 2) {
+                        }
+                        else if (item.type==2)
+                        {
                             Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
                             detailIntent.putExtra("id", item.id + "");
                             detailIntent.putExtra("from", "product");
                             detailIntent.putExtra("title", item.title);
                             detailIntent.putExtra("cover_url", item.imageUrl);
-                            detailIntent.putExtra("url", ZhaiDou.ARTICLE_DETAIL_URL + item.id);
+                            detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+item.id);
                             mContext.startActivity(detailIntent);
-                        } else if (item.type == 3) {
+                        }
+                        else if (item.type==3)
+                        {
                             GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0);
                             Bundle bundle = new Bundle();
                             bundle.putInt("flags", 1);
@@ -345,13 +349,14 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                             bundle.putString("page", item.title);
                             goodsDetailsFragment.setArguments(bundle);
                             ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
-                        } else {
-                            Category category = new Category();
+                        }else
+                        {
+                            ToolUtils.setLog(item.typeValue);
+                            Category category=new Category();
                             category.setId(Integer.parseInt(item.typeValue));
-                            SpecialFragment shopTodaySpecialFragment = SpecialFragment.newInstance("", category);
+                            SpecialFragment shopTodaySpecialFragment = SpecialFragment.newInstance("",category);
                             ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
                         }
-
                     }
                 });
                 ToolUtils.setImageCacheUrl(banners.get(i).imageUrl, img);
@@ -418,24 +423,32 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 img.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        SwitchImage item = banners.get(tag);
-                        if (item.type == 0) {
+//                      r_type=0：0元特卖商城r_type=1：H5页面r_type=2：文章r_type=3：单品r_type=4：分类
+                        SwitchImage item=banners.get(tag);
+                        if (item.type==0)
+                        {
                             SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", "");
                             ((MainActivity) getActivity()).navigationToFragment(specialSaleFragment);
-                        } else if (item.type == 1) {
+                        }
+                        else if (item.type==1)
+                        {
                             Intent intent = new Intent();
                             intent.putExtra("url", item.typeValue);
                             intent.setClass(getActivity(), WebViewActivity.class);
                             getActivity().startActivity(intent);
-                        } else if (item.type == 2) {
+                        }
+                        else if (item.type==2)
+                        {
                             Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
                             detailIntent.putExtra("id", item.id + "");
                             detailIntent.putExtra("from", "product");
                             detailIntent.putExtra("title", item.title);
                             detailIntent.putExtra("cover_url", item.imageUrl);
-                            detailIntent.putExtra("url", ZhaiDou.ARTICLE_DETAIL_URL + item.id);
+                            detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+item.id);
                             mContext.startActivity(detailIntent);
-                        } else if (item.type == 3) {
+                        }
+                        else if (item.type==3)
+                        {
                             GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0);
                             Bundle bundle = new Bundle();
                             bundle.putInt("flags", 1);
@@ -443,10 +456,11 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                             bundle.putString("page", item.title);
                             goodsDetailsFragment.setArguments(bundle);
                             ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
-                        } else {
-                            Category category = new Category();
+                        }else
+                        {
+                            Category category=new Category();
                             category.setId(Integer.parseInt(item.typeValue));
-                            SpecialFragment shopTodaySpecialFragment = SpecialFragment.newInstance("", category);
+                            SpecialFragment shopTodaySpecialFragment = SpecialFragment.newInstance("",category);
                             ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
                         }
                     }

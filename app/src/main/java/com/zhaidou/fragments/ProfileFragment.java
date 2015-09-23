@@ -389,6 +389,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             public void onResponse(JSONObject jsonObject) {
                 Log.i("getUserData--->", jsonObject.toString());
                 JSONObject userObj = jsonObject.optJSONObject("profile");
+                if (userObj==null) return;
                 String mobile = userObj.optString("mobile");
                 mobile = mobile.equals("null") ? "" : mobile;
                 String description = userObj.optString("description");
@@ -397,7 +398,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 boolean verified = userObj.optBoolean("verified");
                 String first_name = userObj.optString("first_name");
                 first_name = "null".equalsIgnoreCase(first_name) ? "" : first_name;
-
                 String address2 = userObj.optString("address2");
                 User user = new User(null, null, null, verified, mobile, description);
                 user.setAddress2(address2);
