@@ -351,7 +351,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
             mOrderNum.setText(item.getNumber());
             mOrderAmount.setText("￥" + ToolUtils.isIntPrice("" +item.getAmount()));
             mOrderStatus.setText(item.getStatus_ch());
-            ToolUtils.setImageCacheUrl(item.getImg(), mOrderImg);
+            ToolUtils.setImageCacheUrl(item.getImg(), mOrderImg,R.drawable.icon_loading_defalut);
 
 
             if (mTimerBtn.getTag() == null) {

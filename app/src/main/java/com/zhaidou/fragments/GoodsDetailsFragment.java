@@ -174,7 +174,6 @@ public class GoodsDetailsFragment extends BaseFragment
     private String token;
     private long temptime;
     private long currentTime;
-    private OnCartNumChangeListener mListener;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -585,20 +584,6 @@ public class GoodsDetailsFragment extends BaseFragment
         return mView;
     }
 
-    @Override
-    public void onAttach(Activity activity)
-    {
-        super.onAttach(activity);
-        try
-        {
-            mListener = (OnCartNumChangeListener) activity;
-        } catch (ClassCastException e)
-        {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnCartNumChangeListener");
-        }
-    }
-
     private void initView()
     {
         shareUrl = shareUrl + mIndex;
@@ -912,35 +897,28 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     private void initCartTips()
     {
-        new Thread(new Runnable()
+        if (checkLogin())
         {
-            @Override
-            public void run()
+            num = 0;
+            getGoodsItems();
+            for (int i = 0; i < items.size(); i++)
             {
-                if (checkLogin())
+                if (items.get(i).isPublish.equals("false") && items.get(i).isOver.equals("false"))
                 {
-                    num = 0;
-                    getGoodsItems();
-                    for (int i = 0; i < items.size(); i++)
-                    {
-                        if (items.get(i).isPublish.equals("false") && items.get(i).isOver.equals("false"))
-                        {
-                            num = num + items.get(i).num;
-                        }
-                    }
-                    Message message = new Message();
-                    message.arg2 = num;
-                    message.what = UPDATE_CARTCAR_DATA;
-                    handler.sendMessage(message);
-                } else
-                {
-                    Message message = new Message();
-                    message.arg2 = num;
-                    message.what = UPDATE_CARTCAR_DATA;
-                    handler.sendMessage(message);
+                    num = num + items.get(i).num;
                 }
             }
-        }).start();
+            Message message = new Message();
+            message.arg2 = num;
+            message.what = UPDATE_CARTCAR_DATA;
+            handler.sendMessage(message);
+        } else
+        {
+            Message message = new Message();
+            message.arg2 = num;
+            message.what = UPDATE_CARTCAR_DATA;
+            handler.sendMessage(message);
+        }
     }
 
     /**
@@ -948,6 +926,7 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     private void getGoodsItems()
     {
+//        items=((MainActivity)mContext).getItems();
         items = CreatCartTools.selectByAll(creatCartDB, userId);
     }
 
@@ -1074,6 +1053,11 @@ public class GoodsDetailsFragment extends BaseFragment
         {
             if (mSpecification != null)
             {
+                if (isAdd())
+                {
+                    ToolUtils.setToastLong(mContext, "抱歉,已经添加了该商品");
+                    return;
+                }
                 if (flags == 1)
                 {
                     if (isOSaleBuy)
@@ -1156,11 +1140,6 @@ public class GoodsDetailsFragment extends BaseFragment
     {
         if (detail != null)
         {
-            if (isAdd())
-            {
-                ToolUtils.setToastLong(mContext, "抱歉,已经添加了该商品");
-                return;
-            }
             if (isOver())
             {
                 int[] location = new int[2];
@@ -1194,7 +1173,6 @@ public class GoodsDetailsFragment extends BaseFragment
                     cartItem.isOSale = "false";
                 }
                 CreatCartTools.insertByData(creatCartDB, items, cartItem);
-                mListener.onCartNumIncrease(1,cartItem,null);
 
                 Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
                 mContext.sendBroadcast(intent);
@@ -1672,9 +1650,4 @@ public class GoodsDetailsFragment extends BaseFragment
         }
     }
 
-    public interface OnCartNumChangeListener{
-        public void onCartNumIncrease(int num,CartItem cartItem,List<CartItem> cartItemList);
-
-        public void onCartNumDecrease(int num,CartItem cartItem,List<CartItem> cartItemList);
-    }
 }

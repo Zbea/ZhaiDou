@@ -131,10 +131,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 case UPDATE_ADAPTER:
                     loadingView.setVisibility(View.GONE);
                     mAdapter.notifyDataSetChanged();
-                    if (banners!=null&&banners.size()<1)
-                    {
-                        getBannerData();
-                    }
                     break;
                 case UPDATE_COUNT_DOWN_TIME:
                     CountTime time = (CountTime) msg.obj;
@@ -472,7 +468,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
      * 红色标识提示显示数量
      */
     private void initCartTips() {
-        if (((MainActivity)getActivity()).getNum() > 0) {
+        if (((MainActivity)getActivity()).getNum() > 0)
+        {
             cartTipsTv.setVisibility(View.VISIBLE);
             cartTipsTv.setText("" + ((MainActivity)getActivity()).getNum());
         } else {

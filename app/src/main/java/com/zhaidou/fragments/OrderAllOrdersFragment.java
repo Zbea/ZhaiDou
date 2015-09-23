@@ -537,7 +537,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             tv_order_number.setText(order.getNumber());
             tv_order_amount.setText("￥" + ToolUtils.isIntPrice("" +order.getAmount()));
             tv_order_status.setText(order.getStatus_ch());
-            ToolUtils.setImageCacheUrl(order.getImg(), iv_order_img);
+            ToolUtils.setImageCacheUrl(order.getImg(), iv_order_img,R.drawable.icon_loading_defalut);
             switch (Integer.parseInt(order.getStatus())) {
                 case ZhaiDou.STATUS_UNPAY:
                     iv_delete.setVisibility(View.GONE);

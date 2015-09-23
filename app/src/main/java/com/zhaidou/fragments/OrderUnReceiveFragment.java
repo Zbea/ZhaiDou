@@ -394,7 +394,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
                 bt_received.setVisibility(View.VISIBLE);
                 bt_logistics.setText("查看物流");
             }
-            ToolUtils.setImageCacheUrl(item.getImg(), iv_order_img);
+            ToolUtils.setImageCacheUrl(item.getImg(), iv_order_img,R.drawable.icon_loading_defalut);
             return convertView;
         }
     }

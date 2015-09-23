@@ -87,7 +87,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         StrategyFragment.OnFragmentInteractionListener,
         ElementListFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
         HomeFragment.OnFragmentInteractionListener, CategoryFragment1.OnFragmentInteractionListener,
-        RegisterFragment.RegisterOrLoginListener,GoodsDetailsFragment.OnCartNumChangeListener,ShopCartFragment.OnCartNumChangeListener{
+        RegisterFragment.RegisterOrLoginListener{
 
     private Fragment utilityFragment;
     private Fragment beautyHomeFragment;
@@ -128,15 +128,15 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     public static List<Province> provinceList = new ArrayList<Province>();
 
     public int num = 0;
-    private List<CartItem> items = new ArrayList<CartItem>();
+    public List<CartItem> items = new ArrayList<CartItem>();
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-//            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag)) {
-//                initCartTips();
-//            }
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag)) {
+                initCartTips();
+            }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
                 initCartTips();
             }
@@ -301,21 +301,16 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
      */
     private void initCartTips() {
         num=0;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                if (checkLogin()) {
-                    getGoodsItems();
-                    for (int i = 0; i < items.size(); i++) {
-                        if (items.get(i).isPublish.equals("false") && items.get(i).isOver.equals("false")) {
-                            num = num + items.get(i).num;
-                        }
-                        System.out.println("MainActivity.run--------->"+num);
-                    }
+        if (checkLogin()) {
+            getGoodsItems();
+            for (int i = 0; i < items.size(); i++)
+            {
+                if (items.get(i).isPublish.equals("false") && items.get(i).isOver.equals("false")) {
+                    num = num + items.get(i).num;
                 }
+                System.out.println("MainActivity.run--------->"+num);
             }
-        }).start();
+        }
     }
 
     /**
@@ -330,6 +325,11 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     public int getNum() {
         return num;
+    }
+
+    public List<CartItem> getItems()
+    {
+        return items;
     }
 
     public void initComponents() {
@@ -716,35 +716,4 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         MobclickAgent.onPause(this);
     }
 
-    @Override
-    public void onCartNumIncrease(int count,CartItem cartItem,List<CartItem> cartItemList) {
-        num+=count;
-        if (cartItemList!=null){
-            items=cartItemList;
-            System.out.println("MainActivity.onCartNumIncrease--------->items=cartItemList");
-        }else {
-            for (CartItem item:items){
-                if (item.id==cartItem.id){
-                    item.num=item.num+count;
-                }
-            }
-            System.out.println("MainActivity.onCartNumIncrease---------->item.num+count---->"+count);
-        }
-    }
-
-    @Override
-    public void onCartNumDecrease(int count,CartItem cartItem,List<CartItem> cartItemList) {
-        num-=count;
-        if (cartItemList!=null){
-            items=cartItemList;
-            System.out.println("MainActivity.onCartNumDecrease--------->items=cartItemList");
-        }else {
-            for (CartItem item:items){
-                if (item.id==cartItem.id){
-                    item.num=item.num-count;
-                }
-            }
-            System.out.println("MainActivity.onCartNumDecrease---------->item.num-count---->"+count);
-        }
-    }
 }
