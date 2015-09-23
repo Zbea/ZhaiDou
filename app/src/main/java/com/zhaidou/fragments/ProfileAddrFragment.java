@@ -111,7 +111,7 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
         tv_save.setOnClickListener(this);
         tv_edit.setOnClickListener(this);
         tv_delete.setOnClickListener(this);
-        if (TextUtils.isEmpty(mNickName)&&TextUtils.isEmpty(mMobile)&&TextUtils.isEmpty(mAddress)){
+        if (TextUtils.isEmpty(mAddress)){
             ll_edit_addr.setVisibility(View.VISIBLE);
             ll_manage_address.setVisibility(View.GONE);
         }else {

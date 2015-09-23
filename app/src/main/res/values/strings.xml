@@ -138,5 +138,9 @@
     
     <!--dialog标题-->
     <string name="dialog_hint_collect">是否确认取消收藏?</string>
+    
+    <!--8分钟-->
+    <integer name="timer_countdown">900000</integer>
+    <integer name="timer_countdown1">8</integer>
 
 </resources>

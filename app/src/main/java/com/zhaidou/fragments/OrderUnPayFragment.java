@@ -233,6 +233,8 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                     });
                 }
             });
+            timer = new MyTimer((mContext.getResources().getInteger(R.integer.timer_countdown)), 1000);
+            timer.start();
             initData();
         }
 
@@ -421,7 +423,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
 
         if (!isTimerStart) {
             if (timer == null)
-                timer = new MyTimer(15 * 60 * 1000, 1000);
+                timer = new MyTimer((mContext.getResources().getInteger(R.integer.timer_countdown)), 1000);
             isTimerStart = true;
             timer.start();
             Log.i("onResume--->timer.start();----------->","timer.start()---------->");
