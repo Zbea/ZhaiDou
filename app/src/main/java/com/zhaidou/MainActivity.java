@@ -30,7 +30,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.sdk.android.AlibabaSDK;
 import com.alibaba.sdk.android.callback.CallbackContext;
+import com.alibaba.sdk.android.callback.InitResultCallback;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -192,7 +194,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         }
     };
 
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main_layout);
@@ -204,15 +207,19 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
         getVersionServer();
 
-
-        commitActiveData();
-        AlibabaSDK.asyncInit(this, new InitResultCallback() {
-            @Override
-            public void onSuccess() {
-                Log.i("onSuccess---->", "初始化成功");
-            }
-
         initComponents();
+        commitActiveData();
+        AlibabaSDK.asyncInit(this, new InitResultCallback()
+        {
+            @Override
+            public void onSuccess()
+            {
+            }
+            @Override
+            public void onFailure(int i, String s)
+            {
+            }
+        });
     }
 
     private void commitActiveData() {
