@@ -59,6 +59,65 @@ public class DialogUtils {
         dialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         dialog.show();
     }
+    /**
+    *
+    * Author Scoield
+    * Created at 15/9/23 11:44
+    * Description:默认加载对话框,不带提示信息
+    * FIXME
+    */
+    public Dialog showLoadingDialog(){
+        final View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_loading, null);
+        TextView textView = (TextView) view.findViewById(R.id.loading_tv);
+        textView.setText(msg);
+        Dialog mDialog = new Dialog(mContext, R.style.custom_dialog_no);
+        mDialog.setCanceledOnTouchOutside(false);
+        mDialog.setCancelable(true);
+        mDialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mDialog.show();
+        showLoadingDialog("","")
+        return mDialog;
+    }
+    /**
+     *
+     * Author Scoield
+     * Created at 15/9/23 11:44
+     * Description:默认加载对话框,带提示信息
+     * @param msg 提示信息
+     * FIXME
+     */
+    public Dialog showLoadingDialog(String msg){
+        final View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_loading, null);
+        TextView textView = (TextView) view.findViewById(R.id.loading_tv);
+        textView.setText(msg);
+        Dialog mDialog = new Dialog(mContext, R.style.custom_dialog_no);
+        mDialog.setCanceledOnTouchOutside(false);
+        mDialog.setCancelable(true);
+        mDialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mDialog.show();
+        return mDialog;
+    }
+    /**
+     *
+     * Author Scoield
+     * Created at 15/9/23 11:44
+     * Description:默认加载对话框,带提示信息
+     * @param msg 提示信息
+     * @param isNeedAnim  是否需要动画，TRUE需要
+     * FIXME
+     */
+
+    public Dialog showLoadingDialog(String msg,boolean isNeedAnim){
+        final View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_loading, null);
+        TextView textView = (TextView) view.findViewById(R.id.loading_tv);
+        textView.setText(msg);
+        Dialog mDialog = new Dialog(mContext, R.style.custom_dialog_no);
+        mDialog.setCanceledOnTouchOutside(false);
+        mDialog.setCancelable(true);
+        mDialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mDialog.show();
+        return mDialog;
+    }
 
     public interface PositiveListener {
         public void onPositive();
