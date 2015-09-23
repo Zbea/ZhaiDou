@@ -128,11 +128,11 @@ public class GoodsDetailsFragment extends BaseFragment
     private final int UPDATE_TIMER_START = 3;
     private final int UPDATE_CARTCAR_DATA = 4;
     private final int UPDATE_LJBUY_ISOSALEBUY = 5;//零元特卖立即购买时候判断是否已经购买郭
-    private CreatCartDB creatCartDB;
-
     private final int UPDATE_ISOSALEBUY = 6;//判断进来时候零元特卖是否已经购买了，购买了才让按钮不能点击
-    private List<CartItem> items = new ArrayList<CartItem>();
+    private final int UPDATE_LOGIN_ISOSALEBUY = 7;//判断进来时候零元特卖是否已经购买了，购买了才让按钮不能点击
 
+    private List<CartItem> items = new ArrayList<CartItem>();
+    private CreatCartDB creatCartDB;
     private int num;
     private ScrollView scrollView;
     private ImageView topBtn;
@@ -162,6 +162,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private int number = 0;
     //是否完成清理
     private boolean isClean = false;
+    private boolean isPublish=false;
     private MyTimer mTimer;
     private TextView mTimerView, imageNull;
     private ArrayList<String> listUrls = new ArrayList<String>();
@@ -174,6 +175,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private String token;
     private long temptime;
     private long currentTime;
+    long mTime = 0;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -234,10 +236,38 @@ public class GoodsDetailsFragment extends BaseFragment
             switch (msg.what)
             {
                 case UPDATE_GOOD_DETAIL:
+
                     if (detail != null)
-                        ljBtn.setVisibility(View.VISIBLE);
-                    addCartBtn.setVisibility(View.VISIBLE);
-                    loadingView.setVisibility(View.GONE);
+                    if (checkLogin())
+                    {
+                        if (flags == 1)
+                        {
+                            FetchOSaleData(UPDATE_ISOSALEBUY);
+                        }
+                        else
+                        {
+                            if (mDialog != null)
+                                mDialog.dismiss();
+                            loadingView.setVisibility(View.GONE);
+                        }
+                    }
+                    else
+                    {
+                        if (mDialog != null)
+                            mDialog.dismiss();
+                        loadingView.setVisibility(View.GONE);
+                    }
+                    if (flags == 1)
+                    {
+                        iconView.setVisibility(View.GONE);
+                        iconOSaleView.setVisibility(View.VISIBLE);
+                        commentView.setVisibility(View.GONE);
+                    } else
+                    {
+                        iconView.setVisibility(View.VISIBLE);
+                        iconOSaleView.setVisibility(View.GONE);
+                        commentView.setVisibility(View.VISIBLE);
+                    }
 
                     detail = (GoodDetail) msg.obj;
                     setChildFargment(detail, goodInfos);
@@ -263,7 +293,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     }
                     if (isOver)
                     {
-                        if (flags == 2)
+                        if (isPublish)
                         {
                             setAddOrBuyShow("此商品已下架");
                         } else
@@ -314,7 +344,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     mTimerView.setText("已结束");
                     setAddOrBuyShow("活动已结束");
                     break;
-                case 5:
+                case UPDATE_LJBUY_ISOSALEBUY:
                     if (mDialog != null)
                         mDialog.dismiss();
                     if (isOSaleBuy)
@@ -336,6 +366,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 case UPDATE_ISOSALEBUY:
                     if (mDialog != null)
                         mDialog.dismiss();
+                    loadingView.setVisibility(View.GONE);
                     if (isOSaleBuy)
                     {
                         setAddOrBuyShow("不能重复购买");
@@ -412,8 +443,8 @@ public class GoodsDetailsFragment extends BaseFragment
                     } else
                     {
                         Intent intent = new Intent(getActivity(), LoginActivity.class);
-                        intent.setFlags(1);
-                        getActivity().startActivity(intent);
+                        intent.setFlags(3);
+                        startActivityForResult(intent,5001);
                     }
                     break;
                 case R.id.goodsLjBuyBtn:
@@ -438,13 +469,12 @@ public class GoodsDetailsFragment extends BaseFragment
                             }
                     } else
                     {
-                        Intent intent = new Intent(getActivity(), LoginActivity.class);
-                        intent.setFlags(1);
-                        getActivity().startActivity(intent);
+                        Intent intent = new Intent(mContext, LoginActivity.class);
+                        intent.setFlags(3);
+                        startActivityForResult(intent,5001);
                     }
                     break;
                 case R.id.goodsAddBuyBtn:
-                    long mTime = 0;
                     if ((System.currentTimeMillis() - mTime) > 1000)
                     {
                         mTime = System.currentTimeMillis();
@@ -558,7 +588,8 @@ public class GoodsDetailsFragment extends BaseFragment
         {
             mPage = getArguments().getString(PAGE);
             mIndex = getArguments().getInt(INDEX);
-            flags = getArguments().getInt("flags");
+            flags=getArguments().getInt("flags");
+            isPublish = (flags==2?true:false);
         }
     }
 
@@ -629,19 +660,8 @@ public class GoodsDetailsFragment extends BaseFragment
         iconView = (LinearLayout) mView.findViewById(R.id.iconView);
         iconOSaleView = (LinearLayout) mView.findViewById(R.id.iconOSaleView);
         commentView = (LinearLayout) mView.findViewById(R.id.commentView);
-        if (flags == 1)
-        {
-            iconView.setVisibility(View.GONE);
-            iconOSaleView.setVisibility(View.VISIBLE);
-            commentView.setVisibility(View.GONE);
-        } else
-        {
-            iconView.setVisibility(View.VISIBLE);
-            iconOSaleView.setVisibility(View.GONE);
-            commentView.setVisibility(View.VISIBLE);
-        }
 
-        if (flags == 2)
+        if (isPublish)
         {
             setAddOrBuyShow("此商品已下架");
         }
@@ -758,6 +778,20 @@ public class GoodsDetailsFragment extends BaseFragment
 
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (resultCode==5001)
+        {
+            if (flags==1)
+            {
+                mDialog=CustomLoadingDialog.setLoadingDialog(mContext,"");
+                FetchOSaleData(UPDATE_LOGIN_ISOSALEBUY);
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     /**
      * 数据加载
      */
@@ -767,13 +801,6 @@ public class GoodsDetailsFragment extends BaseFragment
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
             FetchDetailData(mIndex);
-            if (checkLogin())
-            {
-                if (flags == 1)
-                {
-                    FetchOSaleData(UPDATE_ISOSALEBUY);
-                }
-            }
         } else
         {
             if (mDialog != null)
@@ -1090,8 +1117,8 @@ public class GoodsDetailsFragment extends BaseFragment
         } else
         {
             Intent intent = new Intent(getActivity(), LoginActivity.class);
-            intent.setFlags(1);
-            getActivity().startActivity(intent);
+            intent.setFlags(3);
+            startActivityForResult(intent,5001);
         }
 
     }
@@ -1212,9 +1239,6 @@ public class GoodsDetailsFragment extends BaseFragment
             public void onResponse(JSONObject jsonObject)
             {
 
-                if (mDialog != null)
-                    mDialog.dismiss();
-
                 if (jsonObject != null)
                 {
                     JSONObject merchandise = jsonObject.optJSONObject("merchandise");
@@ -1226,6 +1250,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     double cost_price = merchandise.optDouble("cost_price");
                     int discount = merchandise.optInt("discount");
                     String end_time = merchandise.optString("end_time");
+                    flags=merchandise.optInt("sale_cate");
                     detail = new GoodDetail(id, title, designer, total_count, price, cost_price, discount);
                     detail.setEnd_time(end_time);
 
@@ -1284,6 +1309,8 @@ public class GoodsDetailsFragment extends BaseFragment
                     handler.sendMessage(message);
                 } else
                 {
+                    if (mDialog != null)
+                        mDialog.dismiss();
                     nullView.setVisibility(View.VISIBLE);
                     nullNetView.setVisibility(View.GONE);
                 }
@@ -1308,13 +1335,11 @@ public class GoodsDetailsFragment extends BaseFragment
     public void FetchOSaleData(final int i)
     {
         String url = ZhaiDou.orderCheckOSaleUrl;
-        Log.i("url---------------------->", url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
             {
-
                 if (jsonObject != null)
                 {
                     isOSaleBuy = jsonObject.optBoolean("flag");
@@ -1326,6 +1351,10 @@ public class GoodsDetailsFragment extends BaseFragment
                 {
                     handler.sendEmptyMessage(UPDATE_ISOSALEBUY);
                 }
+                else if(i == UPDATE_LOGIN_ISOSALEBUY)
+                {
+                    handler.sendEmptyMessage(UPDATE_ISOSALEBUY);
+                }
             }
         }, new Response.ErrorListener()
         {
@@ -1334,7 +1363,15 @@ public class GoodsDetailsFragment extends BaseFragment
             {
                 if (mDialog != null)
                     mDialog.dismiss();
-                Toast.makeText(mContext, "抱歉,请求失败", Toast.LENGTH_SHORT).show();
+                if (i == UPDATE_ISOSALEBUY)
+                {
+                    nullView.setVisibility(View.VISIBLE);
+                    nullNetView.setVisibility(View.GONE);
+                }
+                else
+                {
+                   ToolUtils.setToastLong(mContext,"抱歉,加载失败");
+                }
             }
         })
         {
