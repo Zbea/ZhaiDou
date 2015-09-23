@@ -209,7 +209,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         getVersionServer();
 
 
-//        commitActiveData();
+        commitActiveData();
         AlibabaSDK.asyncInit(this, new InitResultCallback() {
             @Override
             public void onSuccess() {
