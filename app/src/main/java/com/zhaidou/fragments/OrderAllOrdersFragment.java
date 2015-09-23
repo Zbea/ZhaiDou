@@ -644,7 +644,6 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
     @Override
     public void onDestroyView() {
-        Log.i("AllOrdersFragment----------->", "onDestroyView");
         if (timer != null) {
             timer.cancel();
             timer = null;
@@ -656,9 +655,8 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
     @Override
     public void onResume() {
-        Log.i("AllOrdersFragment----------->", "onResume");
         if (timer == null)
-            timer = new MyTimer(15 * 60 * 1000, 1000);
+            timer = new MyTimer((mContext.getResources().getInteger(R.integer.timer_countdown)), 1000);
         if (!isTimerStart) {
             isTimerStart = true;
             timer.start();
@@ -692,7 +690,6 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
         @Override
         public void onTick(long l) {
-//            Log.i("onTick----------->", l + "");
             handler.sendEmptyMessage(UPDATE_COUNT_DOWN_TIME);
         }
 

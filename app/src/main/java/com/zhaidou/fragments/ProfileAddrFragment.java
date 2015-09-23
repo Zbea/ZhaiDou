@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
-*
 * Author Scoield
 * Created at 15/9/16 10:08
 * Description:个人资料里的地址管理
@@ -111,7 +110,7 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
         tv_save.setOnClickListener(this);
         tv_edit.setOnClickListener(this);
         tv_delete.setOnClickListener(this);
-        if (TextUtils.isEmpty(mNickName)&&TextUtils.isEmpty(mMobile)&&TextUtils.isEmpty(mAddress)){
+        if (TextUtils.isEmpty(mAddress)){
             ll_edit_addr.setVisibility(View.VISIBLE);
             ll_manage_address.setVisibility(View.GONE);
         }else {
@@ -173,7 +172,7 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
         final String token= (String)SharedPreferencesUtil.getData(mContext,"token","");
         Map<String,String> params=new HashMap<String, String>();
         params.put("_method", "PUT");
-        params.put("profile[nick_name]", username);
+        params.put("profile[first_name]", username);
         params.put("profile[mobile]", mobile);
         params.put("profile[address2]", address);
         params.put("profile[id]", profileId);
@@ -181,7 +180,6 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
             @Override
             public void onResponse(JSONObject jsonObject) {
                 mDialog.dismiss();
-                System.out.println("ProfileAddrFragment.onResponse------->"+jsonObject);
                 if (jsonObject!=null){
                     JSONObject profile = jsonObject.optJSONObject("profile");
                     String mobile = profile.optString("mobile");
