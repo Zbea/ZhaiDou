@@ -24,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -314,46 +315,37 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 img.setLayoutParams(new ViewGroup.LayoutParams(screenWidth, screenWidth * 300 / 750));
                 img.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v)
-                    {
+                    public void onClick(View v) {
 //                      r_type=0：0元特卖商城r_type=1：H5页面r_type=2：文章r_type=3：单品r_type=4：分类
-                        SwitchImage item=banners.get(tag);
-                        if (item.type==0)
-                        {
+                        SwitchImage item = banners.get(tag);
+                        if (item.type == 0) {
                             SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", "");
                             ((MainActivity) getActivity()).navigationToFragment(specialSaleFragment);
-                        }
-                        else if (item.type==1)
-                        {
+                        } else if (item.type == 1) {
                             Intent intent = new Intent();
                             intent.putExtra("url", item.typeValue);
                             intent.setClass(getActivity(), WebViewActivity.class);
                             getActivity().startActivity(intent);
-                        }
-                        else if (item.type==2)
-                        {
+                        } else if (item.type == 2) {
                             Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
                             detailIntent.putExtra("id", item.id + "");
                             detailIntent.putExtra("from", "product");
                             detailIntent.putExtra("title", item.title);
                             detailIntent.putExtra("cover_url", item.imageUrl);
-                            detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+item.id);
+                            detailIntent.putExtra("url", ZhaiDou.ARTICLE_DETAIL_URL + item.id);
                             mContext.startActivity(detailIntent);
-                        }
-                        else if (item.type==3)
-                        {
+                        } else if (item.type == 3) {
                             GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0);
                             Bundle bundle = new Bundle();
                             bundle.putInt("index", Integer.valueOf(item.typeValue));
                             bundle.putString("page", item.title);
                             goodsDetailsFragment.setArguments(bundle);
                             ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
-                        }else
-                        {
+                        } else {
                             ToolUtils.setLog(item.typeValue);
-                            Category category=new Category();
+                            Category category = new Category();
                             category.setId(Integer.parseInt(item.typeValue));
-                            SpecialFragment shopTodaySpecialFragment = SpecialFragment.newInstance("",category);
+                            SpecialFragment shopTodaySpecialFragment = SpecialFragment.newInstance("", category);
                             ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
                         }
                     }
@@ -423,42 +415,34 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     @Override
                     public void onClick(View v) {
 //                      r_type=0：0元特卖商城r_type=1：H5页面r_type=2：文章r_type=3：单品r_type=4：分类
-                        SwitchImage item=banners.get(tag);
-                        if (item.type==0)
-                        {
+                        SwitchImage item = banners.get(tag);
+                        if (item.type == 0) {
                             SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", "");
                             ((MainActivity) getActivity()).navigationToFragment(specialSaleFragment);
-                        }
-                        else if (item.type==1)
-                        {
+                        } else if (item.type == 1) {
                             Intent intent = new Intent();
                             intent.putExtra("url", item.typeValue);
                             intent.setClass(getActivity(), WebViewActivity.class);
                             getActivity().startActivity(intent);
-                        }
-                        else if (item.type==2)
-                        {
+                        } else if (item.type == 2) {
                             Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
                             detailIntent.putExtra("id", item.id + "");
                             detailIntent.putExtra("from", "product");
                             detailIntent.putExtra("title", item.title);
                             detailIntent.putExtra("cover_url", item.imageUrl);
-                            detailIntent.putExtra("url",ZhaiDou.ARTICLE_DETAIL_URL+item.id);
+                            detailIntent.putExtra("url", ZhaiDou.ARTICLE_DETAIL_URL + item.id);
                             mContext.startActivity(detailIntent);
-                        }
-                        else if (item.type==3)
-                        {
+                        } else if (item.type == 3) {
                             GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0);
                             Bundle bundle = new Bundle();
                             bundle.putInt("index", Integer.valueOf(item.typeValue));
                             bundle.putString("page", item.title);
                             goodsDetailsFragment.setArguments(bundle);
                             ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
-                        }else
-                        {
-                            Category category=new Category();
+                        } else {
+                            Category category = new Category();
                             category.setId(Integer.parseInt(item.typeValue));
-                            SpecialFragment shopTodaySpecialFragment = SpecialFragment.newInstance("",category);
+                            SpecialFragment shopTodaySpecialFragment = SpecialFragment.newInstance("", category);
                             ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
                         }
                     }
@@ -480,10 +464,9 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
      * 红色标识提示显示数量
      */
     private void initCartTips() {
-        if (((MainActivity)getActivity()).getNum() > 0)
-        {
+        if (((MainActivity) getActivity()).getNum() > 0) {
             cartTipsTv.setVisibility(View.VISIBLE);
-            cartTipsTv.setText("" + ((MainActivity)getActivity()).getNum());
+            cartTipsTv.setText("" + ((MainActivity) getActivity()).getNum());
         } else {
             cartTipsTv.setVisibility(View.GONE);
         }
@@ -568,7 +551,14 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 nullNetView.setVisibility(View.GONE);
             }
         }
-        );
+        ){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         requestQueue.add(request);
     }
 
@@ -610,7 +600,14 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             @Override
             public void onErrorResponse(VolleyError volleyError) {
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         requestQueue.add(bannerRequest);
     }
 

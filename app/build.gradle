@@ -24,6 +24,7 @@ android {
         AndroidFm { "AndroidFm" }
         AndroidAz { "AndroidAz" }
         AndroidHW { "AndroidHW" }
+        AndroidOap{"AndroidOap"}
     }
     productFlavors.all { flavor ->
         flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
