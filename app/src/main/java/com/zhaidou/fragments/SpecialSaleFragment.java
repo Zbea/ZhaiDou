@@ -344,7 +344,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                         {
                             GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0);
                             Bundle bundle = new Bundle();
-                            bundle.putInt("flags", 1);
                             bundle.putInt("index", Integer.valueOf(item.typeValue));
                             bundle.putString("page", item.title);
                             goodsDetailsFragment.setArguments(bundle);
@@ -451,7 +450,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                         {
                             GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0);
                             Bundle bundle = new Bundle();
-                            bundle.putInt("flags", 1);
                             bundle.putInt("index", Integer.valueOf(item.typeValue));
                             bundle.putString("page", item.title);
                             goodsDetailsFragment.setArguments(bundle);

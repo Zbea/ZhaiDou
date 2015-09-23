@@ -104,28 +104,26 @@ public class ShopSpecialFragment extends BaseFragment
     private CreatCartDB creatCartDB;
     private final int UPDATE_CARTCAR_DATA=4;
 
-//    private BroadcastReceiver broadcastReceiver=new BroadcastReceiver()
-//    {
-//        @Override
-//        public void onReceive(Context context, Intent intent)
-//        {
-//            String action=intent.getAction();
-//            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
-//            {
-//                initCartTips();
-//            }
-//            if (action.equals(ZhaiDou.IntentRefreshLoginTag))
-//            {
-//                checkLogin();
-//                initCartTips();
-//            }
-//            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
-//            {
-//                checkLogin();
-//                initCartTips();
-//            }
-//        }
-//    };
+    private BroadcastReceiver broadcastReceiver=new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            String action=intent.getAction();
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
+            {
+                initCartTips();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshLoginTag))
+            {
+                initCartTips();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
+            {
+                initCartTips();
+            }
+        }
+    };
 
 
     private Handler handler = new Handler()
@@ -261,7 +259,7 @@ public class ShopSpecialFragment extends BaseFragment
                              Bundle savedInstanceState)
     {
             mContext = getActivity();
-//        initBroadcastReceiver();
+        initBroadcastReceiver();
         if(mView==null)
         {
             mView = inflater.inflate(R.layout.shop_special_page, container, false);
@@ -280,14 +278,14 @@ public class ShopSpecialFragment extends BaseFragment
     /**
      * 注册广播
      */
-//    private void initBroadcastReceiver()
-//    {
-//        IntentFilter intentFilter=new IntentFilter();
-//        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
-//        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
-//        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
-//        mContext.registerReceiver(broadcastReceiver,intentFilter);
-//    }
+    private void initBroadcastReceiver()
+    {
+        IntentFilter intentFilter=new IntentFilter();
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
+        mContext.registerReceiver(broadcastReceiver,intentFilter);
+    }
 
     /**
      * 初始化数据
@@ -405,7 +403,6 @@ public class ShopSpecialFragment extends BaseFragment
                         {
                             GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0);
                             Bundle bundle = new Bundle();
-                            bundle.putInt("flags", 1);
                             bundle.putInt("index", Integer.valueOf(item.typeValue));
                             bundle.putString("page", item.title);
                             goodsDetailsFragment.setArguments(bundle);
@@ -531,7 +528,6 @@ public class ShopSpecialFragment extends BaseFragment
                         {
                             GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0);
                             Bundle bundle = new Bundle();
-                            bundle.putInt("flags", 1);
                             bundle.putInt("index", Integer.valueOf(item.typeValue));
                             bundle.putString("page", item.title);
                             goodsDetailsFragment.setArguments(bundle);
@@ -759,7 +755,7 @@ public class ShopSpecialFragment extends BaseFragment
     public void onDestroy()
     {
         isStop = false;
-//        mContext.unregisterReceiver(broadcastReceiver);
+        mContext.unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 

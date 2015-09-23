@@ -267,7 +267,6 @@ public class HomeFragment extends BaseFragment implements
                         {
                             GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0);
                             Bundle bundle = new Bundle();
-                            bundle.putInt("flags", 1);
                             bundle.putInt("index", Integer.valueOf(item.typeValue));
                             bundle.putString("page", item.title);
                             goodsDetailsFragment.setArguments(bundle);
