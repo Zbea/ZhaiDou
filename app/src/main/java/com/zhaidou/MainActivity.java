@@ -30,9 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alibaba.sdk.android.AlibabaSDK;
 import com.alibaba.sdk.android.callback.CallbackContext;
-import com.alibaba.sdk.android.callback.InitResultCallback;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -48,13 +46,11 @@ import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.fragments.CategoryFragment1;
 import com.zhaidou.fragments.DiyFragment;
 import com.zhaidou.fragments.ElementListFragment;
-import com.zhaidou.fragments.GoodsDetailsFragment;
 import com.zhaidou.fragments.HomeCategoryFragment;
 import com.zhaidou.fragments.HomeFragment;
 import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.PersonalFragment;
 import com.zhaidou.fragments.RegisterFragment;
-import com.zhaidou.fragments.ShopCartFragment;
 import com.zhaidou.fragments.ShopPaymentFailFragment;
 import com.zhaidou.fragments.ShopPaymentFragment;
 import com.zhaidou.fragments.ShopPaymentSuccessFragment;
@@ -216,12 +212,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 Log.i("onSuccess---->", "初始化成功");
             }
 
-            @Override
-            public void onFailure(int i, String s) {
-                Log.i("onFailure---->", "初始化异常--" + s);
-            }
-        });
-
         initComponents();
     }
 
@@ -254,7 +244,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> header = new HashMap<String, String>();
-                header.put("Zd_Client", channel);
+                header.put("zd-client", channel);
                 return header;
             }
         };

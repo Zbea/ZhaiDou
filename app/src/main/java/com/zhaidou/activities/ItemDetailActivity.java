@@ -35,15 +35,14 @@ import com.zhaidou.model.Article;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
-
-import cn.sharesdk.framework.ShareSDK;
-import cn.sharesdk.onekeyshare.OnekeyShare;
-
 import com.zhaidou.view.CustomProgressWebview;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import cn.sharesdk.framework.ShareSDK;
+import cn.sharesdk.onekeyshare.OnekeyShare;
 
 public class ItemDetailActivity extends BaseActivity implements View.OnClickListener,
         RegisterFragment.RegisterOrLoginListener,
@@ -247,7 +246,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         url = getIntent().getStringExtra("url");
 
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put("ZhaidouVesion", "2.2");
+        headers.put("ZhaidouVesion", getResources().getString(R.string.app_versionName));
         headers.put("SECAuthorization",token);
         webView.loadUrl(url + "?open=app", headers);
 
