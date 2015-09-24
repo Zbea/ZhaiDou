@@ -13,7 +13,8 @@ android {
     }
 
     productFlavors {
-        default_channel { "default_channel" }
+        Androiddefault { "Androiddefault" }
+        AndroidUpdate { "AndroidUpdate" }
         wandoujiaAD{"wandoujiaAD"}
         AndroidWan { "AndroidWan" }
         Android360 { "Android360" }

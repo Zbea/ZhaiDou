@@ -96,6 +96,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     private ImageButton lastButton;
 
+
     private TextView titleView;
     private LinearLayout mTabContainer;
     private LoginFragment mLoginFragment;
@@ -264,6 +265,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             public void run() {
                 String url = ZhaiDou.ApkUrl;
                 String result = NetService.getHttpService(url);
+                System.out.println("MainActivity.run----getVersionServer--->"+result);
                 if (result != null) {
                     mHandler.obtainMessage(1, result).sendToTarget();
                 }
