@@ -244,6 +244,7 @@
                 android:layout_marginTop="@dimen/default_margin"
                 android:background="@drawable/content_part_bg"
                 android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:padding="@dimen/default_margin">
 
                 <LinearLayout
@@ -256,6 +257,7 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="3dp"
                         android:src="@drawable/icon_quality_goods"/>
                 </LinearLayout>
 

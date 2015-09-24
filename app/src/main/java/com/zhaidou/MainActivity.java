@@ -47,7 +47,6 @@ import com.zhaidou.base.BaseActivity;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.fragments.CategoryFragment1;
 import com.zhaidou.fragments.DiyFragment;
-import com.zhaidou.fragments.ElementListFragment;
 import com.zhaidou.fragments.HomeCategoryFragment;
 import com.zhaidou.fragments.HomeFragment;
 import com.zhaidou.fragments.LoginFragment;
@@ -81,9 +80,7 @@ import java.util.Map;
 
 /**
  */
-public class MainActivity extends BaseActivity implements DiyFragment.OnFragmentInteractionListener,
-        StrategyFragment.OnFragmentInteractionListener,
-        ElementListFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
+public class MainActivity extends BaseActivity implements DiyFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
         HomeFragment.OnFragmentInteractionListener, CategoryFragment1.OnFragmentInteractionListener,
         RegisterFragment.RegisterOrLoginListener{
 

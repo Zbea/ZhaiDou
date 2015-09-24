@@ -18,12 +18,14 @@ public class ShopTodayItem implements Serializable
     public double currentPrice;
     //原价
     public double formerPrice;
-
+    //剩余量
     public int num;
+    //总量
+    public int totalCount;
+    //已购量
+    public int buyCount;
 
-
-
-    public ShopTodayItem(int id,String title, String designer, String imageUrl, double currentPrice, double formerPrice,int num)
+    public ShopTodayItem(int id,String title, String designer, String imageUrl, double currentPrice, double formerPrice,int num,int totalCount, int buyCount)
     {
         this.id=id;
         this.title = title;
@@ -32,6 +34,8 @@ public class ShopTodayItem implements Serializable
         this.currentPrice = currentPrice;
         this.formerPrice = formerPrice;
         this.num=num;
+        this.totalCount = totalCount;
+        this.buyCount = buyCount;
     }
 
     public ShopTodayItem()

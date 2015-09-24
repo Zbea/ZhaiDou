@@ -8,11 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.viewpagerindicator.LinePageIndicator;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.fragments.GoodsDetailsFragment;
@@ -55,6 +58,9 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
         TextView itemCurrentPrice;
         TextView itemFormerPrice;
         TypeFaceTextView itemSales;
+        TextView buyCount;
+        ProgressBar buyProgressBarGreen;
+        ProgressBar buyProgressBarRed;
     }
 
     @Override
@@ -91,6 +97,9 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
             viewHolder.itemBuy = (TypeFaceTextView) convertView.findViewById(R.id.buyGoodsBtn);
             viewHolder.itemImage = (ImageView) convertView.findViewById(R.id.shopGoodsImage);
             viewHolder.itemNull= (ImageView) convertView.findViewById(R.id.shopGoodsImageNo);
+            viewHolder.buyCount= (TextView) convertView.findViewById(R.id.shopBuyCount);
+            viewHolder.buyProgressBarGreen= (ProgressBar) convertView.findViewById(R.id.shopProgressBarGreen);
+            viewHolder.buyProgressBarRed= (ProgressBar) convertView.findViewById(R.id.shopProgressBarRed);
             convertView.setTag(viewHolder);
         }
         else
@@ -101,8 +110,29 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
         ShopTodayItem todayShopItem=items.get(position);
         viewHolder.itemFormerPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
 
-        viewHolder.itemName.setText(todayShopItem.title);
-        viewHolder.itemIntorduce.setText("                        "+todayShopItem.designer);
+        ToolUtils.setLog(""+todayShopItem.buyCount);
+        ToolUtils.setLog(""+todayShopItem.totalCount);
+        ToolUtils.setLog(""+todayShopItem.buyCount*100/todayShopItem.totalCount);
+        viewHolder.buyCount.setText("已抢购"+((todayShopItem.buyCount*100/todayShopItem.totalCount))+"%");
+        if (todayShopItem.totalCount!=0)
+        if ((todayShopItem.buyCount*100/todayShopItem.totalCount)>=80)
+        {
+            viewHolder.buyProgressBarRed.setMax(todayShopItem.totalCount);
+            viewHolder.buyProgressBarRed.setProgress(todayShopItem.buyCount);
+            viewHolder.buyProgressBarRed.setVisibility(View.VISIBLE);
+            viewHolder.buyProgressBarGreen.setVisibility(View.GONE);
+        }
+        else
+        {
+            viewHolder.buyProgressBarGreen.setMax(todayShopItem.totalCount);
+            viewHolder.buyProgressBarGreen.setProgress(todayShopItem.buyCount);
+            viewHolder.buyProgressBarGreen.setVisibility(View.VISIBLE);
+            viewHolder.buyProgressBarRed.setVisibility(View.GONE);
+        }
+
+        viewHolder.itemName.setText("           "+todayShopItem.title);
+//        viewHolder.itemIntorduce.setText("                        "+todayShopItem.designer);
+        viewHolder.itemIntorduce.setText(todayShopItem.designer);
         viewHolder.itemCurrentPrice.setText("￥"+ToolUtils.isIntPrice(""+todayShopItem.currentPrice));
         viewHolder.itemFormerPrice.getPaint().setAntiAlias(true);//去锯齿
         viewHolder.itemFormerPrice.setText("￥"+ToolUtils.isIntPrice(""+todayShopItem.formerPrice));
@@ -138,8 +168,6 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
                 .build();
 
         ImageLoader.getInstance().displayImage(todayShopItem.imageUrl, viewHolder.itemImage,options);
-
-//        ToolUtils.setImageCacheUrl(todayShopItem.imageUrl,viewHolder.itemImage);
 
         viewHolder.itemBuy.setOnClickListener(new View.OnClickListener()
         {
