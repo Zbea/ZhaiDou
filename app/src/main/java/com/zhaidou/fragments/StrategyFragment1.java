@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -199,7 +200,14 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
             public void onErrorResponse(VolleyError error) {
                 ToolUtils.setToast(getActivity(),"抱歉,加载失败");
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         if (mRequestQueue==null) mRequestQueue=Volley.newRequestQueue(getActivity());
         mRequestQueue.add(newMissRequest);
     }
@@ -254,7 +262,14 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
             public void onErrorResponse(VolleyError volleyError) {
 
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         if (mRequestQueue==null) mRequestQueue=Volley.newRequestQueue(getActivity());
         mRequestQueue.add(fetchCategoryTask);
     }
