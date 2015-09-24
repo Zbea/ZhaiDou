@@ -99,6 +99,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     private ImageButton lastButton;
 
+
     private TextView titleView;
     private LinearLayout mTabContainer;
     private LoginFragment mLoginFragment;
