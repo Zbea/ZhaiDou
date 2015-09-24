@@ -207,7 +207,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
             }
             tv_item.setText(item.getName());
 
-            mAllCategory.setWidth(tv_item.getMeasuredWidth());
+//            mAllCategory.setWidth(tv_item.getMeasuredWidth());
             return convertView;
         }
     }
@@ -235,7 +235,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
     @Override
     public void onHiddenChanged(boolean hidden) {
         if (!hidden&&mCategoryList.size()==0){
-//            FetchCategoryData();
+            FetchCategoryData();
         }
     }
 

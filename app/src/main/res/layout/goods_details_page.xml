@@ -36,7 +36,7 @@
                     android:layout_centerInParent="true"
                     android:background="@color/white"
                     android:scaleType="fitXY"
-                    android:src="@drawable/icon_loading_defalut"/>
+                    android:src="@drawable/icon_loading_goods_details"/>
 
                 <com.zhaidou.view.CustomViewPager
                     android:id="@+id/goods_adv_pager"
@@ -44,7 +44,8 @@
                     android:layout_height="240dp"
                     android:layout_centerInParent="true"
                     android:background="@color/white"
-                    android:visibility="gone"/>
+                    android:visibility="gone"
+                    />
 
                 <LinearLayout
                     android:id="@+id/goods_viewGroup"
@@ -55,7 +56,8 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="22dp"
                     android:orientation="horizontal"
-                    android:visibility="gone"></LinearLayout>
+                    android:visibility="gone"
+                    ></LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/timeLine"
@@ -146,8 +148,8 @@
                         android:id="@+id/goodsFormerPrice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/default_margin"
-                        android:layout_marginTop="2dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginTop="1dp"
                         android:textColor="@color/text_gary_color"
                         android:textSize="14sp"/>
 

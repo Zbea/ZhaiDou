@@ -58,7 +58,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class ProfileFragment extends BaseFragment implements View.OnClickListener, PhotoMenuFragment.MenuSelectListener,
         ProfileEditFragment.RefreshDataListener {
     private static final String ARG_PARAM1 = "param1";
@@ -124,9 +123,11 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     tv_intro.setText(TextUtils.isEmpty(user.getDescription()) ? "" : user.getDescription());
                     tv_mobile.setText(TextUtils.isEmpty(user.getMobile()) ? "" : user.getMobile());
                     tv_job.setText(user.isVerified() ? "宅豆认证设计师" : "未认证设计师");
-                    tv_addr_mobile.setText(TextUtils.isEmpty(user.getMobile()) ? "" : "电话："+user.getMobile());
-                    tv_addr.setText(TextUtils.isEmpty(user.getAddress2()) ? "" : "地址："+user.getAddress2());
-                    tv_addr_username.setText("姓名："+user.getFirst_name());
+
+                    tv_addr_mobile.setText(TextUtils.isEmpty(user.getMobile()) ? "" :user.getMobile());
+                    tv_addr.setText(TextUtils.isEmpty(user.getAddress2()) ? "" :user.getAddress2());
+                    tv_addr_username.setText(TextUtils.isEmpty(user.getFirst_name()) ? "" :user.getFirst_name());
+
                     if (TextUtils.isEmpty(user.getAddress2()) || "null".equals(user.getAddress2())) {
                         ll_addr_info.setVisibility(View.GONE);
                         tv_addr_null.setVisibility(View.VISIBLE);
@@ -211,6 +212,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         tv_addr_username = (TextView) view.findViewById(R.id.tv_addr_username);
         tv_addr = (TextView) view.findViewById(R.id.tv_addr);
         ll_addr_info = (LinearLayout) view.findViewById(R.id.ll_addr_info);
+        tv_addr_null= (TextView) view.findViewById(R.id.tv_addr_null);
         tv_delete = (TextView) view.findViewById(R.id.tv_delete);
         tv_edit = (TextView) view.findViewById(R.id.tv_edit);
 
@@ -239,8 +241,14 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         menuFragment.setMenuSelectListener(this);
 
         if (id != -1) {
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
             getUserData();
             getUserInfo();
+                }
+            },300);
         }
         token = mSharedPreferences.getString("token", null);
     }
@@ -285,9 +293,9 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                         ll_addr_info.setVisibility(TextUtils.isEmpty(address)?View.GONE:View.VISIBLE);
                         tv_addr_null.setVisibility(TextUtils.isEmpty(address)?View.VISIBLE:View.GONE);
                         System.out.println("name = [" + name + "], mobile = [" + mobile + "], address = [" + address + "]");
-                        tv_addr_username.setText("姓名：" + name);
-                        tv_addr_mobile.setText("电话："+mobile);
-                        tv_addr.setText("地址："+address);
+                        tv_addr_username.setText(name);
+                        tv_addr_mobile.setText(mobile);
+                        tv_addr.setText(address);
                     }
                 });
                 break;
@@ -312,7 +320,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
      * 设置开始加载进度
      */
     private void setStartLoading() {
-        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
+        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading",true);
     }
 
     /**
@@ -382,6 +390,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             public void onResponse(JSONObject jsonObject) {
                 Log.i("getUserData--->", jsonObject.toString());
                 JSONObject userObj = jsonObject.optJSONObject("profile");
+                if (userObj==null) return;
                 String mobile = userObj.optString("mobile");
                 mobile = mobile.equals("null") ? "" : mobile;
                 String description = userObj.optString("description");
@@ -389,7 +398,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 profileId = userObj.optString("id");
                 boolean verified = userObj.optBoolean("verified");
                 String first_name = userObj.optString("first_name");
-
                 String address2 = userObj.optString("address2");
                 User user = new User(null, null, null, verified, mobile, description);
                 user.setAddress2(address2);

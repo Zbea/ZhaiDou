@@ -268,7 +268,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 final Order order = (Order) values;
                 OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(), order,2);
-                ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(orderDetailFragment);
                 orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
                     @Override
                     public void onOrderStatusChange(Order o) {
@@ -283,7 +283,8 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
     }
 
     private void initData() {
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading",isDialogFirstVisible);
+        isDialogFirstVisible=false;
         if (NetworkUtils.isNetworkAvailable(mContext)) {
             mNetErrorView.setVisibility(View.GONE);
             loadingView.setVisibility(View.GONE);
@@ -393,7 +394,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
                 bt_received.setVisibility(View.VISIBLE);
                 bt_logistics.setText("查看物流");
             }
-            ToolUtils.setImageCacheUrl(item.getImg(), iv_order_img);
+            ToolUtils.setImageCacheUrl(item.getImg(), iv_order_img,R.drawable.icon_loading_defalut);
             return convertView;
         }
     }

@@ -11,10 +11,12 @@ import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
+
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -154,7 +156,14 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
             public void onErrorResponse(VolleyError volleyError) {
 
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("ZhaidouVesion", getApplicationContext().getResources().getString(R.string.app_versionName));
+                return super.getHeaders();
+            }
+        };
         mRequestQueue.add(request);
     }
 

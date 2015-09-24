@@ -49,7 +49,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-
 public class OrderUnPayFragment extends BaseFragment implements View.OnClickListener{
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -75,7 +74,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
     private MyTimer timer;
     private String token;
     private Context mContext;
-    private boolean isTimerStart = false;
+    private boolean isTimerStart = true;
     private boolean isNoFree;//是否不免邮，当只有一个商品且为零元特卖时为真
     private long preTime = 0;
     private long timeStmp = 0;
@@ -234,6 +233,8 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                     });
                 }
             });
+            timer = new MyTimer((mContext.getResources().getInteger(R.integer.timer_countdown)), 1000);
+            timer.start();
             initData();
         }
 
@@ -241,7 +242,8 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
     }
 
     private void initData() {
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading",isDialogFirstVisible);
+        isDialogFirstVisible=false;
         if (NetworkUtils.isNetworkAvailable(mContext)) {
             mNetErrorView.setVisibility(View.GONE);
             loadingView.setVisibility(View.GONE);
@@ -349,7 +351,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
             mOrderNum.setText(item.getNumber());
             mOrderAmount.setText("￥" + ToolUtils.isIntPrice("" +item.getAmount()));
             mOrderStatus.setText(item.getStatus_ch());
-            ToolUtils.setImageCacheUrl(item.getImg(), mOrderImg);
+            ToolUtils.setImageCacheUrl(item.getImg(), mOrderImg,R.drawable.icon_loading_defalut);
 
 
             if (mTimerBtn.getTag() == null) {
@@ -421,7 +423,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
 
         if (!isTimerStart) {
             if (timer == null)
-                timer = new MyTimer(15 * 60 * 1000, 1000);
+                timer = new MyTimer((mContext.getResources().getInteger(R.integer.timer_countdown)), 1000);
             isTimerStart = true;
             timer.start();
             Log.i("onResume--->timer.start();----------->","timer.start()---------->");

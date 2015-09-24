@@ -193,7 +193,8 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
         });
     }
     private void initData() {
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading",isDialogFirstVisible);
+        isDialogFirstVisible=false;
         if (NetworkUtils.isNetworkAvailable(mContext)) {
             mNetErrorView.setVisibility(View.GONE);
             loadingView.setVisibility(View.GONE);
@@ -236,7 +237,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
             tv_order_number.setText(item.getNumber());
             tv_order_amount.setText("￥"+ToolUtils.isIntPrice("" +item.getAmount()+""));
             tv_order_status.setText(item.getStatus_ch());
-            ToolUtils.setImageCacheUrl(item.getImg(), iv_order_img);
+            ToolUtils.setImageCacheUrl(item.getImg(), iv_order_img,R.drawable.icon_loading_defalut);
             mBottomLayout.setVisibility(View.GONE);
             if ((""+ZhaiDou.STATUS_RETURN_GOOD_SUCCESS).equalsIgnoreCase(item.getStatus())|(""+ZhaiDou.STATUS_RETURN_MONEY_SUCCESS).equalsIgnoreCase(item.getStatus())){
                 iv_delete.setVisibility(View.VISIBLE);

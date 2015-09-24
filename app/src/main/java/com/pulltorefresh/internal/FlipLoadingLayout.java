@@ -67,7 +67,7 @@ public class FlipLoadingLayout extends LoadingLayout {
 			 * This is so that it doesn't clip when rotated.
 			 */
 			ViewGroup.LayoutParams lp = mHeaderImage.getLayoutParams();
-			lp.width = lp.height = Math.max(dHeight, dWidth);
+			lp.width = lp.height =Math.max(dHeight, dWidth);
 			mHeaderImage.requestLayout();
 
 			/**

@@ -1,6 +1,7 @@
 package com.zhaidou.fragments;
 
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -95,7 +96,6 @@ public class ShopCartFragment extends BaseFragment
     private CartItem mCartItem;
     private boolean isBuySuccess;
 
-
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
         @Override
@@ -105,7 +105,8 @@ public class ShopCartFragment extends BaseFragment
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
             {
                 items.removeAll(items);
-                items = CreatCartTools.selectByAll(creatCartDB, userId);
+                getGoodsItems();
+//                items = CreatCartTools.selectByAll(creatCartDB, userId);
                 if (items.size() > 0)
                 {
                     setGoodsCheckChange();
@@ -118,12 +119,11 @@ public class ShopCartFragment extends BaseFragment
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
             {
                 isBuySuccess=true;
-                items = CreatCartTools.selectByAll(creatCartDB, userId);
-                ToolUtils.setLog("开始刷新购物车");
+                getGoodsItems();
+//                items = CreatCartTools.selectByAll(creatCartDB, userId);
                 if (items.size() > 0)
                 {
                     addCartGoods();
-
                 } else
                 {
                     mDialog.dismiss();
@@ -192,24 +192,6 @@ public class ShopCartFragment extends BaseFragment
                     }
                     break;
             }
-        }
-    };
-
-    /**
-     * 下拉刷新
-     */
-    private PullToRefreshBase.OnRefreshListener2 refreshListener = new PullToRefreshBase.OnRefreshListener2()
-    {
-        @Override
-        public void onPullDownToRefresh(PullToRefreshBase refreshView)
-        {
-
-        }
-
-        @Override
-        public void onPullUpToRefresh(PullToRefreshBase refreshView)
-        {
-
         }
     };
 
@@ -317,7 +299,6 @@ public class ShopCartFragment extends BaseFragment
         return mView;
     }
 
-
     /**
      * 初始化数据
      */
@@ -349,7 +330,7 @@ public class ShopCartFragment extends BaseFragment
         cartGoodsLine = (LinearLayout) mView.findViewById(R.id.cartGoodsLine);
         creatCartDB = new CreatCartDB(mContext);
         checkLogin();
-        items = CreatCartTools.selectByAll(creatCartDB, userId);
+        getGoodsItems();
 
         if (items.size() > 0)
         {
@@ -372,6 +353,7 @@ public class ShopCartFragment extends BaseFragment
     {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsSubTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
         mContext.registerReceiver(broadcastReceiver, intentFilter);
     }
@@ -385,6 +367,15 @@ public class ShopCartFragment extends BaseFragment
     }
 
     /**
+     * 获得当前userId的所有商品
+     */
+    private void getGoodsItems()
+    {
+//        items=((MainActivity)mContext).getItems();
+        items = CreatCartTools.selectByAll(creatCartDB, userId);
+    }
+
+    /**
      * 本地数据和服务器数据进行对比比较
      */
     private void initData()
@@ -394,6 +385,7 @@ public class ShopCartFragment extends BaseFragment
         items = CreatCartTools.selectByAll(creatCartDB, userId);
         if (itemsServer.size() > 0)
         {
+            int deprecated=0;
             for (int i = 0; i < itemsServer.size(); i++)
             {
                 CartItem itemServer = itemsServer.get(i);
@@ -408,6 +400,7 @@ public class ShopCartFragment extends BaseFragment
                             ToolUtils.setLog("修改是否下架");
                             ToolUtils.setLog(itemServer.isPublish);
                             CreatCartTools.editIsLoseByData(creatCartDB, itemServer);//修改本地数据
+                            deprecated=deprecated+itemLocal.num;
                         }
                         if (!itemServer.isOver.equals(itemLocal.isOver))
                         {
@@ -415,12 +408,12 @@ public class ShopCartFragment extends BaseFragment
                             ToolUtils.setLog("修改是否卖光");
                             ToolUtils.setLog(itemServer.isPublish);
                             CreatCartTools.editIsOverByData(creatCartDB, itemServer);//修改本地数据
+                            deprecated=deprecated+itemLocal.num;
                         }
                         if (!itemServer.isDate.equals(itemLocal.isDate))
                         {
                             items.get(j).isDate=itemServer.isDate;
                             ToolUtils.setLog("修改是否已过期");
-
                         }
                     }
                 }
@@ -430,6 +423,7 @@ public class ShopCartFragment extends BaseFragment
         addCartGoods();
 
     }
+
 
     /**
      * 添加商品信息
@@ -527,7 +521,6 @@ public class ShopCartFragment extends BaseFragment
                     {
                         if (b)
                         {
-                            ToolUtils.setLog("itemCheck"+""+tag+":"+b);
                             cartItem.isCheck = true;
                             itemsCheck.add(cartItem);
                         } else
@@ -552,7 +545,6 @@ public class ShopCartFragment extends BaseFragment
                 islose.setVisibility(View.VISIBLE);
                 isDate.setVisibility(View.GONE);
             }
-            ToolUtils.setLog("是否已过期:"+cartItem.isDate);
             if (cartItem.isDate.equals("true"))
             {
                 isOver.setVisibility(View.GONE);
@@ -560,12 +552,8 @@ public class ShopCartFragment extends BaseFragment
                 isDate.setVisibility(View.VISIBLE);
             }
 
-            //零元特卖不给修改数量
-            if(cartItem.isOSale.equals("true"))
-            {
-                cartNumView.setVisibility(View.GONE);
-                cartNumLoseView.setVisibility(View.VISIBLE);
-            }
+            cartNumView.setVisibility(View.GONE);
+            cartNumLoseView.setVisibility(View.VISIBLE);
 
             itemName.setText(cartItem.name);
             itemSize.setText(cartItem.size);
@@ -574,7 +562,7 @@ public class ShopCartFragment extends BaseFragment
             itemFormalPrice.setText("￥" + ToolUtils.isIntPrice(""+cartItem.formalPrice));
             itemNum.setText("" + cartItem.num);
             itemLoseNum.setText("" + cartItem.num);
-            ToolUtils.setImageCacheUrl(cartItem.imageUrl, itemImage);
+            ToolUtils.setImageCacheUrl(cartItem.imageUrl, itemImage,R.drawable.icon_loading_defalut);
 
             itemDeleteBtn.setOnClickListener(new View.OnClickListener()
             {
@@ -585,6 +573,7 @@ public class ShopCartFragment extends BaseFragment
                     itemsCheck.remove(cartItem);
                     boxs.remove(itemCheck);
                     CustomShopCartDeleteDialog.setDelateDialog(mContext, cartItem, cartGoodsLine, childeView);
+
                 }
             });
             itemSubBtn.setOnClickListener(new View.OnClickListener()

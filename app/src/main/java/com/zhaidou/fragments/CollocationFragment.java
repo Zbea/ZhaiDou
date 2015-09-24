@@ -35,7 +35,6 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Collocation;
-import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
 
@@ -163,7 +162,8 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
     }
 
     public void FetchCollocationData(int page){
-        mDialog= CustomLoadingDialog.setLoadingDialog(mActivity,"loading");
+        mDialog= CustomLoadingDialog.setLoadingDialog(mActivity,"loading",isDialogFirstVisible);
+        isDialogFirstVisible=false;
         int userId=mSharedPreferences.getInt("userId", -1);
         Log.i("FetchCollocationData------->",userId+"");
         //"http://www.zhaidou.com/api/v1/users/77069/bean_collocations?page="+page

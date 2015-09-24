@@ -175,7 +175,6 @@ public class SpecialFragment extends BaseFragment implements PullToRefreshBase.O
 
     private void FetchData(final int page,Category category){
         String categoryId=(category==null?"":category.getId()+"");
-//        categoryId=14+"";
         String url;
         url= ZhaiDou.HOME_CATEGORY_URL+page+((category==null)?"&catetory_id":"&catetory_id="+categoryId);
 

@@ -69,8 +69,8 @@
                 android:id="@+id/nullTv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_main_color"
-                android:layout_marginTop="20dp"
+                android:textColor="@color/text_gary_color"
+                android:layout_marginTop="50dp"
                 android:layout_marginBottom="80dp"
                 android:text="抱歉,暂无收藏"/>
         </LinearLayout>

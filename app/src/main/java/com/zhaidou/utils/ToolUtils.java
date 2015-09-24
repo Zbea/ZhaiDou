@@ -82,7 +82,8 @@ public class ToolUtils
      */
     public static boolean isPhoneOk(String phone)
     {
-        Pattern p=Pattern.compile("(1[358]\\d{9})|(14[57]\\d{8})|(17[0678]\\d{8})");
+        Pattern p=Pattern.compile("(1[3456789]\\d{9})");
+//        Pattern p=Pattern.compile("(1[358]\\d{9})|(14[57]\\d{8})|(17[0678]\\d{8})");
         Matcher m=p.matcher(phone);
         return m.matches();
     }
@@ -177,8 +178,8 @@ public class ToolUtils
     {
         DisplayImageOptions options=new DisplayImageOptions.Builder()
                 .showImageOnLoading(resId)
-                .showImageForEmptyUri(R.drawable.icon_loading_osale)
-                .showImageOnFail(R.drawable.icon_loading_osale)
+                .showImageForEmptyUri(resId)
+                .showImageOnFail(resId)
                 .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .imageScaleType(ImageScaleType.EXACTLY)
@@ -221,7 +222,7 @@ public class ToolUtils
     }
 
     /**
-     * Toast显示长时间
+     * 长显示
      * @param mContext
      * @param msg
      */

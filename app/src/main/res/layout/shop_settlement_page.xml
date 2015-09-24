@@ -320,7 +320,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.000001"
                         android:textColor="@color/text_main_color"
-                        android:text="宅豆发货运费"
+                        android:text="宅豆运费"
                         android:singleLine="true"
                         android:ellipsize="end"
                         android:marqueeRepeatLimit="marquee_forever"/>

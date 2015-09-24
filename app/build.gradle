@@ -15,14 +15,16 @@ android {
     productFlavors {
         default_channel { "default_channel" }
         wandoujiaAD{"wandoujiaAD"}
-        wandoujia { "wandoujia" }
-        _360 { "360" }
-        yingyongbao { "yingyongbao" }
-        xiaomi { "xiaomi" }
-        baidu { "baidu" }
-        huawei { "huawei" }
-        jifeng { "jifeng" }
+        AndroidWan { "AndroidWan" }
         Android360 { "Android360" }
+        AndroidOqq { "AndroidOqq" }
+        Android360Xm { "Android360Xm" }
+        AndroidBaidu { "AndroidBaidu" }
+        AndroidOpp { "AndroidOpp" }
+        AndroidFm { "AndroidFm" }
+        AndroidAz { "AndroidAz" }
+        AndroidHW { "AndroidHW" }
+        AndroidOap{"AndroidOap"}
     }
     productFlavors.all { flavor ->
         flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]

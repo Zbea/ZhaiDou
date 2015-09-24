@@ -1,7 +1,6 @@
 package com.zhaidou.adapter;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
@@ -23,6 +22,7 @@ import com.zhaidou.view.TypeFaceTextView;
 
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.WeakHashMap;
 
 /**
  * Created by roy on 15/7/23.
@@ -32,6 +32,7 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
     private List<ShopTodayItem> items;
     private ViewHolder viewHolder;
     private Context context;
+    private WeakHashMap<Integer,View> map=new WeakHashMap<Integer, View>();
 
     public void clear()
     {
@@ -77,6 +78,7 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
     @Override
     public View getView(final int position, View convertView, ViewGroup parent)
     {
+//        convertView=map.get(position);
         if (convertView == null)
         {
             convertView = LayoutInflater.from(context).inflate(R.layout.shop_today_special_item, null);
@@ -137,7 +139,7 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
 
         ImageLoader.getInstance().displayImage(todayShopItem.imageUrl, viewHolder.itemImage,options);
 
-//        ToolUtils.setImageCacheUrl(todayShopItem.imageUrl,viewHolder.itemImage,R.drawable.icon_loading_defalut);
+//        ToolUtils.setImageCacheUrl(todayShopItem.imageUrl,viewHolder.itemImage);
 
         viewHolder.itemBuy.setOnClickListener(new View.OnClickListener()
         {
@@ -163,6 +165,7 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
             viewHolder.itemBuy.setText("抢光了");
             viewHolder.itemBuy.setClickable(false);
         }
+//        map.put(position,convertView);
         return convertView;
     }
 }

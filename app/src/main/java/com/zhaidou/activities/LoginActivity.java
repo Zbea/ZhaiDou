@@ -121,6 +121,14 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     Intent intent1=new Intent(ZhaiDou.IntentRefreshLoginTag);
                     sendBroadcast(intent1);
 
+                    if (flags==3)
+                    {
+                        Intent intent=new Intent();
+                        setResult(5001, intent);
+                        finish();//此处一定要调用finish()方法
+                        return;
+                    }
+
                     if (flags!=1)
                     {
                         Intent intent=new Intent();

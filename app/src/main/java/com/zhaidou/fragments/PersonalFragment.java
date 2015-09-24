@@ -32,7 +32,6 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.base.BaseFragment;
-
 import com.zhaidou.model.CartItem;
 import com.zhaidou.model.User;
 import com.zhaidou.sqlite.CreatCartDB;
@@ -63,6 +62,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     private final int UPDATE_USER_COLLOCATION = 4;
     private final int UPDATE_UNPAY_COUNT = 5;
     private final int UPDATE_UNPAY_COUNT_REFRESH = 6;
+    private final int UPDATE_CARTCAR_DATA=7;
 
     private Map<String, String> cityMap = new HashMap<String, String>();
 
@@ -85,22 +85,24 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     private String token;
     private int count=0;
     private int collectNum=0;
+    private int cartNum=0;
+//    private int num;
+    private List<CartItem> cartItems = new ArrayList<CartItem>();
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag)) {
+                count=0;
+                initCartTips();
+                exitLoginEvent();
+            }
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag)) {
                 initCartTips();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
                 initCartTips();
-                FetchCollectData();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag)) {
-                count=0;
-                initCartTips();
-                exitLoginEvent();
             }
 
             if (action.equals(ZhaiDou.IntentRefreshUnPayAddTag)) {
@@ -111,7 +113,6 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                 ((MainActivity) getActivity()).hideTip(View.VISIBLE);
             }
             if (action.equals(ZhaiDou.IntentRefreshUnPayDesTag)) {
-                ToolUtils.setLog("开始好刷新count减一");
                 count = count - 1;
                 if (count < 1) {
                     tv_unpay_count.setVisibility(View.GONE);
@@ -163,6 +164,11 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
                     ToolUtils.setLog("代付款："+count);
                     tv_unpay_count.setVisibility(View.VISIBLE);
                     tv_unpay_count.setText(count + "");
+                    break;
+                case UPDATE_CARTCAR_DATA:
+                    int num=msg.arg2;
+                    mCartCount.setVisibility(num>0?View.VISIBLE:View.GONE);
+                    mCartCount.setText("" + num);
                     break;
             }
         }
@@ -506,9 +512,10 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
      * 红色标识提示显示数量
      */
     private void initCartTips() {
-        if (MainActivity.num > 0) {
+        cartNum=((MainActivity)getActivity()).getNum();
+        if (cartNum> 0) {
             mCartCount.setVisibility(View.VISIBLE);
-            mCartCount.setText("" + MainActivity.num);
+            mCartCount.setText("" +cartNum);
         } else {
             mCartCount.setVisibility(View.GONE);
         }
@@ -525,6 +532,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             FetchUnPayCount(UPDATE_UNPAY_COUNT_REFRESH);
             getUserDetail();
             getUserInfo();
+            initCartTips();
         }
         super.onHiddenChanged(hidden);
     }
@@ -563,7 +571,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
     private void FetchCollocationData() {
         ToolUtils.setLog("查看豆搭");
         final String token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
-        final int userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
+//        final int userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_COLLOCATION_ITEM_URL + userId + "/bean_collocations?page=" + 1
                 , new Response.Listener<JSONObject>() {
             @Override
@@ -623,6 +631,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         mRequestQueue.add(request);
     }
     public void onResume() {
+        System.out.println("PersonalFragment.onResume");
         super.onResume();
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_personal));
     }

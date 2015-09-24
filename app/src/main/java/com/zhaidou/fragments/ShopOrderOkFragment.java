@@ -184,7 +184,7 @@ public class ShopOrderOkFragment extends BaseFragment
                         int orderId = orderObj.optInt("id");
                         double amount = orderObj.optDouble("amount");
                         double fare = moneyYF;
-                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId, amount, fare, 15 * 60, null, 1);
+                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId, amount, fare,((mContext.getResources().getInteger(R.integer.timer_countdown))/1000), null, 1);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
                     } catch (Exception e)
                     {

@@ -37,7 +37,6 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.CartItem;
 import com.zhaidou.model.Order;
 import com.zhaidou.utils.SharedPreferencesUtil;
-import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONObject;
@@ -70,7 +69,7 @@ public class ShopPaymentFragment extends BaseFragment
     private View mView;
     private Context mContext;
 
-    private long initTime = 15 * 60;
+    private long initTime =0;
 
     private final int UPDATE_COUNT_DOWN_TIME = 1001, UPDATE_UI_TIMER_FINISH = 1002, UPDATE_TIMER_START = 1003;
 
@@ -245,6 +244,7 @@ public class ShopPaymentFragment extends BaseFragment
         {
             mView = inflater.inflate(R.layout.shop_payment_page, container, false);
             mContext = getActivity();
+            initTime=mContext.getResources().getInteger(R.integer.timer_countdown)/1000;
             initView();
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。

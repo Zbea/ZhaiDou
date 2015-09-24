@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
-*
 * Author Scoield
 * Created at 15/9/16 10:08
 * Description:个人资料里的地址管理
@@ -51,10 +50,10 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
     private String mAddress;
     private String mProfileId;
 
-    private LinearLayout ll_edit_addr;
+    private LinearLayout ll_edit_addr,tv_edit,tv_delete;
     private LinearLayout ll_manage_address;
     private EditText et_mobile,et_addr,et_name;
-    private TextView tv_save,tv_edit,tv_addr_username,tv_addr_mobile,tv_addr,tv_delete;
+    private TextView tv_save,tv_addr_username,tv_addr_mobile,tv_addr;
     private String token;
     private SharedPreferences mSharedPreferences;
     private Context mContext;
@@ -62,7 +61,7 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
     private AddressListener addressListener;
     private Dialog mDialog;
     /**
-     * @param name  姓名
+     * @param nickname  姓名
      * @param mobile  联系电话
      *@param address 收货地址
      * @param profileId 用户的profileId
@@ -103,15 +102,15 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
         et_addr=(EditText)view.findViewById(R.id.et_addr);
         et_mobile=(EditText)view.findViewById(R.id.et_mobile);
         tv_addr=(TextView)view.findViewById(R.id.tv_addr);
-        tv_delete=(TextView)view.findViewById(R.id.tv_delete);
+        tv_delete=(LinearLayout)view.findViewById(R.id.tv_delete);
         tv_addr_mobile=(TextView)view.findViewById(R.id.tv_addr_mobile);
         tv_addr_username=(TextView)view.findViewById(R.id.tv_addr_username);
         tv_save=(TextView)view.findViewById(R.id.tv_save);
-        tv_edit=(TextView)view.findViewById(R.id.tv_edit);
+        tv_edit=(LinearLayout)view.findViewById(R.id.tv_edit);
         tv_save.setOnClickListener(this);
         tv_edit.setOnClickListener(this);
         tv_delete.setOnClickListener(this);
-        if (TextUtils.isEmpty(mNickName)||TextUtils.isEmpty(mMobile)||TextUtils.isEmpty(mAddress)){
+        if (TextUtils.isEmpty(mAddress)){
             ll_edit_addr.setVisibility(View.VISIBLE);
             ll_manage_address.setVisibility(View.GONE);
         }else {
@@ -154,9 +153,9 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
             case R.id.tv_edit:
                 ll_edit_addr.setVisibility(View.VISIBLE);
                 ll_manage_address.setVisibility(View.GONE);
-                et_addr.setHint(mAddress);
-                et_mobile.setHint(mMobile);
-                et_name.setHint(mNickName);
+                et_addr.setText(mAddress);
+                et_mobile.setText(mMobile);
+                et_name.setText(mNickName);
                 break;
             case R.id.tv_delete:
                 Log.i("tv_addr_username.getText().toString()--->",tv_addr_username.getText().toString());
@@ -173,7 +172,7 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
         final String token= (String)SharedPreferencesUtil.getData(mContext,"token","");
         Map<String,String> params=new HashMap<String, String>();
         params.put("_method", "PUT");
-        params.put("profile[nick_name]", username);
+        params.put("profile[first_name]", username);
         params.put("profile[mobile]", mobile);
         params.put("profile[address2]", address);
         params.put("profile[id]", profileId);
@@ -181,7 +180,6 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
             @Override
             public void onResponse(JSONObject jsonObject) {
                 mDialog.dismiss();
-                System.out.println("ProfileAddrFragment.onResponse------->"+jsonObject);
                 if (jsonObject!=null){
                     JSONObject profile = jsonObject.optJSONObject("profile");
                     String mobile = profile.optString("mobile");

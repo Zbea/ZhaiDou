@@ -121,7 +121,7 @@ public class HomeFragment extends BaseFragment implements
     public HomeListAdapter mListAdapter;
     private ViewPager viewPager;
     private LinearLayout tipsLine;//轮播指示标志
-    private List<SwitchImage> banners;
+    private List<SwitchImage> banners=new ArrayList<SwitchImage>();;
     private ImageView[] dots;
     private List<View> adPics = new ArrayList<View>();
     private AdViewAdpater adpaters;
@@ -180,14 +180,6 @@ public class HomeFragment extends BaseFragment implements
                 {
                     mListAdapter = new HomeListAdapter(mContext, articleList,screenWidth);
                     listView.setAdapter(mListAdapter);
-                    if (banners==null||banners.size()<1)
-                    {
-                        getBannerData();
-                    }
-                    if (shopSpecialItem==null)
-                    {
-                        FetchShopData();
-                    }
                 }
                 mScrollView.onRefreshComplete();
                 mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
@@ -276,7 +268,6 @@ public class HomeFragment extends BaseFragment implements
                         {
                             GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0);
                             Bundle bundle = new Bundle();
-                            bundle.putInt("flags", 1);
                             bundle.putInt("index", Integer.valueOf(item.typeValue));
                             bundle.putString("page", item.title);
                             goodsDetailsFragment.setArguments(bundle);
@@ -578,12 +569,12 @@ public class HomeFragment extends BaseFragment implements
 
             case R.id.ll_special_shop:
                 ShopSpecialFragment shopSpecialFragment = ShopSpecialFragment.newInstance("", 0);
-                ((MainActivity) getActivity()).navigationToFragment(shopSpecialFragment);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopSpecialFragment);
                 break;
 
             case R.id.ll_sale:
                 SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragment(specialSaleFragment);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment);
                 break;
             case R.id.ll_forward:
                 Intent intent1 = new Intent();
@@ -629,7 +620,6 @@ public class HomeFragment extends BaseFragment implements
             mScrollView.onRefreshComplete();
             return;
         }
-
         String categoryId = (category == null ? "" : category.getId() + "");
         final String url;
         url = ZhaiDou.HOME_CATEGORY_URL + page + ((category == null) ? "&catetory_id" : "&catetory_id=" + categoryId);
@@ -692,7 +682,8 @@ public class HomeFragment extends BaseFragment implements
             mCategoryView.setImageResource(R.drawable.icon_close);
             fl_category_menu.setVisibility(View.VISIBLE);
 
-            getChildFragmentManager().beginTransaction().show(homeCategoryFragment).commit();
+            getChildFragmentManager().beginTransaction().setCustomAnimations(R.anim
+            .slide_in_from_top,R.anim.slide_out_to_top,R.anim.slide_in_from_bottom,R.anim.slide_out_to_bottom).show(homeCategoryFragment).commit();
         } else
         {
             mCategoryView.setImageResource(R.drawable.icon_category);
@@ -727,7 +718,7 @@ public class HomeFragment extends BaseFragment implements
     private void getBannerData()
     {
         String url = ZhaiDou.BannerUrl+2;
-        banners = new ArrayList<SwitchImage>();
+        banners.removeAll(banners);
         JsonObjectRequest bannerRequest = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
@@ -763,7 +754,6 @@ public class HomeFragment extends BaseFragment implements
             @Override
             public void onErrorResponse(VolleyError volleyError)
             {
-
             }
         });
         mRequestQueue.add(bannerRequest);
