@@ -7,13 +7,14 @@ android {
         applicationId "com.zhaidou"
         minSdkVersion 15
         targetSdkVersion 19
-        versionCode 37
+        versionCode 36
         versionName "2.3.0"
-        manifestPlaceholders = [UMENG_CHANNEL_VALUE: "default_channel"]
+        manifestPlaceholders = [UMENG_CHANNEL_VALUE: "Androiddefault"]
     }
 
     productFlavors {
-        default_channel { "default_channel" }
+        Androiddefault { "Androiddefault" }
+        AndroidUpdate { "AndroidUpdate" }
         wandoujiaAD{"wandoujiaAD"}
         AndroidWan { "AndroidWan" }
         Android360 { "Android360" }
