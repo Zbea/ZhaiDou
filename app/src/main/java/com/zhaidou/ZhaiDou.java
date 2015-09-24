@@ -13,7 +13,6 @@ public class ZhaiDou {
 
     public static String ApkUrl = HOME_BASE_URL+"api/v1/app_versions?os=2";
 
-
     //0元特卖页面：status=0,普通特卖页面：status=1,首页：status=2
     public static String BannerUrl=HOME_BASE_URL+"special_mall/api/sales/sale_banner?status=";
     //APP换量
