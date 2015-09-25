@@ -1,11 +1,14 @@
 package com.zhaidou.activities;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -54,6 +57,17 @@ public class WebViewActivity extends Activity implements View.OnClickListener{
                     webView.progressBar.setProgress(newProgress);
                 }
                 super.onProgressChanged(view, newProgress);
+            }
+        });
+
+        webView.setDownloadListener(new DownloadListener()
+        {
+            @Override
+            public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
+                // 监听下载功能，当用户点击下载链接的时候，直接调用系统的浏览器来下载
+                Uri uri = Uri.parse(url);
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
             }
         });
 

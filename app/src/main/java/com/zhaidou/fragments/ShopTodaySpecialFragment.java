@@ -408,8 +408,8 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     double cost_price = obj.optDouble("cost_price");
                     String imageUrl = obj.optString("img");
                     int num = obj.optInt("total_count");
-                    int totalCount = 100;
-                    int buyCount = Integer.valueOf((int) (Math.random()*100));
+                    int totalCount = obj.optInt("total");
+                    int buyCount = totalCount-num;
                     ShopTodayItem shopTodayItem = new ShopTodayItem(Baseid, Listtitle, designer, imageUrl, price, cost_price, num,totalCount,buyCount);
                     items.add(shopTodayItem);
                 }

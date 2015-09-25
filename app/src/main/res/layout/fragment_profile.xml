@@ -62,7 +62,6 @@
                 android:id="@+id/rl_header_layout"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
                 android:background="@color/white">
 
@@ -98,8 +97,13 @@
                         android:background="@drawable/icon_arrow_right" />
                 </LinearLayout>
             </RelativeLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/line_bottom" />
 
             <RelativeLayout
+                android:layout_marginTop="10dp"
                 android:id="@+id/rl_nickname"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
@@ -397,7 +401,10 @@
                     android:paddingRight="10dp"
                     android:textColor="#a8a8a8" />
             </RelativeLayout>
-
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/line_bottom" />
             <RelativeLayout
                 android:id="@+id/rl_into"
                 android:layout_width="match_parent"
@@ -441,7 +448,10 @@
                 android:paddingRight="10dp"
                 android:paddingBottom="10dp"
                 android:textColor="#a8a8a8" />
-
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/line_bottom" />
             <RelativeLayout
                 android:id="@+id/rl_manage_address"
                 android:layout_width="match_parent"
@@ -607,6 +617,10 @@
                 android:textColor="@color/text_gary_color"
                 android:text="暂无地址"
                 />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/line_bottom" />
         </LinearLayout>
     </ScrollView>
 

@@ -110,26 +110,24 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
         ShopTodayItem todayShopItem=items.get(position);
         viewHolder.itemFormerPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
 
-        ToolUtils.setLog(""+todayShopItem.buyCount);
-        ToolUtils.setLog(""+todayShopItem.totalCount);
-        ToolUtils.setLog(""+todayShopItem.buyCount*100/todayShopItem.totalCount);
-        viewHolder.buyCount.setText("已抢购"+((todayShopItem.buyCount*100/todayShopItem.totalCount))+"%");
         if (todayShopItem.totalCount!=0)
-        if ((todayShopItem.buyCount*100/todayShopItem.totalCount)>=80)
         {
-            viewHolder.buyProgressBarRed.setMax(todayShopItem.totalCount);
-            viewHolder.buyProgressBarRed.setProgress(todayShopItem.buyCount);
-            viewHolder.buyProgressBarRed.setVisibility(View.VISIBLE);
-            viewHolder.buyProgressBarGreen.setVisibility(View.GONE);
+            viewHolder.buyCount.setText("已抢购"+((todayShopItem.buyCount*100/todayShopItem.totalCount))+"%");
+            if ((todayShopItem.buyCount*100/todayShopItem.totalCount)>=80)
+            {
+                viewHolder.buyProgressBarRed.setMax(todayShopItem.totalCount);
+                viewHolder.buyProgressBarRed.setProgress(todayShopItem.buyCount);
+                viewHolder.buyProgressBarRed.setVisibility(View.VISIBLE);
+                viewHolder.buyProgressBarGreen.setVisibility(View.GONE);
+            }
+            else
+            {
+                viewHolder.buyProgressBarGreen.setMax(todayShopItem.totalCount);
+                viewHolder.buyProgressBarGreen.setProgress(todayShopItem.buyCount);
+                viewHolder.buyProgressBarGreen.setVisibility(View.VISIBLE);
+                viewHolder.buyProgressBarRed.setVisibility(View.GONE);
+            }
         }
-        else
-        {
-            viewHolder.buyProgressBarGreen.setMax(todayShopItem.totalCount);
-            viewHolder.buyProgressBarGreen.setProgress(todayShopItem.buyCount);
-            viewHolder.buyProgressBarGreen.setVisibility(View.VISIBLE);
-            viewHolder.buyProgressBarRed.setVisibility(View.GONE);
-        }
-
         viewHolder.itemName.setText("           "+todayShopItem.title);
 //        viewHolder.itemIntorduce.setText("                        "+todayShopItem.designer);
         viewHolder.itemIntorduce.setText(todayShopItem.designer);

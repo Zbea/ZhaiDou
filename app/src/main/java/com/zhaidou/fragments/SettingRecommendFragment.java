@@ -24,6 +24,7 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomeCompetitionActivity;
+import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.adapter.RecommendAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
@@ -74,11 +75,16 @@ public class SettingRecommendFragment extends BaseFragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id)
         {
-            Intent detailIntent = new Intent(getActivity(), HomeCompetitionActivity.class);
-            detailIntent.putExtra("url", lists.get(position).appUrl);
-            detailIntent.putExtra("from", "app");
-            detailIntent.putExtra("title", lists.get(position).title);
-            getActivity().startActivity(detailIntent);
+//            Intent detailIntent = new Intent(getActivity(), HomeCompetitionActivity.class);
+//            detailIntent.putExtra("url", lists.get(position).appUrl);
+//            detailIntent.putExtra("from", "app");
+//            detailIntent.putExtra("title", lists.get(position).title);
+//            getActivity().startActivity(detailIntent);
+
+            Intent intent = new Intent();
+            intent.putExtra("url", lists.get(position).appUrl);
+            intent.setClass(getActivity(), WebViewActivity.class);
+            getActivity().startActivity(intent);
         }
     };
 
@@ -178,7 +184,6 @@ public class SettingRecommendFragment extends BaseFragment {
                     String desc=obj.optString("desc");
                     String android_url=obj.optString("android");
                     String logo=obj.optString("logo");
-                    ToolUtils.setLog(android_url);
                     RecommendItem recommendItem=new RecommendItem();
                     recommendItem.title=title;
                     recommendItem.info=desc;

@@ -61,4 +61,5 @@
 
     <!---->
     <color name="all_e">#EEEEEE</color>
+    <color name="line_bottom">#99CCCCCC</color>
 </resources>

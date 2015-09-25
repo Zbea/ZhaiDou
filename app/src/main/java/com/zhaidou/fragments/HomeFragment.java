@@ -272,7 +272,8 @@ public class HomeFragment extends BaseFragment implements
                             bundle.putString("page", item.title);
                             goodsDetailsFragment.setArguments(bundle);
                             ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
-                        }else
+                        }
+                        else if(item.type==4)
                         {
                             Category category=new Category();
                             category.setId(Integer.parseInt(item.typeValue));

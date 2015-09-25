@@ -341,7 +341,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                             bundle.putString("page", item.title);
                             goodsDetailsFragment.setArguments(bundle);
                             ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
-                        } else {
+                        } else if(item.type==4)
+                        {
                             ToolUtils.setLog(item.typeValue);
                             Category category = new Category();
                             category.setId(Integer.parseInt(item.typeValue));
@@ -439,7 +440,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                             bundle.putString("page", item.title);
                             goodsDetailsFragment.setArguments(bundle);
                             ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
-                        } else {
+                        } else if(item.type==4)
+                        {
                             Category category = new Category();
                             category.setId(Integer.parseInt(item.typeValue));
                             SpecialFragment shopTodaySpecialFragment = SpecialFragment.newInstance("", category);

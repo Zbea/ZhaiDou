@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.DownloadListener;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -14,6 +15,7 @@ import android.webkit.WebViewClient;
 import com.zhaidou.R;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.utils.ToolUtils;
 
 public class WebViewFragment extends BaseFragment{
 
@@ -54,24 +56,16 @@ public class WebViewFragment extends BaseFragment{
         view.findViewById(R.id.rl_back).setVisibility(isShowTitle?View.VISIBLE:View.GONE);
         webView = (WebView) view.findViewById(R.id.strategyView);
         webView.setWebViewClient(new WebViewClient() {
-
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    Intent intent = new Intent();
-                    intent.putExtra("url", url);
-                    intent.putExtra("from","beauty");
-                    intent.setClass(getActivity(), ItemDetailActivity.class);
-                    getActivity().startActivity(intent);
-
+                Intent intent = new Intent();
+                intent.putExtra("url", url);
+                intent.putExtra("from","beauty");
+                intent.setClass(getActivity(), ItemDetailActivity.class);
+                getActivity().startActivity(intent);
                 return true;
             }
-//
-//            public void onPageFinished(WebView view, String url) {
-//                loading.hide();
-//            }
-
         });
-
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setLoadWithOverviewMode(true);
