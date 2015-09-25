@@ -29,8 +29,6 @@ public class ZDApplication extends Application{
     private Typeface mTypeFace;
     @Override
     public void onCreate() {
-
-
         super.onCreate();
 //        CrashReport.initCrashReport(this, "900008762", false);
         initTypeFace();
