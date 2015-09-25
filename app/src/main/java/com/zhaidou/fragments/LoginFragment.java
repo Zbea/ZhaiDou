@@ -227,7 +227,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                 }
 
                 saveEmail();
-                showVerifyDialog();
+//                showVerifyDialog();
 //                new MyTask().execute();
 
                 break;

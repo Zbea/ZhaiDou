@@ -147,7 +147,7 @@ public class AccountRegisterSetPwdActivity extends FragmentActivity {
      */
     private void codeTimer()
     {
-        initTime=60;
+        initTime=ZhaiDou.VERFIRY_TIME;
         mGetCode.setBackgroundResource(R.drawable.btn_no_click_selector);
         mGetCode.setText("重新获取("+initTime+")");
         mGetCode.setClickable(false);

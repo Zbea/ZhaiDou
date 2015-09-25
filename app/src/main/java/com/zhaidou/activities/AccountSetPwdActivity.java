@@ -88,6 +88,7 @@ public class AccountSetPwdActivity extends FragmentActivity {
                     {
                         ToolUtils.setToast(getApplicationContext(),"抱歉,设置的密码过短");
                         mPwdView.setShakeAnimation();
+                        return;
                     }
                     doRegister();
                     break;
@@ -108,7 +109,7 @@ public class AccountSetPwdActivity extends FragmentActivity {
 
         headTitle=(TextView)findViewById(R.id.title_tv);
         headTitle.setText(R.string.title_register_set);
-        mPwdView=(CustomEditText)findViewById(R.id.tv_psd);
+        mPwdView=(CustomEditText)findViewById(R.id.tv_pwd);
         mOk=(TextView)findViewById(R.id.bt_ok);
         mSharedPreferences=getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
 
