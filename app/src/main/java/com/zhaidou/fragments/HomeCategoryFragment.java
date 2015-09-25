@@ -24,6 +24,8 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Category;
+import com.zhaidou.utils.PixelUtil;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
@@ -43,7 +45,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
 
     private GridView mGridView;
     private TextView mAllCategory;
-    private int mCheckedPosition=-1;
+    private int mCheckedPosition=0;
     private List<Category> mCategoryList=new ArrayList<Category>();;
     private RequestQueue mRequestQueue;
     public static String TAG=HomeCategoryFragment.class.getSimpleName();
@@ -143,9 +145,9 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 Category category = mCategoryList.get(position);
-                mCategorySelectedListener.onCategorySelected(category);
+                mCategorySelectedListener.onCategorySelected(position==0?null:category);
                 mCheckedPosition=position;
-
+                notifyDataSetChanged();
             }
         });
 
@@ -165,6 +167,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
                     Category c =new Category(id,name);
                     mCategoryList.add(c);
                 }
+                mCategoryList.add(0, null);
                 mHandler.sendEmptyMessage(UPDATE_CATEGORY_LIST);
             }
         },new Response.ErrorListener() {
@@ -205,9 +208,9 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
             }else {
                 tv_item.setPressed(false);
             }
-            tv_item.setText(item.getName());
-
-//            mAllCategory.setWidth(tv_item.getMeasuredWidth());
+            tv_item.setText(item==null?"全部":item.getName());
+            if (position==0)
+            tv_item.setWidth(PixelUtil.dp2px(70,mContext));
             return convertView;
         }
     }
