@@ -9,17 +9,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,18 +24,11 @@ import com.alibaba.sdk.android.callback.CallbackContext;
 import com.alibaba.sdk.android.login.LoginService;
 import com.alibaba.sdk.android.login.callback.LoginCallback;
 import com.alibaba.sdk.android.session.model.Session;
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
@@ -54,15 +42,9 @@ import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomEditText;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -233,41 +215,41 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     mPswView.setShakeAnimation();
                 }
                 saveEmail();
-                showVerifyDialog();
-//                    final Map<String, String> params = new HashMap<String, String>();
-//                    params.put("user_token[email]", email);
-//                    params.put("user_token[password]", password);
-//                    mDialog = CustomLoadingDialog.setLoadingDialog(LoginActivity.this, "登陆中");
-//                    ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_URL, params, new Response.Listener<JSONObject>() {
-//                        @Override
-//                        public void onResponse(JSONObject jsonObject) {
-//                            if (mDialog != null)
-//                                mDialog.dismiss();
-//                            if (jsonObject != null) {
-//                                String msg = jsonObject.optString("message");
-//                                if (!TextUtils.isEmpty(msg)) {
-//                                    Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_LONG).show();
-//                                    return;
-//                                }
-//                                JSONArray userArr = jsonObject.optJSONArray("users");
-//                                for (int i = 0; i < userArr.length(); i++) {
-//                                    JSONObject userObj = userArr.optJSONObject(i);
-//                                    int id = userObj.optInt("id");
-//                                    String email = userObj.optString("email");
-//                                    String nick = userObj.optString("nick_name");
-//                                    String token = jsonObject.optJSONObject("user_tokens").optString("token");
-//                                    User user = new User(id, email, token, nick, null);
-//                                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
-//                                }
-//                            }
-//                        }
-//                    }, new Response.ErrorListener() {
-//                        @Override
-//                        public void onErrorResponse(VolleyError volleyError) {
-//
-//                        }
-//                    });
-//                    requestQueue.add(request);
+//                showVerifyDialog();
+                    final Map<String, String> params = new HashMap<String, String>();
+                    params.put("user_token[email]", strEmail);
+                    params.put("user_token[password]", password);
+                    mDialog = CustomLoadingDialog.setLoadingDialog(LoginActivity.this, "登陆中");
+                    ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_URL, params, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject jsonObject) {
+                            if (mDialog != null)
+                                mDialog.dismiss();
+                            if (jsonObject != null) {
+                                String msg = jsonObject.optString("message");
+                                if (!TextUtils.isEmpty(msg)) {
+                                    Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_LONG).show();
+                                    return;
+                                }
+                                JSONArray userArr = jsonObject.optJSONArray("users");
+                                for (int i = 0; i < userArr.length(); i++) {
+                                    JSONObject userObj = userArr.optJSONObject(i);
+                                    int id = userObj.optInt("id");
+                                    String email = userObj.optString("email");
+                                    String nick = userObj.optString("nick_name");
+                                    String token = jsonObject.optJSONObject("user_tokens").optString("token");
+                                    User user = new User(id, email, token, nick, null);
+                                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+                                }
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError volleyError) {
+
+                        }
+                    });
+                    requestQueue.add(request);
 
                 break;
             case R.id.tv_register:

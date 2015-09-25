@@ -226,6 +226,7 @@
                 android:orientation="vertical">
 
                 <RelativeLayout
+                    android:id="@+id/rl_homeGoodsImage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 

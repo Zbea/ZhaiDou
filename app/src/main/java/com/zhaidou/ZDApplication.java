@@ -1,35 +1,20 @@
 package com.zhaidou;
 
 import android.app.Application;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Environment;
-import android.telephony.TelephonyManager;
-import android.util.Log;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
-import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.utils.StorageUtils;
-import com.tencent.bugly.crashreport.CrashReport;
-import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.ToolUtils;
 
-import org.json.JSONObject;
-
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by wangclark on 15/7/2.
@@ -47,7 +32,7 @@ public class ZDApplication extends Application{
 
 
         super.onCreate();
-        CrashReport.initCrashReport(this, "900008762", false);
+//        CrashReport.initCrashReport(this, "900008762", false);
         initTypeFace();
         try
         {
