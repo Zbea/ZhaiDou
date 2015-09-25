@@ -435,6 +435,7 @@
                     android:drawablePadding="10dp"
                     android:inputType="phone"
                     android:maxLength="11"
+                    android:background="@color/transparent"
                     android:textColor="@color/text_main_color"
                     android:textColorHint="@color/edit_hint_gray"
                     android:hint="输入手机号"/>
@@ -461,6 +462,7 @@
                     android:drawableRight="@drawable/cancel"
                     android:paddingRight="@dimen/default_margin"
                     android:drawablePadding="10dp"
+                    android:background="@color/transparent"
                     android:textColor="@color/text_main_color"
                     android:textColorHint="@color/edit_hint_gray"
                     android:hint="输入验证码"/>

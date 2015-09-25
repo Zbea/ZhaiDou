@@ -28,8 +28,6 @@ public class ZhaiDou {
     public static String SPECIAL_SALE_URL=HOME_BASE_URL+"special_mall/api/sales/zero_sale";
     //首页分类文章
     public static String HOME_CATEGORY_URL=HOME_BASE_URL+"article/api/articles?page=";
-    //首页轮播图
-    public static String HOME_BANNER_URL=HOME_BASE_URL+"article/api/article_categories/index_code?code=zt001";
 
     //文章页面
     public static String ARTICLE_DETAIL_URL=HOME_BASE_URL+"article/articles/";

@@ -1,254 +1,298 @@
 package com.zhaidou.fragments;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.net.Uri;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
-import android.widget.Button;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+import com.pulltorefresh.PullToRefreshBase;
+import com.pulltorefresh.PullToRefreshListView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
-import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.utils.HtmlFetcher;
+import com.zhaidou.utils.ToolUtils;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.net.URL;
+import java.net.URLDecoder;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.WeakHashMap;
 
 
-public class StrategyFragment extends BaseFragment {
-
-
+public class StrategyFragment extends BaseFragment
+{
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    private WebView webView;
+    //WebViewFragment.newInstance("http://buy.zhaidou.com/gl.html", false)
+    private View mView;
     private Dialog loading;
-    private TextView livingRoomButton;
-    private TextView entirePartButton;
+    private PullToRefreshListView listView;
+    private String targetUrl="http://buy.zhaidou.com/?zdclient=ios&tag=006&count=10&json=1&page={0}";
+    private int currentPage=1;
+    private boolean loadedAll;
+    private final int LOADED = 1;
+    private List<JSONObject> listItem;
+    private RequestQueue mRequestQueue;
+    private ImageAdapter homeItemsAdapter;
 
-    private ViewPager viewPager;
-    private Fragment beautyHomeFragment;
+    private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
 
-    private List<View> views;
+    private static final int STATUS_REFRESH = 0;
+    private static final int STATUS_LOAD_MORE = 1;
 
-    private static final String LIVING_ROOM_TAG = "1";
-    private static final String ENTIRE_PART_TAG = "2";
+    private Handler handler = new Handler()
+    {
+        public void handleMessage(Message msg)
+        {
+            if (msg.what == LOADED)
+            {
 
-    private static final String LIVING_ROOM_URL = "http://buy.zhaidou.com/?zdclient=ios&tag=006&count=10";
-    private static final String ENTIRE_PART_URL = "http://buy.zhaidou.com/gl.html";
+                if (loading.isShowing())
+                {
+                    loading.dismiss();
+                }
+            }
+            listView.onRefreshComplete();
+            homeItemsAdapter.notifyDataSetChanged();
+        }
+    };
 
-    private TextView lastButton;
-    private OnFragmentInteractionListener mListener;
 
-    public StrategyFragment() {
+    private PullToRefreshBase.OnRefreshListener2 onRefreshListener2=new PullToRefreshBase.OnRefreshListener2()
+    {
+        @Override
+        public void onPullDownToRefresh(PullToRefreshBase refreshView)
+        {
+            currentPage = 1;
+            loadMoreData(STATUS_REFRESH);
+        }
+
+        @Override
+        public void onPullUpToRefresh(PullToRefreshBase refreshView)
+        {
+            currentPage++;
+            loadMoreData(STATUS_LOAD_MORE);
+        }
+    };
+
+    private AdapterView.OnItemClickListener itemSelectListener = new AdapterView.OnItemClickListener()
+    {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
+        {
+            try
+            {
+                JSONObject item = listItem.get(i-1);
+                Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
+                detailIntent.putExtra("id", item.get("id").toString());
+                detailIntent.putExtra("title", item.get("title").toString());
+                detailIntent.putExtra("cover_url", URLDecoder.decode(item.get("thumbnail").toString()));
+                detailIntent.putExtra("from","beauty1");
+                detailIntent.putExtra("url", item.get("url").toString());
+                detailIntent.putExtra("show_header", false);
+                startActivity(detailIntent);
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+    };
+
+    public StrategyFragment()
+    {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        views = new ArrayList<View>();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_strategy, container, false);
-        viewPager = (ViewPager) view.findViewById(R.id.strategy_pager);
+                             Bundle savedInstanceState)
+    {
+        mContext = getActivity();
+        if (mView == null) {
+            mView= inflater.inflate(R.layout.fragment_strategy, container, false);
+            initView();
+        }
+        //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
+        ViewGroup parent = (ViewGroup) mView.getParent();
+        if (parent != null) {
+            parent.removeView(mView);
+        }
+        return mView;
+    }
 
-        views.add(view.inflate(getActivity(), R.layout.beauty_home, null));
-        views.add(view.inflate(getActivity(), R.layout.whole_projects, null));
+    /**
+     * 初始化
+     */
+    private void initView()
+    {
+        listView = (PullToRefreshListView) mView.findViewById(R.id.homeItemList);
+        listItem = new ArrayList<JSONObject>();
+        mRequestQueue = Volley.newRequestQueue(mContext);
 
-        viewPager.setAdapter(new MyFragmentAdapter(getChildFragmentManager()));//new MyPagerAdapter(views));
+        homeItemsAdapter = new ImageAdapter(mContext);
+        listView.setAdapter(homeItemsAdapter);
+        listView.setOnItemClickListener(itemSelectListener);
+        listView.setMode(PullToRefreshBase.Mode.BOTH);
+        listView.setOnRefreshListener(onRefreshListener2);
 
-        livingRoomButton = (TextView) view.findViewById(R.id.living_room);
-        entirePartButton = (TextView) view.findViewById(R.id.entire_part);
-        livingRoomButton.setSelected(true);
-        lastButton = livingRoomButton;
+        loadMoreData(STATUS_REFRESH);
+        loading = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
+    }
 
-        livingRoomButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                viewPager.setCurrentItem(0);
-                lastButton.setSelected(false);
-                lastButton = livingRoomButton;
-                lastButton.setSelected(true);
-            }
-        });
 
-        entirePartButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                viewPager.setCurrentItem(1);
-                lastButton.setSelected(false);
-                lastButton = entirePartButton;
-                lastButton.setSelected(true);
-            }
-        });
-
-        viewPager.setCurrentItem(0);
-
-        viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                lastButton.setSelected(false);
-                switch (position) {
-                    case 0: {
-                        lastButton = livingRoomButton;
-                        break;
+    /**
+     * 开始数据请求
+     * @param status
+     */
+    private void loadMoreData(final int status)
+    {
+        new Thread()
+        {
+            public void run()
+            {
+                if (loadedAll)
+                {
+                    return;
+                }
+                try
+                {
+                    String requestUrl = MessageFormat.format(targetUrl, currentPage);
+                    java.net.URL url = new URL(requestUrl);
+                    String jsonContent = HtmlFetcher.fetch(url);
+                    try
+                    {
+                        JSONObject root = new JSONObject(jsonContent);
+                        JSONArray items = root.getJSONArray("posts");
+                        if (currentPage == 1)
+                            listItem.clear();
+                        for (int i = 0; i < items.length(); i++)
+                        {
+                            listItem.add(items.getJSONObject(i));
+                        }
+                        Message msg = new Message();
+                        msg.what = LOADED;
+                        msg.arg1 = status;
+                        handler.sendMessage(msg);
+                        int count = Integer.valueOf(root.get("count").toString());
+                        int pages = Integer.valueOf(root.get("pages").toString());
+                        if (listItem.size() >= count * pages)
+                        {
+                            loadedAll = true;
+                        }
+                    } catch (Exception ex)
+                    {
+                        Log.e("Debug Info", ex.getMessage());
                     }
-
-                    case 1: {
-                        lastButton = entirePartButton;
-                        break;
-                    }
-                }
-                lastButton.setSelected(true);
-            }
-        });
-        return view;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnFragmentInteractionListener {
-        public void onFragmentInteraction(Uri uri);
-    }
-
-    public void onClick_Event(View view) {
-        Button btn = (Button) view;
-        if (lastButton != null) {
-            lastButton.setSelected(false);
-        }
-        String tag = (String) btn.getTag();
-
-        if (LIVING_ROOM_TAG.equals(tag)) {
-            viewPager.setCurrentItem(0);
-        } else if (ENTIRE_PART_TAG.equals(tag)) {
-            viewPager.setCurrentItem(1);
-        }
-
-        lastButton = btn;
-        lastButton.setSelected(true);
-    }
-
-
-    private class MyFragmentAdapter extends FragmentPagerAdapter {
-        public MyFragmentAdapter(FragmentManager fragmentManager) {
-            super(fragmentManager);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch (position) {
-                case 0: {
-                    return ElementListFragment.newInstance("http://buy.zhaidou.com/?zdclient=ios&tag=006&count=10&json=1", ZhaiDou.ListType.TAG.toString());
-                }
-                case 1: {
-                    return WebViewFragment.newInstance("http://buy.zhaidou.com/gl.html",false);
+                } catch (Exception ex)
+                {
                 }
             }
-            return null;
-        }
-
-        @Override
-        public int getCount() {
-            return 2;
-        }
-
+        }.start();
     }
 
-    private class MyPagerAdapter extends PagerAdapter {
-        private List<View> mListView;
+    public class ImageAdapter extends BaseAdapter
+    {
 
-        private MyPagerAdapter(List<View> list) {
-            this.mListView= list;
+        private LayoutInflater inflater;
+
+        public ImageAdapter(Context context)
+        {
+            this.inflater = LayoutInflater.from(context);
         }
-
-        //销毁position位置的界面
-        public void destroyItem(View arg0, int arg1, Object arg2) {
-            ((ViewGroup)arg0).removeView(mListView.get(arg1));
+        public void clear()
+        {
+            listItem.clear();
         }
-
-        @Override
-        public void finishUpdate(View arg0) {
-
+        public int getCount()
+        {
+            return listItem.size();
         }
-
-        public int getCount() {
-            return mListView.size();
+        public Object getItem(int position)
+        {
+            return listItem.get(position);
         }
-
-        @Override
-        public Object instantiateItem(View arg0, int arg1) {
-            ((ViewGroup)arg0).addView(mListView.get(arg1), 0);
-            return mListView.get(arg1);
+        public long getItemId(int position)
+        {
+            return listItem.get(position).hashCode();
         }
+        public View getView(int position, View view, ViewGroup parent)
+        {
+            view = mHashMap.get(position);
+            if (view == null)
+            {
+                view = inflater.inflate(R.layout.home_item_list, null);
+            }
 
-        // 判断是否由对象生成界面
-        public boolean isViewFromObject(View arg0, Object arg1) {
-            return arg0==(arg1);
-        }
+            TextView title = (TextView) view.findViewById(R.id.title);
+            TextView articleViews = (TextView) view.findViewById(R.id.views);
+            ImageView cover = (ImageView) view.findViewById(R.id.cover);
 
-        @Override
-        public void restoreState(Parcelable arg0, ClassLoader arg1) {
+            final JSONObject item = listItem.get(position);
+            try
+            {
+                title.setText(item.get("title").toString());
+                JSONObject customFields = item.getJSONObject("custom_fields");
+                articleViews.setText(customFields.getJSONArray("views").get(0).toString());
 
-        }
+                DisplayImageOptions options=new DisplayImageOptions.Builder()
+                        .showImageOnLoading(R.drawable.icon_loading_item)
+                        .showImageForEmptyUri(R.drawable.icon_loading_item)
+                        .showImageOnFail(R.drawable.icon_loading_item)
+                        .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
+                        .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
+                        .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
+                        .bitmapConfig(Bitmap.Config.RGB_565)
+                        .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
+                        .build();
+                ImageLoader.getInstance().displayImage(URLDecoder.decode(item.get("thumbnail").toString(), "utf-8"), cover,options);
 
-        @Override
-        public Parcelable saveState() {
-            return null;
-        }
-
-        @Override
-        public void startUpdate(View arg0) {
-
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            mHashMap.put(position, view);
+            return view;
         }
     }
 
-    public void onResume() {
+
+    public void onResume()
+    {
         super.onResume();
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_beauty));
     }
-    public void onPause() {
+
+    public void onPause()
+    {
         super.onPause();
         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_beauty));
     }

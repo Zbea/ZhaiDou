@@ -1,12 +1,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
     <RelativeLayout
         android:id="@+id/common_actionbar"
         android:layout_width="match_parent"
         android:background="@color/actionbar_background_color"
         android:layout_height="@dimen/header_height_dimen">
+
         <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/tv_title"
             android:textColor="@color/white"
@@ -14,56 +16,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="专业家居美化方案"/>
+            android:text="@string/title_beauty"/>
     </RelativeLayout>
-    <LinearLayout
+
+    <com.pulltorefresh.PullToRefreshListView
+        android:id="@+id/homeItemList"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:orientation="horizontal"
-        android:weightSum="1">
-
-        <com.zhaidou.view.TypeFaceTextView
-            android:id="@+id/living_room"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="0.5"
-            android:gravity="center"
-            android:background="@drawable/strategy_top_button_background"
-            android:tag="1"
-            android:textColor="@drawable/strategy_top_button_color"
-            android:text="客厅方案" />
-
-        <com.zhaidou.view.TypeFaceTextView
-            android:id="@+id/entire_part"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="0.5"
-            android:gravity="center"
-            android:background="@drawable/strategy_top_button_background"
-            android:tag="2"
-            android:textColor="@drawable/strategy_top_button_color"
-            android:text="整体方案" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-
-        <!--<WebView-->
-            <!--android:id="@+id/strategyView"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!-->-->
-
-        <!--</WebView>-->
-
-        <android.support.v4.view.ViewPager android:id="@+id/strategy_pager" android:layout_width="match_parent" android:layout_height="match_parent">
-
-
-
-        </android.support.v4.view.ViewPager>
-
-    </LinearLayout>
+        android:layout_height="match_parent"
+        android:drawSelectorOnTop="false"
+        android:divider="@null"
+        android:scrollbars="none"
+        android:listSelector="@android:color/transparent"
+        android:dividerHeight="0dp"/>
 
 </LinearLayout>
