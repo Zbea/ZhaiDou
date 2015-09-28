@@ -275,8 +275,7 @@
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
                         android:singleLine="true"
-                        android:ellipsize="marquee"
-                        android:marqueeRepeatLimit="marquee_forever"
+                        android:ellipsize="end"
                         android:textColor="@color/text_main_color"
                         android:text="item的名称"
                         />

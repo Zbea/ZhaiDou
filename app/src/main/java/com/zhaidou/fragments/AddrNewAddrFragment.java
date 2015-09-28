@@ -187,15 +187,7 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
                 mMobile = mobile;
                 mAddress = address;
 
-                if (ToolUtils.isPhoneOk(mMobile))
-                {
-                    new MyTask().execute();
-                }
-                else
-                {
-                    et_mobile.setShakeAnimation();
-                    ToolUtils.setToast(getActivity(),"抱歉,手机号码格式输入不正确");
-                }
+                new MyTask().execute();
                 break;
             case R.id.ll_address:
                 final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);

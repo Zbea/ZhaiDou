@@ -389,33 +389,32 @@
                 android:layout_marginTop="@dimen/default_margin"
                 android:background="@drawable/content_part_bg"
                 >
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/default_margin"
+                    android:textColor="@color/red"
+                    android:textSize="14sp"
+                    android:text="您的帐号还没有绑定手机,请绑定后完成支付"
+                    android:singleLine="true"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:padding="@dimen/default_margin"
+                    android:paddingLeft="@dimen/default_margin"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="5dp"
                     android:gravity="center_vertical">
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.0001"
                         android:textColor="@color/text_main_color"
                         android:textSize="16sp"
                         android:text="验证手机"
-                        android:singleLine="true"
-                        android:ellipsize="end"
-                        android:marqueeRepeatLimit="marquee_forever"/>
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textColor="@color/text_gary_color"
-                        android:textSize="13sp"
-                        android:layout_marginTop="1.5dp"
-                        android:text="(您的帐号还没有绑定手机,请绑定后完成支付)"
                         android:singleLine="true"/>
+
                 </LinearLayout>
 
                 <TextView
