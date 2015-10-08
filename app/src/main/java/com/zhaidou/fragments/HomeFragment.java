@@ -178,6 +178,7 @@ public class HomeFragment extends BaseFragment implements
                 if (mDialog.isShowing()) {
                     mDialog.dismiss();
                 }
+                itemBtn.setVisibility(mCategory==null?View.VISIBLE:View.GONE);
 
             } else if (msg.what == UPDATE_BANNER) {
                 adPics.removeAll(adPics);
@@ -491,6 +492,7 @@ public class HomeFragment extends BaseFragment implements
                 break;
             case R.id.ll_category_view:
                 toggleMenu();
+//                ((MainActivity)getActivity()).navigationToFragment(CommentFragment.newInstance("",""));
                 break;
             case R.id.ll_lottery:
                 Intent detailIntent = new Intent(getActivity(), HomeCompetitionActivity.class);

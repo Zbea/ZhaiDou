@@ -102,7 +102,7 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
                 {
                     Intent intent=new Intent(this,AccountRegisterSetPwdActivity.class);
                     startActivity(intent);
-//                    doRegister();
+                    doRegister();
                 }
                 else
                 {

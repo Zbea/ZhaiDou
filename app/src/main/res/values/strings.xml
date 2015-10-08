@@ -146,4 +146,8 @@
     <integer name="timer_countdown">900000</integer>
     <integer name="timer_countdown1">8</integer>
 
+
+    <!--标题栏，标题-->
+    <string name="title_comment_list">评论</string>
+
 </resources>
