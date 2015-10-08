@@ -14,13 +14,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.alibaba.sdk.android.AlibabaSDK;
 import com.alibaba.sdk.android.callback.CallbackContext;
+import com.alibaba.sdk.android.login.LoginService;
+import com.alibaba.sdk.android.login.callback.LoginCallback;
 import com.alibaba.sdk.android.session.model.Session;
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -31,11 +34,15 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.AccountFindPwdActivity;
-import com.zhaidou.activities.AccountSetPwdActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.User;
+import com.zhaidou.utils.NativeHttpUtil;
+import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.CustomEditText;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -62,14 +69,6 @@ import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.sina.weibo.SinaWeibo;
 import cn.sharesdk.tencent.qq.QQ;
 import cn.sharesdk.wechat.friends.Wechat;
-
-import com.alibaba.sdk.android.AlibabaSDK;
-import com.alibaba.sdk.android.login.LoginService;
-import com.alibaba.sdk.android.login.callback.LoginCallback;
-import com.zhaidou.utils.NativeHttpUtil;
-import com.zhaidou.utils.SharedPreferencesUtil;
-import com.zhaidou.utils.ToolUtils;
-import com.zhaidou.view.CustomEditText;
 
 public class LoginFragment extends BaseFragment implements View.OnClickListener,PlatformActionListener{
     private static final String ARG_PARAM1 = "param1";
@@ -314,7 +313,14 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                             public void onErrorResponse(VolleyError volleyError) {
                                 Log.i("volleyError--->",volleyError.getMessage());
                             }
-                        });
+                        }){
+                            @Override
+                            public Map<String, String> getHeaders() throws AuthFailureError {
+                                Map<String,String> headers=new HashMap<String, String>();
+                                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                                return headers;
+                            }
+                        };
                         requestQueue.add(request);
                     }
                     @Override
@@ -388,6 +394,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
 
             // 实例化HTTP方法
             HttpPost request = new HttpPost(ZhaiDou.USER_LOGIN_URL);
+            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
 
             // 创建名/值组列表
             List<NameValuePair> parameters = new ArrayList<NameValuePair>();
@@ -609,7 +616,14 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
             @Override
             public void onErrorResponse(VolleyError volleyError) {
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         requestQueue.add(request);
     }
 

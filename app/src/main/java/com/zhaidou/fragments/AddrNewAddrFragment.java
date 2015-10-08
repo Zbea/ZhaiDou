@@ -12,11 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -51,7 +51,9 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AddrNewAddrFragment extends BaseFragment implements View.OnClickListener {
     private static final String ARG_ID="id";
@@ -304,6 +306,7 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
             if (mStatus==CREATE_NEW_ADDRESS){
                 // 实例化HTTP方法
                 HttpPost request = new HttpPost(ZhaiDou.ORDER_RECEIVER_URL);
+                request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 request.addHeader("SECAuthorization",token);
 
                 // 创建UrlEncodedFormEntity对象
@@ -404,7 +407,14 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
             public void onErrorResponse(VolleyError volleyError) {
                 ToolUtils.setToast(getActivity(),"抱歉,加载城市失败");
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         mRequestQueue.add(request);
     }
 

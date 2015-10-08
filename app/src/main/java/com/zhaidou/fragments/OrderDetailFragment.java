@@ -338,6 +338,7 @@ public class OrderDetailFragment extends BaseFragment {
                                 public Map<String, String> getHeaders() throws AuthFailureError {
                                     Map<String, String> headers = new HashMap<String, String>();
                                     headers.put("SECAuthorization", token);
+                                    headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                                     return headers;
                                 }
                             };
@@ -489,6 +490,7 @@ public class OrderDetailFragment extends BaseFragment {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("SECAuthorization",token);
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }
         };
@@ -552,6 +554,7 @@ public class OrderDetailFragment extends BaseFragment {
                     public Map<String, String> getHeaders() throws AuthFailureError {
                         Map<String, String> headers = new HashMap<String, String>();
                         headers.put("SECAuthorization", token);
+                        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                         return headers;
                     }
                 };
@@ -608,6 +611,7 @@ public class OrderDetailFragment extends BaseFragment {
                     public Map<String, String> getHeaders() throws AuthFailureError {
                         Map<String, String> headers = new HashMap<String, String>();
                         headers.put("SECAuthorization", token);
+                        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                         return headers;
                     }
                 };

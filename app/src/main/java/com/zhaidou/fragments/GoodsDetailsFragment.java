@@ -1,6 +1,5 @@
 package com.zhaidou.fragments;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -1325,7 +1324,14 @@ public class GoodsDetailsFragment extends BaseFragment
                 nullView.setVisibility(View.VISIBLE);
                 nullNetView.setVisibility(View.GONE);
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         mRequestQueue.add(request);
     }
 
@@ -1379,6 +1385,7 @@ public class GoodsDetailsFragment extends BaseFragment
             public Map<String, String> getHeaders() throws AuthFailureError
             {
                 Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 headers.put("SECAuthorization", token);
                 return headers;
             }

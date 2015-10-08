@@ -226,6 +226,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
                 Map<String, String> headers = new HashMap<String, String>();
                 String token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
                 headers.put("SECAuthorization", token);
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }
         };
@@ -279,6 +280,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("SECAuthorization", token);
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }
         };

@@ -390,6 +390,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("SECAuthorization", token);
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }
         };
@@ -628,6 +629,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
             // 实例化HTTP方法
             HttpPost request = new HttpPost(ZhaiDou.URL_ORDER_LIST + "/" + mOrderId + "/return_items");
             request.addHeader("SECAuthorization", token);
+            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
 
             // 创建名/值组列表
             List<NameValuePair> params = new ArrayList<NameValuePair>();
