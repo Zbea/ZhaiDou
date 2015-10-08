@@ -2,7 +2,6 @@ package com.zhaidou.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -21,6 +20,8 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -37,7 +38,6 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Category;
 import com.zhaidou.model.CategoryItem;
-import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.PixelUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ChildGridView;
@@ -46,7 +46,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 public class CategoryFragment1 extends BaseFragment{
@@ -238,7 +240,14 @@ public class CategoryFragment1 extends BaseFragment{
             public void onErrorResponse(VolleyError volleyError) {
 
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         mRequestQueue.add(request);
     }
 

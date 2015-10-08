@@ -28,7 +28,6 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -324,6 +323,7 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                     {
                         Map<String, String> headers = new HashMap<String, String>();
                         headers.put("SECAuthorization", token);
+                        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                         return headers;
                     }
                 };
@@ -413,6 +413,7 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
             public Map<String, String> getHeaders() throws AuthFailureError
             {
                 Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 if (!TextUtils.isEmpty(token))
                     headers.put("SECAuthorization", token);
                 return headers;

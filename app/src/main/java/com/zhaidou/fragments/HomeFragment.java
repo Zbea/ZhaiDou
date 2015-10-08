@@ -31,6 +31,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -45,7 +46,6 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomeCompetitionActivity;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.SearchActivity;
-import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.adapter.AdViewAdpater;
 import com.zhaidou.adapter.GoodsImageAdapter;
 import com.zhaidou.adapter.HomeListAdapter;
@@ -66,7 +66,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 public class HomeFragment extends BaseFragment implements
@@ -566,7 +568,14 @@ public class HomeFragment extends BaseFragment implements
                 mScrollView.onRefreshComplete();
                 mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         mRequestQueue.add(jr);
     }
 
@@ -638,7 +647,14 @@ public class HomeFragment extends BaseFragment implements
             @Override
             public void onErrorResponse(VolleyError volleyError) {
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         mRequestQueue.add(bannerRequest);
     }
 
@@ -682,7 +698,14 @@ public class HomeFragment extends BaseFragment implements
                 mScrollView.onRefreshComplete();
                 mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         mRequestQueue.add(jr);
     }
 

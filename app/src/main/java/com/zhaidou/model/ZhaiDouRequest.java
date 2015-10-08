@@ -2,12 +2,12 @@ package com.zhaidou.model;/**
  * Created by wangclark on 15/9/9.
  */
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.zhaidou.dialog.CustomLoadingDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,6 +55,11 @@ public class ZhaiDouRequest extends Request<JSONObject> {
     @Override
     public Map<String, String> getParams() {
         return this.params;
+    }
+
+    @Override
+    public Map<String, String> getHeaders() throws AuthFailureError {
+        return super.getHeaders();
     }
 
     @Override

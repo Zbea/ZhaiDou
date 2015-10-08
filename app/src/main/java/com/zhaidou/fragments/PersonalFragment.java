@@ -430,7 +430,14 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             @Override
             public void onErrorResponse(VolleyError volleyError) {
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         mRequestQueue.add(request);
     }
 
@@ -458,7 +465,14 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             @Override
             public void onErrorResponse(VolleyError volleyError) {
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         if (mRequestQueue == null)
             mRequestQueue = Volley.newRequestQueue(mActivity);
         mRequestQueue.add(request);
@@ -562,6 +576,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("SECAuthorization", token);
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }
         };
@@ -589,7 +604,14 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             @Override
             public void onErrorResponse(VolleyError volleyError) {
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         mRequestQueue.add(request);
     }
 
@@ -625,6 +647,7 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("SECAuthorization", token);
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }
         };

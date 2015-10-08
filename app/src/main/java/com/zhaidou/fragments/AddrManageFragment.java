@@ -210,6 +210,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                             @Override
                             public Map<String, String> getHeaders() throws AuthFailureError {
                                 Map<String, String> headers = new HashMap<String, String>();
+                                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                                 headers.put("SECAuthorization",token);
                                 return headers;
                             }
@@ -369,6 +370,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             // 实例化HTTP方法
             HttpPost request = new HttpPost(ZhaiDou.USER_EDIT_PROFILE_URL + id);
             request.addHeader("SECAuthorization", token);
+            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
 
 
             // 创建名/值组列表
@@ -474,6 +476,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 if (!TextUtils.isEmpty(token))
                     headers.put("SECAuthorization",token);
                 return headers;
@@ -562,6 +565,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String,String> headers=new HashMap<String, String>();
+                    headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                     headers.put("SECAuthorization",token);
                     return headers;
                 }

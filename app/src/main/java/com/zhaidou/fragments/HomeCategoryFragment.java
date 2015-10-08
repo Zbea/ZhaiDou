@@ -13,6 +13,8 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -29,7 +31,9 @@ import com.zhaidou.utils.PixelUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HomeCategoryFragment extends BaseFragment implements  View.OnClickListener{
     private static final String ARG_PARAM1 = "param1";
@@ -175,7 +179,14 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
             public void onErrorResponse(VolleyError error) {
                 mHandler.sendEmptyMessage(UPDATE_EMPTY_LIST);
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         mRequestQueue.add(jr);
     }
 
