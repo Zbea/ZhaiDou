@@ -26,6 +26,7 @@ import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshListView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
@@ -111,7 +112,7 @@ public class StrategyFragment extends BaseFragment
                 detailIntent.putExtra("id", item.get("id").toString());
                 detailIntent.putExtra("title", item.get("title").toString());
                 detailIntent.putExtra("cover_url", URLDecoder.decode(item.get("thumbnail").toString()));
-                detailIntent.putExtra("from","beauty1");
+                detailIntent.putExtra("from","product");
                 detailIntent.putExtra("url", item.get("url").toString());
                 detailIntent.putExtra("show_header", false);
                 startActivity(detailIntent);
