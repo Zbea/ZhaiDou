@@ -614,6 +614,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             HttpPost request = new HttpPost(ZhaiDou.USER_REGISTER_URL + "/" + id);
 
             request.addHeader("SECAuthorization", token);
+            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
             // 创建名/值组列表
             List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 

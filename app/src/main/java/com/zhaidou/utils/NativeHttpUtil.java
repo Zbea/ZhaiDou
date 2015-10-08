@@ -119,7 +119,7 @@ public class NativeHttpUtil {
             HttpPost request = new HttpPost(url);
             if (!TextUtils.isEmpty(token))
             request.addHeader("SECAuthorization", token);
-            request.addHeader("ZhaidouVesion","2.3.0");
+            request.addHeader("ZhaidouVesion","V2.4.0");
 
             // 创建名/值组列表
             List<NameValuePair> parameters = new ArrayList<NameValuePair>();

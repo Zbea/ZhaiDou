@@ -17,6 +17,9 @@ import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.utils.ToolUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class WebViewFragment extends BaseFragment{
 
     private WebView webView;
@@ -71,7 +74,9 @@ public class WebViewFragment extends BaseFragment{
         webSettings.setLoadWithOverviewMode(true);
         webSettings.setUseWideViewPort(true);
 
-        webView.loadUrl(url);
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("ZhaidouVesion", getResources().getString(R.string.app_versionName));
+        webView.loadUrl(url,headers);
 
         return view;
     }

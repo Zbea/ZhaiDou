@@ -477,6 +477,7 @@ public class ShopPaymentFragment extends BaseFragment
             {
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("SECAuthorization", token);
+                map.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return map;
             }
         };

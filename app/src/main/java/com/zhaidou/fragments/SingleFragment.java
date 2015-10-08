@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -292,7 +293,16 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
                 nullLine.setVisibility(View.GONE);
                 Log.i("onErrorResponse",error.toString());
             }
-        });
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         if (mRequestQueue==null) mRequestQueue=Volley.newRequestQueue(getActivity());
         mRequestQueue.add(newMissRequest);
     }
@@ -336,7 +346,16 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
             public void onErrorResponse(VolleyError volleyError) {
                 setEndLoading();
             }
-        });
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         mRequestQueue.add(fetchCategoryTask);
     }
 
@@ -413,7 +432,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
             // 实例化HTTP方法
             HttpPost request = new HttpPost(ZhaiDou.USER_DELETE_COLLECT_ITEM_URL);
             request.addHeader("SECAuthorization", token);
-
+            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
             // 创建名/值组列表
             List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 

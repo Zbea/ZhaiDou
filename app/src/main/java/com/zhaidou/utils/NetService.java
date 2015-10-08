@@ -13,6 +13,8 @@ import org.apache.http.util.EntityUtils;
 
 import android.util.Log;
 
+import com.zhaidou.R;
+
 public class NetService
 {
 	private static String result;
@@ -28,6 +30,7 @@ public class NetService
 		try
 		{
 			HttpGet httpGet=new HttpGet(url);
+            httpGet.addHeader("ZhaidouVesion", "V2.4.0");
 			HttpClient httpClient=new DefaultHttpClient();
 			HttpResponse httpResponse=httpClient.execute(httpGet);
 			if (httpResponse.getStatusLine().getStatusCode()==HttpStatus.SC_OK)

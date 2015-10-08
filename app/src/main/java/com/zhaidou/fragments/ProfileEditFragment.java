@@ -241,7 +241,7 @@ public class ProfileEditFragment extends BaseFragment implements View.OnClickLis
             // 实例化HTTP方法
             HttpPost request = new HttpPost(ZhaiDou.USER_EDIT_PROFILE_URL+id);
             request.addHeader("SECAuthorization", token);
-
+            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
 
             // 创建名/值组列表
             List<NameValuePair> parameters = new ArrayList<NameValuePair>();

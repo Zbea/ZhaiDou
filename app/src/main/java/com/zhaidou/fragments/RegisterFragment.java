@@ -227,6 +227,7 @@ import org.apache.http.HttpResponse;
 
              // 实例化HTTP方法
              HttpPost request = new HttpPost(ZhaiDou.USER_REGISTER_URL);
+             request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
 
              // 创建名/值组列表
              List<NameValuePair> parameters = new ArrayList<NameValuePair>();

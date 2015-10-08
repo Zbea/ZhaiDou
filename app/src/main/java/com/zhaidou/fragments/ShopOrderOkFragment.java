@@ -720,7 +720,7 @@ public class ShopOrderOkFragment extends BaseFragment
             // 实例化HTTP方法
             HttpPost request = new HttpPost(ZhaiDou.orderCommitUrl);
             request.addHeader("SECAuthorization", token);
-
+            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
             // 创建名/值组列表
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("sale_order[receiver_id]", "" + address.getId()));
@@ -834,6 +834,7 @@ public class ShopOrderOkFragment extends BaseFragment
             {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("SECAuthorization", token);
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }
         };
@@ -879,6 +880,7 @@ public class ShopOrderOkFragment extends BaseFragment
             {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("SECAuthorization", token);
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }
         };

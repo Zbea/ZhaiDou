@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -32,6 +33,9 @@ import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SettingFragment extends BaseFragment implements View.OnClickListener,ProfileFragment.ProfileListener{
     private static final String ARG_PARAM1 = "param1";
@@ -234,7 +238,15 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
             public void onErrorResponse(VolleyError volleyError) {
 
             }
-        });
+        })        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         requestQueue.add(request);
     }
 
