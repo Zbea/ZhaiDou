@@ -252,6 +252,15 @@ public class HomeFragment extends BaseFragment implements
                             SpecialFragment shopTodaySpecialFragment = SpecialFragment.newInstance("", category);
                             ((MainActivity) getActivity()).navigationToFragment(shopTodaySpecialFragment);
                         }
+                        else if(item.type==5)
+                        {
+                            ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title,  Integer.valueOf(item.typeValue), item.imageUrl);
+                            ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
+                        }
+                        else
+                        {
+
+                        }
                     }
                 });
                 ToolUtils.setImageCacheUrl(banners.get(i).imageUrl, img, R.drawable.icon_loading_item);
