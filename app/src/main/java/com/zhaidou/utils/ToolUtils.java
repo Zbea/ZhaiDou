@@ -1,7 +1,9 @@
 package com.zhaidou.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.ImageView;
@@ -10,7 +12,17 @@ import android.widget.Toast;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.ItemDetailActivity;
+import com.zhaidou.activities.WebViewActivity;
+import com.zhaidou.fragments.GoodsDetailsFragment;
+import com.zhaidou.fragments.ShopTodaySpecialFragment;
+import com.zhaidou.fragments.SpecialFragment;
+import com.zhaidou.fragments.SpecialSaleFragment;
+import com.zhaidou.model.Category;
+import com.zhaidou.model.SwitchImage;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -230,6 +242,57 @@ public class ToolUtils
     public static final void setToastLong(Context mContext,String msg)
     {
         Toast.makeText(mContext, msg, Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * 设置banner的跳转
+     * @param item
+     */
+    public static final void setBannerGoto(SwitchImage item,Context mContext)
+    {
+        if (item.type == 0)
+        {
+            SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", "");
+            ((MainActivity) mContext).navigationToFragment(specialSaleFragment);
+        } else if (item.type == 1)
+        {
+            Intent intent = new Intent();
+            intent.putExtra("url", item.typeValue);
+            intent.setClass(mContext, WebViewActivity.class);
+            mContext.startActivity(intent);
+        } else if (item.type == 2)
+        {
+            Intent detailIntent = new Intent(mContext, ItemDetailActivity.class);
+            detailIntent.putExtra("id", item.id + "");
+            detailIntent.putExtra("from", "product");
+            detailIntent.putExtra("title", item.title);
+            detailIntent.putExtra("cover_url", item.imageUrl);
+            detailIntent.putExtra("url", ZhaiDou.ARTICLE_DETAIL_URL + item.id);
+            mContext.startActivity(detailIntent);
+        } else if (item.type == 3)
+        {
+            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0);
+            Bundle bundle = new Bundle();
+            bundle.putInt("index", Integer.valueOf(item.typeValue));
+            bundle.putString("page", item.title);
+            goodsDetailsFragment.setArguments(bundle);
+            ((MainActivity) mContext).navigationToFragment(goodsDetailsFragment);
+        } else if(item.type==4)
+        {
+            Category category = new Category();
+            category.setId(Integer.parseInt(item.typeValue));
+            SpecialFragment shopTodaySpecialFragment = SpecialFragment.newInstance("", category);
+            ((MainActivity) mContext).navigationToFragment(shopTodaySpecialFragment);
+        }
+        else if(item.type==5)
+        {
+            ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title,  Integer.valueOf(item.typeValue), item.imageUrl);
+            ((MainActivity) mContext).navigationToFragmentWithAnim(shopTodaySpecialFragment);
+        }
+        else
+        {
+
+        }
     }
 
 }
