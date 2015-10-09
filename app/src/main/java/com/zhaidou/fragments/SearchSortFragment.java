@@ -4,7 +4,6 @@ package com.zhaidou.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +11,8 @@ import android.widget.AdapterView;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.zhaidou.R;
-import com.zhaidou.activities.SearchActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -25,7 +22,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class SortFragment extends BaseFragment implements AdapterView.OnItemClickListener,
+public class SearchSortFragment extends BaseFragment implements AdapterView.OnItemClickListener,
                                   View.OnClickListener{
     private static final String PAGE = "page";
     private static final String INDEX = "index";
@@ -40,18 +37,18 @@ public class SortFragment extends BaseFragment implements AdapterView.OnItemClic
     private HashMap<String,Integer> checkedMap = new HashMap<String, Integer>();
     private RefreshDataListener mRefreshDataListener;
     private RelativeLayout mRelativeLayout;
-    public static String TAG=SortFragment.class.getSimpleName();
+    public static String TAG=SearchSortFragment.class.getSimpleName();
 
 
-    public static SortFragment newInstance(String page, int index) {
-        SortFragment fragment = new SortFragment();
+    public static SearchSortFragment newInstance(String page, int index) {
+        SearchSortFragment fragment = new SearchSortFragment();
         Bundle args = new Bundle();
         args.putString(PAGE, page);
         args.putInt(INDEX, index);
         fragment.setArguments(args);
         return fragment;
     }
-    public SortFragment() {
+    public SearchSortFragment() {
     }
 
     @Override
@@ -115,7 +112,7 @@ public class SortFragment extends BaseFragment implements AdapterView.OnItemClic
         boolean isChecked = mListView.isItemChecked(i);
         checkedMap.put(mPage,i);
         mSortAdapter.notifyDataSetChanged();
-        ((SearchActivity)getActivity()).toggleSortMenu();
+        ((SearchFragment)getParentFragment()).toggleSortMenu();
 //        mRefreshDataListener.refreshData(data.get(i));
         mRefreshDataListener.refreshData(i);
     }
@@ -125,7 +122,6 @@ public class SortFragment extends BaseFragment implements AdapterView.OnItemClic
     }
 
     public interface RefreshDataListener{
-//        public void refreshData(String sortMsg);
         public void refreshData(int index);
     }
 
@@ -133,7 +129,7 @@ public class SortFragment extends BaseFragment implements AdapterView.OnItemClic
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.rl_menu_close:
-                ((SearchActivity)getActivity()).toggleSortMenu();
+                ((SearchFragment)getParentFragment()).toggleSortMenu();
                 break;
             default:
                 break;

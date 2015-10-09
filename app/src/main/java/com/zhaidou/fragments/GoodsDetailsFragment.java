@@ -481,7 +481,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     }
                     break;
                 case R.id.goodsTop:
-                    scrollView.scrollTo(0, 0);
+                    scrollView.fullScroll(ScrollView.FOCUS_UP);
                     topBtn.setVisibility(View.GONE);
                     break;
                 case R.id.share_iv:

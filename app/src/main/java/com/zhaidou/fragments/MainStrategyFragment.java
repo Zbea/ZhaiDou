@@ -44,7 +44,10 @@ import java.util.List;
 import java.util.WeakHashMap;
 
 
-public class StrategyFragment extends BaseFragment
+/**
+ * 美丽家
+ */
+public class MainStrategyFragment extends BaseFragment
 {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -123,7 +126,7 @@ public class StrategyFragment extends BaseFragment
         }
     };
 
-    public StrategyFragment()
+    public MainStrategyFragment()
     {
     }
 

@@ -45,7 +45,6 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomeCompetitionActivity;
 import com.zhaidou.activities.ItemDetailActivity;
-import com.zhaidou.activities.SearchActivity;
 import com.zhaidou.adapter.AdViewAdpater;
 import com.zhaidou.adapter.GoodsImageAdapter;
 import com.zhaidou.adapter.HomeListAdapter;
@@ -71,7 +70,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-public class HomeFragment extends BaseFragment implements
+public class MainHomeFragment extends BaseFragment implements
         HeaderLayout.onLeftImageButtonClickListener,
         HeaderLayout.onRightImageButtonClickListener,
         HomeCategoryFragment.CategorySelectedListener,
@@ -291,8 +290,8 @@ public class HomeFragment extends BaseFragment implements
 
     private OnFragmentInteractionListener mListener;
 
-    public static HomeFragment newInstance(String url, String type) {
-        HomeFragment fragment = new HomeFragment();
+    public static MainHomeFragment newInstance(String url, String type) {
+        MainHomeFragment fragment = new MainHomeFragment();
         Bundle args = new Bundle();
         args.putString(URL, url);
         args.putString(TYPE, type);
@@ -300,7 +299,7 @@ public class HomeFragment extends BaseFragment implements
         return fragment;
     }
 
-    public HomeFragment() {
+    public MainHomeFragment() {
     }
 
     @Override
@@ -461,11 +460,12 @@ public class HomeFragment extends BaseFragment implements
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_search:
-                startActivity(new Intent(getActivity(), SearchActivity.class));
+                SearchFragment searchFragment = SearchFragment.newInstance("", "");
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
+//                startActivity(new Intent(getActivity(), SearchActivity.class));
                 break;
             case R.id.ll_category_view:
                 toggleMenu();
-//                ((MainActivity)getActivity()).navigationToFragment(CommentFragment.newInstance("",""));
                 break;
             case R.id.ll_lottery:
                 Intent detailIntent = new Intent(getActivity(), HomeCompetitionActivity.class);

@@ -48,8 +48,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-
-public class SpecialFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<ListView>{
+/**
+ * 文章列表（最实用）
+ */
+public class HomeArticleListFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<ListView>{
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_CATEGORY = "category";
 
@@ -92,21 +94,22 @@ public class SpecialFragment extends BaseFragment implements PullToRefreshBase.O
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             mHomeAdapter.notifyDataSetChanged();
+            listView.onRefreshComplete();
             if (mDialog!=null)
             {
                 mDialog.dismiss();
             }
         }
     };
-    public static SpecialFragment newInstance(String param1, Category category) {
-        SpecialFragment fragment = new SpecialFragment();
+    public static HomeArticleListFragment newInstance(String param1, Category category) {
+        HomeArticleListFragment fragment = new HomeArticleListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putSerializable(ARG_CATEGORY,category);
         fragment.setArguments(args);
         return fragment;
     }
-    public SpecialFragment() {
+    public HomeArticleListFragment() {
     }
 
     @Override
@@ -284,8 +287,6 @@ public class SpecialFragment extends BaseFragment implements PullToRefreshBase.O
         String label = DateUtils.formatDateTime(getActivity(), System.currentTimeMillis(),
                 DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
         refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
-        Log.i("onPullDownToRefresh--->", "onPullDownToRefresh");
-//        articleList.clear();
         FetchData(currentPage = 1, mCategory);
         listView.setMode(PullToRefreshBase.Mode.BOTH);
     }
@@ -295,7 +296,7 @@ public class SpecialFragment extends BaseFragment implements PullToRefreshBase.O
         if (count!=-1&&mHomeAdapter.getCount()==count){
             Toast.makeText(getActivity(),"已经加载完毕",Toast.LENGTH_SHORT).show();
             listView.onRefreshComplete();
-            listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+            listView.setMode(PullToRefreshBase.Mode.BOTH);
             return;
         }
         FetchData(++currentPage, mCategory);

@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -84,7 +85,7 @@ public class ShopOrderOkFragment extends BaseFragment
     private TypeFaceTextView backBtn, titleTv;
     private Button okBtn;
     private LinearLayout orderAddressInfoLine, orderAddressNullLine, orderAddressEditLine;
-    private LinearLayout orderGoodsListLine;
+    private LinearLayout orderGoodsListLine,orderVerifyLine;
     private TypeFaceEditText bzInfo;
     private TextView moneyTv, moneyYfTv, moneyTotalTv;
     private TextView addressNameTv, addressPhoneTv, addressinfoTv,noFreeTv;
@@ -98,6 +99,7 @@ public class ShopOrderOkFragment extends BaseFragment
     private double moneyYF = 0;
     private double totalMoney = 0;
 
+    private ScrollView mScrollView;
     private LinearLayout verifyView;
     private CustomEditText mCodeView,mPhoneView;
     private TextView mGetCode;
@@ -111,7 +113,7 @@ public class ShopOrderOkFragment extends BaseFragment
     private boolean isOSale;//是否含有零元特卖
     private boolean isljOsale;//是否是来自立即购买的零元特卖
     private boolean isNoFree;//是否不免邮，当只有一个商品且为零元特卖时为真
-    private boolean isVerify;//帐号是否需要验证
+    private boolean isVerify=true;//帐号是否需要验证
 
     private Address address;
     private CreatCartDB creatCartDB;
@@ -268,6 +270,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     //当需要验证手机号码时候，需要先判断
                     if (isVerify)
                     {
+                        mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
                         String code = mCodeView.getText().toString();
                         String phone = mPhoneView.getText().toString();
                         if (TextUtils.isEmpty(phone)) {
@@ -281,7 +284,6 @@ public class ShopOrderOkFragment extends BaseFragment
                         if (ToolUtils.isPhoneOk(phone))
                         {
                             mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "提交中");
-
                         }
                         else
                         {
@@ -462,6 +464,8 @@ public class ShopOrderOkFragment extends BaseFragment
         mPhoneView=(CustomEditText)mView.findViewById(R.id.tv_phone);
         mGetCode=(TextView)mView.findViewById(R.id.bt_getCode);
         mGetCode.setOnClickListener(onClickListener);
+
+        mScrollView=(ScrollView)mView.findViewById(R.id.scrollView);
 
         token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);

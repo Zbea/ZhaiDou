@@ -35,6 +35,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 首页筛选
+ */
 public class HomeCategoryFragment extends BaseFragment implements  View.OnClickListener{
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -194,7 +197,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.ll_category_close:
-                ((HomeFragment)getParentFragment()).toggleMenu();
+                ((MainHomeFragment)getParentFragment()).toggleMenu();
                 break;
             case R.id.categoryRefresh:
                 animation.start();

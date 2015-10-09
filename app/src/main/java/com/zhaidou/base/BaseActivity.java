@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
@@ -14,7 +13,7 @@ import android.widget.ImageButton;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.fragments.LoginFragment;
-import com.zhaidou.fragments.PersonalFragment;
+import com.zhaidou.fragments.MainPersonalFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.fragments.ShopPaymentFailFragment;
 import com.zhaidou.fragments.ShopPaymentSuccessFragment;
@@ -26,7 +25,7 @@ import com.zhaidou.utils.SharedPreferencesUtil;
  */
 public class BaseActivity extends FragmentActivity implements RegisterFragment.RegisterOrLoginListener {
     protected FrameLayout mChildContainer;
-    protected PersonalFragment persoanlFragment;
+    protected MainPersonalFragment persoanlFragment;
     protected ImageButton personalButton;
     protected Fragment currentFragment;
     protected WebView webView;
@@ -87,7 +86,7 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
         }
         if ("MainActivity".equalsIgnoreCase(((Object)this).getClass().getSimpleName())) {
             if (persoanlFragment == null) {
-                persoanlFragment = PersonalFragment.newInstance("", "");
+                persoanlFragment = MainPersonalFragment.newInstance("", "");
                 persoanlFragment.onAttach(this);
             } else {
                 persoanlFragment.refreshData(this);

@@ -45,7 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PersonalFragment extends BaseFragment implements View.OnClickListener, CollectFragment.CollectCountChangeListener,
+public class MainPersonalFragment extends BaseFragment implements View.OnClickListener, CollectFragment.CollectCountChangeListener,
         CollocationFragment.CollocationCountChangeListener, SettingFragment.ProfileListener {
 
     private static final String ARG_PARAM1 = "param1";
@@ -174,19 +174,19 @@ public class PersonalFragment extends BaseFragment implements View.OnClickListen
         }
     };
 
-    public static PersonalFragment personalFragment;
+    public static MainPersonalFragment mainPersonalFragment;
 
-    public static PersonalFragment newInstance(String param1, String context) {
-        if (personalFragment == null)
-            personalFragment = new PersonalFragment();
+    public static MainPersonalFragment newInstance(String param1, String context) {
+        if (mainPersonalFragment == null)
+            mainPersonalFragment = new MainPersonalFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putSerializable(ARG_CONTEXT, context);
-        personalFragment.setArguments(args);
-        return personalFragment;
+        mainPersonalFragment.setArguments(args);
+        return mainPersonalFragment;
     }
 
-    public PersonalFragment() {
+    public MainPersonalFragment() {
         // Required empty public constructor
     }
 

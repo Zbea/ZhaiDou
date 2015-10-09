@@ -10,6 +10,7 @@
     <color name="text_gary_color">#999999</color>
     <color name="text_normal_color">#666666</color>
     <color name="line_color">#f3f3f3</color>
+    <color name="line_bottom">#99CCCCCC</color>
     <color name="sale_color">#ff6262</color>
     <color name="green_color">#38C3BF</color>
     <color name="red">#ff6262</color>
@@ -61,5 +62,4 @@
 
     <!---->
     <color name="all_e">#EEEEEE</color>
-    <color name="line_bottom">#99CCCCCC</color>
 </resources>
