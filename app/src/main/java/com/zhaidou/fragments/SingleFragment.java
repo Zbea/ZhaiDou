@@ -36,8 +36,8 @@ import com.zhaidou.adapter.ProductAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.dialog.CustomLoadingResultDialog;
 import com.zhaidou.model.Product;
+import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
@@ -90,6 +90,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
 
     private WeakHashMap<Integer,View> mHashMap = new WeakHashMap<Integer, View>();
     private Dialog mDialog;
+    private DialogUtils mDialogUtils;
 
     private Handler handler = new Handler(){
         @Override
@@ -145,6 +146,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
     private void initView(View view)
     {
         isLogin=checkLogin();
+        mDialogUtils=new DialogUtils(mContext);
         tv_count=(TextView)view.findViewById(R.id.tv_count);
         tv_money=(TextView)view.findViewById(R.id.tv_money);
         gv_single=(PullToRefreshGridView)view.findViewById(R.id.gv_single);
@@ -396,18 +398,18 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
                     {
                         productAdapter.setmCheckPosition(Integer.valueOf(position),Integer.valueOf(position));
                         productAdapter.notifyDataSetChanged();
-                        CustomLoadingResultDialog.setLoadingDialog(mContext,true,"收藏成功");
+                        mDialogUtils.showCollectDialog(mContext,R.drawable.dialog_loading_success_icon,R.string.collect_success);
                     }
                     else
                     {
                         productAdapter.setmCheckPosition(Integer.valueOf(position),-1);
                         productAdapter.notifyDataSetChanged();
-                        CustomLoadingResultDialog.setLoadingDialog(mContext,true,"取消收藏");
+                        mDialogUtils.showCollectDialog(mContext,R.drawable.dialog_loading_success_icon,R.string.collect_cancel);
                     }
                 }
                 else
                 {
-                    CustomLoadingResultDialog.setLoadingDialog(mContext,false,"收藏失败");
+                    mDialogUtils.showCollectDialog(mContext,R.drawable.dialog_loading_success_icon,R.string.collect_fail);
                 }
             }catch (Exception e){
             }

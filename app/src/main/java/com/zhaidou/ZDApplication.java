@@ -12,9 +12,14 @@ import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.utils.StorageUtils;
+import com.zhaidou.utils.DeviceUtils;
 import com.zhaidou.utils.ToolUtils;
 
 import java.io.File;
+import java.util.Set;
+
+import cn.jpush.android.api.JPushInterface;
+import cn.jpush.android.api.TagAliasCallback;
 
 /**
  * Created by wangclark on 15/7/2.
@@ -30,6 +35,15 @@ public class ZDApplication extends Application{
     @Override
     public void onCreate() {
         super.onCreate();
+        JPushInterface.setDebugMode(true); 	// 设置开启日志,发布时请关闭日志
+        JPushInterface.init(this);     		// 初始化 JPush
+
+        JPushInterface.setAlias(getApplicationContext(), DeviceUtils.getImei(getApplicationContext()), new TagAliasCallback() {
+            @Override
+            public void gotResult(int i, String s, Set<String> strings) {
+                System.out.println("ZDApplication.gotResult------->" + s);
+            }
+        });
 
 //        CrashReport.initCrashReport(this, "900008762", false);
         initTypeFace();

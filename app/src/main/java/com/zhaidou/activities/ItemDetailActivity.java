@@ -244,6 +244,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         });
 
         url = getIntent().getStringExtra("url");
+        System.out.println("ItemDetailActivity.onCreate-------->"+url);
 
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("ZhaidouVesion", getResources().getString(R.string.app_versionName));
@@ -261,7 +262,6 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         }
         if (!TextUtils.isEmpty(coverUrl)) {
             ToolUtils.setImageCacheUrl(coverUrl, mHeaderView);
-//            ToolUtils.setImageCacheUrl("drawable://"+R.drawable.icon_item_details_shadow,iv_shadow);
             mTitleView.setVisibility(View.GONE);
             mHeaderText.setText(title);
             imageView.setVisibility(View.VISIBLE);

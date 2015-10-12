@@ -141,6 +141,7 @@
     
     <!--dialog标题-->
     <string name="dialog_hint_collect">是否确认取消收藏?</string>
+    <string name="dialog_hint_delete">是否确认删除?</string>
     
     <!--8分钟-->
     <integer name="timer_countdown">900000</integer>
@@ -149,5 +150,10 @@
 
     <!--标题栏，标题-->
     <string name="title_comment_list">评论</string>
+
+    <!--收藏-->
+    <string name="collect_success">收藏成功</string>
+    <string name="collect_fail">收藏失败</string>
+    <string name="collect_cancel">取消收藏</string>
 
 </resources>

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -61,14 +62,14 @@ public class DialogUtils {
         dialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         dialog.show();
     }
+
     /**
-    *
-    * Author Scoield
-    * Created at 15/9/23 11:44
-    * Description:默认加载对话框,不带提示信息
-    * FIXME
-    */
-    public Dialog showLoadingDialog(){
+     * Author Scoield
+     * Created at 15/9/23 11:44
+     * Description:默认加载对话框,不带提示信息
+     * FIXME
+     */
+    public Dialog showLoadingDialog() {
         final View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_loading, null);
         TextView textView = (TextView) view.findViewById(R.id.loading_tv);
         textView.setText("");
@@ -79,15 +80,16 @@ public class DialogUtils {
         mDialog.show();
         return mDialog;
     }
+
     /**
-     *
      * Author Scoield
      * Created at 15/9/23 11:44
      * Description:默认加载对话框,带提示信息
+     *
      * @param msg 提示信息
-     * FIXME
+     *            FIXME
      */
-    public Dialog showLoadingDialog(String msg){
+    public Dialog showLoadingDialog(String msg) {
         final View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_loading, null);
         TextView textView = (TextView) view.findViewById(R.id.loading_tv);
         textView.setText(msg);
@@ -98,17 +100,18 @@ public class DialogUtils {
         mDialog.show();
         return mDialog;
     }
+
     /**
-     *
      * Author Scoield
      * Created at 15/9/23 11:44
      * Description:默认加载对话框,带提示信息
-     * @param msg 提示信息
-     * @param isNeedAnim  是否需要动画，TRUE需要
-     * FIXME
+     *
+     * @param msg        提示信息
+     * @param isNeedAnim 是否需要动画，TRUE需要
+     *                   FIXME
      */
 
-    public Dialog showLoadingDialog(String msg,boolean isNeedAnim){
+    public Dialog showLoadingDialog(String msg, boolean isNeedAnim) {
         final View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_loading, null);
         TextView textView = (TextView) view.findViewById(R.id.loading_tv);
         textView.setText(msg);
@@ -125,6 +128,23 @@ public class DialogUtils {
         }
         return mDialog;
     }
+
+    public Dialog showCollectDialog(Context mContext, int DrawableRes, int msgRes) {
+        View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_loading_result, null);
+        TextView textView = (TextView) view.findViewById(R.id.dialogTv);
+        textView.setText(mContext.getResources().getString(msgRes));
+
+        ImageView imageView = (ImageView) view.findViewById(R.id.dialogIv);
+        imageView.setImageResource(DrawableRes);
+        Dialog mDialog = new Dialog(mContext, R.style.custom_dialog);
+        mDialog.setCanceledOnTouchOutside(true);
+        mDialog.setCancelable(true);
+        mDialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mDialog.show();
+        return mDialog;
+    }
+
+    ;
 
     public interface PositiveListener {
         public void onPositive();

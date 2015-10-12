@@ -1,7 +1,6 @@
 package com.zhaidou.fragments;
 
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -31,24 +30,24 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.pulltorefresh.PullToRefreshBase;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.dialog.CustomShopCartDeleteDialog;
 import com.zhaidou.dialog.CustomToastDialog;
 import com.zhaidou.model.CartItem;
 import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;
+import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -98,6 +97,7 @@ public class ShopCartFragment extends BaseFragment
     private List<View> views=new ArrayList<View>();
     private CartItem mCartItem;
     private boolean isBuySuccess;
+    private DialogUtils mDialogUtil;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -309,6 +309,7 @@ public class ShopCartFragment extends BaseFragment
     {
         mRequestQueue = Volley.newRequestQueue(mContext);
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        mDialogUtil=new DialogUtils(mContext);
 
         backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(onClickListener);
@@ -575,7 +576,16 @@ public class ShopCartFragment extends BaseFragment
                     items.remove(cartItem);
                     itemsCheck.remove(cartItem);
                     boxs.remove(itemCheck);
-                    CustomShopCartDeleteDialog.setDelateDialog(mContext, cartItem, cartGoodsLine, childeView);
+                    mDialogUtil.showDialog(mContext.getResources().getString(R.string.dialog_hint_delete),new DialogUtils.PositiveListener() {
+                        @Override
+                        public void onPositive() {
+                            CreatCartTools.deleteByData(creatCartDB, cartItem);
+                            //发送广播
+                            Intent intent=new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
+                            mContext.sendBroadcast(intent);
+                            cartGoodsLine.removeView(childeView);
+                        }
+                    },null);
 
                 }
             });

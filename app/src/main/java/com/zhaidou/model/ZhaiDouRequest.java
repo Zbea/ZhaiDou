@@ -1,6 +1,4 @@
-package com.zhaidou.model;/**
- * Created by wangclark on 15/9/9.
- */
+package com.zhaidou.model;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
