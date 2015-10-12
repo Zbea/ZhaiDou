@@ -2,10 +2,8 @@ package com.zhaidou.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -55,6 +53,7 @@ import com.zhaidou.model.Category;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.SwitchImage;
 import com.zhaidou.utils.NetworkUtils;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.HeaderLayout;
 import com.zhaidou.view.ListViewForScrollView;
@@ -150,18 +149,6 @@ public class MainHomeFragment extends BaseFragment implements
     /* Log cat */
     public static final String ERROR_CAT = "ERROR";
     public static final String DEBUG_CAT = "DEBUG";
-
-
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String tag = intent.getAction();
-            if (tag.equals(ZhaiDou.IntentRefreshListTag)) {
-                refresh();
-            }
-
-        }
-    };
 
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
@@ -310,20 +297,12 @@ public class MainHomeFragment extends BaseFragment implements
         }
     }
 
-    /**
-     * 刷新mAdapterList
-     */
-    public void refresh() {
-        mListAdapter.notifyDataSetChanged();
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (view == null) {
             view = inflater.inflate(R.layout.fragment_home, container, false);
             mContext = getActivity();
-            initBroadcastReceiver();
             WindowManager wm = ((Activity) mContext).getWindowManager();
             screenWidth = wm.getDefaultDisplay().getWidth();
 
@@ -410,15 +389,6 @@ public class MainHomeFragment extends BaseFragment implements
             nullView.setVisibility(View.GONE);
         }
 
-    }
-
-    /**
-     * 广播注册
-     */
-    private void initBroadcastReceiver() {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ZhaiDou.IntentRefreshListTag);
-        mContext.registerReceiver(broadcastReceiver, intentFilter);
     }
 
     @Override
@@ -713,6 +683,10 @@ public class MainHomeFragment extends BaseFragment implements
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
         Article article = articleList.get(position);
         Log.i("id----->", article.getId() + "");
+        if ("true".equalsIgnoreCase(article.getIs_new())){
+            SharedPreferencesUtil.saveData(mContext, "is_new_" + article.getId(), false);
+            view.findViewById(R.id.newsView).setVisibility(View.GONE);
+        }
         Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
         detailIntent.putExtra("article", article);
         detailIntent.putExtra("id", article.getId() + "");
@@ -796,7 +770,6 @@ public class MainHomeFragment extends BaseFragment implements
     @Override
     public void onDestroy() {
         isStop = false;
-        mContext.unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 

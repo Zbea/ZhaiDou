@@ -27,7 +27,6 @@ import android.widget.Toast;
 import com.alibaba.sdk.android.callback.CallbackContext;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
-import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.RegisterFragment;
@@ -89,20 +88,6 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
         from = getIntent().getStringExtra("from");
         article = (Article) getIntent().getSerializableExtra("article");
-        if (article != null) {
-            is_id = String.valueOf(article.getId());
-            is_new = article.getIs_new();
-
-            if (is_new.equals("true")) {
-                SharedPreferences sharedPreferences = getSharedPreferences(is_id, 0);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean("is_new", true);
-                editor.commit();
-                Intent intent = new Intent(ZhaiDou.IntentRefreshListTag);
-                sendBroadcast(intent);
-            }
-
-        }
 
         mSharedPreferences = getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         userId = mSharedPreferences.getInt("userId", -1);
@@ -244,8 +229,6 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         });
 
         url = getIntent().getStringExtra("url");
-        System.out.println("ItemDetailActivity.onCreate-------->"+url);
-
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("ZhaidouVesion", getResources().getString(R.string.app_versionName));
         headers.put("SECAuthorization",token);

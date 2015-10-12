@@ -37,6 +37,7 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
 import com.zhaidou.model.Category;
 import com.zhaidou.utils.NetworkUtils;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONArray;
@@ -156,6 +157,10 @@ public class HomeArticleListFragment extends BaseFragment implements PullToRefre
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 Article article=(Article)values;
+                if ("true".equalsIgnoreCase(article.getIs_new())){
+                    SharedPreferencesUtil.saveData(mContext,"is_new_"+article.getId(),false);
+                    parentV.findViewById(R.id.newsView).setVisibility(View.GONE);
+                }
                 Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
                 detailIntent.putExtra("article", article);
                 detailIntent.putExtra("id", article.getId() + "");
@@ -265,7 +270,7 @@ public class HomeArticleListFragment extends BaseFragment implements PullToRefre
             SharedPreferences editor = context.getSharedPreferences(String.valueOf(article.getId()), 0);
             if (article.getIs_new().equals("true"))
             {
-                if (editor.getBoolean("is_new", false))
+                if (!(Boolean)SharedPreferencesUtil.getData(mContext,"is_new_"+article.getId(),true))
                 {
                     newView.setVisibility(View.GONE);
                 } else

@@ -129,6 +129,14 @@ public class DialogUtils {
         return mDialog;
     }
 
+    /**
+    *
+    * Author Scoield
+    * Created at 15/10/12 15:19
+    * Description:收藏成功,收藏失败,取消收藏对话框
+    * param: DrawableRes 图片资源id
+    * param: msgRes 文字信息资源id
+    */
     public Dialog showCollectDialog(Context mContext, int DrawableRes, int msgRes) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_loading_result, null);
         TextView textView = (TextView) view.findViewById(R.id.dialogTv);
@@ -143,8 +151,6 @@ public class DialogUtils {
         mDialog.show();
         return mDialog;
     }
-
-    ;
 
     public interface PositiveListener {
         public void onPositive();
