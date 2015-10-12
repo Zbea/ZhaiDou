@@ -28,10 +28,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.CategoryActivity;
-import com.zhaidou.activities.SearchActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -51,7 +51,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-public class CategoryFragment1 extends BaseFragment{
+/**
+ * 全类别
+ */
+public class MainCategoryFragment extends BaseFragment{
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private long lastClickTime = 0L;
@@ -86,15 +89,15 @@ public class CategoryFragment1 extends BaseFragment{
         }
     };
 
-    public static CategoryFragment1 newInstance(String param1, String param2) {
-        CategoryFragment1 fragment = new CategoryFragment1();
+    public static MainCategoryFragment newInstance(String param1, String param2) {
+        MainCategoryFragment fragment = new MainCategoryFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
-    public CategoryFragment1() {
+    public MainCategoryFragment() {
     }
 
     @Override
@@ -238,7 +241,9 @@ public class CategoryFragment1 extends BaseFragment{
         },new Response.ErrorListener(){
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
+                if (mDialog!=null)
+                mDialog.dismiss();
+                ToolUtils.setToast(mContext,"加载失败");
             }
         }){
             @Override
@@ -383,8 +388,9 @@ public class CategoryFragment1 extends BaseFragment{
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.iv_search:
-                Log.i("iv_search---->","iv_search");
-                startActivity(new Intent(getActivity(),SearchActivity.class));
+                SearchFragment searchFragment = SearchFragment.newInstance("", "");
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
+//                startActivity(new Intent(getActivity(),SearchActivity.class));
                 break;
         }
     }

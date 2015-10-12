@@ -43,7 +43,10 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 
-public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<ListView>{
+/**
+ * 搜索攻略（文章列表）
+ */
+public class SearchArticleListFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<ListView>{
 
 
     private static final String ARG_PARAM1 = "param1";
@@ -87,15 +90,15 @@ public class StrategyFragment1 extends BaseFragment implements PullToRefreshBase
         }
     };
 
-    public static StrategyFragment1 newInstance(String param1, String param2) {
-        StrategyFragment1 fragment = new StrategyFragment1();
+    public static SearchArticleListFragment newInstance(String param1, String param2) {
+        SearchArticleListFragment fragment = new SearchArticleListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
-    public StrategyFragment1() {
+    public SearchArticleListFragment() {
     }
 
     @Override

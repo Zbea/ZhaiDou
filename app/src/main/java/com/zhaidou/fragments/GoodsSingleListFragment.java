@@ -59,7 +59,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-public class SingleFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<GridView>{
+public class GoodsSingleListFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<GridView>{
     private static final String ARG_PARAM1 = "categoryId";
     private static final String ARG_FROM = "from";
     private static final String ID = "id";
@@ -105,15 +105,15 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
         }
     };
 
-    public static SingleFragment newInstance(String categoryId, String from) {
-        SingleFragment fragment = new SingleFragment();
+    public static GoodsSingleListFragment newInstance(String categoryId, String from) {
+        GoodsSingleListFragment fragment = new GoodsSingleListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, categoryId);
         args.putString(ARG_FROM, from);
         fragment.setArguments(args);
         return fragment;
     }
-    public SingleFragment() {
+    public GoodsSingleListFragment() {
     }
 
     @Override
@@ -216,7 +216,7 @@ public class SingleFragment extends BaseFragment implements PullToRefreshBase.On
      */
     private void setStartLoading()
     {
-        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
+        mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"loading");
     }
 
     /**

@@ -14,8 +14,8 @@ import android.widget.TextView;
 import com.umeng.analytics.MobclickAgent;
 import com.viewpagerindicator.TabPageIndicator;
 import com.zhaidou.R;
-import com.zhaidou.fragments.SingleFragment;
-import com.zhaidou.fragments.StrategyFragment1;
+import com.zhaidou.fragments.GoodsSingleListFragment;
+import com.zhaidou.fragments.SearchArticleListFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +26,8 @@ public class CategoryActivity extends FragmentActivity {
     private TabPageIndicator mIndicator;
     private ViewPager mViewPager;
     private List<Fragment> mFragments;
-    private SingleFragment mSingleFragment;
-    private StrategyFragment1 mStrategyFragment;
+    private GoodsSingleListFragment mGoodsSingleListFragment;
+    private SearchArticleListFragment mStrategyFragment;
     private CategoryFragmentAdapter mFragmentAdapter;
 
     private int categoryId;
@@ -59,9 +59,9 @@ public class CategoryActivity extends FragmentActivity {
         mIndicator.setViewPager(mViewPager);
 
         if (mFragments.size()<2){
-            mSingleFragment=SingleFragment.newInstance(categoryId+"","category");
+            mGoodsSingleListFragment = GoodsSingleListFragment.newInstance(categoryId + "", "category");
 //            mStrategyFragment=StrategyFragment1.newInstance(categoryId+"","category");
-            mFragments.add(mSingleFragment);
+            mFragments.add(mGoodsSingleListFragment);
 //            mFragments.add(mStrategyFragment);
         }
 

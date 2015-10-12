@@ -41,17 +41,17 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
-import com.zhaidou.fragments.CategoryFragment1;
+import com.zhaidou.fragments.MainCategoryFragment;
 import com.zhaidou.fragments.DiyFragment;
 import com.zhaidou.fragments.HomeCategoryFragment;
-import com.zhaidou.fragments.HomeFragment;
+import com.zhaidou.fragments.MainHomeFragment;
 import com.zhaidou.fragments.LoginFragment;
-import com.zhaidou.fragments.PersonalFragment;
+import com.zhaidou.fragments.MainPersonalFragment;
+import com.zhaidou.fragments.MainStrategyFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.fragments.ShopPaymentFailFragment;
 import com.zhaidou.fragments.ShopPaymentFragment;
 import com.zhaidou.fragments.ShopPaymentSuccessFragment;
-import com.zhaidou.fragments.StrategyFragment;
 import com.zhaidou.fragments.WebViewFragment;
 import com.zhaidou.model.Area;
 import com.zhaidou.model.CartItem;
@@ -79,7 +79,7 @@ import java.util.Map;
 /**
  */
 public class MainActivity extends BaseActivity implements DiyFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
-        HomeFragment.OnFragmentInteractionListener, CategoryFragment1.OnFragmentInteractionListener,
+        MainHomeFragment.OnFragmentInteractionListener, MainCategoryFragment.OnFragmentInteractionListener,
         RegisterFragment.RegisterOrLoginListener{
 
     private Fragment utilityFragment;
@@ -170,7 +170,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 case 0:
                     User user = (User) msg.obj;
                     if (persoanlFragment == null) {
-                        persoanlFragment = PersonalFragment.newInstance("", "");
+                        persoanlFragment = MainPersonalFragment.newInstance("", "");
                     } else {
                         persoanlFragment.refreshData(MainActivity.this);
                     }
@@ -334,7 +334,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         lastButton = homeButton;
 
         if (utilityFragment == null) {
-            utilityFragment = HomeFragment.newInstance(ZhaiDou.HOME_PAGE_URL, ZhaiDou.ListType.HOME.toString());
+            utilityFragment = MainHomeFragment.newInstance(ZhaiDou.HOME_PAGE_URL, ZhaiDou.ListType.HOME.toString());
         }
 
         currentFragment = utilityFragment;
@@ -360,7 +360,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 //                titleView.setText("专业家居美化方案");
 
                 if (beautyHomeFragment == null) {
-                    beautyHomeFragment = new StrategyFragment();
+                    beautyHomeFragment = new MainStrategyFragment();
                 }
 
                 selectFragment(currentFragment, beautyHomeFragment);
@@ -375,7 +375,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 //                titleView.setText("全类别");
 
                 if (categoryFragment == null) {
-                    categoryFragment = CategoryFragment1.newInstance("", "");
+                    categoryFragment = MainCategoryFragment.newInstance("", "");
                 }
 
 
@@ -408,7 +408,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     MainActivity.this.startActivityForResult(intent, 10000);
                 } else {
                     if (persoanlFragment == null) {
-                        persoanlFragment = PersonalFragment.newInstance("", "");
+                        persoanlFragment = MainPersonalFragment.newInstance("", "");
                     }
                     selectFragment(currentFragment, persoanlFragment);
                     setButton(view);
@@ -520,7 +520,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     public void logout(Fragment fragment) {
         popToStack(fragment);
         if (utilityFragment == null) {
-            utilityFragment = HomeFragment.newInstance(ZhaiDou.HOME_PAGE_URL, ZhaiDou.ListType.HOME.toString());
+            utilityFragment = MainHomeFragment.newInstance(ZhaiDou.HOME_PAGE_URL, ZhaiDou.ListType.HOME.toString());
         }
         selectFragment(currentFragment, utilityFragment);
         setButton(homeButton);
@@ -533,10 +533,10 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         List<Fragment> fragments = manager.getFragments();
         //当分类显示时候，返回先隐藏
         for (Fragment fragment : fragments) {
-            if (fragment instanceof HomeFragment) {
+            if (fragment instanceof MainHomeFragment) {
                 Fragment homeCategoryFragment = fragment.getChildFragmentManager().findFragmentByTag(HomeCategoryFragment.class.getSimpleName());
                 if (!homeCategoryFragment.isHidden()) {
-                    ((HomeFragment) fragment).getHomeCategory();
+                    ((MainHomeFragment) fragment).getHomeCategory();
                     fragment.getChildFragmentManager().beginTransaction().hide(homeCategoryFragment).commit();
                     return true;
                 }
@@ -593,7 +593,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     }
 
     public void toHomeFragment() {
-        if (currentFragment instanceof HomeFragment) {
+        if (currentFragment instanceof MainHomeFragment) {
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
             transaction.show(currentFragment).commit();
@@ -611,7 +611,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         FragmentManager manager = getSupportFragmentManager();
         List<Fragment> fragments = manager.getFragments();
         for (Fragment fragment : fragments) {
-            if (fragment instanceof HomeFragment || fragment instanceof PersonalFragment || fragment instanceof StrategyFragment || fragment instanceof CategoryFragment1 || fragment instanceof DiyFragment) {
+            if (fragment instanceof MainHomeFragment || fragment instanceof MainPersonalFragment || fragment instanceof MainStrategyFragment || fragment instanceof MainCategoryFragment || fragment instanceof DiyFragment) {
             } else {
                 manager.popBackStack();
                 manager.beginTransaction().remove(fragment).commit();

@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
@@ -80,8 +79,8 @@ public class PersonalMainFragment extends Fragment implements View.OnClickListen
 
         FragmentManager manager = getChildFragmentManager();
         FragmentTransaction transaction =manager.beginTransaction();
-        PersonalFragment personalFragment = PersonalFragment.newInstance("","");
-        transaction.add(R.id.fl_container,personalFragment,PersonalFragment.class.getSimpleName()).show(personalFragment).commit();
+        MainPersonalFragment mainPersonalFragment = MainPersonalFragment.newInstance("", "");
+        transaction.add(R.id.fl_container, mainPersonalFragment,MainPersonalFragment.class.getSimpleName()).show(mainPersonalFragment).commit();
 
         token=mSharedPreferences.getString("token", null);
         id=mSharedPreferences.getInt("userId",-1);

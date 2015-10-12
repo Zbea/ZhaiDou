@@ -31,9 +31,9 @@ import com.viewpagerindicator.TabPageIndicator;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.adapter.SearchAdapter;
-import com.zhaidou.fragments.SingleFragment;
-import com.zhaidou.fragments.SortFragment;
-import com.zhaidou.fragments.StrategyFragment1;
+import com.zhaidou.fragments.GoodsSingleListFragment;
+import com.zhaidou.fragments.SearchArticleListFragment;
+import com.zhaidou.fragments.SearchSortFragment;
 import com.zhaidou.utils.HtmlFetcher;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.view.AutoGridView;
@@ -48,7 +48,7 @@ import java.util.Set;
 
 
 public class SearchActivity extends FragmentActivity implements View.OnClickListener,AdapterView.OnItemClickListener,
-                              SortFragment.RefreshDataListener,AutoGridView.OnHistoryItemClickListener{
+                              SearchSortFragment.RefreshDataListener,AutoGridView.OnHistoryItemClickListener{
 
     private GridView gv_hot;
     private CustomEditText mEditText;
@@ -76,10 +76,10 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
     private List<String> mHistoryList=new ArrayList<String>();
     private int historyCount=0;
 
-    private SortFragment mSortFragment;
+    private SearchSortFragment mSearchSortFragment;
 
-    private SingleFragment mSingleFragment;
-    private StrategyFragment1 mStrategyFragment;
+    private GoodsSingleListFragment mGoodsSingleListFragment;
+    private SearchArticleListFragment mStrategyFragment;
 
     private boolean isHidenKeyBoard=false;
 
@@ -95,13 +95,13 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
                     String text = (String)msg.obj;
                     autoGridView.setHistoryList(mHistoryList);
                     if (mFragments.size()<2){
-                        mSingleFragment=SingleFragment.newInstance(text,text);
-                        mStrategyFragment=StrategyFragment1.newInstance(text, text);
-                        mFragments.add(mSingleFragment);
+                        mGoodsSingleListFragment = GoodsSingleListFragment.newInstance(text, text);
+                        mStrategyFragment= SearchArticleListFragment.newInstance(text, text);
+                        mFragments.add(mGoodsSingleListFragment);
                         mFragments.add(mStrategyFragment);
                     }else if (mFragments.size()==2){
-                        Log.i("mFragments.size()==2",mSingleFragment.toString());
-                        mSingleFragment.FetchData(text,sort,1);
+                        Log.i("mFragments.size()==2", mGoodsSingleListFragment.toString());
+                        mGoodsSingleListFragment.FetchData(text,sort,1);
                         mStrategyFragment.FetchData(text,sort,1);
                     }
 
@@ -126,11 +126,11 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
         setContentView(R.layout.activity_search);
         initView();
         getHotSearch();
-        if (mSortFragment==null)
-            mSortFragment=SortFragment.newInstance("",0);
-        mSortFragment.setRefreshDataListener(this);
-        getSupportFragmentManager().beginTransaction().add(R.id.rl_sort,mSortFragment,SortFragment.TAG)
-                .hide(mSortFragment).commit();
+        if (mSearchSortFragment ==null)
+            mSearchSortFragment = SearchSortFragment.newInstance("", 0);
+        mSearchSortFragment.setRefreshDataListener(this);
+        getSupportFragmentManager().beginTransaction().add(R.id.rl_sort, mSearchSortFragment, SearchSortFragment.TAG)
+                .hide(mSearchSortFragment).commit();
     }
 
     private void initView(){
@@ -333,11 +333,11 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
 
     public void toggleSortMenu(){
         mViewPager.setOnTouchListener(null);
-        if (mSortFragment.isHidden()){
-            mSortFragment.setData(mViewPager.getCurrentItem(),0);
-            getSupportFragmentManager().beginTransaction().show(mSortFragment).commit();
+        if (mSearchSortFragment.isHidden()){
+            mSearchSortFragment.setData(mViewPager.getCurrentItem(),0);
+            getSupportFragmentManager().beginTransaction().show(mSearchSortFragment).commit();
         }else {
-            getSupportFragmentManager().beginTransaction().hide(mSortFragment).commit();
+            getSupportFragmentManager().beginTransaction().hide(mSearchSortFragment).commit();
         }
     }
 
@@ -347,7 +347,7 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
         mViewPager.setFocusable(true);
         int page = mViewPager.getCurrentItem();
         if (page==0){
-            mSingleFragment.FetchData(keyWord,index,1);
+            mGoodsSingleListFragment.FetchData(keyWord,index,1);
         }else {
             mStrategyFragment.FetchData(keyWord,index,1);
         }
