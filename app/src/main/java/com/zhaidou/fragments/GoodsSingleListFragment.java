@@ -526,6 +526,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         gv_single.setMode(PullToRefreshBase.Mode.BOTH);
     }
 
+
     @Override
     public void onPullUpToRefresh(PullToRefreshBase<GridView> refreshView) {
         if (count!=-1&&productAdapter.getCount()==count){
