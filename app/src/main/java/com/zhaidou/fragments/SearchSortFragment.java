@@ -70,6 +70,7 @@ public class SearchSortFragment extends BaseFragment implements AdapterView.OnIt
         mListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         mListView.setOnItemClickListener(this);
 
+        checkedMap.put("goods",0);
         checkedMap.put("product",0);
         checkedMap.put("strategy",0);
 
@@ -98,9 +99,16 @@ public class SearchSortFragment extends BaseFragment implements AdapterView.OnIt
     public void setData(int page,int checked){
         this.checked=checked;
         if (page==0){
+            mPage="goods";
+            data=Arrays.asList(getResources().getStringArray(R.array.product_sort));
+        }
+        else if (page==1)
+        {
             mPage="product";
             data=Arrays.asList(getResources().getStringArray(R.array.product_sort));
-        }else {
+        }
+        else
+        {
             mPage="strategy";
             data=Arrays.asList(getResources().getStringArray(R.array.strategy_sort));
         }
@@ -109,11 +117,9 @@ public class SearchSortFragment extends BaseFragment implements AdapterView.OnIt
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        boolean isChecked = mListView.isItemChecked(i);
         checkedMap.put(mPage,i);
         mSortAdapter.notifyDataSetChanged();
         ((SearchFragment)getParentFragment()).toggleSortMenu();
-//        mRefreshDataListener.refreshData(data.get(i));
         mRefreshDataListener.refreshData(i);
     }
 

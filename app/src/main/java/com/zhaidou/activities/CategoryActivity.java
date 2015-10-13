@@ -59,7 +59,7 @@ public class CategoryActivity extends FragmentActivity {
         mIndicator.setViewPager(mViewPager);
 
         if (mFragments.size()<2){
-            mGoodsSingleListFragment = GoodsSingleListFragment.newInstance(categoryId + "", "category");
+            mGoodsSingleListFragment = GoodsSingleListFragment.newInstance(categoryId + "", "category",2);
 //            mStrategyFragment=StrategyFragment1.newInstance(categoryId+"","category");
             mFragments.add(mGoodsSingleListFragment);
 //            mFragments.add(mStrategyFragment);

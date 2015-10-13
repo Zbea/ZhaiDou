@@ -104,15 +104,15 @@ public class SearchFragment extends BaseFragment
                 case UPDATE_HISTORY:
                     String text = (String)msg.obj;
                     autoGridView.setHistoryList(mHistoryList);
-                    if (mFragments.size()<2){
-//                        mSpecialGoodsFragment= GoodsSingleListFragment.newInstance(text, text);
-                        mtaobaoGoodsFragment= GoodsSingleListFragment.newInstance(text, text);
+                    if (mFragments.size()<3){
+                        mSpecialGoodsFragment= GoodsSingleListFragment.newInstance(text, "goods",1);
+                        mtaobaoGoodsFragment= GoodsSingleListFragment.newInstance(text, text,2);
                         mStrategyFragment= SearchArticleListFragment.newInstance(text, text);
-//                        mFragments.add(mSpecialGoodsFragment);
+                        mFragments.add(mSpecialGoodsFragment);
                         mFragments.add(mtaobaoGoodsFragment);
                         mFragments.add(mStrategyFragment);
-                    }else if (mFragments.size()==2){
-                        Log.i("mFragments.size()==2", mtaobaoGoodsFragment.toString());
+                    }else if (mFragments.size()==3){
+                        mSpecialGoodsFragment.FetchData(text,sort,1);
                         mtaobaoGoodsFragment.FetchData(text,sort,1);
                         mStrategyFragment.FetchData(text,sort,1);
                     }
@@ -187,9 +187,16 @@ public class SearchFragment extends BaseFragment
             sort=index;
             mViewPager.setFocusable(true);
             int page = mViewPager.getCurrentItem();
-            if (page==0){
+            if (page==0)
+            {
+                mSpecialGoodsFragment.FetchData(keyWord,index,1);
+            }
+            else if (page==1)
+            {
                 mtaobaoGoodsFragment.FetchData(keyWord,index,1);
-            }else {
+            }
+            else
+            {
                 mStrategyFragment.FetchData(keyWord,index,1);
             }
         }
@@ -249,11 +256,11 @@ public class SearchFragment extends BaseFragment
         mSearchiv=(ImageView)mView.findViewById(R.id.iv_search);
         mDeleteView=(TextView)mView.findViewById(R.id.tv_delete);
         mSearchView=(TextView)mView.findViewById(R.id.tv_cancel);
-        mViewPager=(ViewPager)mView.findViewById(R.id.vp_search);
         mBackView=(LinearLayout)mView.findViewById(R.id.ll_back);
         mSortView=(ImageView)mView.findViewById(R.id.iv_sort);
         mSearchLayout=(LinearLayout)mView.findViewById(R.id.ll_history);
         indicator = (TabPageIndicator)mView.findViewById(R.id.indicator);
+        mViewPager=(ViewPager)mView.findViewById(R.id.vp_search);
         ll_viewpager=(LinearLayout)mView.findViewById(R.id.ll_viewpager);
         mSharedPreferences=mContext.getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
 
@@ -276,6 +283,22 @@ public class SearchFragment extends BaseFragment
         mSearchFragmentAdapter=new SearchFragmentAdapter(getChildFragmentManager());
         mViewPager.setAdapter(mSearchFragmentAdapter);
         indicator.setViewPager(mViewPager);
+        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener()
+        {
+            @Override
+            public void onPageScrolled(int i, float v, int i2)
+            {
+            }
+            @Override
+            public void onPageSelected(int i)
+            {
+                indicator.setCurrentItem(i);
+            }
+            @Override
+            public void onPageScrollStateChanged(int i)
+            {
+            }
+        });
 
         mSearchiv.setOnClickListener(onClickListener);
         mDeleteView.setOnClickListener(onClickListener);
@@ -316,14 +339,10 @@ public class SearchFragment extends BaseFragment
         mEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
             }
-
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
             }
-
             @Override
             public void afterTextChanged(Editable editable) {
                 mSortView.setVisibility(View.GONE);
@@ -379,6 +398,14 @@ public class SearchFragment extends BaseFragment
         }.start();
     }
 
+    /**
+     * 切换到淘宝页面
+     */
+    public void cutTaobaoGoods()
+    {
+        indicator.setCurrentItem(1);
+    }
+
     private class SearchFragmentAdapter extends FragmentPagerAdapter
     {
         public SearchFragmentAdapter(FragmentManager fragmentManager) {
@@ -397,6 +424,10 @@ public class SearchFragment extends BaseFragment
         {
             if (position == 0)
             {
+                return "特卖商城";
+            }
+            else if (position == 1)
+            {
                 return "单品";
             }
             else
@@ -408,7 +439,8 @@ public class SearchFragment extends BaseFragment
 
     public void toggleSortMenu(){
         mViewPager.setOnTouchListener(null);
-        if (mSearchSortFragment.isHidden()){
+        if (mSearchSortFragment.isHidden())
+        {
             mSearchSortFragment.setData(mViewPager.getCurrentItem(),0);
             getChildFragmentManager().beginTransaction().show(mSearchSortFragment).commit();
         }else {

@@ -95,7 +95,7 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
                     String text = (String)msg.obj;
                     autoGridView.setHistoryList(mHistoryList);
                     if (mFragments.size()<2){
-                        mGoodsSingleListFragment = GoodsSingleListFragment.newInstance(text, text);
+                        mGoodsSingleListFragment = GoodsSingleListFragment.newInstance(text, text,1);
                         mStrategyFragment= SearchArticleListFragment.newInstance(text, text);
                         mFragments.add(mGoodsSingleListFragment);
                         mFragments.add(mStrategyFragment);

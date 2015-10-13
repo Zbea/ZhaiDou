@@ -166,7 +166,8 @@ public class GoodsDetailsFragment extends BaseFragment
     private TextView mTimerView, imageNull;
     private ArrayList<String> listUrls = new ArrayList<String>();
 
-    private boolean isOSaleBuy;
+    private boolean isOSaleBuy;//是否购买过零元特卖
+    private boolean isBuy;//是否购买过普通特卖该商品规格
     private boolean isClick;
     private int mClick = -1;
 

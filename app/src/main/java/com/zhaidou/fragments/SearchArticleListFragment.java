@@ -211,7 +211,7 @@ public class SearchArticleListFragment extends BaseFragment implements PullToRef
                 return headers;
             }
         };
-        if (mRequestQueue==null) mRequestQueue=Volley.newRequestQueue(getActivity());
+        if (mRequestQueue==null) mRequestQueue=Volley.newRequestQueue(mContext);
         mRequestQueue.add(newMissRequest);
     }
 
