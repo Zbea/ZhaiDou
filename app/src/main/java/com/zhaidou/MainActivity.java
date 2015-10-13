@@ -1,7 +1,6 @@
 package com.zhaidou;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,13 +14,10 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -65,6 +61,8 @@ import com.zhaidou.model.User;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;
+import com.zhaidou.utils.DeviceUtils;
+import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -231,10 +229,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         }
         final String channel = appInfo.metaData.getString("UMENG_CHANNEL");
         Log.d("appInfo---", " msg == " + channel);
-        String imei = ((TelephonyManager) getSystemService(TELEPHONY_SERVICE))
-                .getDeviceId();
         Map<String, String> map = new HashMap<String, String>();
-        map.put("device_token[device_token]", imei);
+        map.put("device_token[device_token]", DeviceUtils.getImei(this));
         ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.URL_STATISTICS, map, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -250,6 +246,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> header = new HashMap<String, String>();
                 header.put("zd-client", channel);
+                header.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return header;
             }
         };
@@ -586,29 +583,13 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
      * @param shopPaymentFragment
      */
     private void BackPaymentDialog(final Fragment shopPaymentFragment) {
-        final Dialog dialog = new Dialog(this, R.style.custom_dialog);
-        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_custom_collect_hint, null);
-        TextView textView = (TextView) dialogView.findViewById(R.id.tv_msg);
-        textView.setText("确认要放弃支付?");
-        TextView cancelTv = (TextView) dialogView.findViewById(R.id.cancelTv);
-        cancelTv.setOnClickListener(new View.OnClickListener() {
+        DialogUtils mDialogUtils=new DialogUtils(this);
+        mDialogUtils.showDialog("确认要放弃支付?",new DialogUtils.PositiveListener() {
             @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
-        TextView okTv = (TextView) dialogView.findViewById(R.id.okTv);
-        okTv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
+            public void onPositive() {
                 popToStack(shopPaymentFragment);
             }
-        });
-        dialog.setCanceledOnTouchOutside(true);
-        dialog.setCancelable(true);
-        dialog.addContentView(dialogView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        dialog.show();
+        },null);
     }
 
     public void toHomeFragment() {
@@ -695,7 +676,14 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             @Override
             public void onErrorResponse(VolleyError volleyError) {
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         mRequestQueue.add(request);
     }
 

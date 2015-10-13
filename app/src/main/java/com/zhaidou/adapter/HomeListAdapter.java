@@ -2,7 +2,6 @@ package com.zhaidou.adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +11,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.zhaidou.R;
-import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Article;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import java.util.List;
@@ -87,7 +86,7 @@ public class HomeListAdapter extends BaseAdapter
         SharedPreferences editor = context.getSharedPreferences(String.valueOf(article.getId()), 0);
         if (article.getIs_new().equals("true"))
         {
-            if (editor.getBoolean("is_new", false))
+            if (!(Boolean) SharedPreferencesUtil.getData(context, "is_new_" + article.getId(), true))
             {
                 newView.setVisibility(View.GONE);
             } else

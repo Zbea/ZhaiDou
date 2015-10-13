@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +16,9 @@ import android.webkit.WebViewClient;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.view.CustomProgressWebview;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class WebViewActivity extends Activity implements View.OnClickListener{
 
@@ -82,7 +84,9 @@ public class WebViewActivity extends Activity implements View.OnClickListener{
 
         String url = getIntent().getStringExtra("url");
 
-        webView.loadUrl(url);
+        Map<String,String> headers=new HashMap<String, String>();
+        headers.put("ZhaidouVesion", getResources().getString(R.string.app_versionName));
+        webView.loadUrl(url,headers);
     }
 
 
