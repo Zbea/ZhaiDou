@@ -16,17 +16,51 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/title_beauty"/>
+            android:text="专业家居美化方案"/>
     </RelativeLayout>
 
-    <com.pulltorefresh.PullToRefreshListView
-        android:id="@+id/homeItemList"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:drawSelectorOnTop="false"
-        android:divider="@null"
-        android:scrollbars="none"
-        android:listSelector="@android:color/transparent"
-        android:dividerHeight="0dp"/>
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        >
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/living_room"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:background="@drawable/options_search_selector"
+            android:tag="1"
+            android:textSize="16sp"
+            android:textColor="@color/goods_options_text_color_selecter"
+            android:text="客厅方案"/>
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/entire_part"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:background="@drawable/options_search_selector"
+            android:tag="2"
+            android:textColor="@color/goods_options_text_color_selecter"
+            android:text="整体方案"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/strategy_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </android.support.v4.view.ViewPager>
+
+    </LinearLayout>
 
 </LinearLayout>

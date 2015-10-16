@@ -21,17 +21,14 @@ import com.android.volley.toolbox.Volley;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshListView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
-import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.utils.HtmlFetcher;
-import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -142,7 +139,7 @@ public class MainStrategyFragment extends BaseFragment
     {
         mContext = getActivity();
         if (mView == null) {
-            mView= inflater.inflate(R.layout.fragment_strategy, container, false);
+            mView= inflater.inflate(R.layout.fragment_main_strategy, container, false);
             initView();
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。

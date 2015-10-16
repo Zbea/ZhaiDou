@@ -14,6 +14,8 @@ import android.widget.ImageView;
 
 import com.umeng.analytics.MobclickAgent;
 
+import cn.jpush.android.api.JPushInterface;
+
 
 /**
  * Created by roy on 15/7/22.
@@ -131,12 +133,14 @@ public class WelcomePage extends Activity
     @Override
     protected void onResume() {
         super.onResume();
+        JPushInterface.onResume(this);
         MobclickAgent.onResume(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        JPushInterface.onPause(this);
         MobclickAgent.onPause(this);
     }
 }

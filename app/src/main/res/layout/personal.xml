@@ -173,6 +173,7 @@
                 android:drawablePadding="10dp"
                 android:gravity="center"
                 android:paddingLeft="15dp"
+                android:layout_centerVertical="true"
                 android:text="我的订单"
                 android:textColor="@color/text_main_color" />
 
@@ -181,6 +182,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:gravity="center_vertical"
+                android:layout_centerVertical="true"
                 android:orientation="horizontal">
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"

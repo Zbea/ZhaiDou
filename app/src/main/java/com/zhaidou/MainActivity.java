@@ -79,8 +79,7 @@ import java.util.Map;
 /**
  */
 public class MainActivity extends BaseActivity implements DiyFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
-        MainHomeFragment.OnFragmentInteractionListener, MainCategoryFragment.OnFragmentInteractionListener,
-        RegisterFragment.RegisterOrLoginListener{
+        MainHomeFragment.OnFragmentInteractionListener,MainCategoryFragment.OnFragmentInteractionListener,RegisterFragment.RegisterOrLoginListener{
 
     private Fragment utilityFragment;
     private Fragment beautyHomeFragment;
@@ -358,7 +357,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             public void onClick(View view) {
 
 //                titleView.setText("专业家居美化方案");
-
                 if (beautyHomeFragment == null) {
                     beautyHomeFragment = new MainStrategyFragment();
                 }
