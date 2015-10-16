@@ -6,10 +6,11 @@ package com.zhaidou;
 public class ZhaiDou {
 
     public static String HOME_PAGE_URL = "http://buy.zhaidou.com/?json=get_category_posts&slug=%E5%AE%B6%E9%A5%B0%E4%BC%98%E9%80%89&status=publish";
-//    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
-    public static String HOME_BASE_URL = "http://www.zhaidou.com/";
+    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
+    //    public static String HOME_BASE_URL = "http://www.zhaidou.com/";
 //    public static String HOME_BASE_URL = "http://192.168.199.171/";
     public static String TAG_BASE_URL = "http://buy.zhaidou.com/?tag=%s&json=1";
+
 
     public static String ApkUrl = HOME_BASE_URL+"api/v1/app_versions?os=2";
     //0元特卖页面：status=0,普通特卖页面：status=1,首页：status=2
@@ -50,10 +51,17 @@ public class ZhaiDou {
     public static String goodsCartEditGoodsUrl=HOME_BASE_URL+"special_mall/api/merchandises/";
     //地址管理接口
     public static String addressManageUrl=HOME_BASE_URL+"special_mall/api/receivers";
+
     //提交订单接口
     public static String orderCommitUrl=HOME_BASE_URL+"special_mall/api/orders";
     //查看当天是否已经购买了0元特卖商品
     public static String orderCheckOSaleUrl=HOME_BASE_URL+"special_mall/api/orders/order_items_0_status";
+    //查看当天是否已经购买了普通特卖商品
+    public static String orderCheckGoodsUrl=HOME_BASE_URL+"special_mall/api/merchandises/";
+    //确认订单获取短信接口
+    public static String orderGetSMS = HOME_BASE_URL+"api/v1/phone_vcodes/vilidate_phone?flag=1&phone=";
+    //确认订单提交短信接口
+    public static String orderCommitPhone = HOME_BASE_URL+"api/v1/phone_vcodes/vilidate_phone_code?phone=";
 
     //TAB分类
     public static String CATEGORY_ITEM_URL=HOME_BASE_URL+"article/api/item_categories";
@@ -75,7 +83,7 @@ public class ZhaiDou {
     //用户取消收藏
     public static String USER_DELETE_COLLECT_ITEM_URL=HOME_BASE_URL+"article/api/article_items/like";
     //用户豆搭
-    public static String USER_COLLOCATION_ITEM_URL = HOME_BASE_URL + "api/v1/users/";
+    public static String USER_COLLOCATION_ITEM_URL=HOME_BASE_URL+"api/v1/users/";
     //获取验证码
     public static String USER_REGISTER_VERIFY_CODE_URL=HOME_BASE_URL+"api/v1/phone_vcodes/vilidate_phone?phone=";
     //修改密码验证码验证
@@ -144,7 +152,7 @@ public class ZhaiDou {
     public static String ORDER_RECEIVER_URL=HOME_BASE_URL+"special_mall/api/receivers/";
     //省市区
     public static String ORDER_ADDRESS_URL=HOME_BASE_URL+"special_mall/api/sales/provider";
-// 淘宝订单
+    // 淘宝订单
     public static String URL_TAOBAO_ORDER="https://login.m.taobao.com/login.htm?tpl_redirect_url=https://h5.m.taobao.com/mlapp/olist.html";
 
 
@@ -200,6 +208,10 @@ public class ZhaiDou {
     /**
      * 商品详情零元特卖购买后刷新
      */
-    public static String IntentRefreshGoodsDetailsTag="com.zhaidou.home.refesh.goods.details";
+    public static String IntentRefreshOGoodsDetailsTag="com.zhaidou.home.refesh.goods.details";
+    /**
+     * 商品详情普通特卖购买后刷新
+     */
+    public static String IntentRefreshGoodsDetailsTag="com.zhaidou.home.refesh.o.goods.details";
 
 }
