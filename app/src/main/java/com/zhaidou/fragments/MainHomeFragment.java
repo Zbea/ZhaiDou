@@ -683,10 +683,7 @@ public class MainHomeFragment extends BaseFragment implements
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
         Article article = articleList.get(position);
         Log.i("id----->", article.getId() + "");
-        if ("true".equalsIgnoreCase(article.getIs_new())){
-            SharedPreferencesUtil.saveData(mContext, "is_new_" + article.getId(), false);
-            view.findViewById(R.id.newsView).setVisibility(View.GONE);
-        }
+
         Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
         detailIntent.putExtra("article", article);
         detailIntent.putExtra("id", article.getId() + "");
@@ -695,6 +692,10 @@ public class MainHomeFragment extends BaseFragment implements
         detailIntent.putExtra("cover_url", article.getImg_url());
         detailIntent.putExtra("url", ZhaiDou.ARTICLE_DETAIL_URL + article.getId());
         startActivityForResult(detailIntent, 100);
+        if ("true".equalsIgnoreCase(article.getIs_new())){
+            SharedPreferencesUtil.saveData(mContext, "is_new_" + article.getId(), false);
+            view.findViewById(R.id.newsView).setVisibility(View.GONE);
+        }
     }
 
     @Override

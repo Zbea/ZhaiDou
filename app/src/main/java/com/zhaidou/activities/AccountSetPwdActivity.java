@@ -14,6 +14,7 @@ import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -21,21 +22,20 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.User;
 import com.zhaidou.model.ZhaiDouRequest;
+import com.zhaidou.utils.MD5Util;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomEditText;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by roy on 15/9/16.
@@ -47,6 +47,9 @@ public class AccountSetPwdActivity extends FragmentActivity {
     private RequestQueue mRequestQueue;
     private SharedPreferences mSharedPreferences;
     private Dialog mDialog;
+    private String token;
+    private String vertifyCode;
+    private String phone;
 
     private Handler handler=new Handler(){
         @Override
@@ -90,7 +93,7 @@ public class AccountSetPwdActivity extends FragmentActivity {
                         mPwdView.setShakeAnimation();
                         return;
                     }
-                    doRegister();
+                    doReset(pwd);
                     break;
                 case R.id.back_btn:
                     finish();
@@ -106,6 +109,9 @@ public class AccountSetPwdActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.act_account_set_pwd_page);
+        token=getIntent().getStringExtra("token");
+        vertifyCode=getIntent().getStringExtra("code");
+        phone=getIntent().getStringExtra("phone");
 
         headTitle=(TextView)findViewById(R.id.title_tv);
         headTitle.setText(R.string.title_register_set);
@@ -119,42 +125,66 @@ public class AccountSetPwdActivity extends FragmentActivity {
 
     }
 
-    private void doRegister(){
+    private void doReset(String password){
 
-        mDialog= CustomLoadingDialog.setLoadingDialog(AccountSetPwdActivity.this, "注册中");
+        mDialog= CustomLoadingDialog.setLoadingDialog(AccountSetPwdActivity.this, "修改密码中");
+        String md5str= MD5Util.getMD5Encoding(phone+vertifyCode+"adminzhaidou888");
         Map<String, String> valueParams = new HashMap<String,String>();
-        ZhaiDouRequest request=new ZhaiDouRequest(Request.Method.POST,ZhaiDou.USER_REGISTER_URL,valueParams,new Response.Listener<JSONObject>() {
+
+        valueParams.put("SECAuthorization",token);
+        valueParams.put("password",password);
+        valueParams.put("md5str",md5str);
+
+        ZhaiDouRequest request=new ZhaiDouRequest(Request.Method.POST,ZhaiDou.USER_RESET_PSW_URL,valueParams,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog!=null)
                     mDialog.dismiss();
-                Object obj = jsonObject.opt("message");
-                if (obj!=null){
-                    JSONArray errMsg =  jsonObject.optJSONArray("message");
-                    Toast.makeText(AccountSetPwdActivity.this,errMsg.optString(0),Toast.LENGTH_LONG).show();
+
+                int status=jsonObject.optInt("status");
+                String message=jsonObject.optString("message");
+                if (status==201){
+                    Toast.makeText(AccountSetPwdActivity.this,message,Toast.LENGTH_SHORT).show();
                     return;
                 }
+                Toast.makeText(AccountSetPwdActivity.this,message,Toast.LENGTH_SHORT).show();
 
-                JSONObject userObj = jsonObject.optJSONObject("user");
-                int id = userObj.optInt("id");
-                String email = userObj.optString("email");
-                String token = userObj.optString("authentication_token");
-                String state =userObj.optString("state");
-                String avatar = userObj.optJSONObject("avatar").optJSONObject("mobile_icon").optString("url");
-                String nickname=userObj.optString("nick_name");
-                User user=new User(id,email,token,nickname,avatar);
-                Message message=new Message();
-                message.what=0;
-                message.obj=user;
-                handler.sendMessage(message);
+
+
+//                Object obj = jsonObject.opt("message");
+//                if (obj!=null){
+//                    JSONArray errMsg =  jsonObject.optJSONArray("message");
+//                    Toast.makeText(AccountSetPwdActivity.this,errMsg.optString(0),Toast.LENGTH_LONG).show();
+//                    return;
+//                }
+//
+//                JSONObject userObj = jsonObject.optJSONObject("user");
+//                int id = userObj.optInt("id");
+//                String email = userObj.optString("email");
+//                String token = userObj.optString("authentication_token");
+//                String state =userObj.optString("state");
+//                String avatar = userObj.optJSONObject("avatar").optJSONObject("mobile_icon").optString("url");
+//                String nickname=userObj.optString("nick_name");
+//                User user=new User(id,email,token,nickname,avatar);
+//                Message message=new Message();
+//                message.what=0;
+//                message.obj=user;
+//                handler.sendMessage(message);
             }
         },new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
 
             }
-        });
-        mRequestQueue.add(request);
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("SECAuthorization",token);
+                return headers;
+            }
+        };
+        ((ZDApplication)getApplication()).mRequestQueue.add(request);
     }
 
     @Override

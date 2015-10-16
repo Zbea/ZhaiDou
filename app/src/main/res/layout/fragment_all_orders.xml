@@ -82,7 +82,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="80dp"
                 android:layout_marginTop="50dp"
-                android:text="抱歉,暂无待付款订单"
+                android:text="抱歉,暂无订单"
                 android:textColor="@color/text_gary_color" />
 
         </LinearLayout>
