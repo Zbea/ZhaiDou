@@ -129,6 +129,8 @@ public class GoodsDetailsFragment extends BaseFragment
     private final int UPDATE_LJBUY_ISOSALEBUY = 5;//零元特卖立即购买时候判断是否已经购买郭
     private final int UPDATE_ISOSALEBUY = 6;//判断进来时候零元特卖是否已经购买了，购买了才让按钮不能点击
     private final int UPDATE_LOGIN_ISOSALEBUY = 7;//判断进来时候零元特卖是否已经购买了，购买了才让按钮不能点击
+    private final int UPDATE_LJ_ISBUY = 8;//判断立即购买时普通特卖是否购买过
+    private final int UPDATE_ADD_ISBUY = 9;//判断加入购物车时普通特卖是否购买过
 
     private List<CartItem> items = new ArrayList<CartItem>();
     private CreatCartDB creatCartDB;
@@ -166,7 +168,8 @@ public class GoodsDetailsFragment extends BaseFragment
     private TextView mTimerView, imageNull;
     private ArrayList<String> listUrls = new ArrayList<String>();
 
-    private boolean isOSaleBuy;
+    private boolean isOSaleBuy;//是否购买过零元特卖
+    private boolean isBuy;//是否购买过普通特卖该商品规格
     private boolean isClick;
     private int mClick = -1;
 
@@ -194,10 +197,19 @@ public class GoodsDetailsFragment extends BaseFragment
             {
                 initCartTips();
             }
+            if (action.equals(ZhaiDou.IntentRefreshOGoodsDetailsTag))
+            {
+                setAddOrBuyShow("不能重复购买",false);
+                setRefreshSpecification(0);
+            }
             if (action.equals(ZhaiDou.IntentRefreshGoodsDetailsTag))
             {
-                setAddOrBuyShow("不能重复购买");
-                FetchOSaleData(UPDATE_ISOSALEBUY);
+                setAddOrBuyShow("不能重复购买",false);
+                mSpecification.isBuy=true;
+                ToolUtils.setLog(""+mSpecification.num);
+                mSpecification.num=mSpecification.num-1;
+                ToolUtils.setLog(""+mSpecification.num);
+                setRefreshSpecification(1);
             }
 
         }
@@ -282,6 +294,7 @@ public class GoodsDetailsFragment extends BaseFragment
 
                     boolean isOver = true;
 
+                    if (detail.getSpecifications()!=null)
                     for (int i = 0; i < detail.getSpecifications().size(); i++)
                     {
                         if (detail.getSpecifications().get(i).num > 0)
@@ -294,19 +307,18 @@ public class GoodsDetailsFragment extends BaseFragment
                     {
                         if (isPublish)
                         {
-                            setAddOrBuyShow("此商品已下架");
+                            setAddOrBuyShow("此商品已下架",false);
                         } else
                         {
-                            setAddOrBuyShow("已卖光");
+                            setAddOrBuyShow("已卖光",false);
                         }
 
                     }
-//                    initImageData(detail.getImageUrl());
                     ToolUtils.setImageCacheUrl(detail.getImageUrl(), goodsImage, R.drawable.icon_loading_goods_details);
 
                     if (detail.getImgs() == null && detail.getSpecifications() == null && detail.getEnd_time() == null)
                     {
-                        setAddOrBuyShow("此商品已下架");
+                        setAddOrBuyShow("此商品已下架",false);
                     }
 
                     String end_date = detail.getEnd_time();
@@ -320,7 +332,7 @@ public class GoodsDetailsFragment extends BaseFragment
                         if (temp <= 0)
                         {
                             mTimerView.setText("已结束");
-                            setAddOrBuyShow("活动已结束");
+                            setAddOrBuyShow("活动已结束",false);
                         }
                         mTimer = new MyTimer(temp, 1000);
                         mTimer.start();
@@ -339,16 +351,15 @@ public class GoodsDetailsFragment extends BaseFragment
                     mTimerView.setText(timer);
                     break;
                 case UPDATE_UI_TIMER_FINISH:
-                    ToolUtils.setLog("temp:" + 1);
                     mTimerView.setText("已结束");
-                    setAddOrBuyShow("活动已结束");
+                    setAddOrBuyShow("活动已结束",false);
                     break;
                 case UPDATE_LJBUY_ISOSALEBUY:
                     if (mDialog != null)
                         mDialog.dismiss();
                     if (isOSaleBuy)
                     {
-                        setAddOrBuyShow("不能重复购买");
+                        setAddOrBuyShow("不能重复购买",false);
                     } else
                     {
                         for (int i = 0; i < items.size(); i++)
@@ -368,7 +379,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     loadingView.setVisibility(View.GONE);
                     if (isOSaleBuy)
                     {
-                        setAddOrBuyShow("不能重复购买");
+                        setAddOrBuyShow("不能重复购买",false);
                     }
                     break;
                 case UPDATE_CARTCAR_DATA:
@@ -376,27 +387,43 @@ public class GoodsDetailsFragment extends BaseFragment
                     mCartCount.setVisibility(num > 0 ? View.VISIBLE : View.GONE);
                     mCartCount.setText("" + num);
                     break;
+                case UPDATE_LJ_ISBUY:
+                    if (mDialog != null)
+                        mDialog.dismiss();
+                    if (isBuy)
+                    {
+                        setRefreshSpecification(2);
+                        setAddOrBuyShow("不能重复购买",false);
+                        ToolUtils.setToastLong(mContext,"抱歉,今天已经购买过该规格的商品,请明天再购买");
+                    }
+                    else
+                    {
+                        for (int i = 0; i < items.size(); i++)
+                        {
+                            if (items.get(i).sizeId==mSpecification.getId())
+                            {
+                                ljBuyOkDialog(items.get(i));
+                                return;
+                            }
+                        }
+                        buyGoods();
+                    }
+                    break;
+                case UPDATE_ADD_ISBUY:
+                    if (mDialog != null)
+                        mDialog.dismiss();
+                    if (isBuy)
+                    {
+                        setRefreshSpecification(2);
+                        setAddOrBuyShow("不能重复购买",false);
+                        ToolUtils.setToastLong(mContext,"抱歉,今天已经购买过该规格的商品,请明天再试");
+                    }
+                    else
+                    {
+                        addCartGoods();
+                    }
+                    break;
             }
-        }
-    };
-
-    private ViewPager.OnPageChangeListener onPageChangeListener = new ViewPager.OnPageChangeListener()
-    {
-        @Override
-        public void onPageScrolled(int i, float v, int i2)
-        {
-        }
-
-        @Override
-        public void onPageSelected(int i)
-        {
-            setImageBackground(i % adPics.size());
-        }
-
-        @Override
-        public void onPageScrollStateChanged(int i)
-        {
-
         }
     };
 
@@ -452,15 +479,14 @@ public class GoodsDetailsFragment extends BaseFragment
                         if (detail != null)
                             if (mSpecification != null)
                             {
+                                mDialog.show();
                                 if (flags == 1)//判断零元特卖是否已经购买郭
                                 {
-                                    mDialog.show();
                                     FetchOSaleData(UPDATE_LJBUY_ISOSALEBUY);
                                 } else
                                 {
-                                    buyGoods();
+                                    FetchGoodsData(UPDATE_LJ_ISBUY);
                                 }
-
                             } else
                             {
                                 scrollView.scrollTo(0, 405);
@@ -662,7 +688,7 @@ public class GoodsDetailsFragment extends BaseFragment
 
         if (isPublish)
         {
-            setAddOrBuyShow("此商品已下架");
+            setAddOrBuyShow("此商品已下架",false);
         }
 
         tv_comment = (TextView) mView.findViewById(R.id.tv_comment);
@@ -777,6 +803,12 @@ public class GoodsDetailsFragment extends BaseFragment
 
     }
 
+    /**
+     * 登录回调重写
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -784,7 +816,8 @@ public class GoodsDetailsFragment extends BaseFragment
         {
             if (flags==1)
             {
-                mDialog=CustomLoadingDialog.setLoadingDialog(mContext,"");
+                if (mDialog!=null)
+                mDialog.show();
                 FetchOSaleData(UPDATE_LOGIN_ISOSALEBUY);
             }
         }
@@ -815,13 +848,58 @@ public class GoodsDetailsFragment extends BaseFragment
      *
      * @param msg
      */
-    private void setAddOrBuyShow(String msg)
+    private void setAddOrBuyShow(String msg,boolean isShow)
     {
-        publishBtn.setVisibility(View.VISIBLE);
-        publishBtn.setText(msg);
-        ljBtn.setVisibility(View.GONE);
-        addCartBtn.setVisibility(View.GONE);
+        if (isShow)
+        {
+            publishBtn.setVisibility(View.GONE);
+            ljBtn.setVisibility(View.VISIBLE);
+            addCartBtn.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            publishBtn.setVisibility(View.VISIBLE);
+            publishBtn.setText(msg);
+            ljBtn.setVisibility(View.GONE);
+            addCartBtn.setVisibility(View.GONE);
+        }
     }
+
+    /**
+     * 刷新规格数据(0零元特卖1普通特卖购买成功后2立即购买请求是否已经购买)刷新规格数量
+     */
+    private void setRefreshSpecification(int flag)
+    {
+        for (int i = 0; i < specificationList.size(); i++)
+        {
+            if (flag==0)
+            {
+                specificationList.get(i).isBuy=true;
+            }
+            else if(flag==1)
+            {
+                if (specificationList.get(i).getId()==mSpecification.getId())
+                {
+                    specificationList.get(i).isBuy=true;
+                    specificationList.get(i).num=specificationList.get(i).num-1;
+                }
+            }
+            else
+            {
+                if (specificationList.get(i).getId()==mSpecification.getId())
+                {
+                    specificationList.get(i).isBuy=true;
+                    specificationList.get(i).num=mSpecification.num;
+                }
+            }
+        }
+        if (mSpecification.num<1)
+        {
+            mSpecification=null;
+        }
+        specificationAdapter.notifyDataSetChanged();
+    }
+
 
     public boolean checkLogin()
     {
@@ -839,9 +917,18 @@ public class GoodsDetailsFragment extends BaseFragment
         if (detail != null & specificationList.size() > 0)
         {
             mSpecification = specificationList.get(position);
-            mCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + mSpecification.price));
-            mOldPrice.setText("￥" + ToolUtils.isIntPrice("" + mSpecification.oldPrice));
-            setDiscount(mSpecification.price, mSpecification.oldPrice);
+            ToolUtils.setLog(""+mSpecification.num);
+            if (mSpecification.isBuy)
+            {
+                setAddOrBuyShow("不能重复购买",false);
+            }
+            else
+            {
+                setAddOrBuyShow("",true);
+                mCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + mSpecification.price));
+                mOldPrice.setText("￥" + ToolUtils.isIntPrice("" + mSpecification.oldPrice));
+                setDiscount(mSpecification.price, mSpecification.oldPrice);
+            }
         }
     }
 
@@ -915,6 +1002,7 @@ public class GoodsDetailsFragment extends BaseFragment
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshGoodsDetailsTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshOGoodsDetailsTag);
         mContext.registerReceiver(broadcastReceiver, intentFilter);
     }
 
@@ -952,7 +1040,6 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     private void getGoodsItems()
     {
-//        items=((MainActivity)mContext).getItems();
         items = CreatCartTools.selectByAll(creatCartDB, userId);
     }
 
@@ -1000,77 +1087,6 @@ public class GoodsDetailsFragment extends BaseFragment
     }
 
     /**
-     * * 设置头部相片
-     */
-    private void initImageData(List<String> urls)
-    {
-        viewGroupe.removeAllViews();
-        if (urls == null || urls.size() < 1)
-        {
-            if (listUrls != null && listUrls.size() > 0)
-            {
-                urls = listUrls;
-            }
-        }
-        if (CollectionUtils.isNotNull(urls))
-        {
-            if (urls.size() >= 4)
-            {
-                for (int i = 0; i < 4; i++)
-                {
-                    ImageView imageView = new ImageView(mContext);
-                    imageView.setImageResource(R.drawable.icon_loading_goods_details);
-                    imageView.setScaleType(ImageView.ScaleType.CENTER);
-                    ToolUtils.setImageCacheUrl(urls.get(i), imageView);
-                    adPics.add(imageView);
-                }
-            } else
-            {
-                for (String url : urls)
-                {
-                    ImageView imageView = new ImageView(mContext);
-                    imageView.setImageResource(R.drawable.icon_loading_goods_details);
-                    imageView.setScaleType(ImageView.ScaleType.CENTER);
-                    ToolUtils.setImageCacheUrl(url, imageView);
-                    adPics.add(imageView);
-                }
-            }
-            dots = new ImageView[adPics.size()];
-
-            for (int i = 0; i < adPics.size(); i++)
-            {
-                ImageView dot_iv = new ImageView(mContext);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                params.bottomMargin = 10;
-                if (i == 0)
-                {
-                    params.leftMargin = 0;
-                } else
-                {
-                    params.leftMargin = 20;
-                }
-
-                dot_iv.setLayoutParams(params);
-                dots[i] = dot_iv;
-                viewGroupe.addView(dot_iv);
-                if (i == 0)
-                {
-                    dots[i].setBackgroundResource(R.drawable.home_tips_foucs_icon);
-                } else
-                {
-                    dots[i].setBackgroundResource(R.drawable.home_tips_icon);
-                }
-            }
-            viewPager = (ViewPager) mView.findViewById(R.id.goods_adv_pager);
-            viewPager.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 678 / 720));
-            imageAdapter = new GoodsImageAdapter(mContext, adPics);
-            viewPager.setAdapter(imageAdapter);
-            viewPager.setOnPageChangeListener(onPageChangeListener);
-            viewPager.setCurrentItem(0);
-        }
-    }
-
-    /**
      * 添加商品
      */
     private void addGoods()
@@ -1081,14 +1097,14 @@ public class GoodsDetailsFragment extends BaseFragment
             {
                 if (isAdd())
                 {
-                    ToolUtils.setToastLong(mContext, "抱歉,已经添加了该商品");
+                    ToolUtils.setToastLong(mContext, "抱歉,已经添加过该商品");
                     return;
                 }
                 if (flags == 1)
                 {
                     if (isOSaleBuy)
                     {
-                        ToolUtils.setToastLong(mContext, "抱歉,您已经购买了零元特卖商品,今天不能再添加了");
+                        ToolUtils.setToastLong(mContext, "抱歉,您已经购买过零元特卖商品,今天不能再添加了");
                         return;
                     } else
                     {
@@ -1105,7 +1121,9 @@ public class GoodsDetailsFragment extends BaseFragment
 
                 } else
                 {
-                    addCartGoods();
+                    if (mDialog!=null)
+                        mDialog.show();
+                    FetchGoodsData(UPDATE_ADD_ISBUY);
                 }
             } else
             {
@@ -1162,6 +1180,9 @@ public class GoodsDetailsFragment extends BaseFragment
         return false;
     }
 
+    /**
+     * 加入到购物车
+     */
     private void addCartGoods()
     {
         if (detail != null)
@@ -1237,7 +1258,6 @@ public class GoodsDetailsFragment extends BaseFragment
             @Override
             public void onResponse(JSONObject jsonObject)
             {
-
                 if (jsonObject != null)
                 {
                     JSONObject merchandise = jsonObject.optJSONObject("merchandise");
@@ -1281,7 +1301,8 @@ public class GoodsDetailsFragment extends BaseFragment
                             double sizePrice = specificationObj.optDouble("price");
                             double sizeOldPrice = specificationObj.optDouble("cost_price");
 
-                            Specification specification = new Specification(specificationId, specificationTitle, num, sizePrice, sizeOldPrice);
+                            Specification specification = new Specification(specificationId, specificationTitle, sizePrice, sizeOldPrice);
+                            specification.num=num;
                             specificationList.add(specification);
                         }
                         detail.setSpecifications(specificationList);
@@ -1341,6 +1362,7 @@ public class GoodsDetailsFragment extends BaseFragment
     public void FetchOSaleData(final int i)
     {
         String url = ZhaiDou.orderCheckOSaleUrl;
+        ToolUtils.setLog(url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
@@ -1376,8 +1398,57 @@ public class GoodsDetailsFragment extends BaseFragment
                 }
                 else
                 {
-                   ToolUtils.setToastLong(mContext,"抱歉,加载失败");
+                   ToolUtils.setToastLong(mContext,R.string.loading_fail_txt);
                 }
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                headers.put("SECAuthorization", token);
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
+    }
+
+    /*
+    * 普通特卖限购请求
+    */
+    public void FetchGoodsData(final int i)
+    {
+        String url = ZhaiDou.orderCheckGoodsUrl+detail.getId()+"/merchandise_specification?specification_id="+mSpecification.getId();
+        ToolUtils.setLog(url);
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (jsonObject != null)
+                {
+                    JSONObject jsonObject1=jsonObject.optJSONObject("specification");
+                    mSpecification.isBuy=isBuy = jsonObject1.optBoolean("buy_flag");
+                    mSpecification.setNum(jsonObject1.optInt("count"));
+                }
+                if (i == UPDATE_LJ_ISBUY)
+                {
+                    handler.sendEmptyMessage(UPDATE_LJ_ISBUY);
+                } else if (i == UPDATE_ADD_ISBUY)
+                {
+                    handler.sendEmptyMessage(UPDATE_ADD_ISBUY);
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+                ToolUtils.setToastLong(mContext,R.string.loading_fail_txt);
             }
         })
         {

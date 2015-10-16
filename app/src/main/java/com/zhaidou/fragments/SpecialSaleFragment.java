@@ -22,6 +22,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
@@ -50,6 +51,7 @@ import com.zhaidou.model.User;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.CustomBannerView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -96,16 +98,10 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     private long currentTime;
     private Context mContext;
 
-    private ViewPager viewPager;
-    private LinearLayout tipsLine;
     private List<SwitchImage> banners;
-    private ImageView[] dots;
-    private List<View> adPics = new ArrayList<View>();
-    private AdViewAdpater adpaters;
-    private GoodsImageAdapter adapter;
-    private int currentItem = 5000;
-    boolean nowAction = false;
-    boolean isStop = true;
+    private CustomBannerView customBannerView;
+    private LinearLayout bannerLine;
+    private ScrollView scrollView;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -160,9 +156,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 case UPDATE_BANNER:
                     setAdView();
                     break;
-                case 1002:
-                    viewPager.setCurrentItem(currentItem);
-                    break;
             }
         }
     };
@@ -210,10 +203,12 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         if (rootView == null) {
             mContext = getActivity();
             initBroadcastReceiver();
+
             rootView = inflater.inflate(R.layout.fragment_special_sale, container, false);
 
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
-
+            bannerLine=(LinearLayout) rootView.findViewById(R.id.bannerView);
+            scrollView=(ScrollView) rootView.findViewById(R.id.scrollView);
             mGridView = (GridView) rootView.findViewById(R.id.gv_sale);
             mGridView.setEmptyView(mEmptyView);
             mTimerView = (TextView) rootView.findViewById(R.id.tv_count_time);
@@ -234,9 +229,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             myCartBtn = (ImageView) rootView.findViewById(R.id.myCartBtn);
             myCartBtn.setOnClickListener(this);
             cartTipsTv = (TextView) rootView.findViewById(R.id.myCartTipsTv);
-
-            viewPager = (ViewPager) rootView.findViewById(R.id.home_adv_pager);
-            viewPager.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 400 / 750));
 
             isLogin = checkLogin();
 
@@ -304,102 +296,25 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
      * 广告轮播设置
      */
     private void setAdView() {
-        tipsLine = (LinearLayout) rootView.findViewById(R.id.home_viewGroup);
-        tipsLine.removeAllViews();
-        if (banners.size() > 1) {
-            for (int i = 0; i < banners.size(); i++) {
-                final int tag = i;
-                final ImageView img = new ImageView(mContext);
-                img.setImageResource(R.drawable.icon_loading_item);
-                img.setScaleType(ImageView.ScaleType.FIT_XY);
-                img.setLayoutParams(new ViewGroup.LayoutParams(screenWidth, screenWidth * 300 / 750));
-                img.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-//                      r_type=0：0元特卖商城r_type=1：H5页面r_type=2：文章r_type=3：单品r_type=4：分类
-                        SwitchImage item = banners.get(tag);
-                        ToolUtils.setBannerGoto(item,mContext);
-                    }
-                });
-                ToolUtils.setImageCacheUrl(banners.get(i).imageUrl, img);
-                adPics.add(img);
-            }
-            dots = new ImageView[adPics.size()];
-            for (int i = 0; i < adPics.size(); i++) {
-                ImageView dot_iv = new ImageView(mContext);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                params.bottomMargin = 10;
-                if (i == 0) {
-                    params.leftMargin = 0;
-                } else {
-                    params.leftMargin = 20;
-                }
-                dot_iv.setLayoutParams(params);
-                dots[i] = dot_iv;
-                tipsLine.addView(dot_iv);
-                if (i == 0) {
-                    dots[i].setBackgroundResource(R.drawable.home_tips_foucs_icon);
-                } else {
-                    dots[i].setBackgroundResource(R.drawable.home_tips_icon);
-                }
-            }
-            if (adpaters == null) {
-                adpaters = new AdViewAdpater(mContext, adPics);
-                viewPager.setAdapter(adpaters);
-                viewPager.setOnPageChangeListener(new MyPageChangeListener());
-                viewPager.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        v.getParent().requestDisallowInterceptTouchEvent(true);
-                        return false;
-                    }
-                });
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (isStop) {
-                            try {
-                                Thread.sleep(5000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            if (!nowAction) {
-                                currentItem = currentItem + 1;
-                                mHandler.sendEmptyMessage(1002);
-                            }
-                        }
-                    }
-                }).start();
-            } else {
-                adpaters.notifyDataSetChanged();
-            }
 
-        } else if (banners.size() == 1) {
-            isStop = false;
-            for (int i = 0; i < banners.size(); i++) {
-                final int tag = i;
-                final ImageView img = new ImageView(mContext);
-                img.setImageResource(R.drawable.icon_loading_item);
-                img.setScaleType(ImageView.ScaleType.FIT_XY);
-                img.setLayoutParams(new ViewGroup.LayoutParams(screenWidth, screenWidth * 300 / 750));
-                img.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-//                      r_type=0：0元特卖商城r_type=1：H5页面r_type=2：文章r_type=3：单品r_type=4：分类
-                        SwitchImage item = banners.get(tag);
-                        ToolUtils.setBannerGoto(item,mContext);
-                    }
-                });
-                ToolUtils.setImageCacheUrl(banners.get(i).imageUrl, img, R.drawable.icon_loading_item);
-                adPics.add(img);
-            }
-            if (adapter == null) {
-                adapter = new GoodsImageAdapter(mContext, adPics);
-                viewPager.setAdapter(adapter);
-            } else {
-                adapter.notifyDataSetChanged();
-            }
-
+        if (customBannerView==null)
+        {
+            customBannerView=new CustomBannerView(mContext,banners,true);
+            customBannerView.setLayoutParams(screenWidth, screenWidth * 400 / 750);
+            customBannerView.setOnBannerClickListener(new CustomBannerView.OnBannerClickListener()
+            {
+                @Override
+                public void onClick(int postion)
+                {
+                    SwitchImage item = banners.get(postion);
+                    ToolUtils.setBannerGoto(item,mContext);
+                }
+            });
+            bannerLine.addView(customBannerView);
+        }
+        else
+        {
+            customBannerView.setImages(banners);
         }
     }
 
@@ -651,42 +566,5 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     public void onDestroy() {
         getActivity().unregisterReceiver(broadcastReceiver);
         super.onDestroy();
-    }
-
-    /**
-     * 广告轮播指示器
-     */
-    private class MyPageChangeListener implements ViewPager.OnPageChangeListener {
-        public void onPageSelected(int position) {
-            currentItem = position;
-            if (adPics.size() != 0) {
-                changeDotsBg(currentItem % adPics.size());
-            }
-        }
-
-        public void onPageScrollStateChanged(int arg0) {
-            if (arg0 == 0) {
-                nowAction = false;
-            }
-            if (arg0 == 1) {
-                nowAction = true;
-            }
-            if (arg0 == 2) {
-            }
-        }
-
-        public void onPageScrolled(int arg0, float arg1, int arg2) {
-            viewPager.getParent().requestDisallowInterceptTouchEvent(true);
-        }
-
-        private void changeDotsBg(int currentitem) {
-            for (int i = 0; i < dots.length; i++) {
-                if (currentitem == i) {
-                    dots[currentitem].setBackgroundResource(R.drawable.home_tips_foucs_icon);
-                } else {
-                    dots[i].setBackgroundResource(R.drawable.home_tips_icon);
-                }
-            }
-        }
     }
 }

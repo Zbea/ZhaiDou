@@ -400,7 +400,8 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                 shopSpecialItem = new ShopSpecialItem(id, title, null, time, startTime, endTime, overTime, null);
 
                 JSONArray jsonArray = jsonObject.optJSONArray("merchandises");
-                for (int i = 0; i < jsonArray.length(); i++) {
+                for (int i = 0; i < jsonArray.length(); i++)
+                {
                     obj = jsonArray.optJSONObject(i);
                     int Baseid = obj.optInt("id");
                     String Listtitle = obj.optString("title");
@@ -410,10 +411,11 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     String imageUrl = obj.optString("img");
                     int num = obj.optInt("total_count");
                     int totalCount = obj.optInt("total");
-                    int buyCount = totalCount-num;
-                    ShopTodayItem shopTodayItem = new ShopTodayItem(Baseid, Listtitle, designer, imageUrl, price, cost_price, num,totalCount,buyCount);
+                    int buyCount = totalCount - num;
+                    ShopTodayItem shopTodayItem = new ShopTodayItem(Baseid, Listtitle, designer, imageUrl, price, cost_price, num, totalCount, buyCount);
                     items.add(shopTodayItem);
                 }
+
                 introduceTv.setText(introduce);
                 loadingView.setVisibility(View.GONE);
                 Message message = new Message();

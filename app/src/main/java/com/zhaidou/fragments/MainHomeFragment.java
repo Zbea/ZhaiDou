@@ -55,6 +55,7 @@ import com.zhaidou.model.SwitchImage;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.CustomBannerView;
 import com.zhaidou.view.HeaderLayout;
 import com.zhaidou.view.ListViewForScrollView;
 import com.zhaidou.view.TypeFaceTextView;
@@ -118,16 +119,8 @@ public class MainHomeFragment extends BaseFragment implements
     private LinearLayout itemBtn;
 
     public HomeListAdapter mListAdapter;
-    private ViewPager viewPager;
-    private LinearLayout tipsLine;//轮播指示标志
     private List<SwitchImage> banners = new ArrayList<SwitchImage>();
     ;
-    private ImageView[] dots;
-    private List<View> adPics = new ArrayList<View>();
-    private AdViewAdpater adpaters;
-    private GoodsImageAdapter adapter;
-    private int currentItem = 5000;
-    boolean nowAction = false;
     boolean isStop = true;
 
     public HomeCategoryFragment homeCategoryFragment;
@@ -144,6 +137,8 @@ public class MainHomeFragment extends BaseFragment implements
     private LinearLayout loadingView, nullNetView, nullView;
     private TextView reloadBtn, reloadNetBtn;
     private RelativeLayout rl_homeGoodsImage;
+    private CustomBannerView customBannerView;
+    private LinearLayout linearLayout;
 
     private PullToRefreshScrollView mScrollView;
     /* Log cat */
@@ -169,7 +164,6 @@ public class MainHomeFragment extends BaseFragment implements
                 itemBtn.setVisibility(mCategory==null?View.VISIBLE:View.GONE);
 
             } else if (msg.what == UPDATE_BANNER) {
-                adPics.removeAll(adPics);
                 setAdView();
             } else if (msg.what == 1001) {
                 if (shopSpecialItem != null) {
@@ -186,93 +180,29 @@ public class MainHomeFragment extends BaseFragment implements
         }
     };
 
-    private Handler mhandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            viewPager.setCurrentItem(currentItem);
-        }
-    };
-
-
     /**
      * 广告轮播设置
      */
     private void setAdView() {
-        tipsLine.removeAllViews();
-        if (banners.size() > 0) {
-            for (int i = 0; i < banners.size(); i++) {
-                final int tag = i;
-                final ImageView img = new ImageView(mContext);
-                img.setBackgroundResource(R.drawable.icon_loading_item);
-                img.setScaleType(ImageView.ScaleType.FIT_XY);
-                img.setLayoutParams(new ViewGroup.LayoutParams(screenWidth, screenWidth * 300 / 750));
-                img.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-//              r_type=0：0元特卖商城r_type=1：H5页面r_type=2：文章r_type=3：单品r_type=4：分类
-                        SwitchImage item = banners.get(tag);
-                        ToolUtils.setBannerGoto(item,mContext);
-                    }
-                });
-                ToolUtils.setImageCacheUrl(banners.get(i).imageUrl, img, R.drawable.icon_loading_item);
-                adPics.add(img);
-            }
-            dots = new ImageView[adPics.size()];
-            for (int i = 0; i < adPics.size(); i++) {
-                ImageView dot_iv = new ImageView(mContext);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                params.bottomMargin = 10;
-                if (i == 0) {
-                    params.leftMargin = 0;
-                } else {
-                    params.leftMargin = 20;
+        if (customBannerView==null)
+        {
+            customBannerView=new CustomBannerView(mContext,banners,true);
+            customBannerView.setLayoutParams(screenWidth, screenWidth * 316 / 722);
+            customBannerView.setOnBannerClickListener(new CustomBannerView.OnBannerClickListener()
+            {
+                @Override
+                public void onClick(int postion)
+                {
+                    SwitchImage item = banners.get(postion);
+                    ToolUtils.setBannerGoto(item,mContext);
                 }
-
-                dot_iv.setLayoutParams(params);
-                dots[i] = dot_iv;
-                tipsLine.addView(dot_iv);
-                if (i == 0) {
-                    dots[i].setBackgroundResource(R.drawable.home_tips_foucs_icon);
-                } else {
-                    dots[i].setBackgroundResource(R.drawable.home_tips_icon);
-                }
-
-            }
-            if (adpaters == null) {
-                adpaters = new AdViewAdpater(mContext, adPics);
-                viewPager.setAdapter(adpaters);
-                viewPager.setOnPageChangeListener(new MyPageChangeListener());
-                viewPager.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        v.getParent().requestDisallowInterceptTouchEvent(true);
-                        return false;
-                    }
-                });
-
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (isStop) {
-                            try {
-                                Thread.sleep(5000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            if (!nowAction) {
-                                currentItem = currentItem + 1;
-                                mhandler.obtainMessage().sendToTarget();
-                            }
-                        }
-                    }
-                }).start();
-            } else {
-                adpaters.notifyDataSetChanged();
-            }
-
+            });
+            linearLayout.addView(customBannerView);
         }
-
-
+        else
+        {
+            customBannerView.setImages(banners);
+        }
     }
 
     private OnFragmentInteractionListener mListener;
@@ -347,8 +277,6 @@ public class MainHomeFragment extends BaseFragment implements
         mCategoryView.setOnClickListener(this);
         mTitleView = (TextView) view.findViewById(R.id.tv_title);
         mDotView = (ImageView) view.findViewById(R.id.iv_dot);
-        viewPager = (ViewPager) view.findViewById(R.id.home_adv_pager);
-        tipsLine = (LinearLayout) view.findViewById(R.id.home_viewGroup);
         rl_homeGoodsImage=(RelativeLayout)view.findViewById(R.id.rl_homeGoodsImage);
 
         itemBtn = (LinearLayout) view.findViewById(R.id.home_item_goods);
@@ -374,6 +302,8 @@ public class MainHomeFragment extends BaseFragment implements
         itemNameTv = (TypeFaceTextView) view.findViewById(R.id.homeGoodsName);
         itemTimeTv = (TypeFaceTextView) view.findViewById(R.id.shop_time_item);
         itemSaleTv = (TypeFaceTextView) view.findViewById(R.id.homeGoodsSale);
+
+        linearLayout=(LinearLayout)view.findViewById(R.id.bannerView);
         initDate();
 
     }
@@ -721,42 +651,6 @@ public class MainHomeFragment extends BaseFragment implements
         FetchData(++currentPage, mCategory);
     }
 
-    /**
-     * 广告轮播指示器
-     */
-    private class MyPageChangeListener implements ViewPager.OnPageChangeListener {
-        public void onPageSelected(int position) {
-            currentItem = position;
-            if (adPics.size() != 0) {
-                changeDotsBg(currentItem % adPics.size());
-            }
-        }
-
-        public void onPageScrollStateChanged(int arg0) {
-            if (arg0 == 0) {
-                nowAction = false;
-            }
-            if (arg0 == 1) {
-                nowAction = true;
-            }
-            if (arg0 == 2) {
-            }
-        }
-
-        public void onPageScrolled(int arg0, float arg1, int arg2) {
-            viewPager.getParent().requestDisallowInterceptTouchEvent(true);
-        }
-
-        private void changeDotsBg(int currentitem) {
-            for (int i = 0; i < dots.length; i++) {
-                if (currentitem == i) {
-                    dots[currentitem].setBackgroundResource(R.drawable.home_tips_foucs_icon);
-                } else {
-                    dots[i].setBackgroundResource(R.drawable.home_tips_icon);
-                }
-            }
-        }
-    }
 
     public void onResume() {
         super.onResume();

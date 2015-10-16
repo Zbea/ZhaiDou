@@ -12,6 +12,7 @@ public class Specification implements Serializable
     public int num;
     public double price;
     public double oldPrice;
+    public boolean isBuy;
 
     public int getId() {
         return id;
@@ -29,10 +30,49 @@ public class Specification implements Serializable
         this.title = title;
     }
 
-    public Specification(int id, String title,int num,double price,double oldPrice) {
+    public int getNum()
+    {
+        return num;
+    }
+
+    public void setNum(int num)
+    {
+        this.num = num;
+    }
+
+    public double getPrice()
+    {
+        return price;
+    }
+
+    public void setPrice(double price)
+    {
+        this.price = price;
+    }
+
+    public double getOldPrice()
+    {
+        return oldPrice;
+    }
+
+    public void setOldPrice(double oldPrice)
+    {
+        this.oldPrice = oldPrice;
+    }
+
+    public boolean isBuy()
+    {
+        return isBuy;
+    }
+
+    public void setBuy(boolean isBuy)
+    {
+        this.isBuy = isBuy;
+    }
+
+    public Specification(int id, String title,double price,double oldPrice) {
         this.id = id;
         this.title = title;
-        this.num = num;
         this.price = price;
         this.oldPrice = oldPrice;
     }

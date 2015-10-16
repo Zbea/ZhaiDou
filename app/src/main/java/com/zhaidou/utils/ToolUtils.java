@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -94,6 +95,10 @@ public class ToolUtils
      */
     public static boolean isPhoneOk(String phone)
     {
+        if (TextUtils.isEmpty(phone))
+        {
+            return false;
+        }
         Pattern p=Pattern.compile("(1[3456789]\\d{9})");
 //        Pattern p=Pattern.compile("(1[358]\\d{9})|(14[57]\\d{8})|(17[0678]\\d{8})");
         Matcher m=p.matcher(phone);
@@ -235,6 +240,16 @@ public class ToolUtils
     }
 
     /**
+     * Toast显示短时间
+     * @param mContext
+     * @param msgResId
+     */
+    public static final void setToast(Context mContext,int msgResId)
+    {
+        Toast.makeText(mContext, msgResId, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
      * 长显示
      * @param mContext
      * @param msg
@@ -242,6 +257,16 @@ public class ToolUtils
     public static final void setToastLong(Context mContext,String msg)
     {
         Toast.makeText(mContext, msg, Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * 长显示
+     * @param mContext
+     * @param msgResId
+     */
+    public static final void setToastLong(Context mContext,int msgResId)
+    {
+        Toast.makeText(mContext, msgResId, Toast.LENGTH_LONG).show();
     }
 
     /**

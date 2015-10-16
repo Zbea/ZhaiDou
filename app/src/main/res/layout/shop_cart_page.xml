@@ -274,7 +274,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/headLine"
-        android:visibility="gone"
         android:background="@color/white"></LinearLayout>
 
 </RelativeLayout>

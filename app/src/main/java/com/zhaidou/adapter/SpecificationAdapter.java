@@ -34,6 +34,7 @@ public class SpecificationAdapter extends BaseListAdapter<Specification>{
 
         if (specification.num<1)
         {
+            isCheck=false;
             tv_item.setBackgroundResource(R.drawable.btn_no_click_selector);
             tv_item.setTextColor(Color.parseColor("#ffffff"));
             tv_item.setClickable(false);

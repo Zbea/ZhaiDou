@@ -4,6 +4,10 @@
     <string name="app_name">宅豆家居</string>
     <string name="app_versionName">V2.4.0</string>
     <string name="app_version">宅豆家居 V%1$s</string>
+
+    <string name="loading_fail_txt">抱歉,加载失败,请重试</string>
+    <string name="phone_lose_txt">抱歉,无效手机号码</string>
+
     <string name="action_settings">宅豆</string>
     <string name="title_activity_gl">攻略</string>
     <string name="title_activity_categories">分类</string>
@@ -100,7 +104,7 @@
     <string name="title_home">家居生活新时尚</string>
     <string name="title_login">用户登录</string>
     <string name="title_logistics">物流信息</string>
-    <string name="title_beauty">家居软装魔法</string>
+    <string name="title_beauty">软装家居魔法</string>
     <string name="title_after_sale">申请退款/退货</string>
     <string name="title_all_order">所有订单</string>
     <string name="title_order_detail">订单详情</string>

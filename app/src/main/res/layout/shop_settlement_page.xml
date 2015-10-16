@@ -525,4 +525,10 @@
             android:background="@drawable/btn_red_click_selector"/>
     </LinearLayout>
 
+    <include
+        layout="@layout/content_null_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/headLine"></include>
+
 </RelativeLayout>

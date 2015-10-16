@@ -173,15 +173,31 @@
                 android:drawablePadding="10dp"
                 android:gravity="center"
                 android:paddingLeft="15dp"
-                android:text="全部订单"
+                android:layout_centerVertical="true"
+                android:text="我的订单"
                 android:textColor="@color/text_main_color" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:gravity="center_vertical"
+                android:layout_centerVertical="true"
+                android:orientation="horizontal">
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:textSize="12sp"
+                android:text="查看全部订单"
+                android:textColor="@color/text_gary_color" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
                 android:paddingRight="15dp"
                 android:src="@drawable/icon_arrow_right" />
+            </LinearLayout>
         </RelativeLayout>
 
         <ImageView

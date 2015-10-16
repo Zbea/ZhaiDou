@@ -130,8 +130,6 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        Log.i("AllOrdersFragment------------>", "onCreateView");
         if (null != rootView) {
             ViewGroup parent = (ViewGroup) rootView.getParent();
             if (null != parent) {
