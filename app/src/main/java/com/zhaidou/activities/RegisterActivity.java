@@ -23,6 +23,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.User;
@@ -60,6 +61,7 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
                     intent.putExtra("email", user.getEmail());
                     intent.putExtra("token", user.getAuthentication_token());
                     intent.putExtra("nick", user.getNickName());
+                    intent.putExtra("phone",user.getPhone());
                     setResult(2000, intent);
                     finish();
                     break;
@@ -93,16 +95,17 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
         switch (view.getId()) {
             case R.id.bt_register:
                 String email = mEmailView.getText().toString();
-                System.out.println("RegisterActivity.onClick-------->"+email);
+                System.out.println("RegisterActivity.onClick-------->" + email);
                 if (TextUtils.isEmpty(email)) {
                     mEmailView.setShakeAnimation();
                     return;
                 }
                 if (ToolUtils.isPhoneOk(email) && email.length() > 0) {
-                    Intent intent = new Intent(this, AccountRegisterSetPwdActivity.class);
-                    intent.putExtra("phone",email);
-                    startActivity(intent);
+//                    Intent intent = new Intent(this, AccountRegisterSetPwdActivity.class);
+//                    intent.putExtra("phone",email);
+//                    startActivity(intent);
 //                    doRegister();
+                    checkPhoneIsExist(email);
                 } else {
                     mEmailView.setShakeAnimation();
                     ToolUtils.setToast(this, "抱歉,无效手机号码");
@@ -117,6 +120,32 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
             default:
                 break;
         }
+    }
+
+    private void checkPhoneIsExist(final String phone) {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("phone", phone);
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_REGISTER_CHECK_PHONE_URL,params,new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                System.out.println("RegisterActivity.onResponse------->" + jsonObject.toString());
+                int status = jsonObject.optInt("status");
+                String message = jsonObject.optString("message");
+                if (400 == status) {
+                    Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Intent intent = new Intent(RegisterActivity.this, AccountRegisterSetPwdActivity.class);
+                intent.putExtra("phone", phone);
+                startActivityForResult(intent, 200);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        });
+        ((ZDApplication) getApplication()).mRequestQueue.add(request);
     }
 
     private void doRegister() {
@@ -164,6 +193,28 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
             }
         };
         mRequestQueue.add(request);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (resultCode){
+
+            case 2000:
+                if (data != null) {
+                    int id = data.getIntExtra("id", -1);
+                    String email = data.getStringExtra("email");
+                    String token = data.getStringExtra("token");
+                    String nick = data.getStringExtra("nick");
+                    String phone = data.getStringExtra("phone");
+                    User user = new User(id, email, token, nick, null);
+                    Message message = new Message();
+                    message.what = 0;
+                    message.obj = user;
+                    handler.sendMessage(message);
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

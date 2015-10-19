@@ -31,7 +31,6 @@ import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomEditText;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -65,6 +64,7 @@ public class AccountRegisterSetPwdActivity extends FragmentActivity {
                     intent.putExtra("email", user.getEmail());
                     intent.putExtra("token", user.getAuthentication_token());
                     intent.putExtra("nick", user.getNickName());
+                    intent.putExtra("phone",user.getPhone());
                     setResult(2000, intent);
                     finish();
                     break;
@@ -94,7 +94,7 @@ public class AccountRegisterSetPwdActivity extends FragmentActivity {
                         ToolUtils.setToast(getApplicationContext(), "抱歉,设置的密码过短");
                         mPwdView.setShakeAnimation();
                     }
-                    doRegister();
+                    doRegister(phone,code,pwd);
                     break;
                 case R.id.back_btn:
                     finish();
@@ -201,32 +201,34 @@ public class AccountRegisterSetPwdActivity extends FragmentActivity {
     }
 
 
-    private void doRegister() {
+    private void doRegister(String phone, String code, String pwd) {
 
         mDialog = CustomLoadingDialog.setLoadingDialog(AccountRegisterSetPwdActivity.this, "注册中");
-        String code = mCodeView.getText().toString();
         Map<String, String> valueParams = new HashMap<String, String>();
-        valueParams.put("user[email]", code);
-        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_REGISTER_URL, valueParams, new Response.Listener<JSONObject>() {
+        valueParams.put("phone", phone);
+        valueParams.put("vcode", code);
+        valueParams.put("password", pwd);
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_REGISTER_WITH_PHONE_URL, valueParams, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null)
                     mDialog.dismiss();
-                Object obj = jsonObject.opt("message");
-                if (obj != null) {
-                    JSONArray errMsg = jsonObject.optJSONArray("message");
-                    Toast.makeText(AccountRegisterSetPwdActivity.this, errMsg.optString(0), Toast.LENGTH_LONG).show();
+                int status =jsonObject.optInt("status");
+                String msg=jsonObject.optString("message");
+                if (201!=status){
+                    Toast.makeText(AccountRegisterSetPwdActivity.this,msg,Toast.LENGTH_SHORT).show();
                     return;
                 }
-
                 JSONObject userObj = jsonObject.optJSONObject("user");
                 int id = userObj.optInt("id");
                 String email = userObj.optString("email");
                 String token = userObj.optString("authentication_token");
                 String state = userObj.optString("state");
+                String phone=userObj.optString("phone");
                 String avatar = userObj.optJSONObject("avatar").optJSONObject("mobile_icon").optString("url");
                 String nickname = userObj.optString("nick_name");
                 User user = new User(id, email, token, nickname, avatar);
+                user.setPhone(phone);
                 Message message = new Message();
                 message.what = 0;
                 message.obj = user;

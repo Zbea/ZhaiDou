@@ -49,7 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-public class OrderUnPayFragment extends BaseFragment implements View.OnClickListener{
+public class OrderUnPayFragment extends BaseFragment implements View.OnClickListener {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -78,7 +78,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
     private boolean isNoFree;//是否不免邮，当只有一个商品且为零元特卖时为真
     private long preTime = 0;
     private long timeStmp = 0;
-    private View mEmptyView,mNetErrorView;
+    private View mEmptyView, mNetErrorView;
     private Map<Integer, Boolean> timerMap = new HashMap<Integer, Boolean>();
     private BackCountListener backClickListener;
 
@@ -96,9 +96,8 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                         mEmptyView.setVisibility(View.VISIBLE);
                         loadingView.setVisibility(View.VISIBLE);
                     }
-                    if (count!=orders.size())
-                    {
-                        Intent intent=new Intent(ZhaiDou.IntentRefreshUnPayTag);
+                    if (count != orders.size()) {
+                        Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayTag);
                         mContext.sendBroadcast(intent);
                     }
 
@@ -112,7 +111,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
         }
     };
 
-    public static OrderUnPayFragment newInstance(String param1, String param2,int count) {
+    public static OrderUnPayFragment newInstance(String param1, String param2, int count) {
         OrderUnPayFragment fragment = new OrderUnPayFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
@@ -131,7 +130,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
-            count= getArguments().getInt("count");
+            count = getArguments().getInt("count");
         }
     }
 
@@ -147,8 +146,8 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
             rootView = inflater.inflate(R.layout.fragment_unpay, container, false);
             mContext = getActivity();
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
-            mEmptyView=rootView.findViewById(R.id.nullline);
-            mNetErrorView=rootView.findViewById(R.id.nullNetline);
+            mEmptyView = rootView.findViewById(R.id.nullline);
+            mNetErrorView = rootView.findViewById(R.id.nullNetline);
             rootView.findViewById(R.id.netReload).setOnClickListener(this);
             mListView = (ListView) rootView.findViewById(R.id.lv_unpaylist);
             unPayAdapter = new UnPayAdapter(getActivity(), orders);
@@ -163,22 +162,21 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                     final TextView btn2 = (TextView) v.findViewById(R.id.bt_order_timer);
                     if (btn2.getTag() != null)
                         preTime = Long.parseLong(btn2.getTag().toString());
-                    OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(), order,0);
+                    OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(), order, 0);
                     ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
                     orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
                         @Override
                         public void onOrderStatusChange(Order o) {
-                            if (o.getStatus().equals(""+ZhaiDou.STATUS_PAYED))
-                            {
+                            System.out.println("OrderUnPayFragment.onOrderStatusChange---->" + o.toString());
+                            if (o.getStatus().equals("" + ZhaiDou.STATUS_PAYED) || o.getStatus().equals("" + ZhaiDou.STATUS_UNPAY_CANCEL)) {
+                                System.out.println("OrderUnPayFragment.onOrderStatusChange1");
                                 orders.remove(order);
-                                if ( orders.size() <1)
-                                {
+                                if (orders.size() < 1) {
                                     mListView.setVisibility(View.GONE);
                                     loadingView.setVisibility(View.VISIBLE);
                                 }
-                            }
-                            else
-                            {
+                            } else {
+                                System.out.println("OrderUnPayFragment.onOrderStatusChange2");
                                 long time = o.getOver_at();
                                 order.setStatus(o.getStatus());
                                 order.setOver_at(o.getOver_at());
@@ -204,27 +202,20 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                     }
                     ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.getOrderId(), order.getAmount(), 0, order.getOver_at(), order, 2);
                     ((BaseActivity) getActivity()).navigationToFragment(shopPaymentFragment);
-                    shopPaymentFragment.setOrderListener(new Order.OrderListener()
-                    {
+                    shopPaymentFragment.setOrderListener(new Order.OrderListener() {
                         @Override
-                        public void onOrderStatusChange(Order ordera)
-                        {
-                            if (ordera.getStatus().equals(""+ZhaiDou.STATUS_PAYED))
-                            {
+                        public void onOrderStatusChange(Order ordera) {
+                            if (ordera.getStatus().equals("" + ZhaiDou.STATUS_PAYED)) {
                                 orders.remove(order);
-                                if ( orders.size() <1)
-                                {
+                                if (orders.size() < 1) {
                                     mListView.setVisibility(View.GONE);
                                     loadingView.setVisibility(View.VISIBLE);
                                 }
-                            }
-                            else
-                            {
+                            } else {
                                 long time = ordera.getOver_at();
                                 order.setStatus(ordera.getStatus());
                                 order.setOver_at(ordera.getOver_at());
-                                if (!isTimerStart)
-                                {
+                                if (!isTimerStart) {
                                     timeStmp = preTime - time;
                                     timerMap.clear();
                                 }
@@ -242,8 +233,8 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
     }
 
     private void initData() {
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading",isDialogFirstVisible);
-        isDialogFirstVisible=false;
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading", isDialogFirstVisible);
+        isDialogFirstVisible = false;
         if (NetworkUtils.isNetworkAvailable(mContext)) {
             mNetErrorView.setVisibility(View.GONE);
             loadingView.setVisibility(View.GONE);
@@ -264,17 +255,14 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?status=0", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("FetchData------------------>",jsonObject.toString());
+                Log.i("FetchData------------------>", jsonObject.toString());
                 if (mDialog != null)
                     mDialog.dismiss();
-                if (jsonObject != null)
-                {
+                if (jsonObject != null) {
                     JSONArray orderArr = jsonObject.optJSONArray("orders");
-                    if (orderArr != null && orderArr.length() > 0)
-                    {
+                    if (orderArr != null && orderArr.length() > 0) {
                         orders.clear();
-                        for (int i = 0; i < orderArr.length(); i++)
-                        {
+                        for (int i = 0; i < orderArr.length(); i++) {
                             JSONObject orderObj = orderArr.optJSONObject(i);
                             int id = orderObj.optInt("id");
                             String number = orderObj.optString("number");
@@ -288,8 +276,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                             Order order = new Order(id, number, amount, status, status_ch, created_at_for, created_at, "", 0);
                             order.setImg(img);
                             order.setOver_at(over_at);
-                            if (over_at>0)
-                            {
+                            if (over_at > 0) {
                                 orders.add(order);
                             }
                         }
@@ -302,8 +289,8 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                if (mDialog!=null)
-                mDialog.dismiss();
+                if (mDialog != null)
+                    mDialog.dismiss();
                 if (getActivity() != null)
                     Toast.makeText(getActivity(), mContext.getResources().getString(R.string.network_load_error), Toast.LENGTH_SHORT).show();
             }
@@ -322,7 +309,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
     @Override
     public void onClick(View view) {
         super.onClick(view);
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.netReload:
                 initData();
                 break;
@@ -350,9 +337,9 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
             Order item = orders.get(position);
             mOrderTime.setText(item.getCreated_at_for());
             mOrderNum.setText(item.getNumber());
-            mOrderAmount.setText("￥" + ToolUtils.isIntPrice("" +item.getAmount()));
+            mOrderAmount.setText("￥" + ToolUtils.isIntPrice("" + item.getAmount()));
             mOrderStatus.setText(item.getStatus_ch());
-            ToolUtils.setImageCacheUrl(item.getImg(), mOrderImg,R.drawable.icon_loading_defalut);
+            ToolUtils.setImageCacheUrl(item.getImg(), mOrderImg, R.drawable.icon_loading_defalut);
 
 
             if (mTimerBtn.getTag() == null) {
@@ -360,10 +347,8 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
             }
 
             long l = Long.parseLong(mTimerBtn.getTag() + "");
-            if (("" + ZhaiDou.STATUS_UNPAY).equalsIgnoreCase(item.getStatus()))
-            {
-                if (l > 0)
-                {
+            if (("" + ZhaiDou.STATUS_UNPAY).equalsIgnoreCase(item.getStatus())) {
+                if (l > 0) {
                     if (timeStmp > 0 && timerMap != null && (timerMap.get(position) == null || !timerMap.get(position))) {
                         l = l - timeStmp;
                         mTimerBtn.setTag(l);
@@ -374,8 +359,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                         item.setOver_at(Long.parseLong(mTimerBtn.getTag() + "") - 1);
                     }
                     mTimerBtn.setText(String.format(getResources().getString(R.string.timer_start), new SimpleDateFormat("mm:ss").format(new Date(l * 1000))));
-                }
-                else {
+                } else {
                     mTimerBtn.setText(mContext.getResources().getString(R.string.timer_finish));
                     mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
                     mTimerBtn.setBackgroundResource(R.drawable.btn_no_click_selector);
@@ -385,8 +369,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
 //                    Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
 //                    mContext.sendBroadcast(intent);
                 }
-            }
-            else {
+            } else {
                 mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
                 mTimerBtn.setText(mContext.getResources().getString(R.string.timer_finish));
                 mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
@@ -427,15 +410,17 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                 timer = new MyTimer((mContext.getResources().getInteger(R.integer.timer_countdown)), 1000);
             isTimerStart = true;
             timer.start();
-            Log.i("onResume--->timer.start();----------->","timer.start()---------->");
+            Log.i("onResume--->timer.start();----------->", "timer.start()---------->");
         }
         super.onResume();
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_order_unpay));
     }
+
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_order_unpay));
     }
+
     @Override
     public void onStop() {
         if (timer != null) {
@@ -452,13 +437,10 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
             timer = null;
         }
 
-        if (orders!=null)
-            if (backClickListener!=null)
-            {
-                for (int i = 0; i <orders.size() ; i++)
-                {
-                    if (orders.get(i).getOver_at()<=0)
-                    {
+        if (orders != null)
+            if (backClickListener != null) {
+                for (int i = 0; i < orders.size(); i++) {
+                    if (orders.get(i).getOver_at() <= 0) {
                         orders.remove(orders.get(i));
                     }
                 }
@@ -471,7 +453,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
         this.backClickListener = backClickListener;
     }
 
-    public interface BackCountListener{
+    public interface BackCountListener {
         public void onBackCount(int count);
     }
 }

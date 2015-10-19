@@ -78,6 +78,8 @@ public class ZhaiDou {
     public static String USER_LOGIN_THIRD_VERIFY_URL=HOME_BASE_URL+"api/v1/users/verification_other";
     //用户注册
     public static String USER_REGISTER_URL=HOME_BASE_URL+"api/v1/users";
+    //
+    public static String USER_REGISTER_WITH_PHONE_URL=HOME_BASE_URL+"api/v1/users/phone_register";
     //用户收藏
     public static String USER_COLLECT_ITEM_URL=HOME_BASE_URL+"article/api/article_items/like_article_items?per_page=10&page=";
     //用户取消收藏
@@ -90,6 +92,10 @@ public class ZhaiDou {
     public static String USER_RESET_PSW_CONFRIM_URL=HOME_BASE_URL+"api/v1/phone_vcodes/next_to_password?phone=";
     //修改密码
     public static String USER_RESET_PSW_URL=HOME_BASE_URL+"api/v1/users/reset_password";
+    //注册第一步判断手机是否已经注册
+    public static String USER_REGISTER_CHECK_PHONE_URL=HOME_BASE_URL+"api/v1/users/next_to_register";
+    //登陆用户进行绑定手机接口
+    public static String USER_LOGIN_BINE_PHONE_URL=HOME_BASE_URL+"api/v1/users/user_blinding_phone";
 
 
     //后台统计
