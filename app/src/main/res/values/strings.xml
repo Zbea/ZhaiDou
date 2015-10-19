@@ -70,7 +70,7 @@
     <string name="title_activity_search">SearchActivity</string>
 
     <!-- Search -->
-    <string name="search_hint">搜索单品、攻略</string>
+    <string name="search_hint">搜索单品</string>
     <string name="search_history_clear">清除历史记录</string>
     <string name="title_activity_search_tab">SearchTabActivity</string>
     <string name="title_section1">Section 1</string>
@@ -101,7 +101,8 @@
     <string name="title_collocation">我的豆搭</string>
     <string name="title_contact_us">联系我们</string>
     <string name="title_goods_detail">商品详情</string>
-    <string name="title_home">家居生活新时尚</string>
+    <string name="title_home">宅豆家居特卖</string>
+    <string name="title_home_strategy">实用攻略</string>
     <string name="title_login">用户登录</string>
     <string name="title_logistics">物流信息</string>
     <string name="title_beauty">软装家居魔法</string>

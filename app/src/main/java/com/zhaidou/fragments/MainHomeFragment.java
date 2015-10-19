@@ -376,7 +376,7 @@ public class MainHomeFragment extends BaseFragment implements
                 break;
 
             case R.id.ll_special_shop:
-                ShopSpecialFragment shopSpecialFragment = ShopSpecialFragment.newInstance("", 0);
+                HomeStrategyFragment shopSpecialFragment = HomeStrategyFragment.newInstance("", 0);
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopSpecialFragment);
                 break;
 
