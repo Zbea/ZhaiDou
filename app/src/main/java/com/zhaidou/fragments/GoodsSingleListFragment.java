@@ -152,6 +152,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
 
     private void initView(View view)
     {
+        setStartLoading();
         isfrist=true;
         isLogin=checkLogin();
         mDialogUtils=new DialogUtils(mContext);
@@ -257,7 +258,6 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
 
     public void FetchData(String msg,int sort,int page){
         mParam1=msg;
-        setStartLoading();
         this.sort=sort;
         currentpage=page;
         if (page==1) products.clear();
@@ -348,7 +348,6 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
 
     public void FetchCategoryData(String id,int sort,int page)
     {
-        setStartLoading();
         String url=ZhaiDou.ARTICLE_ITEM_WITH_CATEGORY+id+"&page="+page;
         JsonObjectRequest fetchCategoryTask = new JsonObjectRequest(url,new Response.Listener<JSONObject>(){
             @Override

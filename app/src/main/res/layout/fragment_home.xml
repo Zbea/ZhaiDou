@@ -247,7 +247,7 @@
                         android:ellipsize="marquee"
                         android:marqueeRepeatLimit="marquee_forever"
                         android:textSize="16sp"
-                        android:text="3折起"
+                        android:text=""
                         />
 
                     <com.zhaidou.view.TypeFaceTextView
@@ -261,7 +261,7 @@
                         android:singleLine="true"
                         android:ellipsize="end"
                         android:textColor="@color/text_main_color"
-                        android:text="item的名称"
+                        android:text=""
                         />
 
                     <LinearLayout

@@ -247,28 +247,14 @@ public class GoodsDetailsFragment extends BaseFragment
             switch (msg.what)
             {
                 case UPDATE_GOOD_DETAIL:
+                    if (detail == null)
+                    {
+                        return;
+                    }
 
-                    if (detail != null)
-                    if (checkLogin())
-                    {
-                        if (flags == 1)
-                        {
-                            FetchOSaleData(UPDATE_ISOSALEBUY);
-                        }
-                        else
-                        {
-                            if (mDialog != null)
-                                mDialog.dismiss();
-                            loadingView.setVisibility(View.GONE);
-                        }
-                    }
-                    else
-                    {
-                        if (mDialog != null)
-                            mDialog.dismiss();
-                        loadingView.setVisibility(View.GONE);
-                    }
-                    if (flags == 1)
+                    setNextEventView();
+
+                    if (flags == 1)//如果是零元特卖商品UI显示处理
                     {
                         iconView.setVisibility(View.GONE);
                         iconOSaleView.setVisibility(View.VISIBLE);
@@ -288,42 +274,32 @@ public class GoodsDetailsFragment extends BaseFragment
                     tv_comment.setText(detail.getDesigner());
                     mTitle.setText(detail.getTitle());
                     setDiscount(detail.getPrice(), detail.getCost_price());
-
-                    if (detail.getSpecifications() != null)
-                        specificationAdapter.addAll(detail.getSpecifications());
+                    ToolUtils.setImageCacheUrl(detail.getImageUrl(), goodsImage, R.drawable.icon_loading_goods_details);
 
                     boolean isOver = true;
-
                     if (detail.getSpecifications()!=null)
-                    for (int i = 0; i < detail.getSpecifications().size(); i++)
                     {
-                        if (detail.getSpecifications().get(i).num > 0)
+                        specificationAdapter.addAll(detail.getSpecifications());
+                        for (int i = 0; i < detail.getSpecifications().size(); i++)
                         {
-                            isOver = false;
-                            break;
+                            //遍历该商品的全部规格的库存数，如果当有库存数大于0的，则isOver标志位为false
+                            if (detail.getSpecifications().get(i).num > 0)
+                            {
+                                isOver = false;
+                                break;
+                            }
                         }
                     }
                     if (isOver)
                     {
-                        if (isPublish)
-                        {
-                            setAddOrBuyShow("此商品已下架",false);
-                        } else
-                        {
-                            setAddOrBuyShow("已卖光",false);
-                        }
-
+                        setAddOrBuyShow("已卖光",false);
                     }
-                    ToolUtils.setImageCacheUrl(detail.getImageUrl(), goodsImage, R.drawable.icon_loading_goods_details);
-
-                    if (detail.getImgs() == null && detail.getSpecifications() == null && detail.getEnd_time() == null)
+                    if (isPublish)
                     {
                         setAddOrBuyShow("此商品已下架",false);
                     }
-
                     String end_date = detail.getEnd_time();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-
                     try
                     {
                         long millionSeconds = sdf.parse(end_date).getTime();//毫秒
@@ -535,74 +511,6 @@ public class GoodsDetailsFragment extends BaseFragment
 
     public GoodsDetailsFragment()
     {
-    }
-
-    /**
-     * 加载子fargment信息
-     *
-     * @param detail
-     * @param goodInfos
-     */
-    private void setChildFargment(GoodDetail detail, ArrayList<GoodInfo> goodInfos)
-    {
-        mAdapter = new GoodInfoAdapter(mContext, goodInfos);
-        mListView.setAdapter(mAdapter);
-        mImageContainer.removeAllViews();
-        DisplayImageOptions options = new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.drawable.icon_loading_osale)
-//                        .showImageForEmptyUri(R.drawable.icon_loading_osale)
-//                        .showImageOnFail(R.drawable.icon_loading_osale)
-//                        .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
-//                        .bitmapConfig(Bitmap.Config.RGB_565)
-//                        .imageScaleType(ImageScaleType.NONE)
-//                        .cacheInMemory(true) // default
-                .build();
-        if (detail.getImgs() != null)
-        {
-            for (int i = 0; i < detail.getImgs().size(); i++)
-            {
-                LargeImgView imageView = new LargeImgView(mContext);
-                imageView.setScaleType(ImageView.ScaleType.MATRIX);
-                ImageLoader.getInstance().displayImage(detail.getImgs().get(i), imageView, new ImageLoadingListener()
-                {
-                    @Override
-                    public void onLoadingStarted(String s, View view)
-                    {
-                    }
-                    @Override
-                    public void onLoadingFailed(String s, View view, FailReason failReason)
-                    {
-                    }
-                    @Override
-                    public void onLoadingComplete(String s, View view, Bitmap bitmap)
-                    {
-                        if (bitmap != null)
-                        {
-                            LargeImgView imageView1 = (LargeImgView) view;
-                            imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
-                            if (bitmap.getHeight() < 4000)
-                            {
-                                imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
-                                imageView1.setImageBitmap(bitmap);
-                            } else
-                            {
-                                imageView1.setImageBitmapLarge(bitmap);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onLoadingCancelled(String s, View view)
-                    {
-
-                    }
-                });
-                mImageContainer.addView(imageView);
-            }
-        } else
-        {
-            imageNull.setVisibility(View.VISIBLE);
-        }
     }
 
     @Override
@@ -840,7 +748,33 @@ public class GoodsDetailsFragment extends BaseFragment
             nullView.setVisibility(View.GONE);
             nullNetView.setVisibility(View.VISIBLE);
         }
+    }
 
+    /**
+     * 商品信息请求完了，请求商品是否购买过零元特卖商品
+     */
+    private void setNextEventView()
+    {
+        if (checkLogin())
+        {
+            if (flags == 1)
+            {
+                //请求账户是否已经购买过零元特卖商品
+                FetchOSaleData(UPDATE_ISOSALEBUY);
+            }
+            else
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+                loadingView.setVisibility(View.GONE);
+            }
+        }
+        else
+        {
+            if (mDialog != null)
+                mDialog.dismiss();
+            loadingView.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -957,6 +891,75 @@ public class GoodsDetailsFragment extends BaseFragment
         } else
         {
             mDiscount.setVisibility(View.GONE);
+        }
+    }
+
+
+    /**
+     * 加载子fargment信息
+     *
+     * @param detail
+     * @param goodInfos
+     */
+    private void setChildFargment(GoodDetail detail, ArrayList<GoodInfo> goodInfos)
+    {
+        mAdapter = new GoodInfoAdapter(mContext, goodInfos);
+        mListView.setAdapter(mAdapter);
+        mImageContainer.removeAllViews();
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.icon_loading_osale)
+//                        .showImageForEmptyUri(R.drawable.icon_loading_osale)
+//                        .showImageOnFail(R.drawable.icon_loading_osale)
+//                        .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
+//                        .bitmapConfig(Bitmap.Config.RGB_565)
+//                        .imageScaleType(ImageScaleType.NONE)
+//                        .cacheInMemory(true) // default
+                .build();
+        if (detail.getImgs() != null)
+        {
+            for (int i = 0; i < detail.getImgs().size(); i++)
+            {
+                LargeImgView imageView = new LargeImgView(mContext);
+                imageView.setScaleType(ImageView.ScaleType.MATRIX);
+                ImageLoader.getInstance().displayImage(detail.getImgs().get(i), imageView, new ImageLoadingListener()
+                {
+                    @Override
+                    public void onLoadingStarted(String s, View view)
+                    {
+                    }
+                    @Override
+                    public void onLoadingFailed(String s, View view, FailReason failReason)
+                    {
+                    }
+                    @Override
+                    public void onLoadingComplete(String s, View view, Bitmap bitmap)
+                    {
+                        if (bitmap != null)
+                        {
+                            LargeImgView imageView1 = (LargeImgView) view;
+                            imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+                            if (bitmap.getHeight() < 4000)
+                            {
+                                imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
+                                imageView1.setImageBitmap(bitmap);
+                            } else
+                            {
+                                imageView1.setImageBitmapLarge(bitmap);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onLoadingCancelled(String s, View view)
+                    {
+
+                    }
+                });
+                mImageContainer.addView(imageView);
+            }
+        } else
+        {
+            imageNull.setVisibility(View.VISIBLE);
         }
     }
 
@@ -1269,6 +1272,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     double cost_price = merchandise.optDouble("cost_price");
                     int discount = merchandise.optInt("discount");
                     String end_time = merchandise.optString("end_time");
+                    isPublish= merchandise.optBoolean("is_publish")==true?false:true;
                     flags=merchandise.optInt("sale_cate");
                     detail = new GoodDetail(id, title, designer, total_count, price, cost_price, discount);
                     detail.setEnd_time(end_time);

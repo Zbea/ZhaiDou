@@ -60,8 +60,9 @@ public class ZhaiDou {
     public static String orderCheckGoodsUrl=HOME_BASE_URL+"special_mall/api/merchandises/";
     //确认订单获取短信接口
     public static String orderGetSMS = HOME_BASE_URL+"api/v1/phone_vcodes/vilidate_phone?flag=1&phone=";
-    //确认订单提交短信接口
-    public static String orderCommitPhone = HOME_BASE_URL+"api/v1/phone_vcodes/vilidate_phone_code?phone=";
+
+    //判断手机是否需要验证接口
+    public static String accountOrPhone = HOME_BASE_URL+"api/v1/users/validation_phone";
 
     //TAB分类
     public static String CATEGORY_ITEM_URL=HOME_BASE_URL+"article/api/item_categories";
