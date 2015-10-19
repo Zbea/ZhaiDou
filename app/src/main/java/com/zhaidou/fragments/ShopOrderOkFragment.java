@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -59,6 +60,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -260,6 +262,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     {
                         verifyView.setVisibility(View.GONE);
                     }
+                    FetchAddressData();
                     break;
                 case UPDATE_VERFIY_SUCCESSS:
                     isVerify=false;
@@ -310,34 +313,34 @@ public class ShopOrderOkFragment extends BaseFragment
                     break;
 
                 case R.id.jsOkBtn:
-                    judageCommit();
-//                    //当需要验证手机号码时候，需要先判断
-//                    if (isVerify)
-//                    {
-//                        if (TextUtils.isEmpty(phone_Str))
-//                        {
-//                            mScrollView.fullScroll(ScrollView.FOCUS_DOWN);//滑动到最底部
-//                            mPhoneView.setShakeAnimation();
-//                            return;
-//                        }
-//                        if (TextUtils.isEmpty(code_Str))
-//                        {
-//                            mScrollView.fullScroll(ScrollView.FOCUS_DOWN);//滑动到最底部
-//                            mCodeView.setShakeAnimation();
-//                            return;
-//                        }
-//                        if (ToolUtils.isPhoneOk(phone_Str))
-//                        {
-//                            mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "提交中");
-//                            CommitVerifyData();
-//                        } else
-//                        {
-//                            ToolUtils.setToast(mContext, R.string.phone_lose_txt);
-//                        }
-//                    } else
-//                    {
-//                        judageCommit();
-//                    }
+                    //当需要验证手机号码时候，需要先判断
+                    if (isVerify)
+                    {
+                        if (TextUtils.isEmpty(phone_Str))
+                        {
+                            mScrollView.fullScroll(ScrollView.FOCUS_DOWN);//滑动到最底部
+                            mPhoneView.setShakeAnimation();
+                            return;
+                        }
+                        if (TextUtils.isEmpty(code_Str))
+                        {
+                            mScrollView.fullScroll(ScrollView.FOCUS_DOWN);//滑动到最底部
+                            mCodeView.setShakeAnimation();
+                            return;
+                        }
+                        if (ToolUtils.isPhoneOk(phone_Str))
+                        {
+                            mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "提交中");
+                            judageCommit();
+                        } else
+                        {
+                            ToolUtils.setToast(mContext, R.string.phone_lose_txt);
+                        }
+                    } else
+                    {
+                        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "提交中");
+                        judageCommit();
+                    }
                     break;
                 case R.id.jsEditAddressBtn:
                     AddrSelectFragment addrManageFragment = AddrSelectFragment.newInstance("", STATUS_FROM_ORDER, address);
@@ -587,7 +590,6 @@ public class ShopOrderOkFragment extends BaseFragment
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
             FetchVerifyData();
-            FetchAddressData();
         } else
         {
             if (mDialog != null)
@@ -743,7 +745,6 @@ public class ShopOrderOkFragment extends BaseFragment
     {
         if (address != null)
         {
-            mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "提交中");
             for (int i = 0; i < items.size(); i++)
             {
                 if (items.get(i).isOSale.equals("true"))
@@ -807,14 +808,23 @@ public class ShopOrderOkFragment extends BaseFragment
                                 message.obj = errorArr;
                                 handler.sendMessage(message);
                             }
-                        } else if (status == 401)
+                        } else if (status == 401||status==402)
                         {
                             String errorArr = jsonObject.optString("message");
                             Message message = new Message();
                             message.what = 7;
                             message.obj = errorArr;
                             handler.sendMessage(message);
-                        } else
+                        }
+                        else if (status == 403)
+                        {
+                            String errorArr = jsonObject.optJSONObject("user").optString("phone");
+                            Message message = new Message();
+                            message.what = 6;
+                            message.obj = errorArr;
+                            handler.sendMessage(message);
+                        }
+                        else
                         {
                             handler.sendEmptyMessage(3);
                         }
@@ -848,16 +858,15 @@ public class ShopOrderOkFragment extends BaseFragment
             // 创建名/值组列表
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("sale_order[receiver_id]", "" + address.getId()));
-
             params.add(new BasicNameValuePair("sale_order[node]", bzInfo_Str));
+            params.add(new BasicNameValuePair("phone", phone_Str));
+            params.add(new BasicNameValuePair("vcode", code_Str));
             for (int i = 0; i < items.size(); i++)
             {
                 params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][merchandise_id]]", items.get(i).id + ""));
                 params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][specification_id]]", items.get(i).sizeId + ""));
                 params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][count]]", items.get(i).num + ""));
             }
-
-
             // 创建UrlEncodedFormEntity对象
             UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
                     params, HTTP.UTF_8);
@@ -972,16 +981,23 @@ public class ShopOrderOkFragment extends BaseFragment
      */
     public void FetchVerifyData()
     {
-        String url = ZhaiDou.orderCheckOSaleUrl;
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        String url = ZhaiDou.accountOrPhone;
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
             {
+                ToolUtils.setLog(jsonObject.toString());
                 if (jsonObject != null)
                 {
-//                    isVerify = jsonObject.optBoolean("flag");
-                    isVerify=true;
+                    if(jsonObject.optInt("status")==200)
+                    {
+                        isVerify = false;
+                    }
+                    else
+                    {
+                        isVerify =true;
+                    }
                     handler.sendEmptyMessage(UPDATE_VERFIY);
                 } else
                 {
@@ -1048,62 +1064,6 @@ public class ShopOrderOkFragment extends BaseFragment
                     }
                 } else
                 {
-                    ToolUtils.setToastLong(mContext,R.string.loading_fail_txt);
-                }
-            }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-                if (mDialog != null)
-                    mDialog.dismiss();
-                ToolUtils.setToastLong(mContext,R.string.loading_fail_txt);
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
-    }
-
-    /*
-   * 提交验证手机号码
-   */
-    public void CommitVerifyData()
-    {
-        String url = ZhaiDou.orderCommitPhone+phone_Str+"&vcode="+code_Str;
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
-        {
-            @Override
-            public void onResponse(JSONObject jsonObject)
-            {
-                if (jsonObject != null)
-                {
-                    int flag=jsonObject.optInt("status");
-                    String msg=jsonObject.optString("message");
-                    if (flag==201)
-                    {
-                        handler.sendEmptyMessage(UPDATE_VERFIY_SUCCESSS);
-                    }
-                    else
-                    {
-                        if (mDialog != null)
-                            mDialog.dismiss();
-                        ToolUtils.setToastLong(mContext,msg);
-                    }
-                }
-                else
-                {
-                    if (mDialog != null)
-                        mDialog.dismiss();
                     ToolUtils.setToastLong(mContext,R.string.loading_fail_txt);
                 }
             }

@@ -285,6 +285,19 @@ public class MainStrategyFragment extends BaseFragment
         }
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden)
+    {
+        super.onHiddenChanged(hidden);
+        if (!hidden)
+        {
+            if (listItem==null|listItem.size()<1)
+            {
+                loadMoreData(STATUS_REFRESH);
+            }
+        }
+
+    }
 
     public void onResume()
     {

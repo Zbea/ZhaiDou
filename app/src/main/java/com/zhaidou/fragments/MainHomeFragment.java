@@ -376,7 +376,7 @@ public class MainHomeFragment extends BaseFragment implements
                 break;
 
             case R.id.ll_special_shop:
-                ShopSpecialFragment shopSpecialFragment = ShopSpecialFragment.newInstance("", 0);
+                HomeStrategyFragment shopSpecialFragment = HomeStrategyFragment.newInstance("", 0);
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopSpecialFragment);
                 break;
 
@@ -567,13 +567,14 @@ public class MainHomeFragment extends BaseFragment implements
         JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                String result = response.toString();
-                JSONObject obj;
-                try {
-                    JSONObject jsonObject = new JSONObject(result);
-                    JSONArray jsonArray = jsonObject.optJSONArray("sales");
-                    if (jsonArray.length() > 0) {
-                        obj = jsonArray.optJSONObject(0);
+                if(response==null)
+                {
+                    return;
+                }
+                    JSONArray jsonArray = response.optJSONArray("sales");
+                    if (jsonArray.length() > 0)
+                    {
+                        JSONObject obj = jsonArray.optJSONObject(0);
                         int id = obj.optInt("id");
                         String title = obj.optString("title");
                         String sales = obj.optString("tags");
@@ -584,9 +585,6 @@ public class MainHomeFragment extends BaseFragment implements
                         String imageUrl = obj.optString("banner");
                         shopSpecialItem = new ShopSpecialItem(id, title, sales, time, startTime, endTime, overTime, imageUrl);
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
                 Message message = new Message();
                 message.what = 1001;
                 handler.sendMessage(message);

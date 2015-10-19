@@ -54,7 +54,8 @@ import java.util.WeakHashMap;
 /**
  * 全类别
  */
-public class MainCategoryFragment extends BaseFragment{
+public class MainCategoryFragment extends BaseFragment
+{
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private long lastClickTime = 0L;
@@ -69,19 +70,20 @@ public class MainCategoryFragment extends BaseFragment{
     private CategoryExpandeAdapter categoryExpandeAdapter;
     private ExpandableListView expandableListView;
 
-    private int screenWidth;
-
     private Dialog mDialog;
-    private Handler mHandler = new Handler(){
+    private Handler mHandler = new Handler()
+    {
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(Message msg)
+        {
             // 设置默认展开
             int groupCount = expandableListView.getCount();
-            for (int i = 0; i < groupCount; i++) {
+            for (int i = 0; i < groupCount; i++)
+            {
                 expandableListView.expandGroup(i);
             }
             categoryExpandeAdapter.notifyDataSetChanged();
-            if (mDialog!=null)
+            if (mDialog != null)
             {
                 mDialog.dismiss();
             }
@@ -89,7 +91,8 @@ public class MainCategoryFragment extends BaseFragment{
         }
     };
 
-    public static MainCategoryFragment newInstance(String param1, String param2) {
+    public static MainCategoryFragment newInstance(String param1, String param2)
+    {
         MainCategoryFragment fragment = new MainCategoryFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
@@ -97,13 +100,17 @@ public class MainCategoryFragment extends BaseFragment{
         fragment.setArguments(args);
         return fragment;
     }
-    public MainCategoryFragment() {
+
+    public MainCategoryFragment()
+    {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        if (getArguments() != null)
+        {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
@@ -111,144 +118,151 @@ public class MainCategoryFragment extends BaseFragment{
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view=inflater.inflate(R.layout.fragment_category1, container, false);
+                             Bundle savedInstanceState)
+    {
+        View view = inflater.inflate(R.layout.fragment_category1, container, false);
         view.findViewById(R.id.iv_search).setOnClickListener(this);
         mRequestQueue = Volley.newRequestQueue(getActivity());
         getCategoryData();
-        expandableListView=(ExpandableListView)view.findViewById(R.id.el_category);
-        categoryExpandeAdapter=new CategoryExpandeAdapter(getActivity(),categoryList);
+        expandableListView = (ExpandableListView) view.findViewById(R.id.el_category);
+        categoryExpandeAdapter = new CategoryExpandeAdapter(getActivity(), categoryList);
         expandableListView.setAdapter(categoryExpandeAdapter);
-
-
         // 子类点击事件
-        expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-
+        expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener()
+        {
             @Override
-            public boolean onChildClick(ExpandableListView parent, View v,
-                                        int groupPosition, int childPosition, long id) {
-                Log.i("onChildClick------------->","onChildClick");
+            public boolean onChildClick(ExpandableListView parent, View v,int groupPosition, int childPosition, long id)
+            {
                 return true;
             }
         });
         // 父类点击事件
-        expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
-
+        expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener()
+        {
             @Override
-            public boolean onGroupClick(ExpandableListView parent, View v,
-                                        int groupPosition, long id) {
+            public boolean onGroupClick(ExpandableListView parent, View v,int groupPosition, long id)
+            {
                 return true;
             }
         });
-        // 设置点击背景色
-//        expandableListView.setSelector(getResources().getColor(R.color.base_bg));
-        DisplayMetrics dm = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
-        screenWidth=dm.widthPixels;
-        Log.i("screenWidth---------->",screenWidth+"");
-        Log.i("screenHeight---------->",dm.heightPixels+"");
-        mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
+        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
         return view;
     }
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
+    public void onButtonPressed(Uri uri)
+    {
+        if (mListener != null)
+        {
             mListener.onFragmentInteraction(uri);
         }
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState)
+    {
         super.onActivityCreated(savedInstanceState);
     }
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(Activity activity)
+    {
         super.onAttach(activity);
-        try {
+        try
+        {
             mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
+        } catch (ClassCastException e)
+        {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
     }
 
     @Override
-    public void onDetach() {
+    public void onDetach()
+    {
         super.onDetach();
         mListener = null;
     }
 
-    public interface OnFragmentInteractionListener {
+    public interface OnFragmentInteractionListener
+    {
         public void onFragmentInteraction(Uri uri);
     }
 
 
-    private void getCategoryData(){
+    private void getCategoryData()
+    {
 
-        String url=ZhaiDou.CATEGORY_ITEM_URL;
-        JsonObjectRequest request =new JsonObjectRequest(url,new Response.Listener<JSONObject>(){
+        String url = ZhaiDou.CATEGORY_ITEM_URL;
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
             @Override
-            public void onResponse(JSONObject jsonObject) {
-//                Log.i("getCategoryData-------------->",jsonObject.toString());
-                Category category=null;
+            public void onResponse(JSONObject jsonObject)
+            {
+                Category category = null;
                 JSONArray categoryArr = jsonObject.optJSONArray("item_categories");
-                for (int i=0;i<categoryArr.length();i++){
+                for (int i = 0; i < categoryArr.length(); i++)
+                {
                     JSONObject categoryJson = categoryArr.optJSONObject(i);
-                    int id =categoryJson.optInt("id");
+                    int id = categoryJson.optInt("id");
                     String name = categoryJson.optString("name");
                     JSONObject avatar = categoryJson.optJSONObject("avatar").optJSONObject("avatar");
                     String url = avatar.optString("url");
-                    String thumb =avatar.optJSONObject("thumb").optString("url");
+                    String thumb = avatar.optJSONObject("thumb").optString("url");
 
                     JSONArray children = categoryJson.optJSONArray("children");
 
                     CategoryItem childItem = null;
                     List<CategoryItem> childList = new ArrayList<CategoryItem>();
-                    for (int k=0;k<children.length();k++){
+                    for (int k = 0; k < children.length(); k++)
+                    {
                         JSONObject child = children.optJSONObject(k);
-                        int childId =child.optInt("id");
+                        int childId = child.optInt("id");
                         int parentId = child.optInt("parent_id");
-                        int lft=child.optInt("lft");
-                        int rgt=child.optInt("rgt");
-                        String childName =child.optString("name");
+                        int lft = child.optInt("lft");
+                        int rgt = child.optInt("rgt");
+                        String childName = child.optString("name");
                         JSONObject childAvatar = child.optJSONObject("avatar");
                         String childUrl = childAvatar.optString("url");
                         String childThumb = childAvatar.optJSONObject("thumb").optString("url");
-                        int childLevel =child.optInt("level");
-                        childItem = new CategoryItem(childId,parentId,lft,rgt,childName,childUrl,childThumb,childLevel);
+                        int childLevel = child.optInt("level");
+                        childItem = new CategoryItem(childId, parentId, lft, rgt, childName, childUrl, childThumb, childLevel);
                         childList.add(childItem);
                     }
 
-                    while (4-childList.size()%4<4&&4-childList.size()%4>0){
+                    while (4 - childList.size() % 4 < 4 && 4 - childList.size() % 4 > 0)
+                    {
                         CategoryItem item = new CategoryItem();
                         childList.add(item);
                     }
 
-
-                    category = new Category(id,name,url,thumb,childList);
-                    if (id==26){
-                        categoryList.add(0,category);
-                    }else {
+                    category = new Category(id, name, url, thumb, childList);
+                    if (id == 26)
+                    {
+                        categoryList.add(0, category);
+                    } else
+                    {
                         categoryList.add(category);
                     }
 
                     mHandler.sendEmptyMessage(0);
                 }
-                Log.i("categoryList------------->",categoryList.size()+"");
             }
-        },new Response.ErrorListener(){
+        }, new Response.ErrorListener()
+        {
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                if (mDialog!=null)
-                mDialog.dismiss();
-                ToolUtils.setToast(mContext,"加载失败");
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+                ToolUtils.setToast(mContext, "加载失败");
             }
-        }){
+        })
+        {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers=new HashMap<String, String>();
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }
@@ -256,44 +270,52 @@ public class MainCategoryFragment extends BaseFragment{
         mRequestQueue.add(request);
     }
 
-    private class CategoryExpandeAdapter extends BaseExpandableListAdapter{
+    private class CategoryExpandeAdapter extends BaseExpandableListAdapter
+    {
         private Context context;
         private List<Category> mCatrgoryList;
 
-        public CategoryExpandeAdapter(Context context, List<Category> categories) {
+        public CategoryExpandeAdapter(Context context, List<Category> categories)
+        {
             this.context = context;
-            mCatrgoryList=categories;
+            mCatrgoryList = categories;
         }
+
         @Override
-        public Object getChild(int groupPosition, int childPosition) {
+        public Object getChild(int groupPosition, int childPosition)
+        {
             return categoryList.get(groupPosition).getCategoryItems().get(childPosition);
         }
 
         @Override
-        public long getChildId(int groupPosition, int childPosition) {
+        public long getChildId(int groupPosition, int childPosition)
+        {
             return childPosition;
         }
 
         @Override
-        public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-            if (convertView==null)
-                convertView=LayoutInflater.from(context).inflate(R.layout.fragment_category_child_grid,null);
-            ChildGridView gridView = ViewHolder.get(convertView,R.id.gv_category_child);
+        public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent)
+        {
+            if (convertView == null)
+                convertView = LayoutInflater.from(context).inflate(R.layout.fragment_category_child_grid, null);
+            ChildGridView gridView = ViewHolder.get(convertView, R.id.gv_category_child);
 
             List<CategoryItem> categoryItems = categoryList.get(groupPosition).getCategoryItems();
 
-            ChildAdapter childAdapter =new ChildAdapter(context,categoryItems,gridView);
+            ChildAdapter childAdapter = new ChildAdapter(context, categoryItems, gridView);
             gridView.setAdapter(childAdapter);
 
-            childAdapter.setOnInViewClickListener(R.id.rl_grid_category,new BaseListAdapter.onInternalClickListener() {
+            childAdapter.setOnInViewClickListener(R.id.rl_grid_category, new BaseListAdapter.onInternalClickListener()
+            {
                 @Override
-                public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                    CategoryItem item = (CategoryItem)values;
+                public void OnClickListener(View parentV, View v, Integer position, Object values)
+                {
+                    CategoryItem item = (CategoryItem) values;
                     if (TextUtils.isEmpty(item.getName()))
                         return;
-                    Intent intent = new Intent(getActivity(),CategoryActivity.class);
-                    intent.putExtra("id",item.getId());
-                    intent.putExtra("title",item.getName());
+                    Intent intent = new Intent(getActivity(), CategoryActivity.class);
+                    intent.putExtra("id", item.getId());
+                    intent.putExtra("title", item.getName());
                     startActivity(intent);
                 }
             });
@@ -302,91 +324,103 @@ public class MainCategoryFragment extends BaseFragment{
         }
 
         @Override
-        public int getChildrenCount(int groupPosition) {
+        public int getChildrenCount(int groupPosition)
+        {
             return 1;
         }
 
         @Override
-        public Object getGroup(int groupPosition) {
+        public Object getGroup(int groupPosition)
+        {
             return categoryList.get(groupPosition);
         }
+
         @Override
-        public int getGroupCount() {
+        public int getGroupCount()
+        {
             return categoryList.size();
         }
 
         @Override
-        public long getGroupId(int groupPosition) {
+        public long getGroupId(int groupPosition)
+        {
             return groupPosition;
         }
 
         @Override
         public View getGroupView(int groupPosition, boolean isExpanded,
-                                 View convertView, ViewGroup parent) {
-            if (convertView==null)
-               convertView = LayoutInflater.from(context).inflate(R.layout.fragment_category_group_item,
-                    null);
-            TextView textview = ViewHolder.get(convertView,R.id.tv_category_group_name);
+                                 View convertView, ViewGroup parent)
+        {
+            if (convertView == null)
+                convertView = LayoutInflater.from(context).inflate(R.layout.fragment_category_group_item,
+                        null);
+            TextView textview = ViewHolder.get(convertView, R.id.tv_category_group_name);
             textview.setText(categoryList.get(groupPosition).getName());
             return convertView;
         }
 
         @Override
-        public boolean hasStableIds() {
+        public boolean hasStableIds()
+        {
             return false;
         }
 
         @Override
-        public boolean isChildSelectable(int groupPosition, int childPosition) {
+        public boolean isChildSelectable(int groupPosition, int childPosition)
+        {
             return true;
         }
     }
 
-    private class ChildAdapter extends BaseListAdapter<CategoryItem>{
+    private class ChildAdapter extends BaseListAdapter<CategoryItem>
+    {
 
-        private WeakHashMap<Integer,View> weakHashMap = new WeakHashMap<Integer, View>();
+        private WeakHashMap<Integer, View> weakHashMap = new WeakHashMap<Integer, View>();
         private ChildGridView gridView;
-        public ChildAdapter(Context context, List<CategoryItem> list,ChildGridView gridView) {
+
+        public ChildAdapter(Context context, List<CategoryItem> list, ChildGridView gridView)
+        {
             super(context, list);
-            this.gridView=gridView;
+            this.gridView = gridView;
         }
 
         @Override
-        public View bindView(int position, View view, ViewGroup parent) {
-            view =weakHashMap.get(position);
-            if (view==null){
-                view=mInflater.inflate(R.layout.fragment_category_child_item,null);
+        public View bindView(int position, View view, ViewGroup parent)
+        {
+            view = weakHashMap.get(position);
+            if (view == null)
+            {
+                view = mInflater.inflate(R.layout.fragment_category_child_item, null);
                 AbsListView.LayoutParams param = new AbsListView.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,screenWidth/4);
+                        ViewGroup.LayoutParams.MATCH_PARENT, screenWidth / 4);
                 view.setLayoutParams(param);
                 view.setBackgroundResource(R.drawable.grid_category_selector);
             }
 
-            ImageView imageView =ViewHolder.get(view,R.id.iv_category_item);
-//            Log.i("imageView------->",imageView.toString());
-            TextView textView=ViewHolder.get(view,R.id.tv_category_name);
+            ImageView imageView = ViewHolder.get(view, R.id.iv_category_item);
+            TextView textView = ViewHolder.get(view, R.id.tv_category_name);
             CategoryItem item = getList().get(position);
 
-//            Log.i("item.getThumb()-------->",item.getThumb());
-//            Log.i("item.getName()-------->",item.getName());
             ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
 
-            layoutParams.height=PixelUtil.dp2px(30,mContext);
-            layoutParams.width=PixelUtil.dp2px(30,mContext);
+            layoutParams.height = PixelUtil.dp2px(30, mContext);
+            layoutParams.width = PixelUtil.dp2px(30, mContext);
             imageView.setLayoutParams(layoutParams);
             if (!TextUtils.isEmpty(item.getThumb()))
-            ToolUtils.setImageCacheUrl("http://"+item.getThumb(),imageView);
+                ToolUtils.setImageCacheUrl("http://" + item.getThumb(), imageView);
             if (!TextUtils.isEmpty(item.getName()))
-               textView.setText(item.getName());
+                textView.setText(item.getName());
 
-            weakHashMap.put(position,view);
+            weakHashMap.put(position, view);
             return view;
         }
     }
 
     @Override
-    public void onClick(View view) {
-        switch (view.getId()){
+    public void onClick(View view)
+    {
+        switch (view.getId())
+        {
             case R.id.iv_search:
                 SearchFragment searchFragment = SearchFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
@@ -394,11 +428,29 @@ public class MainCategoryFragment extends BaseFragment{
                 break;
         }
     }
-    public void onResume() {
+
+    @Override
+    public void onHiddenChanged(boolean hidden)
+    {
+        super.onHiddenChanged(hidden);
+        if (!hidden)
+        {
+            if (categoryList==null|categoryList.size()<1)
+            {
+                getCategoryData();
+            }
+        }
+
+    }
+
+    public void onResume()
+    {
         super.onResume();
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_all_category)); //统计页面
     }
-    public void onPause() {
+
+    public void onPause()
+    {
         super.onPause();
         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_all_category));
     }

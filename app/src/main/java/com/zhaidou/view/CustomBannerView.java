@@ -41,6 +41,7 @@ public class CustomBannerView extends FrameLayout
     private View view;
     private LinearLayout dotsLine;
     private ViewPager viewPager;
+    private LinearLayout nullLine;
     private ImageLoopPagerAdapter adapter;
     private int currentPos = 0;
     private List<ImageView> dots = new ArrayList<ImageView>();
@@ -121,6 +122,13 @@ public class CustomBannerView extends FrameLayout
 
     private void initView()
     {
+        if (imgs.size()==0)
+        {
+            nullLine=new LinearLayout(mContext);
+            nullLine.setBackgroundColor(R.color.page_bg);
+            return;
+        }
+
         banners.clear();
         dots.clear();
         if (view==null)
@@ -333,7 +341,14 @@ public class CustomBannerView extends FrameLayout
      */
     public void setLayoutParams(int width,int height)
     {
-        viewPager.setLayoutParams(new RelativeLayout.LayoutParams(width,height));
+        if (imgs.size()==0)
+        {
+            nullLine.setLayoutParams(new LinearLayout.LayoutParams(width,height));
+        }
+        else
+        {
+            viewPager.setLayoutParams(new RelativeLayout.LayoutParams(width,height));
+        }
     }
 
     /**

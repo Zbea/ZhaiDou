@@ -386,6 +386,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:visibility="gone"
                 android:background="@color/white"
                 android:layout_marginTop="@dimen/default_margin"
                 >
@@ -394,7 +395,7 @@
                     android:layout_height="wrap_content"
                     android:padding="@dimen/default_margin"
                     android:textColor="@color/red"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:background="@color/page_bg"
                     android:text="您的帐号还没有绑定手机，请绑定后完成支付"
                     android:singleLine="true"/>
@@ -471,6 +472,7 @@
                         android:drawableRight="@drawable/cancel"
                         android:paddingRight="@dimen/default_margin"
                         android:drawablePadding="10dp"
+                        android:inputType="number"
                         android:background="@color/transparent"
                         android:textColor="@color/text_main_color"
                         android:textColorHint="@color/edit_hint_gray"

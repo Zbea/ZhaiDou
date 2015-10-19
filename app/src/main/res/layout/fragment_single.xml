@@ -37,7 +37,7 @@
         android:horizontalSpacing="2dp"
         android:verticalSpacing="2dp"
         android:scrollbars="none"
-        android:layout_marginTop="2dp"
+        android:paddingTop="5dp"
         android:listSelector="@android:color/transparent"
         android:layout_height="match_parent"/>
 

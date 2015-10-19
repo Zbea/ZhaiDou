@@ -194,7 +194,7 @@
                             android:textColor="#666666"
                             android:gravity="center"
                             android:textSize="12sp"
-                            android:text="@string/home_shop_special_text"/>
+                            android:text="@string/title_home_strategy"/>
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -247,7 +247,7 @@
                         android:ellipsize="marquee"
                         android:marqueeRepeatLimit="marquee_forever"
                         android:textSize="16sp"
-                        android:text="3折起"
+                        android:text=""
                         />
 
                     <com.zhaidou.view.TypeFaceTextView
@@ -261,7 +261,7 @@
                         android:singleLine="true"
                         android:ellipsize="end"
                         android:textColor="@color/text_main_color"
-                        android:text="item的名称"
+                        android:text=""
                         />
 
                     <LinearLayout
@@ -305,7 +305,31 @@
                 </LinearLayout>
 
             </LinearLayout>
-
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@color/white">
+                <TextView
+                    android:layout_width="8dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:background="@color/red"/>
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/default_margin"
+                    android:layout_marginRight="@dimen/default_margin"
+                    android:textSize="15sp"
+                    android:textColor="@color/text_main_color"
+                    android:text="新特卖,每日上新"/>
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/click_gray"></View>
             <com.zhaidou.view.ListViewForScrollView
                 android:id="@+id/homeItemList"
                 android:layout_width="match_parent"

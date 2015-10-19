@@ -1,6 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/page_bg"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -30,7 +31,7 @@
         android:id="@+id/el_category"
         android:layout_width="match_parent"
         android:groupIndicator="@null"
-        android:background="#eeeeee"
+        android:background="@color/transparent"
         android:divider="#eeeeee"
         android:listSelector="@android:color/transparent"
         android:layout_height="wrap_content"

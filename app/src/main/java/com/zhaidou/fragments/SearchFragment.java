@@ -107,16 +107,15 @@ public class SearchFragment extends BaseFragment
                     if (mFragments.size()<3){
                         mSpecialGoodsFragment= GoodsSingleListFragment.newInstance(text, "goods",1);
                         mtaobaoGoodsFragment= GoodsSingleListFragment.newInstance(text, text,2);
-                        mStrategyFragment= SearchArticleListFragment.newInstance(text, text);
+//                        mStrategyFragment= SearchArticleListFragment.newInstance(text, text);
                         mFragments.add(mSpecialGoodsFragment);
                         mFragments.add(mtaobaoGoodsFragment);
-                        mFragments.add(mStrategyFragment);
-                    }else if (mFragments.size()==3){
+//                        mFragments.add(mStrategyFragment);
+                    }else if (mFragments.size()==2){
                         mSpecialGoodsFragment.FetchData(text,sort,1);
                         mtaobaoGoodsFragment.FetchData(text,sort,1);
-                        mStrategyFragment.FetchData(text,sort,1);
+//                        mStrategyFragment.FetchData(text,sort,1);
                     }
-
                     mSearchFragmentAdapter.notifyDataSetChanged();
                     indicator.notifyDataSetChanged();
                     ll_viewpager.setVisibility(View.VISIBLE);
@@ -426,14 +425,14 @@ public class SearchFragment extends BaseFragment
             {
                 return "特卖商城";
             }
-            else if (position == 1)
+            else
             {
                 return "单品";
             }
-            else
-            {
-                return "攻略";
-            }
+//            else
+//            {
+//                return "攻略";
+//            }
         };
     }
 
