@@ -685,7 +685,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         mRequestQueue.add(request);
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();

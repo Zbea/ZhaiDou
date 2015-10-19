@@ -1,10 +1,8 @@
 package com.zhaidou.fragments;
 
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -73,25 +71,6 @@ public class HomeArticleListFragment extends BaseFragment implements PullToRefre
 
     private HomeAdapter mHomeAdapter;
 
-    private BroadcastReceiver broadcastReceiver=new BroadcastReceiver()
-    {
-        @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            String tag=intent.getAction();
-            if (tag.equals(ZhaiDou.IntentRefreshListTag))
-            {
-                refresh();
-            }
-
-        }
-    };
-
-    private void refresh()
-    {
-        mHomeAdapter.notifyDataSetChanged();
-    }
-
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             mHomeAdapter.notifyDataSetChanged();
@@ -129,8 +108,6 @@ public class HomeArticleListFragment extends BaseFragment implements PullToRefre
         View view=inflater.inflate(R.layout.fragment_special, container, false);
 
         mContext=getActivity();
-
-        initBroadcastReceiver();
 
         listView=(PullToRefreshListView)view.findViewById(R.id.lv_special_list);
         listView.setMode(PullToRefreshBase.Mode.BOTH);
@@ -172,16 +149,6 @@ public class HomeArticleListFragment extends BaseFragment implements PullToRefre
             }
         });
         return view;
-    }
-
-    /**
-     * 广播注册
-     */
-    private void initBroadcastReceiver()
-    {
-        IntentFilter intentFilter=new IntentFilter();
-        intentFilter.addAction(ZhaiDou.IntentRefreshListTag);
-        mContext.registerReceiver(broadcastReceiver,intentFilter);
     }
 
     private void FetchData(final int page,Category category){

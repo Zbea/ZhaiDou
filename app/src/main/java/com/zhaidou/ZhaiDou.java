@@ -7,7 +7,7 @@ public class ZhaiDou {
 
     public static String HOME_PAGE_URL = "http://buy.zhaidou.com/?json=get_category_posts&slug=%E5%AE%B6%E9%A5%B0%E4%BC%98%E9%80%89&status=publish";
     public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
-//    public static String HOME_BASE_URL = "http://www.zhaidou.com/";
+    //    public static String HOME_BASE_URL = "http://www.zhaidou.com/";
 //    public static String HOME_BASE_URL = "http://192.168.199.171/";
     public static String TAG_BASE_URL = "http://buy.zhaidou.com/?tag=%s&json=1";
 
@@ -85,6 +85,12 @@ public class ZhaiDou {
     public static String USER_DELETE_COLLECT_ITEM_URL=HOME_BASE_URL+"article/api/article_items/like";
     //用户豆搭
     public static String USER_COLLOCATION_ITEM_URL=HOME_BASE_URL+"api/v1/users/";
+    //获取验证码
+    public static String USER_REGISTER_VERIFY_CODE_URL=HOME_BASE_URL+"api/v1/phone_vcodes/vilidate_phone?phone=";
+    //修改密码验证码验证
+    public static String USER_RESET_PSW_CONFRIM_URL=HOME_BASE_URL+"api/v1/phone_vcodes/next_to_password?phone=";
+    //修改密码
+    public static String USER_RESET_PSW_URL=HOME_BASE_URL+"api/v1/users/reset_password";
 
 
     //后台统计
@@ -147,7 +153,7 @@ public class ZhaiDou {
     public static String ORDER_RECEIVER_URL=HOME_BASE_URL+"special_mall/api/receivers/";
     //省市区
     public static String ORDER_ADDRESS_URL=HOME_BASE_URL+"special_mall/api/sales/provider";
-// 淘宝订单
+    // 淘宝订单
     public static String URL_TAOBAO_ORDER="https://login.m.taobao.com/login.htm?tpl_redirect_url=https://h5.m.taobao.com/mlapp/olist.html";
 
 
