@@ -52,7 +52,7 @@ public class AccountFindPwdActivity extends FragmentActivity {
     private int initTime = 60;
     private Timer mTimer;
     private String token;
-    private boolean flag=false;
+    private boolean flag = false;
 
     private Handler handler = new Handler() {
         @Override
@@ -92,7 +92,7 @@ public class AccountFindPwdActivity extends FragmentActivity {
 //                        Intent intent = new Intent(getApplicationContext(), AccountSetPwdActivity.class);
 //                        startActivity(intent);
 //                        doRegister();
-                        doVertify(phone,code);
+                        doVertify(phone, code);
                     } else {
                         ToolUtils.setToast(getApplicationContext(), "抱歉,无效手机号码");
                     }
@@ -115,29 +115,29 @@ public class AccountFindPwdActivity extends FragmentActivity {
     };
 
     private void doVertify(final String phone, final String code) {
-        JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_RESET_PSW_CONFRIM_URL+phone+"&vcode="+code,new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_RESET_PSW_CONFRIM_URL + phone + "&vcode=" + code, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                int status=jsonObject.optInt("status");
-                String message=jsonObject.optString("message");
-                if (status==201){
-                    token=jsonObject.optString("token");
+                int status = jsonObject.optInt("status");
+                String message = jsonObject.optString("message");
+                if (status == 201) {
+                    token = jsonObject.optString("token");
                     Intent intent = new Intent(getApplicationContext(), AccountSetPwdActivity.class);
-                    intent.putExtra("phone",phone);
-                    intent.putExtra("token",token);
-                    intent.putExtra("code",code);
-                    startActivity(intent);
+                    intent.putExtra("phone", phone);
+                    intent.putExtra("token", token);
+                    intent.putExtra("code", code);
+                    startActivityForResult(intent, 200);
                     return;
                 }
-                Toast.makeText(AccountFindPwdActivity.this,message,Toast.LENGTH_SHORT).show();
+                Toast.makeText(AccountFindPwdActivity.this, message, Toast.LENGTH_SHORT).show();
             }
-        },new Response.ErrorListener() {
+        }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
 
             }
         });
-        ((ZDApplication)getApplication()).mRequestQueue.add(request);
+        ((ZDApplication) getApplication()).mRequestQueue.add(request);
     }
 
     @Override
@@ -162,34 +162,37 @@ public class AccountFindPwdActivity extends FragmentActivity {
         findViewById(R.id.back_btn).setOnClickListener(onClickListener);
 
     }
+
     /**
      * 获得验证码
+     *
      * @param phone 手机号码
      */
     private void getVerifyCode(String phone) {
-        codeTimer();
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_REGISTER_VERIFY_CODE_URL+phone+"&flag=2",new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + phone + "&flag=2", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                System.out.println("AccountRegisterSetPwdActivity.onResponse---------->"+jsonObject.toString());
-                int status= jsonObject.optInt("status");
-                String message=jsonObject.optString("message");
-                if (status==201){
-                    token=jsonObject.optString("token");
-                    flag=jsonObject.optBoolean("flag");
-                    Toast.makeText(AccountFindPwdActivity.this,"获取验证码成功",Toast.LENGTH_SHORT).show();
-                }else {
-                    Toast.makeText(AccountFindPwdActivity.this,message,Toast.LENGTH_SHORT).show();
+                System.out.println("AccountRegisterSetPwdActivity.onResponse---------->" + jsonObject.toString());
+                int status = jsonObject.optInt("status");
+                String message = jsonObject.optString("message");
+                if (status == 201) {
+                    codeTimer();
+                    token = jsonObject.optString("token");
+                    flag = jsonObject.optBoolean("flag");
+                    Toast.makeText(AccountFindPwdActivity.this, "获取验证码成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(AccountFindPwdActivity.this, message, Toast.LENGTH_SHORT).show();
                 }
             }
-        },new Response.ErrorListener() {
+        }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
 
             }
         });
-        ((ZDApplication)getApplication()).mRequestQueue.add(request);
+        ((ZDApplication) getApplication()).mRequestQueue.add(request);
     }
+
     /**
      * 验证码倒计时
      */
@@ -259,10 +262,19 @@ public class AccountFindPwdActivity extends FragmentActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
             }
         });
         mRequestQueue.add(request);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (resultCode){
+            case 1500:
+                finish();
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
