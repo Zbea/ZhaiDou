@@ -100,7 +100,7 @@ public class SearchSortFragment extends BaseFragment implements AdapterView.OnIt
         this.checked=checked;
         if (page==0){
             mPage="goods";
-            data=Arrays.asList(getResources().getStringArray(R.array.product_sort));
+            data=Arrays.asList(getResources().getStringArray(R.array.specail_product_sort));
         }
         else if (page==1)
         {

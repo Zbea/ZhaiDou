@@ -100,19 +100,19 @@ public class HomeStrategyFragment extends BaseFragment
     {
         public void handleMessage(Message msg)
         {
-                if (msg.what == UPDATE_HOMELIST)
+            if (msg.what == UPDATE_HOMELIST)
+            {
+                loadingView.setVisibility(View.GONE);
+                if (mListAdapter == null)
                 {
-                    loadingView.setVisibility(View.GONE);
-                    if (mListAdapter == null)
-                    {
-                        mListAdapter = new HomeListAdapter(mContext, articleList, screenWidth);
-                        mListView.setAdapter(mListAdapter);
-                    }
-                    mScrollView.onRefreshComplete();
-                    mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+                    mListAdapter = new HomeListAdapter(mContext, articleList, screenWidth);
+                    mListView.setAdapter(mListAdapter);
                 }
-                if (mListAdapter != null)
-                    mListAdapter.notifyDataSetChanged();
+                mScrollView.onRefreshComplete();
+                mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+            }
+            if (mListAdapter != null)
+                mListAdapter.notifyDataSetChanged();
         }
     };
 
@@ -128,10 +128,12 @@ public class HomeStrategyFragment extends BaseFragment
             FetchData(currentPage = 1, mCategory);
             mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         }
+
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView)
         {
-            if (count != -1 && articleList.size() == count) {
+            if (count != -1 && articleList.size() == count)
+            {
                 Toast.makeText(mContext, "已经加载完毕", Toast.LENGTH_SHORT).show();
                 mScrollView.onRefreshComplete();
                 mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
@@ -142,7 +144,7 @@ public class HomeStrategyFragment extends BaseFragment
         }
     };
 
-    private HomeCategoryFragment.CategorySelectedListener categorySelectedListener=new HomeCategoryFragment.CategorySelectedListener()
+    private HomeCategoryFragment.CategorySelectedListener categorySelectedListener = new HomeCategoryFragment.CategorySelectedListener()
     {
         @Override
         public void onCategorySelected(Category category)
@@ -150,9 +152,11 @@ public class HomeStrategyFragment extends BaseFragment
             mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
             articleList.removeAll(articleList);
             FetchData(currentPage = 1, mCategory = category);
-            if (category != null) {
+            if (category != null)
+            {
                 mDotView.setVisibility(View.VISIBLE);
-            } else {
+            } else
+            {
                 mDotView.setVisibility(View.GONE);
             }
             toggleMenu();
@@ -176,7 +180,8 @@ public class HomeStrategyFragment extends BaseFragment
             detailIntent.putExtra("cover_url", article.getImg_url());
             detailIntent.putExtra("url", ZhaiDou.ARTICLE_DETAIL_URL + article.getId());
             startActivityForResult(detailIntent, 100);
-            if ("true".equalsIgnoreCase(article.getIs_new())){
+            if ("true".equalsIgnoreCase(article.getIs_new()))
+            {
                 SharedPreferencesUtil.saveData(mContext, "is_new_" + article.getId(), false);
                 view.findViewById(R.id.newsView).setVisibility(View.GONE);
             }
@@ -272,11 +277,10 @@ public class HomeStrategyFragment extends BaseFragment
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(R.string.title_home_strategy);
 
-        fl_category_menu = (FrameLayout)mView.findViewById(R.id.fl_category_menu);
+        fl_category_menu = (FrameLayout) mView.findViewById(R.id.fl_category_menu);
         mCategoryView = (ImageView) mView.findViewById(R.id.iv_category);
-        mCategoryView.setOnClickListener(onClickListener);
         mDotView = (ImageView) mView.findViewById(R.id.iv_dot);
-        mView.findViewById(R.id.ll_category_view).setOnClickListener(this);
+        mView.findViewById(R.id.ll_category_view).setOnClickListener(onClickListener);
 
         mScrollView = (PullToRefreshScrollView) mView.findViewById(R.id.sv_special_scrollview);
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
@@ -285,7 +289,8 @@ public class HomeStrategyFragment extends BaseFragment
         mListView = (ListViewForScrollView) mView.findViewById(R.id.shopListView);
         mListView.setOnItemClickListener(onItemClickListener);
 
-        if (homeCategoryFragment == null) {
+        if (homeCategoryFragment == null)
+        {
             homeCategoryFragment = HomeCategoryFragment.newInstance("", "");
             getChildFragmentManager().beginTransaction().add(R.id.fl_category_menu, homeCategoryFragment
                     , HomeCategoryFragment.TAG).hide(homeCategoryFragment).addToBackStack(null).commit();
@@ -322,14 +327,17 @@ public class HomeStrategyFragment extends BaseFragment
     /**
      * 切换
      */
-    public void toggleMenu() {
-        if (homeCategoryFragment.isHidden()) {
+    public void toggleMenu()
+    {
+        if (homeCategoryFragment.isHidden())
+        {
             mCategoryView.setImageResource(R.drawable.icon_close);
             fl_category_menu.setVisibility(View.VISIBLE);
 
             getChildFragmentManager().beginTransaction().setCustomAnimations(R.anim
                     .slide_in_from_top, R.anim.slide_out_to_top, R.anim.slide_in_from_bottom, R.anim.slide_out_to_bottom).show(homeCategoryFragment).commit();
-        } else {
+        } else
+        {
             mCategoryView.setImageResource(R.drawable.icon_category);
             fl_category_menu.setVisibility(View.GONE);
             getChildFragmentManager().beginTransaction().hide(homeCategoryFragment).commit();
@@ -390,15 +398,22 @@ public class HomeStrategyFragment extends BaseFragment
             @Override
             public void onErrorResponse(VolleyError error)
             {
-                ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+
                 if (mDialog.isShowing())
                 {
                     mDialog.dismiss();
                 }
-                nullView.setVisibility(View.VISIBLE);
-                nullNetView.setVisibility(View.GONE);
-                mScrollView.onRefreshComplete();
-                mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+                if (articleList.size()!=0)
+                {
+                    ToolUtils.setToast(mContext, R.string.loading_fail_txt);
+                }
+                else
+                {
+                    nullView.setVisibility(View.VISIBLE);
+                    nullNetView.setVisibility(View.GONE);
+                    mScrollView.onRefreshComplete();
+                    mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+                }
             }
         })
         {
@@ -424,6 +439,14 @@ public class HomeStrategyFragment extends BaseFragment
     {
         super.onPause();
         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_home_strategy));
+    }
+
+    /**
+     * 处理切换图标变换
+     */
+    public static void getHomeCategory() {
+        mCategoryView.setImageResource(R.drawable.icon_category);
+        fl_category_menu.setVisibility(View.GONE);
     }
 
 }

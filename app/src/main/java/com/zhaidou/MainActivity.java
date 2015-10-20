@@ -41,6 +41,7 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
+import com.zhaidou.fragments.HomeStrategyFragment;
 import com.zhaidou.fragments.MainCategoryFragment;
 import com.zhaidou.fragments.DiyFragment;
 import com.zhaidou.fragments.HomeCategoryFragment;
@@ -531,10 +532,10 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         List<Fragment> fragments = manager.getFragments();
         //当分类显示时候，返回先隐藏
         for (Fragment fragment : fragments) {
-            if (fragment instanceof MainHomeFragment) {
+            if (fragment instanceof HomeStrategyFragment) {
                 Fragment homeCategoryFragment = fragment.getChildFragmentManager().findFragmentByTag(HomeCategoryFragment.class.getSimpleName());
                 if (!homeCategoryFragment.isHidden()) {
-                    ((MainHomeFragment) fragment).getHomeCategory();
+                    ((HomeStrategyFragment) fragment).getHomeCategory();
                     fragment.getChildFragmentManager().beginTransaction().hide(homeCategoryFragment).commit();
                     return true;
                 }
