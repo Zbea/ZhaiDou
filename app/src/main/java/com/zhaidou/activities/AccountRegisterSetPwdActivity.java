@@ -131,8 +131,6 @@ public class AccountRegisterSetPwdActivity extends FragmentActivity {
         mRequestQueue = Volley.newRequestQueue(this);
         mRegister.setOnClickListener(onClickListener);
         findViewById(R.id.back_btn).setOnClickListener(onClickListener);
-
-//        codeTimer();
     }
 
     /**

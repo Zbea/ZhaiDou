@@ -88,11 +88,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     public int index;
     RequestQueue requestQueue;
     private DialogUtils mDialogUtils;
-    private boolean validate_phone=false;
+    private boolean validate_phone = false;
 
-    private static final String SHARED_PRE = "_tae_sdk_demo";
-
-    private static final String KEY_ENV_INDEX = "envIndex";
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -225,8 +222,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                         if (mDialog != null)
                             mDialog.dismiss();
                         if (jsonObject != null) {
-                            boolean validate_phone = jsonObject.optBoolean("validate_phone");
                             String token = jsonObject.optJSONObject("user_tokens").optString("token");
+                            validate_phone = jsonObject.optJSONArray("users").optJSONObject(0).optBoolean("validate_phone");
                             if (!validate_phone) {
                                 showVerifyDialog(token);
                             } else {
@@ -325,7 +322,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                                         String nick = user.optString("nick_name");
                                         int id = user.optInt("id");
                                         String email = user.optString("email");
-                                        validate_phone=user.optBoolean("validate_phone");
+                                        validate_phone = user.optBoolean("validate_phone");
                                         User u = new User(id, email, token, nick, null);
                                         Log.i("LoginFragment----onRegisterOrLoginSuccess---->", user.toString());
                                         mRegisterOrLoginListener.onRegisterOrLoginSuccess(u, null);
@@ -399,7 +396,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         mGetCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                codeTimer();
                 getVerifyCode(mPhoneView.getText().toString());
             }
         });
@@ -434,6 +430,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                                 String nick = userObj.optString("nick_name");
                                 String email = userObj.optString("email");
                                 String avatar = userObj.optJSONObject("avatar").optString("mobile_icon");
+                                validate_phone = true;
                                 User user = new User(id, email, token, nick, avatar);
                                 mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
                             } else {
@@ -469,7 +466,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
      * @param phone 手机号码
      */
     private void getVerifyCode(String phone) {
-//        codeTimer();
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + phone + "&flag=1", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -477,12 +473,9 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 int status = jsonObject.optInt("status");
                 String message = jsonObject.optString("message");
                 if (status == 201) {
-                    String token = jsonObject.optString("token");
-//                    flag=jsonObject.optBoolean("flag");
-                    Toast.makeText(LoginActivity.this, "获取验证码成功", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+                    codeTimer();
                 }
+                Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -549,7 +542,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 
         params.put("nick_name", platform.getDb().getUserName());
 
-        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_THIRD_VERIFY_URL,params, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_THIRD_VERIFY_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("jsonObject--->", jsonObject.toString());
@@ -648,7 +641,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     public void onRegisterOrLoginSuccess(final User user, Fragment fragment) {
         if (mDialog != null)
             mDialog.dismiss();
-        if (!validate_phone){
+        if (!validate_phone) {
             mDialogUtils.showVerifyDialog(new DialogUtils.VerifyCodeListener() {
                 @Override
                 public void onVerify(String phone) {
@@ -708,8 +701,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     }
                 }
             });
-        }else {
-            System.out.println("LoginActivity.onRegisterOrLoginSuccess---else--->"+user.toString());
+        } else {
+            System.out.println("LoginActivity.onRegisterOrLoginSuccess---else--->" + user.toString());
             Message message = new Message();
             message.obj = user;
             message.what = 0;

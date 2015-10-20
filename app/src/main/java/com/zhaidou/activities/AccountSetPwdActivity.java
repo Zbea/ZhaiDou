@@ -2,11 +2,8 @@ package com.zhaidou.activities;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -25,10 +22,8 @@ import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.model.User;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.MD5Util;
-import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomEditText;
 
@@ -48,48 +43,24 @@ public class AccountSetPwdActivity extends FragmentActivity {
     private SharedPreferences mSharedPreferences;
     private Dialog mDialog;
     private String token;
-    private String vertifyCode;
+    private String verifyCode;
     private String phone;
 
-    private Handler handler=new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what){
-                case 0:
-                    User user =(User)msg.obj;
-                    SharedPreferencesUtil.saveUser(getApplicationContext(), user);
-                    Intent intent=new Intent();
-                    intent.putExtra("id",user.getId());
-                    intent.putExtra("email",user.getEmail());
-                    intent.putExtra("token",user.getAuthentication_token());
-                    intent.putExtra("nick",user.getNickName());
-                    setResult(2000, intent);
-                    finish();
-                    break;
-            }
-        }
-    };
-
-    private View.OnClickListener onClickListener=new View.OnClickListener()
-    {
+    private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            switch (view.getId()){
+            switch (view.getId()) {
                 case R.id.bt_ok:
                     String pwd = mPwdView.getText().toString();
                     if (TextUtils.isEmpty(pwd)) {
                         mPwdView.setShakeAnimation();
                         return;
-                    }
-                    else if (pwd.length()>16)
-                    {
+                    } else if (pwd.length() > 16) {
                         ToolUtils.setToast(getApplicationContext(), "抱歉,设置的密码过长");
                         mPwdView.setShakeAnimation();
                         return;
-                    }
-                    else if (pwd.length()<6)
-                    {
-                        ToolUtils.setToast(getApplicationContext(),"抱歉,设置的密码过短");
+                    } else if (pwd.length() < 6) {
+                        ToolUtils.setToast(getApplicationContext(), "抱歉,设置的密码过短");
                         mPwdView.setShakeAnimation();
                         return;
                     }
@@ -109,82 +80,62 @@ public class AccountSetPwdActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.act_account_set_pwd_page);
-        token=getIntent().getStringExtra("token");
-        vertifyCode=getIntent().getStringExtra("code");
-        phone=getIntent().getStringExtra("phone");
+        token = getIntent().getStringExtra("token");
+        verifyCode = getIntent().getStringExtra("code");
+        phone = getIntent().getStringExtra("phone");
 
-        headTitle=(TextView)findViewById(R.id.title_tv);
+        headTitle = (TextView) findViewById(R.id.title_tv);
         headTitle.setText(R.string.title_register_set);
-        mPwdView=(CustomEditText)findViewById(R.id.tv_pwd);
-        mOk=(TextView)findViewById(R.id.bt_ok);
-        mSharedPreferences=getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
+        mPwdView = (CustomEditText) findViewById(R.id.tv_pwd);
+        mOk = (TextView) findViewById(R.id.bt_ok);
+        mSharedPreferences = getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
 
-        mRequestQueue= Volley.newRequestQueue(this);
+        mRequestQueue = Volley.newRequestQueue(this);
         mOk.setOnClickListener(onClickListener);
         findViewById(R.id.back_btn).setOnClickListener(onClickListener);
 
     }
 
-    private void doReset(String password){
+    private void doReset(String password) {
 
-        mDialog= CustomLoadingDialog.setLoadingDialog(AccountSetPwdActivity.this, "修改密码中");
-        String md5str= MD5Util.getMD5Encoding(phone+vertifyCode+"adminzhaidou888");
-        Map<String, String> valueParams = new HashMap<String,String>();
+        mDialog = CustomLoadingDialog.setLoadingDialog(AccountSetPwdActivity.this, "修改密码中");
+        String md5str = MD5Util.getMD5Encoding(phone + verifyCode + "adminzhaidou888");
+        Map<String, String> valueParams = new HashMap<String, String>();
 
-        valueParams.put("SECAuthorization",token);
-        valueParams.put("password",password);
-        valueParams.put("md5str",md5str);
+        valueParams.put("SECAuthorization", token);
+        valueParams.put("password", password);
+        valueParams.put("md5str", md5str);
 
-        ZhaiDouRequest request=new ZhaiDouRequest(Request.Method.POST,ZhaiDou.USER_RESET_PSW_URL,valueParams,new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_RESET_PSW_URL, valueParams, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                if (mDialog!=null)
+                if (mDialog != null)
                     mDialog.dismiss();
 
-                int status=jsonObject.optInt("status");
-                String message=jsonObject.optString("message");
-                if (status==201){
-                    Toast.makeText(AccountSetPwdActivity.this,message,Toast.LENGTH_SHORT).show();
+                int status = jsonObject.optInt("status");
+                String message = jsonObject.optString("message");
+                if (status == 201) {
+                    Toast.makeText(AccountSetPwdActivity.this, message, Toast.LENGTH_SHORT).show();
+                    setResult(1500);
+                    finish();
                     return;
                 }
-                Toast.makeText(AccountSetPwdActivity.this,message,Toast.LENGTH_SHORT).show();
-
-
-
-//                Object obj = jsonObject.opt("message");
-//                if (obj!=null){
-//                    JSONArray errMsg =  jsonObject.optJSONArray("message");
-//                    Toast.makeText(AccountSetPwdActivity.this,errMsg.optString(0),Toast.LENGTH_LONG).show();
-//                    return;
-//                }
-//
-//                JSONObject userObj = jsonObject.optJSONObject("user");
-//                int id = userObj.optInt("id");
-//                String email = userObj.optString("email");
-//                String token = userObj.optString("authentication_token");
-//                String state =userObj.optString("state");
-//                String avatar = userObj.optJSONObject("avatar").optJSONObject("mobile_icon").optString("url");
-//                String nickname=userObj.optString("nick_name");
-//                User user=new User(id,email,token,nickname,avatar);
-//                Message message=new Message();
-//                message.what=0;
-//                message.obj=user;
-//                handler.sendMessage(message);
+                Toast.makeText(AccountSetPwdActivity.this, message, Toast.LENGTH_SHORT).show();
             }
-        },new Response.ErrorListener() {
+        }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
 
             }
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers=new HashMap<String, String>();
-                headers.put("SECAuthorization",token);
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("SECAuthorization", token);
                 return headers;
             }
         };
-        ((ZDApplication)getApplication()).mRequestQueue.add(request);
+        ((ZDApplication) getApplication()).mRequestQueue.add(request);
     }
 
     @Override
