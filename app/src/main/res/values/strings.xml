@@ -119,7 +119,11 @@
     <string name="title_profile">个人资料</string>
     <string name="title_setting">设置</string>
 
-
+    <array name="specail_product_sort">
+        <item>默认排序</item>
+        <item>价格从低到高排序</item>
+        <item>价格从高到低排序</item>
+    </array>
     <array name="product_sort">
         <item>默认排序</item>
         <item>按热度排序</item>

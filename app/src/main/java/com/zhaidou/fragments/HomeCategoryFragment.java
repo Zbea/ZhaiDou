@@ -197,7 +197,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.ll_category_close:
-                ((MainHomeFragment)getParentFragment()).toggleMenu();
+                ((HomeStrategyFragment)getParentFragment()).toggleMenu();
                 break;
             case R.id.categoryRefresh:
                 animation.start();

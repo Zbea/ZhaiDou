@@ -104,6 +104,8 @@ public class ZhaiDou {
 
     //搜索单品列表
     public static String SEARCH_PRODUCT_URL=HOME_BASE_URL+"article/api/article_items/search";
+    //搜索特卖商城商品列表
+    public static String SEARCH_SPECACIAL_PRODUCT_URL=HOME_BASE_URL+"special_mall/api/merchandises/search";
     //
     public static String ARTICLE_ITEM_WITH_CATEGORY=HOME_BASE_URL+"article/api/article_items?item_catetory_id=";
 

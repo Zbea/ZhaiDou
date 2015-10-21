@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.utils.NetStateUtils;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.view.HeaderLayout;
 
 /**
@@ -57,8 +59,10 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     protected int screenHeight;
     public static NetStateUtils netStateUtils;
     public static boolean isNetState;
-    protected Context mContext;
+    public Context mContext;
     protected boolean isDialogFirstVisible=true;
+    public String token;
+    public int userId;
 
 
     @Override
@@ -237,6 +241,18 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
         public void onClick(View view) {
             getActivity().finish();
         }
+    }
+
+    /**
+     * 检查是否登录
+     * @return
+     */
+    public boolean checkLogin()
+    {
+        token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
+        userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
+        boolean isLogin = !TextUtils.isEmpty(token) && userId > -1;
+        return isLogin;
     }
 
     /**

@@ -2,6 +2,7 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@color/page_bg"
                 android:id="@+id/home_layout">
 
     <RelativeLayout
@@ -9,38 +10,6 @@
         android:layout_width="match_parent"
         android:background="@color/actionbar_background_color"
         android:layout_height="@dimen/header_height_dimen">
-
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-            <ImageView
-                android:id="@+id/iv_category"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="15dp"
-                android:layout_centerVertical="true"
-                android:src="@drawable/icon_category"/>
-            <ImageView
-                android:id="@+id/iv_dot"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="-19dp"
-                android:layout_marginTop="10dp"
-                android:visibility="gone"
-                android:layout_toRightOf="@id/iv_category"
-                android:src="@drawable/icon_dot"/>
-            </RelativeLayout>
-
-
-        <RelativeLayout
-            android:id="@+id/ll_category_view"
-            android:layout_width="80dp"
-            android:layout_height="50dp"
-            android:gravity="center_vertical"
-            android:clickable="true"
-            android:background="@color/transparent"
-            android:orientation="horizontal">
-        </RelativeLayout>
 
         <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/tv_title"
@@ -54,17 +23,45 @@
         <ImageView
             android:id="@+id/iv_search"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:src="@drawable/icon_search"
-            android:scaleType="fitXY"
-            android:layout_alignParentRight="true"
+            android:scaleType="center"
             android:layout_centerVertical="true"
-            android:layout_marginRight="15dp"/>
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"/>
+
+        <FrameLayout
+            android:id="@+id/tv_shopping_cart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true">
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:background="@drawable/icon_shopping_cart"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/tv_cart_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/shop_goods_my_cart_tips_red_bg"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </FrameLayout>
+
+
     </RelativeLayout>
 
 
     <com.pulltorefresh.PullToRefreshScrollView
-        xmlns:ptr="http://schemas.android.com/apk/res-auto"
         android:id="@+id/sv_home_scrollview"
         android:layout_below="@id/home_actionbar"
         android:layout_width="match_parent"
@@ -72,11 +69,12 @@
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:layout_height="match_parent"
-        ptr:ptrHeaderTextColor="@color/gray_9">
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="vertical"
+            android:background="@color/white"
             android:layout_height="match_parent">
 
             <LinearLayout
@@ -185,7 +183,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:scaleType="fitXY"
-                            android:src="@drawable/home_shop_special_icon"/>
+                            android:src="@drawable/home_category_icon"/>
 
                         <com.zhaidou.view.TypeFaceTextView
                             android:layout_marginTop="6dp"
@@ -198,113 +196,10 @@
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
-
-            <LinearLayout
-                android:layout_marginLeft="7dp"
-                android:layout_marginRight="7dp"
-                android:layout_marginTop="7dp"
-                android:id="@+id/home_item_goods"
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:orientation="vertical">
-
-                <RelativeLayout
-                    android:id="@+id/rl_homeGoodsImage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <ImageView
-                        android:id="@+id/homeGoodsImage"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/home_item_dimen"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/icon_loading_item"/>
-
-                    <ImageView
-                        android:id="@+id/homeGoodsTips"
-                        android:layout_width="@dimen/home_tips_dimen"
-                        android:layout_height="@dimen/home_tips_dimen"
-                        android:src="@drawable/home_info_tips_icon"/>
-
-                </RelativeLayout>
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:gravity="center_vertical"
-                    android:background="@color/white"
-                    android:padding="10dp">
-
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:id="@+id/homeGoodsSale"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/red"
-                        android:layout_weight="0.000001"
-                        android:singleLine="true"
-                        android:ellipsize="marquee"
-                        android:marqueeRepeatLimit="marquee_forever"
-                        android:textSize="16sp"
-                        android:text=""
-                        />
-
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:id="@+id/homeGoodsName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textSize="16sp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:singleLine="true"
-                        android:ellipsize="end"
-                        android:textColor="@color/text_main_color"
-                        android:text=""
-                        />
-
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.000001"
-                        android:gravity="center_vertical">
-
-                        <ImageView
-                            android:layout_width="13dp"
-                            android:layout_height="13dp"
-                            android:src="@drawable/icon_time_block"/>
-
-                        <com.zhaidou.view.TypeFaceTextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/text_main_color"
-                            android:layout_marginLeft="5dp"
-                            android:textSize="13sp"
-                            android:text="剩余"
-                            />
-
-                        <com.zhaidou.view.TypeFaceTextView
-                            android:id="@+id/shop_time_item"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="2dp"
-                            android:textColor="@color/text_main_color"
-                            android:text="1"
-                            />
-
-                        <com.zhaidou.view.TypeFaceTextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/text_main_color"
-                            android:textSize="13sp"
-                            android:text="天"
-                            />
-                    </LinearLayout>
-                </LinearLayout>
-
-            </LinearLayout>
+                android:layout_height="10dp"
+                android:background="@color/page_bg"></View>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
@@ -312,11 +207,11 @@
                 android:gravity="center_vertical"
                 android:background="@color/white">
                 <TextView
-                    android:layout_width="8dp"
+                    android:layout_width="7dp"
                     android:layout_height="match_parent"
                     android:layout_marginTop="3dp"
                     android:layout_marginBottom="3dp"
-                    android:background="@color/red"/>
+                    android:background="@color/green_color"/>
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -324,12 +219,9 @@
                     android:layout_marginRight="@dimen/default_margin"
                     android:textSize="15sp"
                     android:textColor="@color/text_main_color"
-                    android:text="新特卖,每日上新"/>
+                    android:text="新特卖,每日上午十点上新"/>
             </LinearLayout>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/click_gray"></View>
+
             <com.zhaidou.view.ListViewForScrollView
                 android:id="@+id/homeItemList"
                 android:layout_width="match_parent"
@@ -338,18 +230,12 @@
                 android:scrollbars="none"
                 android:listSelector="@android:color/transparent"
                 android:background="@color/black"
+                android:layout_marginLeft="7dp"
+                android:layout_marginRight="7dp"
                 android:layout_marginBottom="7dp"
                 android:dividerHeight="0dp"></com.zhaidou.view.ListViewForScrollView>
         </LinearLayout>
     </com.pulltorefresh.PullToRefreshScrollView>
-
-    <FrameLayout
-        android:id="@+id/fl_category_menu"
-        android:layout_below="@id/home_actionbar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        android:background="#86222222"/>
 
     <include
         android:layout_width="match_parent"

@@ -69,15 +69,15 @@ public class SearchFragment extends BaseFragment
     private TabPageIndicator indicator;
 
     private SearchAdapter mHotAdapter;
-    private SearchAdapter mHistoryAdapter;
     private List<String> list;
     private List<Fragment> mFragments;
     private SearchFragmentAdapter mSearchFragmentAdapter;
     private SharedPreferences mSharedPreferences;
     InputMethodManager inputMethodManager;
 
-    private final int UPDATE_HISTORY=0;
+    private final int UPDATE_CONTENT=0;
     private final int UPDATE_HOTDATA=1;
+    private final int UPDATE_HISTORY=3;
 
     private List<String> mHotList = new ArrayList<String>();
     private Set<String> mHistorys;
@@ -101,10 +101,9 @@ public class SearchFragment extends BaseFragment
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
-                case UPDATE_HISTORY:
+                case UPDATE_CONTENT:
                     String text = (String)msg.obj;
-                    autoGridView.setHistoryList(mHistoryList);
-                    if (mFragments.size()<3){
+                    if (mFragments.size()<2){
                         mSpecialGoodsFragment= GoodsSingleListFragment.newInstance(text, "goods",1);
                         mtaobaoGoodsFragment= GoodsSingleListFragment.newInstance(text, text,2);
 //                        mStrategyFragment= SearchArticleListFragment.newInstance(text, text);
@@ -112,7 +111,7 @@ public class SearchFragment extends BaseFragment
                         mFragments.add(mtaobaoGoodsFragment);
 //                        mFragments.add(mStrategyFragment);
                     }else if (mFragments.size()==2){
-                        mSpecialGoodsFragment.FetchData(text,sort,1);
+                        mSpecialGoodsFragment.FetchSpecialData(text, sort, 1);
                         mtaobaoGoodsFragment.FetchData(text,sort,1);
 //                        mStrategyFragment.FetchData(text,sort,1);
                     }
@@ -122,6 +121,9 @@ public class SearchFragment extends BaseFragment
                     break;
                 case UPDATE_HOTDATA:
                     mHotAdapter.setList(mHotList);
+//                    autoGridView.setHistoryList(mHistoryList);
+                    break;
+                case UPDATE_HISTORY:
                     autoGridView.setHistoryList(mHistoryList);
                     break;
                 default:
@@ -188,7 +190,7 @@ public class SearchFragment extends BaseFragment
             int page = mViewPager.getCurrentItem();
             if (page==0)
             {
-                mSpecialGoodsFragment.FetchData(keyWord,index,1);
+                mSpecialGoodsFragment.FetchSpecialData(keyWord, index, 1);
             }
             else if (page==1)
             {
@@ -250,7 +252,7 @@ public class SearchFragment extends BaseFragment
 
     private void initView()
     {
-        gv_hot=(GridView)mView.findViewById(R.id.gv_hot_search);
+
         mEditText=(CustomEditText)mView.findViewById(R.id.et_search);
         mSearchiv=(ImageView)mView.findViewById(R.id.iv_search);
         mDeleteView=(TextView)mView.findViewById(R.id.tv_delete);
@@ -263,8 +265,7 @@ public class SearchFragment extends BaseFragment
         ll_viewpager=(LinearLayout)mView.findViewById(R.id.ll_viewpager);
         mSharedPreferences=mContext.getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
 
-        autoGridView=(AutoGridView)mView.findViewById(R.id.ag_search_history);
-        autoGridView.setOnHistoryItemClickListener(onHistoryItemClickListener);
+
         mHistorys = mSharedPreferences.getStringSet("history",new LinkedHashSet<String>());
         historyCount=(Integer) SharedPreferencesUtil.getData(mContext, "historyCount", 0);
         mSearchLayout.setVisibility(View.GONE);
@@ -277,6 +278,17 @@ public class SearchFragment extends BaseFragment
             }
             mSearchLayout.setVisibility(View.VISIBLE);
         }
+
+        autoGridView=(AutoGridView)mView.findViewById(R.id.ag_search_history);
+        autoGridView.setOnHistoryItemClickListener(onHistoryItemClickListener);
+        new Handler().postDelayed(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                mHandler.sendEmptyMessage(UPDATE_HISTORY);
+            }
+        },500);
 
         mFragments = new ArrayList<Fragment>();
         mSearchFragmentAdapter=new SearchFragmentAdapter(getChildFragmentManager());
@@ -305,10 +317,10 @@ public class SearchFragment extends BaseFragment
         mBackView.setOnClickListener(onClickListener);
         mSortView.setOnClickListener(onClickListener);
 
+        gv_hot=(GridView)mView.findViewById(R.id.gv_hot_search);
         mHotAdapter=new SearchAdapter(mContext,mHotList);
-
-        mHistoryAdapter=new SearchAdapter(mContext,mHistoryList);
         gv_hot.setAdapter(mHotAdapter);
+        gv_hot.setOnItemClickListener(onItemClickListener);
         inputMethodManager=(InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
 
         if (inputMethodManager.isActive())
@@ -349,8 +361,6 @@ public class SearchFragment extends BaseFragment
             }
         });
 
-        gv_hot.setOnItemClickListener(onItemClickListener);
-
         getHotSearch();
         if (mSearchSortFragment ==null)
             mSearchSortFragment = SearchSortFragment.newInstance("", 0);
@@ -374,7 +384,7 @@ public class SearchFragment extends BaseFragment
         SharedPreferencesUtil.saveHistoryData(mContext,mHistoryList);
 
         Message message = new Message();
-        message.what=UPDATE_HISTORY;
+        message.what=UPDATE_CONTENT;
         message.obj=keyWord;
         mHandler.sendMessage(message);
     }

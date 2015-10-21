@@ -77,7 +77,6 @@ public class ShopSpecialFragment extends BaseFragment
     private Context mContext;
     private int page = 1;
     private Dialog mDialog;
-    private View contentView;
     private LinearLayout loadingView, nullNetView, nullView;
     private TextView reloadBtn, reloadNetBtn;
 
@@ -93,17 +92,11 @@ public class ShopSpecialFragment extends BaseFragment
     private List<ShopSpecialItem> items = new ArrayList<ShopSpecialItem>();
     private ShopSpecialAdapter adapterList;
 
-    private ViewPager viewPager;
 
     private List<SwitchImage> banners= new ArrayList<SwitchImage>();
     private CustomBannerView customBannerView;
     private LinearLayout bannerLine;
-    private int currentItem = 5000;
-    boolean nowAction = false;
     boolean isStop = true;
-    private int num;
-    private List<CartItem> cartItems = new ArrayList<CartItem>();
-    private CreatCartDB creatCartDB;
     private final int UPDATE_CARTCAR_DATA = 4;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
@@ -140,9 +133,6 @@ public class ShopSpecialFragment extends BaseFragment
                     if (mDialog != null)
                         mDialog.dismiss();
                     loadingView.setVisibility(View.GONE);
-                    break;
-                case 1002:
-                    viewPager.setCurrentItem(currentItem);
                     break;
                 case UPDATE_BANNER:
                     setAdView();
@@ -323,7 +313,6 @@ public class ShopSpecialFragment extends BaseFragment
         cartTipsTv = (TextView) mView.findViewById(R.id.myCartTipsTv);
 
         mRequestQueue = Volley.newRequestQueue(mContext);
-        creatCartDB = new CreatCartDB(mContext);
 
     }
 
@@ -340,10 +329,10 @@ public class ShopSpecialFragment extends BaseFragment
      */
     private void initCartTips()
     {
-        if (((MainActivity) getActivity()).getNum() > 0)
+        if (((MainActivity) mContext).getNum() > 0)
         {
             cartTipsTv.setVisibility(View.VISIBLE);
-            cartTipsTv.setText("" + ((MainActivity) getActivity()).getNum());
+            cartTipsTv.setText("" + ((MainActivity) mContext).getNum());
         } else
         {
             cartTipsTv.setVisibility(View.GONE);
