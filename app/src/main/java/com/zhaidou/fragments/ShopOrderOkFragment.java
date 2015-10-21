@@ -842,6 +842,10 @@ public class ShopOrderOkFragment extends BaseFragment
 
     }
 
+    /**
+     * 请求订单
+     * @return
+     */
     private String FetchRequset()
     {
         String result = null;
