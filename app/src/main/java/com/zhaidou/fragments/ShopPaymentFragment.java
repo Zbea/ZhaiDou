@@ -36,9 +36,13 @@ import com.zhaidou.alipay.PayResult;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.CartItem;
 import com.zhaidou.model.Order;
+import com.zhaidou.model.OrderItem;
+import com.zhaidou.model.Receiver;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -284,6 +288,77 @@ public class ShopPaymentFragment extends BaseFragment {
         initTime = mTimeLeft;
 
         mTimer = new Timer();
+        FetchOrderDetail(mOrderId);
+    }
+
+    private void FetchOrderDetail(long mOrderId) {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "/" + mOrderId, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                Log.i("jsonObject--------->", jsonObject.toString());
+                if (jsonObject != null)
+                {
+                    JSONObject orderObj = jsonObject.optJSONObject("order");
+                    String node = orderObj.optString("node");
+                    ToolUtils.setLog("node:" + node);
+                    int total_over_time=orderObj.optInt("total_over_time");
+                    initTime=total_over_time*1000;
+                    int id = orderObj.optInt("id");
+                    String status = orderObj.optString("status");
+                    String created_at_for = orderObj.optString("created_at_for");
+                    String receiver_address = orderObj.optString("receiver_address");
+                    String created_at = orderObj.optString("created_at");
+                    String status_ch = orderObj.optString("status_ch");
+                    String number = orderObj.optString("number");
+                    String receiver_phone = orderObj.optString("receiver_phone");
+                    String deliver_number = orderObj.optString("deliver_number");
+                    String receiver_name = orderObj.optString("receiver_name");
+                    String parent_name=orderObj.optString("parent_name");
+                    String city_name=orderObj.optString("city_name");
+                    String provider_name=orderObj.optString("provider_name");
+
+                    JSONObject receiverObj = orderObj.optJSONObject("receiver");
+                    int receiverId = receiverObj.optInt("id");
+                    String logNum = orderObj.optString("deliver_number");
+                    Receiver receiver = new Receiver(receiverId, null, parent_name, null, null, null, null);
+
+                    JSONArray order_items = orderObj.optJSONArray("order_items");
+                    if (order_items != null && order_items.length() > 0) {
+                        for (int i = 0; i < order_items.length(); i++) {
+                            JSONObject item = order_items.optJSONObject(i);
+                            int itemId = item.optInt("id");
+                            double itemPrice = item.optDouble("price");
+                            int count = item.optInt("count");
+                            double cost_price = item.optDouble("cost_price");
+                            String merchandise = item.optString("merchandise");
+                            String specification = item.optString("specification");
+                            int merchandise_id = item.optInt("merchandise_id");
+                            String merch_img = item.optString("merch_img");
+                            int sale_cate = item.optInt("sale_cate");
+                            OrderItem orderItem = new OrderItem(itemId, itemPrice, count, cost_price, merchandise, specification, merchandise_id, merch_img);
+                            orderItem.setSale_cate(sale_cate );
+//                            orderItems.add(orderItem);
+                        }
+                    }
+//                    Order order = new Order("", id, number, amount, status, status_ch, created_at_for, created_at, receiver, orderItems, receiver_address, receiver_phone, deliver_number, receiver_name);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                if (getActivity() != null)
+                    Toast.makeText(mContext, "加载失败", Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("SECAuthorization",token);
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
     }
 
     /**
