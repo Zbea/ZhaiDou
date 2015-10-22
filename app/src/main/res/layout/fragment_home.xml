@@ -209,8 +209,8 @@
                 <TextView
                     android:layout_width="7dp"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="3dp"
-                    android:layout_marginBottom="3dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
                     android:background="@color/green_color"/>
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"

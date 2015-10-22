@@ -1,6 +1,7 @@
 package com.zhaidou.view;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
@@ -125,7 +126,7 @@ public class CustomBannerView extends FrameLayout
         if (imgs.size()==0)
         {
             nullLine=new LinearLayout(mContext);
-            nullLine.setBackgroundColor(R.color.page_bg);
+            nullLine.setBackgroundColor(Color.parseColor("#f1f1f1"));
             return;
         }
 
@@ -142,7 +143,7 @@ public class CustomBannerView extends FrameLayout
             final int postion=i;
             ImageView imageView = new ImageView(mContext);
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-            ToolUtils.setImageUrl(imgs.get(i).imageUrl, imageView, R.drawable.icon_loading_item);
+            ToolUtils.setImageCacheUrl(imgs.get(i).imageUrl, imageView, R.drawable.icon_loading_item);
             imageView.setOnClickListener(new OnClickListener()
             {
                 @Override
