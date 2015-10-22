@@ -24,7 +24,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alibaba.sdk.android.callback.CallbackContext;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseActivity;
@@ -56,7 +55,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     private String coverUrl;
     private String url;
     private TextView tv_back;
-    private ImageView iv_share, mHeaderView,iv_shadow;
+    private ImageView iv_share, mHeaderView, iv_shadow;
     private FrameLayout mChildContainer;
     private TextView mTitleView, mHeaderText;
     private Article article;
@@ -95,7 +94,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         nickName = mSharedPreferences.getString("nickName", "");
         tv_back = (TextView) findViewById(R.id.tv_back);
         iv_share = (ImageView) findViewById(R.id.iv_share);
-        iv_shadow=(ImageView)findViewById(R.id.iv_shadow);
+        iv_shadow = (ImageView) findViewById(R.id.iv_shadow);
         mChildContainer = (FrameLayout) findViewById(R.id.fl_child_container);
         mTitleView = (TextView) findViewById(R.id.tv_title);
 
@@ -146,10 +145,12 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
                 Log.i("shouldOverrideUrlLoading---------------->", url);
                 getDeviceId();
                 if ("mobile://login?false".equalsIgnoreCase(url)) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, loginFragment)
-                            .addToBackStack(null).commit();
-                    mChildContainer.setVisibility(View.VISIBLE);
-//                    }
+//                    getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, loginFragment)
+//                            .addToBackStack(null).commit();
+//                    mChildContainer.setVisibility(View.VISIBLE);
+                    Intent intent = new Intent(ItemDetailActivity.this, LoginActivity.class);
+                    intent.setFlags(2);
+                    startActivityForResult(intent, 10000);
                     return true;
                 } else if (url.contains("taobao")) {
                     Intent intent = new Intent();
@@ -231,7 +232,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         url = getIntent().getStringExtra("url");
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("ZhaidouVesion", getResources().getString(R.string.app_versionName));
-        headers.put("SECAuthorization",token);
+        headers.put("SECAuthorization", token);
         webView.loadUrl(url + "?open=app", headers);
 
 
@@ -398,7 +399,14 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        CallbackContext.onActivityResult(requestCode, resultCode, data);
+//        CallbackContext.onActivityResult(requestCode, resultCode, data);
+        switch (resultCode){
+            case 2000:
+                token = mSharedPreferences.getString("token", null);
+                System.out.println("HomeCompetitionActivity.onActivityResult---------->"+token);
+                webView.reload();
+                break;
+        }
         super.onActivityResult(requestCode, resultCode, data);
     }
 

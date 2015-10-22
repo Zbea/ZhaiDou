@@ -45,8 +45,8 @@ import com.zhaidou.fragments.HomeStrategyFragment;
 import com.zhaidou.fragments.MainCategoryFragment;
 import com.zhaidou.fragments.DiyFragment;
 import com.zhaidou.fragments.HomeCategoryFragment;
+import com.zhaidou.fragments.MainCategoryFragment;
 import com.zhaidou.fragments.MainHomeFragment;
-import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.MainPersonalFragment;
 import com.zhaidou.fragments.MainStrategyFragment;
 import com.zhaidou.fragments.RegisterFragment;
@@ -97,7 +97,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     private TextView titleView;
     private LinearLayout mTabContainer;
-    private LoginFragment mLoginFragment;
     private ImageView iv_dot;
     private LinearLayout viewLayout;
 

@@ -181,9 +181,25 @@ public class DialogUtils {
         return mDialog;
     }
 
-    public Dialog showVerifyDialog(final VerifyCodeListener verifyCodeListener, final BindPhoneListener bindPhoneListener) {
+    public Dialog showVerifyDialog(VerifyCodeListener verifyCodeListener,BindPhoneListener bindPhoneListener){
+        return showVerifyDialog(verifyCodeListener, bindPhoneListener,false);
+    }
+
+    public Dialog showVerifyDialog(final VerifyCodeListener verifyCodeListener, final BindPhoneListener bindPhoneListener,boolean b) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_phone_verify, null);
-        final Dialog mDialog = new Dialog(mContext, R.style.custom_dialog);
+        ImageView closeView=(ImageView)view.findViewById(R.id.iv_close);
+        closeView.setVisibility(b?View.VISIBLE:View.INVISIBLE);
+        final Dialog mDialog = new Dialog(mContext, R.style.custom_dialog){
+            @Override
+            public void dismiss() {
+                super.dismiss();
+                System.out.println("DialogUtils.dismiss");
+                if (mTimer!=null){
+                    mTimer.cancel();
+                    mTimer=null;
+                }
+            }
+        };
         mDialog.setCanceledOnTouchOutside(false);
         mDialog.setCancelable(false);
         mDialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -197,7 +213,7 @@ public class DialogUtils {
             public void onClick(View v) {
                 String phone = mPhoneView.getText().toString();
                 if (ToolUtils.isPhoneOk(phone)) {
-                    codeTimer();
+//                    codeTimer();
                     if (verifyCodeListener != null) {
                         verifyCodeListener.onVerify(phone);
                     }
@@ -229,13 +245,19 @@ public class DialogUtils {
                 }
             }
         });
+        closeView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+            }
+        });
         return mDialog;
     }
 
     /**
      * 验证码倒计时事件处理
      */
-    private void codeTimer() {
+    public void codeTimer() {
         initTime = ZhaiDou.VERFIRY_TIME;
         mGetCode.setBackgroundResource(R.drawable.btn_no_click_selector);
         mGetCode.setText("重新获取(" + initTime + ")");
@@ -243,6 +265,7 @@ public class DialogUtils {
         mTimer = new Timer();
         mTimer.schedule(new MyTimer(), 1000, 1000);
     }
+
 
     /**
      * 倒计时
@@ -264,6 +287,7 @@ public class DialogUtils {
 
     public interface VerifyCodeListener {
         public void onVerify(String phone);
+
     }
 
     public interface BindPhoneListener {

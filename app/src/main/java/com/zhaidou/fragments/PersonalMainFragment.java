@@ -2,7 +2,6 @@ package com.zhaidou.fragments;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,9 +17,7 @@ import android.widget.FrameLayout;
 
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
-import com.zhaidou.ZhaiDou;
 import com.zhaidou.model.User;
-import com.zhaidou.utils.ToolUtils;
 
 public class PersonalMainFragment extends Fragment implements View.OnClickListener,RegisterFragment.RegisterOrLoginListener{
     private static final String ARG_PARAM1 = "param1";
@@ -156,18 +153,7 @@ public class PersonalMainFragment extends Fragment implements View.OnClickListen
 
     @Override
     public void onRegisterOrLoginSuccess(User user,Fragment fragment) {
-        saveUserToSP(user);
-
-        ToolUtils.setLog("要刷新登录了");
-        Intent intent=new Intent(ZhaiDou.IntentRefreshLoginTag);
-        getActivity().sendBroadcast(intent);
-
-        FragmentManager manager = getChildFragmentManager();
-        if (manager.findFragmentByTag(RegisterFragment.class.getSimpleName())!=null)
-            manager.popBackStack();
-        if (manager.findFragmentByTag(LoginFragment.class.getSimpleName())!=null)
-            manager.popBackStack();
-    }
+     }
     private void saveUserToSP(User user){
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putInt("userId",user.getId());

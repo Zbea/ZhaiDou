@@ -18,7 +18,6 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alibaba.sdk.android.callback.CallbackContext;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseActivity;
@@ -94,9 +93,12 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
                 getDeviceId();
                 if ("mobile://login?false".equalsIgnoreCase(url))
                 {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, loginFragment)
-                            .addToBackStack(null).commit();
-                    mChildContainer.setVisibility(View.VISIBLE);
+//                    getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, loginFragment)
+//                            .addToBackStack(null).commit();
+//                    mChildContainer.setVisibility(View.VISIBLE);
+                    Intent intent = new Intent(HomeCompetitionActivity.this, LoginActivity.class);
+                    intent.setFlags(2);
+                    HomeCompetitionActivity.this.startActivityForResult(intent, 10000);
                     return true;
                 } else if (url.contains("taobao"))
                 {
@@ -112,6 +114,12 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
             @Override
             public void onPageFinished(WebView view, String url)
             {
+                System.out.println("HomeCompetitionActivity.onPageFinished");
+                if (!TextUtils.isEmpty(token)) {
+                    webView.loadUrl("javascript:ReceiveUserInfo(" + userId + ", '" + token + "'," + getDeviceId() + ",'" + nickName + "')");
+                } else {
+                    webView.loadUrl("javascript:ReceiveUserInfo(" + userId + ", '" + "" + "'," + getDeviceId() + ",'" + nickName + "')");
+                }
                 view.loadUrl("javascript:!function(){" +
 
                         "s=document.createElement('style');s.innerHTML="
@@ -121,13 +129,6 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
                         + "document.getElementsByTagName('head')[0].appendChild(s);" +
 
                         "document.getElementsByTagName('body')[0].style.fontFamily = \"FZLTXHK\";}()");
-                if (!TextUtils.isEmpty(token))
-                {
-                    webView.loadUrl("javascript:ReceiveUserInfo(" + userId + ", '" + token + "'," + getDeviceId() + ",'" + nickName + "')");
-                } else
-                {
-                    webView.loadUrl("javascript:ReceiveUserInfo(" + userId + ", '" + "" + "'," + getDeviceId() + ",'" + nickName + "')");
-                }
                 super.onPageFinished(view, url);
             }
 
@@ -229,7 +230,14 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        CallbackContext.onActivityResult(requestCode, resultCode, data);
+//        CallbackContext.onActivityResult(requestCode, resultCode, data);
+        switch (resultCode){
+            case 2000:
+                token = mSharedPreferences.getString("token", null);
+                System.out.println("HomeCompetitionActivity.onActivityResult---------->"+token);
+                webView.reload();
+                break;
+        }
         super.onActivityResult(requestCode, resultCode, data);
     }
 

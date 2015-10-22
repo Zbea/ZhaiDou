@@ -3,7 +3,6 @@ package com.zhaidou.activities;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,12 +11,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,12 +44,11 @@ import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomEditText;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import cn.sharesdk.framework.Platform;
 import cn.sharesdk.framework.PlatformActionListener;
@@ -80,7 +75,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     private CustomEditText mCodeView, mPhoneView;
     private TextView mGetCode;
     private int initTime = 0;
-    private Timer mTimer;
 
     private static final int SHOW_DIALOG = 1;
     private static final int CLOSE_DIALOG = 2;
@@ -175,10 +169,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
      * 记住邮箱帐号
      */
     private void saveEmail() {
-        SharedPreferences sharedPreferences = getSharedPreferences("email", 0);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("email", strEmail);
-        editor.commit();
+        SharedPreferencesUtil.saveData(this,"email",strEmail);
     }
 
     /**
@@ -187,7 +178,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
      * @return
      */
     private String getEmail() {
-        return getSharedPreferences("email", 0).getString("email", "");
+        return (String)SharedPreferencesUtil.getData(this,"email","");
     }
 
     @Override
@@ -203,14 +194,15 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 } else if (TextUtils.isEmpty(password)) {
                     mPswView.setShakeAnimation();
                     return;
-                } else if (password.length() > 16) {
-                    ToolUtils.setToast(getApplicationContext(), "抱歉,您输入的密码过长");
-                    mPswView.setShakeAnimation();
-                    return;
-                } else if (password.length() < 6) {
-                    ToolUtils.setToast(getApplicationContext(), "抱歉,您输入的密码过短");
-                    mPswView.setShakeAnimation();
                 }
+//                else if (password.length() > 16) {
+//                    ToolUtils.setToast(getApplicationContext(), "抱歉,您输入的密码过长");
+//                    mPswView.setShakeAnimation();
+//                    return;
+//                } else if (password.length() < 6) {
+//                    ToolUtils.setToast(getApplicationContext(), "抱歉,您输入的密码过短");
+//                    mPswView.setShakeAnimation();
+//                }
                 saveEmail();
                 final Map<String, String> params = new HashMap<String, String>();
                 params.put("user_token[email]", strEmail);
@@ -222,32 +214,36 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                         if (mDialog != null)
                             mDialog.dismiss();
                         if (jsonObject != null) {
+                            String msg = jsonObject.optString("message");
+                            int status = jsonObject.optInt("status");
                             String token = jsonObject.optJSONObject("user_tokens").optString("token");
                             validate_phone = jsonObject.optJSONArray("users").optJSONObject(0).optBoolean("validate_phone");
-                            if (!validate_phone) {
-                                showVerifyDialog(token);
-                            } else {
-                                String msg = jsonObject.optString("message");
-                                if (!TextUtils.isEmpty(msg)) {
-                                    Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_LONG).show();
-                                    return;
-                                }
-                                JSONArray userArr = jsonObject.optJSONArray("users");
-                                for (int i = 0; i < userArr.length(); i++) {
-                                    JSONObject userObj = userArr.optJSONObject(i);
-                                    int id = userObj.optInt("id");
-                                    String email = userObj.optString("email");
-                                    String nick = userObj.optString("nick_name");
-                                    User user = new User(id, email, token, nick, null);
-                                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
-                                }
+                            JSONArray userArr = jsonObject.optJSONArray("users");
+                            for (int i = 0; i < userArr.length(); i++) {
+                                JSONObject userObj = userArr.optJSONObject(i);
+                                int id = userObj.optInt("id");
+                                String email = userObj.optString("email");
+                                String nick = userObj.optString("nick_name");
+                                User user = new User(id, email, token, nick, null);
+                                mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
                             }
                         }
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
+                        if (mDialog != null)
+                            mDialog.dismiss();
+                        if (401 == volleyError.networkResponse.statusCode) {
+                            try {
+                                JSONObject jsonObject = new JSONObject(new String(volleyError.networkResponse.data));
+                                String message = jsonObject.optString("message");
+                                Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
 
+                        }
                     }
                 });
                 requestQueue.add(request);
@@ -281,61 +277,10 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 authorize(sina);
                 break;
             case R.id.ll_taobao:
-
                 AlibabaSDK.getService(LoginService.class).showLogin(LoginActivity.this, new LoginCallback() {
                     @Override
                     public void onSuccess(final Session session) {
-                        Log.i("onSuccess-----", "onSuccess");
-                        Log.i("getUserId", session.getUserId());
-                        Log.i("getUserIcon", session.getUser().avatarUrl);
-                        Log.i("getUserName", session.getUser().nick);
-                        Map<String, String> params = new HashMap<String, String>();
-                        params.put("uid", session.getUserId());
-                        params.put("provider", "taobao");
-                        params.put("nick_name", session.getUser().nick);
-
-                        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_THIRD_VERIFY_URL, new JSONObject(params), new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject jsonObject) {
-                                Log.i("jsonObject--->", jsonObject.toString());
-                                int flag = jsonObject.optInt("flag");
-
-                                if (0 == flag) {
-                                    JSONObject login_user = jsonObject.optJSONObject("user").optJSONObject("login_user");
-                                    String email = login_user.optString("s_email");
-                                    String nick = login_user.optString("s_nick_name");
-                                    Log.i("0==flag", "0==flag");
-                                    Map<String, String> registers = new HashMap<String, String>();
-                                    registers.put("user[email]", email);
-                                    registers.put("user[nick_name]", session.getUser().nick);
-                                    registers.put("user[uid]", session.getUserId());
-                                    registers.put("user[provider]", "taobao");
-                                    registers.put("profile_image", session.getUser().avatarUrl);
-
-                                    new RegisterTask().execute(registers);
-                                } else {
-                                    JSONObject userJson = jsonObject.optJSONObject("user");
-                                    String token = userJson.optJSONObject("user_tokens").optString("token");
-                                    JSONArray userArray = userJson.optJSONArray("users");
-                                    if (userArray != null && userArray.length() > 0) {
-                                        JSONObject user = userArray.optJSONObject(0);
-                                        String nick = user.optString("nick_name");
-                                        int id = user.optInt("id");
-                                        String email = user.optString("email");
-                                        validate_phone = user.optBoolean("validate_phone");
-                                        User u = new User(id, email, token, nick, null);
-                                        Log.i("LoginFragment----onRegisterOrLoginSuccess---->", user.toString());
-                                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(u, null);
-                                    }
-                                }
-                            }
-                        }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError volleyError) {
-                                Log.i("volleyError--->", volleyError.getMessage());
-                            }
-                        });
-                        requestQueue.add(request);
+                        thirdPartyVerify("taobao", session.getUserId(), session.getUser().nick, session.getUser().avatarUrl);
                     }
 
                     @Override
@@ -347,6 +292,98 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             default:
                 break;
         }
+    }
+
+    private void thirdPartyVerify(final String tag, final String userId, String nick, final String avatarUrl) {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("uid", userId);
+        params.put("provider", tag);
+        params.put("nick_name", nick);
+
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_THIRD_VERIFY_URL,params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                Log.i("jsonObject--->", jsonObject.toString());
+                int flag = jsonObject.optInt("flag");
+
+                if (0 == flag) {
+                    JSONObject login_user = jsonObject.optJSONObject("user").optJSONObject("login_user");
+                    String email = login_user.optString("s_email");
+                    String nick1 = login_user.optString("s_nick_name");
+                    Log.i("0==flag", "0==flag");
+                    Map<String, String> registers = new HashMap<String, String>();
+                    registers.put("user[email]", email);
+                    registers.put("user[nick_name]", nick1);
+                    registers.put("user[uid]", userId);
+                    registers.put("user[provider]", tag);
+                    registers.put("profile_image", avatarUrl);
+
+//                    new RegisterTask().execute(registers);
+                    thirdPartyRegisterTask(registers);
+                } else {
+                    JSONObject userJson = jsonObject.optJSONObject("user");
+                    String token = userJson.optJSONObject("user_tokens").optString("token");
+                    JSONArray userArray = userJson.optJSONArray("users");
+                    if (userArray != null && userArray.length() > 0) {
+                        JSONObject user = userArray.optJSONObject(0);
+                        String nick = user.optString("nick_name");
+                        int id = user.optInt("id");
+                        String email = user.optString("email");
+                        validate_phone = user.optBoolean("validate_phone");
+                        User u = new User(id, email, token, nick, null);
+                        Log.i("LoginFragment----onRegisterOrLoginSuccess---->", user.toString());
+                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(u, null);
+                    }
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.i("volleyError--->", volleyError.getMessage());
+            }
+        });
+        requestQueue.add(request);
+    }
+
+    private void bingPhoneTask(String phone, String verifyCode, final Dialog mDialog, final String token) {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("phone", phone);
+        params.put("vcode", verifyCode);
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_BINE_PHONE_URL, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                int status = jsonObject.optInt("status");
+                if (201 == status) {
+                    mDialog.dismiss();
+                    ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(LoginActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                    JSONObject userObj = jsonObject.optJSONObject("user");
+                    int id = userObj.optInt("id");
+                    String phone = userObj.optString("phone");
+                    String nick = userObj.optString("nick_name");
+                    String email = userObj.optString("email");
+                    String avatar = userObj.optJSONObject("avatar").optString("mobile_icon");
+                    validate_phone = true;
+                    User user = new User(id, email, token, nick, avatar);
+                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+                } else {
+                    String message = jsonObject.optString("message");
+                    Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("SECAuthorization", token);
+                return headers;
+            }
+        };
+        ((ZDApplication) getApplication()).mRequestQueue.add(request);
     }
 
     private void authorize(Platform plat) {
@@ -378,89 +415,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     }
 
     /**
-     * 验证手机号
-     *
-     * @param token
-     */
-    private void showVerifyDialog(final String token) {
-        View view = LayoutInflater.from(this).inflate(R.layout.dialog_custom_phone_verify, null);
-        final Dialog mDialog = new Dialog(this, R.style.custom_dialog);
-        mDialog.setCanceledOnTouchOutside(false);
-        mDialog.setCancelable(false);
-        mDialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        mDialog.show();
-
-        mCodeView = (CustomEditText) view.findViewById(R.id.tv_code);
-        mPhoneView = (CustomEditText) view.findViewById(R.id.tv_phone);
-        mGetCode = (TextView) view.findViewById(R.id.bt_getCode);
-        mGetCode.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getVerifyCode(mPhoneView.getText().toString());
-            }
-        });
-        TextView okTv = (TextView) view.findViewById(R.id.bt_ok);
-        okTv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String code = mCodeView.getText().toString();
-                String phone = mPhoneView.getText().toString();
-                if (TextUtils.isEmpty(phone)) {
-                    mPhoneView.setShakeAnimation();
-                    return;
-                }
-                if (TextUtils.isEmpty(code)) {
-                    mCodeView.setShakeAnimation();
-                    return;
-                }
-                if (ToolUtils.isPhoneOk(phone)) {
-                    Map<String, String> params = new HashMap<String, String>();
-                    params.put("phone", phone);
-                    params.put("vcode", code);
-                    ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_BINE_PHONE_URL, params, new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject jsonObject) {
-                            int status = jsonObject.optInt("status");
-                            if (201 == status) {
-                                mDialog.dismiss();
-                                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(LoginActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                                JSONObject userObj = jsonObject.optJSONObject("user");
-                                int id = userObj.optInt("id");
-                                String phone = userObj.optString("phone");
-                                String nick = userObj.optString("nick_name");
-                                String email = userObj.optString("email");
-                                String avatar = userObj.optJSONObject("avatar").optString("mobile_icon");
-                                validate_phone = true;
-                                User user = new User(id, email, token, nick, avatar);
-                                mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
-                            } else {
-                                String message = jsonObject.optString("message");
-                                Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError volleyError) {
-
-                        }
-                    }) {
-                        @Override
-                        public Map<String, String> getHeaders() throws AuthFailureError {
-                            Map<String, String> headers = new HashMap<String, String>();
-                            headers.put("SECAuthorization", token);
-                            return headers;
-                        }
-                    };
-                    ((ZDApplication) getApplication()).mRequestQueue.add(request);
-
-                } else {
-                    ToolUtils.setToast(getApplicationContext(), "抱歉,无效手机号码");
-                }
-            }
-        });
-    }
-
-    /**
      * 获得验证码
      *
      * @param phone 手机号码
@@ -473,7 +427,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 int status = jsonObject.optInt("status");
                 String message = jsonObject.optString("message");
                 if (status == 201) {
-                    codeTimer();
+//                    codeTimer();
+                    mDialogUtils.codeTimer();
                 }
                 Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
             }
@@ -486,42 +441,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         ((ZDApplication) getApplication()).mRequestQueue.add(request);
     }
 
-    /**
-     * 验证码倒计时事件处理
-     */
-    private void codeTimer() {
-        initTime = ZhaiDou.VERFIRY_TIME;
-        mGetCode.setBackgroundResource(R.drawable.btn_no_click_selector);
-        mGetCode.setText("重新获取(" + initTime + ")");
-        mGetCode.setClickable(false);
-        mTimer = new Timer();
-        mTimer.schedule(new MyTimer(), 1000, 1000);
-    }
-
-    /**
-     * 倒计时
-     */
-    class MyTimer extends TimerTask {
-        @Override
-        public void run() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    initTime = initTime - 1;
-                    mGetCode.setText("重新获取(" + initTime + ")");
-                    if (initTime <= 0) {
-                        if (mTimer != null)
-                            mTimer.cancel();
-                        mGetCode.setText("获取验证码");
-                        mGetCode.setBackgroundResource(R.drawable.btn_green_click_bg);
-                        mGetCode.setClickable(true);
-                    }
-                }
-            });
-        }
-    }
-
-
     @Override
     public void onComplete(final Platform platform, int i, final HashMap<String, Object> stringObjectHashMap) {
         mHandler.sendEmptyMessage(SHOW_DIALOG);
@@ -530,68 +449,12 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         String plat = platform.getName();
         final String provider = plat.equals("QQ") ? "tqq" : plat.equals("SinaWeibo") ? "weibo" : "weixin";
         Log.i("getUserId", platform.getDb().getUserId());
-//        Log.i("getUserIcon","");//platform.getDb().getUserIcon()
-        Log.i("getUserName", platform.getDb().getUserName());
-        Map<String, String> params = new HashMap<String, String>();
+
         if ("weixin".equalsIgnoreCase(provider)) {
-            params.put("uid", stringObjectHashMap.get("unionid") + "");
+            thirdPartyVerify("weixin", stringObjectHashMap.get("unionid") + "", platform.getDb().getUserName(), platform.getDb().getUserIcon());
         } else {
-            params.put("uid", platform.getDb().getUserId());
+            thirdPartyVerify(provider, platform.getDb().getUserId(), platform.getDb().getUserName(),"http://www.zhaidou.com/uploads/user/avatar/77069/thumb_f713f712d202b1ecab67497877401835.png");
         }
-        params.put("provider", provider);
-
-        params.put("nick_name", platform.getDb().getUserName());
-
-        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_THIRD_VERIFY_URL, params, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject jsonObject) {
-                Log.i("jsonObject--->", jsonObject.toString());
-                int flag = jsonObject.optInt("flag");
-
-                if (0 == flag) {
-                    JSONObject login_user = jsonObject.optJSONObject("user").optJSONObject("login_user");
-                    String email = login_user.optString("s_email");
-                    String nick = login_user.optString("s_nick_name");
-                    Log.i("0==flag", "0==flag");
-                    Map<String, String> registers = new HashMap<String, String>();
-                    registers.put("user[email]", email);
-                    registers.put("user[nick_name]", nick);
-                    if ("weixin".equalsIgnoreCase(provider)) {
-                        registers.put("user[uid]", stringObjectHashMap.get("unionid") + "");
-                    } else {
-                        registers.put("user[uid]", platform.getDb().getUserId());
-                    }
-                    registers.put("user[provider]", provider);
-                    Log.i("provider---------------->", provider);
-                    if ("tqq".equalsIgnoreCase(provider)) {//http://www.zhaidou.com/uploads/user/avatar/77069/thumb_f713f712d202b1ecab67497877401835.png
-                        registers.put("profile_image", "http://www.zhaidou.com/uploads/user/avatar/77069/thumb_f713f712d202b1ecab67497877401835.png");
-                    } else {
-                        registers.put("profile_image", platform.getDb().getUserIcon());
-                    }
-                    new RegisterTask().execute(registers);
-                } else {
-                    Log.i("flag==1", "flag==1");
-                    JSONObject userJson = jsonObject.optJSONObject("user");
-                    String token = userJson.optJSONObject("user_tokens").optString("token");
-                    JSONArray userArray = userJson.optJSONArray("users");
-                    if (userArray != null && userArray.length() > 0) {
-                        JSONObject user = userArray.optJSONObject(0);
-                        String nick = user.optString("nick_name");
-                        int id = user.optInt("id");
-                        String email = user.optString("email");
-                        validate_phone = user.optBoolean("validate_phone");
-                        User u = new User(id, email, token, nick, null);
-                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(u, null);
-                    }
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                Toast.makeText(LoginActivity.this, "网络状况不太好哦", Toast.LENGTH_SHORT).show();
-            }
-        });
-        requestQueue.add(request);
     }
 
     @Override
@@ -636,6 +499,29 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             }
         }
     }
+    private void thirdPartyRegisterTask(Map<String,String> params){
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST,ZhaiDou.USER_REGISTER_URL,params,new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (jsonObject!=null) {
+                    JSONObject userJson = jsonObject.optJSONObject("user");
+                    int id = userJson.optInt("id");
+                    String email = userJson.optString("email");
+                    String token = userJson.optString("authentication_token");
+                    String avatar = userJson.optJSONObject("avatar").optString("url");
+                    String nick = userJson.optString("nick_name");
+                    User user = new User(id, email, token, nick, avatar);
+                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+                }
+            }
+        },new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        });
+        ((ZDApplication)getApplication()).mRequestQueue.add(request);
+    }
 
     @Override
     public void onRegisterOrLoginSuccess(final User user, Fragment fragment) {
@@ -645,64 +531,15 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             mDialogUtils.showVerifyDialog(new DialogUtils.VerifyCodeListener() {
                 @Override
                 public void onVerify(String phone) {
-                    System.out.println("LoginActivity.onVerify------------>" + phone);
                     getVerifyCode(phone);
                 }
             }, new DialogUtils.BindPhoneListener() {
                 @Override
                 public void onBind(String phone, String verifyCode, final Dialog mDialog) {
-                    System.out.println("LoginActivity.onPositive-------->");
-                    if (ToolUtils.isPhoneOk(phone)) {
-                        Map<String, String> params = new HashMap<String, String>();
-                        params.put("phone", phone);
-                        params.put("vcode", verifyCode);
-                        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_BINE_PHONE_URL, params, new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject jsonObject) {
-                                int status = jsonObject.optInt("status");
-                                String msg = jsonObject.optString("message");
-                                if (201 == status) {
-                                    mDialog.dismiss();
-                                    ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(LoginActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                                    JSONObject userObj = jsonObject.optJSONObject("user");
-                                    int id = userObj.optInt("id");
-                                    String phone = userObj.optString("phone");
-                                    String nick = userObj.optString("nick_name");
-                                    String email = userObj.optString("email");
-                                    String avatar = userObj.optJSONObject("avatar").optString("mobile_icon");
-                                    String token = userObj.optString("authentication_token");
-                                    User user1 = new User(id, email, token, nick, avatar);
-                                    user1.setPhone(phone);
-                                    Message message = new Message();
-                                    message.obj = user1;
-                                    message.what = 0;
-                                    mHandler.sendMessage(message);
-                                } else {
-                                    Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError volleyError) {
-
-                            }
-                        }) {
-                            @Override
-                            public Map<String, String> getHeaders() throws AuthFailureError {
-                                Map<String, String> headers = new HashMap<String, String>();
-                                headers.put("SECAuthorization", user.getAuthentication_token());
-                                return headers;
-                            }
-                        };
-                        ((ZDApplication) getApplication()).mRequestQueue.add(request);
-
-                    } else {
-                        ToolUtils.setToast(getApplicationContext(), "抱歉,无效手机号码");
-                    }
+                    bingPhoneTask(phone, verifyCode, mDialog, user.getAuthentication_token());
                 }
-            });
+            },true);
         } else {
-            System.out.println("LoginActivity.onRegisterOrLoginSuccess---else--->" + user.toString());
             Message message = new Message();
             message.obj = user;
             message.what = 0;
@@ -737,10 +574,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         if (mDialog != null) {
             mDialog.dismiss();
             mDialog = null;
-        }
-        if (mTimer != null) {
-            mTimer.cancel();
-            mTimer = null;
         }
         super.onDestroy();
     }
