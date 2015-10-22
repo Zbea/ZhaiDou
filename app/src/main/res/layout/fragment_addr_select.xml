@@ -63,12 +63,31 @@
                 android:scrollbars="none"
                 android:divider="@null"
                 android:layout_height="wrap_content"/>
-            <ImageView
+            <LinearLayout
                 android:id="@+id/bt_new_address"
+                android:clickable="true"
+                android:layout_marginLeft="@dimen/default_margin"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="@dimen/default_margin"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_margin="20dp"
-                android:src="@drawable/icon_new_addr"/>
+                android:background="@drawable/btn_red_click_selector"
+                android:gravity="center"
+                android:layout_height="@dimen/btn_height_dimen">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="9dp"
+                    android:src="@drawable/icon_adr_add"/>
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@color/white"
+                    android:text="添加地址"/>
+
+            </LinearLayout>
 
             </LinearLayout>
         </ScrollView>
