@@ -66,7 +66,7 @@ import com.zhaidou.model.GoodInfo;
 import com.zhaidou.model.Specification;
 import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;
-import com.zhaidou.utils.CollectionUtils;
+import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -84,8 +84,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.sharesdk.framework.ShareSDK;
-import cn.sharesdk.onekeyshare.OnekeyShare;
+import cn.sharesdk.framework.Platform;
+import cn.sharesdk.framework.PlatformActionListener;
 
 public class GoodsDetailsFragment extends BaseFragment
 {
@@ -968,31 +968,49 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     private void share()
     {
-        ShareSDK.initSDK(mContext);
-        OnekeyShare oks = new OnekeyShare();
-        //关闭sso授权
-        oks.disableSSOWhenAuthorize();
-        // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
-        oks.setTitle(mPage);
-        // titleUrl是标题的网络链接，仅在人人网和QQ空间使用
-        oks.setTitleUrl(shareUrl);
-        // text是分享文本，所有平台都需要这个字段
-        oks.setText(mPage + "   " + shareUrl);
-        // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
-        if (detail != null)
-        {
-            oks.setImageUrl(detail.getImageUrl());//确保SDcard下面存在此张图片
-        }
-        // url仅在微信（包括好友和朋友圈）中使用
-        oks.setUrl(shareUrl);
-        // comment是我对这条分享的评论，仅在人人网和QQ空间使用
-//            oks.setComment("我是测试评论文本");
-        // site是分享此内容的网站名称，仅在QQ空间使用
-        oks.setSite(getString(R.string.app_name));
-        // siteUrl是分享此内容的网站地址，仅在QQ空间使用
-        oks.setSiteUrl(shareUrl);
+//        ShareSDK.initSDK(mContext);
+//        OnekeyShare oks = new OnekeyShare();
+//        //关闭sso授权
+//        oks.disableSSOWhenAuthorize();
+//        // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
+//        oks.setTitle(mPage);
+//        // titleUrl是标题的网络链接，仅在人人网和QQ空间使用
+//        oks.setTitleUrl(shareUrl);
+//        // text是分享文本，所有平台都需要这个字段
+//        oks.setText(mPage + "   " + shareUrl);
+//        // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
+//        if (detail != null)
+//        {
+//            oks.setImageUrl(detail.getImageUrl());//确保SDcard下面存在此张图片
+//        }
+//        // url仅在微信（包括好友和朋友圈）中使用
+//        oks.setUrl(shareUrl);
+//        // comment是我对这条分享的评论，仅在人人网和QQ空间使用
+////            oks.setComment("我是测试评论文本");
+//        // site是分享此内容的网站名称，仅在QQ空间使用
+//        oks.setSite(getString(R.string.app_name));
+//        // siteUrl是分享此内容的网站地址，仅在QQ空间使用
+//        oks.setSiteUrl(shareUrl);
+//
+//        oks.show(mContext);
 
-        oks.show(mContext);
+        DialogUtils mDialogUtils=new DialogUtils(mContext);
+        mDialogUtils.showShareDialog(mPage,mPage+"  "+shareUrl,detail.getImageUrl(),shareUrl,new PlatformActionListener() {
+            @Override
+            public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
+                Toast.makeText(mContext,mContext.getString(R.string.share_completed),Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(Platform platform, int i, Throwable throwable) {
+                Toast.makeText(mContext,mContext.getString(R.string.share_error),Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancel(Platform platform, int i) {
+                Toast.makeText(mContext,mContext.getString(R.string.share_cancel),Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**

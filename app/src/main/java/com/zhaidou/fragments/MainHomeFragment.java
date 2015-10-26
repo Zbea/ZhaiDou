@@ -11,22 +11,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.view.ViewPager;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,33 +39,24 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomeCompetitionActivity;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.LoginActivity;
-import com.zhaidou.adapter.AdViewAdpater;
-import com.zhaidou.adapter.GoodsImageAdapter;
-import com.zhaidou.adapter.HomeListAdapter;
+import com.zhaidou.activities.SearchActivity;
 import com.zhaidou.adapter.ShopSpecialAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.model.Article;
-import com.zhaidou.model.Category;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.SwitchImage;
 import com.zhaidou.utils.NetworkUtils;
-import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomBannerView;
-import com.zhaidou.view.HeaderLayout;
 import com.zhaidou.view.ListViewForScrollView;
-import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 public class MainHomeFragment extends BaseFragment implements
         AdapterView.OnItemClickListener, View.OnClickListener,
@@ -329,7 +313,7 @@ public class MainHomeFragment extends BaseFragment implements
             case R.id.iv_search:
                 SearchFragment searchFragment = SearchFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
-//                startActivity(new Intent(getActivity(), SearchActivity.class));
+                startActivity(new Intent(getActivity(), SearchActivity.class));
                 break;
             case R.id.ll_lottery:
                 Intent detailIntent = new Intent(getActivity(), HomeCompetitionActivity.class);
