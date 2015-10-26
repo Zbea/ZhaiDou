@@ -405,7 +405,7 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                ToolUtils.setToast(getActivity(),"抱歉,加载城市失败");
+                ToolUtils.setToast(mContext,"抱歉,加载城市失败");
             }
         }){
             @Override
