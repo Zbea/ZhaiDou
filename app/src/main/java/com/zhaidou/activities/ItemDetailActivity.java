@@ -9,8 +9,6 @@ import android.support.v4.app.Fragment;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebChromeClient;
@@ -31,6 +29,7 @@ import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.model.Article;
 import com.zhaidou.model.User;
+import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomProgressWebview;
@@ -39,8 +38,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import cn.sharesdk.framework.ShareSDK;
-import cn.sharesdk.onekeyshare.OnekeyShare;
+import cn.sharesdk.framework.Platform;
+import cn.sharesdk.framework.PlatformActionListener;
 
 public class ItemDetailActivity extends BaseActivity implements View.OnClickListener,
         RegisterFragment.RegisterOrLoginListener,
@@ -76,12 +75,14 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
     private SharedPreferences mSharedPreferences;
     //    private Dialog mDialog;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_detail);
 
+        mContext=this;
         WindowManager wm = getWindowManager();
         screenWidth = wm.getDefaultDisplay().getWidth();
 
@@ -263,50 +264,6 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.item_detail, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            finish();
-            return true;
-        }
-
-        if (id == R.id.action_share) {
-            ShareSDK.initSDK(this);
-            OnekeyShare oks = new OnekeyShare();
-            //关闭sso授权
-            oks.disableSSOWhenAuthorize();
-
-// 分享时Notification的图标和文字  2.5.9以后的版本不调用此方法
-            //oks.setNotification(R.drawable.ic_launcher, getString(R.string.app_name));
-            // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
-            oks.setTitle(getString(R.string.share));
-            // titleUrl是标题的网络链接，仅在人人网和QQ空间使用
-            oks.setTitleUrl(url);
-            // text是分享文本，所有平台都需要这个字段
-            oks.setText(title);
-            // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
-            oks.setImageUrl(coverUrl);//确保SDcard下面存在此张图片
-            // url仅在微信（包括好友和朋友圈）中使用
-            oks.setUrl(url);
-            // comment是我对这条分享的评论，仅在人人网和QQ空间使用
-//            oks.setComment("我是测试评论文本");
-            // site是分享此内容的网站名称，仅在QQ空间使用
-            oks.setSite(getString(R.string.app_name));
-            // siteUrl是分享此内容的网站地址，仅在QQ空间使用
-            oks.setSiteUrl(url);
-
-            oks.show(this);
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tv_back:
@@ -326,31 +283,52 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     }
 
     private void doShare() {
-        ShareSDK.initSDK(this);
-        OnekeyShare oks = new OnekeyShare();
-        //关闭sso授权
-        oks.disableSSOWhenAuthorize();
+//        ShareSDK.initSDK(this);
+//        OnekeyShare oks = new OnekeyShare();
+//        //关闭sso授权
+//        oks.disableSSOWhenAuthorize();
+//
+//// 分享时Notification的图标和文字  2.5.9以后的版本不调用此方法
+//        //oks.setNotification(R.drawable.ic_launcher, getString(R.string.app_name));
+//        // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
+//        oks.setTitle(title);
+//        // titleUrl是标题的网络链接，仅在人人网和QQ空间使用
+//        oks.setTitleUrl(url);
+//        // text是分享文本，所有平台都需要这个字段
+//        oks.setText(title + "   " + url);
+//        // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
+//        oks.setImageUrl(coverUrl);//确保SDcard下面存在此张图片
+//        // url仅在微信（包括好友和朋友圈）中使用
+//        oks.setUrl(url);
+//        // comment是我对这条分享的评论，仅在人人网和QQ空间使用
+////            oks.setComment("我是测试评论文本");
+//        // site是分享此内容的网站名称，仅在QQ空间使用
+//        oks.setSite(getString(R.string.app_name));
+//        // siteUrl是分享此内容的网站地址，仅在QQ空间使用
+//        oks.setSiteUrl(url);
+//
+//        oks.show(this);
 
-// 分享时Notification的图标和文字  2.5.9以后的版本不调用此方法
-        //oks.setNotification(R.drawable.ic_launcher, getString(R.string.app_name));
-        // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
-        oks.setTitle(title);
-        // titleUrl是标题的网络链接，仅在人人网和QQ空间使用
-        oks.setTitleUrl(url);
-        // text是分享文本，所有平台都需要这个字段
-        oks.setText(title + "   " + url);
-        // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
-        oks.setImageUrl(coverUrl);//确保SDcard下面存在此张图片
-        // url仅在微信（包括好友和朋友圈）中使用
-        oks.setUrl(url);
-        // comment是我对这条分享的评论，仅在人人网和QQ空间使用
-//            oks.setComment("我是测试评论文本");
-        // site是分享此内容的网站名称，仅在QQ空间使用
-        oks.setSite(getString(R.string.app_name));
-        // siteUrl是分享此内容的网站地址，仅在QQ空间使用
-        oks.setSiteUrl(url);
+        DialogUtils mDialogUtils=new DialogUtils(this);
+        mDialogUtils.showShareDialog(title,title+"  "+url,coverUrl,url,new PlatformActionListener() {
+            @Override
+            public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
+                System.out.println("ItemDetailActivity.onComplete");
+                Toast.makeText(ItemDetailActivity.this,mContext.getString(R.string.share_completed),Toast.LENGTH_SHORT).show();
+            }
 
-        oks.show(this);
+            @Override
+            public void onError(Platform platform, int i, Throwable throwable) {
+                System.out.println("ItemDetailActivity.onError");
+                Toast.makeText(ItemDetailActivity.this,mContext.getString(R.string.share_error),Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancel(Platform platform, int i) {
+                System.out.println("ItemDetailActivity.onCancel");
+                Toast.makeText(ItemDetailActivity.this,mContext.getString(R.string.share_cancel),Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     //    public void popToStack(Fragment fragment){

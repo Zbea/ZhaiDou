@@ -135,6 +135,15 @@
         <item>按热度排序</item>
     </array>
 
+    <array name="share_title">
+        <item>微信好友</item>
+        <item>朋友圈</item>
+        <item>新浪微博</item>
+        <item>QQ好友</item>
+        <item>QQ空间</item>
+        <item></item>
+    </array>
+
 
     <string name="btn_scroll_view">ScrollView demo</string>
     <string name="btn_list_view">ListView demo</string>
@@ -165,4 +174,8 @@
     <string name="collect_fail">收藏失败</string>
     <string name="collect_cancel">取消收藏</string>
 
+    <!--分享回调-->
+    <string name="share_success">分享成功</string>
+    <string name="share_error">分享失败</string>
+    <string name="share_cancel">分享取消</string>
 </resources>

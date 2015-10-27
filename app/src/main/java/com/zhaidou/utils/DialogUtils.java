@@ -5,21 +5,37 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseListAdapter;
+import com.zhaidou.base.ViewHolder;
 import com.zhaidou.view.CustomEditText;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import cn.sharesdk.framework.Platform;
+import cn.sharesdk.framework.PlatformActionListener;
+import cn.sharesdk.framework.ShareSDK;
+import cn.sharesdk.sina.weibo.SinaWeibo;
+import cn.sharesdk.tencent.qq.QQ;
+import cn.sharesdk.tencent.qzone.QZone;
+import cn.sharesdk.wechat.friends.Wechat;
+import cn.sharesdk.wechat.moments.WechatMoments;
 
 /**
  * User: Scoield(553899626@qq.com)
@@ -38,10 +54,10 @@ public class DialogUtils {
     private Timer mTimer;
     TextView mGetCode;
 
-    private Handler mHandler=new Handler(){
+    private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
+            switch (msg.what) {
                 case 0:
                     initTime = initTime - 1;
                     mGetCode.setText("重新获取(" + initTime + ")");
@@ -56,6 +72,7 @@ public class DialogUtils {
             }
         }
     };
+
     public DialogUtils(Context mContext) {
         this.mContext = mContext;
     }
@@ -181,22 +198,22 @@ public class DialogUtils {
         return mDialog;
     }
 
-    public Dialog showVerifyDialog(VerifyCodeListener verifyCodeListener,BindPhoneListener bindPhoneListener){
-        return showVerifyDialog(verifyCodeListener, bindPhoneListener,false);
+    public Dialog showVerifyDialog(VerifyCodeListener verifyCodeListener, BindPhoneListener bindPhoneListener) {
+        return showVerifyDialog(verifyCodeListener, bindPhoneListener, false);
     }
 
-    public Dialog showVerifyDialog(final VerifyCodeListener verifyCodeListener, final BindPhoneListener bindPhoneListener,boolean b) {
+    public Dialog showVerifyDialog(final VerifyCodeListener verifyCodeListener, final BindPhoneListener bindPhoneListener, boolean b) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_phone_verify, null);
-        ImageView closeView=(ImageView)view.findViewById(R.id.iv_close);
-        closeView.setVisibility(b?View.VISIBLE:View.INVISIBLE);
-        final Dialog mDialog = new Dialog(mContext, R.style.custom_dialog){
+        ImageView closeView = (ImageView) view.findViewById(R.id.iv_close);
+        closeView.setVisibility(b ? View.VISIBLE : View.INVISIBLE);
+        final Dialog mDialog = new Dialog(mContext, R.style.custom_dialog) {
             @Override
             public void dismiss() {
                 super.dismiss();
                 System.out.println("DialogUtils.dismiss");
-                if (mTimer!=null){
+                if (mTimer != null) {
                     mTimer.cancel();
-                    mTimer=null;
+                    mTimer = null;
                 }
             }
         };
@@ -238,7 +255,7 @@ public class DialogUtils {
                 }
                 if (ToolUtils.isPhoneOk(phone)) {
                     if (bindPhoneListener != null) {
-                        bindPhoneListener.onBind(phone, code,mDialog);
+                        bindPhoneListener.onBind(phone, code, mDialog);
                     }
                 } else {
                     ToolUtils.setToast(mContext, "抱歉,无效手机号码");
@@ -252,6 +269,134 @@ public class DialogUtils {
             }
         });
         return mDialog;
+    }
+
+    public void showShareDialog(final String title, final String content, final String imageUrl, final String url,final PlatformActionListener platformActionListener) {
+        ShareSDK.initSDK(mContext);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_share_custom, null);
+        GridView mGridView = (GridView) view.findViewById(R.id.gv_share);
+        TextView tv_cancel = (TextView) view.findViewById(R.id.tv_cancel);
+        String[] titlearr = mContext.getResources().getStringArray(R.array.share_title);
+        List<String> titleList = Arrays.asList(titlearr);
+        int[] drawableId = {R.drawable.skyblue_logo_wechat_checked, R.drawable.skyblue_logo_wechatmoments_checked, R.drawable.skyblue_logo_sinaweibo_checked,
+                R.drawable.skyblue_logo_qq_checked, R.drawable.skyblue_logo_qzone_checked, R.drawable.skyblue_logo_sinaweibo_checked};
+        ShareAdapter shareAdapter = new ShareAdapter(mContext, titleList, drawableId);
+        mGridView.setAdapter(shareAdapter);
+        final Dialog mDialog = new Dialog(mContext, R.style.custom_dialog);
+        mDialog.setCanceledOnTouchOutside(true);
+        mDialog.setCancelable(true);
+        mDialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mDialog.show();
+        Window win = mDialog.getWindow();
+        win.setWindowAnimations(R.style.pop_anim_style);
+        win.getDecorView().setPadding(0, 0, 0, 0);
+        WindowManager.LayoutParams lp = win.getAttributes();
+        lp.width = WindowManager.LayoutParams.FILL_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.gravity = Gravity.BOTTOM;
+
+        win.setAttributes(lp);
+
+        tv_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+            }
+        });
+        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        mDialog.dismiss();
+                        Wechat.ShareParams weChatSP=new Wechat.ShareParams();
+                        weChatSP.setTitle(title);
+                        weChatSP.setText(content);
+                        weChatSP.setImageUrl(imageUrl);
+                        weChatSP.setUrl(url);
+                        weChatSP.setShareType(Platform.SHARE_WEBPAGE);
+                        Platform wechat=ShareSDK.getPlatform(Wechat.NAME);
+                        wechat.setPlatformActionListener(platformActionListener);
+                        wechat.share(weChatSP);
+                        break;
+                    case 1:
+                        mDialog.dismiss();
+                        WechatMoments.ShareParams WMSP=new WechatMoments.ShareParams();
+                        WMSP.setShareType(Platform.SHARE_WEBPAGE);
+                        WMSP.setTitle(title);
+                        WMSP.setText(content);
+                        WMSP.setImageUrl(imageUrl);
+                        WMSP.setUrl(url);
+                        Platform wm=ShareSDK.getPlatform(WechatMoments.NAME);
+                        wm.setPlatformActionListener(platformActionListener);
+                        wm.share(WMSP);
+                        break;
+                    case 2:
+                        mDialog.dismiss();
+                        cn.sharesdk.sina.weibo.SinaWeibo.ShareParams sp = new cn.sharesdk.sina.weibo.SinaWeibo.ShareParams();
+                        sp.setText(content);
+                        sp.setImageUrl(imageUrl);
+                        Platform weibo = ShareSDK.getPlatform(SinaWeibo.NAME);
+                        weibo.setPlatformActionListener(platformActionListener);
+                        weibo.share(sp);
+                        break;
+                    case 3:
+                        mDialog.dismiss();
+                        QQ.ShareParams QQSp=new QQ.ShareParams();
+                        QQSp.setTitle(title);
+                        QQSp.setTitleUrl(url);
+                        QQSp.setText(content);
+                        QQSp.setImageUrl(imageUrl);
+                        Platform qq = ShareSDK.getPlatform(QQ.NAME);
+                        qq.setPlatformActionListener(platformActionListener);
+                        qq.share(QQSp);
+                        break;
+                    case 4:
+                        mDialog.dismiss();
+                        QZone.ShareParams QZoneSP =new QZone.ShareParams();
+                        QZoneSP.setTitle(title);
+                        QZoneSP.setTitleUrl(url); // 标题的超链接
+                        QZoneSP.setText(content);
+                        QZoneSP.setImageUrl(imageUrl);
+                        QZoneSP.setSite(mContext.getString(R.string.app_name));
+                        QZoneSP.setSiteUrl(url);
+                        Platform qzone = ShareSDK.getPlatform (QZone.NAME);
+                        qzone.setPlatformActionListener(platformActionListener); // 设置分享事件回调
+                        qzone.share(QZoneSP);
+                        break;
+                    default:
+                        mDialog.dismiss();
+                        break;
+                }
+            }
+        });
+    }
+
+    public class ShareAdapter extends BaseListAdapter<String> {
+        private int[] drawableId;
+        private List<String> titles;
+
+        public ShareAdapter(Context context, List<String> list) {
+            super(context, list);
+        }
+
+        public ShareAdapter(Context context, List<String> titles, int[] drawableId) {
+            super(context, titles);
+            this.drawableId = drawableId;
+        }
+
+        @Override
+        public View bindView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null)
+                convertView = mInflater.inflate(R.layout.item_share_view, null);
+            ImageView imageView = ViewHolder.get(convertView, R.id.iv_plat);
+            TextView textView = ViewHolder.get(convertView, R.id.tv_plat);
+            String title = getList().get(position);
+            textView.setText(title);
+            imageView.setBackgroundResource(drawableId[position]);
+            imageView.setVisibility(TextUtils.isEmpty(title) ? View.INVISIBLE : View.VISIBLE);
+            return convertView;
+        }
     }
 
     /**
@@ -291,6 +436,10 @@ public class DialogUtils {
     }
 
     public interface BindPhoneListener {
-        public void onBind(String phone, String verifyCode,Dialog mDialog);
+        public void onBind(String phone, String verifyCode, Dialog mDialog);
+    }
+
+    public interface ShareListener {
+        public void onShare(int position, String platform);
     }
 }
