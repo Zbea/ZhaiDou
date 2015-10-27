@@ -330,6 +330,19 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
             @Override
             public void onErrorResponse(VolleyError error) {
                 setEndLoading();
+                if (currentpage==1)
+                {
+                    if (isfrist)
+                    {
+                        isfrist=false;
+                        if ("goods".equalsIgnoreCase(mParam2))
+                        {
+                            ((SearchFragment) getParentFragment()).cutTaobaoGoods();
+                            return;
+                        }
+                    }
+
+                }
                 if (products.size() == 0)
                 {
                     nullLine.setVisibility(View.VISIBLE);
@@ -379,33 +392,43 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
             public void onResponse(JSONObject json) {
 
                 setEndLoading();
-                JSONArray items = json.optJSONArray("article_items");
-                JSONObject meta = json.optJSONObject("meta");
-
-                count=meta==null?0:meta.optInt("count");
-                for (int i=0;i<items.length();i++){
-
-                    JSONObject item = items.optJSONObject(i);
-                    int id=item.optInt("id");
-                    String title =item.optString("title");
-                    double price=item.optDouble("price");
-                    String url=item.optString("url");
-                    int bean_like_count=item.optInt("bean_likes_count");
-                    JSONArray array = item.optJSONArray("asset_imgs");
-                    String image=null;
-                    if (array.length()>0){
-                        JSONArray array1 = array.optJSONArray(0);
-                        JSONObject object =  array1.optJSONObject(1);
-                        JSONObject picObj= object.optJSONObject("picture");
-                        JSONObject thumbObj =picObj.optJSONObject("thumb");
-                        image =thumbObj.optString("url");
-                        Log.i("image",image);
+                if (json!=null)
+                {
+                    JSONArray items = json.optJSONArray("article_items");
+                    JSONObject meta = json.optJSONObject("meta");
+                    if (meta==null)
+                    {
+                        count=0;
                     }
+                    else
+                    {
+                        count=meta.optInt("count");
+                    }
+                    if (items!=null)
+                    for (int i=0;i<items.length();i++){
 
-                    Product product = new Product(id,title,price,url,bean_like_count,null,image);
-                    products.add(product);
+                        JSONObject item = items.optJSONObject(i);
+                        int id=item.optInt("id");
+                        String title =item.optString("title");
+                        double price=item.optDouble("price");
+                        String url=item.optString("url");
+                        int bean_like_count=item.optInt("bean_likes_count");
+                        JSONArray array = item.optJSONArray("asset_imgs");
+                        String image=null;
+                        if (array.length()>0){
+                            JSONArray array1 = array.optJSONArray(0);
+                            JSONObject object =  array1.optJSONObject(1);
+                            JSONObject picObj= object.optJSONObject("picture");
+                            JSONObject thumbObj =picObj.optJSONObject("thumb");
+                            image =thumbObj.optString("url");
+                            Log.i("image",image);
+                        }
+
+                        Product product = new Product(id,title,price,url,bean_like_count,null,image);
+                        products.add(product);
+                    }
+                    handler.sendEmptyMessage(0);
                 }
-                handler.sendEmptyMessage(0);
             }
         }, new Response.ErrorListener() {
             @Override

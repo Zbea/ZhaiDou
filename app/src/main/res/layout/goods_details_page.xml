@@ -90,7 +90,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/content_part_bg"
+                android:background="@color/white"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -195,11 +195,6 @@
 
                     </com.zhaidou.view.ChildGridView>
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#aad5d5d5"/>
-
                 </LinearLayout>
             </LinearLayout>
 
@@ -209,7 +204,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/default_margin"
-                android:background="@drawable/content_part_bg"
+                android:background="@color/white"
                 android:orientation="vertical">
 
                 <com.zhaidou.view.TypeFaceTextView
@@ -242,7 +237,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/default_margin"
-                android:background="@drawable/content_part_bg"
+                android:background="@color/white"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:padding="@dimen/default_margin">
@@ -306,7 +301,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/default_margin"
-                android:background="@drawable/content_part_bg"
+                android:background="@color/white"
                 android:orientation="horizontal"
                 android:padding="@dimen/default_margin">
 
@@ -356,7 +351,7 @@
                 android:background="@color/white"
                 android:orientation="vertical">
 
-                <ListView
+                <com.zhaidou.view.ListViewForScrollView
                     android:id="@+id/lv_good_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -510,10 +505,6 @@
                     
                 </LinearLayout>
             </LinearLayout>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#EEEEEE"/>
 
             <LinearLayout
             android:layout_width="match_parent"

@@ -114,7 +114,7 @@
                 android:textColor="@color/text_main_color"
                 android:text="商品价格名称哈哈啊哈哈"
                 android:singleLine="true"
-                android:ellipsize="marquee"
+                android:ellipsize="end"
                 android:marqueeRepeatLimit="marquee_forever"/>
 
             <LinearLayout

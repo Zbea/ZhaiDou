@@ -7,10 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.zhaidou.R;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.utils.ToolUtils;
@@ -46,6 +48,8 @@ public class ShopSpecialAdapter extends BaseAdapter
         TypeFaceTextView itemName;
         ImageView itemImage;
         TypeFaceTextView itemTime;
+        View itemLine;
+        View itemLine1;
     }
 
     @Override
@@ -77,6 +81,8 @@ public class ShopSpecialAdapter extends BaseAdapter
             viewHolder.itemSale = (TypeFaceTextView) convertView.findViewById(R.id.shop_name_sale);
             viewHolder.itemTime = (TypeFaceTextView) convertView.findViewById(R.id.shop_time_item);
             viewHolder.itemImage = (ImageView) convertView.findViewById(R.id.itemsImageIv);
+            viewHolder.itemLine = (View) convertView.findViewById(R.id.itemsLine);
+            viewHolder.itemLine1 = (View) convertView.findViewById(R.id.itemsLine1);
             convertView.setTag(viewHolder);
         }
         else
@@ -84,7 +90,11 @@ public class ShopSpecialAdapter extends BaseAdapter
             viewHolder = (ViewHolder) convertView.getTag();
         }
         ShopSpecialItem shopSpecialItem=items.get(position);
-
+        if (position==0)
+        {
+            viewHolder.itemLine.setVisibility(View.GONE);
+            viewHolder.itemLine1.setVisibility(View.GONE);
+        }
         viewHolder.itemName.setText(shopSpecialItem.title);
         viewHolder.itemSale.setText(shopSpecialItem.sale);
         viewHolder.itemTime.setText(shopSpecialItem.overTime);
@@ -97,6 +107,7 @@ public class ShopSpecialAdapter extends BaseAdapter
                 .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
                 .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
                 .bitmapConfig(Bitmap.Config.RGB_565)
+                .displayer(new RoundedBitmapDisplayer(8))
                 .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
                 .build();
 
