@@ -4,7 +4,7 @@
     android:id="@+id/ll_unreceive"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/content_part_bg"
+    android:background="@color/white"
     android:orientation="vertical">
     <LinearLayout
         android:layout_width="match_parent"

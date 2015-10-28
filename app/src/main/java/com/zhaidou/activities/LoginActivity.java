@@ -527,7 +527,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     public void onRegisterOrLoginSuccess(final User user, Fragment fragment) {
         if (mDialog != null)
             mDialog.dismiss();
-        if (!validate_phone) {
+        if (!validate_phone)
+        {
             mDialogUtils.showVerifyDialog(new DialogUtils.VerifyCodeListener() {
                 @Override
                 public void onVerify(String phone) {
@@ -539,7 +540,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     bingPhoneTask(phone, verifyCode, mDialog, user.getAuthentication_token());
                 }
             },true);
-        } else {
+        }
+        else {
             Message message = new Message();
             message.obj = user;
             message.what = 0;

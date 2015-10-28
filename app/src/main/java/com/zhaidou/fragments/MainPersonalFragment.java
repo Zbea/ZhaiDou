@@ -537,7 +537,6 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
 
     @Override
     public void onHiddenChanged(boolean hidden) {
-        System.out.println("PersonalFragment.onHiddenChanged-------->"+hidden);
         userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         if (!hidden && userId != -1) {

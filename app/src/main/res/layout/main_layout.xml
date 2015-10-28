@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_above="@+id/tab_container"
-        android:background="@color/click_gray"></View>
+        android:background="@color/page_bg"></View>
     <LinearLayout
         android:id="@+id/tab_container"
         android:layout_width="match_parent"

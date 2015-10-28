@@ -136,7 +136,7 @@ public class MainHomeFragment extends BaseFragment implements
         if (customBannerView==null)
         {
             customBannerView=new CustomBannerView(mContext,banners,true);
-            customBannerView.setLayoutParams(screenWidth, screenWidth * 316 / 722);
+            customBannerView.setLayoutParams(screenWidth, screenWidth * 300 / 750);
             customBannerView.setOnBannerClickListener(new CustomBannerView.OnBannerClickListener()
             {
                 @Override
@@ -313,7 +313,6 @@ public class MainHomeFragment extends BaseFragment implements
             case R.id.iv_search:
                 SearchFragment searchFragment = SearchFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
-                startActivity(new Intent(getActivity(), SearchActivity.class));
                 break;
             case R.id.ll_lottery:
                 Intent detailIntent = new Intent(getActivity(), HomeCompetitionActivity.class);

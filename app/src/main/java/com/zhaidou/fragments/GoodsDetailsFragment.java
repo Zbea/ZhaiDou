@@ -673,6 +673,10 @@ public class GoodsDetailsFragment extends BaseFragment
                             mCurrentPrice.setText("￥" + ToolUtils.isIntPrice(detail.getPrice() + ""));
                             mOldPrice.setText("￥" + ToolUtils.isIntPrice(detail.getCost_price() + ""));
                             setDiscount(detail.getPrice(), detail.getCost_price());
+                            if (isPublish)
+                            {
+                                setAddOrBuyShow("此商品已下架",false);
+                            }
                         }
                     } else
                     {
@@ -851,7 +855,6 @@ public class GoodsDetailsFragment extends BaseFragment
         if (detail != null & specificationList.size() > 0)
         {
             mSpecification = specificationList.get(position);
-            ToolUtils.setLog(""+mSpecification.num);
             if (mSpecification.isBuy)
             {
                 setAddOrBuyShow("不能重复购买",false);
@@ -862,6 +865,10 @@ public class GoodsDetailsFragment extends BaseFragment
                 mCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + mSpecification.price));
                 mOldPrice.setText("￥" + ToolUtils.isIntPrice("" + mSpecification.oldPrice));
                 setDiscount(mSpecification.price, mSpecification.oldPrice);
+            }
+            if (isPublish)
+            {
+                setAddOrBuyShow("此商品已下架",false);
             }
         }
     }
@@ -903,6 +910,7 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     private void setChildFargment(GoodDetail detail, ArrayList<GoodInfo> goodInfos)
     {
+        ToolUtils.setLog(""+goodInfos.size());
         mAdapter = new GoodInfoAdapter(mContext, goodInfos);
         mListView.setAdapter(mAdapter);
         mImageContainer.removeAllViews();
@@ -1762,6 +1770,12 @@ public class GoodsDetailsFragment extends BaseFragment
         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_goods_detail));
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden)
+    {
+        super.onHiddenChanged(hidden);
+    }
+
     /**
      * 规格适配器
      */
@@ -1786,5 +1800,6 @@ public class GoodsDetailsFragment extends BaseFragment
             return convertView;
         }
     }
+
 
 }

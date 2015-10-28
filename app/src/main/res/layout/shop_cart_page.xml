@@ -102,7 +102,7 @@
                 android:orientation="horizontal"
                 android:padding="10dp"
                 android:gravity="center_vertical|right"
-                android:background="@drawable/content_part_bg">
+                android:background="@color/white">
 
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"

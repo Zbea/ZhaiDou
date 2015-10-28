@@ -100,6 +100,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:visibility="gone"
                 android:background="@color/line_bottom"/>
 
             <LinearLayout
@@ -250,6 +251,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:visibility="gone"
                 android:background="@color/line_bottom"/>
 
             <LinearLayout
@@ -369,6 +371,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:visibility="gone"
                 android:background="@color/line_bottom"/>
 
             <LinearLayout
@@ -407,6 +410,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:visibility="gone"
                 android:background="@color/line_bottom"/>
 
             <com.zhaidou.view.TypeFaceTextView

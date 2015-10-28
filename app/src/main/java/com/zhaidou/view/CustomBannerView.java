@@ -1,8 +1,18 @@
 package com.zhaidou.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
+import android.graphics.drawable.shapes.Shape;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.PagerAdapter;
@@ -48,6 +58,8 @@ public class CustomBannerView extends FrameLayout
     private List<ImageView> dots = new ArrayList<ImageView>();
     private List<ImageView> banners = new ArrayList<ImageView>();
     private OnBannerClickListener onClickListener;
+    private Bitmap norBitmap;
+    private Bitmap selectBitmap;
 
     private Handler handler = new Handler()
     {
@@ -87,7 +99,7 @@ public class CustomBannerView extends FrameLayout
                 scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
                 scheduledExecutorService.scheduleAtFixedRate(new SlideShowTask(), 1, TIME_INTERVAL, TimeUnit.SECONDS);
             }
-        },3000);
+        },4000);
 
     }
 
@@ -123,6 +135,7 @@ public class CustomBannerView extends FrameLayout
 
     private void initView()
     {
+
         if (imgs.size()==0)
         {
             nullLine=new LinearLayout(mContext);
@@ -171,6 +184,7 @@ public class CustomBannerView extends FrameLayout
             {
                 dots.get(i).setBackgroundResource(R.drawable.home_tips_foucs_icon);
             } else
+
             {
                 dots.get(i).setBackgroundResource(R.drawable.home_tips_icon);
             }
@@ -192,6 +206,33 @@ public class CustomBannerView extends FrameLayout
             viewPager.setAdapter(new ImageAdapter());
         }
 
+    }
+
+
+    private void setNorBitmap()
+    {
+        Paint paint=new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(Color.GREEN);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        norBitmap=Bitmap.createBitmap(18,18, Bitmap.Config.RGB_565);
+        Canvas canvas=new Canvas(norBitmap);
+        canvas.drawColor(Color.TRANSPARENT);
+        canvas.drawCircle(9, 9, 9, paint);
+        canvas.drawBitmap(norBitmap,0,0,paint);
+
+    }
+
+    private void setSelectBitmap()
+    {
+        Paint paint=new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(Color.RED);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        selectBitmap=Bitmap.createBitmap(18,18, Bitmap.Config.RGB_565);
+        Canvas canvas=new Canvas(selectBitmap);
+        canvas.drawColor(Color.WHITE);
+        canvas.drawCircle(9, 9, 9, paint);
     }
 
     /**
@@ -351,6 +392,7 @@ public class CustomBannerView extends FrameLayout
             viewPager.setLayoutParams(new RelativeLayout.LayoutParams(width,height));
         }
     }
+
 
     /**
      * 刷新
