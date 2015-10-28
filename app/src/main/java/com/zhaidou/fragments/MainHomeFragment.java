@@ -39,7 +39,6 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomeCompetitionActivity;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.LoginActivity;
-import com.zhaidou.activities.SearchActivity;
 import com.zhaidou.adapter.ShopSpecialAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
@@ -316,7 +315,8 @@ public class MainHomeFragment extends BaseFragment implements
                 break;
             case R.id.ll_lottery:
                 Intent detailIntent = new Intent(getActivity(), HomeCompetitionActivity.class);
-                detailIntent.putExtra("url", ZhaiDou.PRIZE_SCRAPING_URL);
+//                detailIntent.putExtra("url", ZhaiDou.PRIZE_SCRAPING_URL);
+                detailIntent.putExtra("url", "http://192.168.1.126:3000/lotteries");
                 detailIntent.putExtra("from", "lottery");
                 detailIntent.putExtra("title", "天天刮奖");
                 getActivity().startActivity(detailIntent);

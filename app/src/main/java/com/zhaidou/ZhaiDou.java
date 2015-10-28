@@ -9,6 +9,7 @@ public class ZhaiDou {
     public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
 //        public static String HOME_BASE_URL = "http://www.zhaidou.com/";
 //    public static String HOME_BASE_URL = "http://192.168.199.171/";
+    //    public static String HOME_BASE_URL = "http://192.168.1.126:3000/lotteries";
     public static String TAG_BASE_URL = "http://buy.zhaidou.com/?tag=%s&json=1";
 
 

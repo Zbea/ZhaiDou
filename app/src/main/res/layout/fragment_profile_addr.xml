@@ -25,6 +25,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:textSize="16sp"
+                android:paddingLeft="8dp"
                 android:drawablePadding="2dp"
                 android:textColor="@color/white"
                 android:layout_alignParentLeft="true"
@@ -36,7 +37,7 @@
             android:layout_centerInParent="true"
             android:textSize="18sp"
             android:textColor="@color/white"
-            android:text="地址管理"/>
+            android:text="获奖地址"/>
         <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/tv_save"
             android:layout_width="wrap_content"

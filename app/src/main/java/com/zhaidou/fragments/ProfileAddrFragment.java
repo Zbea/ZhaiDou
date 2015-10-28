@@ -19,16 +19,17 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.SharedPreferencesUtil;
 
 import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -185,8 +186,9 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
                     JSONObject profile = jsonObject.optJSONObject("profile");
                     String mobile = profile.optString("mobile");
                     String address = profile.optString("address2");
+                    if (addressListener!=null)
                     addressListener.onAddressDataChange(mNickName, mMobile, address);
-                    ((MainActivity) getActivity()).popToStack(ProfileAddrFragment.this);
+                    ((BaseActivity) getActivity()).popToStack(ProfileAddrFragment.this);
                 }
             }
         },new Response.ErrorListener() {
