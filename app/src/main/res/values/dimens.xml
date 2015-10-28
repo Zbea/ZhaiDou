@@ -43,4 +43,8 @@
     <dimen name="indicator_internal_padding">4dp</dimen>
     <dimen name="header_footer_left_right_padding">24dp</dimen>
     <dimen name="header_footer_top_bottom_padding">12dp</dimen>
+
+
+    <!---->
+    <dimen name="dimen_30">30dp</dimen>
 </resources>

@@ -87,7 +87,7 @@
                     android:singleLine="true"
                     android:textColor="@color/text_main_color"
                     android:textColorHint="@color/edit_hint_gray"
-                    android:textSize="15sp" />
+                    android:textSize="13sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -118,9 +118,9 @@
                     android:singleLine="true"
                     android:textColor="@color/text_main_color"
                     android:textColorHint="@color/edit_hint_gray"
-                    android:textSize="15sp" />
+                    android:textSize="13sp" />
 
-                <TextView
+                <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/bt_getCode"
                     android:layout_width="85dp"
                     android:layout_height="28dp"
@@ -137,7 +137,7 @@
 
         </LinearLayout>
 
-        <TextView
+        <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/bt_ok"
             android:layout_width="match_parent"
             android:layout_height="@dimen/btn_height_dimen"

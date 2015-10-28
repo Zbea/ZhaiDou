@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:text="取消"
         android:textSize="15sp"
-        android:textColor="@color/text_main_color"
+        android:textColor="@color/text_gary_color"
         android:gravity="center"
         android:layout_height="88px" />
 
