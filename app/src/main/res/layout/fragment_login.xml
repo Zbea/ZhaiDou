@@ -40,7 +40,7 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:background="@drawable/icon_edit_bg"
-            android:textSize="15sp"
+            android:textSize="13sp"
             android:singleLine="true"
             android:drawableRight="@drawable/cancel"
             android:paddingRight="10dp"
@@ -70,7 +70,7 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:background="@drawable/icon_edit_bg"
-            android:textSize="15sp"
+            android:textSize="13sp"
             android:singleLine="true"
             android:drawableRight="@drawable/cancel"
             android:paddingRight="10dp"
@@ -92,7 +92,7 @@
         android:layout_height="@dimen/btn_height_dimen"
         android:text="登录"
         android:gravity="center"
-        android:layout_marginTop="@dimen/btn_height_dimen"
+        android:layout_marginTop="@dimen/dimen_30"
         android:textColor="@color/white"
         android:textSize="16sp"
         android:background="@drawable/btn_green_click_bg"/>
@@ -109,6 +109,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="right"
+            android:textSize="12sp"
             android:textColor="@color/green_color"
             android:text="新用户注册"/>
         <View
@@ -124,6 +125,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="left"
+            android:textSize="12sp"
             android:textColor="@color/green_color"
             android:layout_gravity="center"
             android:text="忘记密码？"/>
@@ -153,7 +155,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:textSize="12sp"
-                android:textColor="@color/text_main_color"
+                android:textColor="@color/text_normal_color"
                 android:text="淘宝"/>
         </LinearLayout>
         <LinearLayout
@@ -172,7 +174,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:textSize="12sp"
-                android:textColor="@color/text_main_color"
+                android:textColor="@color/text_normal_color"
                 android:text="微信"/>
         </LinearLayout>
         <LinearLayout
@@ -191,7 +193,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:textSize="12sp"
-                android:textColor="@color/text_main_color"
+                android:textColor="@color/text_normal_color"
                 android:text="QQ"/>
         </LinearLayout>
         <LinearLayout
@@ -210,7 +212,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:textSize="12sp"
-                android:textColor="@color/text_main_color"
+                android:textColor="@color/text_normal_color"
                 android:text="新浪微博"/>
         </LinearLayout>
 
@@ -223,22 +225,23 @@
         android:orientation="horizontal">
         <View
             android:layout_width="0dp"
-            android:layout_height="1dp"
+            android:layout_height="1px"
             android:layout_marginLeft="15dp"
-            android:background="#ccd2d2d2"
+            android:background="#f1f1f1"
             android:layout_weight="1"/>
         <com.zhaidou.view.TypeFaceTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
+            android:textSize="12sp"
             android:textColor="@color/edit_hint_gray"
             android:text="第三方登录"/>
         <View
             android:layout_width="0dp"
-            android:layout_height="1dp"
+            android:layout_height="1px"
             android:layout_weight="1"
             android:layout_marginRight="15dp"
-            android:background="#ccd2d2d2"/>
+            android:background="#f1f1f1"/>
     </LinearLayout>
 </RelativeLayout>
