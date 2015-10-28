@@ -433,11 +433,11 @@ public class SearchFragment extends BaseFragment
         {
             if (position == 0)
             {
-                return "特卖商城";
+                return "特卖单品";
             }
             else
             {
-                return "单品";
+                return "淘宝单品";
             }
 //            else
 //            {

@@ -100,6 +100,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:visibility="gone"
                 android:background="@color/line_bottom" />
 
             <RelativeLayout
@@ -404,6 +405,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:visibility="gone"
                 android:background="@color/line_bottom" />
             <RelativeLayout
                 android:id="@+id/rl_into"
@@ -451,6 +453,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:visibility="gone"
                 android:background="@color/line_bottom" />
             <RelativeLayout
                 android:id="@+id/rl_manage_address"
@@ -620,6 +623,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:visibility="gone"
                 android:background="@color/line_bottom" />
         </LinearLayout>
     </ScrollView>

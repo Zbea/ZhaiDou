@@ -32,7 +32,7 @@
                 android:paddingRight="20dp"
                 android:minHeight="@dimen/home_item_dimen"
                 android:textSize="14sp"
-                android:lineSpacingExtra="1.5dp"
+                android:lineSpacingExtra="2dp"
                 android:gravity="center_vertical"
                 android:layout_centerInParent="true"
                 android:textColor="#666666"
