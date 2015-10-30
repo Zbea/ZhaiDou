@@ -8,7 +8,7 @@
     <View
     android:id="@+id/itemsLine"
     android:layout_width="match_parent"
-    android:layout_height="1dp"
+    android:layout_height="1px"
     android:layout_marginLeft="7dp"
     android:layout_marginRight="7dp"
     android:background="#e9e9e9"></View>
@@ -74,13 +74,13 @@
             <ImageView
                 android:layout_width="13dp"
                 android:layout_height="13dp"
-                android:src="@drawable/icon_time_block"/>
+                android:src="@drawable/icon_time_home"/>
 
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:textColor="@color/text_main_color"
+                android:textColor="@color/text_normal_color"
                 android:textSize="13sp"
                 android:text="剩余"
                 />
@@ -89,14 +89,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="2dp"
-                android:textColor="@color/text_main_color"
+                android:textColor="@color/text_normal_color"
                 android:textSize="13sp"
                 android:text="1"
                 />
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_main_color"
+                android:textColor="@color/text_normal_color"
                 android:textSize="13sp"
                 android:text="天"
                 />

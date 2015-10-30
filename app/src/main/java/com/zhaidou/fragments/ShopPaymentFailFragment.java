@@ -151,6 +151,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
                     DecimalFormat df = new DecimalFormat("###.00");
                     price = Double.parseDouble(df.format(price));
                     tv_amount.setText("￥" + ToolUtils.isIntPrice("" + price));
+                    if (amount>0)
                     tv_fare.setText("￥" + (amount-price==0?"0":Integer.parseInt(df.format((amount-price)))));
                     tv_total.setText("￥" + ToolUtils.isIntPrice("" +amount));
                     break;
