@@ -32,7 +32,8 @@
                 android:paddingRight="20dp"
                 android:minHeight="@dimen/home_item_dimen"
                 android:textSize="14sp"
-                android:lineSpacingExtra="2dp"
+                android:lineSpacingMultiplier="1.2"
+                android:textScaleX="1.0"
                 android:gravity="center_vertical"
                 android:layout_centerInParent="true"
                 android:textColor="#666666"
@@ -44,7 +45,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/green_color"
-                android:padding="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:gravity="center_vertical">
 
                 <LinearLayout

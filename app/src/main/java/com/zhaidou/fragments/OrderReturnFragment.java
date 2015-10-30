@@ -208,6 +208,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
             loadingView.setVisibility(View.VISIBLE);
         }
     }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()){
