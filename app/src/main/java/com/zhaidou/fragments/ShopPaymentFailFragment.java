@@ -151,7 +151,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
                     DecimalFormat df = new DecimalFormat("###.00");
                     price = Double.parseDouble(df.format(price));
                     tv_amount.setText("￥" + ToolUtils.isIntPrice("" + price));
-                    tv_fare.setText("￥" + Integer.parseInt(df.format((amount-price))));
+                    tv_fare.setText("￥" + (amount-price==0?"0":Integer.parseInt(df.format((amount-price)))));
                     tv_total.setText("￥" + ToolUtils.isIntPrice("" +amount));
                     break;
             }
@@ -196,7 +196,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
         if (getArguments() != null) {
             mOrderId = getArguments().getLong(ARG_ORDERID);
             mAmount = getArguments().getDouble(ARG_AMOUNT);
-            mFare = getArguments().getInt(ARG_FARE);
+            mFare = getArguments().getDouble(ARG_FARE);
             mTimeStamp = getArguments().getLong(ARG_TIMER);
             mOrder = (Order) getArguments().getSerializable(ARG_ORDER);
         }

@@ -1,26 +1,19 @@
 package com.zhaidou.wxapi;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import android.widget.Toast;
+
 import com.tencent.mm.sdk.constants.ConstantsAPI;
 import com.tencent.mm.sdk.modelbase.BaseReq;
 import com.tencent.mm.sdk.modelbase.BaseResp;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.fragments.ShopPaymentFailFragment;
-import com.zhaidou.fragments.ShopPaymentFragment;
-
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.util.Log;
-import android.widget.Toast;
-
-import java.util.List;
 
 public class WXPayEntryActivity extends FragmentActivity implements IWXAPIEventHandler
 {
@@ -60,7 +53,7 @@ public class WXPayEntryActivity extends FragmentActivity implements IWXAPIEventH
         {
             System.out.println("WXPayEntryActivity.onResp----------------------->" + Thread.currentThread());
 //            			MainActivity.handler.sendEmptyMessage(resp.errCode);
-//            resp.errCode=0;
+//            resp.errCode=-1;
             if (resp.errCode == -2)
             {
                 Toast.makeText(WXPayEntryActivity.this, "取消支付", Toast.LENGTH_SHORT).show();

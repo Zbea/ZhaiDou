@@ -339,7 +339,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                Log.i("volleyError--->", volleyError.getMessage());
             }
         });
         requestQueue.add(request);
@@ -451,9 +450,13 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         Log.i("getUserId", platform.getDb().getUserId());
 
         if ("weixin".equalsIgnoreCase(provider)) {
-            thirdPartyVerify("weixin", stringObjectHashMap.get("unionid") + "", platform.getDb().getUserName(), platform.getDb().getUserIcon());
-        } else {
-            thirdPartyVerify(provider, platform.getDb().getUserId(), platform.getDb().getUserName(),"http://www.zhaidou.com/uploads/user/avatar/77069/thumb_f713f712d202b1ecab67497877401835.png");
+            thirdPartyVerify("weixin", stringObjectHashMap.get("unionid") + "", platform.getDb().getUserName(),String.valueOf(stringObjectHashMap.get("headimgurl")));
+        }else if ("tqq".equalsIgnoreCase(provider)){
+            thirdPartyVerify(provider, platform.getDb().getUserId(), platform.getDb().getUserName(),String.valueOf(stringObjectHashMap.get("figureurl_qq_2")));
+        }else if ("weibo".equalsIgnoreCase(provider)){
+            thirdPartyVerify(provider, platform.getDb().getUserId(), platform.getDb().getUserName(),String.valueOf(stringObjectHashMap.get("avatar_hd")));
+        }else{
+            thirdPartyVerify(provider, platform.getDb().getUserId(), platform.getDb().getUserName(), platform.getDb().getUserIcon());
         }
     }
 
@@ -508,9 +511,9 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     int id = userJson.optInt("id");
                     String email = userJson.optString("email");
                     String token = userJson.optString("authentication_token");
-                    String avatar = userJson.optJSONObject("avatar").optString("url");
+//                    String avatar = userJson.optJSONObject("avatar").optString("url","");
                     String nick = userJson.optString("nick_name");
-                    User user = new User(id, email, token, nick, avatar);
+                    User user = new User(id, email, token, nick, "");
                     mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
                 }
             }
