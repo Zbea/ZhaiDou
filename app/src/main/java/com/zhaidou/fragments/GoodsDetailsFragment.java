@@ -112,7 +112,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private View myCartBtn;
 
     private Dialog mDialog;
-    private GridView mGridView;
+    private ChildGridView mGridView;
     private RequestQueue mRequestQueue;
 
     private ArrayList<GoodInfo> goodInfos = new ArrayList<GoodInfo>();

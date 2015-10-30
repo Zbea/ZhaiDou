@@ -95,6 +95,11 @@ public class ShopSpecialAdapter extends BaseAdapter
             viewHolder.itemLine.setVisibility(View.GONE);
             viewHolder.itemLine1.setVisibility(View.GONE);
         }
+        else
+        {
+            viewHolder.itemLine.setVisibility(View.VISIBLE);
+            viewHolder.itemLine1.setVisibility(View.VISIBLE);
+        }
         viewHolder.itemName.setText(shopSpecialItem.title);
         viewHolder.itemSale.setText(shopSpecialItem.sale);
         viewHolder.itemTime.setText(shopSpecialItem.overTime);

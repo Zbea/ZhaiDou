@@ -227,9 +227,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:divider="@null"
+                android:dividerHeight="0dp"
                 android:scrollbars="none"
                 android:listSelector="@android:color/transparent"
-                android:background="@color/black"></com.zhaidou.view.ListViewForScrollView>
+                ></com.zhaidou.view.ListViewForScrollView>
         </LinearLayout>
     </com.pulltorefresh.PullToRefreshScrollView>
 

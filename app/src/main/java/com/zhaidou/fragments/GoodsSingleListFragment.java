@@ -391,10 +391,20 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
             @Override
             public void onResponse(JSONObject json) {
 
+                ToolUtils.setLog(json.toString());
                 setEndLoading();
                 if (json!=null)
                 {
                     JSONArray items = json.optJSONArray("article_items");
+                    if (items==null)
+                    {
+                        gv_single.onRefreshComplete();
+                        if (products.size() == 0)
+                        {
+                            nullLine.setVisibility(View.VISIBLE);
+                        }
+                        return;
+                    }
                     JSONObject meta = json.optJSONObject("meta");
                     if (meta==null)
                     {
@@ -404,7 +414,6 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                     {
                         count=meta.optInt("count");
                     }
-                    if (items!=null)
                     for (int i=0;i<items.length();i++){
 
                         JSONObject item = items.optJSONObject(i);
