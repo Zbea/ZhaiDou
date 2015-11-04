@@ -271,10 +271,8 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         params.put("search", msg);
         params.put("page",page+"");
         if (sort==1){
-            params.put("hot_d","desc");
-        }else if (sort==2){
             params.put("price","asc");
-        }else if (sort==3){
+        }else if (sort==2){
             params.put("price","desc");
         }
         JsonObjectRequest newMissRequest = new JsonObjectRequest(

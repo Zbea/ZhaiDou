@@ -25,6 +25,7 @@ public class ShopTodayItem implements Serializable
     //已购量
     public int buyCount;
 
+
     public ShopTodayItem(int id,String title, String designer, String imageUrl, double currentPrice, double formerPrice,int num,int totalCount, int buyCount)
     {
         this.id=id;

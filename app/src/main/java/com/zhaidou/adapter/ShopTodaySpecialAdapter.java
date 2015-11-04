@@ -112,8 +112,8 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
 
         if (todayShopItem.totalCount!=0)
         {
-            viewHolder.buyCount.setText("已抢购"+((todayShopItem.buyCount*100/todayShopItem.totalCount))+"%");
-            if ((todayShopItem.buyCount*100/todayShopItem.totalCount)>=80)
+            viewHolder.buyCount.setText("已抢购"+todayShopItem.buyCount+"%");
+            if(todayShopItem.buyCount>=80)
             {
                 viewHolder.buyProgressBarRed.setMax(todayShopItem.totalCount);
                 viewHolder.buyProgressBarRed.setProgress(todayShopItem.buyCount);
