@@ -48,7 +48,7 @@ public class ProductAdapter extends BaseListAdapter<Product>{
             convertView=mInflater.inflate(R.layout.item_fragment_single,null);
         TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
         ImageView image =ViewHolder.get(convertView,R.id.iv_single_item);
-        image.setLayoutParams(new LinearLayout.LayoutParams(screenWidth/2-1,(screenWidth/2-1)*175/186));
+        image.setLayoutParams(new LinearLayout.LayoutParams(screenWidth/2-1,screenWidth/2-1));
         TextView tv_money=ViewHolder.get(convertView,R.id.tv_money);
         ImageView iv_heart=ViewHolder.get(convertView,R.id.iv_heart);
         TextView tv_count=ViewHolder.get(convertView,R.id.tv_count);
