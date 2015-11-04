@@ -302,7 +302,7 @@ public class ShopPaymentFragment extends BaseFragment {
                     String node = orderObj.optString("node");
                     ToolUtils.setLog("node:" + node);
                     int total_over_time=orderObj.optInt("total_over_time");
-                    initTime=total_over_time*1000;
+                    initTime=total_over_time;
                     int id = orderObj.optInt("id");
                     String status = orderObj.optString("status");
                     String created_at_for = orderObj.optString("created_at_for");

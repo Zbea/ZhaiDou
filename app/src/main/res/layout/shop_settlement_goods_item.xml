@@ -14,7 +14,7 @@
         <ImageView
             android:id="@+id/orderImageItemTv"
             android:layout_weight="0.00001"
-            android:layout_width="100dp"
+            android:layout_width="96dp"
             android:layout_height="96dp"
             android:layout_margin="10dp"
             android:scaleType="fitXY"

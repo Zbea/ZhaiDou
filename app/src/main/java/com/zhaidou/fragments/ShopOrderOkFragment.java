@@ -204,7 +204,6 @@ public class ShopOrderOkFragment extends BaseFragment
                     ((MainActivity) getActivity()).popToStack(ShopOrderOkFragment.this);
 
                     String result = (String) msg.obj;
-                    ToolUtils.setLog("hdsfjhk:"+mDialog.isShowing());
                     try
                     {
                         JSONObject jsonObject = new JSONObject(result);
