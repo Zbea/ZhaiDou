@@ -97,6 +97,9 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                System.out.println("view = [" + view + "], url = [" + url + "]");
+                if ("mobile://login?false".equalsIgnoreCase(url)&&!TextUtils.isEmpty(token))
+                    return true;
                 getDeviceId();
                 if ("mobile://login?false".equalsIgnoreCase(url)) {
 //                    getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, loginFragment)
@@ -198,7 +201,7 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("ZhaidouVesion", getResources().getString(R.string.app_versionName));
         headers.put("SECAuthorization", token);
-        webView.loadUrl(url + "?open=app");
+        webView.loadUrl(url + "?open=app",headers);
         this.setTitle("");
         title = getIntent().getStringExtra("title");
         if (!TextUtils.isEmpty(title)) {

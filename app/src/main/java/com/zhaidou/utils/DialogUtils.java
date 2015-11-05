@@ -232,7 +232,7 @@ public class DialogUtils {
                 if (ToolUtils.isPhoneOk(phone)) {
 //                    codeTimer();
                     if (verifyCodeListener != null) {
-                        verifyCodeListener.onVerify(phone);
+                        verifyCodeListener.onVerify(phone,mDialog);
                     }
                 } else {
                     ToolUtils.setToast(mContext, "抱歉,无效手机号码");
@@ -431,7 +431,7 @@ public class DialogUtils {
     }
 
     public interface VerifyCodeListener {
-        public void onVerify(String phone);
+        public void onVerify(String phone,Dialog mDialog);
 
     }
 

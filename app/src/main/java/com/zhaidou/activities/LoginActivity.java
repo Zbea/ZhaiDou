@@ -417,8 +417,9 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
      * 获得验证码
      *
      * @param phone 手机号码
+     * @param mDialog
      */
-    private void getVerifyCode(String phone) {
+    private void getVerifyCode(String phone, final Dialog mDialog) {
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + phone + "&flag=1", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -428,8 +429,11 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 if (status == 201) {
 //                    codeTimer();
                     mDialogUtils.codeTimer();
-                }
+                    return;
+                }else {
+                    mDialog.findViewById(R.id.iv_close).setVisibility(View.VISIBLE);
                 Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+                }
             }
         }, new Response.ErrorListener() {
             @Override
@@ -534,15 +538,15 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         {
             mDialogUtils.showVerifyDialog(new DialogUtils.VerifyCodeListener() {
                 @Override
-                public void onVerify(String phone) {
-                    getVerifyCode(phone);
+                public void onVerify(String phone,Dialog mDialog) {
+                    getVerifyCode(phone,mDialog);
                 }
             }, new DialogUtils.BindPhoneListener() {
                 @Override
                 public void onBind(String phone, String verifyCode, final Dialog mDialog) {
                     bingPhoneTask(phone, verifyCode, mDialog, user.getAuthentication_token());
                 }
-            },true);
+            },false);
         }
         else {
             Message message = new Message();
