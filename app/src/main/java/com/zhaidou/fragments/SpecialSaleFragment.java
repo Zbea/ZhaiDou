@@ -481,12 +481,12 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 convertView = mInflater.inflate(R.layout.item_fragment_sale, null);
             TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
             ImageView image = ViewHolder.get(convertView, R.id.iv_single_item);
-            image.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / 2 - 1, (screenWidth / 2 - 1) * 175 / 186));
+            image.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / 2 - 1, screenWidth / 2 - 1));
             TextView tv_money = ViewHolder.get(convertView, R.id.tv_money);
             TextView tv_price = ViewHolder.get(convertView, R.id.tv_price);
             TextView tv_count = ViewHolder.get(convertView, R.id.tv_count);
             ImageView ll_sale_out = ViewHolder.get(convertView, R.id.ll_sale_out);
-            ll_sale_out.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / 2 - 1, (screenWidth / 2 - 1) * 175 / 186));
+            ll_sale_out.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / 2 - 1, screenWidth / 2 - 1));
             Product product = getList().get(position);
             tv_name.setText(product.getTitle());
             ToolUtils.setImageCacheUrl(product.getImage(), image, R.drawable.icon_loading_defalut);

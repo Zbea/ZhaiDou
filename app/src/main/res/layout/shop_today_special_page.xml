@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="30dp"
                 android:paddingBottom="30dp"
-                android:paddingLeft="20dp"
+                android:paddingLeft="23dp"
                 android:paddingRight="20dp"
                 android:minHeight="@dimen/home_item_dimen"
                 android:textSize="14sp"

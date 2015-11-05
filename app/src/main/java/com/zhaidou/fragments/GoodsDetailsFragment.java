@@ -585,10 +585,10 @@ public class GoodsDetailsFragment extends BaseFragment
         publishBtn = (TextView) mView.findViewById(R.id.goodsPublish);
 
         goodsImage = (ImageView) mView.findViewById(R.id.goodsImageView);
-        goodsImage.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 678 / 720));
+        goodsImage.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth));
 
         relativeLayout = (RelativeLayout) mView.findViewById(R.id.imageRl);
-        relativeLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 678 / 720));
+        relativeLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth));
 
         iconView = (LinearLayout) mView.findViewById(R.id.iconView);
         iconOSaleView = (LinearLayout) mView.findViewById(R.id.iconOSaleView);

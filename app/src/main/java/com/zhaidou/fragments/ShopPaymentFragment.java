@@ -228,7 +228,7 @@ public class ShopPaymentFragment extends BaseFragment {
         if (mView == null) {
             mView = inflater.inflate(R.layout.shop_payment_page, container, false);
             mContext = getActivity();
-            initTime =0;
+            initTime = mContext.getResources().getInteger(R.integer.timer_countdown) / 1000;
             initView();
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
@@ -301,7 +301,6 @@ public class ShopPaymentFragment extends BaseFragment {
                     String node = orderObj.optString("node");
                     ToolUtils.setLog("node:" + node);
                     int total_over_time=orderObj.optInt("total_over_time");
-                    if (total_over_time!=0)
                     initTime=total_over_time;
                     int id = orderObj.optInt("id");
                     String status = orderObj.optString("status");

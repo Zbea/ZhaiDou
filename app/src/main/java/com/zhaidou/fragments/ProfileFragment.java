@@ -370,15 +370,13 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                this.startActivityForResult(intent,
-                        MENU_CAMERA_SELECTED);
+                this.startActivityForResult(intent,MENU_CAMERA_SELECTED);
                 break;
             case MENU_PHOTO_SELECTED:
                 Intent intent1 = new Intent(Intent.ACTION_PICK, null);
                 intent1.setDataAndType(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-                this.startActivityForResult(intent1,
-                        MENU_PHOTO_SELECTED);
+                this.startActivityForResult(intent1,MENU_PHOTO_SELECTED);
                 break;
         }
         toggleMenu();
