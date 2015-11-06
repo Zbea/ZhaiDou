@@ -134,7 +134,7 @@
                     android:paddingBottom="@dimen/default_margin"
                     android:paddingLeft="@dimen/default_margin"
                     android:paddingRight="@dimen/default_margin"
-                    android:paddingTop="5dp">
+                    android:paddingTop="7dp">
 
                     <TextView
                         android:id="@+id/goodsCurrentPrice"

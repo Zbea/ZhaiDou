@@ -7,6 +7,7 @@ import android.os.Environment;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.nostra13.universalimageloader.cache.disc.impl.LimitedAgeDiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -74,7 +75,7 @@ public class ZDApplication extends Application{
                 .threadPoolSize(3)//线程池加载的数量
                 .diskCacheFileCount(50)//最大缓存数量
                 .diskCacheSize(50 * 1024 * 1024) // 50 Mb sd卡(本地)缓存的最大值
-                .diskCache(new UnlimitedDiscCache(cacheDir))//设置缓存路径
+                .diskCache(new LimitedAgeDiscCache(cacheDir,48*60*60*1000))//设置缓存路径
 //                .memoryCache(new UsingFreqLimitedMemoryCache(2* 1024 * 1024))
                 .memoryCache(new WeakMemoryCache())
                 .build();
