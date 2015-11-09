@@ -208,6 +208,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
             bannerLine=(LinearLayout) rootView.findViewById(R.id.bannerView);
+            bannerLine.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 400 / 750));
             scrollView=(ScrollView) rootView.findViewById(R.id.scrollView);
             mGridView = (GridView) rootView.findViewById(R.id.gv_sale);
             mGridView.setEmptyView(mEmptyView);

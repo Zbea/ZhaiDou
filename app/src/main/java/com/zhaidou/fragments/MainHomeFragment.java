@@ -228,6 +228,7 @@ public class MainHomeFragment extends BaseFragment implements
         mRequestQueue = Volley.newRequestQueue(getActivity());
 
         linearLayout=(LinearLayout)view.findViewById(R.id.bannerView);
+        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 300 / 750));
         initDate();
         initCartTips();
     }

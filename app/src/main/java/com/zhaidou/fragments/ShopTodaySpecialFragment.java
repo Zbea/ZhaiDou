@@ -429,7 +429,8 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     int num = obj.optInt("total_count");
                     int totalCount = obj.optInt("total");
                     int buyCount = totalCount - num;
-                    ShopTodayItem shopTodayItem = new ShopTodayItem(Baseid, Listtitle, designer, imageUrl, price, cost_price, num, totalCount, percentum);
+                    ShopTodayItem shopTodayItem = new ShopTodayItem(Baseid, Listtitle, designer, imageUrl, price, cost_price, num, totalCount, buyCount);
+                    shopTodayItem.percentum=percentum;
                     items.add(shopTodayItem);
                 }
 

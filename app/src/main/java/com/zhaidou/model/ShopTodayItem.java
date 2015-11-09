@@ -24,6 +24,8 @@ public class ShopTodayItem implements Serializable
     public int totalCount;
     //已购量
     public int buyCount;
+    //已购量
+    public int percentum;
 
 
     public ShopTodayItem(int id,String title, String designer, String imageUrl, double currentPrice, double formerPrice,int num,int totalCount, int buyCount)
