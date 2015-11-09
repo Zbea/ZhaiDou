@@ -56,6 +56,7 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
     private String token;
     private String nickName;
 
+    private boolean isProfileLoad=false;
     private LoginFragment loginFragment;
     private SharedPreferences mSharedPreferences;
 
@@ -97,11 +98,14 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                System.out.println("view = [" + view + "], url = [" + url + "]");
-                if ("mobile://login?false".equalsIgnoreCase(url)&&!TextUtils.isEmpty(token))
+                System.out.println("view = [" + view + "], url = [" + url + "]-------------->token-------->"+token);
+                if ("mobile://login?false".equalsIgnoreCase(url)&&!TextUtils.isEmpty(token)){
+                    System.out.println("HomeCompetitionActivity.shouldOverrideUrlLoading---->\"mobile://login?false\".equalsIgnoreCase(url)&&!TextUtils.isEmpty(token)");
                     return true;
+                }
                 getDeviceId();
                 if ("mobile://login?false".equalsIgnoreCase(url)) {
+                    System.out.println("HomeCompetitionActivity.shouldOverrideUrlLoading------->\"mobile://login?false\".equalsIgnoreCase(url)");
 //                    getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, loginFragment)
 //                            .addToBackStack(null).commit();
 //                    mChildContainer.setVisibility(View.VISIBLE);
@@ -110,20 +114,28 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
                     HomeCompetitionActivity.this.startActivityForResult(intent, 10000);
                     return true;
                 } else if ("mobile://address".equalsIgnoreCase(url)) {
-                    System.out.println("view = [" + view + "], url = [" + url + "]");
-                    ProfileAddrFragment profileAddrFragment = ProfileAddrFragment.newInstance(user.getFirst_name(), user.getMobile(), user.getAddress2(), profileId);
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, profileAddrFragment)
-                            .addToBackStack(null).commit();
-                    profileAddrFragment.setAddressListener(new ProfileAddrFragment.AddressListener() {
-                        @Override
-                        public void onAddressDataChange(String name, String mobile, String address) {
-                            System.out.println("name = [" + name + "], mobile = [" + mobile + "], address = [" + address + "]");
-                            user.setFirst_name(name);
-                            user.setMobile(mobile);
-                            user.setAddress2(address);
-                        }
-                    });
-                    mChildContainer.setVisibility(View.VISIBLE);
+                    System.out.println("HomeCompetitionActivity.shouldOverrideUrlLoading----------->\"mobile://address\".equalsIgnoreCase(url)----->"+isProfileLoad);
+                    if (isProfileLoad){
+                        System.out.println("view = [" + view + "], url = [" + url + "]");
+                        System.out.println("HomeCompetitionActivity.shouldOverrideUrlLoading--------->" + user.getFirst_name());
+                        System.out.println("HomeCompetitionActivity.shouldOverrideUrlLoading--------->" + user.getMobile());
+                        System.out.println("HomeCompetitionActivity.shouldOverrideUrlLoading--------->" + user.getAddress2());
+                        System.out.println("HomeCompetitionActivity.shouldOverrideUrlLoading--------->" + profileId);
+                        String address = TextUtils.isEmpty(user.getAddress2()) || "null".equalsIgnoreCase(user.getAddress2()) ? "" : user.getAddress2();
+                        ProfileAddrFragment profileAddrFragment = ProfileAddrFragment.newInstance(user.getFirst_name(), user.getMobile(), address, profileId);
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, profileAddrFragment)
+                                .addToBackStack(null).commit();
+                        profileAddrFragment.setAddressListener(new ProfileAddrFragment.AddressListener() {
+                            @Override
+                            public void onAddressDataChange(String name, String mobile, String address) {
+                                System.out.println("name = [" + name + "], mobile = [" + mobile + "], address = [" + address + "]");
+                                user.setFirst_name(name);
+                                user.setMobile(mobile);
+                                user.setAddress2(address);
+                            }
+                        });
+                        mChildContainer.setVisibility(View.VISIBLE);
+                    }
                     return true;
 
                 } else if (url.contains("taobao")) {
@@ -229,6 +241,9 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
         super.onRegisterOrLoginSuccess(user, fragment);
     }
     public void getUserData() {
+        userId = mSharedPreferences.getInt("userId", -1);
+        token = mSharedPreferences.getString("token", null);
+        nickName = mSharedPreferences.getString("nickName", "");
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL + userId + "/profile", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -246,6 +261,7 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
                 user = new User(null, null, null, verified, mobile, description);
                 user.setAddress2(address2);
                 user.setFirst_name(first_name);
+                isProfileLoad=true;
             }
         }, new Response.ErrorListener() {
             @Override
@@ -272,6 +288,7 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
         switch (resultCode) {
             case 2000:
                 token = mSharedPreferences.getString("token", null);
+                getUserData();
                 System.out.println("HomeCompetitionActivity.onActivityResult---------->" + token);
                 webView.reload();
                 break;
