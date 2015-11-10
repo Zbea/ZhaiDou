@@ -209,6 +209,7 @@
                 android:layout_marginTop="2dp"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@id/tv_delete"
+                android:layout_alignParentRight="true"
                 android:layout_marginRight="15dp"
                 android:gravity="center_vertical">
                 <ImageView
