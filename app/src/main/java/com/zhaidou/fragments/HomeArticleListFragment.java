@@ -118,6 +118,7 @@ public class HomeArticleListFragment extends BaseFragment implements PullToRefre
 
         mRequestQueue = Volley.newRequestQueue(getActivity());
 
+
         if (NetworkUtils.isNetworkAvailable(getActivity()))
         {
             mDialog= CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
