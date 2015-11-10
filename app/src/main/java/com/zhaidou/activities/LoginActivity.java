@@ -169,7 +169,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
      * 记住邮箱帐号
      */
     private void saveEmail() {
-        SharedPreferencesUtil.saveData(this, "email", strEmail);
+        SharedPreferencesUtil.saveData(this, "phone", strEmail);
     }
 
     /**
@@ -178,7 +178,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
      * @return
      */
     private String getEmail() {
-        return (String) SharedPreferencesUtil.getData(this, "email", "");
+        return (String) SharedPreferencesUtil.getData(this, "phone", "");
     }
 
     @Override

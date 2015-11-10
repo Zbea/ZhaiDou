@@ -55,7 +55,7 @@
                 android:layout_marginRight="@dimen/default_margin"
                 android:textSize="15sp"
                 android:textColor="@color/text_main_color"
-                android:text="新特卖,每日上新"/>
+                android:text="新特卖•每日上新"/>
             </LinearLayout>
             <View
                 android:layout_width="match_parent"
