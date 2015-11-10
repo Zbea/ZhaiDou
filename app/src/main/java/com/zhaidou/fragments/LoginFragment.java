@@ -184,10 +184,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
      */
     private void saveEmail()
     {
-        SharedPreferences sharedPreferences=mContext.getSharedPreferences("email",0);
-        SharedPreferences.Editor editor=sharedPreferences.edit();
-        editor.putString("email",strEmail);
-        editor.commit();
+        SharedPreferencesUtil.saveData(mContext,"phone",strEmail);
     }
 
     /**
@@ -196,7 +193,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
      */
     private String getEmail()
     {
-        return mContext.getSharedPreferences("email",0).getString("email","");
+        return (String)SharedPreferencesUtil.getData(mContext,"phone","");
     }
 
     @Override
