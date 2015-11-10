@@ -2,17 +2,11 @@ package com.zhaidou.fragments;
 
 
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.view.ViewPager;
-import android.text.TextUtils;
-import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,21 +30,14 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
-import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.adapter.HomeListAdapter;
-import com.zhaidou.adapter.ShopSpecialAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
-import com.zhaidou.model.CartItem;
 import com.zhaidou.model.Category;
-import com.zhaidou.model.ShopSpecialItem;
-import com.zhaidou.model.SwitchImage;
-import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
-import com.zhaidou.view.CustomBannerView;
 import com.zhaidou.view.ListViewForScrollView;
 import com.zhaidou.view.TypeFaceTextView;
 
@@ -178,6 +165,7 @@ public class HomeStrategyFragment extends BaseFragment
             detailIntent.putExtra("from", "product");
             detailIntent.putExtra("title", article.getTitle());
             detailIntent.putExtra("cover_url", article.getImg_url());
+            detailIntent.putExtra("show_header", true);
             detailIntent.putExtra("url", ZhaiDou.ARTICLE_DETAIL_URL + article.getId());
             startActivityForResult(detailIntent, 100);
             if ("true".equalsIgnoreCase(article.getIs_new()))

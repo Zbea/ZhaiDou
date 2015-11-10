@@ -241,11 +241,13 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
         title = getIntent().getStringExtra("title");
         coverUrl = getIntent().getStringExtra("cover_url");
+        isShowHeader = getIntent().getBooleanExtra("show_header", false);
 
         if (!TextUtils.isEmpty(title)) {
             mTitleView.setText(title);
+            mTitleView.setVisibility(View.GONE);
         }
-        if (!TextUtils.isEmpty(coverUrl)) {
+        if (!TextUtils.isEmpty(coverUrl)&&isShowHeader) {
             ToolUtils.setImageCacheUrl(coverUrl, mHeaderView);
             mTitleView.setVisibility(View.GONE);
             mHeaderText.setText(title);
@@ -259,7 +261,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
             imageView.setVisibility(View.GONE);
         }
 
-        isShowHeader = getIntent().getBooleanExtra("show_header", false);
+
 
     }
 
