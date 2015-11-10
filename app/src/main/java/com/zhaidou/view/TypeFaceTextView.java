@@ -31,10 +31,4 @@ public class TypeFaceTextView extends TextView {
                 setTypeface(mTypeFace);
             }
     }
-
-    @Override
-    public boolean isFocused()
-    {
-        return true;
-    }
 }

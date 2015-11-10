@@ -330,9 +330,9 @@ public class SearchFragment extends BaseFragment
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if (i==KeyEvent.KEYCODE_ENTER){
 
-                    if(inputMethodManager.isActive()){
-                        inputMethodManager.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
-                    }
+//                    if(inputMethodManager.isActive()){
+//                        inputMethodManager.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
+//                    }
                     if (isHidenKeyBoard=!isHidenKeyBoard){
                         if (!TextUtils.isEmpty(mEditText.getText().toString().trim())){
                             onSearch();
