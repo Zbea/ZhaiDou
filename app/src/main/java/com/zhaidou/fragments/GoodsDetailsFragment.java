@@ -27,7 +27,6 @@ import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -66,6 +65,7 @@ import com.zhaidou.model.GoodInfo;
 import com.zhaidou.model.Specification;
 import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;
+import com.zhaidou.utils.DeviceUtils;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -703,8 +703,12 @@ public class GoodsDetailsFragment extends BaseFragment
             @Override
             public void onClick(View view)
             {
-                String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_Number);
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                if (DeviceUtils.isApkInstalled(getActivity(),"com.tencent.mobileqq")){
+                    String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_Number);
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                }else {
+                    ShowToast("没有安装QQ客户端哦");
+                }
             }
         });
 
