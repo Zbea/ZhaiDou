@@ -6,8 +6,8 @@ package com.zhaidou;
 public class ZhaiDou {
 
     public static String HOME_PAGE_URL = "http://buy.zhaidou.com/?json=get_category_posts&slug=%E5%AE%B6%E9%A5%B0%E4%BC%98%E9%80%89&status=publish";
-//    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
-        public static String HOME_BASE_URL = "http://www.zhaidou.com/";
+    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
+//        public static String HOME_BASE_URL = "http://www.zhaidou.com/";
 //    public static String HOME_BASE_URL = "http://192.168.199.171/";
     //    public static String HOME_BASE_URL = "http://192.168.1.126:3000/lotteries";
     public static String TAG_BASE_URL = "http://buy.zhaidou.com/?tag=%s&json=1";
@@ -172,21 +172,17 @@ public class ZhaiDou {
 
     //广播标识集合
     /**
-     * 首页点击标识刷新
+     *  购物车选中商品刷新
      */
-    public static String IntentRefreshListTag="com.zhaidou.home.refesh.list";
+    public static String IntentRefreshCartGoodsCheckTag ="com.zhaidou.home.refesh.cart.goods.check";
+//    /**
+//     *  购物车商品减一
+//     */
+//    public static String IntentRefreshCartGoodsSubTag="com.zhaidou.home.refesh.cart.goods.sub";
     /**
-     *  购物车商品刷新
+     * 购物车商品刷新
      */
-    public static String IntentRefreshCartGoodsTag="com.zhaidou.home.refesh.cart.goods";
-    /**
-     *  购物车商品减一
-     */
-    public static String IntentRefreshCartGoodsSubTag="com.zhaidou.home.refesh.cart.goods.sub";
-    /**
-     * 购物车选中商品刷新
-     */
-    public static String IntentRefreshCartGoodsCheckTag="com.zhaidou.home.refesh.cart.goods.check";
+    public static String IntentRefreshCartGoodsTag ="com.zhaidou.home.refesh.cart.goods";
     /**
      * 登录成功
      */
@@ -211,10 +207,6 @@ public class ZhaiDou {
      * 代付款减一
      */
     public static String IntentRefreshUnPayTag="com.zhaidou.home.refesh.unpay.count";
-    /**
-     * 订单支付成功刷新按钮
-     */
-    public static String IntentRefreshPaySuccessTag="com.zhaidou.home.refesh.pay.success";
     /**
      * 商品详情零元特卖购买后刷新
      */

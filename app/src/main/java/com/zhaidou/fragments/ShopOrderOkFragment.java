@@ -194,10 +194,10 @@ public class ShopOrderOkFragment extends BaseFragment
                     }
 
                     //发送刷新购物车广播
-                    Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsCheckTag);
+                    Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
                     mContext.sendBroadcast(intent);
                     //发送刷新购物车数量广播
-                    Intent intent1 = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
+                    Intent intent1 = new Intent(ZhaiDou.IntentRefreshCartGoodsCheckTag);
                     mContext.sendBroadcast(intent1);
                     //关闭本页面
                     ((MainActivity) getActivity()).popToStack(ShopOrderOkFragment.this);

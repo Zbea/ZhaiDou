@@ -113,7 +113,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag)) {
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag)) {
                 initCartTips();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
@@ -249,8 +249,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
      */
     private void initBroadcastReceiver() {
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsSubTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
         mContext.registerReceiver(broadcastReceiver, intentFilter);

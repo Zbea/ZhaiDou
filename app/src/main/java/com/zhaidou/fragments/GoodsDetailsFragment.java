@@ -185,7 +185,7 @@ public class GoodsDetailsFragment extends BaseFragment
         public void onReceive(Context context, Intent intent)
         {
             String action = intent.getAction();
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
             {
                 initCartTips();
             }
@@ -699,18 +699,18 @@ public class GoodsDetailsFragment extends BaseFragment
         imageNull.setVisibility(View.GONE);
 
         mView.findViewById(R.id.rl_qq_contact).setOnClickListener(new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View view)
         {
-            @Override
-            public void onClick(View view)
-            {
-                if (DeviceUtils.isApkInstalled(getActivity(),"com.tencent.mobileqq")){
-                    String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_Number);
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                }else {
-                    ShowToast("没有安装QQ客户端哦");
-                }
+            if (DeviceUtils.isApkInstalled(getActivity(),"com.tencent.mobileqq")){
+                String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_Number);
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            }else {
+                ShowToast("没有安装QQ客户端哦");
             }
-        });
+        }
+    });
 
         creatCartDB = new CreatCartDB(mContext);
         initCartTips();
@@ -1031,7 +1031,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private void initBroadcastReceiver()
     {
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshGoodsDetailsTag);
@@ -1256,6 +1256,7 @@ public class GoodsDetailsFragment extends BaseFragment
 
                 Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
                 mContext.sendBroadcast(intent);
+                ((MainActivity)getActivity()).CartTip(1);
 
             } else
             {
@@ -1516,7 +1517,7 @@ public class GoodsDetailsFragment extends BaseFragment
             public void onClick(View view)
             {
                 CreatCartTools.deleteByData(creatCartDB, cartItem);
-                Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
+                Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsCheckTag);
                 mContext.sendBroadcast(intent);
                 dialog.dismiss();
                 buyGoods();
@@ -1557,7 +1558,7 @@ public class GoodsDetailsFragment extends BaseFragment
             public void onClick(View view)
             {
                 CreatCartTools.deleteByData(creatCartDB, cartItem);
-                Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
+                Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsCheckTag);
                 mContext.sendBroadcast(intent);
                 dialog.dismiss();
                 addCartGoods();

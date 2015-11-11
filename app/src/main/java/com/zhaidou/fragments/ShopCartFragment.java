@@ -105,11 +105,10 @@ public class ShopCartFragment extends BaseFragment
         public void onReceive(Context context, Intent intent)
         {
             String action = intent.getAction();
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
             {
                 items.removeAll(items);
                 getGoodsItems();
-//                items = CreatCartTools.selectByAll(creatCartDB, userId);
                 if (items.size() > 0)
                 {
                     setGoodsCheckChange();
@@ -119,13 +118,15 @@ public class ShopCartFragment extends BaseFragment
                     contentView.setVisibility(View.GONE);
                 }
             }
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
             {
                 isBuySuccess=true;
                 getGoodsItems();
-//                items = CreatCartTools.selectByAll(creatCartDB, userId);
+                ToolUtils.setLog("刷新购物车");
                 if (items.size() > 0)
                 {
+                    nullView.setVisibility(View.GONE);
+                    contentView.setVisibility(View.VISIBLE);
                     addCartGoods();
                 } else
                 {
@@ -236,10 +237,7 @@ public class ShopCartFragment extends BaseFragment
                 case R.id.back_btn:
                     ((MainActivity) getActivity()).popToStack(ShopCartFragment.this);
                     break;
-                case R.id.cartGgTv:
-                    ShopSpecialFragment shopSpecialFragment = ShopSpecialFragment.newInstance("", 0);
-                    ((MainActivity) getActivity()).navigationToFragment(shopSpecialFragment);
-                    break;
+
                 case R.id.okBuyBtn:
                     if (itemsCheck.size() > 0)
                     {
@@ -308,11 +306,15 @@ public class ShopCartFragment extends BaseFragment
     private void initView()
     {
         mRequestQueue = Volley.newRequestQueue(mContext);
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
         mDialogUtil=new DialogUtils(mContext);
 
         backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(onClickListener);
+        if (mIndex==1)
+        {
+            backBtn.setVisibility(View.GONE);
+        }
+
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(R.string.shop_cart_text);
 
@@ -320,8 +322,6 @@ public class ShopCartFragment extends BaseFragment
         okBuyBtn.setOnClickListener(onClickListener);
 
         nullView = (LinearLayout) mView.findViewById(R.id.cartNullLine);
-        ggBtn = (TypeFaceTextView) mView.findViewById(R.id.cartGgTv);
-        ggBtn.setOnClickListener(onClickListener);
         contentView = (RelativeLayout) mView.findViewById(R.id.cartContentLine);
         loadingView=(LinearLayout)mView.findViewById(R.id.loadingView);
 
@@ -333,20 +333,7 @@ public class ShopCartFragment extends BaseFragment
 
         cartGoodsLine = (LinearLayout) mView.findViewById(R.id.cartGoodsLine);
         creatCartDB = new CreatCartDB(mContext);
-        checkLogin();
-        getGoodsItems();
-
-        if (items.size() > 0)
-        {
-            FetchDetailData();
-
-        } else
-        {
-            mDialog.dismiss();
-            nullView.setVisibility(View.VISIBLE);
-            contentView.setVisibility(View.GONE);
-            loadingView.setVisibility(View.GONE);
-        }
+        refreshData();
 
     }
 
@@ -356,9 +343,8 @@ public class ShopCartFragment extends BaseFragment
     private void initBroadcastReceiver()
     {
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsSubTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
         mContext.registerReceiver(broadcastReceiver, intentFilter);
     }
 
@@ -371,11 +357,30 @@ public class ShopCartFragment extends BaseFragment
     }
 
     /**
+     * 刷新数据
+     */
+    public void refreshData()
+    {
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        checkLogin();
+        getGoodsItems();
+        if (items.size() > 0)
+        {
+            FetchDetailData();
+        } else
+        {
+            mDialog.dismiss();
+            nullView.setVisibility(View.VISIBLE);
+            contentView.setVisibility(View.GONE);
+            loadingView.setVisibility(View.GONE);
+        }
+    }
+
+    /**
      * 获得当前userId的所有商品
      */
     private void getGoodsItems()
     {
-//        items=((MainActivity)mContext).getItems();
         items = CreatCartTools.selectByAll(creatCartDB, userId);
     }
 
@@ -581,8 +586,7 @@ public class ShopCartFragment extends BaseFragment
                         public void onPositive() {
                             CreatCartTools.deleteByData(creatCartDB, cartItem);
                             //发送广播
-                            Intent intent=new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
-                            mContext.sendBroadcast(intent);
+                            sendBroadCastEditAll();
                             cartGoodsLine.removeView(childeView);
                         }
                     },null);
@@ -620,7 +624,7 @@ public class ShopCartFragment extends BaseFragment
     public void sendBroadCastEditAll()
     {
         //发送数量修改广播
-        Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
+        Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsCheckTag);
         mContext.sendBroadcast(intent);
     }
 

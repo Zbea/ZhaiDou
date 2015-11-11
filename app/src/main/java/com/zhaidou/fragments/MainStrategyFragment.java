@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
@@ -21,9 +23,11 @@ import com.android.volley.toolbox.Volley;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshListView;
 import com.umeng.analytics.MobclickAgent;
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseFragment;
@@ -165,6 +169,26 @@ public class MainStrategyFragment extends BaseFragment
         listView.setMode(PullToRefreshBase.Mode.BOTH);
         listView.setOnRefreshListener(onRefreshListener2);
 
+        mView.findViewById(R.id.strategy_design).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                StrategyDesignFragment orderDetailFragment = StrategyDesignFragment.newInstance("" ,"");
+                ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
+            }
+        });
+
+        mView.findViewById(R.id.strategy_dd).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                DiyFragment diyFragment = DiyFragment.newInstance("" ,"");
+                ((MainActivity) getActivity()).navigationToFragment(diyFragment);
+            }
+        });
+
         loadMoreData(STATUS_REFRESH);
         loading = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
     }
@@ -256,6 +280,16 @@ public class MainStrategyFragment extends BaseFragment
             TextView title = (TextView) view.findViewById(R.id.title);
             TextView articleViews = (TextView) view.findViewById(R.id.views);
             ImageView cover = (ImageView) view.findViewById(R.id.cover);
+            cover.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth,screenWidth*316/722));
+            View lineTo = (View) view.findViewById(R.id.lineTo);
+            if (position==0)
+            {
+                lineTo.setVisibility(View.GONE);
+            }
+             else
+            {
+                lineTo.setVisibility(View.VISIBLE);
+            }
 
             final JSONObject item = listItem.get(position);
             try
@@ -272,6 +306,7 @@ public class MainStrategyFragment extends BaseFragment
                         .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
                         .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
                         .bitmapConfig(Bitmap.Config.RGB_565)
+                        .displayer(new RoundedBitmapDisplayer(8))
                         .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
                         .build();
                 ImageLoader.getInstance().displayImage(URLDecoder.decode(item.get("thumbnail").toString(), "utf-8"), cover,options);

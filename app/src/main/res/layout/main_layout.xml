@@ -72,9 +72,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:background="@drawable/diy_icon"
+                android:background="@drawable/cart_icon"
                 android:contentDescription="@string/app_name"
                 />
+            <ImageView
+                android:id="@+id/iv_dot_cart"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="6dp"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_dot"/>
         </RelativeLayout>
         <RelativeLayout
             android:layout_width="0dp"

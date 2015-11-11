@@ -70,6 +70,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                     getActivity().sendBroadcast(intent);
 
                     ((MainActivity)getActivity()).logout(SettingFragment.this);
+                    ((MainActivity)getActivity()).CartTip(0);
                     break;
                 case 1:
                     serverCode = parseJosn(msg.obj.toString());

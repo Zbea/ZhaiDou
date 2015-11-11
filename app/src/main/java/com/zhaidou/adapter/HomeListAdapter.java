@@ -47,6 +47,7 @@ public class HomeListAdapter extends BaseAdapter
         TextView articleViews;
         ImageView cover;
         ImageView newView;
+        View lineTo;
     }
 
     @Override
@@ -107,6 +108,7 @@ public class HomeListAdapter extends BaseAdapter
             viewHolder.cover = (ImageView) convertView.findViewById(R.id.cover);
             viewHolder.cover.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth,screenWidth*316/722));
             viewHolder.newView = (ImageView) convertView.findViewById(R.id.newsView);
+            viewHolder.lineTo = (View) convertView.findViewById(R.id.lineTo);
             convertView.setTag(viewHolder);
         }
         else

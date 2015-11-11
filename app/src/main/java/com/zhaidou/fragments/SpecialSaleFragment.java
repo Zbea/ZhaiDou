@@ -11,11 +11,9 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
@@ -34,16 +32,11 @@ import com.android.volley.toolbox.Volley;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.LoginActivity;
-import com.zhaidou.activities.WebViewActivity;
-import com.zhaidou.adapter.AdViewAdpater;
-import com.zhaidou.adapter.GoodsImageAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.model.Category;
 import com.zhaidou.model.CountTime;
 import com.zhaidou.model.Product;
 import com.zhaidou.model.SwitchImage;
@@ -107,7 +100,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag)) {
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag)) {
                 initCartTips();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
@@ -263,7 +256,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
      */
     private void initBroadcastReceiver() {
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
         getActivity().registerReceiver(broadcastReceiver, intentFilter);

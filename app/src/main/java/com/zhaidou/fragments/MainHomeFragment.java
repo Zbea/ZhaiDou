@@ -88,30 +88,8 @@ public class MainHomeFragment extends BaseFragment implements
     private CustomBannerView customBannerView;
     private LinearLayout linearLayout;
     private PullToRefreshScrollView mScrollView;
-    private TextView mCountTv;
-    private FrameLayout mCartIv;
 
 
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
-    {
-        @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            String action = intent.getAction();
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
-            {
-                initCartTips();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshLoginTag))
-            {
-                initCartTips();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
-            {
-                initCartTips();
-            }
-        }
-    };
 
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
@@ -181,7 +159,6 @@ public class MainHomeFragment extends BaseFragment implements
             view = inflater.inflate(R.layout.fragment_home, container, false);
             mContext = getActivity();
             initView();
-            initBroadcastReceiver();
 
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
@@ -219,9 +196,6 @@ public class MainHomeFragment extends BaseFragment implements
 
         mSearchView = (ImageView) view.findViewById(R.id.iv_search);
         mSearchView.setOnClickListener(this);
-        mCountTv = (TextView) view.findViewById(R.id.tv_cart_count);
-        mCartIv=(FrameLayout)view.findViewById(R.id.tv_shopping_cart);
-        mCartIv.setOnClickListener(this);
 
         currentPage = 1;
 
@@ -230,19 +204,6 @@ public class MainHomeFragment extends BaseFragment implements
         linearLayout=(LinearLayout)view.findViewById(R.id.bannerView);
         linearLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 300 / 750));
         initDate();
-        initCartTips();
-    }
-
-    /**
-     * 注册广播
-     */
-    private void initBroadcastReceiver()
-    {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
-        mContext.registerReceiver(broadcastReceiver, intentFilter);
     }
 
     private void initDate() {
@@ -255,21 +216,6 @@ public class MainHomeFragment extends BaseFragment implements
             nullView.setVisibility(View.GONE);
         }
 
-    }
-
-    /**
-     * 红色标识提示显示数量
-     */
-    private void initCartTips()
-    {
-        if (((MainActivity) mContext).getNum() > 0)
-        {
-            mCountTv.setVisibility(View.VISIBLE);
-            mCountTv.setText("" + ((MainActivity) mContext).getNum());
-        } else
-        {
-            mCountTv.setVisibility(View.GONE);
-        }
     }
 
     @Override
@@ -347,19 +293,6 @@ public class MainHomeFragment extends BaseFragment implements
             case R.id.netReload:
                 mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
                 initDate();
-                break;
-            case R.id.tv_shopping_cart:
-                if (checkLogin())
-                {
-                    ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
-                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopCartFragment);
-                }
-                else
-                {
-                    Intent intent = new Intent(mContext, LoginActivity.class);
-                    intent.setFlags(1);
-                    mContext.startActivity(intent);
-                }
                 break;
 
         }
@@ -536,7 +469,6 @@ public class MainHomeFragment extends BaseFragment implements
     @Override
     public void onDestroy()
     {
-        mContext.unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rl_fragment_strategy"
     android:layout_width="match_parent"
     android:layout_height="@dimen/home_item_dimen"
@@ -7,8 +7,18 @@
     android:clipToPadding="true"
     android:paddingLeft="7dp"
     android:paddingRight="7dp"
-    android:paddingTop="7dp"
+    android:orientation="vertical"
+    android:background="@color/white"
     >
+    <View
+        android:id="@+id/lineTo"
+        android:layout_width="match_parent"
+        android:layout_height="7dp"
+        android:background="@color/white"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/cover"
@@ -76,6 +86,6 @@
         android:id="@+id/newsView"
         android:visibility="gone"
         android:src="@drawable/home_info_news_icon"/>
+    </RelativeLayout>
 
-
-</RelativeLayout>
+</LinearLayout>

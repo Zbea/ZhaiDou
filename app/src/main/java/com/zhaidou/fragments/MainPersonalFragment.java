@@ -98,7 +98,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 initCartTips();
                 exitLoginEvent();
             }
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag)) {
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag)) {
                 initCartTips();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
@@ -263,7 +263,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
      */
     private void initBroadcastReceiver() {
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshUnPayAddTag);
@@ -501,11 +501,6 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
         userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         if (userId != -1) {
-//            getUserDetail();
-//            getUserInfo();
-//            FetchCollectData();
-//            FetchCollocationData();
-//            FetchUnPayCount(UPDATE_UNPAY_COUNT);
         }
     }
 
