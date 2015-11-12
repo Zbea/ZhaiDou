@@ -20,7 +20,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -88,12 +88,12 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private Fragment categoryFragment;
     private ShopCartFragment shopCartFragment;
 
-    private ImageButton homeButton;
-    private ImageButton beautyButton;
-    private ImageButton categoryButton;
-    private ImageButton diyButton;
-
-    private ImageButton lastButton;
+    private TextView homeButton;
+    private TextView beautyButton;
+    private TextView categoryButton;
+    private TextView personalButton;
+    private TextView diyButton;
+    private TextView lastButton;
 
 
     private TextView titleView;
@@ -387,7 +387,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
         mTabContainer = (LinearLayout) findViewById(R.id.tab_container);
         mChildContainer = (FrameLayout) findViewById(R.id.fl_child_container);
-        homeButton = (ImageButton) findViewById(R.id.tab_home);
+        homeButton = (TextView) findViewById(R.id.tab_home);
 
         lastButton = homeButton;
 
@@ -413,7 +413,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         });
 
-        beautyButton = (ImageButton) findViewById(R.id.tab_beauty);
+        beautyButton = (TextView) findViewById(R.id.tab_beauty);
         beautyButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -431,7 +431,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         });
 
-        categoryButton = (ImageButton) findViewById(R.id.tab_category);
+        categoryButton = (TextView) findViewById(R.id.tab_category);
         categoryButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -450,7 +450,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         });
 
-        diyButton = (ImageButton) findViewById(R.id.tab_diy);
+        diyButton = (TextView) findViewById(R.id.tab_diy);
         diyButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -475,7 +475,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         });
 
-        personalButton = (ImageButton) findViewById(R.id.tab_personal);
+        personalButton = (TextView)findViewById(R.id.tab_personal);
         personalButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -504,7 +504,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     public void setButton(View view)
     {
-        ImageButton button = (ImageButton) view;
+        TextView button = (TextView) view;
 
         lastButton.setSelected(false);
 

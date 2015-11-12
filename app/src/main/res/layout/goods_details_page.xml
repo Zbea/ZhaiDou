@@ -10,6 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        ></LinearLayout>
+
     <ScrollView
         android:id="@+id/sv_goods_detail"
         android:layout_width="fill_parent"
@@ -64,7 +71,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
-                    android:background="#aa39495D"
+                    android:background="#aa3fcccb"
                     android:gravity="center"
                     android:orientation="horizontal"
                     android:paddingBottom="3dp"
@@ -100,41 +107,27 @@
                     android:paddingTop="10dp"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp">
-
                     <com.zhaidou.view.TypeFaceTextView
                         android:id="@+id/tv_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="@dimen/default_margin"
                         android:layout_weight="1"
                         android:ellipsize="end"
                         android:maxLines="2"
                         android:textColor="@color/text_main_color"
                         android:textSize="16sp"/>
 
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:id="@+id/tv_discount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.0001"
-                        android:background="@drawable/btn_green_click_bg"
-                        android:paddingBottom="3dp"
-                        android:paddingLeft="12dp"
-                        android:paddingRight="12dp"
-                        android:paddingTop="3dp"
-                        android:textColor="@color/white"
-                        android:visibility="gone"/>
-
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingBottom="@dimen/default_margin"
-                    android:paddingLeft="@dimen/default_margin"
-                    android:paddingRight="@dimen/default_margin"
-                    android:paddingTop="7dp">
+                    android:layout_marginBottom="@dimen/default_margin"
+                    android:layout_marginLeft="@dimen/default_margin"
+                    android:layout_marginRight="@dimen/default_margin"
+                    android:gravity="bottom"
+                    android:layout_marginTop="@dimen/default_margin">
 
                     <TextView
                         android:id="@+id/goodsCurrentPrice"
@@ -149,16 +142,143 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
                         android:layout_marginTop="1dp"
+                        android:layout_weight="1"
                         android:textColor="@color/text_gary_color"
                         android:textSize="14sp"/>
 
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:id="@+id/tv_baoyou"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/btn_red_click_selector"
+                        android:paddingBottom="3dp"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:paddingTop="3dp"
+                        android:layout_marginBottom="1dp"
+                        android:text="包邮"
+                        android:visibility="gone"
+                        android:layout_marginRight="10dp"
+                        android:textColor="@color/white"
+                        />
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:id="@+id/tv_discount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.0001"
+                        android:background="@drawable/btn_green_click_bg"
+                        android:paddingBottom="3dp"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:layout_marginBottom="1dp"
+                        android:paddingTop="3dp"
+                        android:visibility="gone"
+                        android:textColor="@color/white"
+                        />
+
                 </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/iconView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/page_bg"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="7dp"
+                android:paddingBottom="7dp">
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="3dp"
+                        android:src="@drawable/icon_quality_goods"/>
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/icon_7_day_return"/>
+                </LinearLayout>
+
+
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/icon_delivery"/>
+                </LinearLayout>
+
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/iconOSaleView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/page_bg"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="7dp"
+                android:visibility="gone"
+                android:paddingBottom="7dp">
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/icon_quality_goods"/>
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/icon_delivery"/>
+                </LinearLayout>
+
+            </LinearLayout>
+            <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_marginTop="@dimen/default_margin"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -231,112 +351,7 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/iconView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/default_margin"
-                android:background="@color/white"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="@dimen/default_margin">
 
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="3dp"
-                        android:src="@drawable/icon_quality_goods"/>
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="0.5dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center_vertical"
-                    android:background="#EEEEEE"/>
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/icon_7_day_return"/>
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="0.5dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center_vertical"
-                    android:background="#EEEEEE"/>
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/icon_delivery"/>
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/iconOSaleView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/default_margin"
-                android:background="@color/white"
-                android:orientation="horizontal"
-                android:padding="@dimen/default_margin">
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/icon_quality_goods"/>
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="0.5dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center_vertical"
-                    android:background="#EEEEEE"/>
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/icon_delivery"/>
-                </LinearLayout>
-
-            </LinearLayout>
 
             <include
                 layout="@layout/goods_details_tip_style"
@@ -643,6 +658,7 @@
         layout="@layout/content_null_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="gone"
         android:layout_below="@+id/headLine"></include>
 
 </RelativeLayout>

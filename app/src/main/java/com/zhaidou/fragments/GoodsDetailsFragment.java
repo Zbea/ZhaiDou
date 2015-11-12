@@ -118,7 +118,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private ArrayList<GoodInfo> goodInfos = new ArrayList<GoodInfo>();
     private int mSpecificationSelectPosition = -1;
 
-    private TextView tv_comment, mCurrentPrice, mOldPrice, mDiscount, mTitle;
+    private TextView tv_comment, mCurrentPrice, mOldPrice, mDiscount, mTitle,tv_baoyou;
 
 
     private final int UPDATE_GOOD_DETAIL = 0;
@@ -204,6 +204,7 @@ public class GoodsDetailsFragment extends BaseFragment
             }
             if (action.equals(ZhaiDou.IntentRefreshGoodsDetailsTag))
             {
+                if (mSpecification!=null)
                 setAddOrBuyShow("不能重复购买",false);
                 mSpecification.isBuy=true;
                 ToolUtils.setLog(""+mSpecification.num);
@@ -259,11 +260,13 @@ public class GoodsDetailsFragment extends BaseFragment
                         iconView.setVisibility(View.GONE);
                         iconOSaleView.setVisibility(View.VISIBLE);
                         commentView.setVisibility(View.GONE);
+                        tv_baoyou.setVisibility(View.GONE);
                     } else
                     {
                         iconView.setVisibility(View.VISIBLE);
                         iconOSaleView.setVisibility(View.GONE);
                         commentView.setVisibility(View.VISIBLE);
+                        tv_baoyou.setVisibility(View.VISIBLE);
                     }
 
                     detail = (GoodDetail) msg.obj;
@@ -600,6 +603,7 @@ public class GoodsDetailsFragment extends BaseFragment
         }
 
         tv_comment = (TextView) mView.findViewById(R.id.tv_comment);
+        tv_baoyou = (TextView) mView.findViewById(R.id.tv_baoyou);
         mCurrentPrice = (TextView) mView.findViewById(R.id.goodsCurrentPrice);
         mOldPrice = (TextView) mView.findViewById(R.id.goodsFormerPrice);
         mOldPrice.getPaint().setAntiAlias(true);
