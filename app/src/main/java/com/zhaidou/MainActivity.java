@@ -99,7 +99,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private TextView titleView;
     private LinearLayout mTabContainer;
     private ImageView iv_dot;
-    private ImageView cart_dot;
+    private TextView cart_dot;
     private LinearLayout viewLayout;
 
     private String token;
@@ -231,7 +231,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main_layout);
         iv_dot = (ImageView) findViewById(R.id.iv_dot);
-        cart_dot = (ImageView) findViewById(R.id.iv_dot_cart);
+        cart_dot = (TextView) findViewById(R.id.cartTipsTv);
         viewLayout = (LinearLayout) findViewById(R.id.content);
         mContext = this;
         init();
@@ -356,9 +356,18 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 {
                     num = num + items.get(i).num;
                 }
-                System.out.println("MainActivity.run--------->" + num);
             }
         }
+        if (num!=0)
+        {
+            cart_dot.setText(""+num);
+            cart_dot.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            cart_dot.setVisibility(View.GONE);
+        }
+
     }
 
     /**
@@ -366,10 +375,16 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
      */
     private void getGoodsItems()
     {
-        items.removeAll(items);
-        //遍历获得这个当前uesrId的所有商品
-        items = CreatCartTools.selectByAll(creatCartDB, id);
-
+        new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                items.removeAll(items);
+                //遍历获得这个当前uesrId的所有商品
+                items = CreatCartTools.selectByAll(creatCartDB, id);
+            }
+        }).start();
     }
 
     public int getNum()
@@ -754,7 +769,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
      */
     public void CartTip(int ty)
     {
-        cart_dot.setVisibility(ty==1?View.VISIBLE:View.GONE);
+//        cart_dot.setVisibility(ty==1?View.VISIBLE:View.GONE);
     }
 
     private void FetchCityData()

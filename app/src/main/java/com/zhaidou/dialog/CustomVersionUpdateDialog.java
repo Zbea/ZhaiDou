@@ -112,6 +112,8 @@ public class CustomVersionUpdateDialog
         final LayoutInflater inflater = LayoutInflater.from(mContext);
         View view = inflater.inflate(R.layout.dialog_custom_update_manager, null);
         noticeDialog.setContentView(view);
+        noticeDialog.setCanceledOnTouchOutside(false);
+        noticeDialog.setCancelable(false);
         noticeDialog.show();
 
         managerLine=(LinearLayout)view.findViewById(R.id.updateManagerLine);
