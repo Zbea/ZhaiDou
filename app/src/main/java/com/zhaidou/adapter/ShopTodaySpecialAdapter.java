@@ -115,15 +115,15 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
             viewHolder.buyCount.setText("已抢购"+todayShopItem.percentum+"%");
             if(todayShopItem.percentum>=80)
             {
-                viewHolder.buyProgressBarRed.setMax(todayShopItem.totalCount);
-                viewHolder.buyProgressBarRed.setProgress(todayShopItem.buyCount);
+                viewHolder.buyProgressBarRed.setMax(todayShopItem.totalCount*10);
+                viewHolder.buyProgressBarRed.setProgress(todayShopItem.buyCount*todayShopItem.totalCount/10);
                 viewHolder.buyProgressBarRed.setVisibility(View.VISIBLE);
                 viewHolder.buyProgressBarGreen.setVisibility(View.GONE);
             }
             else
             {
                 viewHolder.buyProgressBarGreen.setMax(todayShopItem.totalCount);
-                viewHolder.buyProgressBarGreen.setProgress(todayShopItem.buyCount);
+                viewHolder.buyProgressBarGreen.setProgress(todayShopItem.buyCount*todayShopItem.totalCount/10);
                 viewHolder.buyProgressBarGreen.setVisibility(View.VISIBLE);
                 viewHolder.buyProgressBarRed.setVisibility(View.GONE);
             }
