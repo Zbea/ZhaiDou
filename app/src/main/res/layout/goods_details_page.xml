@@ -39,7 +39,7 @@
                 <ImageView
                     android:id="@+id/goodsImageView"
                     android:layout_width="match_parent"
-                    android:layout_height="240dp"
+                    android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:background="@color/white"
                     android:scaleType="fitXY"
@@ -48,7 +48,7 @@
                 <com.zhaidou.view.CustomViewPager
                     android:id="@+id/goods_adv_pager"
                     android:layout_width="match_parent"
-                    android:layout_height="240dp"
+                    android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:background="@color/white"
                     android:visibility="gone"
@@ -104,9 +104,10 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingTop="10dp"
+                    android:paddingTop="15dp"
                     android:paddingLeft="10dp"
-                    android:paddingRight="10dp">
+                    android:paddingRight="10dp"
+                    android:layout_marginBottom="5dp">
                     <com.zhaidou.view.TypeFaceTextView
                         android:id="@+id/tv_title"
                         android:layout_width="wrap_content"
@@ -151,12 +152,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/btn_red_click_selector"
-                        android:paddingBottom="3dp"
-                        android:paddingLeft="12dp"
-                        android:paddingRight="12dp"
-                        android:paddingTop="3dp"
+                        android:paddingBottom="2dp"
+                        android:paddingLeft="9dp"
+                        android:paddingRight="9dp"
+                        android:paddingTop="2dp"
                         android:layout_marginBottom="1dp"
                         android:text="包邮"
+                        android:textSize="13sp"
                         android:visibility="gone"
                         android:layout_marginRight="10dp"
                         android:textColor="@color/white"
@@ -167,12 +169,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.0001"
                         android:background="@drawable/btn_green_click_bg"
-                        android:paddingBottom="3dp"
-                        android:paddingLeft="12dp"
-                        android:paddingRight="12dp"
+                        android:paddingBottom="2dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
                         android:layout_marginBottom="1dp"
-                        android:paddingTop="3dp"
+                        android:paddingTop="2dp"
                         android:visibility="gone"
+                        android:textSize="13sp"
                         android:textColor="@color/white"
                         />
 
@@ -187,8 +190,8 @@
                 android:gravity="center_vertical"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:paddingTop="7dp"
-                android:paddingBottom="7dp">
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp">
 
                 <LinearLayout
                     android:layout_width="fill_parent"
@@ -244,9 +247,9 @@
                 android:gravity="center_vertical"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:paddingTop="7dp"
+                android:paddingTop="5dp"
                 android:visibility="gone"
-                android:paddingBottom="7dp">
+                android:paddingBottom="5dp">
 
                 <LinearLayout
                     android:layout_width="fill_parent"
@@ -305,7 +308,10 @@
                         android:id="@+id/gv_specification"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/default_margin"
+                        android:layout_marginLeft="@dimen/default_margin"
+                        android:layout_marginRight="@dimen/default_margin"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
                         android:horizontalSpacing="@dimen/default_margin"
                         android:listSelector="@color/transparent"
                         android:numColumns="3"
@@ -345,7 +351,10 @@
                     android:id="@+id/tv_comment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/default_margin"
+                    android:layout_marginLeft="@dimen/default_margin"
+                    android:layout_marginRight="@dimen/default_margin"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
                     android:textColor="@color/text_normal_color"
                     android:textSize="14sp"/>
 
@@ -550,7 +559,7 @@
     <LinearLayout
         android:id="@+id/goods_bottom_line"
         android:layout_width="fill_parent"
-        android:layout_height="60dp"
+        android:layout_height="@dimen/goods_bottom_height_dimen"
         android:layout_alignParentBottom="true"
         android:background="@color/white"
         android:orientation="horizontal"
@@ -648,6 +657,7 @@
                 android:marqueeRepeatLimit="marquee_forever"
                 android:singleLine="true"
                 android:text="立即购买"
+
                 android:textColor="@color/white"/>
         </LinearLayout>
 

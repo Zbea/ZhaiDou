@@ -45,6 +45,7 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.SwitchImage;
 import com.zhaidou.utils.NetworkUtils;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomBannerView;
 import com.zhaidou.view.ListViewForScrollView;
@@ -182,7 +183,7 @@ public class MainHomeFragment extends BaseFragment implements
 
         listView = (ListViewForScrollView) view.findViewById(R.id.homeItemList);
         listView.setOnItemClickListener(this);
-        adapterList = new ShopSpecialAdapter(mContext, items);
+        adapterList = new ShopSpecialAdapter(mContext, items,screenWidth);
         listView.setAdapter(adapterList);
 
         mScrollView = (PullToRefreshScrollView) view.findViewById(R.id.sv_home_scrollview);
@@ -334,8 +335,8 @@ public class MainHomeFragment extends BaseFragment implements
                         String endTime = obj.optString("end_time");
                         String overTime = obj.optString("over_day");
                         String imageUrl = obj.optString("banner");
-
-                        ShopSpecialItem shopSpecialItem = new ShopSpecialItem(id, title, sales, time, startTime, endTime, overTime, imageUrl);
+                        String isNew ="true"; //obj.optString("is_new");
+                        ShopSpecialItem shopSpecialItem = new ShopSpecialItem(id, title, sales, time, startTime, endTime, overTime, imageUrl,isNew);
                         items.add(shopSpecialItem);
                     }
                 Message message = new Message();
@@ -429,6 +430,10 @@ public class MainHomeFragment extends BaseFragment implements
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+        if ("true".equalsIgnoreCase(items.get(position).isNew)){
+            SharedPreferencesUtil.saveData(mContext, "is_new_" + items.get(position).id, false);
+            view.findViewById(R.id.newsView).setVisibility(View.GONE);
+        }
         ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(items.get(position).title, items.get(position).id, items.get(position).imageUrl);
         ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
     }

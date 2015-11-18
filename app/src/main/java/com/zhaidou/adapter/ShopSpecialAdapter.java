@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -15,6 +16,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.zhaidou.R;
 import com.zhaidou.model.ShopSpecialItem;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
 
@@ -29,6 +31,7 @@ public class ShopSpecialAdapter extends BaseAdapter
     private List<ShopSpecialItem> items;
     private ViewHolder viewHolder;
     private Context context;
+    private int screenWidth;
 
     public void clear()
     {
@@ -36,10 +39,11 @@ public class ShopSpecialAdapter extends BaseAdapter
         notifyDataSetChanged();
     }
 
-    public ShopSpecialAdapter(Context context, List<ShopSpecialItem> items)
+    public ShopSpecialAdapter(Context context, List<ShopSpecialItem> items,int screenWidth)
     {
         this.context = context;
         this.items = items;
+        this.screenWidth=screenWidth;
     }
 
     class ViewHolder
@@ -50,6 +54,7 @@ public class ShopSpecialAdapter extends BaseAdapter
         TypeFaceTextView itemTime;
         View itemLine;
         View itemLine1;
+        ImageView newView;
     }
 
     @Override
@@ -81,8 +86,10 @@ public class ShopSpecialAdapter extends BaseAdapter
             viewHolder.itemSale = (TypeFaceTextView) convertView.findViewById(R.id.shop_name_sale);
             viewHolder.itemTime = (TypeFaceTextView) convertView.findViewById(R.id.shop_time_item);
             viewHolder.itemImage = (ImageView) convertView.findViewById(R.id.itemsImageIv);
+            viewHolder.itemImage.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth,screenWidth*316/722));
             viewHolder.itemLine = (View) convertView.findViewById(R.id.itemsLine);
             viewHolder.itemLine1 = (View) convertView.findViewById(R.id.itemsLine1);
+            viewHolder.newView = (ImageView) convertView.findViewById(R.id.newsView);
             convertView.setTag(viewHolder);
         }
         else
@@ -118,7 +125,19 @@ public class ShopSpecialAdapter extends BaseAdapter
 
         ImageLoader.getInstance().displayImage(shopSpecialItem.imageUrl, viewHolder.itemImage,options);
 
-//        ToolUtils.setImageCacheUrl(shopSpecialItem.imageUrl,viewHolder.itemImage,R.drawable.icon_loading_item);
+        if (shopSpecialItem.isNew.equals("true"))
+        {
+            if (!(Boolean) SharedPreferencesUtil.getData(context, "is_new_" + shopSpecialItem.id, true))
+            {
+                viewHolder.newView.setVisibility(View.GONE);
+            } else
+            {
+                viewHolder. newView.setVisibility(View.VISIBLE);
+            }
+        } else
+        {
+            viewHolder.newView.setVisibility(View.GONE);
+        }
         return convertView;
     }
 }

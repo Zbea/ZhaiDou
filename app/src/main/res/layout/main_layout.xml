@@ -101,7 +101,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="16dp"
+                android:layout_marginRight="13dp"
                 android:text=""
                 android:gravity="center"
                 android:background="@drawable/shop_goods_my_cart_tips_red_bg"

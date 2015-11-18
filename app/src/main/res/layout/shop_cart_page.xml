@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingTop="@dimen/image_height_dimen"
+        android:paddingTop="140dp"
         android:gravity="center_horizontal"
         >
 
@@ -237,7 +237,7 @@
 
             <Button
                 android:id="@+id/okBuyBtn"
-                android:layout_width="120dp"
+                android:layout_width="110dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.000001"
                 android:layout_marginTop="10dp"

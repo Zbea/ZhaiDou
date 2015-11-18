@@ -136,6 +136,10 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             {
                 initCartTips();
             }
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
+            {
+                initCartTips();
+            }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag))
             {
                 initCartTips();
@@ -144,6 +148,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             {
                 initCartTips();
             }
+
             if (action.equalsIgnoreCase(ZhaiDou.BROADCAST_WXAPI_FILTER))
             {
                 System.out.println("MainActivity.onReceive");
@@ -328,6 +333,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
         intentFilter.addAction(ZhaiDou.BROADCAST_WXAPI_FILTER);
         mContext.registerReceiver(broadcastReceiver, intentFilter);
@@ -357,6 +363,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     num = num + items.get(i).num;
                 }
             }
+            cart_dot.setVisibility(View.VISIBLE);
         }
         if (num!=0)
         {
@@ -375,16 +382,9 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
      */
     private void getGoodsItems()
     {
-        new Thread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                items.removeAll(items);
-                //遍历获得这个当前uesrId的所有商品
-                items = CreatCartTools.selectByAll(creatCartDB, id);
-            }
-        }).start();
+        items.removeAll(items);
+        //遍历获得这个当前uesrId的所有商品
+        items = CreatCartTools.selectByAll(creatCartDB, id);
     }
 
     public int getNum()
