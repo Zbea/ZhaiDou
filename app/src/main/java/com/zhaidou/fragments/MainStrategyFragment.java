@@ -26,6 +26,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshListView;
+import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
@@ -33,6 +34,7 @@ import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.utils.HtmlFetcher;
+import com.zhaidou.view.ListViewForScrollView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -52,10 +54,10 @@ public class MainStrategyFragment extends BaseFragment
 {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    //WebViewFragment.newInstance("http://buy.zhaidou.com/gl.html", false)
     private View mView;
     private Dialog loading;
-    private PullToRefreshListView listView;
+    private ListViewForScrollView listView;
+    private PullToRefreshScrollView mScrollView;
     private String targetUrl="http://buy.zhaidou.com/?zdclient=ios&tag=006&count=10&json=1&page={0}";
     private int currentPage=1;
     private boolean loadedAll;
@@ -75,13 +77,12 @@ public class MainStrategyFragment extends BaseFragment
         {
             if (msg.what == LOADED)
             {
-
                 if (loading.isShowing())
                 {
                     loading.dismiss();
                 }
             }
-            listView.onRefreshComplete();
+            mScrollView.onRefreshComplete();
             homeItemsAdapter.notifyDataSetChanged();
         }
     };
@@ -159,15 +160,17 @@ public class MainStrategyFragment extends BaseFragment
      */
     private void initView()
     {
-        listView = (PullToRefreshListView) mView.findViewById(R.id.homeItemList);
+        listView = (ListViewForScrollView) mView.findViewById(R.id.homeItemList);
         listItem = new ArrayList<JSONObject>();
         mRequestQueue = Volley.newRequestQueue(mContext);
+
+        mScrollView = (PullToRefreshScrollView) mView.findViewById(R.id.sv_scrollview);
+        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+        mScrollView.setOnRefreshListener(onRefreshListener2);
 
         homeItemsAdapter = new ImageAdapter(mContext);
         listView.setAdapter(homeItemsAdapter);
         listView.setOnItemClickListener(itemSelectListener);
-        listView.setMode(PullToRefreshBase.Mode.BOTH);
-        listView.setOnRefreshListener(onRefreshListener2);
 
         mView.findViewById(R.id.strategy_design).setOnClickListener(new View.OnClickListener()
         {
