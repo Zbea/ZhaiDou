@@ -15,6 +15,7 @@
         android:layout_width="260dp"
         android:layout_height="320dp"
         android:orientation="vertical"
+        android:visibility="gone"
         android:gravity="center_horizontal"
         >
 
@@ -91,6 +92,7 @@
                 android:textSize="14sp"
                 android:textColor="@color/white"
                 android:layout_marginRight="5dp"
+                android:visibility="gone"
                 android:background="@drawable/btn_green_click_bg"
                 android:text="以后再说"/>
 
@@ -117,7 +119,6 @@
         android:id="@+id/updateProgressLine"
         android:layout_width="260dp"
         android:layout_height="320dp"
-        android:visibility="gone"
         android:orientation="vertical"
         >
 
@@ -184,6 +185,7 @@
                 android:gravity="center"
                 android:layout_centerInParent="true"
                 android:textColor="@color/gray"
+                android:visibility="gone"
                 android:text="取消更新"/>
 
 

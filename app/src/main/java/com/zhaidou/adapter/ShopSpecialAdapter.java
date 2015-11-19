@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -28,6 +29,7 @@ public class ShopSpecialAdapter extends BaseAdapter
     private List<ShopSpecialItem> items;
     private ViewHolder viewHolder;
     private Context context;
+    private int screenWidth;
 
     public void clear()
     {
@@ -35,10 +37,11 @@ public class ShopSpecialAdapter extends BaseAdapter
         notifyDataSetChanged();
     }
 
-    public ShopSpecialAdapter(Context context, List<ShopSpecialItem> items)
+    public ShopSpecialAdapter(Context context, List<ShopSpecialItem> items,int screenWidth)
     {
         this.context = context;
         this.items = items;
+        this.screenWidth=screenWidth;
     }
 
     class ViewHolder
@@ -50,6 +53,7 @@ public class ShopSpecialAdapter extends BaseAdapter
         View itemLine;
         View itemLine1;
         ImageView isNewsView;
+        ImageView newView;
     }
 
     @Override
@@ -81,9 +85,11 @@ public class ShopSpecialAdapter extends BaseAdapter
             viewHolder.itemSale = (TypeFaceTextView) convertView.findViewById(R.id.shop_name_sale);
             viewHolder.itemTime = (TypeFaceTextView) convertView.findViewById(R.id.shop_time_item);
             viewHolder.itemImage = (ImageView) convertView.findViewById(R.id.itemsImageIv);
+            viewHolder.itemImage.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth,screenWidth*316/722));
             viewHolder.itemLine = (View) convertView.findViewById(R.id.itemsLine);
             viewHolder.itemLine1 = (View) convertView.findViewById(R.id.itemsLine1);
             viewHolder.isNewsView=(ImageView)convertView.findViewById(R.id.newsView);
+            viewHolder.newView = (ImageView) convertView.findViewById(R.id.newsView);
             convertView.setTag(viewHolder);
         }
         else
@@ -105,7 +111,7 @@ public class ShopSpecialAdapter extends BaseAdapter
         viewHolder.itemSale.setText(shopSpecialItem.sale);
         viewHolder.itemTime.setText(shopSpecialItem.overTime);
 
-        if (shopSpecialItem.new_tag)
+        if ("true".equalsIgnoreCase(shopSpecialItem.isNew))
         {
             if (!(Boolean) SharedPreferencesUtil.getData(context, "is_new_" + shopSpecialItem.id, true))
             {

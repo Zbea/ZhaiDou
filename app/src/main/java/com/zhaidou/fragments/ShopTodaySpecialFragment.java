@@ -412,7 +412,8 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                 String endTime = jsonObject.optString("end_time");
                 String overTime = jsonObject.optString("over_day");
                 introduce = jsonObject.optString("quotation");
-                shopSpecialItem = new ShopSpecialItem(id, title, null, time, startTime, endTime, overTime, null);
+                String isNew = jsonObject.optString("is_new");
+                shopSpecialItem = new ShopSpecialItem(id, title, null, time, startTime, endTime, overTime, null,isNew);
 
                 JSONArray jsonArray = jsonObject.optJSONArray("merchandises");
                 for (int i = 0; i < jsonArray.length(); i++)

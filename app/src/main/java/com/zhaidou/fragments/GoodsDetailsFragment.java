@@ -964,6 +964,7 @@ public class GoodsDetailsFragment extends BaseFragment
                             if (bitmap.getHeight() < 4000)
                             {
                                 imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
+                                imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, bitmap.getHeight()*screenWidth/bitmap.getWidth()));
                                 imageView1.setImageBitmap(bitmap);
                             } else
                             {
@@ -1043,10 +1044,12 @@ public class GoodsDetailsFragment extends BaseFragment
     {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshGoodsDetailsTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshOGoodsDetailsTag);
+
         mContext.registerReceiver(broadcastReceiver, intentFilter);
     }
 
@@ -1267,8 +1270,6 @@ public class GoodsDetailsFragment extends BaseFragment
 
                 Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
                 mContext.sendBroadcast(intent);
-                ((MainActivity)getActivity()).CartTip(1);
-
             } else
             {
                 CustomToastDialog.setToastDialog(mContext, "抱歉,商品数量不足,请勿继续添加");

@@ -18,9 +18,8 @@ public class ShopSpecialItem implements Serializable
     //剩余时间
     public String overTime;
     public String imageUrl;
-    public boolean new_tag;
-
-    public ShopSpecialItem(int id, String title, String sale, String time, String startTime, String endTime, String overTime, String imageUrl)
+    public String isNew;
+    public ShopSpecialItem(int id, String title, String sale, String time, String startTime, String endTime, String overTime, String imageUrl,String isNew)
     {
         this.id = id;
         this.title = title;
@@ -30,6 +29,7 @@ public class ShopSpecialItem implements Serializable
         this.endTime = endTime;
         this.overTime = overTime;
         this.imageUrl = imageUrl;
+        this.isNew = isNew;
     }
 
     public ShopSpecialItem()

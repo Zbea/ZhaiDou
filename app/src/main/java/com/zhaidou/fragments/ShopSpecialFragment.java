@@ -293,7 +293,7 @@ public class ShopSpecialFragment extends BaseFragment
         mScrollView.setOnRefreshListener(refreshListener);
 
         mListView = (ListViewForScrollView) mView.findViewById(R.id.shopListView);
-        adapterList = new ShopSpecialAdapter(mContext, items);
+        adapterList = new ShopSpecialAdapter(mContext, items,screenWidth);
         mListView.setAdapter(adapterList);
         mListView.setOnItemClickListener(onItemClickListener);
 
@@ -476,8 +476,8 @@ public class ShopSpecialFragment extends BaseFragment
                         String endTime = obj.optString("end_time");
                         String overTime = obj.optString("over_day");
                         String imageUrl = obj.optString("banner");
-
-                        ShopSpecialItem shopSpecialItem = new ShopSpecialItem(id, title, sales, time, startTime, endTime, overTime, imageUrl);
+                        String isNew = obj.optString("is_new");
+                        ShopSpecialItem shopSpecialItem = new ShopSpecialItem(id, title, sales, time, startTime, endTime, overTime, imageUrl,isNew);
                         items.add(shopSpecialItem);
                     }
                 Message message = new Message();

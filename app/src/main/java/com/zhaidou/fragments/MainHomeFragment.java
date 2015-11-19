@@ -180,7 +180,7 @@ public class MainHomeFragment extends BaseFragment implements
 
         listView = (ListViewForScrollView) view.findViewById(R.id.homeItemList);
         listView.setOnItemClickListener(this);
-        adapterList = new ShopSpecialAdapter(mContext, items);
+        adapterList = new ShopSpecialAdapter(mContext, items,screenWidth);
         listView.setAdapter(adapterList);
 
         specialBanner[0]=(ImageView)view.findViewById(R.id.image1);
@@ -371,8 +371,8 @@ public class MainHomeFragment extends BaseFragment implements
                         String overTime = obj.optString("over_day");
                         String imageUrl = obj.optString("banner");
                         boolean new_tag=obj.optBoolean("new_tag");
-                        ShopSpecialItem shopSpecialItem = new ShopSpecialItem(id, title, sales, time, startTime, endTime, overTime, imageUrl);
-                        shopSpecialItem.new_tag=new_tag;
+                        ShopSpecialItem shopSpecialItem = new ShopSpecialItem(id, title, sales, time, startTime, endTime, overTime, imageUrl,new_tag+"");
+
                         items.add(shopSpecialItem);
                     }
                 Message message = new Message();
@@ -502,7 +502,7 @@ public class MainHomeFragment extends BaseFragment implements
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
         ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(items.get(position).title, items.get(position).id, items.get(position).imageUrl);
         ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
-        if (items.get(position).new_tag)
+        if ("true".equalsIgnoreCase(items.get(position).isNew))
         {
             SharedPreferencesUtil.saveData(mContext, "is_new_" + items.get(position).id, false);
             view.findViewById(R.id.newsView).setVisibility(View.GONE);

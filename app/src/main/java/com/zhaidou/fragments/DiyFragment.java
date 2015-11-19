@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.activities.DiyActivity;
 import com.zhaidou.base.BaseFragment;
@@ -49,6 +50,14 @@ public class DiyFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_diy, container, false);
+        view.findViewById(R.id.back_btn).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ((MainActivity)getActivity()).popToStack(DiyFragment.this);
+            }
+        });
         return view;
     }
 

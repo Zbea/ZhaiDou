@@ -99,7 +99,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private TextView titleView;
     private LinearLayout mTabContainer;
     private ImageView iv_dot;
-    private ImageView cart_dot;
+    private TextView cart_dot;
     private LinearLayout viewLayout;
 
     private String token;
@@ -136,6 +136,10 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             {
                 initCartTips();
             }
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
+            {
+                initCartTips();
+            }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag))
             {
                 initCartTips();
@@ -144,6 +148,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             {
                 initCartTips();
             }
+
             if (action.equalsIgnoreCase(ZhaiDou.BROADCAST_WXAPI_FILTER))
             {
                 System.out.println("MainActivity.onReceive");
@@ -231,7 +236,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main_layout);
         iv_dot = (ImageView) findViewById(R.id.iv_dot);
-        cart_dot = (ImageView) findViewById(R.id.iv_dot_cart);
+        cart_dot = (TextView) findViewById(R.id.cartTipsTv);
         viewLayout = (LinearLayout) findViewById(R.id.content);
         mContext = this;
         init();
@@ -328,6 +333,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
         intentFilter.addAction(ZhaiDou.BROADCAST_WXAPI_FILTER);
         mContext.registerReceiver(broadcastReceiver, intentFilter);
@@ -356,9 +362,19 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 {
                     num = num + items.get(i).num;
                 }
-                System.out.println("MainActivity.run--------->" + num);
             }
+            cart_dot.setVisibility(View.VISIBLE);
         }
+        if (num!=0)
+        {
+            cart_dot.setText(""+num);
+            cart_dot.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            cart_dot.setVisibility(View.GONE);
+        }
+
     }
 
     /**
@@ -369,7 +385,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         items.removeAll(items);
         //遍历获得这个当前uesrId的所有商品
         items = CreatCartTools.selectByAll(creatCartDB, id);
-
     }
 
     public int getNum()
@@ -754,7 +769,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
      */
     public void CartTip(int ty)
     {
-        cart_dot.setVisibility(ty==1?View.VISIBLE:View.GONE);
+//        cart_dot.setVisibility(ty==1?View.VISIBLE:View.GONE);
     }
 
     private void FetchCityData()

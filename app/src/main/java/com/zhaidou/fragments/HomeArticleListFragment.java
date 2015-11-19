@@ -236,7 +236,6 @@ public class HomeArticleListFragment extends BaseFragment implements PullToRefre
             articleViews.setText(article.getReviews()+"");
             ToolUtils.setImageCacheUrl(article.getImg_url(), cover);
 
-            SharedPreferences editor = context.getSharedPreferences(String.valueOf(article.getId()), 0);
             if (article.getIs_new().equals("true"))
             {
                 if (!(Boolean)SharedPreferencesUtil.getData(mContext,"is_new_"+article.getId(),true))
