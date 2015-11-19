@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -35,6 +36,7 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.CartItem;
 import com.zhaidou.model.User;
 import com.zhaidou.sqlite.CreatCartDB;
+import com.zhaidou.utils.DeviceUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
@@ -235,6 +237,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             view.findViewById(R.id.rl_addr_manage).setOnClickListener(this);
             view.findViewById(R.id.ll_collect).setOnClickListener(this);
             view.findViewById(R.id.ll_collocation).setOnClickListener(this);
+            view.findViewById(R.id.rl_service).setOnClickListener(this);
 
             mRequestQueue = Volley.newRequestQueue(getActivity());
             getUserDetail();
@@ -399,6 +402,14 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             case R.id.ll_collocation:
                 CollocationFragment collocationFragment = CollocationFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(collocationFragment);
+                break;
+            case R.id.rl_service:
+                if (DeviceUtils.isApkInstalled(getActivity(), "com.tencent.mobileqq")){
+                    String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_Number);
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                }else {
+                    ShowToast("没有安装QQ客户端哦");
+                }
                 break;
         }
 

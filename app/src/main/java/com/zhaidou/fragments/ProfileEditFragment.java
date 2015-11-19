@@ -24,7 +24,6 @@ import android.widget.Toast;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
@@ -185,7 +184,10 @@ public class ProfileEditFragment extends BaseFragment implements View.OnClickLis
                     }
                 }
                 else
-                {
+                {if (mTitle.equals("个人昵称")&&tv_edit_msg.getText().toString().length()>15){
+                    ShowToast(mTitle+"不能超过15个字");
+                    return;
+                }
                     hideInputMethod();
                     new MyTask().execute(mParam1,mParam2,mProfileId);
                 }

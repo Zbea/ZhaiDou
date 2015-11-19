@@ -103,6 +103,7 @@ public class ShopPaymentFragment extends BaseFragment {
     private String token;
     private IWXAPI api;
     private boolean isSuccess;
+    private TextView mAccountView;
 
     private long commitBtnTime = 0;
     private Handler mHandler = new Handler() {
@@ -284,6 +285,11 @@ public class ShopPaymentFragment extends BaseFragment {
                 }
             }
         });
+        System.out.println("ShopPaymentFragment.initView------>"+(mFare==0));
+        System.out.println("ShopPaymentFragment.onCreate------------>" + mFare + "--------------->" + (mAmount % 1.0 == 0 ? (long) mAmount : mAmount + ""));
+        mAccountView=(TextView)mView.findViewById(R.id.tv_cash);
+        mAccountView.setText("￥"+((mAmount%1.0==0?(long)mAmount:mAmount+"")));
+        mView.findViewById(R.id.tv_pinkage).setVisibility(mFare==0?View.VISIBLE:View.GONE);
         initTime = mTimeLeft;
 
         mTimer = new Timer();

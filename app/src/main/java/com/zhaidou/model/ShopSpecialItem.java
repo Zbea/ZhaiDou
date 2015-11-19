@@ -18,6 +18,7 @@ public class ShopSpecialItem implements Serializable
     //剩余时间
     public String overTime;
     public String imageUrl;
+    public boolean new_tag;
 
     public ShopSpecialItem(int id, String title, String sale, String time, String startTime, String endTime, String overTime, String imageUrl)
     {

@@ -2,10 +2,8 @@ package com.zhaidou.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -38,13 +35,14 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomeCompetitionActivity;
 import com.zhaidou.activities.ItemDetailActivity;
-import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.adapter.ShopSpecialAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.ShopSpecialItem;
+import com.zhaidou.model.SpecialItem;
 import com.zhaidou.model.SwitchImage;
 import com.zhaidou.utils.NetworkUtils;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomBannerView;
 import com.zhaidou.view.ListViewForScrollView;
@@ -88,7 +86,7 @@ public class MainHomeFragment extends BaseFragment implements
     private CustomBannerView customBannerView;
     private LinearLayout linearLayout;
     private PullToRefreshScrollView mScrollView;
-
+    private ImageView[] specialBanner=new ImageView[3];
 
 
     private Handler handler = new Handler() {
@@ -185,6 +183,13 @@ public class MainHomeFragment extends BaseFragment implements
         adapterList = new ShopSpecialAdapter(mContext, items);
         listView.setAdapter(adapterList);
 
+        specialBanner[0]=(ImageView)view.findViewById(R.id.image1);
+        specialBanner[1]=(ImageView)view.findViewById(R.id.image2);
+        specialBanner[2]=(ImageView)view.findViewById(R.id.image3);
+        specialBanner[0].setOnClickListener(this);
+        specialBanner[1].setOnClickListener(this);
+        specialBanner[2].setOnClickListener(this);
+
         mScrollView = (PullToRefreshScrollView) view.findViewById(R.id.sv_home_scrollview);
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         mScrollView.setOnRefreshListener(this);
@@ -210,6 +215,7 @@ public class MainHomeFragment extends BaseFragment implements
         if (NetworkUtils.isNetworkAvailable(mContext)) {
             getBannerData();
             FetchData(currentPage);
+            FetchSpecialData();
         } else {
             mDialog.dismiss();
             nullNetView.setVisibility(View.VISIBLE);
@@ -294,6 +300,36 @@ public class MainHomeFragment extends BaseFragment implements
                 mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
                 initDate();
                 break;
+            case R.id.image1:
+                SpecialItem item= (SpecialItem) specialBanner[0].getTag();
+                if (item!=null&&item.template_type==0){
+                    SpecialSaleFragment1 specialSaleFragment1=SpecialSaleFragment1.newInstance(item.title,item.id+"",item.header_img);
+                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment1);
+                }else if (item!=null&&item.template_type==1){
+                    ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title,item.id, item.banner);
+                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
+                }
+                break;
+            case R.id.image2:
+                SpecialItem item1= (SpecialItem) specialBanner[1].getTag();
+                if (item1!=null&&item1.template_type==0){
+                    SpecialSaleFragment1 specialSaleFragment1=SpecialSaleFragment1.newInstance(item1.title,item1.id+"",item1.header_img);
+                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment1);
+                }else if (item1!=null&&item1.template_type==1){
+                    ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item1.title,item1.id, item1.banner);
+                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
+                }
+                break;
+            case R.id.image3:
+                SpecialItem item2= (SpecialItem) specialBanner[2].getTag();
+                if (item2!=null&&item2.template_type==0){
+                    SpecialSaleFragment1 specialSaleFragment1=SpecialSaleFragment1.newInstance(item2.title,item2.id+"",item2.header_img);
+                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment1);
+                }else if (item2!=null&&item2.template_type==1){
+                    ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item2.title,item2.id, item2.banner);
+                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
+                }
+                break;
 
         }
     }
@@ -334,8 +370,9 @@ public class MainHomeFragment extends BaseFragment implements
                         String endTime = obj.optString("end_time");
                         String overTime = obj.optString("over_day");
                         String imageUrl = obj.optString("banner");
-
+                        boolean new_tag=obj.optBoolean("new_tag");
                         ShopSpecialItem shopSpecialItem = new ShopSpecialItem(id, title, sales, time, startTime, endTime, overTime, imageUrl);
+                        shopSpecialItem.new_tag=new_tag;
                         items.add(shopSpecialItem);
                     }
                 Message message = new Message();
@@ -376,7 +413,41 @@ public class MainHomeFragment extends BaseFragment implements
         mRequestQueue.add(jr);
     }
 
+    private void FetchSpecialData(){
+        JsonObjectRequest request =new JsonObjectRequest(ZhaiDou.HOME_SPECIAL_BANNER_URL,new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                System.out.println("MainHomeFragment.onResponse---FetchSpecialData----->"+jsonObject.toString());
+                if (jsonObject!=null){
+                    JSONArray topics=jsonObject.optJSONArray("topics");
+                    for (int i = 0; i < topics.length(); i++) {
+                        JSONObject topicObj = topics.optJSONObject(i);
+                        int id = topicObj.optInt("id");
+                        String banner = topicObj.optString("banner");
+                        int sale_cate=topicObj.optInt("sale_cate");
+                        int template_type=topicObj.optInt("template_type");
+                        String header_img=topicObj.optString("header_img");
+                        String title=topicObj.optString("title");
+                        SpecialItem item = new SpecialItem();
+                        item.id=id;
+                        item.banner=banner;
+                        item.sale_cate=sale_cate;
+                        item.template_type=template_type;
+                        item.header_img=header_img;
+                        item.title=title;
+                        specialBanner[i].setTag(item);
+                        ToolUtils.setImageCacheUrl(banner,specialBanner[i]);
+                    }
+                }
+            }
+        },new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
 
+            }
+        });
+        mRequestQueue.add(request);
+    }
 
 
     /**
@@ -431,6 +502,11 @@ public class MainHomeFragment extends BaseFragment implements
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
         ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(items.get(position).title, items.get(position).id, items.get(position).imageUrl);
         ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
+        if (items.get(position).new_tag)
+        {
+            SharedPreferencesUtil.saveData(mContext, "is_new_" + items.get(position).id, false);
+            view.findViewById(R.id.newsView).setVisibility(View.GONE);
+        }
     }
 
     @Override
