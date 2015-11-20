@@ -88,7 +88,6 @@ public class MainHomeFragment extends BaseFragment implements
     private PullToRefreshScrollView mScrollView;
     private ImageView[] specialBanner=new ImageView[3];
 
-
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             if (msg.what == 1001)  {
@@ -517,6 +516,7 @@ public class MainHomeFragment extends BaseFragment implements
         getBannerData();
         items.clear();
         FetchData(currentPage = 1);
+        FetchSpecialData();
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
     }
 
