@@ -94,6 +94,7 @@ public class GoodsDetailsFragment extends BaseFragment
 {
     private static final String PAGE = "page";
     private static final String INDEX = "index";
+    private static final String ISSHOWTIMER = "timer";
 
     private String mPage;
     private int mIndex;
@@ -168,6 +169,7 @@ public class GoodsDetailsFragment extends BaseFragment
     //是否完成清理
     private boolean isClean = false;
     private boolean isPublish=false;
+    private boolean isShowTimer;
     private MyTimer mTimer;
     private TextView mTimerView, imageNull;
     private ArrayList<String> listUrls = new ArrayList<String>();
@@ -318,8 +320,10 @@ public class GoodsDetailsFragment extends BaseFragment
                             mTimerView.setText("已结束");
                             setAddOrBuyShow("活动已结束",false);
                         }
-                        mTimer = new MyTimer(temp, 1000);
-                        mTimer.start();
+                        if (isShowTimer){
+                            mTimer = new MyTimer(temp, 1000);
+                            mTimer.start();
+                        }
                     } catch (Exception e)
                     {
                         Log.i("Exception e", e.getMessage());
@@ -531,6 +535,7 @@ public class GoodsDetailsFragment extends BaseFragment
             mIndex = getArguments().getInt(INDEX);
             flags=getArguments().getInt("flags");
             isPublish = (flags==2?true:false);
+            isShowTimer=getArguments().getBoolean(ISSHOWTIMER,true);
         }
     }
 
@@ -601,6 +606,8 @@ public class GoodsDetailsFragment extends BaseFragment
         iconView = (LinearLayout) mView.findViewById(R.id.iconView);
         iconOSaleView = (LinearLayout) mView.findViewById(R.id.iconOSaleView);
         commentView = (LinearLayout) mView.findViewById(R.id.commentView);
+
+        mView.findViewById(R.id.timeLine).setVisibility(isShowTimer?View.VISIBLE:View.GONE);
 
         if (isPublish)
         {
@@ -1849,7 +1856,7 @@ public class GoodsDetailsFragment extends BaseFragment
     public void onResume()
     {
         long temp1 = System.currentTimeMillis() - currentTime;
-        if (temptime - temp1 > 0)
+        if (temptime - temp1 > 0&&isShowTimer)
         {
             if (mTimer != null)
             {

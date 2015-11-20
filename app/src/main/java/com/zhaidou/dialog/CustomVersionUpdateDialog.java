@@ -1,34 +1,29 @@
 package com.zhaidou.dialog;
 
-        import java.io.File;
-        import java.io.FileOutputStream;
-        import java.io.IOException;
-        import java.io.InputStream;
-        import java.net.HttpURLConnection;
-        import java.net.MalformedURLException;
-        import java.net.URL;
-        import android.app.AlertDialog;
         import android.app.Dialog;
-        import android.app.AlertDialog.Builder;
-        import android.content.Context;
-        import android.content.Intent;
-        import android.net.Uri;
-        import android.os.Handler;
-        import android.os.Message;
-        import android.text.Html;
-        import android.view.LayoutInflater;
-        import android.view.View;
-        import android.view.Window;
-        import android.view.animation.Animation;
-        import android.view.animation.AnimationUtils;
-        import android.widget.LinearLayout;
-        import android.widget.ProgressBar;
-        import android.widget.RelativeLayout;
-        import android.widget.TextView;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
-        import com.zhaidou.R;
-        import com.zhaidou.ZhaiDou;
-        import com.zhaidou.view.CircleProgressBar;
+import com.zhaidou.R;
+import com.zhaidou.view.CircleProgressBar;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * Created by roy on 15/8/12.

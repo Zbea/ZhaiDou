@@ -19,8 +19,7 @@ public class ShopSpecialItem implements Serializable
     public String overTime;
     public String imageUrl;
     public String isNew;
-
-    public ShopSpecialItem(int id, String title, String sale, String time, String startTime, String endTime, String overTime, String imageUrl, String isNew)
+    public ShopSpecialItem(int id, String title, String sale, String time, String startTime, String endTime, String overTime, String imageUrl,String isNew)
     {
         this.id = id;
         this.title = title;

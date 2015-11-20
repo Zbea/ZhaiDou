@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:background="@color/white"
-              android:orientation="vertical"
-    >
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
 
     <View
         android:id="@+id/itemsLine"
@@ -25,97 +24,91 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="7dp"
         android:layout_marginRight="7dp"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
         <RelativeLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/itemsImageIv"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/home_item_dimen"
-            android:scaleType="fitXY"
-            android:src="@drawable/icon_loading_item"/>
 
             <ImageView
+                android:id="@+id/itemsImageIv"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/home_item_dimen"
+                android:scaleType="fitXY"
+                android:src="@drawable/icon_loading_item" />
+
+            <ImageView
+                android:id="@+id/newsView"
                 android:layout_width="@dimen/home_tips_dimen"
                 android:layout_height="@dimen/home_tips_dimen"
-                android:layout_alignParentLeft="true"
-                android:id="@+id/newsView"
-                android:src="@drawable/home_info_news_icon"/>
+                android:src="@drawable/home_info_news_icon"
+                android:visibility="gone" />
         </RelativeLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="35dp"
             android:gravity="center_vertical"
-            >
+            android:orientation="horizontal">
 
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/shop_name_sale"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/red"
                 android:layout_weight="0.000001"
-                android:textSize="15sp"
                 android:text="3折起"
-                />
+                android:textColor="@color/red"
+                android:textSize="15sp" />
 
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/shop_name_item"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="10dp"
-                android:singleLine="true"
+                android:layout_weight="1"
                 android:ellipsize="end"
-                android:textColor="@color/text_main_color"
-                android:textSize="15sp"
+                android:singleLine="true"
                 android:text="item的名称"
-                />
+                android:textColor="@color/text_main_color"
+                android:textSize="15sp" />
 
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.000001"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <ImageView
                     android:layout_width="13dp"
                     android:layout_height="13dp"
-                    android:src="@drawable/icon_time_home"/>
+                    android:src="@drawable/icon_time_home" />
 
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
-                    android:textColor="@color/text_normal_color"
-                    android:textSize="13sp"
                     android:text="剩余"
-                    />
+                    android:textColor="@color/text_normal_color"
+                    android:textSize="13sp" />
 
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/shop_time_item"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="2dp"
-                    android:textColor="@color/text_normal_color"
-                    android:textSize="13sp"
                     android:text="1"
-                    />
+                    android:textColor="@color/text_normal_color"
+                    android:textSize="13sp" />
 
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/text_normal_color"
-                    android:textSize="13sp"
                     android:text="天"
-                    />
+                    android:textColor="@color/text_normal_color"
+                    android:textSize="13sp" />
             </LinearLayout>
         </LinearLayout>
 

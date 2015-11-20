@@ -12,6 +12,8 @@ public class ZhaiDou {
     //    public static String HOME_BASE_URL = "http://192.168.1.126:3000/lotteries";
     public static String TAG_BASE_URL = "http://buy.zhaidou.com/?tag=%s&json=1";
 
+    //首页三个专题tag
+    public static String HOME_SPECIAL_BANNER_URL=HOME_BASE_URL+"special_mall/api/sales/topic_sales?topic=true";
 
     public static String ApkUrl = HOME_BASE_URL+"api/v1/app_versions?os=2";
     //0元特卖页面：status=0,普通特卖页面：status=1,首页：status=2

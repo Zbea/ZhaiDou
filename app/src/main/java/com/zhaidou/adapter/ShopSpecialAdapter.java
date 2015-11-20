@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -17,7 +16,6 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.zhaidou.R;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.utils.SharedPreferencesUtil;
-import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
 
 import java.util.List;
@@ -54,6 +52,7 @@ public class ShopSpecialAdapter extends BaseAdapter
         TypeFaceTextView itemTime;
         View itemLine;
         View itemLine1;
+        ImageView isNewsView;
         ImageView newView;
     }
 
@@ -89,6 +88,7 @@ public class ShopSpecialAdapter extends BaseAdapter
             viewHolder.itemImage.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth,screenWidth*316/722));
             viewHolder.itemLine = (View) convertView.findViewById(R.id.itemsLine);
             viewHolder.itemLine1 = (View) convertView.findViewById(R.id.itemsLine1);
+            viewHolder.isNewsView=(ImageView)convertView.findViewById(R.id.newsView);
             viewHolder.newView = (ImageView) convertView.findViewById(R.id.newsView);
             convertView.setTag(viewHolder);
         }
@@ -111,6 +111,20 @@ public class ShopSpecialAdapter extends BaseAdapter
         viewHolder.itemSale.setText(shopSpecialItem.sale);
         viewHolder.itemTime.setText(shopSpecialItem.overTime);
 
+        if ("true".equalsIgnoreCase(shopSpecialItem.isNew))
+        {
+            if (!(Boolean) SharedPreferencesUtil.getData(context, "is_new_" + shopSpecialItem.id, true))
+            {
+                viewHolder.isNewsView.setVisibility(View.GONE);
+            } else
+            {
+                viewHolder. isNewsView.setVisibility(View.VISIBLE);
+            }
+        } else
+        {
+            viewHolder.isNewsView.setVisibility(View.GONE);
+        }
+
         DisplayImageOptions options=new DisplayImageOptions.Builder()
                 .showImageOnLoading(R.drawable.icon_loading_item)
                 .showImageForEmptyUri(R.drawable.icon_loading_item)
@@ -125,19 +139,7 @@ public class ShopSpecialAdapter extends BaseAdapter
 
         ImageLoader.getInstance().displayImage(shopSpecialItem.imageUrl, viewHolder.itemImage,options);
 
-        if (shopSpecialItem.isNew.equals("true"))
-        {
-            if (!(Boolean) SharedPreferencesUtil.getData(context, "is_new_" + shopSpecialItem.id, true))
-            {
-                viewHolder.newView.setVisibility(View.GONE);
-            } else
-            {
-                viewHolder. newView.setVisibility(View.VISIBLE);
-            }
-        } else
-        {
-            viewHolder.newView.setVisibility(View.GONE);
-        }
+//        ToolUtils.setImageCacheUrl(shopSpecialItem.imageUrl,viewHolder.itemImage,R.drawable.icon_loading_item);
         return convertView;
     }
 }

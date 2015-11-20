@@ -76,6 +76,20 @@
             </FrameLayout>
 
         </LinearLayout>
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:text="3.8折"
+            android:gravity="center"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/btn_green_click_bg"
+            android:visibility="gone"
+            android:id="@+id/shopSaleTv"/>
         <LinearLayout
             android:layout_alignParentRight="true"
             android:paddingRight="5dp"
