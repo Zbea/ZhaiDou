@@ -48,7 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickListener{
+public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickListener {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String ARG_TITLE = "title";
@@ -110,12 +110,12 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
     };
 
 
-    public static SpecialSaleFragment1 newInstance(String title,String param1, String param2) {
+    public static SpecialSaleFragment1 newInstance(String title, String param1, String param2) {
         SpecialSaleFragment1 fragment = new SpecialSaleFragment1();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
-        args.putString(ARG_TITLE,title);
+        args.putString(ARG_TITLE, title);
         fragment.setArguments(args);
         return fragment;
     }
@@ -129,7 +129,7 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
-            mTitle=getArguments().getString(ARG_TITLE);
+            mTitle = getArguments().getString(ARG_TITLE);
         }
     }
 
@@ -138,42 +138,46 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
                              Bundle savedInstanceState) {
 
         if (rootView == null) {
+            System.out.println("SpecialSaleFragment1.onCreateView");
             mContext = getActivity();
             rootView = inflater.inflate(R.layout.fragment_special_sale_list, container, false);
 
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
-            bannerLine=(LargeImgView) rootView.findViewById(R.id.bannerView);
-            ImageLoader.getInstance().displayImage(mParam2, bannerLine, new ImageLoadingListener()
-            {
+            bannerLine = (LargeImgView) rootView.findViewById(R.id.bannerView);
+            bannerLine.setDrawingCacheEnabled(true);
+            ImageLoader.getInstance().displayImage(mParam2, bannerLine, new ImageLoadingListener() {
                 @Override
-                public void onLoadingStarted(String s, View view)
-                {
+                public void onLoadingStarted(String s, View view) {
                 }
+
                 @Override
-                public void onLoadingFailed(String s, View view, FailReason failReason)
-                {
+                public void onLoadingFailed(String s, View view, FailReason failReason) {
                 }
+
                 @Override
-                public void onLoadingComplete(String s, View view, Bitmap bitmap)
-                {
-                    if (bitmap != null)
-                    {
+                public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+                    if (bitmap != null) {
                         LargeImgView imageView1 = (LargeImgView) view;
                         imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
-                        imageView1.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(screenWidth*bitmap.getHeight()/bitmap.getWidth())));
-                        imageView1.setImageBitmapLarge(bitmap);
-
+                        imageView1.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (screenWidth * bitmap.getHeight() / bitmap.getWidth())));
+                        if (imageView1.getDrawingCache() != null){
+                            imageView1.setImageBitmapLarge(bitmap);
+                        }else {
+                            if (bitmap.isRecycled()){
+                                bitmap.recycle();
+                                bitmap=null;
+                            }
+                        }
                     }
                 }
 
                 @Override
-                public void onLoadingCancelled(String s, View view)
-                {
+                public void onLoadingCancelled(String s, View view) {
 
                 }
             });
 
-            scrollView=(ScrollView) rootView.findViewById(R.id.scrollView);
+            scrollView = (ScrollView) rootView.findViewById(R.id.scrollView);
             mGridView = (GridView) rootView.findViewById(R.id.gv_sale);
             mGridView.setEmptyView(mEmptyView);
 
@@ -181,7 +185,7 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
             mGridView.setAdapter(mAdapter);
             rootView.findViewById(R.id.ll_back).setOnClickListener(this);
 
-            ((TextView)rootView.findViewById(R.id.tv_title)).setText(mTitle);
+            ((TextView) rootView.findViewById(R.id.tv_title)).setText(mTitle);
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
             nullNetView = (LinearLayout) rootView.findViewById(R.id.nullNetline);
             nullView = (LinearLayout) rootView.findViewById(R.id.nullline);
@@ -204,7 +208,7 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
                     bundle.putInt("flags", 1);
                     bundle.putInt("index", products.get(position).getId());
                     bundle.putString("page", products.get(position).getTitle());
-                    bundle.putBoolean("timer",false);
+                    bundle.putBoolean("timer", false);
                     goodsDetailsFragment.setArguments(bundle);
                     ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
                 }
@@ -234,6 +238,11 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.ll_back:
@@ -254,7 +263,7 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
     }
 
     public void FetchData(int page) {
-        JsonObjectRequest request = new JsonObjectRequest("http://stg.zhaidou.com/special_mall/api/sales/"+mParam1,
+        JsonObjectRequest request = new JsonObjectRequest("http://stg.zhaidou.com/special_mall/api/sales/" + mParam1,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
@@ -306,10 +315,10 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
                 nullNetView.setVisibility(View.GONE);
             }
         }
-        ){
+        ) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers=new HashMap<String, String>();
+                Map<String, String> headers = new HashMap<String, String>();
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }
@@ -334,7 +343,7 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
             TextView tv_price = ViewHolder.get(convertView, R.id.tv_price);
             TextView tv_count = ViewHolder.get(convertView, R.id.tv_count);
             ImageView ll_sale_out = ViewHolder.get(convertView, R.id.ll_sale_out);
-            TextView shopSaleTv=ViewHolder.get(convertView,R.id.shopSaleTv);
+            TextView shopSaleTv = ViewHolder.get(convertView, R.id.shopSaleTv);
             ll_sale_out.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / 2 - 1, screenWidth / 2 - 1));
             Product product = getList().get(position);
             tv_name.setText(product.getTitle());
@@ -342,19 +351,16 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
             tv_price.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
             tv_price.setText("￥" + ToolUtils.isIntPrice("" + product.getCost_price()));
             tv_count.setText("剩余 " + product.getRemaining() + "%");
-            tv_money.setText("￥" +product.getPrice());
+            tv_money.setText("￥" + product.getPrice());
             ll_sale_out.setVisibility(product.getRemaining() == 0 ? View.VISIBLE : View.GONE);
             DecimalFormat df = new DecimalFormat("##.0");
-            String zk=df.format(product.getPrice()/product.getCost_price()*10);
-            if (zk.contains(".0"))
-            {
-                int sales=(int)Double.parseDouble(zk);
-                shopSaleTv.setText(sales+"折");
-            }
-            else
-            {
-                Double sales=Double.parseDouble(zk);
-                shopSaleTv.setText(sales+"折");
+            String zk = df.format(product.getPrice() / product.getCost_price() * 10);
+            if (zk.contains(".0")) {
+                int sales = (int) Double.parseDouble(zk);
+                shopSaleTv.setText(sales + "折");
+            } else {
+                Double sales = Double.parseDouble(zk);
+                shopSaleTv.setText(sales + "折");
             }
             shopSaleTv.setVisibility(View.VISIBLE);
             mHashMap.put(position, convertView);
