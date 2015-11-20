@@ -36,6 +36,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
 import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -71,6 +73,7 @@ import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ChildGridView;
+import com.zhaidou.view.FlowLayout;
 import com.zhaidou.view.LargeImgView;
 import com.zhaidou.view.TypeFaceTextView;
 
@@ -110,6 +113,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private LinearLayout addCartBtn;
     private TextView publishBtn;
     private View myCartBtn;
+    private FlowLayout flowLayout;
 
     private Dialog mDialog;
     private ChildGridView mGridView;
@@ -167,11 +171,13 @@ public class GoodsDetailsFragment extends BaseFragment
     private MyTimer mTimer;
     private TextView mTimerView, imageNull;
     private ArrayList<String> listUrls = new ArrayList<String>();
+    private List<TextView> texts = new ArrayList<TextView>();
 
     private boolean isOSaleBuy;//是否购买过零元特卖
     private boolean isBuy;//是否购买过普通特卖该商品规格
     private boolean isClick;
     private int mClick = -1;
+    private long temp;
 
     private int userId;
     private String token;
@@ -207,9 +213,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 if (mSpecification!=null)
                 setAddOrBuyShow("不能重复购买",false);
                 mSpecification.isBuy=true;
-                ToolUtils.setLog(""+mSpecification.num);
                 mSpecification.num=mSpecification.num-1;
-                ToolUtils.setLog(""+mSpecification.num);
                 setRefreshSpecification(1);
             }
 
@@ -283,6 +287,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     if (detail.getSpecifications()!=null)
                     {
                         specificationAdapter.addAll(detail.getSpecifications());
+                        addSpecificationView();
                         for (int i = 0; i < detail.getSpecifications().size(); i++)
                         {
                             //遍历该商品的全部规格的库存数，如果当有库存数大于0的，则isOver标志位为false
@@ -306,7 +311,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     try
                     {
                         long millionSeconds = sdf.parse(end_date).getTime();//毫秒
-                        long temp = millionSeconds - System.currentTimeMillis();
+                        temp = millionSeconds - System.currentTimeMillis();
                         ToolUtils.setLog("temp:" + temp);
                         if (temp <= 0)
                         {
@@ -646,6 +651,8 @@ public class GoodsDetailsFragment extends BaseFragment
         radioGroup = (RadioGroup) mView.findViewById(R.id.goodsRG);
         radioGroup.setOnCheckedChangeListener(onCheckedChangeListener);
 
+        flowLayout=(FlowLayout) mView.findViewById(R.id.flowLayout);
+
         specificationAdapter = new SpecificationAdapter(getActivity(), new ArrayList<Specification>(), mSpecificationSelectPosition);
         mGridView.setAdapter(specificationAdapter);
 
@@ -812,6 +819,85 @@ public class GoodsDetailsFragment extends BaseFragment
     }
 
     /**
+     * 添加规格布局
+     */
+    private void addSpecificationView()
+    {
+        MarginLayoutParams lp = new MarginLayoutParams(
+                LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
+        lp.leftMargin = 10;
+        lp.rightMargin = 5;
+        lp.topMargin = 10;
+        lp.bottomMargin = 5;
+        for (int i = 0; i <specificationList.size(); i++)
+        {
+            final int position = i;
+            View view= LayoutInflater.from(mContext).inflate(R.layout.goods_details_size_item,null);
+            final TextView textView =(TextView)view.findViewById(R.id.sizeTitleTv);
+            textView.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    boolean isChlic=true;
+                    if (mClick == position)//用来判断是否是否是点击的同一个按钮
+                    {
+                        if (isClick)
+                        {
+                            mClick = position;
+                            isChlic=false;
+                            for (int j = 0; j < texts.size(); j++)
+                            {
+                                texts.get(j).setSelected(false);
+                            }
+                            textView.setSelected(true);
+                            sizeEvent(position);
+                        } else
+                        {
+                            mClick = -1;
+                            isChlic=true;
+                            textView.setSelected(false);
+                            mSpecification = null;
+                            mCurrentPrice.setText("￥" + ToolUtils.isIntPrice(detail.getPrice() + ""));
+                            mOldPrice.setText("￥" + ToolUtils.isIntPrice(detail.getCost_price() + ""));
+                            setDiscount(detail.getPrice(), detail.getCost_price());
+                            if (isPublish)
+                            {
+                                setAddOrBuyShow("此商品已下架",false);
+                            }
+
+                        }
+                    } else
+                    {
+                        mClick = position;
+                        isChlic=false;
+                        for (int j = 0; j < texts.size(); j++)
+                        {
+                            texts.get(j).setSelected(false);
+                        }
+                        textView.setSelected(true);
+                        sizeEvent(position);
+                    }
+                }
+            });
+            Specification specification=specificationList.get(i);
+            textView.setText(specification.getTitle());
+            if (specification.num<1)
+            {
+                textView.setBackgroundResource(R.drawable.goods_no_click_selector);
+                textView.setTextColor(Color.parseColor("#999999"));
+                textView.setClickable(false);
+            }
+            else
+            {
+                textView.setSelected(false);
+                texts.add(textView);
+            }
+            flowLayout.addView(view,lp);
+        }
+    }
+
+    /**
      * 刷新规格数据(0零元特卖1普通特卖购买成功后2立即购买请求是否已经购买)刷新规格数量
      */
     private void setRefreshSpecification(int flag)
@@ -877,6 +963,11 @@ public class GoodsDetailsFragment extends BaseFragment
             if (isPublish)
             {
                 setAddOrBuyShow("此商品已下架",false);
+            }
+            if (temp <= 0)
+            {
+                mTimerView.setText("已结束");
+                setAddOrBuyShow("活动已结束",false);
             }
         }
     }
