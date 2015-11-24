@@ -29,6 +29,7 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
@@ -69,7 +70,6 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
     private TextView reloadBtn, reloadNetBtn;
 
     private final int UPDATE_ADAPTER = 0;
-    private final int UPDATE_TIMER_START = 3;
 
     private Dialog mDialog;
 
@@ -138,44 +138,12 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
                              Bundle savedInstanceState) {
 
         if (rootView == null) {
-            System.out.println("SpecialSaleFragment1.onCreateView");
             mContext = getActivity();
             rootView = inflater.inflate(R.layout.fragment_special_sale_list, container, false);
 
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
             bannerLine = (LargeImgView) rootView.findViewById(R.id.bannerView);
             bannerLine.setDrawingCacheEnabled(true);
-            ImageLoader.getInstance().displayImage(mParam2, bannerLine, new ImageLoadingListener() {
-                @Override
-                public void onLoadingStarted(String s, View view) {
-                }
-
-                @Override
-                public void onLoadingFailed(String s, View view, FailReason failReason) {
-                }
-
-                @Override
-                public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-                    if (bitmap != null) {
-                        LargeImgView imageView1 = (LargeImgView) view;
-                        imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
-                        imageView1.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (screenWidth * bitmap.getHeight() / bitmap.getWidth())));
-                        if (imageView1.getDrawingCache() != null){
-                            imageView1.setImageBitmapLarge(bitmap);
-                        }else {
-                            if (bitmap.isRecycled()){
-                                bitmap.recycle();
-                                bitmap=null;
-                            }
-                        }
-                    }
-                }
-
-                @Override
-                public void onLoadingCancelled(String s, View view) {
-
-                }
-            });
 
             scrollView = (ScrollView) rootView.findViewById(R.id.scrollView);
             mGridView = (GridView) rootView.findViewById(R.id.gv_sale);
@@ -209,6 +177,7 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
                     bundle.putInt("index", products.get(position).getId());
                     bundle.putString("page", products.get(position).getTitle());
                     bundle.putBoolean("timer", false);
+                    bundle.putBoolean("canShare", false);
                     goodsDetailsFragment.setArguments(bundle);
                     ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
                 }
@@ -228,7 +197,44 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
     private void initData() {
         mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading", true);
         if (NetworkUtils.isNetworkAvailable(getActivity())) {
-            FetchData(1);
+            ImageLoader.getInstance().displayImage(mParam2, bannerLine, new ImageLoadingListener() {
+                @Override
+                public void onLoadingStarted(String s, View view) {
+                }
+
+                @Override
+                public void onLoadingFailed(String s, View view, FailReason failReason) {
+                    FetchData(1);
+                }
+
+                @Override
+                public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+                    if (bitmap != null) {
+                        LargeImgView imageView1 = (LargeImgView) view;
+                        imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (screenWidth * bitmap.getHeight() / bitmap.getWidth()));
+                        bannerLine.setLayoutParams(params);
+                        imageView1.setLayoutParams(params);
+                        bannerLine.setBackgroundColor(getResources().getColor(R.color.green_color));
+                        if (imageView1.getDrawingCache() != null) {
+                            imageView1.setImageBitmapLarge(bitmap);
+                        } else {
+                            if (bitmap.isRecycled()) {
+                                bitmap.recycle();
+                                bitmap = null;
+                            }
+                        }
+                    }
+                    mDialog.dismiss();
+                    loadingView.setVisibility(View.GONE);
+                    FetchData(1);
+                }
+
+                @Override
+                public void onLoadingCancelled(String s, View view) {
+                    FetchData(1);
+                }
+            });
         } else {
             if (mDialog != null)
                 mDialog.dismiss();
@@ -263,7 +269,7 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
     }
 
     public void FetchData(int page) {
-        JsonObjectRequest request = new JsonObjectRequest("http://stg.zhaidou.com/special_mall/api/sales/" + mParam1,
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HOME_BASE_URL + "special_mall/api/sales/" + mParam1,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
@@ -271,41 +277,29 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
                         ToolUtils.setLog(jsonObject.toString());
                         JSONObject saleJson = jsonObject.optJSONObject("sale");
                         if (saleJson != null) {
-                            String end_date = saleJson.optString("end_time");
-                            Message timerMsg = new Message();
-                            timerMsg.what = UPDATE_TIMER_START;
-                            timerMsg.obj = end_date;
-                            mHandler.sendMessage(timerMsg);
                             JSONArray items = saleJson.optJSONArray("merchandises");
-                            if (items != null && items.length() > 2) {
-                                if (items != null && items.length() > 0) {
-                                    for (int i = 0; i < items.length(); i++) {
-                                        JSONObject item = items.optJSONObject(i);
-                                        int id = item.optInt("id");
-                                        String title = item.optString("title");
-                                        double price = item.optDouble("price");
-                                        double cost_price = item.optDouble("cost_price");
-                                        String image = item.optString("img");
-//                                        int remaining = item.optInt("total_count");
-                                        int remaining = item.optInt("percentum");
-                                        Product product = new Product();
-                                        product.setId(id);
-                                        product.setPrice(price);
-                                        product.setCost_price(cost_price);
-                                        product.setTitle(title);
-                                        product.setImage(image);
-                                        product.setRemaining(remaining);
-                                        products.add(product);
-                                    }
-                                    mHandler.sendEmptyMessage(UPDATE_ADAPTER);
+                            if (items != null && items.length() > 0) {
+                                for (int i = 0; i < items.length(); i++) {
+                                    JSONObject item = items.optJSONObject(i);
+                                    int id = item.optInt("id");
+                                    String title = item.optString("title");
+                                    double price = item.optDouble("price");
+                                    double cost_price = item.optDouble("cost_price");
+                                    String image = item.optString("img");
+                                    int remaining = item.optInt("percentum");
+                                    Product product = new Product();
+                                    product.setId(id);
+                                    product.setPrice(price);
+                                    product.setCost_price(cost_price);
+                                    product.setTitle(title);
+                                    product.setImage(image);
+                                    product.setRemaining(remaining);
+                                    products.add(product);
                                 }
-                            } else {
-                                mHandler.sendEmptyMessage(UPDATE_ADAPTER);
                             }
-
-                        } else {
-                            mHandler.sendEmptyMessage(UPDATE_ADAPTER);
                         }
+                        mHandler.sendEmptyMessage(UPDATE_ADAPTER);
+
                     }
                 }, new Response.ErrorListener() {
             @Override

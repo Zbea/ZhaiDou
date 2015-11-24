@@ -299,37 +299,48 @@ public class MainHomeFragment extends BaseFragment implements
                 mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
                 initDate();
                 break;
-            case R.id.image1:
-                SpecialItem item= (SpecialItem) specialBanner[0].getTag();
-                if (item!=null&&item.template_type==0){
-                    SpecialSaleFragment1 specialSaleFragment1=SpecialSaleFragment1.newInstance(item.title,item.id+"",item.header_img);
-                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment1);
-                }else if (item!=null&&item.template_type==1){
-                    ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title,item.id, item.banner);
-                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
-                }
-                break;
-            case R.id.image2:
-                SpecialItem item1= (SpecialItem) specialBanner[1].getTag();
-                if (item1!=null&&item1.template_type==0){
-                    SpecialSaleFragment1 specialSaleFragment1=SpecialSaleFragment1.newInstance(item1.title,item1.id+"",item1.header_img);
-                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment1);
-                }else if (item1!=null&&item1.template_type==1){
-                    ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item1.title,item1.id, item1.banner);
-                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
-                }
-                break;
-            case R.id.image3:
-                SpecialItem item2= (SpecialItem) specialBanner[2].getTag();
-                if (item2!=null&&item2.template_type==0){
-                    SpecialSaleFragment1 specialSaleFragment1=SpecialSaleFragment1.newInstance(item2.title,item2.id+"",item2.header_img);
-                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment1);
-                }else if (item2!=null&&item2.template_type==1){
-                    ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item2.title,item2.id, item2.banner);
-                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
-                }
-                break;
-
+//            case R.id.image1:
+//                SpecialItem item= (SpecialItem) specialBanner[0].getTag();
+//                if (item!=null&&item.template_type==0){
+//                    SpecialSaleFragment1 specialSaleFragment1=SpecialSaleFragment1.newInstance(item.title,item.id+"",item.header_img);
+//                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment1);
+//                }else if (item!=null&&item.template_type==1){
+//                    ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title,item.id, item.banner);
+//                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
+//                }
+//                break;
+//            case R.id.image2:
+//                SpecialItem item1= (SpecialItem) specialBanner[1].getTag();
+//                if (item1!=null&&item1.template_type==0){
+//                    SpecialSaleFragment1 specialSaleFragment1=SpecialSaleFragment1.newInstance(item1.title,item1.id+"",item1.header_img);
+//                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment1);
+//                }else if (item1!=null&&item1.template_type==1){
+//                    ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item1.title,item1.id, item1.banner);
+//                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
+//                }
+//                break;
+//            case R.id.image3:
+//                SpecialItem item2= (SpecialItem) specialBanner[2].getTag();
+//                if (item2!=null&&item2.template_type==0){
+//                    SpecialSaleFragment1 specialSaleFragment1=SpecialSaleFragment1.newInstance(item2.title,item2.id+"",item2.header_img);
+//                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment1);
+//                }else if (item2!=null&&item2.template_type==1){
+//                    ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item2.title,item2.id, item2.banner);
+//                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
+//                }
+//                break;
+        }
+        int viewId = view.getId();
+        if (viewId==R.id.image1||viewId==R.id.image2||viewId==R.id.image3){
+            SpecialItem item = (SpecialItem) view.getTag();
+            System.out.println("MainHomeFragment.onClick------->"+item.toString());
+            if (item!=null&&item.template_type==0){
+                SpecialSaleFragment1 specialSaleFragment1=SpecialSaleFragment1.newInstance(item.title,item.id+"",item.header_img);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment1);
+            }else if (item!=null&&item.template_type==1){
+                ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title,item.id, item.banner);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
+            }
         }
     }
 
@@ -423,14 +434,14 @@ public class MainHomeFragment extends BaseFragment implements
                         JSONObject topicObj = topics.optJSONObject(i);
                         int id = topicObj.optInt("id");
                         String banner = topicObj.optString("banner");
-                        int sale_cate=topicObj.optInt("sale_cate");
+                        int topic_tag=topicObj.optInt("topic_tag");
                         int template_type=topicObj.optInt("template_type");
                         String header_img=topicObj.optString("header_img");
                         String title=topicObj.optString("title");
                         SpecialItem item = new SpecialItem();
                         item.id=id;
                         item.banner=banner;
-                        item.sale_cate=sale_cate;
+                        item.topic_tag=topic_tag;
                         item.template_type=template_type;
                         item.header_img=header_img;
                         item.title=title;

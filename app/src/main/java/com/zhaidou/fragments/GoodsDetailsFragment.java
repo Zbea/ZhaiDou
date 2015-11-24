@@ -92,6 +92,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private static final String PAGE = "page";
     private static final String INDEX = "index";
     private static final String ISSHOWTIMER = "timer";
+    private static final String CANSHARE = "canShare";
 
     private String mPage;
     private int mIndex;
@@ -166,6 +167,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private boolean isClean = false;
     private boolean isPublish=false;
     private boolean isShowTimer;
+    private boolean canShare;
     private MyTimer mTimer;
     private TextView mTimerView, imageNull;
     private ArrayList<String> listUrls = new ArrayList<String>();
@@ -180,6 +182,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private long temptime;
     private long currentTime;
     long mTime = 0;
+    private Integer template_type=-1;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -305,6 +308,9 @@ public class GoodsDetailsFragment extends BaseFragment
                     }
                     String end_date = detail.getEnd_time();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+                    System.out.println("GoodsDetailsFragment.handleMessage------------>"+template_type);
+                    mView.findViewById(R.id.timeLine).setVisibility(template_type!=0?View.VISIBLE:View.GONE);
+                    shareBtn.setVisibility(template_type!=0?View.VISIBLE:View.GONE);
                     try
                     {
                         long millionSeconds = sdf.parse(end_date).getTime();//毫秒
@@ -315,7 +321,7 @@ public class GoodsDetailsFragment extends BaseFragment
                             mTimerView.setText("已结束");
                             setAddOrBuyShow("活动已结束",false);
                         }
-                        if (isShowTimer){
+                        if (isShowTimer||template_type==0){
                             mTimer = new MyTimer(temp, 1000);
                             mTimer.start();
                         }
@@ -531,6 +537,7 @@ public class GoodsDetailsFragment extends BaseFragment
             flags=getArguments().getInt("flags");
             isPublish = (flags==2?true:false);
             isShowTimer=getArguments().getBoolean(ISSHOWTIMER,true);
+            canShare=getArguments().getBoolean(CANSHARE,true);
         }
     }
 
@@ -562,6 +569,7 @@ public class GoodsDetailsFragment extends BaseFragment
 
         shareBtn = (ImageView) mView.findViewById(R.id.share_iv);
         shareBtn.setOnClickListener(onClickListener);
+        shareBtn.setVisibility(canShare?View.VISIBLE:View.GONE);
 
         loadingView = (LinearLayout) mView.findViewById(R.id.loadingView);
         nullNetView = (LinearLayout) mView.findViewById(R.id.nullNetline);
@@ -602,7 +610,7 @@ public class GoodsDetailsFragment extends BaseFragment
         iconOSaleView = (LinearLayout) mView.findViewById(R.id.iconOSaleView);
         commentView = (LinearLayout) mView.findViewById(R.id.commentView);
 
-        mView.findViewById(R.id.timeLine).setVisibility(isShowTimer?View.VISIBLE:View.GONE);
+        mView.findViewById(R.id.timeLine).setVisibility(View.GONE);
 
         if (isPublish)
         {
@@ -1307,6 +1315,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 if (jsonObject != null)
                 {
                     JSONObject merchandise = jsonObject.optJSONObject("merchandise");
+                    template_type=merchandise.optInt("template_type");
                     int id = merchandise.optInt("id");
                     String title = merchandise.optString("title");
                     String designer = merchandise.optString("designer");

@@ -289,7 +289,7 @@ public class ShopPaymentFragment extends BaseFragment {
         System.out.println("ShopPaymentFragment.onCreate------------>" + mFare + "--------------->" + (mAmount % 1.0 == 0 ? (long) mAmount : mAmount + ""));
         mAccountView=(TextView)mView.findViewById(R.id.tv_cash);
         mAccountView.setText("￥"+((mAmount%1.0==0?(long)mAmount:mAmount+"")));
-        mView.findViewById(R.id.tv_pinkage).setVisibility(mFare==0?View.VISIBLE:View.GONE);
+        mView.findViewById(R.id.tv_pinkage).setVisibility(View.GONE);
         initTime = mTimeLeft;
 
         mTimer = new Timer();

@@ -15,6 +15,7 @@ public class Product {
     private int bean_like_count;
     private List<Category> categories;
     private int remaining;
+    private int sale_cate;
 
     private String end_date;
 
@@ -125,6 +126,14 @@ public class Product {
 
     public void setCost_price(double cost_price) {
         this.cost_price = cost_price;
+    }
+
+    public int getSale_cate() {
+        return sale_cate;
+    }
+
+    public void setSale_cate(int sale_cate) {
+        this.sale_cate = sale_cate;
     }
 
     public Product() {
