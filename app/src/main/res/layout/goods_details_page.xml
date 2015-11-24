@@ -33,7 +33,7 @@
             <RelativeLayout
                 android:id="@+id/imageRl"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="20dp"
                 android:background="@color/white">
 
                 <ImageView
@@ -184,14 +184,12 @@
             <LinearLayout
                 android:id="@+id/iconView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="28dp"
                 android:background="@color/page_bg"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp">
+                android:paddingRight="10dp">
 
                 <LinearLayout
                     android:layout_width="fill_parent"
@@ -304,6 +302,23 @@
                         android:layout_height="1px"
                         android:background="@color/line_color"/>
 
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <com.zhaidou.view.FlowLayout
+                            android:id="@+id/flowLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/default_margin"
+                            android:layout_marginRight="@dimen/default_margin"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginBottom="15dp"
+                            android:paddingRight="5dp"
+                            >
+
+                        </com.zhaidou.view.FlowLayout>
+                        </RelativeLayout>
+
                     <com.zhaidou.view.ChildGridView
                         android:id="@+id/gv_specification"
                         android:layout_width="match_parent"
@@ -316,6 +331,7 @@
                         android:listSelector="@color/transparent"
                         android:numColumns="3"
                         android:scrollbars="none"
+                        android:visibility="gone"
                         android:verticalSpacing="@dimen/default_margin">
 
                     </com.zhaidou.view.ChildGridView>
@@ -668,7 +684,6 @@
         layout="@layout/content_null_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
         android:layout_below="@+id/headLine"></include>
 
 </RelativeLayout>
