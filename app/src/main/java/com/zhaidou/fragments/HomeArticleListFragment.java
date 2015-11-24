@@ -232,6 +232,7 @@ public class HomeArticleListFragment extends BaseFragment implements PullToRefre
 
             Article article = getList().get(position);
 
+
             title.setText(article.getTitle());
             articleViews.setText(article.getReviews()+"");
             ToolUtils.setImageCacheUrl(article.getImg_url(), cover);
