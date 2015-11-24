@@ -34,6 +34,7 @@ import com.tencent.stat.common.StatLogger;
 public class WelcomePage extends Activity
 {
     private static StatLogger logger = new StatLogger("MTADemon");
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -43,12 +44,15 @@ public class WelcomePage extends Activity
 
 //        initMTAConfig(true);
 //        String appkey = "Aqc1104776552";
-//// 初始化并启动MTA
-//// 第三方SDK必须按以下代码初始化MTA,其中appkey为规定的格式或MTA分配的代码。 // 其它普通的app可自行选择是否调用
-//        try {
-//// 第三个参数必须为:com.tencent.stat.common.StatConstants.VERSION StatService.startStatService(this, appkey,
-//            com.tencent.stat.common.StatConstants.VERSION); } catch (MtaSDkException e) {
-//// MTA初始化失败 logger.error("MTA start failed."); logger.error("e");
+//        // 初始化并启动MTA
+//        // 第三方SDK必须按以下代码初始化MTA,其中appkey为规定的格式或MTA分配的代码。 // 其它普通的app可自行选择是否调用
+//        try
+//        {
+//        // 第三个参数必须为:com.tencent.stat.common.StatConstants.VERSION
+//        StatService.startStatService(this, appkey,com.tencent.stat.common.StatConstants.VERSION);
+//        } catch (MtaSDkException e)
+//        {
+//        // MTA初始化失败 logger.error("MTA start failed."); logger.error("e");
 //        }
         registerMessageReceiver();
         initView();
@@ -56,13 +60,16 @@ public class WelcomePage extends Activity
 //        TestinAgent.setLocalDebug(true);
     }
 
-    private void initMTAConfig(boolean isDebugMode) {
-        if (isDebugMode) {
+    private void initMTAConfig(boolean isDebugMode)
+    {
+        if (isDebugMode)
+        {
             StatConfig.setDebugEnable(true);
             StatConfig.setMTAPreferencesFileName("test");
             StatConfig.setStatSendStrategy(StatReportStrategy.INSTANT);
-            StatConfig.setSessionTimoutMillis(5*60*1000);
-        } else {
+            StatConfig.setSessionTimoutMillis(5 * 60 * 1000);
+        } else
+        {
             StatConfig.setDebugEnable(false);
             StatConfig.setAutoExceptionCaught(true);
             StatConfig.setStatSendStrategy(StatReportStrategy.APP_LAUNCH);

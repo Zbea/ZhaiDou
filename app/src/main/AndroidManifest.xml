@@ -261,11 +261,11 @@
         <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
         <meta-data android:name="JPUSH_APPKEY" android:value="d1dc54d7466632c895ec322f" /> <!--  </>值来自开发者平台取得的AppKey-->
 
-        <!--&lt;!&ndash; 请将value改为MTA分配的appkey < &ndash;&gt;-->
-        <!--<meta-data android:name="TA_APPKEY" android:value="Aqc1104776552"/>-->
-        <!--&lt;!&ndash; 请将value改为app发布对应的渠道,不同的发布渠道使用不同的名字 < &ndash;&gt;-->
-        <!--<meta-data android:name="guangdiantong" android:value="play"/>-->
-        <!--&lt;!&ndash; 注意:若填写的渠道为纯数字字符串类型,请不要超过int表示的范围! < &ndash;&gt;-->
+        <!-- 请将value改为MTA分配的appkey < -->
+        <meta-data android:name="TA_APPKEY" android:value="Aqc1104776552"/>
+        <!-- 请将value改为app发布对应的渠道,不同的发布渠道使用不同的名字 < -->
+        <meta-data android:name="InstallChannel" android:value="广点通"/>
+        <!-- 注意:若填写的渠道为纯数字字符串类型,请不要超过int表示的范围! < -->
 
     </application>
 
