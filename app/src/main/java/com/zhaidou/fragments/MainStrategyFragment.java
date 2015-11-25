@@ -110,7 +110,7 @@ public class MainStrategyFragment extends BaseFragment
         {
             try
             {
-                JSONObject item = listItem.get(i-1);
+                JSONObject item = listItem.get(i);
                 Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
                 detailIntent.putExtra("id", item.get("id").toString());
                 detailIntent.putExtra("title", item.get("title").toString());
