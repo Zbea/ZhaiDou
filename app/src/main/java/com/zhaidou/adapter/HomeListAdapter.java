@@ -1,7 +1,6 @@
 package com.zhaidou.adapter;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,7 +79,7 @@ public class HomeListAdapter extends BaseAdapter
             viewHolder.cover = (ImageView) convertView.findViewById(R.id.cover);
             viewHolder.cover.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth,screenWidth*316/722));
             viewHolder.newView = (ImageView) convertView.findViewById(R.id.newsView);
-            viewHolder.lineTo = (View) convertView.findViewById(R.id.lineTo);
+//            viewHolder.lineTo = (View) convertView.findViewById(R.id.lineTo);
             convertView.setTag(viewHolder);
         }
         else

@@ -200,9 +200,9 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             rootView = inflater.inflate(R.layout.fragment_special_sale, container, false);
 
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
-            bannerLine=(LinearLayout) rootView.findViewById(R.id.bannerView);
+            bannerLine = (LinearLayout) rootView.findViewById(R.id.bannerView);
             bannerLine.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 400 / 750));
-            scrollView=(ScrollView) rootView.findViewById(R.id.scrollView);
+            scrollView = (ScrollView) rootView.findViewById(R.id.scrollView);
             mGridView = (GridView) rootView.findViewById(R.id.gv_sale);
             mGridView.setEmptyView(mEmptyView);
             mTimerView = (TextView) rootView.findViewById(R.id.tv_count_time);
@@ -291,23 +291,18 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
      */
     private void setAdView() {
 
-        if (customBannerView==null)
-        {
-            customBannerView=new CustomBannerView(mContext,banners,true);
+        if (customBannerView == null) {
+            customBannerView = new CustomBannerView(mContext, banners, true);
             customBannerView.setLayoutParams(screenWidth, screenWidth * 400 / 750);
-            customBannerView.setOnBannerClickListener(new CustomBannerView.OnBannerClickListener()
-            {
+            customBannerView.setOnBannerClickListener(new CustomBannerView.OnBannerClickListener() {
                 @Override
-                public void onClick(int postion)
-                {
+                public void onClick(int postion) {
                     SwitchImage item = banners.get(postion);
-                    ToolUtils.setBannerGoto(item,mContext);
+                    ToolUtils.setBannerGoto(item, mContext);
                 }
             });
             bannerLine.addView(customBannerView);
-        }
-        else
-        {
+        } else {
             customBannerView.setImages(banners);
         }
     }
@@ -365,31 +360,31 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                             timerMsg.obj = end_date;
                             mHandler.sendMessage(timerMsg);
                             JSONArray items = saleJson.optJSONArray("merchandises");
-                            if (items != null && items.length() > 2) {
-                                if (items != null && items.length() > 0) {
-                                    for (int i = 0; i < items.length(); i++) {
-                                        JSONObject item = items.optJSONObject(i);
-                                        int id = item.optInt("id");
-                                        String title = item.optString("title");
-                                        double price = item.optDouble("price");
-                                        double cost_price = item.optDouble("cost_price");
-                                        String image = item.optString("img");
+                            if (items != null && items.length() > 0) {
+                                for (int i = 0; i < items.length(); i++) {
+                                    JSONObject item = items.optJSONObject(i);
+                                    int id = item.optInt("id");
+                                    String title = item.optString("title");
+                                    double price = item.optDouble("price");
+                                    double cost_price = item.optDouble("cost_price");
+                                    String image = item.optString("img");
 //                                        int remaining = item.optInt("total_count");
-                                        int remaining = item.optInt("percentum");
-                                        Product product = new Product();
-                                        product.setId(id);
-                                        product.setPrice(price);
-                                        product.setCost_price(cost_price);
-                                        product.setTitle(title);
-                                        product.setImage(image);
-                                        product.setRemaining(remaining);
-                                        products.add(product);
-                                    }
-                                    mHandler.sendEmptyMessage(UPDATE_ADAPTER);
+                                    int remaining = item.optInt("percentum");
+                                    Product product = new Product();
+                                    product.setId(id);
+                                    product.setPrice(price);
+                                    product.setCost_price(cost_price);
+                                    product.setTitle(title);
+                                    product.setImage(image);
+                                    product.setRemaining(remaining);
+                                    products.add(product);
                                 }
-                            } else {
                                 mHandler.sendEmptyMessage(UPDATE_ADAPTER);
                             }
+//                            if (items != null && items.length() > 2) {
+//                            } else {
+//                                mHandler.sendEmptyMessage(UPDATE_ADAPTER);
+//                            }
 
                         } else {
                             mHandler.sendEmptyMessage(UPDATE_ADAPTER);
@@ -403,10 +398,10 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 nullNetView.setVisibility(View.GONE);
             }
         }
-        ){
+        ) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers=new HashMap<String, String>();
+                Map<String, String> headers = new HashMap<String, String>();
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }
@@ -452,10 +447,10 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             @Override
             public void onErrorResponse(VolleyError volleyError) {
             }
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers=new HashMap<String, String>();
+                Map<String, String> headers = new HashMap<String, String>();
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }

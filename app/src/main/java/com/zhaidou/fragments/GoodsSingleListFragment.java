@@ -368,6 +368,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
      * @param page
      */
     public void FetchData(String msg,int sort,int page){
+        System.out.println("msg = [" + msg + "], sort = [" + sort + "], page = [" + page + "]");
         mParam1=msg;
         this.sort=sort;
         currentpage=page;

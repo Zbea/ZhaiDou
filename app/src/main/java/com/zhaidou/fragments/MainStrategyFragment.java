@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -25,7 +24,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.pulltorefresh.PullToRefreshBase;
-import com.pulltorefresh.PullToRefreshListView;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
@@ -300,7 +298,7 @@ public class MainStrategyFragment extends BaseFragment
                 title.setText(item.get("title").toString());
                 JSONObject customFields = item.getJSONObject("custom_fields");
                 articleViews.setText(customFields.getJSONArray("views").get(0).toString());
-
+                System.out.println("ImageAdapter.getView------->"+customFields.getJSONArray("views").get(0).toString());
                 DisplayImageOptions options=new DisplayImageOptions.Builder()
                         .showImageOnLoading(R.drawable.icon_loading_item)
                         .showImageForEmptyUri(R.drawable.icon_loading_item)
