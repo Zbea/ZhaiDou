@@ -71,6 +71,7 @@ public class MainHomeFragment extends BaseFragment implements
 
     private static final int UPDATE_BANNER = 4;
 
+    private View mSpecialLayout;
     private ImageView mSearchView;
     private View view;
     private Dialog mDialog;
@@ -200,6 +201,8 @@ public class MainHomeFragment extends BaseFragment implements
 
         mSearchView = (ImageView) view.findViewById(R.id.iv_search);
         mSearchView.setOnClickListener(this);
+        mSpecialLayout=view.findViewById(R.id.specialLayout);
+        mSpecialLayout.setVisibility(View.GONE);
 
         currentPage = 1;
 
@@ -448,6 +451,7 @@ public class MainHomeFragment extends BaseFragment implements
                         specialBanner[i].setTag(item);
                         ToolUtils.setImageCacheUrl(banner,specialBanner[i]);
                     }
+                    mSpecialLayout.setVisibility(topics.length()>0?View.VISIBLE:View.GONE);
                 }
             }
         },new Response.ErrorListener() {
