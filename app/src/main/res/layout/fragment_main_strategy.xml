@@ -63,6 +63,13 @@
 
             </LinearLayout>
 
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:background="@color/line_color"></View>
+
             <LinearLayout
                 android:id="@+id/strategy_dd"
                 android:layout_width="match_parent"
