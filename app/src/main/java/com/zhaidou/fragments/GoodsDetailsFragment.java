@@ -216,10 +216,12 @@ public class GoodsDetailsFragment extends BaseFragment
             if (action.equals(ZhaiDou.IntentRefreshGoodsDetailsTag))
             {
                 if (mSpecification!=null)
-                setAddOrBuyShow("不能重复购买",false);
-                mSpecification.isBuy=true;
-                mSpecification.num=mSpecification.num-1;
-                setRefreshSpecification(1);
+                {
+                    setAddOrBuyShow("不能重复购买",false);
+                    mSpecification.isBuy=true;
+                    mSpecification.num=mSpecification.num-1;
+                    setRefreshSpecification(1);
+                }
             }
 
         }

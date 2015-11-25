@@ -203,6 +203,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     ((MainActivity) getActivity()).popToStack(ShopOrderOkFragment.this);
 
                     String result = (String) msg.obj;
+                    ToolUtils.setLog(result);
                     try
                     {
                         JSONObject jsonObject = new JSONObject(result);
@@ -210,6 +211,7 @@ public class ShopOrderOkFragment extends BaseFragment
                         int orderId = orderObj.optInt("id");
                         double amount = orderObj.optDouble("amount");
                         double fare = moneyYF;
+                        ToolUtils.setLog("dfsfdsfsdfds");
                         ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId, amount, fare,((mContext.getResources().getInteger(R.integer.timer_countdown)) / 1000), null, 1);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
                     } catch (Exception e)
