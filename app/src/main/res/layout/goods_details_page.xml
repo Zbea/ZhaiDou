@@ -71,7 +71,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
-                    android:background="#aa3fcccb"
+                    android:background="#dd3fcccb"
                     android:gravity="center"
                     android:orientation="horizontal"
                     android:paddingBottom="3dp"
@@ -184,7 +184,7 @@
             <LinearLayout
                 android:id="@+id/iconView"
                 android:layout_width="match_parent"
-                android:layout_height="28dp"
+                android:layout_height="26dp"
                 android:background="@color/page_bg"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
@@ -195,13 +195,12 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="center"
+                    android:gravity="left"
                     android:orientation="vertical">
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="3dp"
                         android:src="@drawable/icon_quality_goods"/>
                 </LinearLayout>
 
@@ -220,12 +219,11 @@
                 </LinearLayout>
 
 
-
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="center"
+                    android:gravity="right"
                     android:orientation="vertical">
 
                     <ImageView
@@ -239,7 +237,7 @@
             <LinearLayout
                 android:id="@+id/iconOSaleView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="26dp"
                 android:background="@color/page_bg"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
