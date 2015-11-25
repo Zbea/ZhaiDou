@@ -280,7 +280,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/title_color"
                     android:textSize="10sp"
-                    android:text="最多上传3张,每张不超过5m,支持jpg、png、bmp"
+                    android:text="最多上传3张,每张不超过3m,支持jpg、png、bmp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginBottom="5dp"/>
             </LinearLayout>
