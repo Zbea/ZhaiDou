@@ -354,7 +354,7 @@ public class GoodsDetailsFragment extends BaseFragment
                         {
                             if (items.get(i).isOSale.equals("true"))
                             {
-                                ljBuyOkDialog(items.get(i));
+                                ljBuyOkDialog(items.get(i),"购物车已经有一件零元特卖商品,继续购买将删除掉该商品，是否删除？");
                                 return;
                             }
                         }
@@ -390,7 +390,7 @@ public class GoodsDetailsFragment extends BaseFragment
                         {
                             if (items.get(i).sizeId==mSpecification.getId())
                             {
-                                ljBuyOkDialog(items.get(i));
+                                ljBuyOkDialog(items.get(i),"购物车已经有一件该商品,继续购买将删除掉该商品，是否删除？");
                                 return;
                             }
                         }
@@ -1607,12 +1607,12 @@ public class GoodsDetailsFragment extends BaseFragment
      *
      * @param cartItem
      */
-    private void ljBuyOkDialog(final CartItem cartItem)
+    private void ljBuyOkDialog(final CartItem cartItem,String msg)
     {
         final Dialog dialog = new Dialog(mContext, R.style.custom_dialog);
         View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_collect_hint, null);
         TextView tvMsg = (TextView) view.findViewById(R.id.tv_msg);
-        tvMsg.setText("购物车已经有一件零元特卖商品,继续购买将删除掉该商品，是否删除？");
+        tvMsg.setText(msg);
         TextView okTv = (TextView) view.findViewById(R.id.okTv);
         okTv.setOnClickListener(new View.OnClickListener()
         {
@@ -1620,7 +1620,7 @@ public class GoodsDetailsFragment extends BaseFragment
             public void onClick(View view)
             {
                 CreatCartTools.deleteByData(creatCartDB, cartItem);
-                Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsCheckTag);
+                Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
                 mContext.sendBroadcast(intent);
                 dialog.dismiss();
                 buyGoods();
@@ -1661,7 +1661,7 @@ public class GoodsDetailsFragment extends BaseFragment
             public void onClick(View view)
             {
                 CreatCartTools.deleteByData(creatCartDB, cartItem);
-                Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsCheckTag);
+                Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
                 mContext.sendBroadcast(intent);
                 dialog.dismiss();
                 addCartGoods();
