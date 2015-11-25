@@ -45,6 +45,7 @@ import com.zhaidou.view.TypeFaceTextView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -285,10 +286,11 @@ public class ShopPaymentFragment extends BaseFragment {
                 }
             }
         });
-        System.out.println("ShopPaymentFragment.initView------>"+(mFare==0));
+        System.out.println("ShopPaymentFragment.initView------>"+(mFare==0)+"---------"+mAmount);
         System.out.println("ShopPaymentFragment.onCreate------------>" + mFare + "--------------->" + (mAmount % 1.0 == 0 ? (long) mAmount : mAmount + ""));
         mAccountView=(TextView)mView.findViewById(R.id.tv_cash);
-        mAccountView.setText("￥"+((mAmount%1.0==0?(long)mAmount:mAmount+"")));
+        DecimalFormat df = new DecimalFormat("###.00");
+        mAccountView.setText("￥"+Double.parseDouble(df.format(mAmount)));
         mView.findViewById(R.id.tv_pinkage).setVisibility(View.GONE);
         initTime = mTimeLeft;
 
