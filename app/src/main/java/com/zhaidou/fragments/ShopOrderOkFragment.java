@@ -207,9 +207,14 @@ public class ShopOrderOkFragment extends BaseFragment
                     try
                     {
                         JSONObject jsonObject = new JSONObject(result);
+                        System.out.println("ShopOrderOkFragment.handleMessage--jsonObject------->"+jsonObject.toString());
                         JSONObject orderObj = jsonObject.optJSONObject("order");
                         int orderId = orderObj.optInt("id");
                         double amount = orderObj.optDouble("amount");
+
+                        System.out.println("ShopOrderOkFragment.handleMessage---------->"+amount);
+                        DecimalFormat df = new DecimalFormat("###.00");
+                        System.out.println("ShopOrderOkFragment.handleMessage----->"+Double.parseDouble(df.format(amount)));
                         double fare = moneyYF;
                         ToolUtils.setLog("dfsfdsfsdfds");
                         ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId, amount, fare,((mContext.getResources().getInteger(R.integer.timer_countdown)) / 1000), null, 1);
