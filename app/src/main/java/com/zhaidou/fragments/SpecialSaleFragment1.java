@@ -171,7 +171,7 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
             mAdapter.setOnInViewClickListener(R.id.ll_single_layout, new BaseListAdapter.onInternalClickListener() {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(products.get(position).getTitle(), products.get(position).getId());
+                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(products.get(position).getTitle(), products.get(position).getId()+"");
                     Bundle bundle = new Bundle();
                     bundle.putInt("flags", 1);
                     bundle.putInt("index", products.get(position).getId());

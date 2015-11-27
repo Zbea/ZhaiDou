@@ -69,27 +69,22 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private static final String IMAGEURL = "image";
 
     private String shareUrl = ZhaiDou.shopSpecialListShareUrl;
-    private String mPage;
+    private String mString;
     private String mImageUrl;
-    private int mIndex;
+    private String mIndex;
     private View mView;
     private Context mContext;
     private Dialog mDialog;
-    private int id;
     private String mTitle;
     private String introduce;//引文介绍
-    private final int UPDATE_COUNT_DOWN_TIME = 1;
-    private final int UPDATE_UI_TIMER_FINISH = 2;
     private final int UPDATE_TIMER_START_AND_DETAIL_DATA = 3;
     private final int UPDATE_CARTCAR_DATA=5;
 
-    //    private MyTimer mTimer;
     private Timer mTimer;
     private boolean isTimerStart = false;
     private long initTime;
 
     private RequestQueue mRequestQueue;
-    private Map<Integer, View> mHashMap = new HashMap<Integer, View>();
 
     private ImageView shareBtn;
     private TypeFaceTextView backBtn, titleTv, introduceTv, timeTv;
@@ -99,15 +94,13 @@ public class ShopTodaySpecialFragment extends BaseFragment {
 
     private TextView myCartTips;
     private ImageView myCartBtn;
-    private long time;
     private long currentTime;
-    private int num;
-    private List<CartItem> cartItems = new ArrayList<CartItem>();
-    private CreatCartDB creatCartDB;
 
     private List<ShopTodayItem> items = new ArrayList<ShopTodayItem>();
     private ShopTodaySpecialAdapter adapter;
     private ShopSpecialItem shopSpecialItem;
+
+    private int page=1;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -136,16 +129,16 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     break;
                 case UPDATE_TIMER_START_AND_DETAIL_DATA:
                     adapter.notifyDataSetChanged();
-                    String date = (String) msg.obj;
-                    ToolUtils.setLog(date);
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-                    try {
-                        long millionSeconds = sdf.parse(date).getTime();//毫秒
-                        long temp = millionSeconds - System.currentTimeMillis();
-                        initTime = temp;
-                    } catch (Exception e) {
-                        Log.i("Exception e", e.getMessage());
-                    }
+                    introduceTv.setText(introduce);
+                    loadingView.setVisibility(View.GONE);
+                    long temp =  shopSpecialItem.endTime - System.currentTimeMillis();
+                    initTime = temp;
+//                    if (temp>0)
+//                    {
+//                        if (mTimer == null)
+//                            mTimer = new Timer();
+//                        mTimer.schedule(new MyTimerTask(), 1000, 1000);
+//                    }
                     break;
                 case UPDATE_CARTCAR_DATA:
                     int num=msg.arg2;
@@ -162,7 +155,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(i).title, items.get(i).id);
+            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(i).title, items.get(i).goodsId);
             ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
         }
     };
@@ -201,11 +194,11 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     };
 
 
-    public static ShopTodaySpecialFragment newInstance(String page, int index, String imageUrl) {
+    public static ShopTodaySpecialFragment newInstance(String page, String index, String imageUrl) {
         ShopTodaySpecialFragment fragment = new ShopTodaySpecialFragment();
         Bundle args = new Bundle();
         args.putString(PAGE, page);
-        args.putInt(INDEX, index);
+        args.putString(INDEX, index);
         args.putString(IMAGEURL, imageUrl);
         fragment.setArguments(args);
         return fragment;
@@ -218,11 +211,10 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mPage = getArguments().getString(PAGE);
-            mIndex = getArguments().getInt(INDEX);
+            mString = getArguments().getString(PAGE);
+            mIndex = getArguments().getString(INDEX);
             mImageUrl = getArguments().getString(IMAGEURL);
-            id = mIndex;
-            mTitle = mPage;
+            mTitle = mString;
         }
     }
 
@@ -266,7 +258,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                 @Override
                 public void run() {
 
-                    FetchData(id);
+                    FetchData();
                 }
             }, 300);
         } else {
@@ -313,9 +305,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         myCartBtn.setOnClickListener(onClickListener);
 
         mRequestQueue = Volley.newRequestQueue(mContext);
-        creatCartDB = new CreatCartDB(mContext);
-
-//        initCartTips();
 
 
         initData();
@@ -347,27 +336,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
      * 分享
      */
     private void share() {
-//        ShareSDK.initSDK(mContext);
-//        OnekeyShare oks = new OnekeyShare();
-//        //关闭sso授权
-//        oks.disableSSOWhenAuthorize();
-//        // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
-//        oks.setTitle(mTitle);
-//        // titleUrl是标题的网络链接，仅在人人网和QQ空间使用
-//        oks.setTitleUrl(shareUrl);
-//        // text是分享文本，所有平台都需要这个字段
-//        oks.setText(mTitle + "   " + shareUrl);
-//        // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
-//        oks.setImageUrl(mImageUrl);//确保SDcard下面存在此张图片
-//        // url仅在微信（包括好友和朋友圈）中使用
-//        oks.setUrl(shareUrl);
-//        // site是分享此内容的网站名称，仅在QQ空间使用
-//        oks.setSite(getString(R.string.app_name));
-//        // siteUrl是分享此内容的网站地址，仅在QQ空间使用
-//        oks.setSiteUrl(shareUrl);
-//
-//        oks.show(mContext);
-
         DialogUtils mDialogUtils=new DialogUtils(mContext);
         mDialogUtils.showShareDialog(mTitle,mTitle+"  "+shareUrl,mImageUrl,shareUrl,new PlatformActionListener() {
             @Override
@@ -390,8 +358,8 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     /**
      * 加载列表数据
      */
-    private void FetchData(int id) {
-        String url = ZhaiDou.shopSpecialTadayUrl + id;
+    private void FetchData() {
+        String url = ZhaiDou.HomeGoodsListUrl+mIndex+"&pageNo="+ page +"&typeEnum="+1;
         ToolUtils.setLog(url);
         JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
             @Override
@@ -404,41 +372,43 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     return;
                 }
                 JSONObject obj;
-                JSONObject jsonObject = response.optJSONObject("sale");
-                int id = jsonObject.optInt("id");
-                String title = jsonObject.optString("title");
-                String time = jsonObject.optString("day");
-                String startTime = jsonObject.optString("start_time");
-                String endTime = jsonObject.optString("end_time");
-                String overTime = jsonObject.optString("over_day");
-                introduce = jsonObject.optString("quotation");
-                String isNew = jsonObject.optString("is_new");
-                shopSpecialItem = new ShopSpecialItem(id, title, null, time, startTime, endTime, overTime, null,isNew);
+                JSONObject jsonObject1 = response.optJSONObject("data");
+                JSONObject jsonObject = jsonObject1.optJSONObject("activityPO");
+                String id = jsonObject.optString("activityCode");
+                String title = jsonObject.optString("activityName");
+                long startTime = jsonObject.optLong("startTime");
+                long endTime = jsonObject.optLong("endTime");
+                int overTime = Integer.parseInt((String.valueOf((endTime-startTime)/(24*60*60*1000))));
+                introduce = jsonObject.optString("description");
+                int isNew = jsonObject.optInt("newFlag");
+                shopSpecialItem = new ShopSpecialItem(id, title, null,startTime, endTime, overTime, null,isNew);
 
-                JSONArray jsonArray = jsonObject.optJSONArray("merchandises");
-                for (int i = 0; i < jsonArray.length(); i++)
+                JSONObject jsonObject2 = jsonObject1.optJSONObject("pagePO");
+                if (jsonObject2!=null)
                 {
-                    obj = jsonArray.optJSONObject(i);
-                    int Baseid = obj.optInt("id");
-                    String Listtitle = obj.optString("title");
-                    String designer = obj.optString("designer");
-                    double price = obj.optDouble("price");
-                    double cost_price = obj.optDouble("cost_price");
-                    int percentum =100-obj.optInt("percentum");
-                    String imageUrl = obj.optString("img");
-                    int num = obj.optInt("total_count");
-                    int totalCount = obj.optInt("total");
-                    int buyCount = totalCount - num;
-                    ShopTodayItem shopTodayItem = new ShopTodayItem(Baseid, Listtitle, designer, imageUrl, price, cost_price, num, totalCount, buyCount);
-                    shopTodayItem.percentum=percentum;
-                    items.add(shopTodayItem);
+                    JSONArray jsonArray = jsonObject2.optJSONArray("items");
+                    if (jsonArray!=null)
+
+                        for (int i = 0; i < jsonArray.length(); i++)
+                        {
+                            obj = jsonArray.optJSONObject(i);
+                            String Baseid = obj.optString("productId");
+                            String Listtitle = obj.optString("productName");
+                            double price = obj.optDouble("price");
+                            double cost_price = obj.optDouble("marketPrice");
+                            String imageUrl = obj.optString("productPicUrl");
+                            JSONObject jsonObject3=obj.optJSONObject("expandedResponse");
+                            int num = jsonObject3.optInt("stock");
+                            int totalCount = jsonObject3.optInt("total");
+                            int percentum =100-jsonObject3.optInt("percentum");
+                            ShopTodayItem shopTodayItem = new ShopTodayItem(Baseid, Listtitle, imageUrl, price, cost_price, num, totalCount);
+                            shopTodayItem.percentum=percentum;
+                            items.add(shopTodayItem);
+                        }
                 }
 
-                introduceTv.setText(introduce);
-                loadingView.setVisibility(View.GONE);
                 Message message = new Message();
                 message.what = UPDATE_TIMER_START_AND_DETAIL_DATA;
-                message.obj = endTime;
                 handler.sendMessage(message);
             }
         }, new Response.ErrorListener() {

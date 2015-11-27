@@ -131,7 +131,7 @@ public class OrderDetailFragment extends BaseFragment {
         {
             if (flags!=1)
             {
-                GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(orderItems.get(i).getMerchandise(), orderItems.get(i).getId());
+                GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(orderItems.get(i).getMerchandise(), orderItems.get(i).getId()+"");
                 Bundle bundle = new Bundle();
                 if(orderItems.get(i).getSale_cate()==1)
                 {

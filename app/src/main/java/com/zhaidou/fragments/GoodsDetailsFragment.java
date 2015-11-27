@@ -98,7 +98,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private static final String CANSHARE = "canShare";
 
     private String mPage;
-    private int mIndex;
+    private String mIndex;
     private View mView;
     private int flags;//1代表零元特卖；2代表已下架商品
     private Context mContext;
@@ -322,7 +322,6 @@ public class GoodsDetailsFragment extends BaseFragment
                     {
                         long millionSeconds = sdf.parse(end_date).getTime();//毫秒
                         temp = millionSeconds - System.currentTimeMillis();
-                        ToolUtils.setLog("temp:" + temp);
                         if (temp <= 0)
                         {
                             mTimerView.setText("已结束");
@@ -519,12 +518,12 @@ public class GoodsDetailsFragment extends BaseFragment
         }
     };
 
-    public static GoodsDetailsFragment newInstance(String page, int index)
+    public static GoodsDetailsFragment newInstance(String page, String index)
     {
         GoodsDetailsFragment fragment = new GoodsDetailsFragment();
         Bundle args = new Bundle();
         args.putString(PAGE, page);
-        args.putInt(INDEX, index);
+        args.putString(INDEX, index);
         fragment.setArguments(args);
         return fragment;
     }
@@ -540,7 +539,7 @@ public class GoodsDetailsFragment extends BaseFragment
         if (getArguments() != null)
         {
             mPage = getArguments().getString(PAGE);
-            mIndex = getArguments().getInt(INDEX);
+            mIndex = getArguments().getString(INDEX);
             flags=getArguments().getInt("flags");
             isPublish = (flags==2?true:false);
             isShowTimer=getArguments().getBoolean(ISSHOWTIMER,true);
@@ -776,7 +775,7 @@ public class GoodsDetailsFragment extends BaseFragment
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "");
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
-            FetchDetailData(mIndex);
+            FetchDetailData();
         } else
         {
             if (mDialog != null)
@@ -1395,10 +1394,10 @@ public class GoodsDetailsFragment extends BaseFragment
         }
     }
 
-    public void FetchDetailData(int id)
+    public void FetchDetailData()
     {
         listUrls.clear();
-        String url = ZhaiDou.goodsDetailsUrlUrl + id;
+        String url = ZhaiDou.goodsDetailsUrlUrl + mIndex;
         Log.i("url---------------------->", url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {

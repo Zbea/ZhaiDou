@@ -67,6 +67,7 @@ public class MainHomeFragment extends BaseFragment implements
 
     private int currentPage = 1;
     private int count = -1;
+    private int pageCount=0;
 
 
     private static final int UPDATE_BANNER = 4;
@@ -87,18 +88,22 @@ public class MainHomeFragment extends BaseFragment implements
     private CustomBannerView customBannerView;
     private LinearLayout linearLayout;
     private PullToRefreshScrollView mScrollView;
-    private ImageView[] specialBanner=new ImageView[3];
+    private ImageView[] specialBanner = new ImageView[3];
 
-    private Handler handler = new Handler() {
-        public void handleMessage(Message msg) {
-            if (msg.what == 1001)  {
+    private Handler handler = new Handler()
+    {
+        public void handleMessage(Message msg)
+        {
+            if (msg.what == 1001)
+            {
                 mScrollView.onRefreshComplete();
                 adapterList.notifyDataSetChanged();
                 if (mDialog != null)
                     mDialog.dismiss();
                 loadingView.setVisibility(View.GONE);
 
-            } else if (msg.what == UPDATE_BANNER) {
+            } else if (msg.what == UPDATE_BANNER)
+            {
                 setAdView();
             }
         }
@@ -107,10 +112,11 @@ public class MainHomeFragment extends BaseFragment implements
     /**
      * 广告轮播设置
      */
-    private void setAdView() {
-        if (customBannerView==null)
+    private void setAdView()
+    {
+        if (customBannerView == null)
         {
-            customBannerView=new CustomBannerView(mContext,banners,true);
+            customBannerView = new CustomBannerView(mContext, banners, true);
             customBannerView.setLayoutParams(screenWidth, screenWidth * 300 / 750);
             customBannerView.setOnBannerClickListener(new CustomBannerView.OnBannerClickListener()
             {
@@ -118,12 +124,11 @@ public class MainHomeFragment extends BaseFragment implements
                 public void onClick(int postion)
                 {
                     SwitchImage item = banners.get(postion);
-                    ToolUtils.setBannerGoto(item,mContext);
+                    ToolUtils.setBannerGoto(item, mContext);
                 }
             });
             linearLayout.addView(customBannerView);
-        }
-        else
+        } else
         {
             customBannerView.setImages(banners);
         }
@@ -131,7 +136,8 @@ public class MainHomeFragment extends BaseFragment implements
 
     private OnFragmentInteractionListener mListener;
 
-    public static MainHomeFragment newInstance(String url, String type) {
+    public static MainHomeFragment newInstance(String url, String type)
+    {
         MainHomeFragment fragment = new MainHomeFragment();
         Bundle args = new Bundle();
         args.putString(URL, url);
@@ -140,20 +146,25 @@ public class MainHomeFragment extends BaseFragment implements
         return fragment;
     }
 
-    public MainHomeFragment() {
+    public MainHomeFragment()
+    {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        if (getArguments() != null)
+        {
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        if (view == null) {
+                             Bundle savedInstanceState)
+    {
+        if (view == null)
+        {
             view = inflater.inflate(R.layout.fragment_home, container, false);
             mContext = getActivity();
             initView();
@@ -161,13 +172,15 @@ public class MainHomeFragment extends BaseFragment implements
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
         ViewGroup parent = (ViewGroup) view.getParent();
-        if (parent != null) {
+        if (parent != null)
+        {
             parent.removeView(view);
         }
         return view;
     }
 
-    private void initView() {
+    private void initView()
+    {
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
 
         loadingView = (LinearLayout) view.findViewById(R.id.loadingView);
@@ -180,12 +193,12 @@ public class MainHomeFragment extends BaseFragment implements
 
         listView = (ListViewForScrollView) view.findViewById(R.id.homeItemList);
         listView.setOnItemClickListener(this);
-        adapterList = new ShopSpecialAdapter(mContext, items,screenWidth);
+        adapterList = new ShopSpecialAdapter(mContext, items, screenWidth);
         listView.setAdapter(adapterList);
 
-        specialBanner[0]=(ImageView)view.findViewById(R.id.image1);
-        specialBanner[1]=(ImageView)view.findViewById(R.id.image2);
-        specialBanner[2]=(ImageView)view.findViewById(R.id.image3);
+        specialBanner[0] = (ImageView) view.findViewById(R.id.image1);
+        specialBanner[1] = (ImageView) view.findViewById(R.id.image2);
+        specialBanner[2] = (ImageView) view.findViewById(R.id.image3);
         specialBanner[0].setOnClickListener(this);
         specialBanner[1].setOnClickListener(this);
         specialBanner[2].setOnClickListener(this);
@@ -201,24 +214,27 @@ public class MainHomeFragment extends BaseFragment implements
 
         mSearchView = (ImageView) view.findViewById(R.id.iv_search);
         mSearchView.setOnClickListener(this);
-        mSpecialLayout=view.findViewById(R.id.specialLayout);
+        mSpecialLayout = view.findViewById(R.id.specialLayout);
         mSpecialLayout.setVisibility(View.GONE);
 
         currentPage = 1;
 
         mRequestQueue = Volley.newRequestQueue(getActivity());
 
-        linearLayout=(LinearLayout)view.findViewById(R.id.bannerView);
+        linearLayout = (LinearLayout) view.findViewById(R.id.bannerView);
         linearLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 300 / 750));
         initDate();
     }
 
-    private void initDate() {
-        if (NetworkUtils.isNetworkAvailable(mContext)) {
+    private void initDate()
+    {
+        if (NetworkUtils.isNetworkAvailable(mContext))
+        {
             getBannerData();
             FetchData(currentPage);
             FetchSpecialData();
-        } else {
+        } else
+        {
             mDialog.dismiss();
             nullNetView.setVisibility(View.VISIBLE);
             nullView.setVisibility(View.GONE);
@@ -227,43 +243,53 @@ public class MainHomeFragment extends BaseFragment implements
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState)
+    {
         super.onActivityCreated(savedInstanceState);
 
     }
 
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
+    public void onButtonPressed(Uri uri)
+    {
+        if (mListener != null)
+        {
             mListener.onFragmentInteraction(uri);
         }
     }
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(Activity activity)
+    {
         super.onAttach(activity);
-        try {
+        try
+        {
             mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
+        } catch (ClassCastException e)
+        {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
     }
 
     @Override
-    public void onDetach() {
+    public void onDetach()
+    {
         super.onDetach();
         mListener = null;
     }
 
 
-    public interface OnFragmentInteractionListener {
+    public interface OnFragmentInteractionListener
+    {
         public void onFragmentInteraction(Uri uri);
     }
 
     @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
+    public void onClick(View view)
+    {
+        switch (view.getId())
+        {
             case R.id.iv_search:
                 SearchFragment searchFragment = SearchFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
@@ -302,48 +328,21 @@ public class MainHomeFragment extends BaseFragment implements
                 mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
                 initDate();
                 break;
-//            case R.id.image1:
-//                SpecialItem item= (SpecialItem) specialBanner[0].getTag();
-//                if (item!=null&&item.template_type==0){
-//                    SpecialSaleFragment1 specialSaleFragment1=SpecialSaleFragment1.newInstance(item.title,item.id+"",item.header_img);
-//                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment1);
-//                }else if (item!=null&&item.template_type==1){
-//                    ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title,item.id, item.banner);
-//                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
-//                }
-//                break;
-//            case R.id.image2:
-//                SpecialItem item1= (SpecialItem) specialBanner[1].getTag();
-//                if (item1!=null&&item1.template_type==0){
-//                    SpecialSaleFragment1 specialSaleFragment1=SpecialSaleFragment1.newInstance(item1.title,item1.id+"",item1.header_img);
-//                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment1);
-//                }else if (item1!=null&&item1.template_type==1){
-//                    ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item1.title,item1.id, item1.banner);
-//                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
-//                }
-//                break;
-//            case R.id.image3:
-//                SpecialItem item2= (SpecialItem) specialBanner[2].getTag();
-//                if (item2!=null&&item2.template_type==0){
-//                    SpecialSaleFragment1 specialSaleFragment1=SpecialSaleFragment1.newInstance(item2.title,item2.id+"",item2.header_img);
-//                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment1);
-//                }else if (item2!=null&&item2.template_type==1){
-//                    ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item2.title,item2.id, item2.banner);
-//                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
-//                }
-//                break;
         }
         int viewId = view.getId();
-        if (viewId==R.id.image1||viewId==R.id.image2||viewId==R.id.image3){
+        if (viewId == R.id.image1 || viewId == R.id.image2 || viewId == R.id.image3)
+        {
             SpecialItem item = (SpecialItem) view.getTag();
-            System.out.println("MainHomeFragment.onClick------->"+item.toString());
-            if (item!=null&&item.template_type==0){
-                SpecialSaleFragment1 specialSaleFragment1=SpecialSaleFragment1.newInstance(item.title,item.id+"",item.header_img);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment1);
-            }else if (item!=null&&item.template_type==1){
-                ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title,item.id, item.banner);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
-            }
+            System.out.println("MainHomeFragment.onClick------->" + item.toString());
+//            if (item != null && item.template_type == 0)
+//            {
+//                SpecialSaleFragment1 specialSaleFragment1 = SpecialSaleFragment1.newInstance(item.title, item.id + "", item.header_img);
+//                ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment1);
+//            } else if (item != null && item.template_type == 1)
+//            {
+//                ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title, item.id, item.banner);
+//                ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
+//            }
         }
     }
 
@@ -353,7 +352,7 @@ public class MainHomeFragment extends BaseFragment implements
     private void FetchData(final int page)
     {
         final String url;
-        url = ZhaiDou.shopSpecialListUrl + "&page=" + page;
+        url = ZhaiDou.HomeShopListUrl + page;
         JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
@@ -369,22 +368,23 @@ public class MainHomeFragment extends BaseFragment implements
                     nullNetView.setVisibility(View.GONE);
                     return;
                 }
-                JSONArray jsonArray = response.optJSONArray("sales");
+                JSONObject jsonObject=response.optJSONObject("data");
+                pageCount=response.optInt("totalCount");
+                JSONArray jsonArray = jsonObject.optJSONArray("themeList");
 
                 if (jsonArray != null)
                     for (int i = 0; i < jsonArray.length(); i++)
                     {
                         JSONObject obj = jsonArray.optJSONObject(i);
-                        int id = obj.optInt("id");
-                        String title = obj.optString("title");
-                        String sales = obj.optString("tags");
-                        String time = obj.optString("day");
-                        String startTime = obj.optString("start_time");
-                        String endTime = obj.optString("end_time");
-                        String overTime = obj.optString("over_day");
-                        String imageUrl = obj.optString("banner");
-                        boolean new_tag=obj.optBoolean("new_tag");
-                        ShopSpecialItem shopSpecialItem = new ShopSpecialItem(id, title, sales, time, startTime, endTime, overTime, imageUrl,new_tag+"");
+                        String id = obj.optString("activityCode");
+                        String title = obj.optString("activityName");
+                        String sales = obj.optString("discountLabel");
+                        long startTime = obj.optLong("startTime");
+                        long endTime = obj.optLong("endTime");
+                        int overTime = Integer.parseInt((String.valueOf((endTime-startTime)/(24*60*60*1000))));
+                        String imageUrl = obj.optString("mainPic");
+                        int isNew = jsonObject.optInt("newFlag");
+                        ShopSpecialItem shopSpecialItem = new ShopSpecialItem(id, title, sales, startTime, endTime, overTime, imageUrl, isNew);
 
                         items.add(shopSpecialItem);
                     }
@@ -401,12 +401,11 @@ public class MainHomeFragment extends BaseFragment implements
                     mDialog.dismiss();
                 mScrollView.onRefreshComplete();
                 mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
-                if (items.size()!=0)
+                if (items.size() != 0)
                 {
                     currentPage--;
-                    ToolUtils.setToast(mContext,R.string.loading_fail_txt);
-                }
-                else
+                    ToolUtils.setToast(mContext, R.string.loading_fail_txt);
+                } else
                 {
                     nullView.setVisibility(View.VISIBLE);
                     nullNetView.setVisibility(View.GONE);
@@ -414,7 +413,8 @@ public class MainHomeFragment extends BaseFragment implements
                     mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
                 }
             }
-        })        {
+        })
+        {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError
             {
@@ -426,37 +426,43 @@ public class MainHomeFragment extends BaseFragment implements
         mRequestQueue.add(jr);
     }
 
-    private void FetchSpecialData(){
-        JsonObjectRequest request =new JsonObjectRequest(ZhaiDou.HOME_SPECIAL_BANNER_URL,new Response.Listener<JSONObject>() {
+    private void FetchSpecialData()
+    {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HOME_SPECIAL_BANNER_URL, new Response.Listener<JSONObject>()
+        {
             @Override
-            public void onResponse(JSONObject jsonObject) {
-                System.out.println("MainHomeFragment.onResponse---FetchSpecialData----->"+jsonObject.toString());
-                if (jsonObject!=null){
-                    JSONArray topics=jsonObject.optJSONArray("topics");
-                    for (int i = 0; i < topics.length(); i++) {
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (jsonObject != null)
+                {
+                    JSONArray topics = jsonObject.optJSONArray("topics");
+                    for (int i = 0; i < topics.length(); i++)
+                    {
                         JSONObject topicObj = topics.optJSONObject(i);
                         int id = topicObj.optInt("id");
                         String banner = topicObj.optString("banner");
-                        int topic_tag=topicObj.optInt("topic_tag");
-                        int template_type=topicObj.optInt("template_type");
-                        String header_img=topicObj.optString("header_img");
-                        String title=topicObj.optString("title");
+                        int topic_tag = topicObj.optInt("topic_tag");
+                        int template_type = topicObj.optInt("template_type");
+                        String header_img = topicObj.optString("header_img");
+                        String title = topicObj.optString("title");
                         SpecialItem item = new SpecialItem();
-                        item.id=id;
-                        item.banner=banner;
-                        item.topic_tag=topic_tag;
-                        item.template_type=template_type;
-                        item.header_img=header_img;
-                        item.title=title;
+                        item.id = id;
+                        item.banner = banner;
+                        item.topic_tag = topic_tag;
+                        item.template_type = template_type;
+                        item.header_img = header_img;
+                        item.title = title;
                         specialBanner[i].setTag(item);
-                        ToolUtils.setImageCacheUrl(banner,specialBanner[i]);
+                        ToolUtils.setImageCacheUrl(banner, specialBanner[i]);
                     }
-                    mSpecialLayout.setVisibility(topics.length()>0?View.VISIBLE:View.GONE);
+                    mSpecialLayout.setVisibility(topics.length() > 0 ? View.VISIBLE : View.GONE);
                 }
             }
-        },new Response.ErrorListener() {
+        }, new Response.ErrorListener()
+        {
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
+            public void onErrorResponse(VolleyError volleyError)
+            {
 
             }
         });
@@ -467,43 +473,60 @@ public class MainHomeFragment extends BaseFragment implements
     /**
      * 获得广告数据
      */
-    private void getBannerData() {
-        String url = ZhaiDou.BannerUrl + 2;
+    private void getBannerData()
+    {
+        String url = ZhaiDou.HomeBannerUrl + "01";
         banners.removeAll(banners);
-        JsonObjectRequest bannerRequest = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
+        JsonObjectRequest bannerRequest = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
             @Override
-            public void onResponse(JSONObject jsonObject) {
-                JSONArray jsonArray = jsonObject.optJSONArray("sale_banners");
-                if (jsonArray != null && jsonArray.length() > 0) {
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject obj = jsonArray.optJSONObject(i);
-                        int id = obj.optInt("id");
-                        int type = obj.optInt("r_type");
-                        String typeValue = obj.optString("r_value");
-                        String imageUrl = obj.optString("imgs");
-                        String title = obj.optString("title");
-                        SwitchImage switchImage = new SwitchImage();
-                        switchImage.id = id;
-                        switchImage.type = type;
-                        switchImage.typeValue = typeValue;
-                        switchImage.imageUrl = imageUrl;
-                        switchImage.title = title;
-                        banners.add(switchImage);
-                    }
+            public void onResponse(JSONObject jsonObject)
+            {
+                ToolUtils.setLog(jsonObject.toString());
+                JSONArray jsonArray = jsonObject.optJSONArray("data");
+                if (jsonArray != null && jsonArray.length() > 0)
+                {
+                    JSONObject jsonObj=jsonArray.optJSONObject(0);
+                    JSONArray array =jsonObj.optJSONArray("programPOList") ;
+                    if (array != null)
+                        for (int i = 0; i < array.length(); i++)
+                        {
+                            JSONObject obj = array.optJSONObject(i);
+                            int type = obj.optInt("type");
+                            String typeValue = obj.optString("code");
+                            String imageUrl = obj.optString("pictureUrl");
+                            String title = obj.optString("name");
+                            if (type==1)
+                            {
+                                typeValue = obj.optString("url");
+                            }
+                            SwitchImage switchImage = new SwitchImage();
+                            switchImage.id = i;
+                            switchImage.type = type;
+                            switchImage.typeValue = typeValue;
+                            switchImage.imageUrl = imageUrl;
+                            switchImage.title = title;
+                            banners.add(switchImage);
+                        }
+
                     Message message = new Message();
                     message.what = UPDATE_BANNER;
                     message.obj = banners;
                     handler.sendMessage(message);
                 }
             }
-        }, new Response.ErrorListener() {
+        }, new Response.ErrorListener()
+        {
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
+            public void onErrorResponse(VolleyError volleyError)
+            {
             }
-        }){
+        })
+        {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers=new HashMap<String, String>();
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }
@@ -513,10 +536,11 @@ public class MainHomeFragment extends BaseFragment implements
 
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-        ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(items.get(position).title, items.get(position).id, items.get(position).imageUrl);
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
+    {
+        ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(items.get(position).title, items.get(position).goodsId, items.get(position).imageUrl);
         ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
-        if ("true".equalsIgnoreCase(items.get(position).isNew))
+        if ("1".equalsIgnoreCase(items.get(position).isNew+""))
         {
             SharedPreferencesUtil.saveData(mContext, "is_new_" + items.get(position).id, false);
             view.findViewById(R.id.newsView).setVisibility(View.GONE);
@@ -524,7 +548,8 @@ public class MainHomeFragment extends BaseFragment implements
     }
 
     @Override
-    public void onPullDownToRefresh(PullToRefreshBase<ScrollView> refreshView) {
+    public void onPullDownToRefresh(PullToRefreshBase<ScrollView> refreshView)
+    {
         String label = DateUtils.formatDateTime(getActivity(), System.currentTimeMillis(),
                 DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
         refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
@@ -536,8 +561,10 @@ public class MainHomeFragment extends BaseFragment implements
     }
 
     @Override
-    public void onPullUpToRefresh(PullToRefreshBase<ScrollView> refreshView) {
-        if (count != -1 && items.size() == currentPage*10) {
+    public void onPullUpToRefresh(PullToRefreshBase<ScrollView> refreshView)
+    {
+        if (count != -1 && items.size() == currentPage * 10)
+        {
             Toast.makeText(getActivity(), "已经加载完毕", Toast.LENGTH_SHORT).show();
             mScrollView.onRefreshComplete();
             mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
@@ -547,12 +574,14 @@ public class MainHomeFragment extends BaseFragment implements
     }
 
 
-    public void onResume() {
+    public void onResume()
+    {
         super.onResume();
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_home));
     }
 
-    public void onPause() {
+    public void onPause()
+    {
         super.onPause();
         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_home));
     }

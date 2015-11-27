@@ -297,7 +297,7 @@ public class ToolUtils
             mContext.startActivity(detailIntent);
         } else if (item.type == 3)
         {
-            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0);
+            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0+"");
             Bundle bundle = new Bundle();
             bundle.putInt("index", Integer.valueOf(item.typeValue));
             bundle.putString("page", item.title);
@@ -312,7 +312,7 @@ public class ToolUtils
         }
         else if(item.type==5)
         {
-            ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title,  Integer.valueOf(item.typeValue), item.imageUrl);
+            ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title,  item.typeValue, item.imageUrl);
             ((MainActivity) mContext).navigationToFragmentWithAnim(shopTodaySpecialFragment);
         }
         else

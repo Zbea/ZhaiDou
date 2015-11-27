@@ -454,7 +454,7 @@ public class ShopCartFragment extends BaseFragment
                 {
                     if(items!=null&&items.size()>0)
                     {
-                        GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(tag).name, items.get(tag).id);
+                        GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(tag).name, items.get(tag).id+"");
                         Bundle bundle = new Bundle();
                         if (items.get(tag).isOSale.equals("true"))
                         {
@@ -464,9 +464,6 @@ public class ShopCartFragment extends BaseFragment
                         {
                             bundle.putInt("flags", 2);
                         }
-                        bundle.putString("page",items.get(tag).name);
-                        bundle.putInt("index", items.get(tag).id);
-                        goodsDetailsFragment.setArguments(bundle);
                         ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
                     }
                 }
