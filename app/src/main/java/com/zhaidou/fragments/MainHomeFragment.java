@@ -334,15 +334,15 @@ public class MainHomeFragment extends BaseFragment implements
         {
             SpecialItem item = (SpecialItem) view.getTag();
             System.out.println("MainHomeFragment.onClick------->" + item.toString());
-//            if (item != null && item.template_type == 0)
-//            {
-//                SpecialSaleFragment1 specialSaleFragment1 = SpecialSaleFragment1.newInstance(item.title, item.id + "", item.header_img);
-//                ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment1);
-//            } else if (item != null && item.template_type == 1)
-//            {
-//                ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title, item.id, item.banner);
-//                ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
-//            }
+            if (item != null && item.template_type == 0)
+            {
+                SpecialSaleFragment1 specialSaleFragment1 = SpecialSaleFragment1.newInstance(item.title, item.id + "", item.header_img);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment1);
+            } else if (item != null && item.template_type == 1)
+            {
+                ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title, item.id, item.banner);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
+            }
         }
     }
 
@@ -352,7 +352,7 @@ public class MainHomeFragment extends BaseFragment implements
     private void FetchData(final int page)
     {
         final String url;
-        url = ZhaiDou.HomeShopListUrl + page;
+        url = ZhaiDou.HomeShopListUrl + page+"&typeEnum=1";
         JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
@@ -381,7 +381,12 @@ public class MainHomeFragment extends BaseFragment implements
                         String sales = obj.optString("discountLabel");
                         long startTime = obj.optLong("startTime");
                         long endTime = obj.optLong("endTime");
-                        int overTime = Integer.parseInt((String.valueOf((endTime-startTime)/(24*60*60*1000))));
+                        int overTime = Integer.parseInt((String.valueOf((endTime-System.currentTimeMillis())/(24*60*60*1000))));
+                        if ((endTime-System.currentTimeMillis())%(24*60*60*1000)>0)
+                        {
+                            overTime=overTime+1;
+                        }
+
                         String imageUrl = obj.optString("mainPic");
                         int isNew = jsonObject.optInt("newFlag");
                         ShopSpecialItem shopSpecialItem = new ShopSpecialItem(id, title, sales, startTime, endTime, overTime, imageUrl, isNew);
@@ -428,34 +433,33 @@ public class MainHomeFragment extends BaseFragment implements
 
     private void FetchSpecialData()
     {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HOME_SPECIAL_BANNER_URL, new Response.Listener<JSONObject>()
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeShopListUrl+"1&typeEnum=3", new Response.Listener<JSONObject>()
         {
             @Override
-            public void onResponse(JSONObject jsonObject)
+            public void onResponse(JSONObject response)
             {
-                if (jsonObject != null)
+                if (response != null)
                 {
-                    JSONArray topics = jsonObject.optJSONArray("topics");
-                    for (int i = 0; i < topics.length(); i++)
-                    {
-                        JSONObject topicObj = topics.optJSONObject(i);
-                        int id = topicObj.optInt("id");
-                        String banner = topicObj.optString("banner");
-                        int topic_tag = topicObj.optInt("topic_tag");
-                        int template_type = topicObj.optInt("template_type");
-                        String header_img = topicObj.optString("header_img");
-                        String title = topicObj.optString("title");
-                        SpecialItem item = new SpecialItem();
-                        item.id = id;
-                        item.banner = banner;
-                        item.topic_tag = topic_tag;
-                        item.template_type = template_type;
-                        item.header_img = header_img;
-                        item.title = title;
-                        specialBanner[i].setTag(item);
-                        ToolUtils.setImageCacheUrl(banner, specialBanner[i]);
-                    }
-                    mSpecialLayout.setVisibility(topics.length() > 0 ? View.VISIBLE : View.GONE);
+                    JSONObject jsonObject=response.optJSONObject("data");
+                    JSONArray jsonArray = jsonObject.optJSONArray("themeList");
+                    if (jsonArray != null)
+                        for (int i = 0; i < jsonArray.length(); i++)
+                        {
+                            JSONObject obj = jsonArray.optJSONObject(i);
+                            String id = obj.optString("activityCode");
+                            String title = obj.optString("activityName");
+                            String imageUrl = obj.optString("mainPic");
+                            SpecialItem item = new SpecialItem();
+                            item.id = id;
+                            item.banner = imageUrl;
+                            item.topic_tag = i;
+                            item.template_type = i==0?0:1;
+                            item.header_img = imageUrl;
+                            item.title = title;
+                            specialBanner[i].setTag(item);
+                            ToolUtils.setImageCacheUrl(imageUrl, specialBanner[i]);
+                        }
+                    mSpecialLayout.setVisibility(jsonArray.length() > 0 ? View.VISIBLE : View.GONE);
                 }
             }
         }, new Response.ErrorListener()

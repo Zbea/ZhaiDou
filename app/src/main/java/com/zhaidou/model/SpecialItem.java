@@ -10,7 +10,7 @@ package com.zhaidou.model;/**
  * FIXME
  */
 public class SpecialItem {
-    public int id;
+    public String id;
     public String banner;
     public int topic_tag;
     public int template_type;

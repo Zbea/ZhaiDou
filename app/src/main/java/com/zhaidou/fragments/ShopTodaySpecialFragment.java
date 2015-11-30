@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,27 +33,23 @@ import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.adapter.ShopTodaySpecialAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.model.CartItem;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.ShopTodayItem;
-import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ListViewForScrollView;
+import com.zhaidou.view.TimerTextView;
 import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import cn.sharesdk.framework.Platform;
 import cn.sharesdk.framework.PlatformActionListener;
@@ -80,8 +75,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private final int UPDATE_TIMER_START_AND_DETAIL_DATA = 3;
     private final int UPDATE_CARTCAR_DATA=5;
 
-    private Timer mTimer;
-    private boolean isTimerStart = false;
     private long initTime;
 
     private RequestQueue mRequestQueue;
@@ -91,6 +84,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private ListViewForScrollView mListView;
     private LinearLayout loadingView, nullNetView, nullView;
     private TextView reloadBtn, reloadNetBtn;
+    private TimerTextView timeTvs;
 
     private TextView myCartTips;
     private ImageView myCartBtn;
@@ -99,6 +93,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private List<ShopTodayItem> items = new ArrayList<ShopTodayItem>();
     private ShopTodaySpecialAdapter adapter;
     private ShopSpecialItem shopSpecialItem;
+    private boolean isFrist;
 
     private int page=1;
 
@@ -131,14 +126,19 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     adapter.notifyDataSetChanged();
                     introduceTv.setText(introduce);
                     loadingView.setVisibility(View.GONE);
-                    long temp =  shopSpecialItem.endTime - System.currentTimeMillis();
-                    initTime = temp;
-//                    if (temp>0)
-//                    {
-//                        if (mTimer == null)
-//                            mTimer = new Timer();
-//                        mTimer.schedule(new MyTimerTask(), 1000, 1000);
-//                    }
+                    initTime =  shopSpecialItem.endTime - System.currentTimeMillis();
+                    if (initTime>0)
+                    {
+                        timeTvs.setTimes(initTime);
+                        if (!timeTvs.isRun())
+                        {
+                            timeTvs.start();
+                        }
+                    }
+                    else
+                    {
+                       timeTvs.setText("已结束");
+                    }
                     break;
                 case UPDATE_CARTCAR_DATA:
                     int num=msg.arg2;
@@ -291,7 +291,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(mTitle);
         timeTv = (TypeFaceTextView) mView.findViewById(R.id.shopTimeTv);
-
+        timeTvs = (TimerTextView) mView.findViewById(R.id.shopTime1Tv);
 
         mListView = (ListViewForScrollView) mView.findViewById(R.id.shopListView);
         mListView.setOnItemClickListener(onItemClickListener);
@@ -378,6 +378,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                 String title = jsonObject.optString("activityName");
                 long startTime = jsonObject.optLong("startTime");
                 long endTime = jsonObject.optLong("endTime");
+                ToolUtils.setLog(""+endTime);
                 int overTime = Integer.parseInt((String.valueOf((endTime-startTime)/(24*60*60*1000))));
                 introduce = jsonObject.optString("description");
                 int isNew = jsonObject.optInt("newFlag");
@@ -399,8 +400,8 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                             String imageUrl = obj.optString("productPicUrl");
                             JSONObject jsonObject3=obj.optJSONObject("expandedResponse");
                             int num = jsonObject3.optInt("stock");
-                            int totalCount = jsonObject3.optInt("total");
-                            int percentum =100-jsonObject3.optInt("percentum");
+                            int totalCount = 100;
+                            int percentum =obj.optInt("progressPercentage");
                             ShopTodayItem shopTodayItem = new ShopTodayItem(Baseid, Listtitle, imageUrl, price, cost_price, num, totalCount);
                             shopTodayItem.percentum=percentum;
                             items.add(shopTodayItem);
@@ -434,18 +435,8 @@ public class ShopTodaySpecialFragment extends BaseFragment {
 
 
     @Override
-    public void onResume() {
-        long temp = System.currentTimeMillis() - currentTime;
-        if (!isTimerStart) {
-            isTimerStart = true;
-            if (mTimer == null)
-                mTimer = new Timer();
-            if (initTime > 0)
-                initTime -= temp;
-            mTimer.schedule(new MyTimerTask(), 1000, 1000);
-        } else {
-
-        }
+    public void onResume()
+    {
         initCartTips();
         super.onResume();
         MobclickAgent.onPageStart(mTitle);
@@ -453,15 +444,8 @@ public class ShopTodaySpecialFragment extends BaseFragment {
 
     @Override
     public void onPause() {
+        isFrist=true;
         currentTime = System.currentTimeMillis();
-        if (isTimerStart) {
-            isTimerStart = false;
-            if (mTimer != null) {
-                mTimer.cancel();
-                mTimer.purge();
-                mTimer = null;
-            }
-        }
         super.onPause();
         MobclickAgent.onPageEnd(mTitle);
     }
@@ -470,45 +454,9 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     public void onDestroy() {
         if (broadcastReceiver != null)
             mContext.unregisterReceiver(broadcastReceiver);
-        isTimerStart = false;
+        timeTvs.stop();
         mRequestQueue.stop();
-        if (mTimer != null) {
-            mTimer.cancel();
-            mTimer.purge();
-            mTimer = null;
-        }
         super.onDestroy();
     }
 
-    private class MyTimerTask extends TimerTask {
-        @Override
-        public void run() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    initTime = initTime - 1000;
-                    long day = 24 * 3600 * 1000;
-                    long hour = 3600 * 1000;
-                    long minute = 60 * 1000;
-                    //两个日期想减得到天数
-                    long dayCount = initTime / day;
-                    long hourCount = (initTime - (dayCount * day)) / hour;
-                    long minCount = (initTime - (dayCount * day) - (hour * hourCount)) / minute;
-                    long secondCount = (initTime - (dayCount * day) - (hour * hourCount) - (minCount * minute)) / 1000;
-                    String hourStr = String.format("%02d", hourCount);
-                    String minStr = String.format("%02d", minCount);
-                    String secondStr = String.format("%02d", secondCount);
-                    String timerFormat = mContext.getResources().getString(R.string.timer);
-                    String timer = String.format(timerFormat, dayCount, hourStr, minStr, secondStr);
-                    timeTv.setText(timer);
-                    if (initTime <= 0) {
-                        if (mTimer != null) {
-                            mTimer.cancel();
-                            timeTv.setText("已结束");
-                        }
-                    }
-                }
-            });
-        }
-    }
 }

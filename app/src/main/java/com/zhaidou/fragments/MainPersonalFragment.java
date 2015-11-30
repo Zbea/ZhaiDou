@@ -33,7 +33,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.model.CartItem;
+import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.User;
 import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.utils.DeviceUtils;
@@ -77,7 +77,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     private int num;
     private ProfileFragment mProfileFragment;
     private CreatCartDB creatCartDB;
-    private List<CartItem> items = new ArrayList<CartItem>();
+    private List<CartGoodsItem> items = new ArrayList<CartGoodsItem>();
     private ImageView iv_header, mPrePayView, mPreReceivedView, mReturnView;
     private TextView tv_nickname, tv_desc, tv_collect, tv_collocation, tv_unpay_count;
     private RelativeLayout mCouponsView, mSettingView, mAllOrderView;
@@ -89,7 +89,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     private int collectNum=0;
     private int cartNum=0;
 //    private int num;
-    private List<CartItem> cartItems = new ArrayList<CartItem>();
+    private List<CartGoodsItem> cartGoodsItems = new ArrayList<CartGoodsItem>();
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override

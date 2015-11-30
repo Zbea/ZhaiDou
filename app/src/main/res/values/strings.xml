@@ -6,6 +6,7 @@
     <string name="app_version">宅豆家居 V%1$s</string>
 
     <string name="loading_fail_txt">抱歉,加载失败,请重试</string>
+    <string name="net_fail_txt">抱歉,网络连接失败</string>
     <string name="phone_lose_txt">抱歉,无效手机号码</string>
 
     <string name="action_settings">宅豆</string>

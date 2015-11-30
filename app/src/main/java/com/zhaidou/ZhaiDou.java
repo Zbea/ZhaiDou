@@ -8,16 +8,23 @@ public class ZhaiDou {
     public static String HOME_PAGE_URL = "http://buy.zhaidou.com/?json=get_category_posts&slug=%E5%AE%B6%E9%A5%B0%E4%BC%98%E9%80%89&status=publish";
 //    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
         public static String HOME_BASE_URL = "http://www.zhaidou.com/";
-//    public static String HOME_BASE_URL = "http://192.168.199.171/";
-    //    public static String HOME_BASE_URL = "http://192.168.1.126:3000/lotteries";
-    public static String TAG_BASE_URL = "http://buy.zhaidou.com/?tag=%s&json=1";
 
     //首页banner
     public static String HomeBannerUrl="http://121.42.206.45:7082/index/getBoardContent.action?boardCodes=";
     //首页特卖列表
     public static String HomeShopListUrl="http://121.42.206.45:7082/index/getSpecialSaleList.action?pageSize=20&pageNo=";
-    //首页特卖列表
+    //0元特卖列表
+    public static String OSaleListUrl="http://121.42.206.45:7082/index/getActivityProductList.action?activityCode=ZHD2015NNW59113611&pageSize=20&pageNo=1&typeEnum=2";
+    //首页特卖商品列表
     public static String HomeGoodsListUrl="http://121.42.206.45:7082/index/getActivityProductList.action?pageSize=20&activityCode=";
+    //商品详情接口
+    public static String HomeGoodsDetailsUrl="http://121.42.206.45:7082/product/getProductInfo.action?productId=030400185916&businessType=01&version=1.0.0";
+
+    //购物车数量接口
+    public static String CartGoodsCountUrl="http://121.42.206.45:7082/cart/countUserCartQuantity.action?businessType=01&version=1.0.0&userId=1";
+    //购物车列表接口
+    public static String CartGoodsListUrl="http://121.42.206.45:7082/cart/queryUserCart.action?businessType=01&version=1.0.0&clientType=app&userId=1";
+
 
     //首页三个专题tag
     public static String HOME_SPECIAL_BANNER_URL=HOME_BASE_URL+"special_mall/api/sales/topic_sales?topic=true";

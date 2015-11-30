@@ -54,7 +54,7 @@ import com.zhaidou.fragments.ShopPaymentFragment;
 import com.zhaidou.fragments.ShopPaymentSuccessFragment;
 import com.zhaidou.fragments.WebViewFragment;
 import com.zhaidou.model.Area;
-import com.zhaidou.model.CartItem;
+import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.City;
 import com.zhaidou.model.Province;
 import com.zhaidou.model.User;
@@ -123,7 +123,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     public static List<Province> provinceList = new ArrayList<Province>();
 
     public int num = 0;
-    public List<CartItem> items = new ArrayList<CartItem>();
+    public List<CartGoodsItem> items = new ArrayList<CartGoodsItem>();
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -346,6 +346,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         FetchCityData();
     }
 
+
+
     /**
      * 红色标识提示显示数量
      */
@@ -391,7 +393,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         return num;
     }
 
-    public List<CartItem> getItems()
+    public List<CartGoodsItem> getItems()
     {
         return items;
     }
@@ -768,7 +770,15 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
      */
     public void CartTip(int ty)
     {
-//        cart_dot.setVisibility(ty==1?View.VISIBLE:View.GONE);
+        if (ty==0)
+        {
+            cart_dot.setVisibility(View.GONE);
+        }
+        else
+        {
+            cart_dot.setText(""+ty);
+            cart_dot.setVisibility(View.VISIBLE);
+        }
     }
 
     private void FetchCityData()

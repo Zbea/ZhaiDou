@@ -60,7 +60,7 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.dialog.CustomToastDialog;
-import com.zhaidou.model.CartItem;
+import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.CountTime;
 import com.zhaidou.model.GoodDetail;
 import com.zhaidou.model.GoodInfo;
@@ -138,7 +138,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private final int UPDATE_LJ_ISBUY = 8;//判断立即购买时普通特卖是否购买过
     private final int UPDATE_ADD_ISBUY = 9;//判断加入购物车时普通特卖是否购买过
 
-    private List<CartItem> items = new ArrayList<CartItem>();
+    private List<CartGoodsItem> items = new ArrayList<CartGoodsItem>();
     private CreatCartDB creatCartDB;
     private int num;
     private ScrollView scrollView;
@@ -1195,34 +1195,34 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     private void buyGoods()
     {
-        CartItem cartItem = new CartItem();
-        cartItem.userId = userId;
-        cartItem.id = detail.getId();
-        cartItem.name = detail.getTitle();
-        cartItem.creatTime = System.currentTimeMillis();
-        cartItem.imageUrl = detail.getImageUrl();
-        cartItem.currentPrice = mSpecification.price;//规格的价格
-        cartItem.formalPrice = mSpecification.oldPrice;
+        CartGoodsItem cartGoodsItem = new CartGoodsItem();
+        cartGoodsItem.userId = userId;
+        cartGoodsItem.id = detail.getId();
+        cartGoodsItem.name = detail.getTitle();
+        cartGoodsItem.creatTime = System.currentTimeMillis();
+        cartGoodsItem.imageUrl = detail.getImageUrl();
+        cartGoodsItem.currentPrice = mSpecification.price;//规格的价格
+        cartGoodsItem.formalPrice = mSpecification.oldPrice;
         DecimalFormat df = new DecimalFormat("##.0");
         double saveMoney = Double.parseDouble(df.format(mSpecification.oldPrice - mSpecification.price));
-        cartItem.saveMoney = saveMoney;
-        cartItem.saveTotalMoney = saveMoney;
-        cartItem.totalMoney = detail.getPrice();
-        cartItem.num = 1;
-        cartItem.size = mSpecification.getTitle();
-        cartItem.sizeId = mSpecification.getId();
-        cartItem.isPublish = "false";
+        cartGoodsItem.saveMoney = saveMoney;
+        cartGoodsItem.saveTotalMoney = saveMoney;
+        cartGoodsItem.totalMoney = detail.getPrice();
+        cartGoodsItem.num = 1;
+        cartGoodsItem.size = mSpecification.getTitle();
+        cartGoodsItem.sizeId = mSpecification.getId();
+        cartGoodsItem.isPublish = "false";
         if (flags == 1)
         {
-            cartItem.isOSale = "true";
+            cartGoodsItem.isOSale = "true";
         } else
         {
-            cartItem.isOSale = "false";
+            cartGoodsItem.isOSale = "false";
         }
 
 
-        ArrayList<CartItem> itemsCheck = new ArrayList<CartItem>();
-        itemsCheck.add(cartItem);
+        ArrayList<CartGoodsItem> itemsCheck = new ArrayList<CartGoodsItem>();
+        itemsCheck.add(cartGoodsItem);
 
         ShopOrderOkFragment shopOrderOkFragment = ShopOrderOkFragment.newInstance("", 0);
         Bundle bundle = new Bundle();
@@ -1341,32 +1341,32 @@ public class GoodsDetailsFragment extends BaseFragment
                 Drawable drawable = mTipView.getDrawable();
                 doAnim(drawable, location);
 
-                CartItem cartItem = new CartItem();
-                cartItem.userId = userId;
-                cartItem.id = detail.getId();
-                cartItem.name = detail.getTitle();
-                cartItem.creatTime = System.currentTimeMillis();
-                cartItem.imageUrl = detail.getImageUrl();
-                cartItem.currentPrice = mSpecification.price;//规格的价格
-                cartItem.formalPrice = mSpecification.oldPrice;
+                CartGoodsItem cartGoodsItem = new CartGoodsItem();
+                cartGoodsItem.userId = userId;
+                cartGoodsItem.id = detail.getId();
+                cartGoodsItem.name = detail.getTitle();
+                cartGoodsItem.creatTime = System.currentTimeMillis();
+                cartGoodsItem.imageUrl = detail.getImageUrl();
+                cartGoodsItem.currentPrice = mSpecification.price;//规格的价格
+                cartGoodsItem.formalPrice = mSpecification.oldPrice;
                 DecimalFormat df = new DecimalFormat("###.00");
                 double saveMoney = Double.parseDouble(df.format(mSpecification.oldPrice - mSpecification.price));
-                cartItem.saveMoney = saveMoney;
-                cartItem.saveTotalMoney = saveMoney;
-                cartItem.totalMoney = detail.getPrice();
-                cartItem.num = 1;
-                cartItem.size = mSpecification.getTitle();
-                cartItem.sizeId = mSpecification.getId();
-                cartItem.isPublish = "false";
-                cartItem.isOver = "false";
+                cartGoodsItem.saveMoney = saveMoney;
+                cartGoodsItem.saveTotalMoney = saveMoney;
+                cartGoodsItem.totalMoney = detail.getPrice();
+                cartGoodsItem.num = 1;
+                cartGoodsItem.size = mSpecification.getTitle();
+                cartGoodsItem.sizeId = mSpecification.getId();
+                cartGoodsItem.isPublish = "false";
+                cartGoodsItem.isOver = "false";
                 if (flags == 1)//是否零元特卖
                 {
-                    cartItem.isOSale = "true";
+                    cartGoodsItem.isOSale = "true";
                 } else
                 {
-                    cartItem.isOSale = "false";
+                    cartGoodsItem.isOSale = "false";
                 }
-                CreatCartTools.insertByData(creatCartDB, items, cartItem);
+                CreatCartTools.insertByData(creatCartDB, items, cartGoodsItem);
 
                 Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
                 mContext.sendBroadcast(intent);
@@ -1615,9 +1615,9 @@ public class GoodsDetailsFragment extends BaseFragment
     /**
      * 立即购买清除掉购物车中的零元特卖
      *
-     * @param cartItem
+     * @param cartGoodsItem
      */
-    private void ljBuyOkDialog(final CartItem cartItem,String msg)
+    private void ljBuyOkDialog(final CartGoodsItem cartGoodsItem,String msg)
     {
         final Dialog dialog = new Dialog(mContext, R.style.custom_dialog);
         View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_collect_hint, null);
@@ -1629,7 +1629,7 @@ public class GoodsDetailsFragment extends BaseFragment
             @Override
             public void onClick(View view)
             {
-                CreatCartTools.deleteByData(creatCartDB, cartItem);
+                CreatCartTools.deleteByData(creatCartDB, cartGoodsItem);
                 Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
                 mContext.sendBroadcast(intent);
                 dialog.dismiss();
@@ -1656,9 +1656,9 @@ public class GoodsDetailsFragment extends BaseFragment
     /**
      * 加入购物车清除掉购物车中的零元特卖
      *
-     * @param cartItem
+     * @param cartGoodsItem
      */
-    private void addCartOkDialog(final CartItem cartItem)
+    private void addCartOkDialog(final CartGoodsItem cartGoodsItem)
     {
         final Dialog dialog = new Dialog(mContext, R.style.custom_dialog);
         View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_collect_hint, null);
@@ -1670,7 +1670,7 @@ public class GoodsDetailsFragment extends BaseFragment
             @Override
             public void onClick(View view)
             {
-                CreatCartTools.deleteByData(creatCartDB, cartItem);
+                CreatCartTools.deleteByData(creatCartDB, cartGoodsItem);
                 Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
                 mContext.sendBroadcast(intent);
                 dialog.dismiss();

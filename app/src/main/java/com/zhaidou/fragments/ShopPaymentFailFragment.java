@@ -32,7 +32,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.alipay.PayResult;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.model.CartItem;
+import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.Order;
 import com.zhaidou.model.OrderItem;
 import com.zhaidou.model.Receiver;
@@ -78,7 +78,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
     private CheckBox cb_weixin;
     private CheckBox cb_zhifubao;
 
-    private ArrayList<CartItem> items;
+    private ArrayList<CartGoodsItem> items;
     private int num = 0;
     private double total = 0;
     private double fare = 0;

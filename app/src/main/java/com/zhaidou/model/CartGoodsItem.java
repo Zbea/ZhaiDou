@@ -5,12 +5,16 @@ import java.io.Serializable;
 /**
  * Created by roy on 15/7/28.
  */
-public class CartItem implements Serializable
+public class CartGoodsItem implements Serializable
 {
     //用户id
     public int userId;
+    //用户id
+    public String userIds;//*
     //商品id
     public int id;
+    //名称
+    public String goodsId;
     //名称
     public String name;
     //图片地址
@@ -28,6 +32,10 @@ public class CartItem implements Serializable
     //数量
     public int num;
     //规格
+    public String specification;//*
+    //规格Sku
+    public String sku;//*
+    //规格
     public String size;
     //规格id
     public int sizeId;
@@ -44,9 +52,9 @@ public class CartItem implements Serializable
     //生成时间
     public long creatTime;
 
-    public CartItem(int userId,int id, long creatTime, String name, String imageUrl, double currentPrice,
-                    double formalPrice,double saveMoney, double saveTotalMoney, double totalMoney,
-                    int num, String size, int sizeId, String isPublish, String isOver, boolean isCheck,String isOSale,String isDate)
+    public CartGoodsItem(int userId, int id, long creatTime, String name, String imageUrl, double currentPrice,
+                         double formalPrice, double saveMoney, double saveTotalMoney, double totalMoney,
+                         int num, String size, int sizeId, String isPublish, String isOver, boolean isCheck, String isOSale, String isDate)
     {
         this.userId=userId;
         this.id = id;
@@ -68,7 +76,7 @@ public class CartItem implements Serializable
         this.isDate=isDate;
     }
 
-    public CartItem()
+    public CartGoodsItem()
     {
     }
 }

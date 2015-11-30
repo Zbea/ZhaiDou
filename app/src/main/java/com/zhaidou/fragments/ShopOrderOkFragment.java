@@ -37,7 +37,7 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.dialog.CustomToastDialog;
 import com.zhaidou.model.Address;
-import com.zhaidou.model.CartItem;
+import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;
 import com.zhaidou.utils.NetworkUtils;
@@ -93,8 +93,8 @@ public class ShopOrderOkFragment extends BaseFragment
     private TypeFaceEditText bzInfo;
     private TextView moneyTv, moneyYfTv, moneyTotalTv;
     private TextView addressNameTv, addressPhoneTv, addressinfoTv, noFreeTv;
-    private ArrayList<CartItem> items;
-    private List<CartItem> erroritems = new ArrayList<CartItem>();
+    private ArrayList<CartGoodsItem> items;
+    private List<CartGoodsItem> erroritems = new ArrayList<CartGoodsItem>();
     private List<Address> addressList = new ArrayList<Address>();
     private String Str_token;
 
@@ -456,7 +456,7 @@ public class ShopOrderOkFragment extends BaseFragment
             mPage = getArguments().getString(PAGE);
             mIndex = getArguments().getInt(INDEX);
             flags = getArguments().getInt("flags");
-            items = (ArrayList<CartItem>) getArguments().getSerializable("goodsList");
+            items = (ArrayList<CartGoodsItem>) getArguments().getSerializable("goodsList");
         }
     }
 
@@ -641,9 +641,9 @@ public class ShopOrderOkFragment extends BaseFragment
 
         for (int i = 0; i < items.size(); i++)
         {
-            CartItem cartItem = items.get(i);
-            num = num + cartItem.num;
-            money = money + cartItem.num * cartItem.currentPrice;
+            CartGoodsItem cartGoodsItem = items.get(i);
+            num = num + cartGoodsItem.num;
+            money = money + cartGoodsItem.num * cartGoodsItem.currentPrice;
         }
 
         DecimalFormat df = new DecimalFormat("###.00");
@@ -689,15 +689,15 @@ public class ShopOrderOkFragment extends BaseFragment
                 itemLine.setVisibility(View.GONE);
             }
 
-            final CartItem cartItem = items.get(position);
+            final CartGoodsItem cartGoodsItem = items.get(position);
 
-            itemName.setText(cartItem.name);
-            itemSize.setText(cartItem.size);
-            itemCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + cartItem.currentPrice));
+            itemName.setText(cartGoodsItem.name);
+            itemSize.setText(cartGoodsItem.size);
+            itemCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + cartGoodsItem.currentPrice));
             itemFormalPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
-            itemFormalPrice.setText("￥" + ToolUtils.isIntPrice("" + cartItem.formalPrice));
-            itemNum.setText("" + cartItem.num);
-            ToolUtils.setImageCacheUrl(cartItem.imageUrl, itemImage);
+            itemFormalPrice.setText("￥" + ToolUtils.isIntPrice("" + cartGoodsItem.formalPrice));
+            itemNum.setText("" + cartGoodsItem.num);
+            ToolUtils.setImageCacheUrl(cartGoodsItem.imageUrl, itemImage);
 
             orderGoodsListLine.addView(childeView);
         }
