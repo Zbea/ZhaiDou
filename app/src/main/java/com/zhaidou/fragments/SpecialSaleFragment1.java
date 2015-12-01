@@ -171,10 +171,10 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
             mAdapter.setOnInViewClickListener(R.id.ll_single_layout, new BaseListAdapter.onInternalClickListener() {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(products.get(position).getTitle(), products.get(position).getId()+"");
+                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(products.get(position).getTitle(), products.get(position).goodsId);
                     Bundle bundle = new Bundle();
                     bundle.putInt("flags", 1);
-                    bundle.putInt("index", products.get(position).getId());
+                    bundle.putString("index", products.get(position).goodsId);
                     bundle.putString("page", products.get(position).getTitle());
                     bundle.putBoolean("timer", false);
                     bundle.putBoolean("canShare", false);
@@ -281,14 +281,14 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
                             if (items != null && items.length() > 0) {
                                 for (int i = 0; i < items.length(); i++) {
                                     JSONObject item = items.optJSONObject(i);
-                                    int id = item.optInt("id");
+                                    String id = item.optString("id");
                                     String title = item.optString("title");
                                     double price = item.optDouble("price");
                                     double cost_price = item.optDouble("cost_price");
                                     String image = item.optString("img");
                                     int remaining = item.optInt("percentum");
                                     Product product = new Product();
-                                    product.setId(id);
+                                    product.goodsId=id;
                                     product.setPrice(price);
                                     product.setCost_price(cost_price);
                                     product.setTitle(title);

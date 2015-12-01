@@ -211,7 +211,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     }
                     selectFragment(currentFragment, shopCartFragment);
                     setButton(diyButton);
-                    CartTip(0);
                 }
 
                 break;
@@ -486,7 +485,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     }
                     selectFragment(currentFragment, shopCartFragment);
                     setButton(view);
-                    CartTip(0);
                 }
             }
         });

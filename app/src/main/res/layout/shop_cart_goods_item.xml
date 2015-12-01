@@ -156,7 +156,6 @@
                 android:layout_marginTop="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="25dp"
-                android:visibility="gone"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -189,6 +188,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="25dp"
                 android:gravity="center_vertical"
+                android:visibility="gone"
                 android:orientation="horizontal">
 
                 <com.zhaidou.view.TypeFaceTextView

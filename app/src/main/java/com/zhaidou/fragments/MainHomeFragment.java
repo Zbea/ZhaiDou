@@ -66,8 +66,8 @@ public class MainHomeFragment extends BaseFragment implements
     private ListView listView;
 
     private int currentPage = 1;
-    private int count = -1;
-    private int pageCount=0;
+    private int pageSize;
+    private int pageCount;
 
 
     private static final int UPDATE_BANNER = 4;
@@ -101,6 +101,14 @@ public class MainHomeFragment extends BaseFragment implements
                 if (mDialog != null)
                     mDialog.dismiss();
                 loadingView.setVisibility(View.GONE);
+                if (pageCount>pageSize*currentPage)
+                {
+                    mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+                }
+                else
+                {
+                    mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+                }
 
             } else if (msg.what == UPDATE_BANNER)
             {
@@ -333,7 +341,6 @@ public class MainHomeFragment extends BaseFragment implements
         if (viewId == R.id.image1 || viewId == R.id.image2 || viewId == R.id.image3)
         {
             SpecialItem item = (SpecialItem) view.getTag();
-            System.out.println("MainHomeFragment.onClick------->" + item.toString());
             if (item != null && item.template_type == 0)
             {
                 SpecialSaleFragment1 specialSaleFragment1 = SpecialSaleFragment1.newInstance(item.title, item.id + "", item.header_img);
@@ -370,6 +377,7 @@ public class MainHomeFragment extends BaseFragment implements
                 }
                 JSONObject jsonObject=response.optJSONObject("data");
                 pageCount=response.optInt("totalCount");
+                pageSize=response.optInt("pageSize");
                 JSONArray jsonArray = jsonObject.optJSONArray("themeList");
 
                 if (jsonArray != null)
@@ -480,7 +488,7 @@ public class MainHomeFragment extends BaseFragment implements
     private void getBannerData()
     {
         String url = ZhaiDou.HomeBannerUrl + "01";
-        banners.removeAll(banners);
+        banners.clear();
         JsonObjectRequest bannerRequest = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
@@ -559,21 +567,14 @@ public class MainHomeFragment extends BaseFragment implements
         refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
         getBannerData();
         items.clear();
+        banners.clear();
         FetchData(currentPage = 1);
         FetchSpecialData();
-        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
     }
 
     @Override
     public void onPullUpToRefresh(PullToRefreshBase<ScrollView> refreshView)
     {
-        if (count != -1 && items.size() == currentPage * 10)
-        {
-            Toast.makeText(getActivity(), "已经加载完毕", Toast.LENGTH_SHORT).show();
-            mScrollView.onRefreshComplete();
-            mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
-            return;
-        }
         FetchData(++currentPage);
     }
 

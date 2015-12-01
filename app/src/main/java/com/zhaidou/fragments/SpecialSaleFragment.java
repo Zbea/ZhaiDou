@@ -81,6 +81,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     private final int UPDATE_ADAPTER = 0;
     private final int UPDATE_TIMER_START = 1;
     private final int UPDATE_BANNER = 2;
+    private final int UPDATE_CARTCAR_DATA = 3;
 
     private Dialog mDialog;
 
@@ -88,19 +89,18 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     private ImageView myCartBtn;
 
     private View rootView;
-    private boolean isLogin;
     private long end_date;
     private long time;
-    private long currentTime;
     private Context mContext;
 
     private List<SwitchImage> banners;
     private CustomBannerView customBannerView;
     private LinearLayout bannerLine;
-    private boolean isFrist;
-    private int page=1;
+    private int page = 1;
     private int pageTotal;
     private int pageSize;
+    private int cartCount;//购物车商品数量
+    private boolean isFristCount = true;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -110,16 +110,18 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             String action = intent.getAction();
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
             {
-                initCartTips();
+                FetchCountData();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshAddCartTag))
+            {
+                FetchCountData();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag))
             {
-                isLogin = true;
-                initCartTips();
+                FetchCountData();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
             {
-                isLogin = false;
                 initCartTips();
             }
         }
@@ -135,19 +137,24 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 case UPDATE_ADAPTER:
                     loadingView.setVisibility(View.GONE);
                     mAdapter.notifyDataSetChanged();
-                    if (page*pageSize<pageTotal)
+                    if (page * pageSize < pageTotal)
                     {
                         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
-                    }else
+                    } else
                     {
                         mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+                    }
+                    if (isFristCount)
+                    {
+                        isFristCount = false;
+                        FetchCountData();
                     }
                     break;
                 case UPDATE_TIMER_START:
                     time = end_date - System.currentTimeMillis();
                     if (time > 0)
                     {
-                        ToolUtils.setLog("开始："+time);
+                        ToolUtils.setLog("开始：" + time);
                         mTimerView.setTimes(time);
                         if (!mTimerView.isRun())
                         {
@@ -161,11 +168,14 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 case UPDATE_BANNER:
                     setAdView();
                     break;
+                case UPDATE_CARTCAR_DATA:
+                    initCartTips();
+                    break;
             }
         }
     };
 
-    private PullToRefreshBase.OnRefreshListener2 onRefreshListener2=new PullToRefreshBase.OnRefreshListener2()
+    private PullToRefreshBase.OnRefreshListener2 onRefreshListener2 = new PullToRefreshBase.OnRefreshListener2()
     {
         @Override
         public void onPullDownToRefresh(PullToRefreshBase refreshView)
@@ -175,11 +185,14 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             banners.clear();
             getBannerData();
             FetchData();
+            FetchCountData();
         }
+
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView)
         {
             page++;
+            FetchData();
             getBannerData();
         }
     };
@@ -267,10 +280,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             myCartBtn.setOnClickListener(this);
             cartTipsTv = (TextView) rootView.findViewById(R.id.myCartTipsTv);
 
-            isLogin = checkLogin();
-
-            initCartTips();
-
             initData();
 
             mAdapter.setOnInViewClickListener(R.id.ll_single_layout, new BaseListAdapter.onInternalClickListener()
@@ -278,10 +287,10 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values)
                 {
-                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(products.get(position).getTitle(), products.get(position).getId() + "");
+                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(products.get(position).getTitle(), products.get(position).goodsId);
                     Bundle bundle = new Bundle();
                     bundle.putInt("flags", 1);
-                    bundle.putInt("index", products.get(position).getId());
+                    bundle.putString("index", products.get(position).goodsId);
                     bundle.putString("page", products.get(position).getTitle());
                     goodsDetailsFragment.setArguments(bundle);
                     ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
@@ -304,6 +313,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshAddCartTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
         getActivity().registerReceiver(broadcastReceiver, intentFilter);
@@ -325,7 +335,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading", true);
         if (NetworkUtils.isNetworkAvailable(getActivity()))
         {
-
             getBannerData();
             FetchData();
         } else
@@ -368,10 +377,16 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
      */
     private void initCartTips()
     {
-        if (((MainActivity) getActivity()).getNum() > 0)
+        if (checkLogin())
         {
-            cartTipsTv.setVisibility(View.VISIBLE);
-            cartTipsTv.setText("" + ((MainActivity) getActivity()).getNum());
+            if (cartCount > 0)
+            {
+                cartTipsTv.setVisibility(View.VISIBLE);
+                cartTipsTv.setText("" + cartCount);
+            } else
+            {
+                cartTipsTv.setVisibility(View.GONE);
+            }
         } else
         {
             cartTipsTv.setVisibility(View.GONE);
@@ -388,7 +403,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 break;
 
             case R.id.myCartBtn:
-                if (isLogin)
+                if (checkLogin())
                 {
                     ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
                     ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
@@ -404,7 +419,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 
     public void FetchData()
     {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeShopListUrl + page+"&typeEnum=2",
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.OSaleListUrl,
                 new Response.Listener<JSONObject>()
                 {
                     @Override
@@ -413,11 +428,10 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                         mDialog.dismiss();
                         mScrollView.onRefreshComplete();
                         ToolUtils.setLog(jsonObject.toString());
-                        if (jsonObject.equals("")||jsonObject==null)
+                        if (jsonObject.equals("") || jsonObject == null)
                         {
-                            nullView.setVisibility(View.VISIBLE);
                             nullNetView.setVisibility(View.GONE);
-                            ToolUtils.setToast(getActivity(), "加载失败");
+                            ToolUtils.setToast(mContext, R.string.loading_fail_txt);
                             return;
                         }
                         JSONObject object = jsonObject.optJSONObject("data");
@@ -425,15 +439,15 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                         if (totalObject != null)
                         {
                             end_date = totalObject.optLong("endTime");
-                            String description=totalObject.optString("description");
-                            mHandler.obtainMessage(UPDATE_TIMER_START,end_date).sendToTarget();
+                            String description = totalObject.optString("description");
+                            mHandler.obtainMessage(UPDATE_TIMER_START, end_date).sendToTarget();
                         } else
                         {
                             mHandler.sendEmptyMessage(UPDATE_ADAPTER);
                         }
                         JSONObject itemObject = object.optJSONObject("pagePO");
-                        pageSize=totalObject.optInt("pageSize");
-                        pageTotal=totalObject.optInt("totalCount");
+                        pageSize = totalObject.optInt("pageSize");
+                        pageTotal = totalObject.optInt("totalCount");
                         JSONArray items = itemObject.optJSONArray("items");
                         if (items != null && items.length() > 0)
                         {
@@ -449,6 +463,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                                 JSONObject countObject = item.optJSONObject("expandedResponse");
                                 int remaining = countObject.optInt("stock");
                                 Product product = new Product();
+                                product.goodsId=goodsId;
                                 product.setId(id);
                                 product.setPrice(price);
                                 product.setCost_price(cost_price);
@@ -468,8 +483,15 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             {
                 mDialog.dismiss();
                 mScrollView.onRefreshComplete();
-                nullView.setVisibility(View.VISIBLE);
-                nullNetView.setVisibility(View.GONE);
+                if (page > 1)
+                {
+                    page--;
+                } else
+                {
+                    isFristCount=true;
+                    nullView.setVisibility(View.VISIBLE);
+                    nullNetView.setVisibility(View.GONE);
+                }
             }
         }
         )
@@ -543,6 +565,47 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         requestQueue.add(bannerRequest);
     }
 
+    /**
+     * 请求购物车列表数据
+     */
+    public void FetchCountData()
+    {
+        String url = ZhaiDou.CartGoodsCountUrl;
+        ToolUtils.setLog("url:" + url);
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (jsonObject != null)
+                {
+                    JSONObject object = jsonObject.optJSONObject("data");
+                    cartCount = object.optInt("totalQuantity");
+                    mHandler.sendEmptyMessage(UPDATE_CARTCAR_DATA);
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+
     public class ProductAdapter extends BaseListAdapter<Product>
     {
         public ProductAdapter(Context context, List<Product> list)
@@ -580,8 +643,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     @Override
     public void onDestroyView()
     {
-        if (mTimerView.isRun())
-            mTimerView.stop();
         super.onDestroyView();
     }
 
@@ -601,8 +662,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     @Override
     public void onPause()
     {
-        isFrist=true;
-        currentTime = System.currentTimeMillis();
         super.onPause();
     }
 

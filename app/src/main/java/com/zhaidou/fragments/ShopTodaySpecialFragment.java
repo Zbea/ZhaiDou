@@ -25,6 +25,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.pulltorefresh.PullToRefreshBase;
+import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
@@ -72,8 +74,13 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private Dialog mDialog;
     private String mTitle;
     private String introduce;//引文介绍
-    private final int UPDATE_TIMER_START_AND_DETAIL_DATA = 3;
-    private final int UPDATE_CARTCAR_DATA=5;
+    private final int UPDATE_TIMER_START_AND_DETAIL_DATA = 1;
+    private final int UPDATE_CARTCAR_DATA=2;
+
+    private int page = 1;
+    private int pageSize;
+    private int pageCount;
+    private PullToRefreshScrollView mScrollView;
 
     private long initTime;
 
@@ -88,25 +95,25 @@ public class ShopTodaySpecialFragment extends BaseFragment {
 
     private TextView myCartTips;
     private ImageView myCartBtn;
-    private long currentTime;
 
     private List<ShopTodayItem> items = new ArrayList<ShopTodayItem>();
     private ShopTodaySpecialAdapter adapter;
     private ShopSpecialItem shopSpecialItem;
-    private boolean isFrist;
-
-    private int page=1;
+    private int cartCount;//购物车商品数量
+    private boolean isFristCount=true;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag)) {
-                initCartTips();
+                FetchCountData();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshAddCartTag)) {
+                FetchCountData();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
-                checkLogin();
-                initCartTips();
+                FetchCountData();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginExitTag)) {
                 checkLogin();
@@ -119,11 +126,16 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private Handler handler = new Handler() {
         public void handleMessage(final Message msg) {
             switch (msg.what) {
-                case 4:
-                    adapter.notifyDataSetChanged();
-                    break;
                 case UPDATE_TIMER_START_AND_DETAIL_DATA:
                     adapter.notifyDataSetChanged();
+                    if (pageCount>pageSize*page)
+                    {
+                        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+                    }
+                    else
+                    {
+                        mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+                    }
                     introduceTv.setText(introduce);
                     loadingView.setVisibility(View.GONE);
                     initTime =  shopSpecialItem.endTime - System.currentTimeMillis();
@@ -139,13 +151,34 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     {
                        timeTvs.setText("已结束");
                     }
+                    if (isFristCount)
+                    {
+                        isFristCount=false;
+                        FetchCountData();
+                    }
                     break;
                 case UPDATE_CARTCAR_DATA:
-                    int num=msg.arg2;
-                    myCartTips.setVisibility(num>0?View.VISIBLE:View.GONE);
-                    myCartTips.setText("" + num);
+                    initCartTips();
                     break;
             }
+        }
+    };
+
+    private PullToRefreshBase.OnRefreshListener2 onRefreshListener=new PullToRefreshBase.OnRefreshListener2()
+    {
+        @Override
+        public void onPullDownToRefresh(PullToRefreshBase refreshView)
+        {
+            items.clear();
+            page=1;
+            FetchData();
+            FetchCountData();
+        }
+        @Override
+        public void onPullUpToRefresh(PullToRefreshBase refreshView)
+        {
+            page++;
+            FetchData();
         }
     };
 
@@ -242,6 +275,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private void initBroadcastReceiver() {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshAddCartTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
         mContext.registerReceiver(broadcastReceiver, intentFilter);
@@ -254,13 +288,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         if (NetworkUtils.isNetworkAvailable(mContext)) {
             mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading", isDialogFirstVisible);
             isDialogFirstVisible = false;
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-
-                    FetchData();
-                }
-            }, 300);
+            FetchData();
         } else {
             if (mDialog != null)
                 mDialog.dismiss();
@@ -304,6 +332,10 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         myCartBtn = (ImageView) mView.findViewById(R.id.myCartBtn);
         myCartBtn.setOnClickListener(onClickListener);
 
+        mScrollView = (PullToRefreshScrollView) mView.findViewById(R.id.scrollView);
+        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+        mScrollView.setOnRefreshListener(onRefreshListener);
+
         mRequestQueue = Volley.newRequestQueue(mContext);
 
 
@@ -322,11 +354,20 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     /**
      * 红色标识提示显示数量
      */
-    private void initCartTips() {
-        if (((MainActivity) getActivity()).getNum() > 0) {
-            myCartTips.setVisibility(View.VISIBLE);
-            myCartTips.setText("" + ((MainActivity) getActivity()).getNum());
-        } else {
+    private void initCartTips()
+    {
+        if (checkLogin())
+        {
+            if (cartCount > 0)
+            {
+                myCartTips.setVisibility(View.VISIBLE);
+                myCartTips.setText("" + cartCount);
+            } else {
+                myCartTips.setVisibility(View.GONE);
+            }
+        }
+        else
+        {
             myCartTips.setVisibility(View.GONE);
         }
     }
@@ -366,48 +407,53 @@ public class ShopTodaySpecialFragment extends BaseFragment {
             public void onResponse(JSONObject response) {
                 if (mDialog != null)
                     mDialog.dismiss();
+                mScrollView.onRefreshComplete();
                 if (response == null) {
-                    nullView.setVisibility(View.VISIBLE);
                     nullNetView.setVisibility(View.GONE);
                     return;
                 }
                 JSONObject obj;
                 JSONObject jsonObject1 = response.optJSONObject("data");
-                JSONObject jsonObject = jsonObject1.optJSONObject("activityPO");
-                String id = jsonObject.optString("activityCode");
-                String title = jsonObject.optString("activityName");
-                long startTime = jsonObject.optLong("startTime");
-                long endTime = jsonObject.optLong("endTime");
-                ToolUtils.setLog(""+endTime);
-                int overTime = Integer.parseInt((String.valueOf((endTime-startTime)/(24*60*60*1000))));
-                introduce = jsonObject.optString("description");
-                int isNew = jsonObject.optInt("newFlag");
-                shopSpecialItem = new ShopSpecialItem(id, title, null,startTime, endTime, overTime, null,isNew);
-
-                JSONObject jsonObject2 = jsonObject1.optJSONObject("pagePO");
-                if (jsonObject2!=null)
+                if (jsonObject1!=null)
                 {
-                    JSONArray jsonArray = jsonObject2.optJSONArray("items");
-                    if (jsonArray!=null)
+                    JSONObject jsonObject = jsonObject1.optJSONObject("activityPO");
+                    pageCount=jsonObject.optInt("totalCount");
+                    pageSize=jsonObject.optInt("pageSize");
+                    String id = jsonObject.optString("activityCode");
+                    String title = jsonObject.optString("activityName");
+                    long startTime = jsonObject.optLong("startTime");
+                    long endTime = jsonObject.optLong("endTime");
+                    ToolUtils.setLog(""+endTime);
+                    int overTime = Integer.parseInt((String.valueOf((endTime-startTime)/(24*60*60*1000))));
+                    introduce = jsonObject.optString("description");
+                    int isNew = jsonObject.optInt("newFlag");
+                    shopSpecialItem = new ShopSpecialItem(id, title, null,startTime, endTime, overTime, null,isNew);
 
-                        for (int i = 0; i < jsonArray.length(); i++)
-                        {
-                            obj = jsonArray.optJSONObject(i);
-                            String Baseid = obj.optString("productId");
-                            String Listtitle = obj.optString("productName");
-                            double price = obj.optDouble("price");
-                            double cost_price = obj.optDouble("marketPrice");
-                            String imageUrl = obj.optString("productPicUrl");
-                            JSONObject jsonObject3=obj.optJSONObject("expandedResponse");
-                            int num = jsonObject3.optInt("stock");
-                            int totalCount = 100;
-                            int percentum =obj.optInt("progressPercentage");
-                            ShopTodayItem shopTodayItem = new ShopTodayItem(Baseid, Listtitle, imageUrl, price, cost_price, num, totalCount);
-                            shopTodayItem.percentum=percentum;
-                            items.add(shopTodayItem);
-                        }
+                    JSONObject jsonObject2 = jsonObject1.optJSONObject("pagePO");
+                    if (jsonObject2!=null)
+                    {
+                        JSONArray jsonArray = jsonObject2.optJSONArray("items");
+                        if (jsonArray!=null)
+
+                            for (int i = 0; i < jsonArray.length(); i++)
+                            {
+                                obj = jsonArray.optJSONObject(i);
+                                String Baseid = obj.optString("productId");
+                                String Listtitle = obj.optString("productName");
+                                double price = obj.optDouble("price");
+                                double cost_price = obj.optDouble("marketPrice");
+                                String imageUrl = obj.optString("productPicUrl");
+                                JSONObject jsonObject3=obj.optJSONObject("expandedResponse");
+                                int num = jsonObject3.optInt("stock");
+                                int totalCount = 100;
+                                int percentum =obj.optInt("progressPercentage");
+                                ShopTodayItem shopTodayItem = new ShopTodayItem(Baseid, Listtitle, imageUrl, price, cost_price, num, totalCount);
+                                shopTodayItem.percentum=percentum;
+                                items.add(shopTodayItem);
+                            }
+                    }
+
                 }
-
                 Message message = new Message();
                 message.what = UPDATE_TIMER_START_AND_DETAIL_DATA;
                 handler.sendMessage(message);
@@ -415,10 +461,20 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+
                 if (mDialog != null)
                     mDialog.dismiss();
-                nullView.setVisibility(View.VISIBLE);
-                nullNetView.setVisibility(View.GONE);
+                mScrollView.onRefreshComplete();
+                if (page>1)
+                {
+                    page--;
+                }
+                else
+                {
+                    isFristCount=true;
+                    nullView.setVisibility(View.VISIBLE);
+                    nullNetView.setVisibility(View.GONE);
+                }
             }
         })
         {
@@ -433,6 +489,46 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         mRequestQueue.add(jr);
     }
 
+    /**
+     * 请求购物车列表数据
+     */
+    public void FetchCountData()
+    {
+        String url = ZhaiDou.CartGoodsCountUrl;
+        ToolUtils.setLog("url:" + url);
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (jsonObject != null)
+                {
+                    JSONObject object = jsonObject.optJSONObject("data");
+                    cartCount = object.optInt("totalQuantity");
+                    handler.sendEmptyMessage(UPDATE_CARTCAR_DATA);
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
+    }
+
 
     @Override
     public void onResume()
@@ -444,8 +540,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
 
     @Override
     public void onPause() {
-        isFrist=true;
-        currentTime = System.currentTimeMillis();
         super.onPause();
         MobclickAgent.onPageEnd(mTitle);
     }

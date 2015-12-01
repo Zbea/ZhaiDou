@@ -56,9 +56,11 @@
         android:layout_height="match_parent"
         android:visibility="gone">
 
-        <ScrollView
+        <com.pulltorefresh.PullToRefreshScrollView
+            android:id="@+id/scrollView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/line_bottom"
             android:scrollbars="none">
 
         <LinearLayout
@@ -126,9 +128,10 @@
                 android:layout_height="70dp"></LinearLayout>
 
         </LinearLayout>
-        </ScrollView>
+        </com.pulltorefresh.PullToRefreshScrollView>
 
         <LinearLayout
+            android:id="@+id/line_bottom"
             android:layout_width="match_parent"
             android:layout_alignParentBottom="true"
             android:layout_height="@dimen/goods_bottom_height_dimen"

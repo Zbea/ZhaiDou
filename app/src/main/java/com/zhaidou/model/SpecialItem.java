@@ -7,7 +7,6 @@ package com.zhaidou.model;/**
  * Date: 2015-11-19
  * Time: 10:20
  * Description:专题实体类
- * FIXME
  */
 public class SpecialItem {
     public String id;
