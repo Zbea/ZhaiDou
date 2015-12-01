@@ -205,28 +205,34 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 //                }
                 saveEmail();
                 final Map<String, String> params = new HashMap<String, String>();
-                params.put("user_token[email]", strEmail);
-                params.put("user_token[password]", password);
+                params.put("email", strEmail);
+                params.put("password", password);
 
                 mDialog = CustomLoadingDialog.setLoadingDialog(LoginActivity.this, "登陆中");
                 final ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_URL, params, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
+                        System.out.println("LoginActivity.onResponse---->" + jsonObject.toString());
                         if (mDialog != null)
                             mDialog.dismiss();
                         if (jsonObject != null) {
-                            String msg = jsonObject.optString("message");
-                            int status = jsonObject.optInt("status");
-                            String token = jsonObject.optJSONObject("user_tokens").optString("token");
-                            validate_phone = jsonObject.optJSONArray("users").optJSONObject(0).optBoolean("validate_phone");
-                            JSONArray userArr = jsonObject.optJSONArray("users");
-                            for (int i = 0; i < userArr.length(); i++) {
-                                JSONObject userObj = userArr.optJSONObject(i);
-                                int id = userObj.optInt("id");
-                                String email = userObj.optString("email");
-                                String nick = userObj.optString("nick_name");
-                                User user = new User(id, email, token, nick, null);
-                                mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+                            JSONObject dataObj = jsonObject.optJSONObject("data");
+                            String message = dataObj.optString("message");
+                            if (TextUtils.isEmpty(message)) {
+                                String token = dataObj.optJSONObject("user_tokens").optString("token");
+                                validate_phone = dataObj.optJSONArray("users").optJSONObject(0).optBoolean("validate_phone");
+                                JSONArray userArr = dataObj.optJSONArray("users");
+                                for (int i = 0; i < userArr.length(); i++) {
+                                    JSONObject userObj = userArr.optJSONObject(i);
+                                    int id = userObj.optInt("id");
+                                    String email = userObj.optString("email");
+                                    String nick = userObj.optString("nick_name");
+                                    User user = new User(id, email, token, nick, null);
+                                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+                                }
+
+                            }else {
+                                Toast.makeText(LoginActivity.this,message,Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
@@ -354,11 +360,12 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_BINE_PHONE_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                int status = jsonObject.optInt("status");
+                JSONObject dataObj=jsonObject.optJSONObject("data");
+                int status = dataObj.optInt("status");
                 if (201 == status) {
                     mDialog.dismiss();
                     ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(LoginActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                    JSONObject userObj = jsonObject.optJSONObject("user");
+                    JSONObject userObj = dataObj.optJSONObject("user");
                     int id = userObj.optInt("id");
                     String phone = userObj.optString("phone");
                     String nick = userObj.optString("nick_name");
@@ -368,7 +375,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     User user = new User(id, email, token, nick, avatar);
                     mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
                 } else {
-                    String message = jsonObject.optString("message");
+                    String message = dataObj.optString("message");
                     Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -381,6 +388,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
+                System.out.println("LoginActivity.getHeaders------------>"+token);
                 headers.put("SECAuthorization", token);
                 return headers;
             }
@@ -423,12 +431,13 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
      * @param mDialog
      */
     private void getVerifyCode(String phone, final Dialog mDialog) {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + phone + "&flag=1", new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + "?phone="+phone+"&flag=1", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 System.out.println("LoginActivity.onResponse------->" + jsonObject.toString());
-                int status = jsonObject.optInt("status");
-                String message = jsonObject.optString("message");
+                JSONObject dataObj = jsonObject.optJSONObject("data");
+                String message=dataObj.optString("message");
+                int status= dataObj.optInt("status");
                 if (status == 201) {
 //                    codeTimer();
                     mDialogUtils.codeTimer();

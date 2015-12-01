@@ -118,10 +118,11 @@ public class AccountFindPwdActivity extends FragmentActivity {
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_RESET_PSW_CONFRIM_URL + phone + "&vcode=" + code, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                int status = jsonObject.optInt("status");
-                String message = jsonObject.optString("message");
+                JSONObject dataObj = jsonObject.optJSONObject("data");
+                int status = dataObj.optInt("status");
+                String message = dataObj.optString("message");
                 if (status == 201) {
-                    token = jsonObject.optString("token");
+                    token = dataObj.optString("token");
                     Intent intent = new Intent(getApplicationContext(), AccountSetPwdActivity.class);
                     intent.putExtra("phone", phone);
                     intent.putExtra("token", token);
@@ -169,12 +170,12 @@ public class AccountFindPwdActivity extends FragmentActivity {
      * @param phone 手机号码
      */
     private void getVerifyCode(String phone) {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + phone + "&flag=2", new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_REGISTER_VERIFY_CODE_URL +"?phone="+ phone + "&flag=2", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                System.out.println("AccountRegisterSetPwdActivity.onResponse---------->" + jsonObject.toString());
-                int status = jsonObject.optInt("status");
-                String message = jsonObject.optString("message");
+                JSONObject dataObj = jsonObject.optJSONObject("data");
+                int status = dataObj.optInt("status");
+                String message = dataObj.optString("message");
                 if (status == 201) {
                     codeTimer();
                     token = jsonObject.optString("token");

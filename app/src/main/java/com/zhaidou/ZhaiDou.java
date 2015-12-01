@@ -7,8 +7,8 @@ public class ZhaiDou {
 
     public static String HOME_PAGE_URL = "http://buy.zhaidou.com/?json=get_category_posts&slug=%E5%AE%B6%E9%A5%B0%E4%BC%98%E9%80%89&status=publish";
 //    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
-        public static String HOME_BASE_URL = "http://www.zhaidou.com/";
-//    public static String HOME_BASE_URL = "http://192.168.199.171/";
+//        public static String HOME_BASE_URL = "http://www.zhaidou.com/";
+    public static String HOME_BASE_URL = "http://192.168.1.148:8080/";
     //    public static String HOME_BASE_URL = "http://192.168.1.126:3000/lotteries";
     public static String TAG_BASE_URL = "http://buy.zhaidou.com/?tag=%s&json=1";
 
@@ -77,13 +77,13 @@ public class ZhaiDou {
     //用户退出登录
     public static String USER_LOGOUT_URL=HOME_BASE_URL+"api/v1/user_tokens/logout";
     //用户登录
-    public static String USER_LOGIN_URL=HOME_BASE_URL+"api/v1/user_tokens";
+    public static String USER_LOGIN_URL=HOME_BASE_URL+"zdportal_web/user/user_tokens.action";
     //第三方登录--验证
     public static String USER_LOGIN_THIRD_VERIFY_URL=HOME_BASE_URL+"api/v1/users/verification_other";
     //用户注册
     public static String USER_REGISTER_URL=HOME_BASE_URL+"api/v1/users";
     //
-    public static String USER_REGISTER_WITH_PHONE_URL=HOME_BASE_URL+"api/v1/users/phone_register";
+    public static String USER_REGISTER_WITH_PHONE_URL=HOME_BASE_URL+"zdportal_web/user/phone_register.action";
     //用户收藏
     public static String USER_COLLECT_ITEM_URL=HOME_BASE_URL+"article/api/article_items/like_article_items?per_page=10&page=";
     //用户取消收藏
@@ -91,15 +91,15 @@ public class ZhaiDou {
     //用户豆搭
     public static String USER_COLLOCATION_ITEM_URL=HOME_BASE_URL+"api/v1/users/";
     //获取验证码
-    public static String USER_REGISTER_VERIFY_CODE_URL=HOME_BASE_URL+"api/v1/phone_vcodes/vilidate_phone?phone=";
+    public static String USER_REGISTER_VERIFY_CODE_URL=HOME_BASE_URL+"zdportal_web/user/vilidate_phone.action";
     //修改密码验证码验证
-    public static String USER_RESET_PSW_CONFRIM_URL=HOME_BASE_URL+"api/v1/phone_vcodes/next_to_password?phone=";
+    public static String USER_RESET_PSW_CONFRIM_URL=HOME_BASE_URL+"zdportal_web/user/next_to_password.action?phone=";
     //修改密码
     public static String USER_RESET_PSW_URL=HOME_BASE_URL+"api/v1/users/reset_password";
     //注册第一步判断手机是否已经注册
-    public static String USER_REGISTER_CHECK_PHONE_URL=HOME_BASE_URL+"api/v1/users/next_to_register";
+    public static String USER_REGISTER_CHECK_PHONE_URL=HOME_BASE_URL+"zdportal_web/user/next_to_register.action";
     //登陆用户进行绑定手机接口
-    public static String USER_LOGIN_BINE_PHONE_URL=HOME_BASE_URL+"api/v1/users/user_blinding_phone";
+    public static String USER_LOGIN_BINE_PHONE_URL=HOME_BASE_URL+"zdportal_web/user/user_blinding_phone.action";
 
 
     //后台统计

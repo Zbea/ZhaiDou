@@ -241,7 +241,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         init();
         initBroadcastReceiver();
 
-        getVersionServer();
+//        getVersionServer();
 
         initComponents();
         commitActiveData();

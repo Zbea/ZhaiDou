@@ -93,6 +93,7 @@ public class AccountRegisterSetPwdActivity extends FragmentActivity {
                     } else if (pwd.length() < 6) {
                         ToolUtils.setToast(getApplicationContext(), "抱歉,设置的密码过短");
                         mPwdView.setShakeAnimation();
+                        return;
                     }
                     doRegister(phone,code,pwd);
                     break;
@@ -134,24 +135,20 @@ public class AccountRegisterSetPwdActivity extends FragmentActivity {
     }
 
     /**
-     * 获得验证码
+     * 获得验证码  &flag=1
      */
     private void getVerifyCode() {
         codeTimer();
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_REGISTER_VERIFY_CODE_URL+phone+"&flag=1",new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_REGISTER_VERIFY_CODE_URL+"?phone="+phone+"&flag=1",new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 System.out.println("AccountRegisterSetPwdActivity.onResponse---------->"+jsonObject.toString());
-                int status= jsonObject.optInt("status");
-                String time=jsonObject.optString("time");
-                String message=jsonObject.optString("message");
+                JSONObject dataObj = jsonObject.optJSONObject("data");
+                String message=dataObj.optString("message");
+                int status= dataObj.optInt("status");
                 if (status==201){
                     Toast.makeText(AccountRegisterSetPwdActivity.this,"获取验证码成功",Toast.LENGTH_SHORT).show();
                 }else {
-                    if (!TextUtils.isEmpty(time)){
-                        Toast.makeText(AccountRegisterSetPwdActivity.this,time,Toast.LENGTH_SHORT).show();
-                        return;
-                    }
                     Toast.makeText(AccountRegisterSetPwdActivity.this,message,Toast.LENGTH_SHORT).show();
                 }
             }
@@ -211,26 +208,29 @@ public class AccountRegisterSetPwdActivity extends FragmentActivity {
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null)
                     mDialog.dismiss();
-                int status =jsonObject.optInt("status");
-                String msg=jsonObject.optString("message");
-                if (201!=status){
-                    Toast.makeText(AccountRegisterSetPwdActivity.this,msg,Toast.LENGTH_SHORT).show();
-                    return;
+                JSONObject dataObj=jsonObject.optJSONObject("data");
+                if (dataObj!=null){
+                    int status = dataObj.optInt("status");
+                    String msg = dataObj.optString("message");
+                    if (201 != status) {
+                        Toast.makeText(AccountRegisterSetPwdActivity.this, msg, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    JSONObject userObj = dataObj.optJSONObject("user");
+                    int id = userObj.optInt("id");
+                    String email = userObj.optString("email");
+                    String token = userObj.optString("authentication_token");
+                    String state = userObj.optString("state");
+                    String phone = userObj.optString("phone");
+                    String avatar = userObj.optJSONObject("avatar").optJSONObject("mobile_icon").optString("url");
+                    String nickname = userObj.optString("nick_name");
+                    User user = new User(id, email, token, nickname, avatar);
+                    user.setPhone(phone);
+                    Message message = new Message();
+                    message.what = 0;
+                    message.obj = user;
+                    handler.sendMessage(message);
                 }
-                JSONObject userObj = jsonObject.optJSONObject("user");
-                int id = userObj.optInt("id");
-                String email = userObj.optString("email");
-                String token = userObj.optString("authentication_token");
-                String state = userObj.optString("state");
-                String phone=userObj.optString("phone");
-                String avatar = userObj.optJSONObject("avatar").optJSONObject("mobile_icon").optString("url");
-                String nickname = userObj.optString("nick_name");
-                User user = new User(id, email, token, nickname, avatar);
-                user.setPhone(phone);
-                Message message = new Message();
-                message.what = 0;
-                message.obj = user;
-                handler.sendMessage(message);
             }
         }, new Response.ErrorListener() {
             @Override
