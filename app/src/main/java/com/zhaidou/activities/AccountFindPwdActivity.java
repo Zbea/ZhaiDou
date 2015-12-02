@@ -89,9 +89,6 @@ public class AccountFindPwdActivity extends FragmentActivity {
                         return;
                     }
                     if (ToolUtils.isPhoneOk(phone)) {
-//                        Intent intent = new Intent(getApplicationContext(), AccountSetPwdActivity.class);
-//                        startActivity(intent);
-//                        doRegister();
                         doVertify(phone, code);
                     } else {
                         ToolUtils.setToast(getApplicationContext(), "抱歉,无效手机号码");
@@ -114,23 +111,30 @@ public class AccountFindPwdActivity extends FragmentActivity {
         }
     };
 
-    private void doVertify(final String phone, final String code) {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_RESET_PSW_CONFRIM_URL + phone + "&vcode=" + code, new Response.Listener<JSONObject>() {
+    private void doVertify(final String phone, final String verifyCode) {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_RESET_PSW_CONFRIM_URL + phone + "&vcode=" + verifyCode, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                JSONObject dataObj = jsonObject.optJSONObject("data");
-                int status = dataObj.optInt("status");
-                String message = dataObj.optString("message");
-                if (status == 201) {
-                    token = dataObj.optString("token");
-                    Intent intent = new Intent(getApplicationContext(), AccountSetPwdActivity.class);
-                    intent.putExtra("phone", phone);
-                    intent.putExtra("token", token);
-                    intent.putExtra("code", code);
-                    startActivityForResult(intent, 200);
-                    return;
+                String code = jsonObject.optString("code");
+                String msg = jsonObject.optString("message");
+                if (code!=null&&!"404".equalsIgnoreCase(code)) {
+                    JSONObject dataObj = jsonObject.optJSONObject("data");
+                    int status = dataObj.optInt("status");
+                    String message = dataObj.optString("message");
+                    if (status == 201) {
+                        token = dataObj.optString("token");
+                        Intent intent = new Intent(getApplicationContext(), AccountSetPwdActivity.class);
+                        intent.putExtra("phone", phone);
+                        intent.putExtra("token", token);
+                        intent.putExtra("code", verifyCode);
+                        startActivityForResult(intent, 200);
+                        return;
+                    }else {
+                        Toast.makeText(AccountFindPwdActivity.this, message, Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(AccountFindPwdActivity.this, msg, Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(AccountFindPwdActivity.this, message, Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -170,18 +174,24 @@ public class AccountFindPwdActivity extends FragmentActivity {
      * @param phone 手机号码
      */
     private void getVerifyCode(String phone) {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_REGISTER_VERIFY_CODE_URL +"?phone="+ phone + "&flag=2", new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + "?phone=" + phone + "&flag=2", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                JSONObject dataObj = jsonObject.optJSONObject("data");
-                int status = dataObj.optInt("status");
-                String message = dataObj.optString("message");
-                if (status == 201) {
-                    codeTimer();
-                    token = jsonObject.optString("token");
-                    flag = jsonObject.optBoolean("flag");
-                    Toast.makeText(AccountFindPwdActivity.this, "获取验证码成功", Toast.LENGTH_SHORT).show();
-                } else {
+                String code = jsonObject.optString("code");
+                String message = jsonObject.optString("message");
+                if (!"404".equalsIgnoreCase(code)){
+                    JSONObject dataObj = jsonObject.optJSONObject("data");
+                    int status = dataObj.optInt("status");
+                    String msg = dataObj.optString("message");
+                    if (status == 201) {
+                        codeTimer();
+                        token = jsonObject.optString("token");
+                        flag = jsonObject.optBoolean("flag");
+                        Toast.makeText(AccountFindPwdActivity.this, "获取验证码成功", Toast.LENGTH_SHORT).show();
+                    }else {
+                        Toast.makeText(AccountFindPwdActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    }
+                }else {
                     Toast.makeText(AccountFindPwdActivity.this, message, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -270,7 +280,7 @@ public class AccountFindPwdActivity extends FragmentActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (resultCode){
+        switch (resultCode) {
             case 1500:
                 finish();
                 break;

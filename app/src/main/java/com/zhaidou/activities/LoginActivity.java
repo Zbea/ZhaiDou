@@ -212,13 +212,12 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 final ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_URL, params, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
-                        System.out.println("LoginActivity.onResponse---->" + jsonObject.toString());
                         if (mDialog != null)
                             mDialog.dismiss();
                         if (jsonObject != null) {
                             JSONObject dataObj = jsonObject.optJSONObject("data");
-                            String message = dataObj.optString("message");
-                            if (TextUtils.isEmpty(message)) {
+                            String message = jsonObject.optString("message");
+                            if (jsonObject.isNull("code")){
                                 String token = dataObj.optJSONObject("user_tokens").optString("token");
                                 validate_phone = dataObj.optJSONArray("users").optJSONObject(0).optBoolean("validate_phone");
                                 JSONArray userArr = dataObj.optJSONArray("users");
@@ -230,9 +229,9 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                                     User user = new User(id, email, token, nick, null);
                                     mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
                                 }
-
                             }else {
-                                Toast.makeText(LoginActivity.this,message,Toast.LENGTH_SHORT).show();
+                                String msg = dataObj.optString("message");
+                                Toast.makeText(LoginActivity.this,TextUtils.isEmpty(msg)?message:msg,Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
@@ -241,7 +240,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     public void onErrorResponse(VolleyError volleyError) {
                         if (mDialog != null)
                             mDialog.dismiss();
-                        System.out.println("LoginActivity.onErrorResponse-------->" + volleyError.getMessage());
                         if (volleyError.getMessage() != null && volleyError.getMessage().contains("authentication")) {
                             Toast.makeText(LoginActivity.this, "密码错误", Toast.LENGTH_LONG).show();
                         } else if (401 == volleyError.networkResponse.statusCode) {
@@ -313,10 +311,11 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("jsonObject--->", jsonObject.toString());
-                int flag = jsonObject.optInt("flag");
+                JSONObject dataObj = jsonObject.optJSONObject("data");
+                int flag = dataObj.optInt("flag");
 
                 if (0 == flag) {
-                    JSONObject login_user = jsonObject.optJSONObject("user").optJSONObject("login_user");
+                    JSONObject login_user = dataObj.optJSONObject("user").optJSONObject("login_user");
                     String email = login_user.optString("s_email");
                     String nick1 = login_user.optString("s_nick_name");
                     Log.i("0==flag", "0==flag");
@@ -330,7 +329,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 //                    new RegisterTask().execute(registers);
                     thirdPartyRegisterTask(registers);
                 } else {
-                    JSONObject userJson = jsonObject.optJSONObject("user");
+                    JSONObject userJson = dataObj.optJSONObject("user");
                     String token = userJson.optJSONObject("user_tokens").optString("token");
                     JSONArray userArray = userJson.optJSONArray("users");
                     if (userArray != null && userArray.length() > 0) {
