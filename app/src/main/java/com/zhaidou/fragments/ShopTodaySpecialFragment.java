@@ -83,11 +83,13 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private PullToRefreshScrollView mScrollView;
 
     private long initTime;
+    private long systemTime;
+    private boolean isFrist;
 
     private RequestQueue mRequestQueue;
 
     private ImageView shareBtn;
-    private TypeFaceTextView backBtn, titleTv, introduceTv, timeTv;
+    private TypeFaceTextView backBtn, titleTv, introduceTv;
     private ListViewForScrollView mListView;
     private LinearLayout loadingView, nullNetView, nullView;
     private TextView reloadBtn, reloadNetBtn;
@@ -125,19 +127,20 @@ public class ShopTodaySpecialFragment extends BaseFragment {
 
     private Handler handler = new Handler() {
         public void handleMessage(final Message msg) {
-            switch (msg.what) {
+            switch (msg.what)
+            {
                 case UPDATE_TIMER_START_AND_DETAIL_DATA:
                     adapter.notifyDataSetChanged();
-                    if (pageCount>pageSize*page)
+                    if (pageCount > pageSize * page)
                     {
                         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
-                    }
-                    else
+                    } else
                     {
                         mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                     }
                     introduceTv.setText(introduce);
                     loadingView.setVisibility(View.GONE);
+                    if (shopSpecialItem != null)
                     initTime =  shopSpecialItem.endTime - System.currentTimeMillis();
                     if (initTime>0)
                     {
@@ -318,7 +321,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(mTitle);
-        timeTv = (TypeFaceTextView) mView.findViewById(R.id.shopTimeTv);
         timeTvs = (TimerTextView) mView.findViewById(R.id.shopTime1Tv);
 
         mListView = (ListViewForScrollView) mView.findViewById(R.id.shopListView);
@@ -533,13 +535,20 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     @Override
     public void onResume()
     {
-        initCartTips();
+        if(isFrist)
+        {
+            long temp=Math.abs(systemTime-System.currentTimeMillis());
+            initTime =timeTvs.getTimes()-temp;
+            timeTvs.setTimes(initTime);
+        }
         super.onResume();
         MobclickAgent.onPageStart(mTitle);
     }
 
     @Override
     public void onPause() {
+        systemTime=System.currentTimeMillis();
+        isFrist=true;
         super.onPause();
         MobclickAgent.onPageEnd(mTitle);
     }

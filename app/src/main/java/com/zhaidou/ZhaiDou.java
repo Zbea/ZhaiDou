@@ -14,7 +14,7 @@ public class ZhaiDou {
     //首页特卖列表
     public static String HomeShopListUrl="http://121.42.206.45:7082/index/getSpecialSaleList.action?pageSize=20&pageNo=";
     //0元特卖列表
-    public static String OSaleListUrl="http://121.42.206.45:7082/index/getActivityProductList.action?activityCode=ZHD2015NNW59113611&pageSize=20&pageNo=1&typeEnum=2";
+    public static String OSaleListUrl="http://121.42.206.45:7082/index/getActivityProductList.action?pageNo=1&typeEnum=2&activityCode=ZHD2015NNW59113611";
     //首页特卖商品列表
     public static String HomeGoodsListUrl="http://121.42.206.45:7082/index/getActivityProductList.action?pageSize=20&activityCode=";
     //商品加入购物车

@@ -167,8 +167,9 @@ public class GoodsDetailsFragment extends BaseFragment
     private boolean isBuy;//是否购买过普通特卖该商品规格
     private boolean isClick;//规格是否可以点击
     private int mClick = -1;
-    private long temp;
-
+    private long initTime;
+    private long systemTime;
+    private boolean isFrist;
     private int userId;
     private String token;
     long mTime = 0;
@@ -296,19 +297,16 @@ public class GoodsDetailsFragment extends BaseFragment
                     {
                         setAddOrBuyShow("此商品已下架", false);
                     }
-                    long end_date = detail.end_time;
-                    mView.findViewById(R.id.timeLine).setVisibility(template_type != 0 ? View.VISIBLE : View.GONE);
                     shareBtn.setVisibility(template_type != 0 ? View.VISIBLE : View.GONE);
                     try
                     {
-                        temp =1444000000; //end_date - System.currentTimeMillis();
-                        if (temp <= 0)
+                        initTime =detail.end_time - System.currentTimeMillis();
+                        if (initTime <= 0)
                         {
                             mTimerView.setText("已结束");
-                            setAddOrBuyShow("活动已结束", false);
                         } else
                         {
-                            mTimerView.setTimes(temp);
+                            mTimerView.setTimes(initTime);
                             mTimerView.start();
                         }
                     } catch (Exception e)
@@ -882,11 +880,6 @@ public class GoodsDetailsFragment extends BaseFragment
             {
                 setAddOrBuyShow("此商品已下架", false);
             }
-            temp = mTimerView.getTimes();
-            if (temp <= 0)
-            {
-                setAddOrBuyShow("活动已结束", false);
-            }
         }
     }
 
@@ -1085,6 +1078,7 @@ public class GoodsDetailsFragment extends BaseFragment
             {
                 if (jsonObject != null)
                 {
+                    long  endTime = jsonObject.optLong("timestamp");
                     JSONObject dataObject = jsonObject.optJSONObject("data");
                     if (dataObject==null)
                     {
@@ -1095,6 +1089,10 @@ public class GoodsDetailsFragment extends BaseFragment
                     }
                     String goodsId = dataObject.optString("productId");
                     String goodsName = dataObject.optString("productName");
+                    String specificationName = dataObject.optString("attributeName1");
+                    String modelName = dataObject.optString("attributeName1");
+                    flags = dataObject.optString("businessType").equals("01")?0:1;
+                    isPublish=dataObject.optInt("isProductShelves")==0?true:false;
 
                     JSONObject expandObject = dataObject.optJSONObject("expandedResponse");
                     String designer = expandObject.optString("productDescription");//豆豆点评
@@ -1112,10 +1110,32 @@ public class GoodsDetailsFragment extends BaseFragment
                     int viewCount = expandObject.optInt("viewCount");//浏览数
                     String score = expandObject.optString("score");//商品评分
                     String discount = expandObject.optString("discount");
+                    int totalCount = expandObject.optInt("productStock");
+                    double price = expandObject.optDouble("salePrice");
+                    double markerPrice = expandObject.optDouble("markerPrice");
+                    String imageUrl = expandObject.optString("imageUrl") + ".jpg";
+                    int userMaxNum = expandObject.optInt("userMaxNum");// 一定时间内特卖限购数量
+                    int zeroMaxCount = expandObject.optInt("zeroMaxCount");//0元每天购限购数量
+                    int userMaxType = expandObject.optInt("userMaxType");//特卖限购时间  单位小时
+
+                    JSONArray descriptions = expandObject.optJSONArray("attributeList");
+                    if (descriptions != null && descriptions.length() > 0&&!descriptions.equals(""))
+                    {
+                        for (int i = 0; i < descriptions.length(); i++)
+                        {
+                            JSONObject description = descriptions.optJSONObject(i);
+                            int descriptionsId = description.optInt("id");
+                            String descriptionsTitle = description.optString("attributeName");
+                            String value = description.optString("attributeValue");
+                            GoodInfo goodInfo = new GoodInfo(descriptionsId, descriptionsTitle, value);
+                            goodInfos.add(goodInfo);
+                        }
+
+                    }
 
                     JSONArray imgArrays = dataObject.optJSONArray("productImageArray");
                     ArrayList<String> imgsList = new ArrayList<String>();
-                    if (imgArrays != null && imgArrays.length() > 0)
+                    if (imgArrays != null && imgArrays.length() > 0&&!imgArrays.equals(""))
                     {
                         for (int i = 0; i < imgArrays.length(); i++)
                         {
@@ -1125,7 +1145,7 @@ public class GoodsDetailsFragment extends BaseFragment
                         }
                     }
                     JSONArray specifications = dataObject.optJSONArray("productSKUArray");
-                    if (specifications != null && specifications.length() > 0)
+                    if (specifications != null && specifications.length() > 0&&!specifications.equals(""))
                     {
                         specificationList = new ArrayList<Specification>();
                         for (int i = 0; i < specifications.length(); i++)
@@ -1139,12 +1159,16 @@ public class GoodsDetailsFragment extends BaseFragment
                                 for (int j = 0; j < imageArray.length(); j++)
                                 {
                                     JSONObject imageObj = imageArray.optJSONObject(i);
-                                    String url = imageObj.optString("imageArray") + imageObj.optString("imageFileType");
+                                    if (imageObj!=null)
+                                    {
+                                        String url = imageObj.optString("imageArray") + imageObj.optString("imageFileType");
+                                    }
                                 }
                             }
                             int num = specificationObj.optInt("stock");
                             double sizePrice = specificationObj.optDouble("price");
                             double sizeOldPrice = specificationObj.optDouble("marketPrice");
+                            double returnPrice = specificationObj.optDouble("returnAmount");//返现金额
                             Specification specification = new Specification();
                             specification.sizeId = specificationId;
                             specification.title = specificationTitle;
@@ -1154,31 +1178,18 @@ public class GoodsDetailsFragment extends BaseFragment
                             specificationList.add(specification);
                         }
                     }
-                    JSONArray descriptions = dataObject.optJSONArray("descriptions");
-                    if (descriptions != null && descriptions.length() > 0)
-                    {
-                        for (int i = 0; i < descriptions.length(); i++)
-                        {
-                            JSONObject description = descriptions.optJSONObject(i);
-                            int descriptionsId = description.optInt("id");
-                            String descriptionsTitle = description.optString("title");
-                            String value = description.optString("value");
-                            GoodInfo goodInfo = new GoodInfo(descriptionsId, descriptionsTitle, value);
-                            goodInfos.add(goodInfo);
-                        }
 
-                    }
 
                     detail = new GoodDetail();
                     detail.goodsId = goodsId;
                     detail.title = goodsName;
                     detail.designer = designer;
                     detail.discount = discount;
-                    detail.end_time = 1444000000;
-                    detail.price = 0;
-                    detail.cost_price = 0;
-                    flags = 0;
-                    detail.imageUrl = imgsList.get(0);
+                    detail.end_time = endTime;
+                    detail.total_count = totalCount;
+                    detail.price = price;
+                    detail.cost_price =markerPrice;
+                    detail.imageUrl = imageUrl;
                     detail.imgs = imgsList;
                     detail.specifications = specificationList;
                     detail.goodsInfo = goodInfos;
@@ -1498,6 +1509,12 @@ public class GoodsDetailsFragment extends BaseFragment
     @Override
     public void onResume()
     {
+        if(isFrist)
+        {
+            long temp=Math.abs(systemTime-System.currentTimeMillis());
+            initTime =mTimerView.getTimes()-temp;
+            mTimerView.setTimes(initTime);
+        }
         super.onResume();
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_goods_detail));
     }
@@ -1505,6 +1522,8 @@ public class GoodsDetailsFragment extends BaseFragment
     @Override
     public void onPause()
     {
+        systemTime=System.currentTimeMillis();
+        isFrist=true;
         super.onPause();
         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_goods_detail));
     }

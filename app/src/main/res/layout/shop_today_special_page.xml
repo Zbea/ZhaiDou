@@ -94,17 +94,6 @@
                         android:layout_marginLeft="5dp"
                         android:id="@+id/shopTime1Tv"/>
 
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/white"
-                        android:text="计时中"
-                        android:singleLine="true"
-                        android:ellipsize="marquee"
-                        android:visibility="gone"
-                        android:marqueeRepeatLimit="marquee_forever"
-                        android:layout_marginLeft="5dp"
-                        android:id="@+id/shopTimeTv"/>
                 </LinearLayout>
             </RelativeLayout>
 

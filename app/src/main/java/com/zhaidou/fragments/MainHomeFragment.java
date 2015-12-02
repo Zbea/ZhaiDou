@@ -1,5 +1,6 @@
 package com.zhaidou.fragments;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +41,6 @@ import com.zhaidou.adapter.ShopSpecialAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.ShopSpecialItem;
-import com.zhaidou.model.SpecialItem;
 import com.zhaidou.model.SwitchImage;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -82,11 +83,13 @@ public class MainHomeFragment extends BaseFragment implements
     private ShopSpecialAdapter adapterList;
     private RequestQueue mRequestQueue;
     private List<SwitchImage> banners = new ArrayList<SwitchImage>();
-
+    private List<SwitchImage> codes = new ArrayList<SwitchImage>();
+    private List<SwitchImage> specials = new ArrayList<SwitchImage>();
+    private List<SwitchImage> switchImages = new ArrayList<SwitchImage>();
     private LinearLayout loadingView, nullNetView, nullView;
     private TextView reloadBtn, reloadNetBtn;
     private CustomBannerView customBannerView;
-    private LinearLayout linearLayout;
+    private LinearLayout linearLayout, codeView;
     private PullToRefreshScrollView mScrollView;
     private ImageView[] specialBanner = new ImageView[3];
 
@@ -101,11 +104,10 @@ public class MainHomeFragment extends BaseFragment implements
                 if (mDialog != null)
                     mDialog.dismiss();
                 loadingView.setVisibility(View.GONE);
-                if (pageCount>pageSize*currentPage)
+                if (pageCount > pageSize * currentPage)
                 {
                     mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
-                }
-                else
+                } else
                 {
                     mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                 }
@@ -113,6 +115,8 @@ public class MainHomeFragment extends BaseFragment implements
             } else if (msg.what == UPDATE_BANNER)
             {
                 setAdView();
+                setCodeView();
+                setSpecialView();
             }
         }
     };
@@ -132,6 +136,7 @@ public class MainHomeFragment extends BaseFragment implements
                 public void onClick(int postion)
                 {
                     SwitchImage item = banners.get(postion);
+                    ToolUtils.setLog("banner:"+item.type);
                     ToolUtils.setBannerGoto(item, mContext);
                 }
             });
@@ -140,6 +145,55 @@ public class MainHomeFragment extends BaseFragment implements
         {
             customBannerView.setImages(banners);
         }
+    }
+
+    /**
+     * 添加 banner 顶部
+     */
+    private void setCodeView()
+    {
+        codeView.removeAllViews();
+        for (int i = 0; i < codes.size(); i++)
+        {
+            final int pos = i;
+            final View mView = LayoutInflater.from(mContext).inflate(R.layout.item_home_code, null);
+            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+            mView.setLayoutParams(param);
+            TextView codeName = (TextView) mView.findViewById(R.id.codeName);
+            codeName.setText(codes.get(i).title);
+            ImageView imageIv = (ImageView) mView.findViewById(R.id.codeImage);
+            ToolUtils.setImageUrl(codes.get(i).imageUrl, imageIv);
+            mView.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    SwitchImage item = codes.get(pos);
+                    ToolUtils.setLog("code"+item.type);
+                    ToolUtils.setBannerGoto(item, mContext);
+                }
+            });
+            codeView.addView(mView);
+        }
+    }
+
+    private void setSpecialView()
+    {
+        if (specials.size() > 0)
+        {
+            mSpecialLayout.setVisibility(View.VISIBLE);
+            for (int i = 0; i < specials.size(); i++)
+            {
+                specialBanner[i].setTag(specials.get(i));
+                ToolUtils.setImageUrl(specials.get(i).imageUrl, specialBanner[i],R.drawable.icon_loading_item);
+            }
+        } else
+        {
+            mSpecialLayout.setVisibility(View.GONE);
+        }
+
     }
 
     private OnFragmentInteractionListener mListener;
@@ -215,6 +269,7 @@ public class MainHomeFragment extends BaseFragment implements
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         mScrollView.setOnRefreshListener(this);
 
+        codeView = (LinearLayout) view.findViewById(R.id.homeCodeView);
         view.findViewById(R.id.ll_lottery).setOnClickListener(this);
         view.findViewById(R.id.ll_special_shop).setOnClickListener(this);
         view.findViewById(R.id.ll_sale).setOnClickListener(this);
@@ -238,9 +293,8 @@ public class MainHomeFragment extends BaseFragment implements
     {
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
-            getBannerData();
-            FetchData(currentPage);
             FetchSpecialData();
+            FetchData(currentPage);
         } else
         {
             mDialog.dismiss();
@@ -248,22 +302,6 @@ public class MainHomeFragment extends BaseFragment implements
             nullView.setVisibility(View.GONE);
         }
 
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState)
-    {
-        super.onActivityCreated(savedInstanceState);
-
-    }
-
-
-    public void onButtonPressed(Uri uri)
-    {
-        if (mListener != null)
-        {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override
@@ -305,7 +343,6 @@ public class MainHomeFragment extends BaseFragment implements
             case R.id.ll_lottery:
                 Intent detailIntent = new Intent(getActivity(), HomeCompetitionActivity.class);
                 detailIntent.putExtra("url", ZhaiDou.PRIZE_SCRAPING_URL);
-//                detailIntent.putExtra("url", "http://192.168.1.126:3000/lotteries");
                 detailIntent.putExtra("from", "lottery");
                 detailIntent.putExtra("title", "天天刮奖");
                 getActivity().startActivity(detailIntent);
@@ -340,14 +377,14 @@ public class MainHomeFragment extends BaseFragment implements
         int viewId = view.getId();
         if (viewId == R.id.image1 || viewId == R.id.image2 || viewId == R.id.image3)
         {
-            SpecialItem item = (SpecialItem) view.getTag();
+            SwitchImage item = (SwitchImage) view.getTag();
             if (item != null && item.template_type == 0)
             {
-                SpecialSaleFragment1 specialSaleFragment1 = SpecialSaleFragment1.newInstance(item.title, item.id + "", item.header_img);
+                SpecialSaleFragment1 specialSaleFragment1 = SpecialSaleFragment1.newInstance(item.title, item.typeValue, item.imageUrl);
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment1);
             } else if (item != null && item.template_type == 1)
             {
-                ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title, item.id, item.banner);
+                ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title, item.typeValue, item.imageUrl);
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
             }
         }
@@ -359,7 +396,7 @@ public class MainHomeFragment extends BaseFragment implements
     private void FetchData(final int page)
     {
         final String url;
-        url = ZhaiDou.HomeShopListUrl + page+"&typeEnum=1";
+        url = ZhaiDou.HomeShopListUrl + page + "&typeEnum=1";
         JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
@@ -375,9 +412,10 @@ public class MainHomeFragment extends BaseFragment implements
                     nullNetView.setVisibility(View.GONE);
                     return;
                 }
-                JSONObject jsonObject=response.optJSONObject("data");
-                pageCount=response.optInt("totalCount");
-                pageSize=response.optInt("pageSize");
+                ToolUtils.setLog(response.toString());
+                JSONObject jsonObject = response.optJSONObject("data");
+                pageCount = response.optInt("totalCount");
+                pageSize = response.optInt("pageSize");
                 JSONArray jsonArray = jsonObject.optJSONArray("themeList");
 
                 if (jsonArray != null)
@@ -389,10 +427,10 @@ public class MainHomeFragment extends BaseFragment implements
                         String sales = obj.optString("discountLabel");
                         long startTime = obj.optLong("startTime");
                         long endTime = obj.optLong("endTime");
-                        int overTime = Integer.parseInt((String.valueOf((endTime-System.currentTimeMillis())/(24*60*60*1000))));
-                        if ((endTime-System.currentTimeMillis())%(24*60*60*1000)>0)
+                        int overTime = Integer.parseInt((String.valueOf((endTime - System.currentTimeMillis()) / (24 * 60 * 60 * 1000))));
+                        if ((endTime - System.currentTimeMillis()) % (24 * 60 * 60 * 1000) > 0)
                         {
-                            overTime=overTime+1;
+                            overTime = overTime + 1;
                         }
 
                         String imageUrl = obj.optString("mainPic");
@@ -422,8 +460,6 @@ public class MainHomeFragment extends BaseFragment implements
                 {
                     nullView.setVisibility(View.VISIBLE);
                     nullNetView.setVisibility(View.GONE);
-                    mScrollView.onRefreshComplete();
-                    mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
                 }
             }
         })
@@ -441,33 +477,58 @@ public class MainHomeFragment extends BaseFragment implements
 
     private void FetchSpecialData()
     {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeShopListUrl+"1&typeEnum=3", new Response.Listener<JSONObject>()
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeBannerUrl + "01,02,03", new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
             {
                 if (response != null)
                 {
-                    JSONObject jsonObject=response.optJSONObject("data");
-                    JSONArray jsonArray = jsonObject.optJSONArray("themeList");
+                    ToolUtils.setLog(response.toString());
+                    JSONArray jsonArray = response.optJSONArray("data");
                     if (jsonArray != null)
+                    {
                         for (int i = 0; i < jsonArray.length(); i++)
                         {
-                            JSONObject obj = jsonArray.optJSONObject(i);
-                            String id = obj.optString("activityCode");
-                            String title = obj.optString("activityName");
-                            String imageUrl = obj.optString("mainPic");
-                            SpecialItem item = new SpecialItem();
-                            item.id = id;
-                            item.banner = imageUrl;
-                            item.topic_tag = i;
-                            item.template_type = i==0?0:1;
-                            item.header_img = imageUrl;
-                            item.title = title;
-                            specialBanner[i].setTag(item);
-                            ToolUtils.setImageCacheUrl(imageUrl, specialBanner[i]);
+                            JSONObject jsonObj = jsonArray.optJSONObject(i);
+                            String flags = jsonObj.optString("boardCode");
+                            JSONArray array = jsonObj.optJSONArray("programPOList");
+                            if (array != null)
+                            for (int j = 0; j < array.length(); j++)
+                            {
+                                JSONObject obj = array.optJSONObject(j);
+                                int type = obj.optInt("type");
+                                String typeValue = obj.optString("code");
+                                String imageUrl = obj.optString("pictureUrl");
+                                String title = obj.optString("name");
+                                if (type==1)
+                                {
+                                    typeValue = obj.optString("url");
+                                }
+                                SwitchImage switchImage = new SwitchImage();
+                                switchImage.id = j;
+                                switchImage.type = type;
+                                switchImage.typeValue = typeValue;
+                                switchImage.imageUrl = imageUrl;
+                                switchImage.title = title;
+                                switchImage.template_type = j == 0 ? 0 : 1;
+                                if (flags.equals("01"))
+                                {
+                                    banners.add(switchImage);
+                                }
+                                if (flags.equals("02"))
+                                {
+                                    specials.add(switchImage);
+                                }
+                                if (flags.equals("03"))
+                                {
+                                    ToolUtils.setLog("switchImage:"+switchImage.type);
+                                    codes.add(switchImage);
+                                }
+                            }
                         }
-                    mSpecialLayout.setVisibility(jsonArray.length() > 0 ? View.VISIBLE : View.GONE);
+                    }
+                    handler.sendEmptyMessage(UPDATE_BANNER);
                 }
             }
         }, new Response.ErrorListener()
@@ -475,84 +536,17 @@ public class MainHomeFragment extends BaseFragment implements
             @Override
             public void onErrorResponse(VolleyError volleyError)
             {
-
             }
         });
         mRequestQueue.add(request);
     }
-
-
-    /**
-     * 获得广告数据
-     */
-    private void getBannerData()
-    {
-        String url = ZhaiDou.HomeBannerUrl + "01";
-        banners.clear();
-        JsonObjectRequest bannerRequest = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
-        {
-            @Override
-            public void onResponse(JSONObject jsonObject)
-            {
-                ToolUtils.setLog(jsonObject.toString());
-                JSONArray jsonArray = jsonObject.optJSONArray("data");
-                if (jsonArray != null && jsonArray.length() > 0)
-                {
-                    JSONObject jsonObj=jsonArray.optJSONObject(0);
-                    JSONArray array =jsonObj.optJSONArray("programPOList") ;
-                    if (array != null)
-                        for (int i = 0; i < array.length(); i++)
-                        {
-                            JSONObject obj = array.optJSONObject(i);
-                            int type = obj.optInt("type");
-                            String typeValue = obj.optString("code");
-                            String imageUrl = obj.optString("pictureUrl");
-                            String title = obj.optString("name");
-                            if (type==1)
-                            {
-                                typeValue = obj.optString("url");
-                            }
-                            SwitchImage switchImage = new SwitchImage();
-                            switchImage.id = i;
-                            switchImage.type = type;
-                            switchImage.typeValue = typeValue;
-                            switchImage.imageUrl = imageUrl;
-                            switchImage.title = title;
-                            banners.add(switchImage);
-                        }
-
-                    Message message = new Message();
-                    message.what = UPDATE_BANNER;
-                    message.obj = banners;
-                    handler.sendMessage(message);
-                }
-            }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        mRequestQueue.add(bannerRequest);
-    }
-
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
     {
         ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(items.get(position).title, items.get(position).goodsId, items.get(position).imageUrl);
         ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
-        if ("1".equalsIgnoreCase(items.get(position).isNew+""))
+        if ("1".equalsIgnoreCase(items.get(position).isNew + ""))
         {
             SharedPreferencesUtil.saveData(mContext, "is_new_" + items.get(position).id, false);
             view.findViewById(R.id.newsView).setVisibility(View.GONE);
@@ -565,9 +559,10 @@ public class MainHomeFragment extends BaseFragment implements
         String label = DateUtils.formatDateTime(getActivity(), System.currentTimeMillis(),
                 DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
         refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
-        getBannerData();
         items.clear();
         banners.clear();
+        codes.clear();
+        specials.clear();
         FetchData(currentPage = 1);
         FetchSpecialData();
     }

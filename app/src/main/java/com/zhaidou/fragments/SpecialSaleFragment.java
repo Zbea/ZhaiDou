@@ -91,6 +91,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     private View rootView;
     private long end_date;
     private long time;
+    private long systemTime;
+    private boolean isFrist;
     private Context mContext;
 
     private List<SwitchImage> banners;
@@ -166,6 +168,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     }
                     break;
                 case UPDATE_BANNER:
+                    loadingView.setVisibility(View.GONE);
                     setAdView();
                     break;
                 case UPDATE_CARTCAR_DATA:
@@ -254,7 +257,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 
             mScrollView = (PullToRefreshScrollView) rootView.findViewById(R.id.scrollView);
             mScrollView.setOnRefreshListener(onRefreshListener2);
-            mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+            mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
 
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
             bannerLine = (LinearLayout) rootView.findViewById(R.id.bannerView);
@@ -428,13 +431,14 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                         mDialog.dismiss();
                         mScrollView.onRefreshComplete();
                         ToolUtils.setLog(jsonObject.toString());
-                        if (jsonObject.equals("") || jsonObject == null)
+                        JSONObject object = jsonObject.optJSONObject("data");
+                        if (object == null)
                         {
                             nullNetView.setVisibility(View.GONE);
+                            mTimerView.setText("已结束");
                             ToolUtils.setToast(mContext, R.string.loading_fail_txt);
                             return;
                         }
-                        JSONObject object = jsonObject.optJSONObject("data");
                         JSONObject totalObject = object.optJSONObject("activityPO");
                         if (totalObject != null)
                         {
@@ -512,7 +516,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
      */
     private void getBannerData()
     {
-        String url = ZhaiDou.BannerUrl + 0;
+        String url = ZhaiDou.HomeBannerUrl + "04";
         ToolUtils.setLog(url);
         banners = new ArrayList<SwitchImage>();
         JsonObjectRequest bannerRequest = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
@@ -520,31 +524,43 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             @Override
             public void onResponse(JSONObject jsonObject)
             {
-                JSONArray jsonArray = jsonObject.optJSONArray("sale_banners");
-                if (jsonArray != null && jsonArray.length() > 0)
+                if (jsonObject != null)
                 {
-                    for (int i = 0; i < jsonArray.length(); i++)
+                    ToolUtils.setLog(jsonObject.toString());
+                    JSONArray jsonArray = jsonObject.optJSONArray("data");
+                    if (jsonArray != null)
                     {
-                        JSONObject obj = jsonArray.optJSONObject(i);
-                        int id = obj.optInt("id");
-                        int type = obj.optInt("r_type");
-                        String typeValue = obj.optString("r_value");
-                        String imageUrl = obj.optString("imgs");
-                        String title = obj.optString("title");
-                        SwitchImage switchImage = new SwitchImage();
-                        switchImage.id = id;
-                        switchImage.type = type;
-                        switchImage.typeValue = typeValue;
-                        switchImage.imageUrl = imageUrl;
-                        switchImage.title = title;
-                        banners.add(switchImage);
+                        for (int i = 0; i < jsonArray.length(); i++)
+                        {
+                            JSONObject jsonObj = jsonArray.optJSONObject(i);
+                            JSONArray array = jsonObj.optJSONArray("programPOList");
+                            if (array != null)
+                                for (int j = 0; j < array.length(); j++)
+                                {
+                                    JSONObject obj = array.optJSONObject(j);
+                                    int type = obj.optInt("type");
+                                    String typeValue = obj.optString("code");
+                                    String imageUrl = obj.optString("pictureUrl");
+                                    String title = obj.optString("name");
+                                    if (type == 1)
+                                    {
+                                        typeValue = obj.optString("url");
+                                    }
+                                    SwitchImage switchImage = new SwitchImage();
+                                    switchImage.id = j;
+                                    switchImage.type = type;
+                                    switchImage.typeValue = typeValue;
+                                    switchImage.imageUrl = imageUrl;
+                                    switchImage.title = title;
+                                    banners.add(switchImage);
+                                }
+                        }
                     }
                     Message message = new Message();
                     message.what = UPDATE_BANNER;
                     message.obj = banners;
                     mHandler.sendMessage(message);
                 }
-
             }
         }, new Response.ErrorListener()
         {
@@ -656,12 +672,20 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     @Override
     public void onResume()
     {
+        if(isFrist)
+        {
+            long temp=Math.abs(systemTime-System.currentTimeMillis());
+            time =mTimerView.getTimes()-temp;
+            mTimerView.setTimes(time);
+        }
         super.onResume();
     }
 
     @Override
     public void onPause()
     {
+        systemTime=System.currentTimeMillis();
+        isFrist=true;
         super.onPause();
     }
 

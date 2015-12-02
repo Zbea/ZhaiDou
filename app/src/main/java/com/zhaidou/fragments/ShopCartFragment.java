@@ -671,8 +671,11 @@ public class ShopCartFragment extends BaseFragment
                                     String goodsSKU = goodsObject.optString("productSKUId");
                                     String specification = goodsObject.optString("productSKUSpecification");
                                     double goodsPrice = goodsObject.optDouble("salePrice");
+                                    double formalPrice = goodsObject.optDouble("markerPrice");
                                     int goodsCount = goodsObject.optInt("quantity");
                                     double goodsTotal = goodsObject.optDouble("subTotal");
+                                    String isPublish = goodsObject.optString("productShelves").equals("1")?"false":"true";
+                                    String isOver = goodsObject.optInt("stock")>0?"false":"true";
                                     CartGoodsItem goodsItem = new CartGoodsItem();
                                     goodsItem.userIds = userId;
                                     goodsItem.goodsId = goodsId;
@@ -681,11 +684,11 @@ public class ShopCartFragment extends BaseFragment
                                     goodsItem.size = specification;
                                     goodsItem.sku = goodsSKU;
                                     goodsItem.currentPrice = goodsPrice;
-                                    goodsItem.formalPrice = 0;
+                                    goodsItem.formalPrice = formalPrice;
                                     goodsItem.num = goodsCount;
                                     goodsItem.totalMoney = goodsTotal;
-                                    goodsItem.isOver = "false";
-                                    goodsItem.isPublish = "false";
+                                    goodsItem.isOver = isOver;
+                                    goodsItem.isPublish = isPublish;
                                     goodsItem.isDate = "false";
 
                                     goodsItems.add(goodsItem);

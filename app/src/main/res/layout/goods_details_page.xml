@@ -73,6 +73,7 @@
                     android:layout_alignParentBottom="true"
                     android:background="#dd3fcccb"
                     android:gravity="center"
+                    android:visibility="gone"
                     android:orientation="horizontal"
                     android:paddingBottom="3dp"
                     android:paddingTop="3dp">
