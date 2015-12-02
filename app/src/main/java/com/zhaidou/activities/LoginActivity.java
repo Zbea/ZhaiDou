@@ -413,6 +413,9 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 //                return;
 //            }
 //        }
+        if (plat.isValid()){
+            plat.removeAccount();
+        }
         plat.setPlatformActionListener(this);
         //关闭SSO授权
         if ("SinaWeibo".equalsIgnoreCase(plat.getName())) {
@@ -557,7 +560,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 public void onBind(String phone, String verifyCode, final Dialog mDialog) {
                     bingPhoneTask(phone, verifyCode, mDialog, user.getAuthentication_token());
                 }
-            }, false);
+            }, true);
         } else {
             Message message = new Message();
             message.obj = user;
