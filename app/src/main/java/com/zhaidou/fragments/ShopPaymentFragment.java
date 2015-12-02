@@ -290,7 +290,7 @@ public class ShopPaymentFragment extends BaseFragment {
         System.out.println("ShopPaymentFragment.onCreate------------>" + mFare + "--------------->" + (mAmount % 1.0 == 0 ? (long) mAmount : mAmount + ""));
         mAccountView=(TextView)mView.findViewById(R.id.tv_cash);
         DecimalFormat df = new DecimalFormat("###.00");
-        mAccountView.setText("￥"+Double.parseDouble(df.format(mAmount)));
+        mAccountView.setText("￥"+ToolUtils.isIntPrice("" + Double.parseDouble(df.format(mAmount))));
         mView.findViewById(R.id.tv_pinkage).setVisibility(View.GONE);
         initTime = mTimeLeft;
 

@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -32,11 +33,13 @@ import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.dialog.CustomToastDialog;
 import com.zhaidou.model.Address;
+import com.zhaidou.model.CartArrayItem;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.sqlite.CreatCartTools;
@@ -62,9 +65,11 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -93,10 +98,8 @@ public class ShopOrderOkFragment extends BaseFragment
     private TypeFaceEditText bzInfo;
     private TextView moneyTv, moneyYfTv, moneyTotalTv;
     private TextView addressNameTv, addressPhoneTv, addressinfoTv, noFreeTv;
-    private ArrayList<CartGoodsItem> items;
-    private List<CartGoodsItem> erroritems = new ArrayList<CartGoodsItem>();
+    private List<CartGoodsItem> items=new ArrayList<CartGoodsItem>();
     private List<Address> addressList = new ArrayList<Address>();
-    private String Str_token;
 
     private int num = 0;
     private double money = 0;
@@ -120,19 +123,19 @@ public class ShopOrderOkFragment extends BaseFragment
     private final int UPDATE_VERFIY = 9;
     private final int UPDATE_VERFIY_SUCCESSS = 10;
     private final int UPDATE_GETSMS_SUCCESSS = 11;
-    private final int UPDATE_GETSMS_FAIL = 12;
 
     private boolean isOSaleBuy;//是否已经购买过零元特卖
     private boolean isOSale;//是否含有零元特卖
     private boolean isljOsale;//是否是来自立即购买的零元特卖
     private boolean isNoFree;//是否不免邮，当只有一个商品且为零元特卖时为真
-    private boolean isVerify = true;//帐号是否需要验证
+    private boolean isVerify;//帐号是否需要验证
 
     private Address address;
     private CreatCartDB creatCartDB;
     private String token;
     private int userId;
     private int flags = 0;//1代表立即购买
+    private ArrayList<CartArrayItem> cartArrayItems=new ArrayList<CartArrayItem>();
 
     private Handler handler = new Handler()
     {
@@ -142,10 +145,8 @@ public class ShopOrderOkFragment extends BaseFragment
             switch (msg.what)
             {
                 case UPDATE_DEFALUE_ADDRESS_INFO:
-                    if (mDialog != null)
-                        mDialog.dismiss();
+                    mDialog.dismiss();
                     loadingView.setVisibility(View.GONE);
-
                     orderAddressInfoLine.setVisibility(View.VISIBLE);
                     orderAddressEditLine.setVisibility(View.VISIBLE);
                     orderAddressNullLine.setVisibility(View.GONE);
@@ -157,7 +158,6 @@ public class ShopOrderOkFragment extends BaseFragment
                     addressinfoTv.setText(address.getProvince() + address.getCity() + address.getArea() + address.getAddress());
                     break;
                 case 2:
-                    mDialog.dismiss();
                     if (mDialog != null)
                         mDialog.dismiss();
                     loadingView.setVisibility(View.GONE);
@@ -171,15 +171,6 @@ public class ShopOrderOkFragment extends BaseFragment
                     break;
                 case 4:
                     mDialog.dismiss();
-
-                    if (flags != 1)
-                    {
-                        for (int i = 0; i < items.size(); i++)
-                        {
-                            CreatCartTools.deleteByData(creatCartDB, items.get(i));
-                        }
-                    }
-
                     if (isljOsale)
                     {
                         //发送刷新商品详情零元特卖购买广播
@@ -192,7 +183,6 @@ public class ShopOrderOkFragment extends BaseFragment
                         Intent intent= new Intent(ZhaiDou.IntentRefreshGoodsDetailsTag);
                         mContext.sendBroadcast(intent);
                     }
-
                     //发送刷新购物车广播
                     Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
                     mContext.sendBroadcast(intent);
@@ -207,16 +197,12 @@ public class ShopOrderOkFragment extends BaseFragment
                     try
                     {
                         JSONObject jsonObject = new JSONObject(result);
-                        System.out.println("ShopOrderOkFragment.handleMessage--jsonObject------->"+jsonObject.toString());
-                        JSONObject orderObj = jsonObject.optJSONObject("order");
-                        int orderId = orderObj.optInt("id");
-                        double amount = orderObj.optDouble("amount");
-
-                        System.out.println("ShopOrderOkFragment.handleMessage---------->"+amount);
+                        JSONObject orderObj = jsonObject.optJSONObject("data");
+                        int orderId = orderObj.optInt("orderId");
+                        double amount = orderObj.optDouble("orderTotalAmount");
                         DecimalFormat df = new DecimalFormat("###.00");
-                        System.out.println("ShopOrderOkFragment.handleMessage----->"+Double.parseDouble(df.format(amount)));
                         double fare = moneyYF;
-                        ToolUtils.setLog("dfsfdsfsdfds");
+                        int status=orderObj.optInt("status");
                         ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId, amount, fare,((mContext.getResources().getInteger(R.integer.timer_countdown)) / 1000), null, 1);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
                     } catch (Exception e)
@@ -225,39 +211,8 @@ public class ShopOrderOkFragment extends BaseFragment
                     }
                     break;
                 case 5:
-                    if (isOSaleBuy)
-                    {
-                        mDialog.dismiss();
-                        CustomToastDialog.setToastDialog(mContext, "抱歉,您已经购买过零元特卖商品,今天已经不能购买");
-                    } else
-                    {
-                        commit();
-                    }
-                    break;
-                case 6:
                     mDialog.dismiss();
-                    String json = msg.obj.toString();
-                    String json1 = json.substring(2);
-                    CustomToastDialog.setToastDialog(mContext, json1.substring(0, json1.length() - 2));
-                    break;
-                case 7:
-                    mDialog.dismiss();
-                    String goodsbuy = msg.obj.toString();
-                    ToolUtils.setToastLong(mContext, goodsbuy);
-                    break;
-                case 8:
-                    mDialog.dismiss();
-                    String publish = msg.obj.toString();
-                    String[] publishStr = new String[]{};
-                    publishStr = publish.split(",");
-
-                    for (int i = 0; i < items.size(); i++)
-                    {
-                        if (items.get(i).sizeId == Integer.valueOf(publishStr[1]))
-                        {
-                            CustomToastDialog.setToastDialog(mContext, items.get(i).name + "的活动已经下架");
-                        }
-                    }
+                    CustomToastDialog.setToastDialog(mContext, msg.obj.toString());
                     break;
                 case UPDATE_VERFIY:
                     if (isVerify)
@@ -271,12 +226,10 @@ public class ShopOrderOkFragment extends BaseFragment
                     break;
                 case UPDATE_VERFIY_SUCCESSS:
                     isVerify=false;
-                    ToolUtils.setLog("提交验证码成功");
                     verifyView.setVisibility(View.GONE);
                     judageCommit();
                     break;
                 case UPDATE_GETSMS_SUCCESSS:
-                    ToolUtils.setLog("获取到验证码");
                     codeTimer();
                     break;
             }
@@ -336,7 +289,7 @@ public class ShopOrderOkFragment extends BaseFragment
                         if (ToolUtils.isPhoneOk(phone_Str))
                         {
                             mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "提交中");
-                            judageCommit();
+                            FetchBlindPhoneData();
                         } else
                         {
                             ToolUtils.setToast(mContext, R.string.phone_lose_txt);
@@ -456,7 +409,7 @@ public class ShopOrderOkFragment extends BaseFragment
             mPage = getArguments().getString(PAGE);
             mIndex = getArguments().getInt(INDEX);
             flags = getArguments().getInt("flags");
-            items = (ArrayList<CartGoodsItem>) getArguments().getSerializable("goodsList");
+            cartArrayItems = (ArrayList<CartArrayItem>) getArguments().getSerializable("goodsList");
         }
     }
 
@@ -505,6 +458,11 @@ public class ShopOrderOkFragment extends BaseFragment
 
         okBtn = (Button) mView.findViewById(R.id.jsOkBtn);
         okBtn.setOnClickListener(onClickListener);
+
+        for (int i = 0; i <cartArrayItems.size() ; i++)
+        {
+            items.addAll(cartArrayItems.get(i).goodsItems);
+        }
 
         if (flags == 1)
         {
@@ -591,7 +549,7 @@ public class ShopOrderOkFragment extends BaseFragment
 
     private void initData()
     {
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "");
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
             FetchVerifyData();
@@ -776,58 +734,28 @@ public class ShopOrderOkFragment extends BaseFragment
      */
     private void commit()
     {
+        mDialog=CustomLoadingDialog.setLoadingDialog(mContext,"");
         new Thread(new Runnable()
         {
             @Override
             public void run()
             {
-                if (mDialog!=null)
-                mDialog.dismiss();
                 String result = FetchRequset();
-                if (result != null && result.length() > 10)
+                if (result != null && result.length() > 0)
                 {
                     try
                     {
+                        mDialog.dismiss();
                         JSONObject jsonObject = new JSONObject(result);
                         ToolUtils.setLog(jsonObject.toString());
                         int status = jsonObject.optInt("status");
-                        if (status == 201)
+                        if (status == 200)
                         {
-                            JSONObject orderObj = jsonObject.optJSONObject("order");
-                            int id = orderObj.optInt("id");
-                            String number = orderObj.optString("number");
-                            double amount = orderObj.optDouble("amount");
-                            int count = orderObj.optInt("count");
-
-                            Message message = new Message();
-                            message.what = 4;
-                            message.obj = result;
-                            handler.sendMessage(message);
-                        } else if (status == 400)
-                        {
-                            String errorArr = jsonObject.optJSONObject("message").optString("order_items.merchandise_id");
-                            if (errorArr.length() > 3)
-                            {
-                                Message message = new Message();
-                                message.what = 6;
-                                message.obj = errorArr;
-                                handler.sendMessage(message);
-                            }
-                        } else if (status == 401||status==402)
+                            handler.obtainMessage(4,result).sendToTarget();
+                        } else if (status == 500)
                         {
                             String errorArr = jsonObject.optString("message");
-                            Message message = new Message();
-                            message.what = 7;
-                            message.obj = errorArr;
-                            handler.sendMessage(message);
-                        }
-                        else if (status == 403)
-                        {
-                            String errorArr = jsonObject.optJSONObject("user").optString("phone");
-                            Message message = new Message();
-                            message.what = 6;
-                            message.obj = errorArr;
-                            handler.sendMessage(message);
+                            handler.obtainMessage(5,errorArr).sendToTarget();
                         }
                         else
                         {
@@ -859,23 +787,45 @@ public class ShopOrderOkFragment extends BaseFragment
         {
             // 定义HttpClient
             HttpClient client = new DefaultHttpClient();
-
             // 实例化HTTP方法
-            HttpPost request = new HttpPost(ZhaiDou.orderCommitUrl);
+            HttpPost request = new HttpPost(ZhaiDou.CommitOrdersUrl);
             request.addHeader("SECAuthorization", token);
             request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
             // 创建名/值组列表
             List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("sale_order[receiver_id]", "" + address.getId()));
-            params.add(new BasicNameValuePair("sale_order[node]", bzInfo_Str));
-            params.add(new BasicNameValuePair("phone", phone_Str));
-            params.add(new BasicNameValuePair("vcode", code_Str));
-            for (int i = 0; i < items.size(); i++)
+            params.add(new BasicNameValuePair("businessType", "01"));
+            params.add(new BasicNameValuePair("userId", userId+""));
+            params.add(new BasicNameValuePair("orderPayAmount", totalMoney+""));
+            params.add(new BasicNameValuePair("userAddressId", address.getId()+""));
+            params.add(new BasicNameValuePair("token", token));
+            params.add(new BasicNameValuePair("version", mContext.getResources().getString(R.string.app_versionName).substring(1)));
+            params.add(new BasicNameValuePair("clientType", "ANDROID"));
+            params.add(new BasicNameValuePair("clientVersion", ZDApplication.localVersionCode+""));
+
+            JSONArray storeArray=new JSONArray();
+            for (int i = 0; i < cartArrayItems.size(); i++)
             {
-                params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][merchandise_id]]", items.get(i).id + ""));
-                params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][specification_id]]", items.get(i).sizeId + ""));
-                params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][count]]", items.get(i).num + ""));
+                JSONObject storeObject=new JSONObject();
+                storeObject.put("storeId",cartArrayItems.get(i).storeId);
+                storeObject.put("storeDeliveryId",2);
+                storeObject.put("storeDeliveryFee",moneyYF);
+                storeObject.put("messageToStore",bzInfo_Str);
+
+                JSONArray goodsArray=new JSONArray();
+                for (int j = 0; j <cartArrayItems.get(i).goodsItems.size(); j++)
+                {
+                    CartGoodsItem cartGoodsItem=cartArrayItems.get(i).goodsItems.get(j);
+                    JSONObject goodsObject=new JSONObject();
+                    goodsObject.put("productSKUCode",cartGoodsItem.sku);
+                    goodsObject.put("quantity",cartGoodsItem.num);
+                    goodsObject.put("price",cartGoodsItem.formalPrice);
+                    goodsObject.put("points",0);
+                    goodsArray.put(goodsObject);
+                }
+                storeObject.put("orderItemList",goodsArray);
+                storeArray.put(storeObject);
             }
+            params.add(new BasicNameValuePair("storeOrderItemPOList", storeArray.toString()));
             // 创建UrlEncodedFormEntity对象
             UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
                     params, HTTP.UTF_8);
@@ -990,7 +940,7 @@ public class ShopOrderOkFragment extends BaseFragment
      */
     public void FetchVerifyData()
     {
-        String url = ZhaiDou.accountOrPhone;
+        String url = ZhaiDou.OrderAccountOrPhone;
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,url, new Response.Listener<JSONObject>()
         {
             @Override
@@ -1001,11 +951,14 @@ public class ShopOrderOkFragment extends BaseFragment
                 {
                     if(jsonObject.optInt("status")==200)
                     {
-                        isVerify = false;
-                    }
-                    else
-                    {
-                        isVerify =true;
+                        JSONObject object=jsonObject.optJSONObject("data");
+                        if (object!=null)
+                        {
+                            if (object.optInt("status")==400)
+                            {
+                                isVerify =true;
+                            }
+                        }
                     }
                     handler.sendEmptyMessage(UPDATE_VERFIY);
                 } else
@@ -1046,7 +999,7 @@ public class ShopOrderOkFragment extends BaseFragment
   */
     public void FetchSMSData()
     {
-        String url = ZhaiDou.orderGetSMS+phone_Str;
+        String url = ZhaiDou.OrderGetSMS+phone_Str;
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
@@ -1058,18 +1011,90 @@ public class ShopOrderOkFragment extends BaseFragment
                 {
                     int flag=jsonObject.optInt("status");
                     String msg=jsonObject.optString("message");
-                    String time=jsonObject.optString("time");
-                    if (flag==201)
+                    if (flag==200)
                     {
-                        handler.sendEmptyMessage(UPDATE_GETSMS_SUCCESSS);
+                        JSONObject object=jsonObject.optJSONObject("data");
+                        if (object!=null)
+                        {
+                            if (object.optInt("status")!=201)
+                            {
+                                ToolUtils.setToastLong(mContext,object.optString("message"));
+                            }
+                            else
+                            {
+                                handler.sendEmptyMessage(UPDATE_GETSMS_SUCCESSS);
+                            }
+                        }
+                        else
+                        {
+                            handler.sendEmptyMessage(UPDATE_GETSMS_SUCCESSS);
+                        }
+
+                    }
+                } else
+                {
+                    ToolUtils.setToastLong(mContext,R.string.loading_fail_txt);
+                }
+
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+                ToolUtils.setToastLong(mContext,R.string.loading_fail_txt);
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                headers.put("SECAuthorization", token);
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
+    }
+
+    /*
+     * 获取短信
+     */
+    public void FetchBlindPhoneData()
+    {
+        String url = ZhaiDou.OrderBlindPhone;
+        Map<String,String> maps=new HashMap<String, String>();
+        maps.put("phone", phone_Str);
+        maps.put("vcode", code_Str);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,url,new JSONObject(maps), new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+                if (jsonObject != null)
+                {
+                    int flag=jsonObject.optInt("status");
+                    String msg=jsonObject.optString("message");
+                    JSONObject object=jsonObject.optJSONObject("data");
+                    if (object!=null)
+                    {
+                        if (object.optInt("status")!=201)
+                        {
+                            ToolUtils.setToastLong(mContext,object.optString("message"));
+                        }
+                        else
+                        {
+                            handler.sendEmptyMessage(UPDATE_VERFIY_SUCCESSS);
+                        }
                     }
                     else
                     {
-                        if (msg.equals("no"))
-                        {
-                            msg="验证码十分钟内有效,请使用之前下发的验证码";
-                        }
-                        ToolUtils.setToastLong(mContext,msg);
+                        handler.sendEmptyMessage(UPDATE_VERFIY_SUCCESSS);
                     }
                 } else
                 {
@@ -1099,13 +1124,13 @@ public class ShopOrderOkFragment extends BaseFragment
         mRequestQueue.add(request);
     }
 
+
     /**
      * 零元特卖是否购买请求
      */
     public void FetchOSaleData(final int i)
     {
         String url = ZhaiDou.orderCheckOSaleUrl;
-        Log.i("url---------------------->", url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
@@ -1115,7 +1140,6 @@ public class ShopOrderOkFragment extends BaseFragment
                 if (jsonObject != null)
                 {
                     isOSaleBuy = jsonObject.optBoolean("flag");
-                    Log.i("isOSaleBuy---------------------->", "" + isOSaleBuy);
                 }
                 if (i == 5)
                 {

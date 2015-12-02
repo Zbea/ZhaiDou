@@ -12,15 +12,7 @@ public class SwitchImage {
     public String typeValue;
     public String title;
     public String imageUrl;
+    public int template_type;
 
-
-    public SwitchImage(String url, int id, String title,String imageUrl) {
-        this.id = id;
-        this.title = title;
-        this.imageUrl=imageUrl;
-    }
-
-    public SwitchImage() {
-    }
 
 }

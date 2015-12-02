@@ -6,15 +6,15 @@ package com.zhaidou;
 public class ZhaiDou {
 
     public static String HOME_PAGE_URL = "http://buy.zhaidou.com/?json=get_category_posts&slug=%E5%AE%B6%E9%A5%B0%E4%BC%98%E9%80%89&status=publish";
-//    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
-        public static String HOME_BASE_URL = "http://www.zhaidou.com/";
+    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
+//        public static String HOME_BASE_URL = "http://www.zhaidou.com/";
 
     //首页banner
     public static String HomeBannerUrl="http://121.42.206.45:7082/index/getBoardContent.action?boardCodes=";
     //首页特卖列表
     public static String HomeShopListUrl="http://121.42.206.45:7082/index/getSpecialSaleList.action?pageSize=20&pageNo=";
     //0元特卖列表
-    public static String OSaleListUrl="http://121.42.206.45:7082/index/getActivityProductList.action?activityCode=ZHD2015NNW59113611&pageSize=20&pageNo=1&typeEnum=2";
+    public static String OSaleListUrl="http://121.42.206.45:7082/index/getActivityProductList.action?pageNo=1&typeEnum=2&activityCode=ZHD2015NNW59113611";
     //首页特卖商品列表
     public static String HomeGoodsListUrl="http://121.42.206.45:7082/index/getActivityProductList.action?pageSize=20&activityCode=";
     //商品加入购物车
@@ -30,7 +30,8 @@ public class ZhaiDou {
     //修改购物车商品详情接口
     public static String CartGoodsEditUrl="http://121.42.206.45:7082/cart/editUserCart.action?businessType=01&version=1.0.0&clientType=app&userId=1&quantity=";
 
-
+    //提交订单接口
+    public static String CommitOrdersUrl="http://121.42.206.45:7082/order/addMallOrder.action";
 
     //首页三个专题tag
     public static String HOME_SPECIAL_BANNER_URL=HOME_BASE_URL+"special_mall/api/sales/topic_sales?topic=true";
@@ -81,11 +82,13 @@ public class ZhaiDou {
     public static String orderCheckOSaleUrl=HOME_BASE_URL+"special_mall/api/orders/order_items_0_status";
     //查看当天是否已经购买了普通特卖商品
     public static String orderCheckGoodsUrl=HOME_BASE_URL+"special_mall/api/merchandises/";
-    //确认订单获取短信接口
-    public static String orderGetSMS = HOME_BASE_URL+"api/v1/phone_vcodes/vilidate_phone?flag=1&phone=";
 
+    //确认订单获取短信接口
+    public static String OrderGetSMS = "http://portal-web.zhaidou.com/user/vilidate_phone.action?flag=1&phone=";
     //判断手机是否需要验证接口
-    public static String accountOrPhone = HOME_BASE_URL+"api/v1/users/validation_phone";
+    public static String OrderAccountOrPhone = "http://121.42.206.45:7082/user/validation_phone.action";
+    //提交手机验证接口
+    public static String OrderBlindPhone = "http://121.42.206.45:7082/user/user_blinding_phone.action";
 
     //TAB分类
     public static String CATEGORY_ITEM_URL=HOME_BASE_URL+"article/api/item_categories";

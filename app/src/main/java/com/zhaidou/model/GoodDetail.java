@@ -19,6 +19,8 @@ public class GoodDetail implements Serializable
     public double price;
     public double cost_price;
     public String discount;
+    public String specificationName;//规格
+    public String modelName;//型号
     public List<Specification> specifications;
     public ArrayList<GoodInfo> goodsInfo;
     public ArrayList<String> imgs;

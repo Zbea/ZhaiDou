@@ -16,6 +16,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.HomeCompetitionActivity;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.fragments.GoodsDetailsFragment;
@@ -281,10 +282,21 @@ public class ToolUtils
             ((MainActivity) mContext).navigationToFragment(specialSaleFragment);
         } else if (item.type == 1)
         {
-            Intent intent = new Intent();
-            intent.putExtra("url", item.typeValue);
-            intent.setClass(mContext, WebViewActivity.class);
-            mContext.startActivity(intent);
+            if (item.title.equals("天天刮奖"))
+            {
+                Intent detailIntent = new Intent(mContext, HomeCompetitionActivity.class);
+                detailIntent.putExtra("url", ZhaiDou.PRIZE_SCRAPING_URL);
+                detailIntent.putExtra("from", "lottery");
+                detailIntent.putExtra("title", "天天刮奖");
+                mContext.startActivity(detailIntent);
+            }
+            else
+            {
+                Intent intent = new Intent();
+                intent.putExtra("url", item.typeValue);
+                intent.setClass(mContext, WebViewActivity.class);
+                mContext.startActivity(intent);
+            }
         } else if (item.type == 2)
         {
             Intent detailIntent = new Intent(mContext, ItemDetailActivity.class);
