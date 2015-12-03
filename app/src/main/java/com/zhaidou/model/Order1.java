@@ -22,7 +22,31 @@ public class Order1 implements Serializable{
     public String creationTime;
     public String updatedTime;
     public String storeId;
+    public String remark;
 
-    private List<Store> childOrderPOList;
+    public List<Store> childOrderPOList;
+    public Address deliveryAddressPO;
 
+    @Override
+    public String toString() {
+        return "Order1{" +
+                "orderId=" + orderId +
+                ", orderCode='" + orderCode + '\'' +
+                ", status=" + status +
+                ", orderShowStatus='" + orderShowStatus + '\'' +
+                ", buyerId=" + buyerId +
+                ", itemTotalAmount='" + itemTotalAmount + '\'' +
+                ", orderPayAmount='" + orderPayAmount + '\'' +
+                ", orderActualAmount='" + orderActualAmount + '\'' +
+                ", orderTotalAmount='" + orderTotalAmount + '\'' +
+                ", discountAmount='" + discountAmount + '\'' +
+                ", deliveryFee='" + deliveryFee + '\'' +
+                ", creationTime='" + creationTime + '\'' +
+                ", updatedTime='" + updatedTime + '\'' +
+                ", storeId='" + storeId + '\'' +
+                ", remark='" + remark + '\'' +
+                ", childOrderPOList=" + childOrderPOList +
+                ", deliveryAddressPO=" + deliveryAddressPO +
+                '}';
+    }
 }

@@ -95,17 +95,17 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
                     ((MainActivity)mContext).toHomeFragment();
                     break;
                 case R.id.tv_order_detail:
-                    ToolUtils.setLog("前往订单");
-                    OrderDetailFragment orderDetailFragment=OrderDetailFragment.newInstance(mOrderId+"",0,mOrder,1);
-                    ((MainActivity)getActivity()).navigationToFragment(orderDetailFragment);
-                    orderDetailFragment.setOnColseSuccess(new OrderDetailFragment.OnColseSuccess()
-                    {
-                        @Override
-                        public void colsePage()
-                        {
-                            colseFragment(ShopPaymentSuccessFragment.this);
-                        }
-                    });
+//                    ToolUtils.setLog("前往订单");
+//                    OrderDetailFragment orderDetailFragment=OrderDetailFragment.newInstance(mOrderId+"",0,mOrder,1);
+//                    ((MainActivity)getActivity()).navigationToFragment(orderDetailFragment);
+//                    orderDetailFragment.setOnColseSuccess(new OrderDetailFragment.OnColseSuccess()
+//                    {
+//                        @Override
+//                        public void colsePage()
+//                        {
+//                            colseFragment(ShopPaymentSuccessFragment.this);
+//                        }
+//                    });
                     break;
             }
         }

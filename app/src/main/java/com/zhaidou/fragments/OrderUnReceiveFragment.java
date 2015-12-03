@@ -15,6 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -31,6 +32,7 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
+import com.zhaidou.model.Order1;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -63,12 +65,13 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
     private View rootView;
     private View mEmptyView, mNetErrorView;
     private Context mContext;
+    private List<Order1> mOrderList;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case STATUS_UNRECEIVE_LIST:
-                    if (orders != null && orders.size() > 0) {
+                    if (mOrderList != null && mOrderList.size() > 0) {
                         loadingView.setVisibility(View.GONE);
                         unReceiveAdapter.notifyDataSetChanged();
                     } else {
@@ -121,6 +124,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
     private void initView(View view) {
         mContext = getActivity();
 //        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
+        mOrderList = new ArrayList<Order1>();
         loadingView = (LinearLayout) view.findViewById(R.id.loadingView);
         mEmptyView = rootView.findViewById(R.id.nullline);
         mNetErrorView = rootView.findViewById(R.id.nullNetline);
@@ -268,18 +272,18 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
         unReceiveAdapter.setOnInViewClickListener(R.id.ll_unreceive, new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                final Order order = (Order) values;
-                OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(), order,2);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(orderDetailFragment);
-                orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
-                    @Override
-                    public void onOrderStatusChange(Order o) {
-                        if ("5".equalsIgnoreCase(o.getStatus())) {
-                            orders.remove(order);
-                            handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
-                        }
-                    }
-                });
+//                final Order order = (Order) values;
+//                OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(), order,2);
+//                ((MainActivity) getActivity()).navigationToFragmentWithAnim(orderDetailFragment);
+//                orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
+//                    @Override
+//                    public void onOrderStatusChange(Order o) {
+//                        if ("5".equalsIgnoreCase(o.getStatus())) {
+//                            orders.remove(order);
+//                            handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
+//                        }
+//                    }
+//                });
             }
         });
     }
@@ -301,43 +305,53 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
     }
 
     private void FetchReceiveData() {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?status=1,4", new Response.Listener<JSONObject>() {
+        Map<String,String> params = new HashMap();
+        params.put("userId","28129");
+        params.put("clientType","ANDROID");
+        params.put("clientVersion","45");
+        params.put("businessType","01");
+        params.put("type", "3");
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,ZhaiDou.URL_ORDER_LIST ,new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null)
                     mDialog.dismiss();
                 Log.i("FetchReceiveData----------->", jsonObject.toString());
-                if (jsonObject != null) {
-                    JSONArray orderArr = jsonObject.optJSONArray("orders");
-                    if (orderArr != null && orderArr.length() > 0) {
-                        orders.clear();
-                        for (int i = 0; i < orderArr.length(); i++) {
-                            JSONObject orderObj = orderArr.optJSONObject(i);
-                            int id = orderObj.optInt("id");
-                            String number = orderObj.optString("number");
-                            String logNum = orderObj.optString("deliver_number");
-                            double amount = orderObj.optDouble("amount");
-                            String status = orderObj.optString("status");
-                            String status_ch = orderObj.optString("status_ch");
-                            String created_at = orderObj.optString("created_at");
-                            String created_at_for = orderObj.optString("created_at_for");
-                            String img = orderObj.optString("merch_img");
-                            long over_at = orderObj.optLong("over_at");
-                            boolean is_zero=orderObj.optBoolean("is_zero");
-                            Order order = new Order(id, number, amount, status, status_ch, created_at_for, created_at, "", 0);
-                            order.logisticsNum=logNum;
-                            order.setImg(img);
-                            order.setOver_at(over_at);
-                            order.setZero(is_zero);
-                            orders.add(order);
-                        }
-                        handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
-                    } else {
-                        mListView.setVisibility(View.GONE);
-                        mEmptyView.setVisibility(View.VISIBLE);
-                        loadingView.setVisibility(View.VISIBLE);
-                    }
-                }
+//                if (jsonObject != null) {
+//                    JSONArray orderArr = jsonObject.optJSONArray("orders");
+//                    if (orderArr != null && orderArr.length() > 0) {
+//                        orders.clear();
+//                        for (int i = 0; i < orderArr.length(); i++) {
+//                            JSONObject orderObj = orderArr.optJSONObject(i);
+//                            int id = orderObj.optInt("id");
+//                            String number = orderObj.optString("number");
+//                            String logNum = orderObj.optString("deliver_number");
+//                            double amount = orderObj.optDouble("amount");
+//                            String status = orderObj.optString("status");
+//                            String status_ch = orderObj.optString("status_ch");
+//                            String created_at = orderObj.optString("created_at");
+//                            String created_at_for = orderObj.optString("created_at_for");
+//                            String img = orderObj.optString("merch_img");
+//                            long over_at = orderObj.optLong("over_at");
+//                            boolean is_zero=orderObj.optBoolean("is_zero");
+//                            Order order = new Order(id, number, amount, status, status_ch, created_at_for, created_at, "", 0);
+//                            order.logisticsNum=logNum;
+//                            order.setImg(img);
+//                            order.setOver_at(over_at);
+//                            order.setZero(is_zero);
+//                            orders.add(order);
+//                        }
+//                        handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
+//                    } else {
+//                        mListView.setVisibility(View.GONE);
+//                        mEmptyView.setVisibility(View.VISIBLE);
+//                        loadingView.setVisibility(View.VISIBLE);
+//                    }
+//                }
+                JSONArray dataArray = jsonObject.optJSONArray("data");
+                mOrderList.addAll(JSON.parseArray(dataArray.toString(), Order1.class));
+                System.out.println("OrderUnPayFragment.onResponse---->"+mOrderList.size());
+                handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
             }
         }, new Response.ErrorListener() {
             @Override

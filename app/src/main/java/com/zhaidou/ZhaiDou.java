@@ -134,7 +134,7 @@ public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
     public final static int VERFIRY_TIME=60;
 
     /** 未付款*/
-    public final static int STATUS_UNPAY=0;
+    public final static int STATUS_UNPAY=10;
     /**已付款*/
     public final static int STATUS_PAYED=1;
     /** 超时过期*/
@@ -154,13 +154,15 @@ public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
     /**未付款取消*/
     public final static int STATUS_UNPAY_CANCEL=9;
     /**交易关闭*/
-    public final static int STATUS_DEAL_CLOSE=10;
+    public final static int STATUS_DEAL_CLOSE=100;
     /**退款成功*/
     public final static int STATUS_RETURN_MONEY_SUCCESS=11;
 
 
     //订单列表
     public static String URL_ORDER_LIST=HOME_BASE_URL+"order/orderList.action";
+    //订单详情
+    public static String URL_ORDER_DETAIL=HOME_BASE_URL+"order/getOrderDetail.action";
     //收货地址
     public static String ORDER_RECEIVER_URL=HOME_BASE_URL+"special_mall/api/receivers/";
     //省市区
