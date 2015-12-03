@@ -331,6 +331,7 @@ public class ShopCartFragment extends BaseFragment
         return isLogin;
     }
 
+
     /**
      * 刷新数据
      */
