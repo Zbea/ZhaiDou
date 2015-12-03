@@ -217,7 +217,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                         if (jsonObject != null) {
                             JSONObject dataObj = jsonObject.optJSONObject("data");
                             String message = jsonObject.optString("message");
-                            if (jsonObject.isNull("code")){
+                            if (jsonObject.isNull("code")) {
                                 String token = dataObj.optJSONObject("user_tokens").optString("token");
                                 validate_phone = dataObj.optJSONArray("users").optJSONObject(0).optBoolean("validate_phone");
                                 JSONArray userArr = dataObj.optJSONArray("users");
@@ -229,9 +229,9 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                                     User user = new User(id, email, token, nick, null);
                                     mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
                                 }
-                            }else {
+                            } else {
                                 String msg = dataObj.optString("message");
-                                Toast.makeText(LoginActivity.this,TextUtils.isEmpty(msg)?message:msg,Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this, TextUtils.isEmpty(msg) ? message : msg, Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
@@ -359,7 +359,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_BINE_PHONE_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                JSONObject dataObj=jsonObject.optJSONObject("data");
+                JSONObject dataObj = jsonObject.optJSONObject("data");
                 int status = dataObj.optInt("status");
                 if (201 == status) {
                     mDialog.dismiss();
@@ -387,7 +387,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                System.out.println("LoginActivity.getHeaders------------>"+token);
+                System.out.println("LoginActivity.getHeaders------------>" + token);
                 headers.put("SECAuthorization", token);
                 return headers;
             }
@@ -413,7 +413,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 //                return;
 //            }
 //        }
-        if (plat.isValid()){
+        if (plat.isValid()) {
             plat.removeAccount();
         }
         plat.setPlatformActionListener(this);
@@ -433,19 +433,23 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
      * @param mDialog
      */
     private void getVerifyCode(String phone, final Dialog mDialog) {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + "?phone="+phone+"&flag=1", new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + "?phone=" + phone + "&flag=1", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                System.out.println("LoginActivity.onResponse------->" + jsonObject.toString());
                 JSONObject dataObj = jsonObject.optJSONObject("data");
-                String message=dataObj.optString("message");
-                int status= dataObj.optInt("status");
-                if (status == 201) {
-//                    codeTimer();
-                    mDialogUtils.codeTimer();
-                    return;
+                String message=jsonObject.optString("message");
+                if (jsonObject.isNull("code")) {
+                    String msg = dataObj.optString("message");
+                    int status = dataObj.optInt("status");
+                    if (status == 201) {
+                        mDialogUtils.codeTimer();
+                        return;
+                    } else {
+                        mDialog.findViewById(R.id.iv_close).setVisibility(View.VISIBLE);
+                        Toast.makeText(LoginActivity.this, TextUtils.isEmpty(msg)?message:msg, Toast.LENGTH_SHORT).show();
+                    }
+
                 } else {
-                    mDialog.findViewById(R.id.iv_close).setVisibility(View.VISIBLE);
                     Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                 }
             }

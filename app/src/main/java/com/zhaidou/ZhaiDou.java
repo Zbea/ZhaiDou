@@ -160,7 +160,7 @@ public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
 
 
     //订单列表
-    public static String URL_ORDER_LIST=HOME_BASE_URL+"special_mall/api/orders";
+    public static String URL_ORDER_LIST=HOME_BASE_URL+"order/orderList.action";
     //收货地址
     public static String ORDER_RECEIVER_URL=HOME_BASE_URL+"special_mall/api/receivers/";
     //省市区

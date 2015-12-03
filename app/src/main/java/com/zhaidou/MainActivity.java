@@ -76,12 +76,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.sharesdk.framework.Platform;
-import cn.sharesdk.framework.ShareSDK;
-import cn.sharesdk.sina.weibo.SinaWeibo;
-import cn.sharesdk.tencent.qq.QQ;
-import cn.sharesdk.wechat.friends.Wechat;
-
 /**
  */
 public class MainActivity extends BaseActivity implements DiyFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
@@ -554,21 +548,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         }
         selectFragment(currentFragment, utilityFragment);
         setButton(homeButton);
-        ShareSDK.initSDK(this);
-        ShareSDK.deleteCache();
-        Platform qq = ShareSDK.getPlatform(this, QQ.NAME);
-        Platform wechat = ShareSDK.getPlatform(this, Wechat.NAME);
-        Platform sina = ShareSDK.getPlatform(this, SinaWeibo.NAME);
-        ShareSDK.removeCookieOnAuthorize(true);
-        if (qq.isValid()) {
-            qq.removeAccount();
-        }
-        if (wechat.isValid()) {
-            wechat.removeAccount();
-        }
-        if (sina.isValid()) {
-            sina.removeAccount();
-        }
     }
 
     @Override

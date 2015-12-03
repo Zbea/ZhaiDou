@@ -18,7 +18,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -34,6 +36,7 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
+import com.zhaidou.model.Order1;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -252,39 +255,79 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
     private void FetchData() {
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         orders.clear();
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?status=0", new Response.Listener<JSONObject>() {
+        Map<String,String> params = new HashMap();
+        params.put("userId","28129");
+        params.put("clientType","ANDROID");
+        params.put("clientVersion","45");
+        params.put("businessType","01");
+        params.put("type","1");
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,ZhaiDou.URL_ORDER_LIST,new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("FetchData------------------>", jsonObject.toString());
                 if (mDialog != null)
                     mDialog.dismiss();
-                if (jsonObject != null) {
-                    JSONArray orderArr = jsonObject.optJSONArray("orders");
-                    if (orderArr != null && orderArr.length() > 0) {
-                        orders.clear();
-                        for (int i = 0; i < orderArr.length(); i++) {
-                            JSONObject orderObj = orderArr.optJSONObject(i);
-                            int id = orderObj.optInt("id");
-                            String number = orderObj.optString("number");
-                            double amount = orderObj.optDouble("amount");
-                            String status = orderObj.optString("status");
-                            String status_ch = orderObj.optString("status_ch");
-                            String created_at = orderObj.optString("created_at");
-                            String created_at_for = orderObj.optString("created_at_for");
-                            String img = orderObj.optString("merch_img");
-                            long over_at = orderObj.optLong("over_at");
-                            Order order = new Order(id, number, amount, status, status_ch, created_at_for, created_at, "", 0);
-                            order.setImg(img);
-                            order.setOver_at(over_at);
-                            if (over_at > 0) {
-                                orders.add(order);
-                            }
-                        }
-                        handler.sendEmptyMessage(UPDATE_UNPAY_LIST);
-                    } else {
-                        handler.sendEmptyMessage(UPDATE_UNPAY_LIST);
-                    }
-                }
+//                if (jsonObject != null) {
+//                    JSONArray orderArr = jsonObject.optJSONArray("orders");
+//                    if (orderArr != null && orderArr.length() > 0) {
+//                        orders.clear();
+//                        for (int i = 0; i < orderArr.length(); i++) {
+//                            JSONObject orderObj = orderArr.optJSONObject(i);
+//                            int id = orderObj.optInt("id");
+//                            String number = orderObj.optString("number");
+//                            double amount = orderObj.optDouble("amount");
+//                            String status = orderObj.optString("status");
+//                            String status_ch = orderObj.optString("status_ch");
+//                            String created_at = orderObj.optString("created_at");
+//                            String created_at_for = orderObj.optString("created_at_for");
+//                            String img = orderObj.optString("merch_img");
+//                            long over_at = orderObj.optLong("over_at");
+//                            Order order = new Order(id, number, amount, status, status_ch, created_at_for, created_at, "", 0);
+//                            order.setImg(img);
+//                            order.setOver_at(over_at);
+//                            if (over_at > 0) {
+//                                orders.add(order);
+//                            }
+//                        }
+//                        handler.sendEmptyMessage(UPDATE_UNPAY_LIST);
+//                    } else {
+//                        handler.sendEmptyMessage(UPDATE_UNPAY_LIST);
+//                    }
+//                }
+
+                JSONArray dataArray = jsonObject.optJSONArray("data");
+                List<Order1> order1s = JSON.parseArray(dataArray.toString(), Order1.class);
+                System.out.println("OrderUnPayFragment.onResponse---->"+order1s.size());
+//                for (int i = 0; i <dataArray.length() ; i++) {
+//                    JSONObject orderObj = dataArray.optJSONObject(i);
+//                    long orderId = orderObj.optLong("orderId");
+//                    String orderCode = orderObj.optString("orderCode");
+//                    int status = orderObj.optInt("status");
+//                    String orderShowStatus = orderObj.optString("orderShowStatus");
+//                    int buyerId = orderObj.optInt("buyerId");
+//                    String itemTotalAmount = orderObj.optString("itemTotalAmount");
+//                    String orderPayAmount = orderObj.optString("orderPayAmount");
+//                    String orderActualAmount = orderObj.optString("orderActualAmount");
+//                    String orderTotalAmount = orderObj.optString("orderTotalAmount");
+//                    String discountAmount = orderObj.optString("discountAmount");
+//                    String deliveryFee = orderObj.optString("deliveryFee");
+//                    String creationTime = orderObj.optString("creationTime");
+//                    String updatedTime = orderObj.optString("updatedTime");
+//                    String storeId = orderObj.optString("storeId");
+//
+//                    JSONArray childOrderPOList=orderObj.optJSONArray("childOrderPOList");
+//                    for (int j = 0; j < childOrderPOList.length(); j++) {
+//                        JSONObject childOrderObj = childOrderPOList.optJSONObject(i);
+//                        String storeId1 = childOrderObj.optString("storeId");
+//                        String storeName = childOrderObj.optString("storeName");
+//                        String supplierCode = childOrderObj.optString("supplierCode");
+//                        String supplierName = childOrderObj.optString("supplierName");
+//                        int quantity = childOrderObj.optInt("quantity");
+//                        int isApplyCancel = childOrderObj.optInt("isApplyCancel");
+//
+//                    }
+//
+//                }
             }
         }, new Response.ErrorListener() {
             @Override
