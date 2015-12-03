@@ -183,7 +183,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                 Product product=(Product)values;
                 if (mFlag==1)
                 {
-                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0);
+                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0+"");
                     Bundle bundle = new Bundle();
                     bundle.putInt("index", product.getId());
                     bundle.putString("page", product.getTitle());

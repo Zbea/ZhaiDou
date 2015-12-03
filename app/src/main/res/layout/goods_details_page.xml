@@ -73,6 +73,7 @@
                     android:layout_alignParentBottom="true"
                     android:background="#dd3fcccb"
                     android:gravity="center"
+                    android:visibility="gone"
                     android:orientation="horizontal"
                     android:paddingBottom="3dp"
                     android:paddingTop="3dp">
@@ -82,7 +83,7 @@
                         android:layout_height="13dp"
                         android:src="@drawable/icon_time_white"/>
 
-                    <com.zhaidou.view.TypeFaceTextView
+                    <com.zhaidou.view.TimerTextView
                         android:id="@+id/tv_count_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -298,23 +299,6 @@
 
                         </com.zhaidou.view.FlowLayout>
                         </RelativeLayout>
-
-                    <com.zhaidou.view.ChildGridView
-                        android:id="@+id/gv_specification"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/default_margin"
-                        android:layout_marginRight="@dimen/default_margin"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginBottom="20dp"
-                        android:horizontalSpacing="@dimen/default_margin"
-                        android:listSelector="@color/transparent"
-                        android:numColumns="3"
-                        android:scrollbars="none"
-                        android:visibility="gone"
-                        android:verticalSpacing="@dimen/default_margin">
-
-                    </com.zhaidou.view.ChildGridView>
 
                 </LinearLayout>
             </LinearLayout>

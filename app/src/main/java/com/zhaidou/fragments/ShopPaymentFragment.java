@@ -34,7 +34,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.alipay.PayResult;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.model.CartItem;
+import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.Order;
 import com.zhaidou.model.OrderItem;
 import com.zhaidou.model.Receiver;
@@ -85,7 +85,7 @@ public class ShopPaymentFragment extends BaseFragment {
     private LinearLayout loseView;
     private Button paymentBtn;
 
-    private ArrayList<CartItem> items;
+    private ArrayList<CartGoodsItem> items;
     private int num = 0;
     private double money = 0;
     private double moneyYF = 0;

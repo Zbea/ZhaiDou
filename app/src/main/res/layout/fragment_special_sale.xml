@@ -43,12 +43,12 @@
             android:layout_centerInParent="true"
             android:text="零元特卖"/>
     </RelativeLayout>
-<ScrollView
+ <com.pulltorefresh.PullToRefreshScrollView
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:scrollbars="none"
     android:layout_below="@+id/common_actionbar"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -93,7 +93,7 @@
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:src="@drawable/time_icon"/>
-            <com.zhaidou.view.TypeFaceTextView
+            <com.zhaidou.view.TimerTextView
                 android:id="@+id/tv_count_time"
                 android:paddingLeft="5dp"
                 android:layout_width="wrap_content"
@@ -117,7 +117,7 @@
         android:layout_marginBottom="10dp"
         android:listSelector="@android:color/transparent"/>
     </LinearLayout>
-</ScrollView>
+</com.pulltorefresh.PullToRefreshScrollView>
 
     <RelativeLayout
         android:layout_width="50dp"

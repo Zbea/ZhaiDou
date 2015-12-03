@@ -13,6 +13,29 @@ public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
     //    public static String HOME_BASE_URL = "http://192.168.1.126:3000/lotteries";
     public static String TAG_BASE_URL = "http://buy.zhaidou.com/?tag=%s&json=1";
 
+    //首页banner
+    public static String HomeBannerUrl="http://121.42.206.45:7082/index/getBoardContent.action?boardCodes=";
+    //首页特卖列表
+    public static String HomeShopListUrl="http://121.42.206.45:7082/index/getSpecialSaleList.action?pageSize=20&pageNo=";
+    //0元特卖列表
+    public static String OSaleListUrl="http://121.42.206.45:7082/index/getActivityProductList.action?pageNo=1&typeEnum=2&activityCode=ZHD2015NNW59113611";
+    //首页特卖商品列表
+    public static String HomeGoodsListUrl="http://121.42.206.45:7082/index/getActivityProductList.action?pageSize=20&activityCode=";
+    //商品加入购物车
+    public static String GoodsDetailsAddUrl="http://121.42.206.45:7082/cart/addUserCart.action?businessType=01&version=1.0.0&clientType=app&quantity=1&userId=1&productSKUId=";
+    //商品详情接口
+    public static String HomeGoodsDetailsUrl="http://121.42.206.45:7082/product/getProductInfo.action?businessType=01&version=1.0.0&productId=";
+    //购物车数量接口
+    public static String CartGoodsCountUrl="http://121.42.206.45:7082/cart/countUserCartQuantity.action?businessType=01&version=1.0.0&userId=1";
+    //购物车列表接口
+    public static String CartGoodsListUrl="http://121.42.206.45:7082/cart/queryUserCart.action?businessType=01&version=1.0.0&clientType=app&userId=1";
+    //删除购物车接口
+    public static String CartGoodsDeleteUrl="http://121.42.206.45:7082/cart/deleteUserCart.action?businessType=01&version=1.0.0&userId=1&productSKUId=";
+    //修改购物车商品详情接口
+    public static String CartGoodsEditUrl="http://121.42.206.45:7082/cart/editUserCart.action?businessType=01&version=1.0.0&clientType=app&userId=1&quantity=";
+
+
+
     //首页三个专题tag
     public static String HOME_SPECIAL_BANNER_URL=HOME_BASE_URL+"special_mall/api/sales/topic_sales?topic=true";
 
@@ -180,10 +203,10 @@ public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
      *  购物车选中商品刷新
      */
     public static String IntentRefreshCartGoodsCheckTag ="com.zhaidou.home.refesh.cart.goods.check";
-//    /**
-//     *  购物车商品减一
-//     */
-//    public static String IntentRefreshCartGoodsSubTag="com.zhaidou.home.refesh.cart.goods.sub";
+    /**
+     *  加入购物车成功
+     */
+    public static String IntentRefreshAddCartTag="com.zhaidou.home.refesh.goods.add.cart";
     /**
      * 购物车商品刷新
      */

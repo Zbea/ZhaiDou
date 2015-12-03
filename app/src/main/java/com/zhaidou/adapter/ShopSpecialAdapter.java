@@ -109,9 +109,9 @@ public class ShopSpecialAdapter extends BaseAdapter
         }
         viewHolder.itemName.setText(shopSpecialItem.title);
         viewHolder.itemSale.setText(shopSpecialItem.sale);
-        viewHolder.itemTime.setText(shopSpecialItem.overTime);
+        viewHolder.itemTime.setText(""+shopSpecialItem.overTime);
 
-        if ("true".equalsIgnoreCase(shopSpecialItem.isNew))
+        if (shopSpecialItem.isNew==1)
         {
             if (!(Boolean) SharedPreferencesUtil.getData(context, "is_new_" + shopSpecialItem.id, true))
             {

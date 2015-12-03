@@ -54,6 +54,7 @@ public class WelcomePage extends Activity
 //        {
 //        // MTA初始化失败 logger.error("MTA start failed."); logger.error("e");
 //        }
+
         registerMessageReceiver();
         initView();
 //        TestinAgent.init(this, "a6fa2001f0268f633bd007e5b0f118ca");

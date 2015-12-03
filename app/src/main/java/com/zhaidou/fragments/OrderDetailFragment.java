@@ -475,7 +475,7 @@ public class OrderDetailFragment extends BaseFragment {
 //                order.setCity_name(city_name);
 //                order.setProvider_name(provider_name);
                 if (orderDetail.orderItemPOList!=null)
-                orderItems.addAll(orderDetail.orderItemPOList);
+                    orderItems.addAll(orderDetail.orderItemPOList);
                 Message message = new Message();
                 message.obj = orderDetail;
                 message.what = 1;

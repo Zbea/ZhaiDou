@@ -129,7 +129,6 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
             }
         }
         viewHolder.itemName.setText(todayShopItem.title);
-        viewHolder.itemIntorduce.setText(todayShopItem.designer);
         viewHolder.itemCurrentPrice.setText("￥"+ToolUtils.isIntPrice(""+todayShopItem.currentPrice));
         viewHolder.itemFormerPrice.getPaint().setAntiAlias(true);//去锯齿
         viewHolder.itemFormerPrice.setText("￥"+ToolUtils.isIntPrice(""+todayShopItem.formerPrice));
@@ -171,7 +170,7 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
             @Override
             public void onClick(View view)
             {
-                GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).title, items.get(position).id);
+                GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).title, items.get(position).goodsId);
                 ((MainActivity) context).navigationToFragment(goodsDetailsFragment);
             }
         });
