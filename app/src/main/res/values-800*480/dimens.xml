@@ -2,6 +2,7 @@
 <resources>
     <dimen name="header_height_dimen">46dp</dimen>
     <dimen name="home_item_dimen">135dp</dimen>
+    <dimen name="home_code_dimen">40dp</dimen>
     <dimen name="goods_height_dimen">200dp</dimen>
     <dimen name="image_height_dimen">100dp</dimen>
     <dimen name="image_width_dimen">100dp</dimen>

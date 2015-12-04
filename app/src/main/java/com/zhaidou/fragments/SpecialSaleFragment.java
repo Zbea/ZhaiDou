@@ -422,7 +422,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 
     public void FetchData()
     {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.OSaleListUrl,
+        String url=ZhaiDou.HomeGoodsListUrl+mParam2+"&pageNo="+ page +"&typeEnum="+2;
+        JsonObjectRequest request = new JsonObjectRequest(url,
                 new Response.Listener<JSONObject>()
                 {
                     @Override

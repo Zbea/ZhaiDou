@@ -335,7 +335,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         myCartBtn.setOnClickListener(onClickListener);
 
         mScrollView = (PullToRefreshScrollView) mView.findViewById(R.id.scrollView);
-        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         mScrollView.setOnRefreshListener(onRefreshListener);
 
         mRequestQueue = Volley.newRequestQueue(mContext);

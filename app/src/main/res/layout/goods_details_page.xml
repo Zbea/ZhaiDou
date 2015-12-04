@@ -39,7 +39,7 @@
                 <ImageView
                     android:id="@+id/goodsImageView"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="140dp"
                     android:layout_centerInParent="true"
                     android:background="@color/white"
                     android:scaleType="fitXY"
@@ -674,6 +674,7 @@
         layout="@layout/content_null_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="gone"
         android:layout_below="@+id/headLine"></include>
 
 </RelativeLayout>

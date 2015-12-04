@@ -13,10 +13,8 @@ public class ZhaiDou {
     public static String HomeBannerUrl="http://121.42.206.45:7082/index/getBoardContent.action?boardCodes=";
     //首页特卖列表
     public static String HomeShopListUrl="http://121.42.206.45:7082/index/getSpecialSaleList.action?pageSize=20&pageNo=";
-    //0元特卖列表
-    public static String OSaleListUrl="http://121.42.206.45:7082/index/getActivityProductList.action?pageNo=1&typeEnum=2&activityCode=ZHD2015NNW59113611";
     //首页特卖商品列表
-    public static String HomeGoodsListUrl="http://121.42.206.45:7082/index/getActivityProductList.action?pageSize=20&activityCode=";
+    public static String HomeGoodsListUrl="http://121.42.206.45:7082/index/getActivityProductList.action?activityCode=";
     //商品加入购物车
     public static String GoodsDetailsAddUrl="http://121.42.206.45:7082/cart/addUserCart.action?businessType=01&version=1.0.0&clientType=app&quantity=1&userId=1&productSKUId=";
     //商品详情接口

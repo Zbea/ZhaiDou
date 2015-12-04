@@ -459,6 +459,7 @@ public class ShopOrderOkFragment extends BaseFragment
         okBtn = (Button) mView.findViewById(R.id.jsOkBtn);
         okBtn.setOnClickListener(onClickListener);
 
+        items.clear();
         for (int i = 0; i <cartArrayItems.size() ; i++)
         {
             items.addAll(cartArrayItems.get(i).goodsItems);
@@ -818,7 +819,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     JSONObject goodsObject=new JSONObject();
                     goodsObject.put("productSKUCode",cartGoodsItem.sku);
                     goodsObject.put("quantity",cartGoodsItem.num);
-                    goodsObject.put("price",cartGoodsItem.formalPrice);
+                    goodsObject.put("price",cartGoodsItem.currentPrice);
                     goodsObject.put("points",0);
                     goodsArray.put(goodsObject);
                 }

@@ -278,7 +278,7 @@ public class ToolUtils
     {
         if (item.type == 0)
         {
-            SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", "");
+            SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", item.typeValue);
             ((MainActivity) mContext).navigationToFragment(specialSaleFragment);
         } else if (item.type == 1)
         {

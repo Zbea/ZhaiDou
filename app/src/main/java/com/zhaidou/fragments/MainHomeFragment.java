@@ -148,7 +148,7 @@ public class MainHomeFragment extends BaseFragment implements
     }
 
     /**
-     * 添加 banner 顶部
+     * 添加 banner 下面四个按钮
      */
     private void setCodeView()
     {
