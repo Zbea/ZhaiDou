@@ -735,7 +735,6 @@ public class ShopOrderOkFragment extends BaseFragment
      */
     private void commit()
     {
-        mDialog=CustomLoadingDialog.setLoadingDialog(mContext,"");
         new Thread(new Runnable()
         {
             @Override

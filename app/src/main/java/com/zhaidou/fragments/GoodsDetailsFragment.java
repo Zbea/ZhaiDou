@@ -409,7 +409,7 @@ public class GoodsDetailsFragment extends BaseFragment
                             {
                                 if (mSpecification1==null)
                                 {
-                                    scrollView.scrollTo(0, 405);
+                                    scrollView.scrollTo(0, 450);
                                     ToolUtils.setToast(mContext,"抱歉，请先选择"+sizeName1);
                                     return;
                                 }
@@ -426,7 +426,7 @@ public class GoodsDetailsFragment extends BaseFragment
                                 }
                             } else
                             {
-                                scrollView.scrollTo(0, 600);
+                                scrollView.scrollTo(0, 700);
                                 Toast.makeText(mContext, "抱歉,先选择"+sizeName2, Toast.LENGTH_SHORT).show();
                             }
                     } else
@@ -602,7 +602,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     {
                         topBtn.setVisibility(View.VISIBLE);
                     }
-                    if (scrollY < 600)
+                    if (scrollY < 700)
                     {
                         topBtn.setVisibility(View.GONE);
                     }
@@ -829,7 +829,6 @@ public class GoodsDetailsFragment extends BaseFragment
                             textView.setSelected(false);
                             mSpecification1=null;
                             addSpecificationView2(specificationList.get(0).sizess);
-
                         }
                     } else
                     {
@@ -1025,13 +1024,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 textView.setClickable(false);
             } else
             {
-                if (mClick == position)
-                {
-                    textView.setSelected(true);
-                } else
-                {
-                    textView.setSelected(false);
-                }
+                textView.setSelected(false);
                 texts2.add(textView);
             }
             flowLayout1.addView(view, lp);
@@ -1047,20 +1040,40 @@ public class GoodsDetailsFragment extends BaseFragment
         {
             if (flag == 0)
             {
-                specificationList.get(i).isBuy = true;
-            } else if (flag == 1)
-            {
-                if (specificationList.get(i).sizeId.equals(mSpecification.sizeId))
+                //判断是否为二维
+                if (isSizeShow1==false&&isSizeShow2==false)
+                {
+                    for (int j = 0; j <specificationList.get(i).sizess.size() ; j++)
+                    {
+                        specificationList.get(i).sizess.get(j).isBuy = true;
+                    }
+                }
+                else
                 {
                     specificationList.get(i).isBuy = true;
-                    specificationList.get(i).num = specificationList.get(i).num - 1;
                 }
-            } else
+            } else if (flag == 1)
             {
-                if (specificationList.get(i).sizeId.equals(mSpecification.sizeId))
+                //判断是否为二维
+                if (isSizeShow1==false&&isSizeShow2==false)
                 {
-                    specificationList.get(i).num = mSpecification.num;
+                    for (int j = 0; j <specificationList.get(i).sizess.size() ; j++)
+                    {
+                        if (specificationList.get(i).sizess.get(j).sizeId.equals(mSpecification.sizeId))
+                        {
+                            specificationList.get(i).sizess.get(j).num = specificationList.get(i).sizess.get(j).num - 1;
+                        }
+
+                    }
                 }
+                else
+                {
+                    if (specificationList.get(i).sizeId.equals(mSpecification.sizeId))
+                    {
+                        specificationList.get(i).num = specificationList.get(i).num - 1;
+                    }
+                }
+
             }
         }
         if (mSpecification.num < 1)
@@ -1091,9 +1104,9 @@ public class GoodsDetailsFragment extends BaseFragment
         } else
         {
             setAddOrBuyShow("", true);
-            mCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + mSpecification.price));
-            mOldPrice.setText("￥" + ToolUtils.isIntPrice("" + mSpecification.oldPrice));
-            setDiscount(mSpecification.price, mSpecification.oldPrice);
+            mCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + spe.price));
+            mOldPrice.setText("￥" + ToolUtils.isIntPrice("" + spe.oldPrice));
+            setDiscount(spe.price, spe.oldPrice);
         }
         if (isPublish)
         {
@@ -1272,7 +1285,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 {
                     if (mSpecification1==null)
                     {
-                        scrollView.scrollTo(0, 405);
+                        scrollView.scrollTo(0, 450);
                         ToolUtils.setToast(mContext,"抱歉，请先选择"+sizeName1);
                         return;
                     }
@@ -1283,7 +1296,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     FetchAddCartData();
                 } else
                 {
-                    scrollView.scrollTo(0, 600);
+                    scrollView.scrollTo(0, 700);
                     Toast.makeText(mContext, "抱歉,先选择"+sizeName2, Toast.LENGTH_SHORT).show();
                 }
         } else
@@ -1299,9 +1312,10 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     private void commitLjBuy()
     {
+        arrayItems.clear();
         cartGoodsItem.num = 1;
         cartGoodsItem.name = detail.title;
-        cartGoodsItem.size = mSpecification.title;
+        cartGoodsItem.size = mSpecification.title+mSpecification.title1;
         cartGoodsItem.sku = mSpecification.sizeId;
         cartGoodsItem.currentPrice = mSpecification.price;
         cartGoodsItem.formalPrice = mSpecification.oldPrice;
@@ -1314,6 +1328,7 @@ public class GoodsDetailsFragment extends BaseFragment
             cartGoodsItem.isOSale = "false";
         }
         List<CartGoodsItem> goodsItems = new ArrayList<CartGoodsItem>();
+        goodsItems.clear();
         goodsItems.add(cartGoodsItem);
         cartArrayItem.storeCount = 1;
         cartArrayItem.storeMoney = mSpecification.price;
@@ -1477,8 +1492,14 @@ public class GoodsDetailsFragment extends BaseFragment
                             {
                                 Specification specification = new Specification();
                                 specification.sizeId = specificationId;
-                                specification.title = specificationTitle;
-                                specification.title = specificationTitle1;
+                                if (isSizeShow1)
+                                {
+                                    specification.title = specificationTitle;
+                                }
+                                else
+                                {
+                                    specification.title = specificationTitle;
+                                }
                                 specification.price = sizePrice;
                                 specification.oldPrice = sizeOldPrice;
                                 specification.num = num;

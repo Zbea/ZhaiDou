@@ -30,6 +30,10 @@ public class ZhaiDou {
 
     //提交订单接口
     public static String CommitOrdersUrl="http://121.42.206.45:7082/order/addMallOrder.action";
+    //支付
+    public static String CommitPaymentGetCodeUrl="http://121.42.206.45:7082/pay/queryThirdpartyPayType.action";
+    //支付
+    public static String CommitPaymentUrl="http://121.42.206.45:7082/pay/payConfirm.action";
 
     //首页三个专题tag
     public static String HOME_SPECIAL_BANNER_URL=HOME_BASE_URL+"special_mall/api/sales/topic_sales?topic=true";

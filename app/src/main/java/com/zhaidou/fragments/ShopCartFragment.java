@@ -121,7 +121,6 @@ public class ShopCartFragment extends BaseFragment
             {
                 isBuySuccess = true;
                 refreshData();
-                FetchCountData();
             }
         }
     };
@@ -166,7 +165,7 @@ public class ShopCartFragment extends BaseFragment
         {
             arrays.clear();
             refreshData();
-            FetchCountData();
+
         }
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView)
@@ -347,6 +346,7 @@ public class ShopCartFragment extends BaseFragment
         }
         checkLogin();
         FetchDetailData();
+        FetchCountData();
     }
 
     /**
@@ -482,6 +482,7 @@ public class ShopCartFragment extends BaseFragment
 
             final CartGoodsItem cartGoodsItem = items.get(position);
 
+
             //判断商品是否下架或者卖光处理
             if (cartGoodsItem.isOver.equals("true") | cartGoodsItem.isPublish.equals("true") | cartGoodsItem.isDate.equals("true"))
             {
@@ -534,6 +535,13 @@ public class ShopCartFragment extends BaseFragment
                 islose.setVisibility(View.GONE);
                 isDate.setVisibility(View.VISIBLE);
             }
+
+            if (cartGoodsItem.isOSale.equals("true"))
+            {
+                cartNumView.setVisibility(View.GONE);
+                cartNumLoseView.setVisibility(View.VISIBLE);
+            }
+
             itemName.setText(cartGoodsItem.name);
             itemSize.setText(cartGoodsItem.size);
             itemCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + cartGoodsItem.currentPrice));

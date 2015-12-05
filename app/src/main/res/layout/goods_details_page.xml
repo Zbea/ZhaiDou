@@ -292,8 +292,13 @@
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:background="@color/white"
-                    android:visibility="gone"
                     android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="@color/line_color"
+                        ></View>
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:id="@+id/attributeName2"
