@@ -120,9 +120,14 @@ public class ShopOrderOkFragment extends BaseFragment
     private RequestQueue mRequestQueue;
     private int STATUS_FROM_ORDER = 3;
     private final int UPDATE_DEFALUE_ADDRESS_INFO = 0;
-    private final int UPDATE_VERFIY = 9;
-    private final int UPDATE_VERFIY_SUCCESSS = 10;
-    private final int UPDATE_GETSMS_SUCCESSS = 11;
+    private final int UPDATE_ADDRESS_LOADING_FAIL = 2;
+    private final int UPDATE_ISBUYOSALE =1;
+    private final int UPDATE_LOADING_FAIL= 3;
+    private final int UPDATE_COMMIT_SUCCESS= 4;
+    private final int UPDATE_COMMIT_FAIL= 5;
+    private final int UPDATE_VERFIY = 6;
+    private final int UPDATE_VERFIY_SUCCESSS = 7;
+    private final int UPDATE_GETSMS_SUCCESSS = 8;
 
     private boolean isOSaleBuy;//是否已经购买过零元特卖
     private boolean isOSale;//是否含有零元特卖
@@ -131,7 +136,6 @@ public class ShopOrderOkFragment extends BaseFragment
     private boolean isVerify;//帐号是否需要验证
 
     private Address address;
-    private CreatCartDB creatCartDB;
     private String token;
     private int userId;
     private int flags = 0;//1代表立即购买
@@ -157,7 +161,18 @@ public class ShopOrderOkFragment extends BaseFragment
                     addressNameTv.setText("收件人：" + address.getName());
                     addressinfoTv.setText(address.getProvince() + address.getCity() + address.getArea() + address.getAddress());
                     break;
-                case 2:
+                case UPDATE_ISBUYOSALE:
+                    if (isOSaleBuy)
+                    {
+                        mDialog.dismiss();
+                        CustomToastDialog.setToastDialog(mContext, "您今天已经购买过零元特卖商品，请勿重复购买");
+                    }
+                    else
+                    {
+                        commit();
+                    }
+                    break;
+                case UPDATE_ADDRESS_LOADING_FAIL:
                     if (mDialog != null)
                         mDialog.dismiss();
                     loadingView.setVisibility(View.GONE);
@@ -165,11 +180,11 @@ public class ShopOrderOkFragment extends BaseFragment
                     orderAddressEditLine.setVisibility(View.GONE);
                     orderAddressNullLine.setVisibility(View.VISIBLE);
                     break;
-                case 3:
+                case UPDATE_LOADING_FAIL:
                     mDialog.dismiss();
-                    Toast.makeText(mContext, "抱歉,提交订单失败", Toast.LENGTH_LONG).show();
+                    ToolUtils.setToastLong(mContext, "抱歉,提交订单失败");
                     break;
-                case 4:
+                case UPDATE_COMMIT_SUCCESS:
                     mDialog.dismiss();
                     if (isljOsale)
                     {
@@ -199,18 +214,19 @@ public class ShopOrderOkFragment extends BaseFragment
                         JSONObject jsonObject = new JSONObject(result);
                         JSONObject orderObj = jsonObject.optJSONObject("data");
                         int orderId = orderObj.optInt("orderId");
+                        String orderCode = orderObj.optString("orderCode");
                         double amount = orderObj.optDouble("orderTotalAmount");
                         DecimalFormat df = new DecimalFormat("###.00");
                         double fare = moneyYF;
                         int status=orderObj.optInt("status");
-                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId, amount, fare,((mContext.getResources().getInteger(R.integer.timer_countdown)) / 1000), null, 1);
+                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId,orderCode ,amount, fare,((mContext.getResources().getInteger(R.integer.timer_countdown)) / 1000), null, 1);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
                     } catch (Exception e)
                     {
 
                     }
                     break;
-                case 5:
+                case UPDATE_COMMIT_FAIL:
                     mDialog.dismiss();
                     CustomToastDialog.setToastDialog(mContext, msg.obj.toString());
                     break;
@@ -542,8 +558,6 @@ public class ShopOrderOkFragment extends BaseFragment
         token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
 
-        creatCartDB = new CreatCartDB(mContext);
-
         initDataView();
         initData();
     }
@@ -718,7 +732,7 @@ public class ShopOrderOkFragment extends BaseFragment
             }
             if (isOSale)
             {
-                FetchOSaleData(5);//判断零元特卖是否已经当天购买过
+                FetchOSaleData();//判断零元特卖是否已经当天购买过
             } else
             {
                 commit();
@@ -735,7 +749,6 @@ public class ShopOrderOkFragment extends BaseFragment
      */
     private void commit()
     {
-        mDialog=CustomLoadingDialog.setLoadingDialog(mContext,"");
         new Thread(new Runnable()
         {
             @Override
@@ -752,15 +765,15 @@ public class ShopOrderOkFragment extends BaseFragment
                         int status = jsonObject.optInt("status");
                         if (status == 200)
                         {
-                            handler.obtainMessage(4,result).sendToTarget();
+                            handler.obtainMessage(UPDATE_COMMIT_SUCCESS,result).sendToTarget();
                         } else if (status == 500)
                         {
                             String errorArr = jsonObject.optString("message");
-                            handler.obtainMessage(5,errorArr).sendToTarget();
+                            handler.obtainMessage(UPDATE_COMMIT_FAIL,errorArr).sendToTarget();
                         }
                         else
                         {
-                            handler.sendEmptyMessage(3);
+                            handler.sendEmptyMessage(UPDATE_LOADING_FAIL);
                         }
 
                     } catch (Exception e)
@@ -769,7 +782,7 @@ public class ShopOrderOkFragment extends BaseFragment
 
                 } else
                 {
-                    handler.sendEmptyMessage(3);
+                    handler.sendEmptyMessage(UPDATE_LOADING_FAIL);
                 }
             }
         }).start();
@@ -817,7 +830,7 @@ public class ShopOrderOkFragment extends BaseFragment
                 {
                     CartGoodsItem cartGoodsItem=cartArrayItems.get(i).goodsItems.get(j);
                     JSONObject goodsObject=new JSONObject();
-                    goodsObject.put("productSKUCode",cartGoodsItem.sku);
+                    goodsObject.put("productSKUCode",cartGoodsItem.sizeId);
                     goodsObject.put("quantity",cartGoodsItem.num);
                     goodsObject.put("price",cartGoodsItem.currentPrice);
                     goodsObject.put("points",0);
@@ -908,7 +921,7 @@ public class ShopOrderOkFragment extends BaseFragment
                         handler.sendMessage(message);
                     } else
                     {
-                        handler.sendEmptyMessage(2);
+                        handler.sendEmptyMessage(UPDATE_ADDRESS_LOADING_FAIL);
                     }
                 }
             }
@@ -1129,22 +1142,22 @@ public class ShopOrderOkFragment extends BaseFragment
     /**
      * 零元特卖是否购买请求
      */
-    public void FetchOSaleData(final int i)
+    public void FetchOSaleData()
     {
-        String url = ZhaiDou.orderCheckOSaleUrl;
+        String url = ZhaiDou.IsBuyOSaleUrl+userId;
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
             {
-
                 if (jsonObject != null)
                 {
-                    isOSaleBuy = jsonObject.optBoolean("flag");
-                }
-                if (i == 5)
-                {
-                    handler.sendEmptyMessage(5);
+                    isOSaleBuy = jsonObject.optInt("ifBuy")==1?false:true;
+                    if (jsonObject.optInt("status")==500)
+                    {
+                        isOSaleBuy=false;
+                    }
+                    handler.sendEmptyMessage(UPDATE_ISBUYOSALE);
                 }
             }
         }, new Response.ErrorListener()
@@ -1154,7 +1167,7 @@ public class ShopOrderOkFragment extends BaseFragment
             {
                 if (mDialog != null)
                     mDialog.dismiss();
-                Toast.makeText(getActivity(), "抱歉,请求失败", Toast.LENGTH_SHORT).show();
+                ToolUtils.setToast(mContext,R.string.loading_fail_txt);
             }
         })
         {

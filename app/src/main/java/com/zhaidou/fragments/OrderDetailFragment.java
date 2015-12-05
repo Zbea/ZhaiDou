@@ -391,7 +391,7 @@ public class OrderDetailFragment extends BaseFragment {
                 Intent intent1 = new Intent(getActivity(), PayDemoActivity.class);
                 intent1.putExtra("id", Integer.parseInt(mOrderId + ""));
                 intent1.putExtra("amount", mOrder.getAmount());
-                ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(Integer.parseInt(mOrderId), amount, 10, mOrder.getOver_at(), mOrder,2);
+                ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(Integer.parseInt(mOrderId),"", amount, 10, mOrder.getOver_at(), mOrder,2);
                 ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
                 shopPaymentFragment.setOrderListener(new Order.OrderListener() {
                     @Override

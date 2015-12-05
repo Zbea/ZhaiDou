@@ -11,7 +11,6 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.ViewPager;
@@ -45,7 +44,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
@@ -59,10 +57,8 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.dialog.CustomToastDialog;
 import com.zhaidou.model.CartArrayItem;
 import com.zhaidou.model.CartGoodsItem;
-import com.zhaidou.model.CountTime;
 import com.zhaidou.model.GoodDetail;
 import com.zhaidou.model.GoodInfo;
 import com.zhaidou.model.Specification;
@@ -80,7 +76,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -122,12 +117,10 @@ public class GoodsDetailsFragment extends BaseFragment
 
     private final int UPDATE_GOOD_DETAIL = 0;
     private final int UPDATE_CARTCAR_DATA = 1;
-    private final int UPDATE_LJBUY_ISOSALEBUY = 2;//零元特卖立即购买时候判断是否已经购买郭
-    private final int UPDATE_ISOSALEBUY = 3;//判断进来时候零元特卖是否已经购买了，购买了才让按钮不能点击
+    private final int UPDATE_ISOSALEBUY = 2;//判断进来时候零元特卖是否已经购买了，购买了才让按钮不能点击
+    private final int UPDATE_LJBUY_ISOSALEBUY = 3;//零元特卖立即购买时候判断是否已经购买郭
     private final int UPDATE_LOGIN_ISOSALEBUY = 4;//判断进来时候零元特卖是否已经购买了，购买了才让按钮不能点击
-    private final int UPDATE_LJ_ISBUY = 5;//判断立即购买时普通特卖是否购买过
-    private final int UPDATE_ADD_ISBUY = 6;//判断加入购物车时普通特卖是否购买过
-    private final int UPDATE_ADD_CART = 7;//加入购物车
+    private final int UPDATE_ADD_CART = 5;//加入购物车
 
     private ScrollView scrollView;
     private ImageView topBtn;
@@ -172,8 +165,8 @@ public class GoodsDetailsFragment extends BaseFragment
     private int mClick2 = -1;
     private boolean isClick;//规格是否可以点击
     private boolean isClick1;//规格是否可以点击
-    private Specification mSpecification;//选中型号
-    private Specification mSpecification1;//选中规格
+    private Specification mSpecification2;//选中型号第二个
+    private Specification mSpecification1;//选中规格第一个
     private List<Specification> specificationList;
 
     private boolean isOSaleBuy;//是否购买过零元特卖
@@ -218,10 +211,9 @@ public class GoodsDetailsFragment extends BaseFragment
             }
             if (action.equals(ZhaiDou.IntentRefreshGoodsDetailsTag))
             {
-                if (mSpecification != null)
+                if (mSpecification2 != null)
                 {
-//                    mSpecification.isBuy=true;
-                    mSpecification.num = mSpecification.num - 1;
+                    mSpecification2.num = mSpecification2.num - 1;
                     setRefreshSpecification(1);
                 }
             }
@@ -266,7 +258,6 @@ public class GoodsDetailsFragment extends BaseFragment
                         return;
                     }
                     setNextEventView();
-
                     if (flags == 1)//如果是零元特卖商品UI显示处理
                     {
                         iconView.setVisibility(View.GONE);
@@ -329,6 +320,10 @@ public class GoodsDetailsFragment extends BaseFragment
                     if (isOSaleBuy)
                     {
                         setAddOrBuyShow("不能重复购买", false);
+                    }
+                    else
+                    {
+                        commitLjBuy();
                     }
                     break;
                 case UPDATE_ISOSALEBUY:
@@ -405,30 +400,30 @@ public class GoodsDetailsFragment extends BaseFragment
                     if (checkLogin())
                     {
                         if (detail != null)
-                            if (isSizeShow1==false&&isSizeShow2==false)
+                            if (isTwoSize())
                             {
-                                if (mSpecification1==null)
+                                if (mSpecification1 == null)
                                 {
-                                    scrollView.scrollTo(0, 405);
-                                    ToolUtils.setToast(mContext,"抱歉，请先选择"+sizeName1);
+                                    scrollView.scrollTo(0, 450);
+                                    ToolUtils.setToast(mContext, "抱歉，请先选择" + sizeName1);
                                     return;
                                 }
                             }
-                            if (mSpecification != null)
+                        if (mSpecification2 != null)
+                        {
+                            if (flags == 1)//判断零元特卖是否已经购买郭
                             {
-
-                                if (flags == 1)//判断零元特卖是否已经购买郭
-                                {
-                                    mDialog.show();
-                                } else
-                                {
-                                    commitLjBuy();
-                                }
+                                mDialog.show();
+                                FetchOSaleData(UPDATE_LJBUY_ISOSALEBUY);
                             } else
                             {
-                                scrollView.scrollTo(0, 600);
-                                Toast.makeText(mContext, "抱歉,先选择"+sizeName2, Toast.LENGTH_SHORT).show();
+                                commitLjBuy();
                             }
+                        } else
+                        {
+                            scrollView.scrollTo(0, 700);
+                            Toast.makeText(mContext, "抱歉,先选择" + sizeName2, Toast.LENGTH_SHORT).show();
+                        }
                     } else
                     {
                         Intent intent = new Intent(mContext, LoginActivity.class);
@@ -602,7 +597,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     {
                         topBtn.setVisibility(View.VISIBLE);
                     }
-                    if (scrollY < 600)
+                    if (scrollY < 700)
                     {
                         topBtn.setVisibility(View.GONE);
                     }
@@ -774,7 +769,7 @@ public class GoodsDetailsFragment extends BaseFragment
             //关联
             for (int i = 0; i < specificationList.size(); i++)
             {
-                for (int j = 0; j <subclassSizes.size(); j++)
+                for (int j = 0; j < subclassSizes.size(); j++)
                 {
                     if (specificationList.get(i).title.equals(subclassSizes.get(j).title))
                     {
@@ -821,37 +816,36 @@ public class GoodsDetailsFragment extends BaseFragment
                                 texts1.get(j).setSelected(false);
                             }
                             textView.setSelected(true);
-                            mSpecification1=specificationList.get(position);
+                            mSpecification1 = specificationList.get(position);
                             addSpecificationView2(mSpecification1.sizess);
                         } else
                         {
                             mClick1 = -1;
                             textView.setSelected(false);
-                            mSpecification1=null;
+                            mSpecification1 = null;
                             addSpecificationView2(specificationList.get(0).sizess);
-
                         }
                     } else
                     {
-                        mClick1= position;
+                        mClick1 = position;
                         for (int j = 0; j < texts1.size(); j++)
                         {
                             texts1.get(j).setSelected(false);
                         }
                         textView.setSelected(true);
-                        mSpecification1=specificationList.get(position);
+                        mSpecification1 = specificationList.get(position);
                         addSpecificationView2(mSpecification1.sizess);
                     }
                 }
             });
             Specification specification = specificationList.get(i);
             textView.setText(specification.title);
-                if (0 == position)
-                {
-                    textView.setSelected(true);
-                    mSpecification1=specificationList.get(i);
-                }
-                texts1.add(textView);
+//            if (0 == position)
+//            {
+//                textView.setSelected(true);
+//                mSpecification1 = specificationList.get(i);
+//            }
+            texts1.add(textView);
             flowLayout.addView(view, lp);
         }
         addSpecificationView2(specificationList.get(0).sizess);
@@ -862,7 +856,14 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     private void addSpecificationView()
     {
-        flowLayout.removeAllViews();
+        if (isSizeShow2)
+        {
+            flowLayout.removeAllViews();
+        }
+        if (isSizeShow1)
+        {
+            flowLayout1.removeAllViews();
+        }
         MarginLayoutParams lp = new MarginLayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         lp.leftMargin = 10;
@@ -873,6 +874,7 @@ public class GoodsDetailsFragment extends BaseFragment
         {
             final int position = i;
             final Specification specification = specificationList.get(i);
+            ToolUtils.setLog(specification.title);
             View view = LayoutInflater.from(mContext).inflate(R.layout.goods_details_size_item, null);
             final TextView textView = (TextView) view.findViewById(R.id.sizeTitleTv);
             textView.setOnClickListener(new View.OnClickListener()
@@ -891,12 +893,12 @@ public class GoodsDetailsFragment extends BaseFragment
                                 texts.get(j).setSelected(false);
                             }
                             textView.setSelected(true);
-                            sizeEvent(position,specification);
+                            sizeEvent(position, specification);
                         } else
                         {
                             mClick = -1;
                             textView.setSelected(false);
-                            mSpecification = null;
+                            mSpecification2 = null;
                             mCurrentPrice.setText("￥" + ToolUtils.isIntPrice(detail.price + ""));
                             mOldPrice.setText("￥" + ToolUtils.isIntPrice(detail.cost_price + ""));
                             setDiscount(detail.price, detail.cost_price);
@@ -914,7 +916,7 @@ public class GoodsDetailsFragment extends BaseFragment
                             texts.get(j).setSelected(false);
                         }
                         textView.setSelected(true);
-                        sizeEvent(position,specification);
+                        sizeEvent(position, specification);
                     }
                 }
             });
@@ -935,7 +937,14 @@ public class GoodsDetailsFragment extends BaseFragment
                 }
                 texts.add(textView);
             }
-            flowLayout.addView(view, lp);
+            if (isSizeShow2)
+            {
+                flowLayout.addView(view, lp);
+            }
+            if (isSizeShow1)
+            {
+                flowLayout1.addView(view, lp);
+            }
         }
     }
 
@@ -968,11 +977,11 @@ public class GoodsDetailsFragment extends BaseFragment
                     {
                         if (isClick)
                         {
-                            if (isSizeShow1==false&&isSizeShow2==false)
+                            if (isTwoSize())//让其先选第一个规格
                             {
-                                if (mSpecification1==null)
+                                if (mSpecification1 == null)
                                 {
-                                    ToolUtils.setToast(mContext,"抱歉，请先选择"+sizeName1);
+                                    ToolUtils.setToast(mContext, "抱歉，请先选择" + sizeName1);
                                     return;
                                 }
                             }
@@ -982,12 +991,12 @@ public class GoodsDetailsFragment extends BaseFragment
                                 texts2.get(j).setSelected(false);
                             }
                             textView.setSelected(true);
-                            sizeEvent(position,specification);
+                            sizeEvent(position, specification);
                         } else
                         {
                             mClick = -1;
                             textView.setSelected(false);
-                            mSpecification = null;
+                            mSpecification2 = null;
                             mCurrentPrice.setText("￥" + ToolUtils.isIntPrice(detail.price + ""));
                             mOldPrice.setText("￥" + ToolUtils.isIntPrice(detail.cost_price + ""));
                             setDiscount(detail.price, detail.cost_price);
@@ -999,11 +1008,11 @@ public class GoodsDetailsFragment extends BaseFragment
                         }
                     } else
                     {
-                        if (isSizeShow1==false&&isSizeShow2==false)
+                        if (isTwoSize())//让其先选第一个规格
                         {
-                            if (mSpecification1==null)
+                            if (mSpecification1 == null)
                             {
-                                ToolUtils.setToast(mContext,"抱歉，请先选择"+sizeName1);
+                                ToolUtils.setToast(mContext, "抱歉，请先选择" + sizeName1);
                                 return;
                             }
                         }
@@ -1013,7 +1022,7 @@ public class GoodsDetailsFragment extends BaseFragment
                             texts2.get(j).setSelected(false);
                         }
                         textView.setSelected(true);
-                        sizeEvent(position,specification);
+                        sizeEvent(position, specification);
                     }
                 }
             });
@@ -1025,13 +1034,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 textView.setClickable(false);
             } else
             {
-                if (mClick == position)
-                {
-                    textView.setSelected(true);
-                } else
-                {
-                    textView.setSelected(false);
-                }
+                textView.setSelected(false);
                 texts2.add(textView);
             }
             flowLayout1.addView(view, lp);
@@ -1045,27 +1048,45 @@ public class GoodsDetailsFragment extends BaseFragment
     {
         for (int i = 0; i < specificationList.size(); i++)
         {
-            if (flag == 0)
+            if (flag == 0)//零元特卖
             {
-                specificationList.get(i).isBuy = true;
-            } else if (flag == 1)
-            {
-                if (specificationList.get(i).sizeId.equals(mSpecification.sizeId))
+                //判断是否为二维
+                if (isTwoSize())
+                {
+                    for (int j = 0; j < specificationList.get(i).sizess.size(); j++)
+                    {
+                        specificationList.get(i).sizess.get(j).isBuy = true;
+                    }
+                } else
                 {
                     specificationList.get(i).isBuy = true;
-                    specificationList.get(i).num = specificationList.get(i).num - 1;
-                }
-            } else
-            {
-                if (specificationList.get(i).sizeId.equals(mSpecification.sizeId))
-                {
-                    specificationList.get(i).num = mSpecification.num;
                 }
             }
+            if (flag == 1)//普通特卖
+            {
+                //判断是否为二维
+                if (isTwoSize())
+                {
+                    for (int j = 0; j < specificationList.get(i).sizess.size(); j++)
+                    {
+                        if (specificationList.get(i).sizess.get(j).sizeId.equals(mSpecification2.sizeId))
+                        {
+                            specificationList.get(i).sizess.get(j).num = mSpecification2.num;
+                        }
+                    }
+                } else
+                {
+                    if (specificationList.get(i).sizeId.equals(mSpecification2.sizeId))
+                    {
+                        specificationList.get(i).num = mSpecification2.num;
+                    }
+                }
+
+            }
         }
-        if (mSpecification.num < 1)
+        if (mSpecification2.num < 1)
         {
-            mSpecification = null;
+            mSpecification2 = null;
             addSpecificationView();
         }
     }
@@ -1082,22 +1103,26 @@ public class GoodsDetailsFragment extends BaseFragment
     /**
      * 选择规格事件处理
      */
-    private void sizeEvent(int position,Specification spe)
+    private void sizeEvent(int position, Specification spe)
     {
-        mSpecification = spe;
-        if (mSpecification.isBuy)
+        mSpecification2 = spe;
+        if (mSpecification2.isBuy)
         {
             setAddOrBuyShow("不能重复购买", false);
         } else
         {
             setAddOrBuyShow("", true);
-            mCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + mSpecification.price));
-            mOldPrice.setText("￥" + ToolUtils.isIntPrice("" + mSpecification.oldPrice));
-            setDiscount(mSpecification.price, mSpecification.oldPrice);
+            mCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + spe.price));
+            mOldPrice.setText("￥" + ToolUtils.isIntPrice("" + spe.oldPrice));
+            setDiscount(spe.price, spe.oldPrice);
         }
         if (isPublish)
         {
             setAddOrBuyShow("此商品已下架", false);
+        }
+        if (isOSaleBuy)
+        {
+            setAddOrBuyShow("不能重复购买", false);
         }
     }
 
@@ -1261,6 +1286,22 @@ public class GoodsDetailsFragment extends BaseFragment
     }
 
     /**
+     * 是否是二维规格
+     * @return
+     */
+    private boolean isTwoSize()
+    {
+        if (isTwoSize())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    /**
      * 加入购物车
      */
     private void AddCart()
@@ -1268,24 +1309,24 @@ public class GoodsDetailsFragment extends BaseFragment
         if (checkLogin())
         {
             if (detail != null)
-                if (isSizeShow1==false&&isSizeShow2==false)
+                if (isTwoSize())
                 {
-                    if (mSpecification1==null)
+                    if (mSpecification1 == null)
                     {
-                        scrollView.scrollTo(0, 405);
-                        ToolUtils.setToast(mContext,"抱歉，请先选择"+sizeName1);
+                        scrollView.scrollTo(0, 450);
+                        ToolUtils.setToast(mContext, "抱歉，请先选择" + sizeName1);
                         return;
                     }
                 }
-                if (mSpecification != null)
-                {
-                    mDialog.show();
-                    FetchAddCartData();
-                } else
-                {
-                    scrollView.scrollTo(0, 600);
-                    Toast.makeText(mContext, "抱歉,先选择"+sizeName2, Toast.LENGTH_SHORT).show();
-                }
+            if (mSpecification2 != null)
+            {
+                mDialog.show();
+                FetchAddCartData();
+            } else
+            {
+                scrollView.scrollTo(0, 700);
+                Toast.makeText(mContext, "抱歉,先选择" + sizeName2, Toast.LENGTH_SHORT).show();
+            }
         } else
         {
             Intent intent = new Intent(mContext, LoginActivity.class);
@@ -1299,12 +1340,20 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     private void commitLjBuy()
     {
+        arrayItems.clear();
         cartGoodsItem.num = 1;
         cartGoodsItem.name = detail.title;
-        cartGoodsItem.size = mSpecification.title;
-        cartGoodsItem.sku = mSpecification.sizeId;
-        cartGoodsItem.currentPrice = mSpecification.price;
-        cartGoodsItem.formalPrice = mSpecification.oldPrice;
+        if (isTwoSize())
+        {
+            cartGoodsItem.size = mSpecification2.title + mSpecification2.title1;
+        }
+        else
+        {
+            cartGoodsItem.size = mSpecification2.title;
+        }
+        cartGoodsItem.sku = mSpecification2.sizeId;
+        cartGoodsItem.currentPrice = mSpecification2.price;
+        cartGoodsItem.formalPrice = mSpecification2.oldPrice;
         cartGoodsItem.imageUrl = detail.imageUrl;
         if (flags == 1)
         {
@@ -1314,9 +1363,10 @@ public class GoodsDetailsFragment extends BaseFragment
             cartGoodsItem.isOSale = "false";
         }
         List<CartGoodsItem> goodsItems = new ArrayList<CartGoodsItem>();
+        goodsItems.clear();
         goodsItems.add(cartGoodsItem);
         cartArrayItem.storeCount = 1;
-        cartArrayItem.storeMoney = mSpecification.price;
+        cartArrayItem.storeMoney = mSpecification2.price;
         cartArrayItem.goodsItems = goodsItems;
         arrayItems.add(cartArrayItem);
 
@@ -1442,7 +1492,7 @@ public class GoodsDetailsFragment extends BaseFragment
                                 }
                             }
                             int num = specificationObj.optInt("stock");
-                            if (num>0)
+                            if (num > 0)
                             {
                                 isOver = false;
                             }
@@ -1450,7 +1500,7 @@ public class GoodsDetailsFragment extends BaseFragment
                             double sizeOldPrice = specificationObj.optDouble("marketPrice");
                             double returnPrice = specificationObj.optDouble("returnAmount");//返现金额
 
-                            if (isSizeShow1==false && isSizeShow2==false)
+                            if (isTwoSize())
                             {
                                 //子集规格集合
                                 Specification specificationSubclassItem = new Specification();
@@ -1460,11 +1510,12 @@ public class GoodsDetailsFragment extends BaseFragment
                                 specificationSubclassItem.price = sizePrice;
                                 specificationSubclassItem.oldPrice = sizeOldPrice;
                                 specificationSubclassItem.num = num;
+                                ToolUtils.setLog("num:"+num);
                                 subclassSizes.add(specificationSubclassItem);
 
                                 Specification specification = new Specification();
                                 specification.title = specificationTitle;
-                                for (int j = 0; j <specificationList.size() ; j++)
+                                for (int j = 0; j < specificationList.size(); j++)
                                 {
                                     if (specificationList.get(j).title.equals(specificationTitle))
                                     {
@@ -1472,13 +1523,18 @@ public class GoodsDetailsFragment extends BaseFragment
                                     }
                                 }
                                 specificationList.add(specification);
-                            }
-                            else
+                            } else
                             {
                                 Specification specification = new Specification();
                                 specification.sizeId = specificationId;
-                                specification.title = specificationTitle;
-                                specification.title = specificationTitle1;
+                                if (isSizeShow1)
+                                {
+                                    specification.title = specificationTitle1;
+                                }
+                                if (isSizeShow2)
+                                {
+                                    specification.title = specificationTitle;
+                                }
                                 specification.price = sizePrice;
                                 specification.oldPrice = sizeOldPrice;
                                 specification.num = num;
@@ -1584,7 +1640,7 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     public void FetchAddCartData()
     {
-        String url = ZhaiDou.GoodsDetailsAddUrl + mSpecification.sizeId;
+        String url = ZhaiDou.GoodsDetailsAddUrl + mSpecification2.sizeId;
         ToolUtils.setLog(url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
@@ -1634,7 +1690,7 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     public void FetchOSaleData(final int i)
     {
-        String url = ZhaiDou.orderCheckOSaleUrl;
+        String url = ZhaiDou.IsBuyOSaleUrl+userId;
         ToolUtils.setLog(url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
@@ -1643,7 +1699,7 @@ public class GoodsDetailsFragment extends BaseFragment
             {
                 if (jsonObject != null)
                 {
-                    isOSaleBuy = jsonObject.optBoolean("flag");
+                    isOSaleBuy = jsonObject.optInt("ifBuy")==1?false:true;
                 }
                 if (i == UPDATE_LJBUY_ISOSALEBUY)
                 {
@@ -1665,8 +1721,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     mDialog.dismiss();
                 if (i == UPDATE_ISOSALEBUY)
                 {
-                    nullView.setVisibility(View.VISIBLE);
-                    nullNetView.setVisibility(View.GONE);
+                    loadingView.setVisibility(View.GONE);
                 } else
                 {
                     ToolUtils.setToastLong(mContext, R.string.loading_fail_txt);

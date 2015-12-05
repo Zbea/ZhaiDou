@@ -19,6 +19,8 @@ public class ZhaiDou {
     public static String GoodsDetailsAddUrl="http://121.42.206.45:7082/cart/addUserCart.action?businessType=01&version=1.0.0&clientType=app&quantity=1&userId=1&productSKUId=";
     //商品详情接口
     public static String HomeGoodsDetailsUrl="http://121.42.206.45:7082/product/getProductInfo.action?businessType=01&version=1.0.0&productId=";
+    //判断是否是0元特卖商品是否已经购买了
+    public static String  IsBuyOSaleUrl="http://121.42.206.45:7082/product/checkProduct.action?version=1.0.0&userId=";
     //购物车数量接口
     public static String CartGoodsCountUrl="http://121.42.206.45:7082/cart/countUserCartQuantity.action?businessType=01&version=1.0.0&userId=1";
     //购物车列表接口
@@ -30,6 +32,12 @@ public class ZhaiDou {
 
     //提交订单接口
     public static String CommitOrdersUrl="http://121.42.206.45:7082/order/addMallOrder.action";
+    //获取支付方式
+    public static String CommitPaymentGetCodeUrl="http://121.42.206.45:7082/pay/queryThirdpartyPayType.action";
+    //支付
+    public static String CommitPaymentUrl="http://121.42.206.45:7082/pay/payConfirm.action";
+    //获取订单详情
+    public static String GetOrderDetailsUrl="http://121.42.206.45:7082/order/getOrderDetail.action";
 
     //首页三个专题tag
     public static String HOME_SPECIAL_BANNER_URL=HOME_BASE_URL+"special_mall/api/sales/topic_sales?topic=true";

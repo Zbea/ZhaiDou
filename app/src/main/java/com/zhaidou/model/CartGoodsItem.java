@@ -8,9 +8,7 @@ import java.io.Serializable;
 public class CartGoodsItem implements Serializable
 {
     //用户id
-    public int userId;
-    //用户id
-    public String userIds;//*
+    public String userId;//*
     //用户id
     public String storeId;//*
     //商品id
@@ -34,11 +32,9 @@ public class CartGoodsItem implements Serializable
     //数量
     public int num;
     //规格Sku
-    public String sku;//*
+    public String sizeId;//*
     //规格
     public String size;
-    //规格id
-    public int sizeId;
     //是否下架
     public String isPublish;
     //是否卖光
@@ -51,30 +47,6 @@ public class CartGoodsItem implements Serializable
     public String isDate;
     //生成时间
     public long creatTime;
-
-    public CartGoodsItem(int userId, int id, long creatTime, String name, String imageUrl, double currentPrice,
-                         double formalPrice, double saveMoney, double saveTotalMoney, double totalMoney,
-                         int num, String size, int sizeId, String isPublish, String isOver, boolean isCheck, String isOSale, String isDate)
-    {
-        this.userId=userId;
-        this.id = id;
-        this.creatTime = creatTime;
-        this.name = name;
-        this.imageUrl = imageUrl;
-        this.currentPrice = currentPrice;
-        this.formalPrice = formalPrice;
-        this.saveMoney = saveMoney;
-        this.saveTotalMoney = saveTotalMoney;
-        this.totalMoney = totalMoney;
-        this.num = num;
-        this.size = size;
-        this.sizeId = sizeId;
-        this.isPublish = isPublish;
-        this.isOver = isOver;
-        this.isCheck = isCheck;
-        this.isOSale=isOSale;
-        this.isDate=isDate;
-    }
 
     public CartGoodsItem()
     {
