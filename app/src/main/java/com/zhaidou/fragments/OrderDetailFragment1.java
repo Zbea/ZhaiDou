@@ -43,6 +43,7 @@ import com.zhaidou.model.Order;
 import com.zhaidou.model.Order1;
 import com.zhaidou.model.OrderDetail;
 import com.zhaidou.model.OrderItem1;
+import com.zhaidou.model.Store;
 import com.zhaidou.utils.DeviceUtils;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -55,7 +56,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class OrderDetailFragment extends BaseFragment {
+public class OrderDetailFragment1 extends BaseFragment {
     private static final String ARG_ID = "id";
     private static final String ARG_TIMESTMP = "timestmp";
     private static final String ARG_ORDER = "order";
@@ -67,7 +68,7 @@ public class OrderDetailFragment extends BaseFragment {
 
     private RequestQueue requestQueue;
     private TextView mOrderNumber, mOrderTime, mOrderStatus,
-            mReceiverName, mReceiverPhone, mReceiverAddress, mReceiverTime,
+            mReceiverName, mReceiverPhone, mReceiverAddress, mReceiverTime,mTotalView,
             mOrderAmount, mOrderEdit, mCancelOrder, mOrderTimer, goodsInfo;
     private ListView mListView;
     private TextView mSaleServiceTV;
@@ -89,24 +90,28 @@ public class OrderDetailFragment extends BaseFragment {
     private String token;
     private FrameLayout mBottomLayout;
     private Order order;
+    private ListView mStoreList;
+    private StoreAdapter mStoreAdapter;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
+                    mStoreList.setAdapter(mStoreAdapter);
                     loadingView.setVisibility(View.GONE);
-                    OrderDetail orderDetail = (OrderDetail) msg.obj;
-                    mOrderNumber.setText(orderDetail.orderCode);
-                    mOrderTime.setText(orderDetail.creationTime);
-                    mOrderStatus.setText(orderDetail.orderShowStatus);
-                    goodsInfo.setText(orderDetail.remark);
-                    if (orderDetail.status == ZhaiDou.STATUS_UNPAY && mParam2 <= 0) {
-                        mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
-                    }
-                    mReceiverName.setText(orderDetail.buyerNick);
-                    mReceiverPhone.setText(orderDetail.buyerMobile);
-                    mReceiverAddress.setText(orderDetail.deliveryAddressPO.provinceName + orderDetail.deliveryAddressPO.cityName + orderDetail.deliveryAddressPO.address);
-                    orderItemAdapter.notifyDataSetChanged();
+//                    OrderDetail orderDetail = (OrderDetail) msg.obj;
+//                    mOrderNumber.setText(orderDetail.orderCode);
+//                    mOrderTime.setText(orderDetail.creationTime);
+//                    mOrderStatus.setText(orderDetail.orderShowStatus);
+//                    goodsInfo.setText(orderDetail.remark);
+//                    if (orderDetail.status == ZhaiDou.STATUS_UNPAY && mParam2 <= 0) {
+//                        mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
+//                    }
+                    mReceiverName.setText(mOrder.childOrderPOList.get(0).buyerNick);
+                    mReceiverPhone.setText(mOrder.childOrderPOList.get(0).buyerMobile);
+                    mTotalView.setText("￥"+mOrder.orderPayAmount);
+//                    mReceiverAddress.setText(orderDetail.deliveryAddressPO.provinceName + orderDetail.deliveryAddressPO.cityName + orderDetail.deliveryAddressPO.address);
+//                    orderItemAdapter.notifyDataSetChanged();
                     break;
 //                case UPDATE_COUNT_DOWN_TIME:
 //                    String time = (String) msg.obj;
@@ -140,8 +145,8 @@ public class OrderDetailFragment extends BaseFragment {
         }
     };
 
-    public static OrderDetailFragment newInstance(String id, long timestmp, Order1 order, int flags) {
-        OrderDetailFragment fragment = new OrderDetailFragment();
+    public static OrderDetailFragment1 newInstance(String id, long timestmp, Order1 order, int flags) {
+        OrderDetailFragment1 fragment = new OrderDetailFragment1();
         Bundle args = new Bundle();
         args.putString(ARG_ID, id);
         args.putInt("flags", flags);
@@ -151,7 +156,7 @@ public class OrderDetailFragment extends BaseFragment {
         return fragment;
     }
 
-    public OrderDetailFragment() {
+    public OrderDetailFragment1() {
     }
 
     @Override
@@ -174,7 +179,7 @@ public class OrderDetailFragment extends BaseFragment {
                 parent.removeView(rootView);
             }
         } else {
-            rootView = inflater.inflate(R.layout.fragment_order_detail, container, false);
+            rootView = inflater.inflate(R.layout.fragment_order_detail_list, container, false);
             initView(rootView);
         }
         return rootView;
@@ -184,25 +189,18 @@ public class OrderDetailFragment extends BaseFragment {
         mContext = getActivity();
 //        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading", true);
         loadingView = (LinearLayout) view.findViewById(R.id.loadingView);
-        mOrderNumber = (TextView) view.findViewById(R.id.tv_order_number);
-        mOrderTime = (TextView) view.findViewById(R.id.tv_order_time);
-        mOrderStatus = (TextView) view.findViewById(R.id.tv_order_status);
+
+        mStoreList=(ListView)view.findViewById(R.id.storeList);
+
+        mStoreAdapter=new StoreAdapter(mContext,new ArrayList<Store>());
+//        mStoreList.setAdapter(mStoreAdapter);
+        requestQueue = Volley.newRequestQueue(getActivity());
         mReceiverName = (TextView) view.findViewById(R.id.tv_receiver_name);
         mReceiverPhone = (TextView) view.findViewById(R.id.tv_receiver_phone);
         mReceiverAddress = (TextView) view.findViewById(R.id.tv_receiver_address);
         mReceiverTime = (TextView) view.findViewById(R.id.tv_receiver_name);
         mOrderAmount = (TextView) view.findViewById(R.id.tv_order_amount);
-        mOrderEdit = (TextView) view.findViewById(R.id.tv_order_edit);
-        mCancelOrder = (TextView) view.findViewById(R.id.tv_cancel_order);
-        mBottomLayout = (FrameLayout) view.findViewById(R.id.fl_bottom);
-        goodsInfo = (TextView) view.findViewById(R.id.goodsInfo);
-        mOrderTimer = (TextView) view.findViewById(R.id.tv_order_time_left);
-        mOrderTimer.setOnClickListener(this);
-        mListView = (ListView) view.findViewById(R.id.lv_order_list);
-        orderItemAdapter = new OrderItemAdapter(getActivity(), orderItems);
-        mListView.setAdapter(orderItemAdapter);
-        mListView.setOnItemClickListener(onItemClickListener);
-        requestQueue = Volley.newRequestQueue(getActivity());
+        mTotalView=(TextView)view.findViewById(R.id.total);
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -211,7 +209,6 @@ public class OrderDetailFragment extends BaseFragment {
             }
         }, 300);
 
-        mCancelOrder.setOnClickListener(this);
 //        if (mOrder != null && "678".contains(mOrder.getStatus())) {
 //            view.findViewById(R.id.tv_order_time_left).setVisibility(View.GONE);
 //            ((TextView) view.findViewById(R.id.tv_cancel_order)).setText(getResources().getString(R.string.sale_service_personal));
@@ -277,6 +274,13 @@ public class OrderDetailFragment extends BaseFragment {
                 break;
         }
         loadingView.setVisibility(View.GONE);
+//        mStoreAdapter.setOnInViewClickListener(R.id.moreDetail,new BaseListAdapter.onInternalClickListener() {
+//            @Override
+//            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+//                Store store = (Store) values;
+//                store.isExpand=!store.isExpand;
+//            }
+//        });
     }
 
     @Override
@@ -412,11 +416,10 @@ public class OrderDetailFragment extends BaseFragment {
 
     private void FetchOrderDetail(String id) {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("userId", "28129");
+        params.put("userId", ZhaiDou.TESTUSERID);
         params.put("clientType", "ANDROID");
         params.put("clientVersion", "45");
         params.put("businessType", "01");
-        params.put("type", "1");
         params.put("orderCode", mOrder.orderCode);//"MCMST3407850_1"
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_DETAIL, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
@@ -427,53 +430,7 @@ public class OrderDetailFragment extends BaseFragment {
 //                Order1 order = JSON.toJavaObject(dataObj, Order1.class);
                 OrderDetail orderDetail = JSON.parseObject(dataObj.toString(), OrderDetail.class);
 
-//                JSONObject orderObj = jsonObject.optJSONObject("order");
-//                amount = orderObj.optDouble("amount");
-//                String node = orderObj.optString("node");
-//                ToolUtils.setLog("node:" + node);
-//                int id = orderObj.optInt("id");
-//                String status = orderObj.optString("status");
-//                String created_at_for = orderObj.optString("created_at_for");
-//                String receiver_address = orderObj.optString("receiver_address");
-//                String created_at = orderObj.optString("created_at");
-//                String status_ch = orderObj.optString("status_ch");
-//                String number = orderObj.optString("number");
-//                String receiver_phone = orderObj.optString("receiver_phone");
-//                String deliver_number = orderObj.optString("deliver_number");
-//                String receiver_name = orderObj.optString("receiver_name");
-//                String parent_name = orderObj.optString("parent_name");
-//                String city_name = orderObj.optString("city_name");
-//                String provider_name = orderObj.optString("provider_name");
-//
-//                JSONObject receiverObj = orderObj.optJSONObject("receiver");
-//                int receiverId = receiverObj.optInt("id");
-//                String logNum = orderObj.optString("deliver_number");
-//                Receiver receiver = new Receiver(receiverId, null, parent_name, null, null, null, null);
-//
-//                JSONArray order_items = orderObj.optJSONArray("order_items");
-//                if (order_items != null && order_items.length() > 0) {
-//                    for (int i = 0; i < order_items.length(); i++) {
-//                        JSONObject item = order_items.optJSONObject(i);
-//                        int itemId = item.optInt("id");
-//                        double itemPrice = item.optDouble("price");
-//                        int count = item.optInt("count");
-//                        double cost_price = item.optDouble("cost_price");
-//                        String merchandise = item.optString("merchandise");
-//                        String specification = item.optString("specification");
-//                        int merchandise_id = item.optInt("merchandise_id");
-//                        String merch_img = item.optString("merch_img");
-//                        int sale_cate = item.optInt("sale_cate");
-//                        OrderItem orderItem = new OrderItem(itemId, itemPrice, count, cost_price, merchandise, specification, merchandise_id, merch_img);
-//                        orderItem.setSale_cate(sale_cate);
-//                        orderItems.add(orderItem);
-//                    }
-//                }
-//                Order order = new Order("", id, number, amount, status, status_ch, created_at_for, created_at, receiver, orderItems, receiver_address, receiver_phone, deliver_number, receiver_name);
-//                order.logisticsNum = logNum;
-//                order.setNode(node);
-//                order.setParent_name(parent_name);
-//                order.setCity_name(city_name);
-//                order.setProvider_name(provider_name);
+                mStoreAdapter.addAll(mOrder.childOrderPOList);
                 if (orderDetail.orderItemPOList != null)
                     orderItems.addAll(orderDetail.orderItemPOList);
                 Message message = new Message();
@@ -526,7 +483,7 @@ public class OrderDetailFragment extends BaseFragment {
                         mOrder.orderShowStatus="已取消";
                         if (orderListener != null)
                             orderListener.onOrderStatusChange(mOrder);
-                        ((MainActivity) getActivity()).popToStack(OrderDetailFragment.this);
+                        ((MainActivity) getActivity()).popToStack(OrderDetailFragment1.this);
                     }
                 }, new Response.ErrorListener() {
                     @Override
@@ -673,6 +630,7 @@ public class OrderDetailFragment extends BaseFragment {
         public View bindView(int position, View convertView, ViewGroup parent) {
             if (convertView == null)
                 convertView = mInflater.inflate(R.layout.item_order_detail, null);
+            System.out.println("OrderItemAdapter.bindView");
             TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
             TextView tv_specification = ViewHolder.get(convertView, R.id.tv_specification);
             TextView tv_count = ViewHolder.get(convertView, R.id.tv_count);
@@ -773,6 +731,48 @@ public class OrderDetailFragment extends BaseFragment {
 
     public interface OnColseSuccess {
         public void colsePage();
+    }
+
+    private class StoreAdapter extends BaseListAdapter<Store>{
+
+//        private Map<Integer,Boolean> expand = new HashMap<Integer, Boolean>();
+        public StoreAdapter(Context context, List<Store> list) {
+            super(context, list);
+        }
+
+        @Override
+        public View bindView(final int position, View convertView, ViewGroup parent) {
+            if (convertView==null)
+                convertView=mInflater.inflate(R.layout.item_order_detail1,null);
+            TextView mOrderNumber=ViewHolder.get(convertView,R.id.tv_order_number);
+            TextView mOrderTime = ViewHolder.get(convertView,R.id.tv_order_time);
+            TextView mOrderStatus =ViewHolder.get(convertView,R.id.tv_order_status);
+            ListView mListView =ViewHolder.get(convertView,R.id.lv_order_list);
+            final Store store = getList().get(position);
+            mOrderNumber.setText(store.orderCode+"");
+            mOrderTime.setText(store.creationTime);
+            mOrderStatus.setText(store.orderShowStatus);
+            final OrderItemAdapter adapter = new OrderItemAdapter(mContext,store.orderItemPOList){
+                @Override
+                public int getCount() {
+                    if (!store.isExpand)
+                        return 1;
+                    return super.getCount();
+                }
+            };
+            mListView.setAdapter(adapter);
+            setOnInViewClickListener(R.id.moreDetail,new onInternalClickListener() {
+                @Override
+                public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                    Store store1= (Store) values;
+                    if (store1.orderItemPOList!=null&&store1.orderItemPOList.size()<2)
+                    store1.orderItemPOList.addAll(store1.orderItemPOList);
+                    store1.isExpand=!store1.isExpand;
+                    adapter.notifyDataSetChanged();
+                }
+            });
+            return convertView;
+        }
     }
 
 }

@@ -23,6 +23,8 @@ public class Order1 implements Serializable{
     public String updatedTime;
     public String storeId;
     public String remark;
+    public long orderRemainingTime;
+    public long orderRemainingTimeType;
 
     public List<Store> childOrderPOList;
     public Address deliveryAddressPO;

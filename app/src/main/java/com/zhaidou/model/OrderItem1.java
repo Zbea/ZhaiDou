@@ -18,6 +18,7 @@ public class OrderItem1 {
     public int productId;
     public String productCode;
     public String productName;
+    public int productType;
     public int productSKUId;
     public String productSKUCode;
     public String price;

@@ -38,6 +38,7 @@ public class Store {
     public String creationTime;
     public String updatedTime;
     public int orderType;
+    public boolean isExpand;
 
     public List<OrderItem1> orderItemPOList;
 }

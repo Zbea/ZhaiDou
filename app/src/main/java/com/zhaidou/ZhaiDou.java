@@ -96,6 +96,8 @@ public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
 
     //用户简单信息
     public static String USER_SIMPLE_PROFILE_URL=HOME_BASE_URL+"api/v1/users/";
+    //用户简单信息INFO
+    public static String USER_SIMPLE_INFO_URL=HOME_BASE_URL+"/user/queryUserInfo.action";
     //用户编辑信息
     public static String USER_EDIT_PROFILE_URL=HOME_BASE_URL+"api/v1/profiles/";
     //用户退出登录
@@ -156,8 +158,25 @@ public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
      */
     public final static int VERFIRY_TIME=60;
 
-    /** 未付款*/
+    /** 待付款*/
     public final static int STATUS_UNPAY=10;
+    /** 部分付款*/
+    public final static int STATUS_PARY_PAY=11;
+    /** 待审核*/
+    public final static int STATUS_UNCHECK=20;
+    /**待发货*/
+    public final static int STATUS_UNDELIVERY=30;
+    /**部分发货*/
+    public final static int STATUS_PART_DELIVERY=31;
+    /**已发货*/
+    public final static int STATUS__DELIVERYED=40;
+    /**交易成功*/
+    public final static int STATUS_DEAL_SUCCESS=50;
+    /**申请取消*/
+    public final static int STATUS_ORDER_APPLY_CANCEL=-10;
+    /**已取消*/
+    public final static int STATUS_ORDER_CANCEL=-20;
+
     /**已付款*/
     public final static int STATUS_PAYED=1;
     /** 超时过期*/
@@ -165,9 +184,8 @@ public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
     /**已取消（已付款）*/
     public final static int STATUS_ORDER_CANCEL_PAYED=3;
     /**已发货*/
-    public final static int STATUS_DELIVERY=4;
-    /**交易成功*/
-    public final static int STATUS_DEAL_SUCCESS=5;
+    public final static int STATUS_DELIVERY=40;
+
     /**申请退货*/
     public final static int STATUS_APPLY_GOOD_RETURN=6;
     /**退货中*/
@@ -182,8 +200,17 @@ public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
     public final static int STATUS_RETURN_MONEY_SUCCESS=11;
 
 
+
+
+
     //订单列表
     public static String URL_ORDER_LIST=HOME_BASE_URL+"order/orderList.action";
+    //取消订单
+    public static String URL_ORDER_CANCEL=HOME_BASE_URL+"order/cancelOrder.action";
+    //删除订单
+    public static String URL_ORDER_DELETE=HOME_BASE_URL+"order/deleteOrder.action";
+    //确认收货
+    public static String URL_ORDER_CONFIRM=HOME_BASE_URL+"order/confirmReceived.action";
     //订单详情
     public static String URL_ORDER_DETAIL=HOME_BASE_URL+"order/getOrderDetail.action";
     //收货地址
@@ -243,5 +270,5 @@ public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
      * 商品详情普通特卖购买后刷新
      */
     public static String IntentRefreshGoodsDetailsTag="com.zhaidou.home.refesh.o.goods.details";
-
+public static String TESTUSERID="28129";//28129//16665//64410
 }
