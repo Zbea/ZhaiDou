@@ -599,7 +599,7 @@ public class ShopPaymentFragment extends BaseFragment
                                 {
                                     String tradeItemCode = object.optString("tradeItemCode");//流水号
                                     String cashAmount = object.optString("cashAmount");//付款金额
-                                   final String appId ="wx4a41efaa968348df" ;//object.optString("appId");
+                                    final String appId ="wx4a41efaa968348df" ;//object.optString("appId");
 //                                    final String appId ="wxce03c66622e5b243";
 //                                    final String timeStamp = object.optString("timestamp");
 //                                    final String signType = object.optString("signType");
