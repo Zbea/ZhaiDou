@@ -103,14 +103,16 @@ public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
 
     //用户简单信息
     public static String USER_SIMPLE_PROFILE_URL=HOME_BASE_URL+"api/v1/users/";
+    //用户简单信息INFO
+    public static String USER_SIMPLE_INFO_URL=HOME_BASE_URL+"/user/queryUserInfo.action";
     //用户编辑信息
     public static String USER_EDIT_PROFILE_URL=HOME_BASE_URL+"api/v1/profiles/";
     //用户退出登录
     public static String USER_LOGOUT_URL=HOME_BASE_URL+"api/v1/user_tokens/logout";
     //用户登录
-    public static String USER_LOGIN_URL=HOME_BASE_URL+"api/v1/user_tokens";
+    public static String USER_LOGIN_URL=HOME_BASE_URL+"user/user_tokens.action";
     //第三方登录--验证
-    public static String USER_LOGIN_THIRD_VERIFY_URL=HOME_BASE_URL+"api/v1/users/verification_other";
+    public static String USER_LOGIN_THIRD_VERIFY_URL=HOME_BASE_URL+"user/verification_other.action";
     //用户注册
     public static String USER_REGISTER_URL=HOME_BASE_URL+"api/v1/users";
     //
