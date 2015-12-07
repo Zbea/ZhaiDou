@@ -31,7 +31,7 @@ public class CreatCartTools
             while (cursor.moveToNext())
             {
                 CartGoodsItem item = new CartGoodsItem();
-                item.userId = cursor.getInt(cursor.getColumnIndex("userId"));
+                item.userId = cursor.getString(cursor.getColumnIndex("userId"));
                 item.id = cursor.getInt(cursor.getColumnIndex("baseId"));
                 item.name = cursor.getString(cursor.getColumnIndex("title"));
                 item.imageUrl = cursor.getString(cursor.getColumnIndex("img"));
@@ -41,7 +41,7 @@ public class CreatCartTools
                 item.saveTotalMoney = cursor.getDouble(cursor.getColumnIndex("saveTotalMoney"));
                 item.num = cursor.getInt(cursor.getColumnIndex("num"));
                 item.size = cursor.getString(cursor.getColumnIndex("size"));
-                item.sizeId = cursor.getInt(cursor.getColumnIndex("sizeId"));
+                item.sizeId = cursor.getString(cursor.getColumnIndex("sizeId"));
                 item.isPublish = cursor.getString(cursor.getColumnIndex("isPublish"));
                 item.isOver = cursor.getString(cursor.getColumnIndex("isOver"));
                 item.isOSale = cursor.getString(cursor.getColumnIndex("isOSale"));

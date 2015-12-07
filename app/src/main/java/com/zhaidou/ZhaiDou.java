@@ -6,9 +6,9 @@ package com.zhaidou;
 public class ZhaiDou {
 
     public static String HOME_PAGE_URL = "http://buy.zhaidou.com/?json=get_category_posts&slug=%E5%AE%B6%E9%A5%B0%E4%BC%98%E9%80%89&status=publish";
-//    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
+    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
 //        public static String HOME_BASE_URL = "http://www.zhaidou.com/";
-public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
+//public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
 
     //首页banner
     public static String HomeBannerUrl="http://121.42.206.45:7082/index/getBoardContent.action?boardCodes=";

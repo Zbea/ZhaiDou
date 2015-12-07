@@ -37,6 +37,7 @@ import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.alipay.PayResult;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.Order;
 import com.zhaidou.model.OrderItem;
@@ -83,11 +84,13 @@ public class ShopPaymentFragment extends BaseFragment
     private static final String ARG_ORDER = "order";
 
     private long mOrderId;
+    private String orderCode;
     private double mAmount;
     private double mFare;
     private int flags;
     private long mTimeLeft;
     private Order mOrder;
+    private Order netOrder;//获取网络订单
     private View mView;
     private Context mContext;
 
@@ -103,12 +106,6 @@ public class ShopPaymentFragment extends BaseFragment
     private LinearLayout loseView;
     private Button paymentBtn;
 
-    private ArrayList<CartGoodsItem> items;
-    private int num = 0;
-    private double money = 0;
-    private double moneyYF = 0;
-    private double totalMoney = 0;
-
     private CheckBox cb_weixin;
     private CheckBox cb_zhifubao;
     private int mCheckPosition = 0;
@@ -123,9 +120,11 @@ public class ShopPaymentFragment extends BaseFragment
     private int userId;
     private IWXAPI api;
     private boolean isSuccess;
-    private TextView mAccountView;
+    private double payMoney;//订单获取的金额
+    private int payOrderId;
+    private String payOrderCode;
+    private Dialog mDialog;
 
-    private long commitBtnTime = 0;
     private Handler mHandler = new Handler()
     {
         @Override
@@ -186,81 +185,6 @@ public class ShopPaymentFragment extends BaseFragment
                             Toast.LENGTH_SHORT).show();
                     break;
                 }
-                case 1000:
-                {
-                    try
-                    {
-                        JSONObject jsonObject = new JSONObject(msg.obj.toString());
-
-                        if (jsonObject != null)
-                        {
-                            int status = jsonObject.optInt("status");
-                            if (status == 200)
-                            {
-                                JSONObject object = jsonObject.optJSONObject("data");
-                                if (object != null)
-                                {
-                                    if (mCheckPosition == 0)
-                                    {
-                                        if (api.isWXAppInstalled())
-                                        {
-                                            String tradeItemCode = object.optString("tradeItemCode");//流水号
-                                            String cashAmount = object.optString("cashAmount");//付款金额
-                                            final String appId = object.optString("appId");
-                                            final String timeStamp = object.optString("timestamp");
-//                            final String signType = object.optString("signType");
-                                            final String mpackage = object.optString("packageValue");
-                                            final String nonceStr = object.optString("nonceString");
-                                            final String prepayId = object.optString("prepayId");
-                                            final String paySign = jsonObject.optString("paySign");
-                                            final String partnerId = jsonObject.optString("partnerId");
-
-                                            PayReq request = new PayReq();
-                                            request.appId = appId;
-                                            request.partnerId = partnerId;
-                                            request.prepayId = prepayId;
-                                            request.packageValue = mpackage;
-                                            request.nonceStr = nonceStr;
-                                            request.timeStamp = timeStamp;
-                                            request.sign = paySign;
-                                            api.sendReq(request);
-                                        } else
-                                        {
-                                            ShowToast("没有安装微信客户端哦");
-                                        }
-
-                                    } else if (mCheckPosition == 1)
-                                    {
-                                        String tradeItemCode = object.optString("tradeItemCode");//流水号
-                                        String cashAmount = object.optString("cashAmount");//付款金额
-                                        final String url = object.optString("notifyUrl");
-                                        mHandler.postDelayed(new Runnable()
-                                        {
-                                            @Override
-                                            public void run()
-                                            {
-                                                pay(url);
-                                            }
-                                        }, 0);
-                                    }
-                                }
-                            }
-                        }
-
-
-                    } catch (JSONException e)
-                    {
-                        e.printStackTrace();
-                    }
-                    break;
-                }
-                case 1001:
-                {
-                    Toast.makeText(getActivity(), "抱歉,加载失败",
-                            Toast.LENGTH_SHORT).show();
-                    paymentBtn.setClickable(true);
-                    break;
-                }
                 default:
                     break;
             }
@@ -287,7 +211,6 @@ public class ShopPaymentFragment extends BaseFragment
                     } else
                     {
                         paymentBtn.setClickable(false);
-//                        commit();
                         payment();
                     }
                     break;
@@ -295,11 +218,12 @@ public class ShopPaymentFragment extends BaseFragment
         }
     };
 
-    public static ShopPaymentFragment newInstance(long orderId, double amount, double fare, long timeLeft, Order order, int flags)
+    public static ShopPaymentFragment newInstance(long orderId,String orderCode, double amount, double fare, long timeLeft, Order order, int flags)
     {
         ShopPaymentFragment fragment = new ShopPaymentFragment();
         Bundle args = new Bundle();
         args.putLong(ARG_ORDERID, orderId);
+        args.putString("orderCode", orderCode);
         args.putDouble(ARG_AMOUNT, amount);
         args.putDouble(ARG_FARE, fare);
         args.putLong(ARG_TIME, timeLeft);
@@ -320,6 +244,7 @@ public class ShopPaymentFragment extends BaseFragment
         if (getArguments() != null)
         {
             mOrderId = getArguments().getLong(ARG_ORDERID);
+            orderCode = getArguments().getString("orderCode");
             mAmount = getArguments().getDouble(ARG_AMOUNT);
             mFare = getArguments().getDouble(ARG_FARE);
             mTimeLeft = getArguments().getLong(ARG_TIME);
@@ -360,7 +285,8 @@ public class ShopPaymentFragment extends BaseFragment
             setUnPayAddCount();
         }
         api = WXAPIFactory.createWXAPI(mContext, null);
-        api.registerApp("wxce03c66622e5b243");
+//        api.registerApp("wxce03c66622e5b243");
+        api.registerApp("wx4a41efaa968348df");
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
         mRequestQueue = Volley.newRequestQueue(mContext);
@@ -402,7 +328,7 @@ public class ShopPaymentFragment extends BaseFragment
                 }
             }
         });
-        mAccountView = (TextView) mView.findViewById(R.id.tv_cash);
+        TextView mAccountView = (TextView) mView.findViewById(R.id.tv_cash);
         DecimalFormat df = new DecimalFormat("###.00");
         mAccountView.setText("￥" + ToolUtils.isIntPrice("" + Double.parseDouble(df.format(mAmount))));
         mView.findViewById(R.id.tv_pinkage).setVisibility(View.GONE);
@@ -410,87 +336,70 @@ public class ShopPaymentFragment extends BaseFragment
 
         mTimer = new Timer();
 
-//        FetchOrderDetail(mOrderId);
+        mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"");
+        FetchOrderDetail();
     }
 
-//    private void FetchOrderDetail(long mOrderId)
-//    {
-//        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "/" + mOrderId, new Response.Listener<JSONObject>()
-//        {
-//            @Override
-//            public void onResponse(JSONObject jsonObject)
-//            {
-//                if (jsonObject != null)
-//                {
-//                    JSONObject orderObj = jsonObject.optJSONObject("order");
-//                    String node = orderObj.optString("node");
-//                    ToolUtils.setLog("node:" + node);
-//                    int total_over_time = orderObj.optInt("total_over_time");
-//                    if (mTimeLeft < 0)
-//                        initTime = total_over_time;
-//                    int id = orderObj.optInt("id");
-//                    String status = orderObj.optString("status");
-//                    String created_at_for = orderObj.optString("created_at_for");
-//                    String receiver_address = orderObj.optString("receiver_address");
-//                    String created_at = orderObj.optString("created_at");
-//                    String status_ch = orderObj.optString("status_ch");
-//                    String number = orderObj.optString("number");
-//                    String receiver_phone = orderObj.optString("receiver_phone");
-//                    String deliver_number = orderObj.optString("deliver_number");
-//                    String receiver_name = orderObj.optString("receiver_name");
-//                    String parent_name = orderObj.optString("parent_name");
-//                    String city_name = orderObj.optString("city_name");
-//                    String provider_name = orderObj.optString("provider_name");
-//
-//                    JSONObject receiverObj = orderObj.optJSONObject("receiver");
-//                    int receiverId = receiverObj.optInt("id");
-//                    String logNum = orderObj.optString("deliver_number");
-//                    Receiver receiver = new Receiver(receiverId, null, parent_name, null, null, null, null);
-//
-//                    JSONArray order_items = orderObj.optJSONArray("order_items");
-//                    if (order_items != null && order_items.length() > 0)
-//                    {
-//                        for (int i = 0; i < order_items.length(); i++)
-//                        {
-//                            JSONObject item = order_items.optJSONObject(i);
-//                            int itemId = item.optInt("id");
-//                            double itemPrice = item.optDouble("price");
-//                            int count = item.optInt("count");
-//                            double cost_price = item.optDouble("cost_price");
-//                            String merchandise = item.optString("merchandise");
-//                            String specification = item.optString("specification");
-//                            int merchandise_id = item.optInt("merchandise_id");
-//                            String merch_img = item.optString("merch_img");
-//                            int sale_cate = item.optInt("sale_cate");
-//                            OrderItem orderItem = new OrderItem(itemId, itemPrice, count, cost_price, merchandise, specification, merchandise_id, merch_img);
-//                            orderItem.setSale_cate(sale_cate);
-////                            orderItems.add(orderItem);
-//                        }
-//                    }
-////                    Order order = new Order("", id, number, amount, status, status_ch, created_at_for, created_at, receiver, orderItems, receiver_address, receiver_phone, deliver_number, receiver_name);
-//                }
-//            }
-//        }, new Response.ErrorListener()
-//        {
-//            @Override
-//            public void onErrorResponse(VolleyError volleyError)
-//            {
-//                if (getActivity() != null)
-//                    Toast.makeText(mContext, "加载失败", Toast.LENGTH_SHORT).show();
-//            }
-//        })
-//        {
-//            @Override
-//            public Map<String, String> getHeaders() throws AuthFailureError
-//            {
-//                Map<String, String> headers = new HashMap<String, String>();
-//                headers.put("SECAuthorization", token);
-//                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-//                return headers;
-//            }
-//        };
-//        mRequestQueue.add(request);
-//    }
+    /**
+     * 获取订单详情
+     */
+    private void FetchOrderDetail()
+    {
+        JSONObject json=null;
+        try
+        {
+            json=new JSONObject();
+            json.put("businessType","01");
+            json.put("userId",userId);
+            json.put("orderCode",orderCode);
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,ZhaiDou.GetOrderDetailsUrl,json, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (jsonObject != null)
+                {
+                    int status=jsonObject.optInt("status");
+                    if(status==200)
+                    {
+                        JSONObject dataObject=jsonObject.optJSONObject("data");
+                        payMoney=dataObject.optDouble("orderTotalAmount");
+                        payOrderId=dataObject.optInt("orderId");
+                        payOrderCode=dataObject.optString("orderCode");
+                    }
+                    else
+                    {
+
+                    }
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                if (mContext != null)
+                    ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("SECAuthorization", token);
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
+    }
 
     /**
      * 发送刷新代付加一
@@ -582,102 +491,62 @@ public class ShopPaymentFragment extends BaseFragment
         dialog.show();
     }
 
-//    /**
-//     * 付款ZFBMALLANDROID,WXMALLANDROID
-//     */
-//    private void payment()
-//    {
-//        Map<String,String> maps=new HashMap<String, String>();
-//        maps.put("businessType ","01");
-//        maps.put("clientType ","ANDROID");
-//        maps.put("clientVersion ",mContext.getResources().getString(R.string.app_versionName).substring(1));
-//        maps.put("signature ","0459764e251e372215beec19050771c8");
-//        maps.put("timestamp ",System.currentTimeMillis()+"");
-//        maps.put("token ",token);
-//        maps.put("userId ",userId+"");
-//        maps.put("version ","1.0.0");
-//        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,ZhaiDou.CommitPaymentUrl,new JSONObject(maps), new Response.Listener<JSONObject>()
-//        {
-//            @Override
-//            public void onResponse(JSONObject jsonObject)
-//            {
-//                if (jsonObject != null)
-//                {
-//                    int status = jsonObject.optInt("status");
-//                    if (status == 200)
-//                    {
-//                        JSONArray array=jsonObject.optJSONArray("data");
-//                        if (array!=null)
-//                        {
-////                            final String appId = jsonObject.optString("appId");
-////                            final String timeStamp = jsonObject.optString("timeStamp");
-////                            final String signType = jsonObject.optString("signType");
-////                            final String mpackage = jsonObject.optString("package");
-////                            final String nonceStr = jsonObject.optString("nonceStr");
-////                            final String prepayId = jsonObject.optString("prepayId");
-////                            int order_id = jsonObject.optInt("order_id");
-////                            final String paySign = jsonObject.optString("paySign");
-//                            if (mCheckPosition == 0)
-//                            {
-//                                if (api.isWXAppInstalled())
-//                                {
-//                                    JSONObject weixin=array.optJSONObject(1);
-//                                    String channelId=weixin.optString("channelId");
-//                                    String channelCode=weixin.optString("channelCode");
-//
-////                                    PayReq request = new PayReq();
-////                                    request.appId = appId;
-////                                    request.partnerId = "1254327401";
-////                                    request.prepayId = prepayId;
-////                                    request.packageValue = mpackage;
-////                                    request.nonceStr = nonceStr;
-////                                    request.timeStamp = timeStamp;
-////                                    request.sign = paySign;
-////                                    api.sendReq(request);
-//                                } else
-//                                {
-//                                    ShowToast("没有安装微信客户端哦");
-//                                }
-//
-//                            } else if (mCheckPosition == 1)
-//                            {
-//                                JSONObject zhifubao=array.optJSONObject(0);
-//                                String channelId=zhifubao.optString("channelId");
-//                                String channelCode=zhifubao.optString("channelCode");
-//
-////                                final String url = jsonObject.optString("url");
-////                                mHandler.postDelayed(new Runnable()
-////                                {
-////                                    @Override
-////                                    public void run()
-////                                    {
-////                                        pay(url);
-////                                    }
-////                                }, 0);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }, new Response.ErrorListener()
-//        {
-//            @Override
-//            public void onErrorResponse(VolleyError volleyError)
-//            {
-//            }
-//        })
-//        {
-//            @Override
-//            public Map<String, String> getHeaders() throws AuthFailureError
-//            {
-//                Map<String, String> map = new HashMap<String, String>();
-//                map.put("SECAuthorization", token);
-//                map.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-//                return map;
-//            }
-//        };
-//        mRequestQueue.add(request);
-//    }
+    /**
+     * 付款ZFBMALLANDROID,WXMALLANDROID
+     */
+    private void getPaymentCode()
+    {
+        Map<String,String> maps=new HashMap<String, String>();
+        maps.put("businessType ","01");
+        maps.put("clientType ","ANDROID");
+        maps.put("clientVersion ",mContext.getResources().getString(R.string.app_versionName).substring(1));
+        maps.put("signature ","0459764e251e372215beec19050771c8");
+        maps.put("timestamp ",System.currentTimeMillis()+"");
+        maps.put("token ",token);
+        maps.put("userId ",userId+"");
+        maps.put("version ","1.0.0");
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,ZhaiDou.CommitPaymentUrl,new JSONObject(maps), new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (jsonObject != null)
+                {
+                    int status = jsonObject.optInt("status");
+                    if (status == 200)
+                    {
+                        JSONArray array=jsonObject.optJSONArray("data");
+                        if (array!=null)
+                        {
+                            for (int i = 0; i <array.length() ; i++)
+                            {
+                                JSONObject obj=array.optJSONObject(i);
+                                String channelId=obj.optString("channelId");
+                                String channelCode=obj.optString("channelCode");
+                            }
+                        }
+                    }
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("SECAuthorization", token);
+                map.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return map;
+            }
+        };
+        mRequestQueue.add(request);
+    }
 
     private void payment()
     {
@@ -730,13 +599,21 @@ public class ShopPaymentFragment extends BaseFragment
                                 {
                                     String tradeItemCode = object.optString("tradeItemCode");//流水号
                                     String cashAmount = object.optString("cashAmount");//付款金额
-                                    final String appId = object.optString("appId");
+                                    final String appId ="wx4a41efaa968348df" ;//object.optString("appId");
+//                                    final String appId ="wxce03c66622e5b243";
+//                                    final String timeStamp = object.optString("timestamp");
+//                                    final String signType = object.optString("signType");
+//                                    final String mpackage = object.optString("packageValue");
+//                                    final String nonceStr = "vVgG2AtBxd8NdwkmGz64msdMF4dGokJE";
+//                                    final String prepayId = "wx2015120518132541c922c8230630767305";
+//                                    final String paySign = "8363A9D42FF76007433A38B4F516FA25";
+//                                    final String partnerId = "1254327401";
                                     final String timeStamp = object.optString("timestamp");
-//                            final String signType = object.optString("signType");
+                                    final String signType = object.optString("signType");
                                     final String mpackage = object.optString("packageValue");
                                     final String nonceStr = object.optString("nonceString");
                                     final String prepayId = object.optString("prepayId");
-                                    final String paySign = jsonObject.optString("paySign");
+                                    final String paySign = jsonObject.optString("sign");
                                     final String partnerId = jsonObject.optString("partnerId");
 
                                     PayReq request = new PayReq();
@@ -768,6 +645,16 @@ public class ShopPaymentFragment extends BaseFragment
                                 }, 0);
                             }
                         }
+                        else
+                        {
+                            paymentBtn.setClickable(true);
+                            ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+                        }
+                    }
+                    else
+                    {
+                        paymentBtn.setClickable(true);
+                        ToolUtils.setToast(mContext,R.string.loading_fail_txt);
                     }
                 }
             }
@@ -909,7 +796,7 @@ public class ShopPaymentFragment extends BaseFragment
                 break;
             case -2://取消支付
                 Log.i("----->", "取消支付");
-                ShowToast("取消支付");
+                ToolUtils.setToast(mContext,R.string.loading_fail_txt);
                 break;
             default:
                 break;
@@ -944,18 +831,12 @@ public class ShopPaymentFragment extends BaseFragment
     @Override
     public void onStop()
     {
-        System.out.println("ShopPaymentFragment.onStop");
-        if (mTimer != null)
-        {
-//            isTimerStart = false;
-        }
         super.onStop();
     }
 
     @Override
     public void onDestroyView()
     {
-        System.out.println("ShopPaymentFragment.onDestroyView");
         if (orderListener != null)
         {
             mOrder.setOver_at(initTime);

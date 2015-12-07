@@ -217,7 +217,7 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                         ShowToast(mContext.getResources().getString(R.string.order_had_order_time));
                         return;
                     }
-                    ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.getOrderId(), order.getAmount(), 0, order.getOver_at(), order, 2);
+                    ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.getOrderId(),"", order.getAmount(), 0, order.getOver_at(), order, 2);
                     ((BaseActivity) getActivity()).navigationToFragment(shopPaymentFragment);
                     shopPaymentFragment.setOrderListener(new Order.OrderListener() {
                         @Override

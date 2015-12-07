@@ -61,8 +61,6 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     public static boolean isNetState;
     public Context mContext;
     protected boolean isDialogFirstVisible=true;
-    public String token;
-    public int userId;
 
 
     @Override
@@ -249,8 +247,8 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
      */
     public boolean checkLogin()
     {
-        token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
-        userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
+        String token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
+        int userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
         boolean isLogin = !TextUtils.isEmpty(token) && userId > -1;
         return isLogin;
     }

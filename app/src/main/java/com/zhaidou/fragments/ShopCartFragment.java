@@ -358,7 +358,7 @@ public class ShopCartFragment extends BaseFragment
         {
             for (int j = 0; j <arrays.get(i).goodsItems.size(); j++)
             {
-                if (arrays.get(i).goodsItems.get(j).sku.equals(mCartGoodsItem.sku))
+                if (arrays.get(i).goodsItems.get(j).sizeId.equals(mCartGoodsItem.sizeId))
                 {
                     if (flags==1)
                     {
@@ -374,7 +374,7 @@ public class ShopCartFragment extends BaseFragment
         }
         for (int i = 0; i <itemsCheck.size(); i++)
         {
-            if (itemsCheck.get(i).sku.equals(mCartGoodsItem.sku))
+            if (itemsCheck.get(i).sizeId.equals(mCartGoodsItem.sizeId))
             {
                 if (flags==1)
                 {
@@ -717,13 +717,13 @@ public class ShopCartFragment extends BaseFragment
                                     String isPublish = goodsObject.optString("productShelves").equals("1")?"false":"true";
                                     String isOver = goodsObject.optInt("stock")>0?"false":"true";
                                     CartGoodsItem goodsItem = new CartGoodsItem();
-                                    goodsItem.userIds = userId;
+                                    goodsItem.userId = userId;
                                     goodsItem.storeId = storeId;
                                     goodsItem.goodsId = goodsId;
                                     goodsItem.name = goodsName;
                                     goodsItem.imageUrl = goodsUrl;
                                     goodsItem.size = specification;
-                                    goodsItem.sku = goodsSKU;
+                                    goodsItem.sizeId = goodsSKU;
                                     goodsItem.currentPrice = goodsPrice;
                                     goodsItem.formalPrice = formalPrice;
                                     goodsItem.num = goodsCount;
@@ -822,7 +822,7 @@ public class ShopCartFragment extends BaseFragment
     public void FetchGoodsDeleteData(final CartGoodsItem cartGoodsItem,final View childeView,final CheckBox itemCheck)
     {
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
-        String url = ZhaiDou.CartGoodsDeleteUrl + "[" + cartGoodsItem.sku + "]";
+        String url = ZhaiDou.CartGoodsDeleteUrl + "[" + cartGoodsItem.sizeId + "]";
         ToolUtils.setLog("url:" + url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
@@ -876,7 +876,7 @@ public class ShopCartFragment extends BaseFragment
     private void FetchEditDate(final TextView itemNum, final int num, final CartGoodsItem mCartGoodsItem)
     {
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
-        String url = ZhaiDou.CartGoodsEditUrl +num+ "&productSKUId="+mCartGoodsItem.sku;
+        String url = ZhaiDou.CartGoodsEditUrl +num+ "&productSKUId="+mCartGoodsItem.sizeId;
         ToolUtils.setLog("url:" + url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
