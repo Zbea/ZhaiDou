@@ -217,8 +217,8 @@ public class DialogUtils {
                 }
             }
         };
-        mDialog.setCanceledOnTouchOutside(false);
-        mDialog.setCancelable(false);
+        mDialog.setCanceledOnTouchOutside(true);
+        mDialog.setCancelable(true);
         mDialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         mDialog.show();
 

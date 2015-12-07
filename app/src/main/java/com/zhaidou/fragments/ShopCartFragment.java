@@ -87,16 +87,17 @@ public class ShopCartFragment extends BaseFragment
     private RequestQueue mRequestQueue;
 
     private int userId;
-    private String Str_publish;
     private List<CartGoodsItem> items = new ArrayList<CartGoodsItem>();
-    private ArrayList<CartGoodsItem> itemsCheck = new ArrayList<CartGoodsItem>();
-    private List<CartArrayItem> arrays = new ArrayList<CartArrayItem>();
+    private ArrayList<CartArrayItem> arrays = new ArrayList<CartArrayItem>();
+    private ArrayList<CartArrayItem> arraysCheck = new ArrayList<CartArrayItem>();
+    private List<CartGoodsItem> itemsCheck = new ArrayList<CartGoodsItem>();
     private List<CheckBox> boxs = new ArrayList<CheckBox>();
     private boolean isBuySuccess;
     private DialogUtils mDialogUtil;
     private int totalCount;
     private double totalMoney;
     private boolean isGoods;//是否存在商品
+    private boolean isFrist=true;
     private int cartCount;//购物车商品数量
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
@@ -119,18 +120,7 @@ public class ShopCartFragment extends BaseFragment
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
             {
                 isBuySuccess = true;
-                ToolUtils.setLog("刷新购物车");
-                if (items.size() > 0)
-                {
-                    nullView.setVisibility(View.GONE);
-                    contentView.setVisibility(View.VISIBLE);
-                    addCartGoods();
-                } else
-                {
-                    mDialog.dismiss();
-                    nullView.setVisibility(View.VISIBLE);
-                    contentView.setVisibility(View.GONE);
-                }
+                refreshData();
             }
         }
     };
@@ -146,7 +136,12 @@ public class ShopCartFragment extends BaseFragment
                     if (isGoods)
                     {
                         addCartGoods();
-                        FetchCountData();
+                        if (isFrist)
+                        {
+                            isFrist=false;
+                            FetchCountData();
+                        }
+
                     } else
                     {
                         loadingView.setVisibility(View.GONE);
@@ -170,6 +165,7 @@ public class ShopCartFragment extends BaseFragment
         {
             arrays.clear();
             refreshData();
+
         }
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView)
@@ -220,11 +216,7 @@ public class ShopCartFragment extends BaseFragment
                 case R.id.okBuyBtn:
                     if (itemsCheck.size() > 0)
                     {
-                        ShopOrderOkFragment shopOrderOkFragment = ShopOrderOkFragment.newInstance("", 0);
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("goodsList", itemsCheck);
-                        shopOrderOkFragment.setArguments(bundle);
-                        ((MainActivity) getActivity()).navigationToFragment(shopOrderOkFragment);
+                        commitCartOrder();
                     } else
                     {
                         ToolUtils.setToast(mContext, "抱歉,先选择商品");
@@ -338,15 +330,23 @@ public class ShopCartFragment extends BaseFragment
         return isLogin;
     }
 
+
     /**
      * 刷新数据
      */
     public void refreshData()
     {
         arrays.clear();
+        arraysCheck.clear();
+        itemsCheck.clear();
         items.clear();
+        if (allCb.isChecked())
+        {
+            allCb.setChecked(false);
+        }
         checkLogin();
         FetchDetailData();
+        FetchCountData();
     }
 
     /**
@@ -397,6 +397,9 @@ public class ShopCartFragment extends BaseFragment
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
             arrays.clear();
+            arraysCheck.clear();
+            itemsCheck.clear();
+            items.clear();
             mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
             checkLogin();
             FetchDetailData();
@@ -479,6 +482,7 @@ public class ShopCartFragment extends BaseFragment
 
             final CartGoodsItem cartGoodsItem = items.get(position);
 
+
             //判断商品是否下架或者卖光处理
             if (cartGoodsItem.isOver.equals("true") | cartGoodsItem.isPublish.equals("true") | cartGoodsItem.isDate.equals("true"))
             {
@@ -531,6 +535,13 @@ public class ShopCartFragment extends BaseFragment
                 islose.setVisibility(View.GONE);
                 isDate.setVisibility(View.VISIBLE);
             }
+
+            if (cartGoodsItem.isOSale.equals("true"))
+            {
+                cartNumView.setVisibility(View.GONE);
+                cartNumLoseView.setVisibility(View.VISIBLE);
+            }
+
             itemName.setText(cartGoodsItem.name);
             itemSize.setText(cartGoodsItem.size);
             itemCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + cartGoodsItem.currentPrice));
@@ -589,6 +600,34 @@ public class ShopCartFragment extends BaseFragment
         //发送数量修改广播
         Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsCheckTag);
         mContext.sendBroadcast(intent);
+    }
+
+    /**
+     * 提交订单
+     */
+    private void commitCartOrder()
+    {
+        arraysCheck=arrays;
+        for (int i = 0; i <arraysCheck.size() ; i++)
+        {
+            arraysCheck.get(i).goodsItems.clear();
+            for (int j = 0; j < itemsCheck.size(); j++)
+            {
+                if (arraysCheck.get(i).storeId.equals(itemsCheck.get(j).storeId))
+                {
+                    arraysCheck.get(i).goodsItems.add(itemsCheck.get(j));
+                }
+            }
+           if (arraysCheck.get(i).goodsItems.size()==0)
+           {
+               arraysCheck.remove(i);
+           }
+        }
+        ShopOrderOkFragment shopOrderOkFragment = ShopOrderOkFragment.newInstance("", 0);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("goodsList",arraysCheck);
+        shopOrderOkFragment.setArguments(bundle);
+        ((MainActivity) getActivity()).navigationToFragment(shopOrderOkFragment);
     }
 
     /**
@@ -670,6 +709,7 @@ public class ShopCartFragment extends BaseFragment
                                     String goodsUrl = goodsObject.optString("productSKUPicUrl");
                                     String goodsSKU = goodsObject.optString("productSKUId");
                                     String specification = goodsObject.optString("productSKUSpecification");
+                                    String isOSale=goodsObject.optString("businessType").equals("01")?"false":"true";
                                     double goodsPrice = goodsObject.optDouble("salePrice");
                                     double formalPrice = goodsObject.optDouble("markerPrice");
                                     int goodsCount = goodsObject.optInt("quantity");
@@ -678,6 +718,7 @@ public class ShopCartFragment extends BaseFragment
                                     String isOver = goodsObject.optInt("stock")>0?"false":"true";
                                     CartGoodsItem goodsItem = new CartGoodsItem();
                                     goodsItem.userIds = userId;
+                                    goodsItem.storeId = storeId;
                                     goodsItem.goodsId = goodsId;
                                     goodsItem.name = goodsName;
                                     goodsItem.imageUrl = goodsUrl;
@@ -690,6 +731,7 @@ public class ShopCartFragment extends BaseFragment
                                     goodsItem.isOver = isOver;
                                     goodsItem.isPublish = isPublish;
                                     goodsItem.isDate = "false";
+                                    goodsItem.isOSale=isOSale;
 
                                     goodsItems.add(goodsItem);
                                     if (goodsItems.size() > 0)

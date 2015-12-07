@@ -7,20 +7,14 @@ public class ZhaiDou {
 
     public static String HOME_PAGE_URL = "http://buy.zhaidou.com/?json=get_category_posts&slug=%E5%AE%B6%E9%A5%B0%E4%BC%98%E9%80%89&status=publish";
 //    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
-//        public static String HOME_BASE_URL = "http://www.zhaidou.com/";
-public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
-//    public static String HOME_BASE_URL = "http://192.168.1.148:8080/";
-    //    public static String HOME_BASE_URL = "http://192.168.1.126:3000/lotteries";
-    public static String TAG_BASE_URL = "http://buy.zhaidou.com/?tag=%s&json=1";
+        public static String HOME_BASE_URL = "http://www.zhaidou.com/";
 
     //首页banner
     public static String HomeBannerUrl="http://121.42.206.45:7082/index/getBoardContent.action?boardCodes=";
     //首页特卖列表
     public static String HomeShopListUrl="http://121.42.206.45:7082/index/getSpecialSaleList.action?pageSize=20&pageNo=";
-    //0元特卖列表
-    public static String OSaleListUrl="http://121.42.206.45:7082/index/getActivityProductList.action?pageNo=1&typeEnum=2&activityCode=ZHD2015NNW59113611";
     //首页特卖商品列表
-    public static String HomeGoodsListUrl="http://121.42.206.45:7082/index/getActivityProductList.action?pageSize=20&activityCode=";
+    public static String HomeGoodsListUrl="http://121.42.206.45:7082/index/getActivityProductList.action?activityCode=";
     //商品加入购物车
     public static String GoodsDetailsAddUrl="http://121.42.206.45:7082/cart/addUserCart.action?businessType=01&version=1.0.0&clientType=app&quantity=1&userId=1&productSKUId=";
     //商品详情接口
@@ -96,20 +90,18 @@ public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
 
     //用户简单信息
     public static String USER_SIMPLE_PROFILE_URL=HOME_BASE_URL+"api/v1/users/";
-    //用户简单信息INFO
-    public static String USER_SIMPLE_INFO_URL=HOME_BASE_URL+"/user/queryUserInfo.action";
     //用户编辑信息
     public static String USER_EDIT_PROFILE_URL=HOME_BASE_URL+"api/v1/profiles/";
     //用户退出登录
     public static String USER_LOGOUT_URL=HOME_BASE_URL+"api/v1/user_tokens/logout";
     //用户登录
-    public static String USER_LOGIN_URL=HOME_BASE_URL+"user/user_tokens.action";
+    public static String USER_LOGIN_URL=HOME_BASE_URL+"api/v1/user_tokens";
     //第三方登录--验证
-    public static String USER_LOGIN_THIRD_VERIFY_URL=HOME_BASE_URL+"user/verification_other.action";
+    public static String USER_LOGIN_THIRD_VERIFY_URL=HOME_BASE_URL+"api/v1/users/verification_other";
     //用户注册
     public static String USER_REGISTER_URL=HOME_BASE_URL+"api/v1/users";
     //
-    public static String USER_REGISTER_WITH_PHONE_URL=HOME_BASE_URL+"user/phone_register.action";
+    public static String USER_REGISTER_WITH_PHONE_URL=HOME_BASE_URL+"api/v1/users/phone_register";
     //用户收藏
     public static String USER_COLLECT_ITEM_URL=HOME_BASE_URL+"article/api/article_items/like_article_items?per_page=10&page=";
     //用户取消收藏
@@ -117,15 +109,15 @@ public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
     //用户豆搭
     public static String USER_COLLOCATION_ITEM_URL=HOME_BASE_URL+"api/v1/users/";
     //获取验证码
-    public static String USER_REGISTER_VERIFY_CODE_URL=HOME_BASE_URL+"user/vilidate_phone.action";
+    public static String USER_REGISTER_VERIFY_CODE_URL=HOME_BASE_URL+"api/v1/phone_vcodes/vilidate_phone?phone=";
     //修改密码验证码验证
-    public static String USER_RESET_PSW_CONFRIM_URL=HOME_BASE_URL+"user/next_to_password.action?phone=";
+    public static String USER_RESET_PSW_CONFRIM_URL=HOME_BASE_URL+"api/v1/phone_vcodes/next_to_password?phone=";
     //修改密码
-    public static String USER_RESET_PSW_URL=HOME_BASE_URL+"user/reset_password.action";
+    public static String USER_RESET_PSW_URL=HOME_BASE_URL+"api/v1/users/reset_password";
     //注册第一步判断手机是否已经注册
-    public static String USER_REGISTER_CHECK_PHONE_URL=HOME_BASE_URL+"user/next_to_register.action";
+    public static String USER_REGISTER_CHECK_PHONE_URL=HOME_BASE_URL+"api/v1/users/next_to_register";
     //登陆用户进行绑定手机接口
-    public static String USER_LOGIN_BINE_PHONE_URL=HOME_BASE_URL+"user/user_blinding_phone.action";
+    public static String USER_LOGIN_BINE_PHONE_URL=HOME_BASE_URL+"api/v1/users/user_blinding_phone";
 
 
     //后台统计
@@ -158,25 +150,8 @@ public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
      */
     public final static int VERFIRY_TIME=60;
 
-    /** 待付款*/
-    public final static int STATUS_UNPAY=10;
-    /** 部分付款*/
-    public final static int STATUS_PARY_PAY=11;
-    /** 待审核*/
-    public final static int STATUS_UNCHECK=20;
-    /**待发货*/
-    public final static int STATUS_UNDELIVERY=30;
-    /**部分发货*/
-    public final static int STATUS_PART_DELIVERY=31;
-    /**已发货*/
-    public final static int STATUS__DELIVERYED=40;
-    /**交易成功*/
-    public final static int STATUS_DEAL_SUCCESS=50;
-    /**申请取消*/
-    public final static int STATUS_ORDER_APPLY_CANCEL=-10;
-    /**已取消*/
-    public final static int STATUS_ORDER_CANCEL=-20;
-
+    /** 未付款*/
+    public final static int STATUS_UNPAY=0;
     /**已付款*/
     public final static int STATUS_PAYED=1;
     /** 超时过期*/
@@ -184,8 +159,9 @@ public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
     /**已取消（已付款）*/
     public final static int STATUS_ORDER_CANCEL_PAYED=3;
     /**已发货*/
-    public final static int STATUS_DELIVERY=40;
-
+    public final static int STATUS_DELIVERY=4;
+    /**交易成功*/
+    public final static int STATUS_DEAL_SUCCESS=5;
     /**申请退货*/
     public final static int STATUS_APPLY_GOOD_RETURN=6;
     /**退货中*/
@@ -195,24 +171,13 @@ public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
     /**未付款取消*/
     public final static int STATUS_UNPAY_CANCEL=9;
     /**交易关闭*/
-    public final static int STATUS_DEAL_CLOSE=100;
+    public final static int STATUS_DEAL_CLOSE=10;
     /**退款成功*/
     public final static int STATUS_RETURN_MONEY_SUCCESS=11;
 
 
-
-
-
     //订单列表
-    public static String URL_ORDER_LIST=HOME_BASE_URL+"order/orderList.action";
-    //取消订单
-    public static String URL_ORDER_CANCEL=HOME_BASE_URL+"order/cancelOrder.action";
-    //删除订单
-    public static String URL_ORDER_DELETE=HOME_BASE_URL+"order/deleteOrder.action";
-    //确认收货
-    public static String URL_ORDER_CONFIRM=HOME_BASE_URL+"order/confirmReceived.action";
-    //订单详情
-    public static String URL_ORDER_DETAIL=HOME_BASE_URL+"order/getOrderDetail.action";
+    public static String URL_ORDER_LIST=HOME_BASE_URL+"special_mall/api/orders";
     //收货地址
     public static String ORDER_RECEIVER_URL=HOME_BASE_URL+"special_mall/api/receivers/";
     //省市区
@@ -270,5 +235,5 @@ public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
      * 商品详情普通特卖购买后刷新
      */
     public static String IntentRefreshGoodsDetailsTag="com.zhaidou.home.refesh.o.goods.details";
-public static String TESTUSERID="28129";//28129//16665//64410
+
 }

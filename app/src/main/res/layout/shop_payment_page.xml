@@ -159,7 +159,7 @@
                     android:text="(包邮)"
                     android:textColor="#AAE2E2" />
 
-                <com.zhaidou.view.TypeFaceTextView
+                <TextView
                     android:id="@+id/tv_cash"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

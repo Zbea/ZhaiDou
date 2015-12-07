@@ -11,6 +11,8 @@ public class CartGoodsItem implements Serializable
     public int userId;
     //用户id
     public String userIds;//*
+    //用户id
+    public String storeId;//*
     //商品id
     public int id;
     //名称
@@ -31,8 +33,6 @@ public class CartGoodsItem implements Serializable
     public double totalMoney;
     //数量
     public int num;
-    //规格
-    public String specification;//*
     //规格Sku
     public String sku;//*
     //规格

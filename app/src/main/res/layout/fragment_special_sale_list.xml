@@ -51,10 +51,10 @@
             android:textSize="18sp" />
     </RelativeLayout>
 
-    <ScrollView
+    <com.pulltorefresh.PullToRefreshScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_below="@+id/common_actionbar"
         android:scrollbars="none">
 
@@ -66,7 +66,9 @@
             <com.zhaidou.view.LargeImgView
                 android:id="@+id/bannerView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:scaleType="fitXY"
+                android:src="@drawable/icon_loading_item"/>
 
             <com.zhaidou.view.ChildGridView
                 android:id="@+id/gv_sale"
@@ -80,7 +82,7 @@
                 android:scrollbars="none"
                 android:verticalSpacing="2dp" />
         </LinearLayout>
-    </ScrollView>
+    </com.pulltorefresh.PullToRefreshScrollView>
 
     <RelativeLayout
         android:layout_width="50dp"
