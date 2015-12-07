@@ -1351,7 +1351,7 @@ public class GoodsDetailsFragment extends BaseFragment
         {
             cartGoodsItem.size = mSpecification2.title;
         }
-        cartGoodsItem.sku = mSpecification2.sizeId;
+        cartGoodsItem.sizeId = mSpecification2.sizeId;
         cartGoodsItem.currentPrice = mSpecification2.price;
         cartGoodsItem.formalPrice = mSpecification2.oldPrice;
         cartGoodsItem.imageUrl = detail.imageUrl;
