@@ -392,23 +392,23 @@ public class OrderDetailFragment1 extends BaseFragment {
                 Intent intent1 = new Intent(getActivity(), PayDemoActivity.class);
                 intent1.putExtra("id", Integer.parseInt(mOrderId + ""));
                 intent1.putExtra("amount", mOrder.orderPayAmount);
-                ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(Integer.parseInt(mOrderId), amount, 10, 1000, null, 2);
-                ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
-                shopPaymentFragment.setOrderListener(new Order.OrderListener() {
-                    @Override
-                    public void onOrderStatusChange(Order order) {
-                        if (order.getStatus().equals("" + ZhaiDou.STATUS_PAYED)) {
-                            order.setStatus("" + ZhaiDou.STATUS_PAYED);
-                            order.setOver_at(0);
-                            mCancelOrder.setText(mContext.getResources().getString(R.string.order_return_money));
-                            mOrderTimer.setVisibility(View.GONE);
-                            mCancelOrder.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_green_click_bg));
-                            mOrderStatus.setText("已付款");
-                        } else {
-                            mParam2 = order.getOver_at();
-                        }
-                    }
-                });
+//                ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(Integer.parseInt(mOrderId), amount, 10, 1000, null, 2);
+//                ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
+//                shopPaymentFragment.setOrderListener(new Order.OrderListener() {
+//                    @Override
+//                    public void onOrderStatusChange(Order order) {
+//                        if (order.getStatus().equals("" + ZhaiDou.STATUS_PAYED)) {
+//                            order.setStatus("" + ZhaiDou.STATUS_PAYED);
+//                            order.setOver_at(0);
+//                            mCancelOrder.setText(mContext.getResources().getString(R.string.order_return_money));
+//                            mOrderTimer.setVisibility(View.GONE);
+//                            mCancelOrder.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_green_click_bg));
+//                            mOrderStatus.setText("已付款");
+//                        } else {
+//                            mParam2 = order.getOver_at();
+//                        }
+//                    }
+//                });
                 break;
         }
         super.onClick(view);
