@@ -201,6 +201,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
             payMoney=getArguments().getDouble(ARG_AMOUNT);
             payYFMoney=getArguments().getDouble(ARG_FARE);
             mTimeStamp = getArguments().getLong(ARG_TIMER);
+
             payOrderCode = (String) getArguments().getSerializable(ARG_ORDER);
         }
     }
