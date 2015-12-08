@@ -24,7 +24,7 @@
             android:gravity="center_vertical"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:background="@drawable/content_part_bg"
+            android:background="@color/white"
             >
 
             <ImageView
@@ -86,7 +86,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginTop="@dimen/default_margin"
-            android:background="@drawable/content_part_bg"
+            android:background="@color/white"
             >
 
             <LinearLayout
@@ -115,9 +115,10 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="38dp"
                 android:orientation="horizontal"
-                android:padding="@dimen/default_margin"
+                android:paddingLeft="@dimen/default_margin"
+                android:paddingRight="@dimen/default_margin"
                 android:gravity="center_vertical">
 
                 <com.zhaidou.view.TypeFaceTextView
@@ -132,9 +133,8 @@
 
                 <TextView
                     android:id="@+id/failPriceTotalTv"
-                    android:layout_width="60dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.000001"
                     android:textSize="16sp"
                     android:textColor="@color/red"
                     android:singleLine="true"
@@ -150,9 +150,10 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="38dp"
                 android:orientation="horizontal"
-                android:padding="@dimen/default_margin"
+                android:paddingLeft="@dimen/default_margin"
+                android:paddingRight="@dimen/default_margin"
                 android:layout_gravity="center_vertical|right"
                 android:gravity="center_vertical">
 
@@ -168,9 +169,8 @@
 
                 <TextView
                     android:id="@+id/failPriceYfTv"
-                    android:layout_width="60dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.000001"
                     android:textSize="16sp"
                     android:textColor="@color/red"
                     android:singleLine="true"
@@ -190,11 +190,6 @@
                 android:padding="@dimen/default_margin"
                 android:gravity="center_vertical|right">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
-                    android:orientation="horizontal">
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:layout_width="wrap_content"
@@ -207,7 +202,6 @@
                         android:id="@+id/jsTotalNum"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:textColor="@color/text_gary_color"
                         android:textSize="16sp"
                         android:layout_marginLeft="2dp"
@@ -219,15 +213,8 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/text_main_color"
                         android:textSize="16sp"
+                        android:layout_marginRight="10dp"
                         android:text="件商品"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
                     <com.zhaidou.view.TypeFaceTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -239,12 +226,9 @@
                         android:id="@+id/failTotalMoney"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:textColor="@color/red"
                         android:textSize="18sp"
                         android:text="￥0.0"/>
-
-                </LinearLayout>
 
 
             </LinearLayout>
@@ -255,7 +239,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/default_margin"
-            android:background="@drawable/content_part_bg"
+            android:background="@color/white"
             android:orientation="vertical">
 
             <LinearLayout

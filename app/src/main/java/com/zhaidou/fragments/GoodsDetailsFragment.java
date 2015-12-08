@@ -161,7 +161,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private List<TextView> texts1 = new ArrayList<TextView>();
     private List<TextView> texts2 = new ArrayList<TextView>();
     private int mClick = -1;
-    private int mClick1 = -1;
+    private int mClick1 = 0;
     private int mClick2 = -1;
     private boolean isClick;//规格是否可以点击
     private boolean isClick1;//规格是否可以点击
@@ -257,7 +257,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     {
                         return;
                     }
-                    setNextEventView();
+                   setNextEventView();
                     if (flags == 1)//如果是零元特卖商品UI显示处理
                     {
                         iconView.setVisibility(View.GONE);
@@ -271,17 +271,14 @@ public class GoodsDetailsFragment extends BaseFragment
                         commentView.setVisibility(View.VISIBLE);
                         tv_baoyou.setVisibility(View.VISIBLE);
                     }
-
                     detail = (GoodDetail) msg.obj;
                     setChildFargment(detail, goodInfos);
-
                     mCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + detail.price + ""));
                     mOldPrice.setText("￥" + ToolUtils.isIntPrice("" + detail.cost_price + ""));
                     tv_comment.setText(detail.designer);
                     mTitle.setText(detail.title);
                     setDiscount(detail.price, detail.cost_price);
                     ToolUtils.setImageCacheUrl(detail.imageUrl, goodsImage, R.drawable.icon_loading_goods_details);
-
                     if (detail.specifications != null)
                     {
                         setSizeView();
@@ -633,8 +630,6 @@ public class GoodsDetailsFragment extends BaseFragment
             }
         });
 
-        initCartTips();
-
         initData();
 
     }
@@ -747,24 +742,11 @@ public class GoodsDetailsFragment extends BaseFragment
         }
     }
 
-
     private void setSizeView()
     {
         sizeNameTv1.setText(sizeName1);
         sizeNameTv2.setText(sizeName2);
-        if (isSizeShow1)
-        {
-            sizeLine1.setVisibility(View.GONE);
-            sizeLine2.setVisibility(View.VISIBLE);
-            addSpecificationView();
-        }
-        if (isSizeShow2)
-        {
-            sizeLine1.setVisibility(View.VISIBLE);
-            sizeLine2.setVisibility(View.GONE);
-            addSpecificationView();
-        }
-        if (!isSizeShow1 && !isSizeShow2)
+        if (isTwoSize())
         {
             //关联
             for (int i = 0; i < specificationList.size(); i++)
@@ -780,7 +762,21 @@ public class GoodsDetailsFragment extends BaseFragment
             sizeLine1.setVisibility(View.VISIBLE);
             sizeLine2.setVisibility(View.VISIBLE);
             addSpecificationView1();
+            return;
         }
+        if (isSizeShow1&&!isSizeShow2)
+        {
+            sizeLine1.setVisibility(View.GONE);
+            sizeLine2.setVisibility(View.VISIBLE);
+            addSpecificationView();
+        }
+        if (!isSizeShow1&&isSizeShow2)
+        {
+            sizeLine1.setVisibility(View.VISIBLE);
+            sizeLine2.setVisibility(View.GONE);
+            addSpecificationView();
+        }
+
     }
 
     /**
@@ -840,11 +836,11 @@ public class GoodsDetailsFragment extends BaseFragment
             });
             Specification specification = specificationList.get(i);
             textView.setText(specification.title);
-//            if (0 == position)
-//            {
-//                textView.setSelected(true);
-//                mSpecification1 = specificationList.get(i);
-//            }
+            if (0 == position)
+            {
+                textView.setSelected(true);
+                mSpecification1 = specificationList.get(i);
+            }
             texts1.add(textView);
             flowLayout.addView(view, lp);
         }
@@ -1291,7 +1287,7 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     private boolean isTwoSize()
     {
-        if (isTwoSize())
+        if (isSizeShow1==false&&isSizeShow2==false)
         {
             return true;
         }
@@ -1510,7 +1506,6 @@ public class GoodsDetailsFragment extends BaseFragment
                                 specificationSubclassItem.price = sizePrice;
                                 specificationSubclassItem.oldPrice = sizeOldPrice;
                                 specificationSubclassItem.num = num;
-                                ToolUtils.setLog("num:"+num);
                                 subclassSizes.add(specificationSubclassItem);
 
                                 Specification specification = new Specification();

@@ -88,15 +88,13 @@ public class ShopPaymentFragment extends BaseFragment
     private double mAmount;
     private double mFare;
     private int flags;
-    private long mTimeLeft;
     private Order mOrder;
     private Order netOrder;//获取网络订单
     private View mView;
     private Context mContext;
 
     private long initTime = 0;
-
-    private final int UPDATE_COUNT_DOWN_TIME = 1001, UPDATE_UI_TIMER_FINISH = 1002, UPDATE_TIMER_START = 1003;
+    private final static int UPDATE_ORDER_DETAILS = 1001;
 
     private TypeFaceTextView backBtn, titleTv;
     private TypeFaceTextView timeInfoTv;
@@ -121,7 +119,7 @@ public class ShopPaymentFragment extends BaseFragment
     private IWXAPI api;
     private boolean isSuccess;
     private double payMoney;//订单获取的金额
-    private int payOrderId;
+    private long payOrderId;
     private String payOrderCode;
     private Dialog mDialog;
 
@@ -160,7 +158,7 @@ public class ShopPaymentFragment extends BaseFragment
                     } else if (TextUtils.equals(resultStatus, "4000"))
                     {
                         // 其他值就可以判断为支付失败，包括用户主动取消支付，或者系统返回的错误
-                        ShopPaymentFailFragment shopPaymentFailFragment = ShopPaymentFailFragment.newInstance(mOrderId, mAmount, mFare, initTime, mOrder);
+                        ShopPaymentFailFragment shopPaymentFailFragment = ShopPaymentFailFragment.newInstance(mOrderId, mAmount, mFare, initTime, payOrderCode);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
                     } else if (TextUtils.equals(resultStatus, "6002"))
                     {
@@ -172,17 +170,19 @@ public class ShopPaymentFragment extends BaseFragment
                         // 其他值就可以判断为支付失败，包括用户主动取消支付，或者系统返回的错误
                         Toast.makeText(getActivity(), "支付取消",
                                 Toast.LENGTH_SHORT).show();
-//                        ShopPaymentFailFragment shopPaymentFailFragment=ShopPaymentFailFragment.newInstance(mOrderId,mAmount,mFare,initTime,mOrder);
-//                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
-
-//                        ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, 0, mOrder);
-//                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                     }
                     break;
                 case SDK_CHECK_FLAG:
                 {
                     Toast.makeText(getActivity(), "检查结果为：" + msg.obj,
                             Toast.LENGTH_SHORT).show();
+                    break;
+                }
+                case UPDATE_ORDER_DETAILS:
+                {
+                    if (mTimer == null)
+                        mTimer = new Timer();
+                    mTimer.schedule(new MyTimer(), 1000, 1000);
                     break;
                 }
                 default:
@@ -243,11 +243,11 @@ public class ShopPaymentFragment extends BaseFragment
         super.onCreate(savedInstanceState);
         if (getArguments() != null)
         {
-            mOrderId = getArguments().getLong(ARG_ORDERID);
-            orderCode = getArguments().getString("orderCode");
-            mAmount = getArguments().getDouble(ARG_AMOUNT);
+            payOrderId=mOrderId = getArguments().getLong(ARG_ORDERID);
+            payOrderCode=orderCode = getArguments().getString("orderCode");
+            payMoney= mAmount = getArguments().getDouble(ARG_AMOUNT);
             mFare = getArguments().getDouble(ARG_FARE);
-            mTimeLeft = getArguments().getLong(ARG_TIME);
+            initTime = getArguments().getLong(ARG_TIME);
             mOrder = (Order) getArguments().getSerializable(ARG_ORDER);
             flags = getArguments().getInt("flags");
         }
@@ -261,7 +261,6 @@ public class ShopPaymentFragment extends BaseFragment
         {
             mView = inflater.inflate(R.layout.shop_payment_page, container, false);
             mContext = getActivity();
-            initTime = mContext.getResources().getInteger(R.integer.timer_countdown) / 1000;
             initView();
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
@@ -285,8 +284,8 @@ public class ShopPaymentFragment extends BaseFragment
             setUnPayAddCount();
         }
         api = WXAPIFactory.createWXAPI(mContext, null);
-//        api.registerApp("wxce03c66622e5b243");
-        api.registerApp("wx4a41efaa968348df");
+        api.registerApp("wxce03c66622e5b243");
+        ToolUtils.setLog("api:"+api.registerApp("wxce03c66622e5b243"));
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
         mRequestQueue = Volley.newRequestQueue(mContext);
@@ -312,6 +311,7 @@ public class ShopPaymentFragment extends BaseFragment
                 {
                     cb_zhifubao.setChecked(false);
                     mCheckPosition = 0;
+                    paymentBtn.setClickable(true);
                 }
             }
         });
@@ -324,6 +324,7 @@ public class ShopPaymentFragment extends BaseFragment
                 if (b)
                 {
                     cb_weixin.setChecked(false);
+                    paymentBtn.setClickable(true);
                     mCheckPosition = 1;
                 }
             }
@@ -332,9 +333,6 @@ public class ShopPaymentFragment extends BaseFragment
         DecimalFormat df = new DecimalFormat("###.00");
         mAccountView.setText("￥" + ToolUtils.isIntPrice("" + Double.parseDouble(df.format(mAmount))));
         mView.findViewById(R.id.tv_pinkage).setVisibility(View.GONE);
-        initTime = mTimeLeft;
-
-        mTimer = new Timer();
 
         mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"");
         FetchOrderDetail();
@@ -363,6 +361,7 @@ public class ShopPaymentFragment extends BaseFragment
             @Override
             public void onResponse(JSONObject jsonObject)
             {
+                mDialog.dismiss();
                 if (jsonObject != null)
                 {
                     int status=jsonObject.optInt("status");
@@ -370,20 +369,20 @@ public class ShopPaymentFragment extends BaseFragment
                     {
                         JSONObject dataObject=jsonObject.optJSONObject("data");
                         payMoney=dataObject.optDouble("orderTotalAmount");
-                        payOrderId=dataObject.optInt("orderId");
+                        payOrderId=dataObject.optLong("orderId");
                         payOrderCode=dataObject.optString("orderCode");
-                    }
-                    else
-                    {
-
+                        initTime=dataObject.optInt("orderRemainingTime");
                     }
                 }
+                mHandler.sendEmptyMessage(UPDATE_ORDER_DETAILS);
             }
         }, new Response.ErrorListener()
         {
             @Override
             public void onErrorResponse(VolleyError volleyError)
             {
+                mDialog.dismiss();
+                mHandler.sendEmptyMessage(UPDATE_ORDER_DETAILS);
                 if (mContext != null)
                     ToolUtils.setToast(mContext,R.string.loading_fail_txt);
             }
@@ -556,10 +555,10 @@ public class ShopPaymentFragment extends BaseFragment
         {
             json = new JSONObject();
             json.put("userName", "朱烽");
-            json.put("cashAmount", 500 + "");
-            json.put("orderId", 100204 + "");
+            json.put("cashAmount", payMoney + "");
+            json.put("orderId", payOrderId + "");
             json.put("userId", userId + "");
-            json.put("orderCode", "M2015PFS04075449");
+            json.put("orderCode", payOrderCode);
             if (mCheckPosition == 0)
             {
                 json.put("channelCode", "WXMALLANDROID");
@@ -597,26 +596,16 @@ public class ShopPaymentFragment extends BaseFragment
                             {
                                 if (api.isWXAppInstalled())
                                 {
-                                    String tradeItemCode = object.optString("tradeItemCode");//流水号
-                                    String cashAmount = object.optString("cashAmount");//付款金额
-                                    final String appId ="wx4a41efaa968348df" ;//object.optString("appId");
-//                                    final String appId ="wxce03c66622e5b243";
-//                                    final String timeStamp = object.optString("timestamp");
-//                                    final String signType = object.optString("signType");
-//                                    final String mpackage = object.optString("packageValue");
-//                                    final String nonceStr = "vVgG2AtBxd8NdwkmGz64msdMF4dGokJE";
-//                                    final String prepayId = "wx2015120518132541c922c8230630767305";
-//                                    final String paySign = "8363A9D42FF76007433A38B4F516FA25";
-//                                    final String partnerId = "1254327401";
+                                   final String appId =object.optString("appid");
                                     final String timeStamp = object.optString("timestamp");
                                     final String signType = object.optString("signType");
                                     final String mpackage = object.optString("packageValue");
                                     final String nonceStr = object.optString("nonceString");
                                     final String prepayId = object.optString("prepayId");
-                                    final String paySign = jsonObject.optString("sign");
-                                    final String partnerId = jsonObject.optString("partnerId");
-
+                                    final String paySign = object.optString("sign");
+                                    final String partnerId = object.optString("partnerId");
                                     PayReq request = new PayReq();
+
                                     request.appId = appId;
                                     request.partnerId = partnerId;
                                     request.prepayId = prepayId;
@@ -625,15 +614,20 @@ public class ShopPaymentFragment extends BaseFragment
                                     request.timeStamp = timeStamp;
                                     request.sign = paySign;
                                     api.sendReq(request);
+                                    ToolUtils.setLog("request:"+request.checkArgs());
+                                    ToolUtils.setLog("api:"+api.sendReq(request));
+                                    if (!api.sendReq(request))
+                                    {
+                                        paymentBtn.setClickable(true);
+                                    }
                                 } else
                                 {
+                                    paymentBtn.setClickable(true);
                                     ShowToast("没有安装微信客户端哦");
                                 }
 
                             } else if (mCheckPosition == 1)
                             {
-                                String tradeItemCode = object.optString("tradeItemCode");//流水号
-                                String cashAmount = object.optString("cashAmount");//付款金额
                                 final String url = object.optString("notifyUrl");
                                 mHandler.postDelayed(new Runnable()
                                 {
@@ -677,74 +671,6 @@ public class ShopPaymentFragment extends BaseFragment
         };
         mRequestQueue.add(request);
     }
-
-
-//    /**
-//     * 付款
-//     */
-//    private void payment() {
-//        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "/" + mOrderId + "/order_payment?payment_id=" + mCheckPosition, new Response.Listener<JSONObject>() {
-//            @Override
-//            public void onResponse(JSONObject jsonObject) {
-//                Log.i("jsonObject--------->", jsonObject.toString());
-//                if (jsonObject != null) {
-//                    int status = jsonObject.optInt("status");
-//                    if (status == 201)
-//                    {
-//                        final String appId = jsonObject.optString("appId");
-//                        final String timeStamp = jsonObject.optString("timeStamp");
-//                        final String signType = jsonObject.optString("signType");
-//                        final String mpackage = jsonObject.optString("package");
-//                        final String nonceStr = jsonObject.optString("nonceStr");
-//                        final String prepayId = jsonObject.optString("prepayId");
-//                        int order_id = jsonObject.optInt("order_id");
-//                        final String paySign = jsonObject.optString("paySign");
-//                        if (mCheckPosition == 0)
-//                        {
-//                            if (api.isWXAppInstalled())
-//                            {
-//                                PayReq request = new PayReq();
-//                                request.appId = appId;
-//                                request.partnerId = "1254327401";
-//                                request.prepayId = prepayId;
-//                                request.packageValue = mpackage;
-//                                request.nonceStr = nonceStr;
-//                                request.timeStamp = timeStamp;
-//                                request.sign = paySign;
-//                                api.sendReq(request);
-//                            } else {
-//                                ShowToast("没有安装微信客户端哦");
-//                            }
-//
-//                        } else if (mCheckPosition == 1)
-//                        {
-//                            final String url = jsonObject.optString("url");
-//                            mHandler.postDelayed(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    pay(url);
-//                                }
-//                            }, 0);
-//
-//                        }
-//                    }
-//                }
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError volleyError) {
-//            }
-//        }) {
-//            @Override
-//            public Map<String, String> getHeaders() throws AuthFailureError {
-//                Map<String, String> map = new HashMap<String, String>();
-//                map.put("SECAuthorization", token);
-//                map.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-//                return map;
-//            }
-//        };
-//        mRequestQueue.add(request);
-//    }
 
 
     public void pay(final String url)
@@ -791,7 +717,7 @@ public class ShopPaymentFragment extends BaseFragment
                 break;
             case -1://支付失败
                 Log.i("----->", "支付失败");
-                ShopPaymentFailFragment shopPaymentFailFragment = ShopPaymentFailFragment.newInstance(mOrderId, mAmount, mFare, initTime, mOrder);
+                ShopPaymentFailFragment shopPaymentFailFragment = ShopPaymentFailFragment.newInstance(mOrderId, mAmount, mFare, initTime, payOrderCode);
                 ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
                 break;
             case -2://取消支付
@@ -816,14 +742,6 @@ public class ShopPaymentFragment extends BaseFragment
     @Override
     public void onResume()
     {
-        paymentBtn.setClickable(true);
-        if (!isTimerStart)
-        {
-            isTimerStart = true;
-            if (mTimer == null)
-                mTimer = new Timer();
-            mTimer.schedule(new MyTimer(), 1000, 1000);
-        }
         super.onResume();
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.shop_payment_text));
     }
@@ -844,7 +762,6 @@ public class ShopPaymentFragment extends BaseFragment
         }
         if (mTimer != null)
         {
-            isTimerStart = false;
             mTimer.cancel();
             mTimer = null;
         }

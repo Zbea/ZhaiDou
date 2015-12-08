@@ -884,15 +884,22 @@ public class ShopOrderOkFragment extends BaseFragment
      */
     private void FetchAddressData()
     {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_RECEIVER_URL, new Response.Listener<JSONObject>()
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.AddressListUrl, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
             {
+                mDialog.dismiss();
                 ToolUtils.setLog(jsonObject.toString());
-                if (jsonObject != null)
+                int status=jsonObject.optInt("status");
+                if (status!=200)
                 {
-                    JSONArray receivers = jsonObject.optJSONArray("receivers");
+                    ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+                }
+                JSONObject dataObject=jsonObject.optJSONObject("data");
+                if (dataObject != null)
+                {
+                    JSONArray receivers = dataObject.optJSONArray("receivers");
                     if (receivers != null && receivers.length() > 0)
                     {
                         for (int i = 0; i < receivers.length(); i++)

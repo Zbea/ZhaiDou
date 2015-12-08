@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -174,6 +175,7 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
 
         FetchData(mOrderId);
     }
+
 
     private void FetchData(long orderId) {
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "/" + orderId, new Response.Listener<JSONObject>() {

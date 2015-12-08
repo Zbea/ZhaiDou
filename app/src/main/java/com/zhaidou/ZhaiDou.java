@@ -39,6 +39,18 @@ public class ZhaiDou {
     //获取订单详情
     public static String GetOrderDetailsUrl="http://121.42.206.45:7082/order/getOrderDetail.action";
 
+    //地址列表
+    public static String AddressListUrl="http://121.42.206.45:7082/user/receivers.action";
+    //设为默认地址
+    public static String AddressIsDefultUrl="http://121.42.206.45:7082/user/receivers_default.action";
+    //新建地址
+    public static String AddressNewUrl="http://121.42.206.45:7082/user/receivers_add.action";
+    //删除地址
+    public static String AddressDeleteUrl="http://121.42.206.45:7082/user/receivers_delete.action";
+    //编辑地址
+    public static String AddressEditUrl="http://121.42.206.45:7082/user/receivers_update.action";
+
+
     //首页三个专题tag
     public static String HOME_SPECIAL_BANNER_URL=HOME_BASE_URL+"special_mall/api/sales/topic_sales?topic=true";
 

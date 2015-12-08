@@ -183,20 +183,32 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 mDialogUtil.showDialog("是否删除地址?",new DialogUtils.PositiveListener() {
                     @Override
                     public void onPositive() {
-                        String url =ZhaiDou.ORDER_RECEIVER_URL + id;
+                        String url = ZhaiDou.AddressDeleteUrl +"?id="+ address.getId();
                         JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject jsonObject) {
-                                if (mDialog!=null)
+                                if (mDialog != null)
                                     mDialog.dismiss();
-                                if (jsonObject!=null){
-                                    int status=jsonObject.optInt("status");
-                                    if (status==201){
+                                int code=jsonObject.optInt("status");
+                                if (code!=200)
+                                {
+                                    ToolUtils.setToast(mContext,"抱歉，删除失败");
+                                }
+                                JSONObject dataObject=jsonObject.optJSONObject("data");
+                                if (dataObject != null)
+                                {
+                                    int status = dataObject.optInt("status");
+                                    if (status == 201)
+                                    {
                                         addressList.remove(address);
                                         addressAdapter.notifyDataSetChanged();
+                                        if (addressList.size() == 0)
+                                        {
+                                            addressListener.onDeleteFinishAddress();
+                                        }
                                     }
-                                    String message=jsonObject.optString("message");
-                                    ShowToast(message);
+                                    String message = jsonObject.optString("message");
+                                    ToolUtils.setToast(mContext, message);
                                 }
                             }
                         }, new Response.ErrorListener() {
@@ -204,7 +216,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                             public void onErrorResponse(VolleyError volleyError) {
                                 if (mDialog!=null)
                                     mDialog.dismiss();
-                                ShowToast("网络异常");
+                                ToolUtils.setToast(mContext,"抱歉，删除失败");
                             }
                         }) {
                             @Override
@@ -422,12 +434,18 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
         public void onDeleteFinishAddress();
     }
     private void FetchData() {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_RECEIVER_URL, new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.AddressListUrl, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 mDialog.dismiss();
-                JSONArray receiversArr = jsonObject.optJSONArray("receivers");
                 ToolUtils.setLog(jsonObject.toString());
+                int status=jsonObject.optInt("status");
+                if (status!=200)
+                {
+                    ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+                }
+                JSONObject dataObject=jsonObject.optJSONObject("data");
+                JSONArray receiversArr = dataObject.optJSONArray("receivers");
                 if (receiversArr != null && receiversArr.length() > 0)
                 {
                     for (int i = 0; i < receiversArr.length(); i++)
@@ -438,14 +456,16 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                         String addr = receiverObj.optString("address");
                         String name = receiverObj.optString("name");
                         int id = receiverObj.optInt("id");
-                        int provider_id=receiverObj.optInt("provider_id");
-                        String province=receiverObj.optString("parent_name");
-                        String city=receiverObj.optString("city_name");
-                        String area=receiverObj.optString("provider_name");
-                        boolean is_default=receiverObj.optBoolean("is_default");
-                        double price=receiverObj.optDouble("price");
+                        int provider_id = receiverObj.optInt("provider_id");
+                        String province = receiverObj.optString("parent_name");
+                        String city = receiverObj.optString("city_name");
+                        String area = receiverObj.optString("provider_name");
+                        boolean is_default = receiverObj.optBoolean("is_default");
+                        double price = receiverObj.optDouble("price");
                         if (is_default)
-                            mCheckedPosition=i;
+                        {
+                            mCheckedPosition = i;
+                        }
                         Address address = new Address();
                         address.setAddress(addr);
                         address.setName(name);
@@ -460,9 +480,9 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                         address.setPrice(price);
                         addressList.add(address);
                     }
-//                    addressAdapter.notifyDataSetChanged();
                     handler.sendEmptyMessage(UPDATE_ADDRESS_LIST);
-                }else {
+                } else
+                {
                     loadingView.setVisibility(View.GONE);
                 }
             }
@@ -470,7 +490,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 mDialog.dismiss();
-                Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
+                ToolUtils.setToast(mContext,R.string.loading_fail_txt);
             }
         }) {
             @Override
@@ -536,11 +556,24 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
         if (addressAdapter.getCount()>mCheckedPosition)
         {
             Address address=addressAdapter.getItem(mCheckedPosition);
-            JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,ZhaiDou.ORDER_RECEIVER_URL+"/"+address.getId()+"/set_default",new Response.Listener<JSONObject>() {
+            JSONObject jsonObject=new JSONObject();
+            try
+            {
+                jsonObject.put("id",address.getId());
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,ZhaiDou.AddressIsDefultUrl,jsonObject,new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject jsonObject) {
                     if (jsonObject!=null){
-                        JSONObject receiver=jsonObject.optJSONObject("receiver");
+                        JSONObject dataObject=jsonObject.optJSONObject("data");
+                        if (dataObject==null)
+                        {
+                            return;
+                        }
+                        JSONObject receiver=dataObject.optJSONObject("receiver");
                         int id=receiver.optInt("id");
                         String phone=receiver.optString("phone");
                         String updated_at=receiver.optString("updated_at");

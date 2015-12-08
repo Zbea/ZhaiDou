@@ -266,12 +266,17 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
                 mDialog.dismiss();
                 JSONObject json = new JSONObject(s);
                 ToolUtils.setLog("s:"+s);
-                String message=json.optString("message");
                 int status=json.optInt("status");
-                if (status==201)
+                if (status!=200)
                 {
-                    JSONObject receiver=json.optJSONObject("receiver");
-                    double price=json.optDouble("price");
+                    ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+                }
+                JSONObject dataObject=json.optJSONObject("data");
+                int code=dataObject.optInt("status");
+                if (code==201)
+                {
+                    JSONObject receiver=dataObject.optJSONObject("receiver");
+                    double price=dataObject.optDouble("price");
                     ToolUtils.setLog("yfPrice:"+price);
                     if (addrSaveSuccessListener!=null)
                     {
@@ -298,14 +303,14 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
             // 创建名/值组列表
             List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 
-            parameters.add(new BasicNameValuePair("receivers[name]", et_name.getText().toString().trim()));
-            parameters.add(new BasicNameValuePair("receivers[phone]", et_mobile.getText().toString().trim()));
-            parameters.add(new BasicNameValuePair("receivers[address]", et_address_detail.getText().toString().trim()));
-            parameters.add(new BasicNameValuePair("receivers[provider_id]", mProviderId+""));
+            parameters.add(new BasicNameValuePair("name", et_name.getText().toString().trim()));
+            parameters.add(new BasicNameValuePair("phone", et_mobile.getText().toString().trim()));
+            parameters.add(new BasicNameValuePair("address", et_address_detail.getText().toString().trim()));
+            parameters.add(new BasicNameValuePair("provider_id", mProviderId+""));
 
             if (mStatus==CREATE_NEW_ADDRESS){
                 // 实例化HTTP方法
-                HttpPost request = new HttpPost(ZhaiDou.ORDER_RECEIVER_URL);
+                HttpPost request = new HttpPost(ZhaiDou.AddressNewUrl);
                 request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 request.addHeader("SECAuthorization",token);
 
@@ -316,9 +321,8 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
                 // 执行请求
                 response = client.execute(request);
             }else if (mStatus==UPDATE_ADDRESS_INFO){
-                Log.i("mStatus==UPDATE_ADDRESS_INFO------------>","mStatus==UPDATE_ADDRESS_INFO");
                 // 实例化HTTP方法
-                HttpPatch request = new HttpPatch(ZhaiDou.ORDER_RECEIVER_URL+"/"+mId);
+                HttpPatch request = new HttpPatch(ZhaiDou.AddressEditUrl);
                 request.addHeader("SECAuthorization",token);
 
                 // 创建UrlEncodedFormEntity对象
