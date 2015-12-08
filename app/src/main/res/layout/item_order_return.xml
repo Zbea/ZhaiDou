@@ -162,7 +162,28 @@
            android:paddingRight="20dp"
            android:src="@drawable/icon_arrow_right" />
    </LinearLayout>
-
+    <LinearLayout
+        android:id="@+id/remarkLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_alignParentTop="true"
+            android:background="@color/page_bg" />
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/remark"
+            android:gravity="center_vertical"
+            android:text="备注:返回键阿海珐接撒公交卡睡个觉熬枯受淡个房间啊康师傅噶"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:textColor="@color/text_gary_color"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
    <RelativeLayout
        android:id="@+id/rl_btn"
        android:layout_width="match_parent"
@@ -214,7 +235,7 @@
                android:paddingLeft="10dp"
                android:paddingRight="10dp"
                android:paddingTop="5dp"
-               android:text="查看物流"
+               android:text="申请退款"
                android:textColor="@color/white"
                android:textSize="13sp" />
        </RelativeLayout>

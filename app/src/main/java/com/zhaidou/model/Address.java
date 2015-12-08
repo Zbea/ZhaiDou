@@ -8,21 +8,27 @@ import java.io.Serializable;
 public class Address implements Serializable
 {
 
-    protected int id;
+    public int id;
     protected String name;
     private boolean is_default;
     private String phone;
     private int user_id;
-    private String address;
+    public String address;
     private int provider_id;
     private String updated_at;
     private String created_at;
 
-    private String province;
-    private String city;
+    public String province;
+    public String city;
     private String area;
 
     private double price;
+
+    public int type;
+    public String mobile;
+    public String provinceName;
+    public String cityName;
+
 
     public int getId() {
         return id;

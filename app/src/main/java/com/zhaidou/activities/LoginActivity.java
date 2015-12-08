@@ -205,8 +205,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 //                }
                 saveEmail();
                 final Map<String, String> params = new HashMap<String, String>();
-                params.put("user_token[email]", strEmail);
-                params.put("user_token[password]", password);
+                params.put("email", strEmail);
+                params.put("password", password);
 
                 mDialog = CustomLoadingDialog.setLoadingDialog(LoginActivity.this, "登陆中");
                 final ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_URL, params, new Response.Listener<JSONObject>() {
@@ -215,18 +215,23 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                         if (mDialog != null)
                             mDialog.dismiss();
                         if (jsonObject != null) {
-                            String msg = jsonObject.optString("message");
-                            int status = jsonObject.optInt("status");
-                            String token = jsonObject.optJSONObject("user_tokens").optString("token");
-                            validate_phone = jsonObject.optJSONArray("users").optJSONObject(0).optBoolean("validate_phone");
-                            JSONArray userArr = jsonObject.optJSONArray("users");
-                            for (int i = 0; i < userArr.length(); i++) {
-                                JSONObject userObj = userArr.optJSONObject(i);
-                                int id = userObj.optInt("id");
-                                String email = userObj.optString("email");
-                                String nick = userObj.optString("nick_name");
-                                User user = new User(id, email, token, nick, null);
-                                mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+                            JSONObject dataObj = jsonObject.optJSONObject("data");
+                            String message = jsonObject.optString("message");
+                            if (jsonObject.isNull("code")) {
+                                String token = dataObj.optJSONObject("user_tokens").optString("token");
+                                validate_phone = dataObj.optJSONArray("users").optJSONObject(0).optBoolean("validate_phone");
+                                JSONArray userArr = dataObj.optJSONArray("users");
+                                for (int i = 0; i < userArr.length(); i++) {
+                                    JSONObject userObj = userArr.optJSONObject(i);
+                                    int id = userObj.optInt("id");
+                                    String email = userObj.optString("email");
+                                    String nick = userObj.optString("nick_name");
+                                    User user = new User(id, email, token, nick, null);
+                                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+                                }
+                            } else {
+                                String msg = dataObj.optString("message");
+                                Toast.makeText(LoginActivity.this, TextUtils.isEmpty(msg) ? message : msg, Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
@@ -235,7 +240,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     public void onErrorResponse(VolleyError volleyError) {
                         if (mDialog != null)
                             mDialog.dismiss();
-                        System.out.println("LoginActivity.onErrorResponse-------->" + volleyError.getMessage());
                         if (volleyError.getMessage() != null && volleyError.getMessage().contains("authentication")) {
                             Toast.makeText(LoginActivity.this, "密码错误", Toast.LENGTH_LONG).show();
                         } else if (401 == volleyError.networkResponse.statusCode) {
@@ -307,10 +311,11 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("jsonObject--->", jsonObject.toString());
-                int flag = jsonObject.optInt("flag");
+                JSONObject dataObj = jsonObject.optJSONObject("data");
+                int flag = dataObj.optInt("flag");
 
                 if (0 == flag) {
-                    JSONObject login_user = jsonObject.optJSONObject("user").optJSONObject("login_user");
+                    JSONObject login_user = dataObj.optJSONObject("user").optJSONObject("login_user");
                     String email = login_user.optString("s_email");
                     String nick1 = login_user.optString("s_nick_name");
                     Log.i("0==flag", "0==flag");
@@ -324,7 +329,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 //                    new RegisterTask().execute(registers);
                     thirdPartyRegisterTask(registers);
                 } else {
-                    JSONObject userJson = jsonObject.optJSONObject("user");
+                    JSONObject userJson = dataObj.optJSONObject("user");
                     String token = userJson.optJSONObject("user_tokens").optString("token");
                     JSONArray userArray = userJson.optJSONArray("users");
                     if (userArray != null && userArray.length() > 0) {
@@ -354,11 +359,12 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_BINE_PHONE_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                int status = jsonObject.optInt("status");
+                JSONObject dataObj = jsonObject.optJSONObject("data");
+                int status = dataObj.optInt("status");
                 if (201 == status) {
                     mDialog.dismiss();
                     ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(LoginActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                    JSONObject userObj = jsonObject.optJSONObject("user");
+                    JSONObject userObj = dataObj.optJSONObject("user");
                     int id = userObj.optInt("id");
                     String phone = userObj.optString("phone");
                     String nick = userObj.optString("nick_name");
@@ -368,7 +374,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     User user = new User(id, email, token, nick, avatar);
                     mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
                 } else {
-                    String message = jsonObject.optString("message");
+                    String message = dataObj.optString("message");
                     Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -381,6 +387,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
+                System.out.println("LoginActivity.getHeaders------------>" + token);
                 headers.put("SECAuthorization", token);
                 return headers;
             }
@@ -406,6 +413,9 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 //                return;
 //            }
 //        }
+        if (plat.isValid()) {
+            plat.removeAccount();
+        }
         plat.setPlatformActionListener(this);
         //关闭SSO授权
         if ("SinaWeibo".equalsIgnoreCase(plat.getName())) {
@@ -423,18 +433,23 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
      * @param mDialog
      */
     private void getVerifyCode(String phone, final Dialog mDialog) {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + phone + "&flag=1", new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + "?phone=" + phone + "&flag=1", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                System.out.println("LoginActivity.onResponse------->" + jsonObject.toString());
-                int status = jsonObject.optInt("status");
-                String message = jsonObject.optString("message");
-                if (status == 201) {
-//                    codeTimer();
-                    mDialogUtils.codeTimer();
-                    return;
+                JSONObject dataObj = jsonObject.optJSONObject("data");
+                String message=jsonObject.optString("message");
+                if (jsonObject.isNull("code")) {
+                    String msg = dataObj.optString("message");
+                    int status = dataObj.optInt("status");
+                    if (status == 201) {
+                        mDialogUtils.codeTimer();
+                        return;
+                    } else {
+                        mDialog.findViewById(R.id.iv_close).setVisibility(View.VISIBLE);
+                        Toast.makeText(LoginActivity.this, TextUtils.isEmpty(msg)?message:msg, Toast.LENGTH_SHORT).show();
+                    }
+
                 } else {
-                    mDialog.findViewById(R.id.iv_close).setVisibility(View.VISIBLE);
                     Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -549,7 +564,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 public void onBind(String phone, String verifyCode, final Dialog mDialog) {
                     bingPhoneTask(phone, verifyCode, mDialog, user.getAuthentication_token());
                 }
-            }, false);
+            }, true);
         } else {
             Message message = new Message();
             message.obj = user;

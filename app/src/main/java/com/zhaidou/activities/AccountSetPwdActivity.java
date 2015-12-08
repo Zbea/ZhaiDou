@@ -82,6 +82,7 @@ public class AccountSetPwdActivity extends FragmentActivity {
         setContentView(R.layout.act_account_set_pwd_page);
         token = getIntent().getStringExtra("token");
         verifyCode = getIntent().getStringExtra("code");
+        System.out.println("AccountSetPwdActivity.onCreate---->" + verifyCode);
         phone = getIntent().getStringExtra("phone");
 
         headTitle = (TextView) findViewById(R.id.title_tv);
@@ -97,12 +98,11 @@ public class AccountSetPwdActivity extends FragmentActivity {
     }
 
     private void doReset(String password) {
-
+        System.out.println("AccountSetPwdActivity.doReset------>" + phone + "---" + verifyCode);
         mDialog = CustomLoadingDialog.setLoadingDialog(AccountSetPwdActivity.this, "修改密码中");
         String md5str = MD5Util.getMD5Encoding(phone + verifyCode + "adminzhaidou888");
         Map<String, String> valueParams = new HashMap<String, String>();
 
-        valueParams.put("SECAuthorization", token);
         valueParams.put("password", password);
         valueParams.put("md5str", md5str);
 
@@ -112,15 +112,21 @@ public class AccountSetPwdActivity extends FragmentActivity {
                 if (mDialog != null)
                     mDialog.dismiss();
 
-                int status = jsonObject.optInt("status");
                 String message = jsonObject.optString("message");
-                if (status == 201) {
-                    Toast.makeText(AccountSetPwdActivity.this, message, Toast.LENGTH_SHORT).show();
-                    setResult(1500);
-                    finish();
-                    return;
+                JSONObject dataObj = jsonObject.optJSONObject("data");
+                if (jsonObject.isNull("code")) {
+                    int status = dataObj.optInt("status");
+                    String msg = dataObj.optString("message");
+                    if (201 == status) {
+                        setResult(1500);
+                        finish();
+                    } else {
+                        Toast.makeText(AccountSetPwdActivity.this, TextUtils.isEmpty(msg) ? message : msg, Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    String msg = dataObj.optString("message");
+                    Toast.makeText(AccountSetPwdActivity.this, TextUtils.isEmpty(msg) ? message : msg, Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(AccountSetPwdActivity.this, message, Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override

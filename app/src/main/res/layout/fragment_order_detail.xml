@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:background="#f1f1f1">
 
+
     <RelativeLayout
         android:id="@+id/common_actionbar"
         android:layout_width="match_parent"

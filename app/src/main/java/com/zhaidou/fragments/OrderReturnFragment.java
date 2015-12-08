@@ -128,7 +128,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 Order order=(Order)values;
-                OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(),order,0);
+                OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(),null,0);
                 ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
             }
         }) ;
@@ -251,6 +251,12 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
         }
     }
     private void FetchReturnData(){
+        Map<String,String> params = new HashMap();
+        params.put("userId","28129");
+        params.put("clientType","ANDROID");
+        params.put("clientVersion","45");
+        params.put("businessType","01");
+        params.put("type", "3");
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?status=3,6,7,8,11", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {

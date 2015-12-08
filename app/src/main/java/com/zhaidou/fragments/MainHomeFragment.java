@@ -1,6 +1,5 @@
 package com.zhaidou.fragments;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -9,9 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.Nullable;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +18,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
@@ -494,38 +490,38 @@ public class MainHomeFragment extends BaseFragment implements
                             String flags = jsonObj.optString("boardCode");
                             JSONArray array = jsonObj.optJSONArray("programPOList");
                             if (array != null)
-                            for (int j = 0; j < array.length(); j++)
-                            {
-                                JSONObject obj = array.optJSONObject(j);
-                                int type = obj.optInt("type");
-                                String typeValue = obj.optString("code");
-                                String imageUrl = obj.optString("pictureUrl");
-                                String title = obj.optString("name");
-                                if (type==1)
+                                for (int j = 0; j < array.length(); j++)
                                 {
-                                    typeValue = obj.optString("url");
+                                    JSONObject obj = array.optJSONObject(j);
+                                    int type = obj.optInt("type");
+                                    String typeValue = obj.optString("code");
+                                    String imageUrl = obj.optString("pictureUrl");
+                                    String title = obj.optString("name");
+                                    if (type==1)
+                                    {
+                                        typeValue = obj.optString("url");
+                                    }
+                                    SwitchImage switchImage = new SwitchImage();
+                                    switchImage.id = j;
+                                    switchImage.type = type;
+                                    switchImage.typeValue = typeValue;
+                                    switchImage.imageUrl = imageUrl;
+                                    switchImage.title = title;
+                                    switchImage.template_type = j == 0 ? 0 : 1;
+                                    if (flags.equals("01"))
+                                    {
+                                        banners.add(switchImage);
+                                    }
+                                    if (flags.equals("02"))
+                                    {
+                                        specials.add(switchImage);
+                                    }
+                                    if (flags.equals("03"))
+                                    {
+                                        ToolUtils.setLog("switchImage:"+switchImage.type);
+                                        codes.add(switchImage);
+                                    }
                                 }
-                                SwitchImage switchImage = new SwitchImage();
-                                switchImage.id = j;
-                                switchImage.type = type;
-                                switchImage.typeValue = typeValue;
-                                switchImage.imageUrl = imageUrl;
-                                switchImage.title = title;
-                                switchImage.template_type = j == 0 ? 0 : 1;
-                                if (flags.equals("01"))
-                                {
-                                    banners.add(switchImage);
-                                }
-                                if (flags.equals("02"))
-                                {
-                                    specials.add(switchImage);
-                                }
-                                if (flags.equals("03"))
-                                {
-                                    ToolUtils.setLog("switchImage:"+switchImage.type);
-                                    codes.add(switchImage);
-                                }
-                            }
                         }
                     }
                     handler.sendEmptyMessage(UPDATE_BANNER);

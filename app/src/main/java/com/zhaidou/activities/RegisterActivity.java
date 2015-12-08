@@ -129,8 +129,9 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
             @Override
             public void onResponse(JSONObject jsonObject) {
                 System.out.println("RegisterActivity.onResponse------->" + jsonObject.toString());
-                int status = jsonObject.optInt("status");
-                String message = jsonObject.optString("message");
+                JSONObject dataObj = jsonObject.optJSONObject("data");
+                int status = dataObj.optInt("status");
+                String message = dataObj.optString("message");
                 if (400 == status) {
                     Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_SHORT).show();
                     return;

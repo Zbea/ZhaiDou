@@ -188,32 +188,32 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             switch (msg.what)
             {
                 case 0:
-                if(type == 1)
-                {
-                    if (persoanlFragment == null)
+                    if(type == 1)
                     {
-                        persoanlFragment = MainPersonalFragment.newInstance("", "");
-                    } else
-                    {
-                        persoanlFragment.refreshData(MainActivity.this);
+                        if (persoanlFragment == null)
+                        {
+                            persoanlFragment = MainPersonalFragment.newInstance("", "");
+                        } else
+                        {
+                            persoanlFragment.refreshData(MainActivity.this);
+                        }
+                        selectFragment(currentFragment, persoanlFragment);
+                        setButton(personalButton);
                     }
-                    selectFragment(currentFragment, persoanlFragment);
-                    setButton(personalButton);
-                }
-                else
-                {
-                    if (shopCartFragment == null)
+                    else
                     {
-                        shopCartFragment = ShopCartFragment.newInstance("", 1);
-                    } else
-                    {
-                        shopCartFragment.refreshData();
+                        if (shopCartFragment == null)
+                        {
+                            shopCartFragment = ShopCartFragment.newInstance("", 1);
+                        } else
+                        {
+                            shopCartFragment.refreshData();
+                        }
+                        selectFragment(currentFragment, shopCartFragment);
+                        setButton(diyButton);
                     }
-                    selectFragment(currentFragment, shopCartFragment);
-                    setButton(diyButton);
-                }
 
-                break;
+                    break;
 
                 case 1:
                     serverCode = parseJosn(msg.obj.toString());

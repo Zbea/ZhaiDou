@@ -117,7 +117,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                     Order order = (Order) msg.obj;
                     if (orderListener != null)
                         orderListener.onOrderStatusChange(order);
-                    ToolUtils.setToast(getActivity(), "恭喜,申请退款成功");
+                    ToolUtils.setToast(getActivity(), "恭喜,申请退货成功");
                     ((BaseActivity) getActivity()).popToStack(OrderAfterSaleFragment.this);
                     break;
             }
