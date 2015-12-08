@@ -371,7 +371,7 @@ public class ShopPaymentFragment extends BaseFragment
                         payMoney=dataObject.optDouble("orderTotalAmount");
                         payOrderId=dataObject.optLong("orderId");
                         payOrderCode=dataObject.optString("orderCode");
-                        initTime=dataObject.optInt("orderRemainingTime");
+                        initTime=dataObject.optInt("orderRemainingTime")>0?dataObject.optInt("orderRemainingTime"):initTime;
                     }
                 }
                 mHandler.sendEmptyMessage(UPDATE_ORDER_DETAILS);

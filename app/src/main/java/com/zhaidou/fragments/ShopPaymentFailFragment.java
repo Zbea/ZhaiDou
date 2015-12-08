@@ -321,7 +321,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
                         payYFMoney=payMoney-payGoodsMoney;
                         payOrderId=dataObject.optLong("orderId");
                         payOrderCode=dataObject.optString("orderCode");
-                        mTimeStamp=dataObject.optInt("orderRemainingTime");
+                        mTimeStamp=dataObject.optInt("orderRemainingTime")>0?dataObject.optInt("orderRemainingTime"):mTimeStamp;
                     }
                 }
                 mHandler.sendEmptyMessage(UPDATE_FEE_DETAIL);
