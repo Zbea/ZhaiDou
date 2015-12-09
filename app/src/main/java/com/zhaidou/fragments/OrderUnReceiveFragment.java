@@ -71,14 +71,16 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case STATUS_UNRECEIVE_LIST:
-                    if (mOrderList != null && mOrderList.size() > 0) {
-                        loadingView.setVisibility(View.GONE);
-                        unReceiveAdapter.notifyDataSetChanged();
-                    } else {
-                        mListView.setVisibility(View.GONE);
-                        loadingView.setVisibility(View.VISIBLE);
-                    }
-
+//                    if (mOrderList != null && mOrderList.size() > 0) {
+//                        loadingView.setVisibility(View.GONE);
+//                        unReceiveAdapter.notifyDataSetChanged();
+//                    } else {
+//                        mListView.setVisibility(View.GONE);
+//                        loadingView.setVisibility(View.VISIBLE);
+//                    }
+                    loadingView.setVisibility(View.GONE);
+                    mListView.setVisibility(View.VISIBLE);
+                    unReceiveAdapter.notifyDataSetChanged();
                     break;
             }
         }
@@ -132,7 +134,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
         view.findViewById(R.id.netReload).setOnClickListener(this);
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         orders = new ArrayList<Order>();
-        unReceiveAdapter = new UnReceiveAdapter(getActivity(), orders);
+        unReceiveAdapter = new UnReceiveAdapter(getActivity(), mOrderList);
         mListView.setAdapter(unReceiveAdapter);
         mRequestQueue = Volley.newRequestQueue(getActivity());
         initData();
@@ -141,7 +143,6 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 final Order order = (Order) values;
                 if ("4".equalsIgnoreCase(order.getStatus())) {
-
 
                     OrderLogisticsMsgFragment logisticsMsgFragment = OrderLogisticsMsgFragment.newInstance("", "",order);
                     ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
@@ -284,6 +285,9 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
 //                        }
 //                    }
 //                });
+                Order1 order =(Order1)values;
+                OrderDetailFragment1 orderDetailFragment = OrderDetailFragment1.newInstance(order.orderId + "", 1000, order, 2);
+                ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
             }
         });
     }
@@ -306,11 +310,11 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
 
     private void FetchReceiveData() {
         Map<String,String> params = new HashMap();
-        params.put("userId","28129");
+        params.put("userId",ZhaiDou.TESTUSERID);
         params.put("clientType","ANDROID");
         params.put("clientVersion","45");
         params.put("businessType","01");
-        params.put("type", "3");
+        params.put("type", ZhaiDou.TYPE_ORDER_PREDELIVERY);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,ZhaiDou.URL_ORDER_LIST ,new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -350,8 +354,14 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
 //                }
                 JSONArray dataArray = jsonObject.optJSONArray("data");
                 mOrderList.addAll(JSON.parseArray(dataArray.toString(), Order1.class));
-                System.out.println("OrderUnPayFragment.onResponse---->"+mOrderList.size());
-                handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
+                System.out.println("OrderUnPayFragment.onResponse---->" + mOrderList.size());
+                if (mOrderList.size() > 0) {
+                    handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
+                } else {
+                    mListView.setVisibility(View.GONE);
+                    loadingView.setVisibility(View.VISIBLE);
+                    mEmptyView.setVisibility(View.VISIBLE);
+                }
             }
         }, new Response.ErrorListener() {
             @Override
@@ -382,8 +392,8 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
         }
     }
 
-    public class UnReceiveAdapter extends BaseListAdapter<Order> {
-        public UnReceiveAdapter(Context context, List<Order> list) {
+    public class UnReceiveAdapter extends BaseListAdapter<Order1> {
+        public UnReceiveAdapter(Context context, List<Order1> list) {
             super(context, list);
         }
 
@@ -398,20 +408,21 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
             TextView bt_received = ViewHolder.get(convertView, R.id.bt_received);
             TextView bt_logistics = ViewHolder.get(convertView, R.id.bt_logistics);
             ImageView iv_order_img = ViewHolder.get(convertView, R.id.iv_order_img);
-            Order item = getList().get(position);
-            tv_order_time.setText(item.getCreated_at_for());
-            tv_order_number.setText(item.getNumber());
-            tv_order_amount.setText("￥" + ToolUtils.isIntPrice("" +item.getAmount() + ""));
-            tv_order_status.setText(item.getStatus_ch());
-            if ("1".equalsIgnoreCase(item.getStatus())) {
+            Order1 order1 = getList().get(position);
+
+            tv_order_time.setText(order1.creationTime);
+            tv_order_number.setText(order1.orderCode);
+            tv_order_amount.setText("￥" + order1.orderActualAmount);
+            tv_order_status.setText(order1.orderShowStatus);
+            if (1==order1.status) {
                 bt_received.setVisibility(View.GONE);
                 bt_logistics.setText("申请退款");
-                bt_logistics.setVisibility(item.isZero()?View.GONE:View.VISIBLE);
-            } else if ("4".equalsIgnoreCase(item.getStatus())) {
+//                bt_logistics.setVisibility(item.isZero()?View.GONE:View.VISIBLE);
+            } else if (4==order1.status) {
                 bt_received.setVisibility(View.VISIBLE);
                 bt_logistics.setText("查看物流");
             }
-            ToolUtils.setImageCacheUrl(item.getImg(), iv_order_img,R.drawable.icon_loading_defalut);
+            ToolUtils.setImageCacheUrl(order1.childOrderPOList.get(0).orderItemPOList.get(0).pictureMiddleUrl, iv_order_img,R.drawable.icon_loading_defalut);
             return convertView;
         }
     }

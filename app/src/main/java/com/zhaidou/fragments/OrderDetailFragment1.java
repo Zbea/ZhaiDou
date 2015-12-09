@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +34,7 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.alipay.PayDemoActivity;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -92,6 +92,7 @@ public class OrderDetailFragment1 extends BaseFragment {
     private Order order;
     private ListView mStoreList;
     private StoreAdapter mStoreAdapter;
+    private DialogUtils mDialogUtils;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -107,9 +108,9 @@ public class OrderDetailFragment1 extends BaseFragment {
 //                    if (orderDetail.status == ZhaiDou.STATUS_UNPAY && mParam2 <= 0) {
 //                        mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
 //                    }
-                    mReceiverName.setText(mOrder.childOrderPOList.get(0).buyerNick);
-                    mReceiverPhone.setText(mOrder.childOrderPOList.get(0).buyerMobile);
-                    mTotalView.setText("￥"+mOrder.orderPayAmount);
+//                    mReceiverName.setText(mOrder.childOrderPOList.get(0).buyerNick);
+//                    mReceiverPhone.setText(mOrder.childOrderPOList.get(0).buyerMobile);
+//                    mTotalView.setText("￥"+mOrder.orderActualAmount);
 //                    mReceiverAddress.setText(orderDetail.deliveryAddressPO.provinceName + orderDetail.deliveryAddressPO.cityName + orderDetail.deliveryAddressPO.address);
 //                    orderItemAdapter.notifyDataSetChanged();
                     break;
@@ -187,9 +188,10 @@ public class OrderDetailFragment1 extends BaseFragment {
 
     private void initView(View view) {
         mContext = getActivity();
+        System.out.println("OrderDetailFragment1.initView----------->"+getActivity());
 //        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading", true);
         loadingView = (LinearLayout) view.findViewById(R.id.loadingView);
-
+mDialogUtils=new DialogUtils(mContext);
         mStoreList=(ListView)view.findViewById(R.id.storeList);
 
         mStoreAdapter=new StoreAdapter(mContext,new ArrayList<Store>());
@@ -219,68 +221,88 @@ public class OrderDetailFragment1 extends BaseFragment {
             mBottomLayout.setVisibility(View.GONE);
         }
 
-        switch (mOrder.status) {
-            case ZhaiDou.STATUS_UNPAY:
-                if (mOrder.status == ZhaiDou.STATUS_UNPAY && mParam2 < 1) {
-                    mBottomLayout.setVisibility(View.GONE);
-                }
-                break;
-            case ZhaiDou.STATUS_PAYED:
-                mCancelOrder.setText(mContext.getResources().getString(R.string.order_return_money));
-                mOrderTimer.setVisibility(View.GONE);
-                mCancelOrder.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_green_click_bg));
-                break;
-            case ZhaiDou.STATUS_OVER_TIME:
-                mBottomLayout.setVisibility(View.GONE);
-                break;
-            case ZhaiDou.STATUS_ORDER_CANCEL_PAYED:
-                mBottomLayout.setVisibility(View.VISIBLE);
-                mCancelOrder.setText(mContext.getResources().getString(R.string.after_sale_service));
-                mOrderTimer.setVisibility(View.GONE);
-                break;
-            case ZhaiDou.STATUS_DELIVERY:
-                mCancelOrder.setText(mContext.getResources().getString(R.string.order_logistics));
-                mOrderTimer.setText(mContext.getResources().getString(R.string.order_received));
-                mCancelOrder.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_green_click_bg));
-                mOrderTimer.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_red_click_selector));
-                break;
-            case ZhaiDou.STATUS_DEAL_SUCCESS:
-                Log.i("STATUS_DELIVERY----------------->", "STATUS_DELIVERY");
-                mCancelOrder.setText(mContext.getResources().getString(R.string.order_logistics));
-                mOrderTimer.setText(mContext.getResources().getString(R.string.order_return_good));
-                mCancelOrder.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_green_click_bg));
-                mOrderTimer.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_green_click_bg));
-                break;
-            case ZhaiDou.STATUS_APPLY_GOOD_RETURN:
-                mOrderTimer.setVisibility(View.GONE);
-                mCancelOrder.setText(getResources().getString(R.string.sale_service_personal));
-                break;
-            case ZhaiDou.STATUS_GOOD_RETURNING:
-                mOrderTimer.setVisibility(View.GONE);
-                mCancelOrder.setText(getResources().getString(R.string.sale_service_personal));
-                break;
-            case ZhaiDou.STATUS_RETURN_GOOD_SUCCESS:
-                mOrderTimer.setVisibility(View.GONE);
-                mCancelOrder.setText(getResources().getString(R.string.sale_service_personal));
-                break;
-            case ZhaiDou.STATUS_UNPAY_CANCEL:
-                mBottomLayout.setVisibility(View.GONE);
-                break;
-            case ZhaiDou.STATUS_DEAL_CLOSE:
-                mBottomLayout.setVisibility(View.GONE);
-                break;
-            case ZhaiDou.STATUS_RETURN_MONEY_SUCCESS:
-                mBottomLayout.setVisibility(View.GONE);
-                break;
-        }
+//        switch (mOrder.status) {
+//            case ZhaiDou.STATUS_UNPAY:
+//                if (mOrder.status == ZhaiDou.STATUS_UNPAY && mParam2 < 1) {
+//                    mBottomLayout.setVisibility(View.GONE);
+//                }
+//                break;
+//            case ZhaiDou.STATUS_PAYED:
+//                mCancelOrder.setText(mContext.getResources().getString(R.string.order_return_money));
+//                mOrderTimer.setVisibility(View.GONE);
+//                mCancelOrder.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_green_click_bg));
+//                break;
+//            case ZhaiDou.STATUS_OVER_TIME:
+//                mBottomLayout.setVisibility(View.GONE);
+//                break;
+//            case ZhaiDou.STATUS_ORDER_CANCEL_PAYED:
+//                mBottomLayout.setVisibility(View.VISIBLE);
+//                mCancelOrder.setText(mContext.getResources().getString(R.string.after_sale_service));
+//                mOrderTimer.setVisibility(View.GONE);
+//                break;
+//            case ZhaiDou.STATUS_DELIVERY:
+//                mCancelOrder.setText(mContext.getResources().getString(R.string.order_logistics));
+//                mOrderTimer.setText(mContext.getResources().getString(R.string.order_received));
+//                mCancelOrder.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_green_click_bg));
+//                mOrderTimer.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_red_click_selector));
+//                break;
+//            case ZhaiDou.STATUS_DEAL_SUCCESS:
+//                Log.i("STATUS_DELIVERY----------------->", "STATUS_DELIVERY");
+//                mCancelOrder.setText(mContext.getResources().getString(R.string.order_logistics));
+//                mOrderTimer.setText(mContext.getResources().getString(R.string.order_return_good));
+//                mCancelOrder.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_green_click_bg));
+//                mOrderTimer.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_green_click_bg));
+//                break;
+//            case ZhaiDou.STATUS_APPLY_GOOD_RETURN:
+//                mOrderTimer.setVisibility(View.GONE);
+//                mCancelOrder.setText(getResources().getString(R.string.sale_service_personal));
+//                break;
+//            case ZhaiDou.STATUS_GOOD_RETURNING:
+//                mOrderTimer.setVisibility(View.GONE);
+//                mCancelOrder.setText(getResources().getString(R.string.sale_service_personal));
+//                break;
+//            case ZhaiDou.STATUS_RETURN_GOOD_SUCCESS:
+//                mOrderTimer.setVisibility(View.GONE);
+//                mCancelOrder.setText(getResources().getString(R.string.sale_service_personal));
+//                break;
+//            case ZhaiDou.STATUS_UNPAY_CANCEL:
+//                mBottomLayout.setVisibility(View.GONE);
+//                break;
+//            case ZhaiDou.STATUS_DEAL_CLOSE:
+//                mBottomLayout.setVisibility(View.GONE);
+//                break;
+//            case ZhaiDou.STATUS_RETURN_MONEY_SUCCESS:
+//                mBottomLayout.setVisibility(View.GONE);
+//                break;
+
+//        }
         loadingView.setVisibility(View.GONE);
-//        mStoreAdapter.setOnInViewClickListener(R.id.moreDetail,new BaseListAdapter.onInternalClickListener() {
-//            @Override
-//            public void OnClickListener(View parentV, View v, Integer position, Object values) {
-//                Store store = (Store) values;
-//                store.isExpand=!store.isExpand;
-//            }
-//        });
+        mStoreAdapter.setOnInViewClickListener(R.id.bt_logistics,new BaseListAdapter.onInternalClickListener() {
+            @Override
+            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                System.out.println("StoreAdapter.OnClickListener-------bt_logistics");
+                Store store=(Store)values;
+                if (ZhaiDou.STATUS_DEAL_SUCCESS==store.status){
+                    OrderLogisticsMsgFragment logisticsMsgFragment=OrderLogisticsMsgFragment.newInstance("","",null);
+                    ((BaseActivity)getActivity()).navigationToFragment(logisticsMsgFragment);
+                }
+            }
+        });
+        mStoreAdapter.setOnInViewClickListener(R.id.bt_received,new BaseListAdapter.onInternalClickListener() {
+            @Override
+            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                System.out.println("parentV = [" + parentV + "], v = [" + v + "], position = [" + position + "], values = [" + values + "]");
+                Store store = (Store)values;
+                if (ZhaiDou.STATUS_DEAL_SUCCESS==store.status){
+                    mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_apply_return_goods),new DialogUtils.PositiveListener() {
+                        @Override
+                        public void onPositive() {
+
+                        }
+                    },null);
+                }
+            }
+        });
     }
 
     @Override
@@ -735,7 +757,6 @@ public class OrderDetailFragment1 extends BaseFragment {
 
     private class StoreAdapter extends BaseListAdapter<Store>{
 
-//        private Map<Integer,Boolean> expand = new HashMap<Integer, Boolean>();
         public StoreAdapter(Context context, List<Store> list) {
             super(context, list);
         }
@@ -748,15 +769,41 @@ public class OrderDetailFragment1 extends BaseFragment {
             TextView mOrderTime = ViewHolder.get(convertView,R.id.tv_order_time);
             TextView mOrderStatus =ViewHolder.get(convertView,R.id.tv_order_status);
             ListView mListView =ViewHolder.get(convertView,R.id.lv_order_list);
+            TextView btn1=ViewHolder.get(convertView,R.id.bt_received);
+            TextView btn2=ViewHolder.get(convertView,R.id.bt_logistics);
+            LinearLayout mBottomLayout =ViewHolder.get(convertView,R.id.ll_bottom);
+
+            final LinearLayout detailContainer=ViewHolder.get(convertView,R.id.detailContainer);
+            TextView mReceiverName=ViewHolder.get(convertView,R.id.tv_receiver_name);
+            TextView mReceiverPhone=ViewHolder.get(convertView,R.id.tv_receiver_phone);
+            TextView mReceiverAddress=ViewHolder.get(convertView,R.id.tv_receiver_address);
+            TextView mOrderAmount=ViewHolder.get(convertView,R.id.total);
+            mReceiverName.setText(mOrder.childOrderPOList.get(0).buyerNick);
+            mReceiverPhone.setText(mOrder.childOrderPOList.get(0).buyerMobile);
+            mOrderAmount.setText("￥"+mOrder.orderActualAmount);
+//            mReceiverAddress.setText(orderDetail.deliveryAddressPO.provinceName + orderDetail.deliveryAddressPO.cityName + orderDetail.deliveryAddressPO.address);
+
             final Store store = getList().get(position);
             mOrderNumber.setText(store.orderCode+"");
             mOrderTime.setText(store.creationTime);
             mOrderStatus.setText(store.orderShowStatus);
+
+            if (ZhaiDou.STATUS_DEAL_SUCCESS==store.status){
+                btn1.setText("申请退货");
+                btn2.setText("查看物流");
+                btn1.setBackgroundResource(R.drawable.btn_green_click_bg);
+            }else if (ZhaiDou.STATUS_UNDELIVERY==store.status||ZhaiDou.STATUS_UNPAY==store.status){
+                mBottomLayout.setVisibility(View.GONE);
+            }
+
             final OrderItemAdapter adapter = new OrderItemAdapter(mContext,store.orderItemPOList){
                 @Override
                 public int getCount() {
-                    if (!store.isExpand)
+                    if (!store.isExpand){
+                        detailContainer.setVisibility(View.GONE);
                         return 1;
+                    }
+                    detailContainer.setVisibility(View.VISIBLE);
                     return super.getCount();
                 }
             };
@@ -765,14 +812,14 @@ public class OrderDetailFragment1 extends BaseFragment {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
                     Store store1= (Store) values;
-                    if (store1.orderItemPOList!=null&&store1.orderItemPOList.size()<2)
-                    store1.orderItemPOList.addAll(store1.orderItemPOList);
+//                    if (store1.orderItemPOList!=null&&store1.orderItemPOList.size()<2)
+//                    store1.orderItemPOList.addAll(store1.orderItemPOList);
                     store1.isExpand=!store1.isExpand;
                     adapter.notifyDataSetChanged();
                 }
             });
+
             return convertView;
         }
     }
-
 }

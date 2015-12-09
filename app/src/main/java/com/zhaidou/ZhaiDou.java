@@ -8,7 +8,7 @@ public class ZhaiDou {
     public static String HOME_PAGE_URL = "http://buy.zhaidou.com/?json=get_category_posts&slug=%E5%AE%B6%E9%A5%B0%E4%BC%98%E9%80%89&status=publish";
 //    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
 //        public static String HOME_BASE_URL = "http://www.zhaidou.com/";
-public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
+    public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
 
     //首页banner
     public static String HomeBannerUrl="http://121.42.206.45:7082/index/getBoardContent.action?boardCodes=";
@@ -206,11 +206,20 @@ public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
     /**退款成功*/
     public final static int STATUS_RETURN_MONEY_SUCCESS=11;
 
+    /** 订单类型 0：全部 1待付款  2待发货  3待收货 4交易完成 5已取消  */
+    public final static String TYPE_ORDER_ALL="0";
+    public final static String TYPE_ORDER_PREPAY="1";
+    public final static String TYPE_ORDER_PREDELIVERY="2";
+    public final static String TYPE_ORDER_SUCCESS="4";
+    public final static String TYPE_ORDER_CANCEL="5";
+
 
     //订单列表
     public static String URL_ORDER_LIST=HOME_BASE_URL+"order/orderList.action";
     //取消订单
     public static String URL_ORDER_CANCEL=HOME_BASE_URL+"order/cancelOrder.action";
+    //申请取消订单
+    public static String URL_ORDER_APPLY_CANCEL=HOME_BASE_URL+"order/applyCancelOrder.action";
     //删除订单
     public static String URL_ORDER_DELETE=HOME_BASE_URL+"order/deleteOrder.action";
     //确认收货
@@ -274,5 +283,6 @@ public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
      * 商品详情普通特卖购买后刷新
      */
     public static String IntentRefreshGoodsDetailsTag="com.zhaidou.home.refesh.o.goods.details";
-    public static String TESTUSERID="28129";//28129//16665//64410
+    public static String TESTUSERID="16665";//28129//16665//64410
+    public static String TESTTYPE="2";
 }

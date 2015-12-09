@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f1f1f1">
+    android:background="#f6f6f6">
 
 
     <RelativeLayout
@@ -48,200 +48,32 @@
             android:textSize="18sp" />
     </RelativeLayout>
 
-
-    <ListView
-        android:id="@+id/storeList"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/common_actionbar" />
+        android:layout_height="match_parent"
+        android:scrollbars="none"
+        android:layout_below="@id/common_actionbar">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/storeList"
-        android:orientation="vertical">
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#EEEEEE" />
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:orientation="vertical">
-
-            <com.zhaidou.view.TypeFaceTextView
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:gravity="center_vertical"
-                android:paddingLeft="10dp"
-                android:text="总金额"
-                android:textColor="@color/text_main_color"
-                android:textSize="16sp" />
-            <com.zhaidou.view.TypeFaceTextView
-                android:id="@+id/total"
-                android:layout_width="wrap_content"
-                android:layout_alignParentRight="true"
-                android:gravity="center_vertical"
-                android:paddingRight="10dp"
-                android:layout_height="40dp"
-                />
-        </RelativeLayout>
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#EEEEEE" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
             android:orientation="vertical">
 
-            <com.zhaidou.view.TypeFaceTextView
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:gravity="center_vertical"
-                android:paddingLeft="10dp"
-                android:text="收货信息"
-                android:textColor="@color/text_main_color"
-                android:textSize="16sp" />
 
+            <com.zhaidou.view.ListViewForScrollView
+                android:id="@+id/storeList"
+                android:scrollbars="none"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:dividerHeight="10dp"
+                android:divider="#F6F6F6"/>
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#EEEEEE" />
+                android:layout_height="10dp"
+                android:background="#F6F6F6"/>
+
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:orientation="horizontal"
-            android:paddingBottom="10dp"
-            android:paddingLeft="15dp"
-            android:paddingTop="10dp">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="5dp"
-                        android:text="收货人:"
-                        android:textColor="@color/text_main_color"
-                        android:textSize="14sp" />
-
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:id="@+id/tv_receiver_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/text_normal_color" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="5dp"
-                        android:text="手机号码:"
-                        android:textColor="@color/text_main_color"
-                        android:textSize="14sp" />
-
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:id="@+id/tv_receiver_phone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/text_normal_color" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:orientation="horizontal">
-
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="5dp"
-                        android:text="收货地址:"
-                        android:textColor="@color/text_main_color"
-                        android:textSize="14sp" />
-
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:id="@+id/tv_receiver_address"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/text_normal_color" />
-                </LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="#EEEEEE" />
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:background="@color/white"
-            android:gravity="right">
-
-
-            <com.zhaidou.view.TypeFaceTextView
-                android:id="@+id/bt_received"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="2dp"
-                android:background="@drawable/btn_red_click_selector"
-                android:gravity="center"
-                android:paddingBottom="5dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="5dp"
-                android:text="确认收货"
-                android:textColor="@color/white"
-                android:textSize="13sp"/>
-
-            <com.zhaidou.view.TypeFaceTextView
-                android:id="@+id/bt_logistics"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="2dp"
-                android:layout_toLeftOf="@id/bt_received"
-                android:background="@drawable/btn_green_click_bg"
-                android:gravity="center"
-                android:paddingBottom="5dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="5dp"
-                android:text="申请退款"
-                android:textColor="@color/white"
-                android:textSize="13sp" />
-        </RelativeLayout>
-    </LinearLayout>
+    </ScrollView>
 
 
     <include
