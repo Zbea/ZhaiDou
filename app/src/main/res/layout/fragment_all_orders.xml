@@ -43,7 +43,7 @@
     </RelativeLayout>
 
 
-    <ListView
+    <com.pulltorefresh.PullToRefreshListView
         android:id="@+id/lv_all_orderlist"
         android:layout_below="@id/rl_back"
         android:listSelector="@android:color/transparent"

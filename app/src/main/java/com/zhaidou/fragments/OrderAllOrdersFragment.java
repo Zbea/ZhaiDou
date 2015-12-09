@@ -25,6 +25,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.pulltorefresh.PullToRefreshBase;
+import com.pulltorefresh.PullToRefreshListView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
@@ -53,7 +55,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class OrderAllOrdersFragment extends BaseFragment implements View.OnClickListener {
+public class OrderAllOrdersFragment extends BaseFragment implements View.OnClickListener, PullToRefreshBase.OnRefreshListener2<ListView> {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -65,7 +67,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     private LinearLayout loadingView;
 
     private RequestQueue mRequestQueue;
-    private ListView mListView;
+    private PullToRefreshListView mListView;
     private List<Order> orders = new ArrayList<Order>();
     AllOrderAdapter allOrderAdapter;
     private final int UPDATE_ORDER_LIST = 1;
@@ -83,15 +85,17 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     private boolean isTimerStart = false;
     private List<Order1> mOrderList;
     private DialogUtils mDialogUtils;
+    private int mCurrentPage;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            isViewDestroy=!isViewDestroy;
+            isViewDestroy = !isViewDestroy;
             switch (msg.what) {
                 case UPDATE_ORDER_LIST:
                     loadingView.setVisibility(View.GONE);
                     mListView.setVisibility(View.VISIBLE);
                     allOrderAdapter.notifyDataSetChanged();
+                    mListView.onRefreshComplete();
 //                    if (timer == null)
 //                        timer = new MyTimer(15 * 60 * 1000, 1000);
 //                    timer.start();
@@ -143,12 +147,15 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             rootView = inflater.inflate(R.layout.fragment_all_orders, container, false);
             mContext = getActivity();
             mOrderList = new ArrayList<Order1>();
-            mDialogUtils=new DialogUtils(mContext);
+            mDialogUtils = new DialogUtils(mContext);
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
             mEmptyView = rootView.findViewById(R.id.nullline);
             mNetErrorView = rootView.findViewById(R.id.nullNetline);
             rootView.findViewById(R.id.netReload).setOnClickListener(this);
-            mListView = (ListView) rootView.findViewById(R.id.lv_all_orderlist);
+            mListView = (PullToRefreshListView) rootView.findViewById(R.id.lv_all_orderlist);
+            mListView.setMode(PullToRefreshBase.Mode.BOTH);
+            mListView.setOnRefreshListener(this);
+
             mRequestQueue = Volley.newRequestQueue(getActivity());
             allOrderAdapter = new AllOrderAdapter(getActivity(), mOrderList);
             mListView.setAdapter(allOrderAdapter);
@@ -168,7 +175,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 //                    }
 //                    if (btn2.getTag() != null)
 //                        preTime = Long.parseLong(btn2.getTag().toString());
-                    OrderDetailFragment1 orderDetailFragment = OrderDetailFragment1.newInstance(order.orderId + "", 1000, order,2);
+                    OrderDetailFragment1 orderDetailFragment = OrderDetailFragment1.newInstance(order.orderId + "", 1000, order, 2);
                     ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
 //                    orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
 //                        @Override
@@ -196,16 +203,66 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
                     final Order1 order = (Order1) values;
-                    if (ZhaiDou.STATUS_UNDELIVERY==order.status){
+                    if (ZhaiDou.STATUS_UNDELIVERY == order.status) {
                         List<Store> childOrderPOList = order.childOrderPOList;
-                        if (childOrderPOList.size()==1&&childOrderPOList.get(0).orderItemPOList.size()==1&&childOrderPOList.get(0).orderItemPOList.get(0).productType==2){
+                        if (childOrderPOList.size() == 1 && childOrderPOList.get(0).orderItemPOList.size() == 1 && childOrderPOList.get(0).orderItemPOList.get(0).productType == 2) {
                             ShowToast("零元特卖商品不可以退哦！");
                             return;
                         }
                         mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_apply_return_money), new DialogUtils.PositiveListener() {
                             @Override
                             public void onPositive() {
+                                final Map<String, String> params = new HashMap();
+                                params.put("businessType", "01");
+                                params.put("clientType", "ANDROID");
+                                params.put("version", "1.0.1");
+                                params.put("userId", ZhaiDou.TESTUSERID);
+                                params.put("clientVersion", "45");
+                                params.put("orderCode", order.orderCode);
+                                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_APPLY_CANCEL, new JSONObject(params), new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(JSONObject jsonObject) {
+                                        int status = jsonObject.optInt("status");
+                                        String message = jsonObject.optString("message");
+                                        if (200 == status) {
+                                            order.status = ZhaiDou.STATUS_ORDER_APPLY_CANCEL;
+                                            order.orderShowStatus = "申请取消中";
+                                        }
+                                        ShowToast(status == 200 ? "正在申请退款" : message);
+                                    }
+                                }, null);
+                                mRequestQueue.add(request);
+                            }
+                        }, null);
+                    } else if (ZhaiDou.STATUS_UNPAY == order.status) {
+                        final Map<String, String> params = new HashMap();
+                        params.put("businessType", "01");
+                        params.put("clientType", "ANDROID");
+                        params.put("version", "1.0.1");
+                        params.put("userId", ZhaiDou.TESTUSERID);
+                        params.put("clientVersion", "45");
+                        params.put("orderCode", order.orderCode);
+                        mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_cancel_ok), new DialogUtils.PositiveListener() {
+                            @Override
+                            public void onPositive() {
+                                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_CANCEL, new JSONObject(params), new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(JSONObject jsonObject) {
+                                        int status = jsonObject.optInt("status");
+                                        String message = jsonObject.optString("message");
+                                        if (200 == status) {
+                                            order.status = ZhaiDou.STATUS_ORDER_CANCEL;
+                                            order.orderShowStatus = "已取消";
+                                        }
+                                        ShowToast(status == 200 ? "取消订单成功" : message);
+                                    }
+                                }, new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError volleyError) {
 
+                                    }
+                                });
+                                mRequestQueue.add(request);
                             }
                         }, null);
                     }
@@ -333,33 +390,33 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 //                        return;
 //                    }
 
-                    mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_confirm),new DialogUtils.PositiveListener() {
+                    mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_confirm), new DialogUtils.PositiveListener() {
                         @Override
                         public void onPositive() {
                             System.out.println("OrderAllOrdersFragment.onPositive");
-                            Map<String,String> params = new HashMap();
-                            params.put("businessType","01");
-                            params.put("clientType","ANDROID");
-                            params.put("userId",ZhaiDou.TESTUSERID);
-                            params.put("clientVersion","45");
-                            params.put("orderCode",order.orderCode);
-                            JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,ZhaiDou.URL_ORDER_CONFIRM,new JSONObject(params),new Response.Listener<JSONObject>() {
+                            Map<String, String> params = new HashMap();
+                            params.put("businessType", "01");
+                            params.put("clientType", "ANDROID");
+                            params.put("userId", ZhaiDou.TESTUSERID);
+                            params.put("clientVersion", "45");
+                            params.put("orderCode", order.orderCode);
+                            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_CONFIRM, new JSONObject(params), new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject jsonObject) {
                                     int status = jsonObject.optInt("status");
                                     String message = jsonObject.optString("message");
-                                    if (200==status){
-                                        order.status=50;
-                                        order.orderShowStatus="交易完成";
+                                    if (200 == status) {
+                                        order.status = 50;
+                                        order.orderShowStatus = "交易完成";
                                         allOrderAdapter.notifyDataSetChanged();
-                                    }else {
+                                    } else {
                                         ShowToast(message);
                                     }
                                 }
-                            },null);
+                            }, null);
                             mRequestQueue.add(request);
                         }
-                    },null);
+                    }, null);
 
 //                    final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
 //
@@ -419,30 +476,30 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                 public void OnClickListener(View parentV, View v, final Integer position, Object values) {
                     Log.i("position--------->", position + "");
                     final Order1 order = (Order1) values;
-                    final Map<String,String> params = new HashMap();
-                    params.put("businessType","01");
-                    params.put("userId",ZhaiDou.TESTUSERID);
-                    params.put("orderCode",order.orderCode);
+                    final Map<String, String> params = new HashMap();
+                    params.put("businessType", "01");
+                    params.put("userId", ZhaiDou.TESTUSERID);
+                    params.put("orderCode", order.orderCode);
                     DialogUtils mDialogUtils = new DialogUtils(getActivity());
-                    mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_delete),new DialogUtils.PositiveListener() {
+                    mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_delete), new DialogUtils.PositiveListener() {
                         @Override
                         public void onPositive() {
-                            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,ZhaiDou.URL_ORDER_DELETE,new JSONObject(params),new Response.Listener<JSONObject>() {
+                            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_DELETE, new JSONObject(params), new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject jsonObject) {
                                     int status = jsonObject.optInt("status");
                                     String message = jsonObject.optString("message");
-                                    if (200==status){
+                                    if (200 == status) {
                                         mOrderList.remove(order);
                                         allOrderAdapter.notifyDataSetChanged();
-                                    }else {
+                                    } else {
                                         ShowToast(message);
                                     }
                                 }
-                            },null);
+                            }, null);
                             mRequestQueue.add(request);
                         }
-                    },null);
+                    }, null);
 //                    final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
 //
 //                    View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
@@ -509,7 +566,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         if (NetworkUtils.isNetworkAvailable(mContext)) {
             mNetErrorView.setVisibility(View.GONE);
             loadingView.setVisibility(View.GONE);
-            FetchAllOrder();
+            FetchAllOrder(mCurrentPage = 0);
         } else {
             if (mDialog != null)
                 mDialog.dismiss();
@@ -532,14 +589,15 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         }
     }
 
-    private void FetchAllOrder() {
+    private void FetchAllOrder(int page) {
         Map<String, String> params = new HashMap();//28129
         params.put("userId", ZhaiDou.TESTUSERID);//64410//16665
         params.put("clientType", "ANDROID");
         params.put("clientVersion", "45");
         params.put("businessType", "01");
-        params.put("type", "0");
-        params.put("pageSize","50");// ZhaiDou.URL_ORDER_LIST,
+        params.put("type", ZhaiDou.TYPE_ORDER_ALL);
+        params.put("pageNo", page + "");
+        params.put("pageSize", "10");// ZhaiDou.URL_ORDER_LIST,
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -576,16 +634,23 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 //                    }
 //                }
                 JSONArray dataArray = jsonObject.optJSONArray("data");
+                int pageNo = jsonObject.optInt("pageNo");
+                if (dataArray.length()<10){
+                    ShowToast("订单加载完毕");
+                    mListView.onRefreshComplete();
+                    mListView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+                }
                 List<Order1> orderList = JSON.parseArray(dataArray.toString(), Order1.class);
-                for(Order1 order:orderList){
+                for (Order1 order : orderList) {
                     List<Store> childOrderPOList = order.childOrderPOList;
-                    for(Store store:childOrderPOList){
+                    for (Store store : childOrderPOList) {
                         List<OrderItem1> orderItemList = store.orderItemPOList;
                     }
                 }
+                if (pageNo == 0) {
+                    mOrderList.clear();
+                }
                 mOrderList.addAll(orderList);
-
-                System.out.println("OrderUnPayFragment.onResponse---->" + mOrderList.size());
                 if (mOrderList.size() > 0) {
                     handler.sendEmptyMessage(UPDATE_ORDER_LIST);
                 } else {
@@ -610,6 +675,18 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             }
         };
         mRequestQueue.add(request);
+    }
+
+    @Override
+    public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+        System.out.println("OrderAllOrdersFragment.onPullDownToRefresh");
+        FetchAllOrder(mCurrentPage = 0);
+    }
+
+    @Override
+    public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+        System.out.println("OrderAllOrdersFragment.onPullUpToRefresh");
+        FetchAllOrder(++mCurrentPage);
     }
 
     public class AllOrderAdapter extends BaseListAdapter<Order1> {
@@ -757,13 +834,14 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         if (timeStmp > 0 && timerMap != null && (timerMap.get(position) == null || !timerMap.get(position))) {
                             l = l - timeStmp;
                             btn2.setTag(l);
-                            order.orderRemainingTime=l;
+                            order.orderRemainingTime = l;
                             timerMap.put(position, true);
                         } else {
                             btn2.setTag(Long.parseLong(btn2.getTag() + "") - 1);
-                            order.orderRemainingTime=(Long.parseLong(btn2.getTag() + "") - 1);
+                            order.orderRemainingTime = (Long.parseLong(btn2.getTag() + "") - 1);
                         }
                         btn2.setText("支付" + new SimpleDateFormat("mm:ss").format(new Date(l * 1000)));
+                        btn2.setBackgroundResource(R.drawable.btn_red_click_selector);
                     } else {
                         btn2.setText("超时过期");
 //                        order.setStatus(ZhaiDou.STATUS_DEAL_CLOSE + "");
@@ -847,6 +925,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 //                    tv_order_status.setText("退款成功");
                     ll_btn.setVisibility(View.VISIBLE);
                     btn2.setVisibility(View.GONE);
+                    btn1.setText("申请退款");
                     break;
                 case ZhaiDou.STATUS_PART_DELIVERY:
                     iv_delete.setVisibility(View.GONE);
@@ -856,6 +935,10 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                 case ZhaiDou.STATUS_ORDER_CANCEL:
                     iv_delete.setVisibility(View.VISIBLE);
 //                    tv_order_status.setText("退款成功");
+                    ll_btn.setVisibility(View.GONE);
+                    break;
+                case ZhaiDou.STATUS_ORDER_APPLY_CANCEL://申请取消中
+                    iv_delete.setVisibility(View.GONE);
                     ll_btn.setVisibility(View.GONE);
                     break;
             }

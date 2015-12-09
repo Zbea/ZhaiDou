@@ -412,7 +412,7 @@ public class OrderDetailFragment extends BaseFragment {
 
     private void FetchOrderDetail(String id) {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("userId", "28129");
+        params.put("userId", ZhaiDou.TESTUSERID);
         params.put("clientType", "ANDROID");
         params.put("clientVersion", "45");
         params.put("businessType", "01");
