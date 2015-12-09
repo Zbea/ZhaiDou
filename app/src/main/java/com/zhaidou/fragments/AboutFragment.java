@@ -84,7 +84,7 @@ public class AboutFragment extends BaseFragment implements View.OnClickListener{
             PackageManager manager = getActivity().getPackageManager();
             PackageInfo info = manager.getPackageInfo(getActivity().getPackageName(), 0);
             String version = info.versionName;
-            return String.format(getResources().getString(R.string.app_version),version);
+            return String.format(getResources().getString(R.string.app_versionName),version);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

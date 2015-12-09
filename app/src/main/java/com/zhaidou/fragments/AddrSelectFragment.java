@@ -282,8 +282,8 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
             @Override
             public void onClick(View view)
             {
-                mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "删除中");
-                String url = ZhaiDou.ORDER_RECEIVER_URL + address.getId();
+                mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "删除中");
+                String url = ZhaiDou.AddressDeleteUrl +"?id="+ address.getId();
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, new Response.Listener<JSONObject>()
                 {
                     @Override
@@ -291,9 +291,15 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                     {
                         if (mDialog != null)
                             mDialog.dismiss();
-                        if (jsonObject != null)
+                        int code=jsonObject.optInt("status");
+                        if (code!=200)
                         {
-                            int status = jsonObject.optInt("status");
+                            ToolUtils.setToast(mContext,"抱歉，删除失败");
+                        }
+                        JSONObject dataObject=jsonObject.optJSONObject("data");
+                        if (dataObject != null)
+                        {
+                            int status = dataObject.optInt("status");
                             if (status == 201)
                             {
                                 addressList.remove(address);
@@ -314,7 +320,7 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                     {
                         if (mDialog != null)
                             mDialog.dismiss();
-                        ShowToast("加载失败");
+                        ToolUtils.setToast(mContext,"抱歉，删除失败");
                     }
                 })
                 {
@@ -351,14 +357,20 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
 
     private void FetchData()
     {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_RECEIVER_URL, new Response.Listener<JSONObject>()
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.AddressListUrl, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
             {
                 mDialog.dismiss();
-                JSONArray receiversArr = jsonObject.optJSONArray("receivers");
                 ToolUtils.setLog(jsonObject.toString());
+                int status=jsonObject.optInt("status");
+                if (status!=200)
+                {
+                    ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+                }
+                JSONObject dataObject=jsonObject.optJSONObject("data");
+                JSONArray receiversArr = dataObject.optJSONArray("receivers");
                 if (receiversArr != null && receiversArr.length() > 0)
                 {
                     for (int i = 0; i < receiversArr.length(); i++)
@@ -405,7 +417,7 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
             public void onErrorResponse(VolleyError volleyError)
             {
                 mDialog.dismiss();
-                Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
+                ToolUtils.setToast(mContext,R.string.loading_fail_txt);
             }
         })
         {
@@ -414,8 +426,7 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
             {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                if (!TextUtils.isEmpty(token))
-                    headers.put("SECAuthorization", token);
+                headers.put("SECAuthorization", token);
                 return headers;
             }
         };
