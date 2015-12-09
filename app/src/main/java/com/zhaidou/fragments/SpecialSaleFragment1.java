@@ -269,7 +269,6 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (screenWidth * bitmap.getHeight() / bitmap.getWidth()));
                     bannerLine.setLayoutParams(params);
                     imageView1.setLayoutParams(params);
-                    bannerLine.setBackgroundColor(getResources().getColor(R.color.green_color));
                     if (imageView1.getDrawingCache() != null) {
                         imageView1.setImageBitmapLarge(bitmap);
                     } else {

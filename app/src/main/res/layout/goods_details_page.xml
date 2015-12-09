@@ -419,14 +419,27 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
+                    android:visibility="gone"
                     android:orientation="vertical"></LinearLayout>
+
+
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/img_null"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
                     android:gravity="center"
+                    android:visibility="gone"
                     android:textColor="@color/text_gary_color"
                     android:text="暂无图文详情"/>
+
+
+                <com.zhaidou.view.CustomProgressWebview
+                    android:id="@+id/goodsWebView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="200dp"
+                    android:scrollbars="none"
+                    ></com.zhaidou.view.CustomProgressWebview>
 
             </LinearLayout>
 
