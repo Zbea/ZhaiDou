@@ -1,0 +1,67 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/common_actionbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/header_height_dimen"
+        android:background="@color/actionbar_background_color">
+
+        <LinearLayout
+            android:id="@+id/searchLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:background="@drawable/search_titlebar_bg">
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="椅子"
+                android:textColor="#D0D0D0"
+                android:drawableLeft="@drawable/icon_search_gray"
+                android:drawablePadding="10dp"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/iv_search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:scaleType="fitXY"
+                android:visibility="gone"
+                android:src="@drawable/icon_search_gray" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <ListView
+            android:id="@+id/category"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:background="#F6F6F6"
+            android:divider="@null"
+            android:scrollbars="none" />
+
+        <GridView
+            android:id="@+id/categoryItem"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:scrollbars="none"
+            android:numColumns="3"
+            android:layout_weight="3" />
+    </LinearLayout>
+</LinearLayout>

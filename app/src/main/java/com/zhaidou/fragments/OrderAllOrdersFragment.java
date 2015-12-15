@@ -31,6 +31,7 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -389,34 +390,41 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 //                        });
 //                        return;
 //                    }
-
-                    mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_confirm), new DialogUtils.PositiveListener() {
-                        @Override
-                        public void onPositive() {
-                            System.out.println("OrderAllOrdersFragment.onPositive");
-                            Map<String, String> params = new HashMap();
-                            params.put("businessType", "01");
-                            params.put("clientType", "ANDROID");
-                            params.put("userId", ZhaiDou.TESTUSERID);
-                            params.put("clientVersion", "45");
-                            params.put("orderCode", order.orderCode);
-                            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_CONFIRM, new JSONObject(params), new Response.Listener<JSONObject>() {
-                                @Override
-                                public void onResponse(JSONObject jsonObject) {
-                                    int status = jsonObject.optInt("status");
-                                    String message = jsonObject.optString("message");
-                                    if (200 == status) {
-                                        order.status = 50;
-                                        order.orderShowStatus = "交易完成";
-                                        allOrderAdapter.notifyDataSetChanged();
-                                    } else {
-                                        ShowToast(message);
+                    if (ZhaiDou.STATUS_UNPAY==order.status){
+//                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.getOrderId(), order.getAmount(), 0, order.getOver_at(), order,2);
+                        System.out.println("OrderAllOrdersFragment.OnClickListener--->"+btn2.getTag());
+                        ShopPaymentFragment shopPaymentFragment=ShopPaymentFragment.newInstance(order,order.orderCode,2,Integer.parseInt(btn2.getTag().toString()));
+                        ((BaseActivity)getActivity()).navigationToFragment(shopPaymentFragment);
+                    }else if (ZhaiDou.STATUS__DELIVERYED==order.status){
+                        mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_confirm), new DialogUtils.PositiveListener() {
+                            @Override
+                            public void onPositive() {
+                                System.out.println("OrderAllOrdersFragment.onPositive");
+                                Map<String, String> params = new HashMap();
+                                params.put("businessType", "01");
+                                params.put("clientType", "ANDROID");
+                                params.put("userId", ZhaiDou.TESTUSERID);
+                                params.put("clientVersion", "45");
+                                params.put("orderCode", order.orderCode);
+                                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_CONFIRM, new JSONObject(params), new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(JSONObject jsonObject) {
+                                        int status = jsonObject.optInt("status");
+                                        String message = jsonObject.optString("message");
+                                        if (200 == status) {
+                                            order.status = 50;
+                                            order.orderShowStatus = "交易完成";
+                                            allOrderAdapter.notifyDataSetChanged();
+                                        } else {
+                                            ShowToast(message);
+                                        }
                                     }
-                                }
-                            }, null);
-                            mRequestQueue.add(request);
-                        }
-                    }, null);
+                                }, null);
+                                mRequestQueue.add(request);
+                            }
+                        }, null);
+                    }
+
 
 //                    final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
 //
@@ -595,7 +603,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         params.put("clientType", "ANDROID");
         params.put("clientVersion", "45");
         params.put("businessType", "01");
-        params.put("type", ZhaiDou.TYPE_ORDER_ALL);
+        params.put("type", ZhaiDou.TYPE_ORDER_PRERECEIVE);
         params.put("pageNo", page + "");
         params.put("pageSize", "10");// ZhaiDou.URL_ORDER_LIST,
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST, new JSONObject(params), new Response.Listener<JSONObject>() {

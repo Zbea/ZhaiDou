@@ -29,13 +29,12 @@ import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomePTActivity;
-import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.User;
-import com.zhaidou.sqlite.CreatCartDB;
 import com.zhaidou.utils.DeviceUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -76,7 +75,6 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     private User user;
     private int num;
     private ProfileFragment mProfileFragment;
-    private CreatCartDB creatCartDB;
     private List<CartGoodsItem> items = new ArrayList<CartGoodsItem>();
     private ImageView iv_header, mPrePayView, mPreReceivedView, mReturnView;
     private TextView tv_nickname, tv_desc, tv_collect, tv_collocation, tv_unpay_count;
@@ -97,14 +95,9 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             String action = intent.getAction();
             if (action.equals(ZhaiDou.IntentRefreshLoginExitTag)) {
                 count=0;
-                initCartTips();
                 exitLoginEvent();
             }
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag)) {
-                initCartTips();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
-                initCartTips();
             }
 
             if (action.equals(ZhaiDou.IntentRefreshUnPayAddTag)) {
@@ -233,7 +226,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             view.findViewById(R.id.tv_shopping_cart).setOnClickListener(this);
             view.findViewById(R.id.rl_contact).setOnClickListener(this);
             view.findViewById(R.id.rl_competition).setOnClickListener(this);
-            view.findViewById(R.id.rl_taobao_order).setOnClickListener(this);
+            view.findViewById(R.id.rl_collocation).setOnClickListener(this);
             view.findViewById(R.id.rl_addr_manage).setOnClickListener(this);
             view.findViewById(R.id.ll_collect).setOnClickListener(this);
             view.findViewById(R.id.ll_collocation).setOnClickListener(this);
@@ -244,12 +237,9 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             getUserInfo();
             userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
             token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
-            creatCartDB = new CreatCartDB(getActivity());
 
-            initCartTips();
-
-            FetchCollectData();
-            FetchCollocationData();
+//            FetchCollectData();
+//            FetchCollocationData();
             FetchUnPayCount(UPDATE_UNPAY_COUNT);
 
         }
@@ -299,10 +289,9 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 OrderAllOrdersFragment allOrdersFragment = OrderAllOrdersFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(allOrdersFragment);
                 break;
-            case R.id.rl_taobao_order:
-                Intent intent1 = new Intent(getActivity(), WebViewActivity.class);
-                intent1.putExtra("url", ZhaiDou.URL_TAOBAO_ORDER);
-                startAnimActivity(intent1);
+            case R.id.rl_collocation:
+                CollocationFragment collocationFragment = CollocationFragment.newInstance("", "");
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(collocationFragment);
                 break;
             case R.id.tv_pre_pay:
                 ToolUtils.setLog("count:"+count);
@@ -364,13 +353,8 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                     @Override
                     public void onProfileChange(User user)
                     {
-                        if (!TextUtils.isEmpty(user.getDescription())){
-                            tv_desc.setText(user.getDescription());
-                        }else if (!TextUtils.isEmpty(user.getAvatar())){
-                            ToolUtils.setImageCacheUrl("http://" + user.getAvatar(), iv_header);
-                        }else if (!TextUtils.isEmpty(user.getNickName())){
-                            tv_nickname.setText(user.getNickName());
-                        }
+//                            ToolUtils.se());
+//                        }
                     }
                 });
                 ((MainActivity)getActivity()).navigationToFragmentWithAnim(mProfileFragment);
@@ -389,20 +373,14 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 collectFragment.setCollectCountChangeListener(new CollectFragment.CollectCountChangeListener() {
                     @Override
                     public void onCountChange(int count, Fragment fragment) {
-                        System.out.println("PersonalFragment.onCountChange------->"+collectNum);
-//                        collectNum=collectNum-1;
-//                        if (collectNum<=0)
-//                        {
-//                            collectNum=0;
-//                        }
                         tv_collect.setText(collectNum-1<=0?0+"":""+--collectNum);
                     }
                 });
                 break;
-            case R.id.ll_collocation:
-                CollocationFragment collocationFragment = CollocationFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(collocationFragment);
-                break;
+//            case R.id.ll_collocation:
+//                CollocationFragment collocationFragment = CollocationFragment.newInstance("", "");
+//                ((MainActivity) getActivity()).navigationToFragmentWithAnim(collocationFragment);
+//                break;
             case R.id.rl_service:
                 if (DeviceUtils.isApkInstalled(getActivity(), "com.tencent.mobileqq")){
                     String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_Number);
@@ -418,24 +396,31 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     public void getUserInfo() {
 
         Object id = SharedPreferencesUtil.getData(getActivity(), "userId", 0);
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL + id, new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL + "?id="+id, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                JSONObject userObj = jsonObject.optJSONObject("user");
-                String email = userObj.optString("email");
-                String avatar = userObj.optJSONObject("avatar").optString("url");
-                String nick_name = userObj.optString("nick_name");
-                String province = userObj.optString("province");
-                String city = userObj.optString("city");
-                User user = new User();
-                user.setAvatar(avatar);
-                user.setNickName(nick_name);
-                user.setProvince(province);
-                user.setCity(city);
-                Message message = new Message();
-                message.what = UPDATE_USER_INFO;
-                message.obj = user;
-                mHandler.sendMessage(message);
+                int status = jsonObject.optInt("status");
+                String msg = jsonObject.optString("message");
+                if (status==200){
+                    JSONObject dataObj = jsonObject.optJSONObject("data");
+                    JSONObject userObj = dataObj.optJSONObject("user");
+                    String email = userObj.optString("email");
+                    String avatar = userObj.optJSONObject("avatar").optString("url");
+                    String nick_name = userObj.optString("nick_name");
+                    String province = userObj.optString("province");
+                    String city = userObj.optString("city");
+                    User user = new User();
+                    user.setAvatar(avatar);
+                    user.setNickName(nick_name);
+                    user.setProvince(province);
+                    user.setCity(city);
+                    Message message = new Message();
+                    message.what = UPDATE_USER_INFO;
+                    message.obj = user;
+                    mHandler.sendMessage(message);
+                }else {
+                    ShowToast(msg);
+                }
             }
         }, new Response.ErrorListener() {
             @Override
@@ -454,21 +439,28 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
 
     public void getUserDetail() {
         Object id = SharedPreferencesUtil.getData(getActivity(), "userId", 0);
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL + id + "/profile", new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_DETAIL_PROFILE_URL +"?id="+id, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                JSONObject userObj = jsonObject.optJSONObject("profile");
-                if (userObj != null) {
-                    String nick_name = userObj.optString("nick_name");
-                    String mobile = userObj.optString("mobile");
-                    String description = userObj.optString("description");
-//                int profileId=userObj.optString("id");
-                    boolean verified = userObj.optBoolean("verified");
-                    User user = new User(null, null, nick_name, verified, mobile, description);
-                    Message message = new Message();
-                    message.what = UPDATE_USER_DESCRIPTION;
-                    message.obj = user;
-                    mHandler.sendMessage(message);
+                int status = jsonObject.optInt("status");
+                String msg = jsonObject.optString("message");
+                if (status==200){
+                    JSONObject dataObj = jsonObject.optJSONObject("data");
+                    JSONObject userObj = dataObj.optJSONObject("profile");
+                    if (userObj != null) {
+                        String nick_name = userObj.optString("nick_name");
+                        String mobile = userObj.optString("mobile");
+                        String description = userObj.optString("description");
+                        boolean verified = userObj.optBoolean("verified");
+                        User user = new User(null, null, nick_name, verified, mobile, description);
+                        Message message = new Message();
+                        message.what = UPDATE_USER_DESCRIPTION;
+                        message.obj = user;
+                        mHandler.sendMessage(message);
+                    }
+
+                }else {
+                    ShowToast(msg);
                 }
 
             }
@@ -484,9 +476,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 return headers;
             }
         };
-        if (mRequestQueue == null)
-            mRequestQueue = Volley.newRequestQueue(mActivity);
-        mRequestQueue.add(request);
+        ((ZDApplication)getActivity().getApplication()).mRequestQueue.add(request);
     }
 
     @Override
@@ -528,30 +518,16 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
         super.onDestroyView();
     }
 
-    /**
-     * 红色标识提示显示数量
-     */
-    private void initCartTips() {
-        cartNum=((MainActivity)getActivity()).getNum();
-        if (cartNum> 0) {
-            mCartCount.setVisibility(View.VISIBLE);
-            mCartCount.setText("" +cartNum);
-        } else {
-            mCartCount.setVisibility(View.GONE);
-        }
-    }
-
     @Override
     public void onHiddenChanged(boolean hidden) {
         userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         if (!hidden && userId != -1) {
-            FetchCollectData();
-            FetchCollocationData();
+//            FetchCollectData();
+//            FetchCollocationData();
             FetchUnPayCount(UPDATE_UNPAY_COUNT_REFRESH);
             getUserDetail();
             getUserInfo();
-            initCartTips();
         }
         super.onHiddenChanged(hidden);
     }

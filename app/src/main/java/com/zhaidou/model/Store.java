@@ -2,6 +2,7 @@ package com.zhaidou.model;/**
  * Created by wangclark on 15/12/3.
  */
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ import java.util.List;
  * Description:商店实体类
  * FIXME
  */
-public class Store {
+public class Store implements Serializable{
     public String storeId;
     public String storeName;
     public String supplierCode;
@@ -40,5 +41,43 @@ public class Store {
     public int orderType;
     public boolean isExpand;
 
+    public Delivery deliveryPO;
+    public DeliveryAddress deliveryAddressPO;
+
     public List<OrderItem1> orderItemPOList;
+
+    @Override
+    public String toString() {
+        return "Store{" +
+                "storeId='" + storeId + '\'' +
+                ", storeName='" + storeName + '\'' +
+                ", supplierCode='" + supplierCode + '\'' +
+                ", supplierName='" + supplierName + '\'' +
+                ", quantity=" + quantity +
+                ", isApplyCancel=" + isApplyCancel +
+                ", orderId=" + orderId +
+                ", orderCode='" + orderCode + '\'' +
+                ", parentOrderCode='" + parentOrderCode + '\'' +
+                ", businessType='" + businessType + '\'' +
+                ", status=" + status +
+                ", orderShowStatus='" + orderShowStatus + '\'' +
+                ", isDelete=" + isDelete +
+                ", buyerId=" + buyerId +
+                ", buyerEmail='" + buyerEmail + '\'' +
+                ", buyerNick='" + buyerNick + '\'' +
+                ", buyerMobile='" + buyerMobile + '\'' +
+                ", discountAmount='" + discountAmount + '\'' +
+                ", itemTotalAmount='" + itemTotalAmount + '\'' +
+                ", orderTotalAmount='" + orderTotalAmount + '\'' +
+                ", orderPayAmount='" + orderPayAmount + '\'' +
+                ", orderActualAmount='" + orderActualAmount + '\'' +
+                ", deliveryFee='" + deliveryFee + '\'' +
+                ", creationTime='" + creationTime + '\'' +
+                ", updatedTime='" + updatedTime + '\'' +
+                ", orderType=" + orderType +
+                ", isExpand=" + isExpand +
+                ", deliveryPO=" + deliveryPO +
+                ", orderItemPOList=" + orderItemPOList +
+                '}';
+    }
 }

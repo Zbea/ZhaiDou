@@ -4,6 +4,20 @@ package com.zhaidou.model;
  * Created by wangclark on 15/6/16.
  */
 public class CategoryItem {
+    /**
+     * categoryId : 0201
+     * categoryName : 桌面收纳
+     * categoryPicUrl : http://imgs.zhaidou.com/saleCate/01/0201/sclog1_20150001.jpg
+     * children : null
+     * categoryProductCount : null
+     */
+
+    public String categoryId;
+    public String categoryName;
+    public String categoryPicUrl;
+    public Object children;
+    public Object categoryProductCount;
+
     private int id;
     private int parentId;
     private int lft;
@@ -12,6 +26,7 @@ public class CategoryItem {
     private String url;
     private String thumb;
     private int level;
+
 
     public CategoryItem() {
     }
@@ -89,5 +104,16 @@ public class CategoryItem {
 
     public void setLevel(int level) {
         this.level = level;
+    }
+
+    @Override
+    public String toString() {
+        return "CategoryItem{" +
+                "categoryProductCount=" + categoryProductCount +
+                ", categoryId='" + categoryId + '\'' +
+                ", categoryName='" + categoryName + '\'' +
+                ", categoryPicUrl='" + categoryPicUrl + '\'' +
+                ", children=" + children +
+                '}';
     }
 }

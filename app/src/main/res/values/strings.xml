@@ -116,6 +116,7 @@
     <string name="title_register">新用户注册</string>
     <string name="title_register_set">设置密码</string>
     <string name="title_find_psd">找回密码</string>
+    <string name="title_change_psd">修改密码</string>
     <string name="title_profile">个人资料</string>
     <string name="title_setting">设置</string>
 
