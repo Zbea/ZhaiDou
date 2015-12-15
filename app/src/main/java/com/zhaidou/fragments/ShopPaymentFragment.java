@@ -361,10 +361,11 @@ public class ShopPaymentFragment extends BaseFragment
                     if(status==200)
                     {
                         JSONObject dataObject=jsonObject.optJSONObject("data");
+                        if (dataObject!=null)
                         payMoney=dataObject.optDouble("orderTotalAmount");
                         payOrderId=dataObject.optLong("orderId");
                         payOrderCode=dataObject.optString("orderCode");
-                        initTime=dataObject.optInt("orderRemainingTime")>0?dataObject.optInt("orderRemainingTime"):initTime;
+                        initTime=dataObject.optInt("orderRemainingTime");
                     }
                 }
                 mHandler.sendEmptyMessage(UPDATE_ORDER_DETAILS);

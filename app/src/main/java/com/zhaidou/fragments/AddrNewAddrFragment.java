@@ -321,6 +321,7 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
                 // 执行请求
                 response = client.execute(request);
             }else if (mStatus==UPDATE_ADDRESS_INFO){
+                parameters.add(new BasicNameValuePair("id", mId+""));
                 // 实例化HTTP方法
                 HttpPatch request = new HttpPatch(ZhaiDou.AddressEditUrl);
                 request.addHeader("SECAuthorization",token);

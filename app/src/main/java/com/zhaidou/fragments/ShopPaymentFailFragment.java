@@ -317,12 +317,13 @@ public class ShopPaymentFailFragment extends BaseFragment {
                     if(status==200)
                     {
                         JSONObject dataObject=jsonObject.optJSONObject("data");
+                        if (dataObject!=null)
                         payMoney=dataObject.optDouble("orderTotalAmount");
                         payGoodsMoney=dataObject.optDouble("itemTotalAmount");
                         payYFMoney=payMoney-payGoodsMoney;
                         payOrderId=dataObject.optLong("orderId");
                         payOrderCode=dataObject.optString("orderCode");
-                        mTimeStamp=dataObject.optInt("orderRemainingTime")>0?dataObject.optInt("orderRemainingTime"):mTimeStamp;
+                        mTimeStamp=dataObject.optInt("orderRemainingTime");
                     }
                 }
                 mHandler.sendEmptyMessage(UPDATE_FEE_DETAIL);

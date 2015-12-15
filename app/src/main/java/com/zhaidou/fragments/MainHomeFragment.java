@@ -160,7 +160,7 @@ public class MainHomeFragment extends BaseFragment implements
             TextView codeName = (TextView) mView.findViewById(R.id.codeName);
             codeName.setText(codes.get(i).title);
             ImageView imageIv = (ImageView) mView.findViewById(R.id.codeImage);
-            ToolUtils.setImageUrl(codes.get(i).imageUrl, imageIv);
+            ToolUtils.setImageUrl(codes.get(i).imageUrl, imageIv,R.drawable.icon_loading_circle);
             mView.setOnClickListener(new View.OnClickListener()
             {
                 @Override
@@ -374,15 +374,7 @@ public class MainHomeFragment extends BaseFragment implements
         if (viewId == R.id.image1 || viewId == R.id.image2 || viewId == R.id.image3)
         {
             SwitchImage item = (SwitchImage) view.getTag();
-            if (item != null && item.template_type == 0)
-            {
-                SpecialSaleFragment1 specialSaleFragment1 = SpecialSaleFragment1.newInstance(item.title, item.typeValue, item.imageUrl);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment1);
-            } else if (item != null && item.template_type == 1)
-            {
-                ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title, item.typeValue, item.imageUrl);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
-            }
+            ToolUtils.setBannerGoto(item,mContext);
         }
     }
 
@@ -409,35 +401,50 @@ public class MainHomeFragment extends BaseFragment implements
                     return;
                 }
                 ToolUtils.setLog(response.toString());
+                int  code = response.optInt("code");
+                if(code==500)
+                {
+                    if (mDialog != null)
+                        mDialog.dismiss();
+                    mScrollView.onRefreshComplete();
+                    mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+                    nullView.setVisibility(View.VISIBLE);
+                    nullNetView.setVisibility(View.GONE);
+                    return;
+                }
                 JSONObject jsonObject = response.optJSONObject("data");
                 pageCount = response.optInt("totalCount");
                 pageSize = response.optInt("pageSize");
-                JSONArray jsonArray = jsonObject.optJSONArray("themeList");
+                if (jsonObject!=null)
+                {
+                    JSONArray jsonArray = jsonObject.optJSONArray("themeList");
 
-                if (jsonArray != null)
-                    for (int i = 0; i < jsonArray.length(); i++)
-                    {
-                        JSONObject obj = jsonArray.optJSONObject(i);
-                        String id = obj.optString("activityCode");
-                        String title = obj.optString("activityName");
-                        String sales = obj.optString("discountLabel");
-                        long startTime = obj.optLong("startTime");
-                        long endTime = obj.optLong("endTime");
-                        int overTime = Integer.parseInt((String.valueOf((endTime - System.currentTimeMillis()) / (24 * 60 * 60 * 1000))));
-                        if ((endTime - System.currentTimeMillis()) % (24 * 60 * 60 * 1000) > 0)
+                    if (jsonArray != null)
+                        for (int i = 0; i < jsonArray.length(); i++)
                         {
-                            overTime = overTime + 1;
+                            JSONObject obj = jsonArray.optJSONObject(i);
+                            String id = obj.optString("activityCode");
+                            String title = obj.optString("activityName");
+                            String sales = obj.optString("discountLabel");
+                            long startTime = obj.optLong("startTime");
+                            long endTime = obj.optLong("endTime");
+                            int overTime = Integer.parseInt((String.valueOf((endTime - System.currentTimeMillis()) / (24 * 60 * 60 * 1000))));
+                            if ((endTime - System.currentTimeMillis()) % (24 * 60 * 60 * 1000) > 0)
+                            {
+                                overTime = overTime + 1;
+                            }
+
+                            String imageUrl = obj.optString("mainPic");
+                            int isNew = jsonObject.optInt("newFlag");
+                            ShopSpecialItem shopSpecialItem = new ShopSpecialItem(id, title, sales, startTime, endTime, overTime, imageUrl, isNew);
+
+                            items.add(shopSpecialItem);
                         }
+                    Message message = new Message();
+                    message.what = 1001;
+                    handler.sendMessage(message);
+                }
 
-                        String imageUrl = obj.optString("mainPic");
-                        int isNew = jsonObject.optInt("newFlag");
-                        ShopSpecialItem shopSpecialItem = new ShopSpecialItem(id, title, sales, startTime, endTime, overTime, imageUrl, isNew);
-
-                        items.add(shopSpecialItem);
-                    }
-                Message message = new Message();
-                message.what = 1001;
-                handler.sendMessage(message);
             }
         }, new Response.ErrorListener()
         {
@@ -523,8 +530,8 @@ public class MainHomeFragment extends BaseFragment implements
                                     }
                                 }
                         }
+                        handler.sendEmptyMessage(UPDATE_BANNER);
                     }
-                    handler.sendEmptyMessage(UPDATE_BANNER);
                 }
             }
         }, new Response.ErrorListener()

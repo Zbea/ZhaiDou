@@ -179,23 +179,37 @@ public class SettingRecommendFragment extends BaseFragment {
             {
                 if (mDialog!=null)
                     mDialog.dismiss();
-                JSONArray array=response.optJSONArray("app_exchanges");
-                for (int i = 0; i < array.length(); i++)
+                if (response!=null)
                 {
-                    JSONObject obj=array.optJSONObject(i);
-                    String title=obj.optString("title");
-                    String desc=obj.optString("desc");
-                    String android_url=obj.optString("android");
-                    String logo=obj.optString("logo");
-                    RecommendItem recommendItem=new RecommendItem();
-                    recommendItem.title=title;
-                    recommendItem.info=desc;
-                    recommendItem.appUrl=android_url;
-                    recommendItem.imageUrl=logo;
-                    lists.add(recommendItem);
+                    int stutus=response.optInt("status");
+                    if (stutus!=200)
+                    {
+                        return;
+                    }
+                    JSONObject jsonObject=response.optJSONObject("data");
+                    if (jsonObject!=null)
+                    {
+                        JSONArray array=jsonObject.optJSONArray("app_exchanges");
+                        for (int i = 0; i < array.length(); i++)
+                        {
+                            JSONObject obj=array.optJSONObject(i);
+                            String title=obj.optString("title");
+                            String desc=obj.optString("desc");
+                            String android_url=obj.optString("android");
+                            String logo=obj.optString("logo");
+                            RecommendItem recommendItem=new RecommendItem();
+                            recommendItem.title=title;
+                            recommendItem.info=desc;
+                            recommendItem.appUrl=android_url;
+                            recommendItem.imageUrl=logo;
+                            lists.add(recommendItem);
+
+                        }
+                        mHandler.sendEmptyMessage(1);
+                    }
 
                 }
-                mHandler.sendEmptyMessage(1);
+
             }
         }, new Response.ErrorListener()
         {

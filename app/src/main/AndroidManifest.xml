@@ -94,11 +94,6 @@
             android:label="@string/title_activity_web_view" >
         </activity>
         <activity
-            android:name=".activities.SearchActivity"
-            android:theme="@style/StyledIndicators"
-            android:label="@string/title_activity_search">
-        </activity>
-        <activity
             android:name=".activities.CategoryActivity"
             android:theme="@style/StyledIndicators"
             android:label="@string/title_activity_search">

@@ -25,6 +25,7 @@ import android.view.animation.AnimationSet;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
+import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -67,6 +68,7 @@ import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.CustomProgressWebview;
 import com.zhaidou.view.FlowLayout;
 import com.zhaidou.view.LargeImgView;
 import com.zhaidou.view.TimerTextView;
@@ -147,6 +149,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private LinearLayout mImageContainer;
     private LinearLayout goodsImagesView;
     private LinearLayout goodsInfoView;
+    private CustomProgressWebview webView;
     //动画时间
     private int AnimationDuration = 1000;
     //正在执行的动画数量
@@ -172,6 +175,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private boolean isOSaleBuy;//是否购买过零元特卖
     private boolean isBuy;//是否购买过普通特卖该商品规格
 
+    private String integrityDesc;
     private long initTime;
     private long systemTime;
     private boolean isFrist;
@@ -607,6 +611,7 @@ public class GoodsDetailsFragment extends BaseFragment
         radioGroup.setOnCheckedChangeListener(onCheckedChangeListener);
 
         goodsImagesView = (LinearLayout) mView.findViewById(R.id.goodInfoView);
+        webView=(CustomProgressWebview)mView.findViewById(R.id.goodsWebView);
         goodsInfoView = (LinearLayout) mView.findViewById(R.id.goodInfo1View);
 
         mListView = (ListView) mView.findViewById(R.id.lv_good_info);
@@ -1161,57 +1166,58 @@ public class GoodsDetailsFragment extends BaseFragment
     {
         mAdapter = new GoodInfoAdapter(mContext, goodInfos);
         mListView.setAdapter(mAdapter);
+        webView.loadData(integrityDesc, "text/html; charset=UTF-8", "UTF-8");
 
-        mImageContainer.removeAllViews();
-        if (detail.imgs != null)
-        {
-            for (int i = 0; i < detail.imgs.size(); i++)
-            {
-                LargeImgView imageView = new LargeImgView(mContext);
-                imageView.setScaleType(ImageView.ScaleType.MATRIX);
-                ImageLoader.getInstance().displayImage(detail.imgs.get(i), imageView, new ImageLoadingListener()
-                {
-                    @Override
-                    public void onLoadingStarted(String s, View view)
-                    {
-                    }
-
-                    @Override
-                    public void onLoadingFailed(String s, View view, FailReason failReason)
-                    {
-                    }
-
-                    @Override
-                    public void onLoadingComplete(String s, View view, Bitmap bitmap)
-                    {
-                        if (bitmap != null)
-                        {
-                            LargeImgView imageView1 = (LargeImgView) view;
-                            imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
-                            if (bitmap.getHeight() < 4000)
-                            {
-                                imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
-                                imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, bitmap.getHeight() * screenWidth / bitmap.getWidth()));
-                                imageView1.setImageBitmap(bitmap);
-                            } else
-                            {
-                                imageView1.setImageBitmapLarge(bitmap);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onLoadingCancelled(String s, View view)
-                    {
-
-                    }
-                });
-                mImageContainer.addView(imageView);
-            }
-        } else
-        {
-            imageNull.setVisibility(View.VISIBLE);
-        }
+//        mImageContainer.removeAllViews();
+//        if (detail.imgs != null&&detail.imgs.size()>0)
+//        {
+//            for (int i = 0; i < detail.imgs.size(); i++)
+//            {
+//                LargeImgView imageView = new LargeImgView(mContext);
+//                imageView.setScaleType(ImageView.ScaleType.MATRIX);
+//                ImageLoader.getInstance().displayImage(detail.imgs.get(i), imageView, new ImageLoadingListener()
+//                {
+//                    @Override
+//                    public void onLoadingStarted(String s, View view)
+//                    {
+//                    }
+//
+//                    @Override
+//                    public void onLoadingFailed(String s, View view, FailReason failReason)
+//                    {
+//                    }
+//
+//                    @Override
+//                    public void onLoadingComplete(String s, View view, Bitmap bitmap)
+//                    {
+//                        if (bitmap != null)
+//                        {
+//                            LargeImgView imageView1 = (LargeImgView) view;
+//                            imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+//                            if (bitmap.getHeight() < 4000)
+//                            {
+//                                imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
+//                                imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, bitmap.getHeight() * screenWidth / bitmap.getWidth()));
+//                                imageView1.setImageBitmap(bitmap);
+//                            } else
+//                            {
+//                                imageView1.setImageBitmapLarge(bitmap);
+//                            }
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onLoadingCancelled(String s, View view)
+//                    {
+//
+//                    }
+//                });
+//                mImageContainer.addView(imageView);
+//            }
+//        } else
+//        {
+//            imageNull.setVisibility(View.VISIBLE);
+//        }
     }
 
     /**
@@ -1426,9 +1432,10 @@ public class GoodsDetailsFragment extends BaseFragment
                     int userMaxNum = expandObject.optInt("userMaxNum");// 一定时间内特卖限购数量
                     int zeroMaxCount = expandObject.optInt("zeroMaxCount");//0元每天购限购数量
                     int userMaxType = expandObject.optInt("userMaxType");//特卖限购时间  单位小时
+                    integrityDesc = expandObject.optString("integrityDesc");//图文详情
 
                     JSONArray descriptions = expandObject.optJSONArray("attributeList");
-                    if (descriptions != null && descriptions.length() > 0 && !descriptions.equals(""))
+                    if (descriptions != null && descriptions.length() > 0)
                     {
                         for (int i = 0; i < descriptions.length(); i++)
                         {

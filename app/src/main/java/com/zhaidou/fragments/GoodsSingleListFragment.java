@@ -54,6 +54,8 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,6 +79,8 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
     private boolean isLogin=false;
 
     private int currentpage=1;
+    private int pageTotal;
+    private int pageSize;
     private int count=-1;
     private int sort=0;
 
@@ -89,24 +93,31 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
     private List<Product> products = new ArrayList<Product>();
     private RequestQueue mRequestQueue;
     private ProductAdapter productAdapter;
-
-    private WeakHashMap<Integer,View> mHashMap = new WeakHashMap<Integer, View>();
     private Dialog mDialog;
-    private DialogUtils mDialogUtils;
-    private boolean isfrist;
 
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg)
         {
-            isfrist=false;
-            if (mDialog != null) mDialog.dismiss();
-            if (products.size() > 0)
+            switch (msg.what)
             {
-                productAdapter.setList(products);
-                nullLine.setVisibility(View.GONE);
+                case 0:
+                    if (products.size() > 0)
+                    {
+                        productAdapter.setList(products);
+                        nullLine.setVisibility(View.GONE);
+                        if (products.size()<pageTotal)
+                        {
+                            gv_single.setMode(PullToRefreshBase.Mode.BOTH);
+                        }
+                        else
+                        {
+                            gv_single.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+                        }
+                    }
+                    break;
             }
-            gv_single.onRefreshComplete();
+
         }
     };
 
@@ -153,68 +164,35 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
     private void initView(View view)
     {
         setStartLoading();
-        isfrist=true;
         isLogin=checkLogin();
-        mDialogUtils=new DialogUtils(mContext);
         tv_count=(TextView)view.findViewById(R.id.tv_count);
         tv_money=(TextView)view.findViewById(R.id.tv_money);
         gv_single=(PullToRefreshGridView)view.findViewById(R.id.gv_single);
         nullLine=(LinearLayout)view.findViewById(R.id.nullline);
         productAdapter = new ProductAdapter(getActivity(),products,1,screenWidth,mFlag);
         gv_single.setAdapter(productAdapter);
-        mRequestQueue= Volley.newRequestQueue(getActivity());
-        if ("category".equalsIgnoreCase(mParam2))//全分类
-        {
-            FetchCategoryData(mParam1, sort, currentpage = 1);
-        }
-        else if ("goods".equalsIgnoreCase(mParam2))//搜索特卖商城
-        {
-            FetchSpecialData(mParam1, sort, currentpage=1);
-        }
-        else {
-            FetchData(mParam1, sort, currentpage=1);
-        }
-
-        gv_single.setMode(PullToRefreshBase.Mode.BOTH);
         gv_single.setOnRefreshListener(this);
         productAdapter.setOnInViewClickListener(R.id.ll_single_layout,new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 Product product=(Product)values;
-                if (mFlag==1)
-                {
-                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0+"");
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("index", product.getId());
-                    bundle.putString("page", product.getTitle());
-                    goodsDetailsFragment.setArguments(bundle);
-                    ((MainActivity) mContext).navigationToFragment(goodsDetailsFragment);
-                }
-                else
-                {
-                    Intent detailIntent = new Intent(getActivity(), WebViewActivity.class);;
-                    detailIntent.putExtra("id", product.getId()+"");
-                    detailIntent.putExtra("title", product.getTitle());
-                    detailIntent.putExtra("url",product.getUrl());
-                    startActivity(detailIntent);
-                }
+                GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(product.getTitle(), product.goodsId);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
             }
         });
-        productAdapter.setOnInViewClickListener(R.id.iv_heart,new BaseListAdapter.onInternalClickListener() {
-            @Override
-            public void OnClickListener(View parentV, View v, Integer position, Object values)
-            {
-                if (isLogin)
-                {
-                    setStartLoading();
-                    new CollectTask().execute(userid+"",((Product)values).getId()+"",token,""+position);
-                }
-                else
-                {
-                    ToolUtils.setToast(getActivity(),"抱歉,尚未登录");
-                }
-            }
-        });
+        mRequestQueue= Volley.newRequestQueue(mContext);
+        FetchSpecialData(mParam1, sort, currentpage=1);
+//        if ("category".equalsIgnoreCase(mParam2))//全分类
+//        {
+//            FetchCategoryData(mParam1, sort, currentpage = 1);
+//        }
+//        else if ("goods".equalsIgnoreCase(mParam2))//搜索特卖商城
+//        {
+//            FetchSpecialData(mParam1, sort, currentpage=1);
+//        }
+//        else {
+//            FetchData(mParam1, sort, currentpage=1);
+//        }
     }
 
     public boolean checkLogin()
@@ -267,40 +245,56 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         this.sort=sort;
         currentpage=page;
         if (page==1) products.clear();
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("search", msg);
-        params.put("page",page+"");
-        if (sort==1){
-            params.put("price","asc");
-        }else if (sort==2){
-            params.put("price","desc");
+        String url= null;
+        try
+        {
+            url = ZhaiDou.SearchGoodsUrl+ URLEncoder.encode(msg, "UTF-8")+"&pageNo="+currentpage;
+        } catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
         }
-        JsonObjectRequest newMissRequest = new JsonObjectRequest(
-                Request.Method.POST, ZhaiDou.SEARCH_SPECACIAL_PRODUCT_URL,
-                new JSONObject(params), new Response.Listener<JSONObject>() {
-
+        ToolUtils.setLog(url);
+        JsonObjectRequest newMissRequest = new JsonObjectRequest(Request.Method.GET,url, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject json) {
                 setEndLoading();
+                gv_single.onRefreshComplete();
                 if (json!=null)
                 {
-                    JSONArray jsonArray = json.optJSONArray("merchandises");
-                        if (jsonArray==null)
+                    JSONObject dataObject=json.optJSONObject("data");
+                    if (dataObject==null)
+                    {
+                        if (currentpage==1)
                         {
-                            gv_single.onRefreshComplete();
+                            if (products.size() == 0)
+                            {
+                                nullLine.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        return;
+                    }
+                    JSONObject pageObject=dataObject.optJSONObject("pagePO");
+                    if (pageObject==null)
+                    {
+                        if (currentpage==1)
+                        {
+                            if (products.size() == 0)
+                            {
+                                nullLine.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        return;
+                    }
+                    pageTotal=pageObject.optInt("totalCount");
+                    pageSize=pageObject.optInt("pageSize");
+                    JSONArray jsonArray = pageObject.optJSONArray("items");
+                    if (jsonArray==null||jsonArray.length()<5)
+                        {
                             if (currentpage==1)
                             {
                                 if (products.size() == 0)
                                 {
                                     nullLine.setVisibility(View.VISIBLE);
-                                    if (isfrist)
-                                    {
-                                        isfrist=false;
-                                        if ("goods".equalsIgnoreCase(mParam2))
-                                        {
-                                            ((SearchFragment) getParentFragment()).cutTaobaoGoods();
-                                        }
-                                    }
                                 }
                             }
                             return;
@@ -309,16 +303,12 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                     {
                         JSONObject merchandise=jsonArray.optJSONObject(i);
                         int id = merchandise.optInt("id");
-                        String title = merchandise.optString("title");
+                        String productId = merchandise.optString("productId");
+                        String title = merchandise.optString("productName");
                         double price = merchandise.optDouble("price");
-                        int bean_like_count=1;
-                        String imgUrl=null;
-                        JSONArray imgArrays = merchandise.optJSONArray("imgs");
-                        if (imgArrays != null && imgArrays.length() > 0)
-                        {
-                            imgUrl=imgArrays.optJSONObject(0).optString("url");
-                        }
-                        Product product = new Product(id,title,price,imgUrl,bean_like_count,null,imgUrl);
+                        String imgUrl=merchandise.optString("productPicUrl");
+                        Product product = new Product(id,title,price,imgUrl,0,null,imgUrl);
+                        product.goodsId=productId;
                         products.add(product);
                     }
                 }
@@ -328,19 +318,6 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
             @Override
             public void onErrorResponse(VolleyError error) {
                 setEndLoading();
-                if (currentpage==1)
-                {
-                    if (isfrist)
-                    {
-                        isfrist=false;
-                        if ("goods".equalsIgnoreCase(mParam2))
-                        {
-                            ((SearchFragment) getParentFragment()).cutTaobaoGoods();
-                            return;
-                        }
-                    }
-
-                }
                 if (products.size() == 0)
                 {
                     nullLine.setVisibility(View.VISIBLE);
@@ -353,10 +330,11 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
             {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                headers.put("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
                 return headers;
             }
         };
-        if (mRequestQueue==null) mRequestQueue=Volley.newRequestQueue(getActivity());
+        if (mRequestQueue==null) mRequestQueue=Volley.newRequestQueue(mContext);
         mRequestQueue.add(newMissRequest);
     }
 
@@ -457,7 +435,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                 return headers;
             }
         };
-        if (mRequestQueue==null) mRequestQueue=Volley.newRequestQueue(getActivity());
+        if (mRequestQueue==null) mRequestQueue=Volley.newRequestQueue(mContext);
         mRequestQueue.add(newMissRequest);
     }
 
@@ -516,113 +494,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         mRequestQueue.add(fetchCategoryTask);
     }
 
-    /**
-     * 收藏
-     */
-    private class CollectTask extends AsyncTask<String,Void,String>{
-        String position;
-        @Override
-        protected void onPreExecute()
-        {
-            super.onPreExecute();
-        }
-        @Override
-        protected String doInBackground(String... strings) {
-            String s=null;
-            try {
-                position=strings[3];
-                s=executeHttpPost(strings[0],strings[1],strings[2]);
-            }catch (Exception e){
-            }
-            return s;
-        }
 
-        @Override
-        protected void onPostExecute(String s) {
-            if (mDialog!=null)
-                mDialog.dismiss();
-            try {
-                if (!TextUtils.isEmpty(s))
-                {
-                    JSONObject jsonObject = new JSONObject(s);
-                    ToolUtils.setLog(jsonObject.toString());
-                    String like_state=jsonObject.optString("like_state");
-                    String likes=jsonObject.optString("likes");
-
-                    if(like_state.equals("true"))
-                    {
-                        productAdapter.setmCheckPosition(Integer.valueOf(position),Integer.valueOf(position));
-                        productAdapter.notifyDataSetChanged();
-                        mDialogUtils.showCollectDialog(mContext,R.drawable.dialog_loading_success_icon,R.string.collect_success);
-                    }
-                    else
-                    {
-                        productAdapter.setmCheckPosition(Integer.valueOf(position),-1);
-                        productAdapter.notifyDataSetChanged();
-                        mDialogUtils.showCollectDialog(mContext,R.drawable.dialog_loading_success_icon,R.string.collect_cancel);
-                    }
-                }
-                else
-                {
-                    mDialogUtils.showCollectDialog(mContext,R.drawable.dialog_loading_success_icon,R.string.collect_fail);
-                }
-            }catch (Exception e){
-            }
-        }
-    }
-
-    /**
-     * 收藏响应
-     * @param liker_id
-     * @param article_item_id
-     * @param token
-     * @return
-     * @throws Exception
-     */
-    public String executeHttpPost(String liker_id,String article_item_id,String token) throws Exception {
-        BufferedReader in = null;
-        try {
-            // 定义HttpClient
-            HttpClient client = new DefaultHttpClient();
-            // 实例化HTTP方法
-            HttpPost request = new HttpPost(ZhaiDou.USER_DELETE_COLLECT_ITEM_URL);
-            request.addHeader("SECAuthorization", token);
-            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-            // 创建名/值组列表
-            List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-
-            parameters.add(new BasicNameValuePair("liker_id",liker_id));
-            parameters.add(new BasicNameValuePair("article_item_id",article_item_id));
-
-            // 创建UrlEncodedFormEntity对象
-            UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
-                    parameters);
-            request.setEntity(formEntiry);
-            // 执行请求
-            HttpResponse response = client.execute(request);
-
-            in = new BufferedReader(new InputStreamReader(response.getEntity()
-                    .getContent()));
-            StringBuffer sb = new StringBuffer("");
-            String line = "";
-            String NL = System.getProperty("line.separator");
-            while ((line = in.readLine()) != null) {
-                sb.append(line + NL);
-            }
-            in.close();
-            String result = sb.toString();
-            return result;
-
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
 
     @Override
     public void onPullDownToRefresh(PullToRefreshBase<GridView> refreshView) {
@@ -641,17 +513,11 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         else {
             FetchData(mParam1, sort, currentpage=1);
         }
-        gv_single.setMode(PullToRefreshBase.Mode.BOTH);
     }
 
 
     @Override
     public void onPullUpToRefresh(PullToRefreshBase<GridView> refreshView) {
-        if (count!=-1&&productAdapter.getCount()==count){
-            Toast.makeText(getActivity(),"已经加载完毕",Toast.LENGTH_SHORT).show();
-            gv_single.onRefreshComplete();
-            gv_single.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
-        }
         if ("category".equalsIgnoreCase(mParam2))//全分类
         {
             FetchCategoryData(mParam1, sort, ++currentpage);

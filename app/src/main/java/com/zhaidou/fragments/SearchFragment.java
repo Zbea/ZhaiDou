@@ -27,6 +27,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.viewpagerindicator.TabPageIndicator;
 import com.zhaidou.MainActivity;
@@ -34,17 +40,22 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.adapter.SearchAdapter;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.model.Product;
 import com.zhaidou.utils.HtmlFetcher;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.AutoGridView;
 import com.zhaidou.view.CustomEditText;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -61,10 +72,10 @@ public class SearchFragment extends BaseFragment
     private GridView gv_hot;
     private CustomEditText mEditText;
     private ImageView mSearchiv;
-    private TextView mDeleteView,mSearchView;
+    private TextView mDeleteView, mSearchView;
     private ViewPager mViewPager;
     private LinearLayout ll_viewpager;
-    private LinearLayout mBackView,mSearchLayout;
+    private LinearLayout mBackView, mSearchLayout;
     private ImageView mSortView;
     private TabPageIndicator indicator;
 
@@ -75,14 +86,15 @@ public class SearchFragment extends BaseFragment
     private SharedPreferences mSharedPreferences;
     InputMethodManager inputMethodManager;
 
-    private final int UPDATE_CONTENT=0;
-    private final int UPDATE_HOTDATA=1;
-    private final int UPDATE_HISTORY=3;
+    private final int UPDATE_CONTENT = 0;
+    private final int UPDATE_HOTDATA = 1;
+    private final int UPDATE_HISTORY = 3;
 
     private List<String> mHotList = new ArrayList<String>();
     private Set<String> mHistorys;
-    private List<String> mHistoryList=new ArrayList<String>();
-    private int historyCount=0;
+    private List<String> mHistoryList = new ArrayList<String>();
+    private int historyCount = 0;
+    private String search_Str;
 
     private SearchSortFragment mSearchSortFragment;
 
@@ -90,38 +102,46 @@ public class SearchFragment extends BaseFragment
     private GoodsSingleListFragment mtaobaoGoodsFragment;
     private SearchArticleListFragment mStrategyFragment;
 
-    private boolean isHidenKeyBoard=false;
+    private boolean isHidenKeyBoard = false;
 
-    private String keyWord;
-
-    private int sort=0;
+    private int sort = 0;
     private AutoGridView autoGridView;
+    private RequestQueue mRequestQueue;
 
-    private Handler mHandler=new Handler(){
+    private Handler mHandler = new Handler()
+    {
         @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what){
+        public void handleMessage(Message msg)
+        {
+            switch (msg.what)
+            {
                 case UPDATE_CONTENT:
-                    String text = (String)msg.obj;
-                    if (mFragments.size()<2){
-                        mSpecialGoodsFragment= GoodsSingleListFragment.newInstance(text, "goods",1);
-                        mtaobaoGoodsFragment= GoodsSingleListFragment.newInstance(text, text,2);
-//                        mStrategyFragment= SearchArticleListFragment.newInstance(text, text);
+                    if (mSpecialGoodsFragment==null)
+                    {
+                        mSpecialGoodsFragment = GoodsSingleListFragment.newInstance(search_Str, "goods", 1);
                         mFragments.add(mSpecialGoodsFragment);
-                        mFragments.add(mtaobaoGoodsFragment);
-//                        mFragments.add(mStrategyFragment);
-                    }else if (mFragments.size()==2){
-                        mSpecialGoodsFragment.FetchSpecialData(text, sort, 1);
-                        mtaobaoGoodsFragment.FetchData(text,sort,1);
-//                        mStrategyFragment.FetchData(text,sort,1);
                     }
+                    else
+                    {
+                        mSpecialGoodsFragment.FetchSpecialData(search_Str, sort, 1);
+                    }
+//                    if (mFragments.size()<2){
+//                    mSpecialGoodsFragment = GoodsSingleListFragment.newInstance(text, "goods", 1);
+//                        mtaobaoGoodsFragment= GoodsSingleListFragment.newInstance(text, text,2);
+//                        mStrategyFragment= SearchArticleListFragment.newInstance(text, text);
+//                    mFragments.add(mSpecialGoodsFragment);
+//                        mFragments.add(mtaobaoGoodsFragment);
+//                        mFragments.add(mStrategyFragment);
+//                    }else if (mFragments.size()==2){
+//                        mSpecialGoodsFragment.FetchSpecialData(text, sort, 1);
+//                        mtaobaoGoodsFragment.FetchData(text,sort,1);
+//                    }
                     mSearchFragmentAdapter.notifyDataSetChanged();
                     indicator.notifyDataSetChanged();
                     ll_viewpager.setVisibility(View.VISIBLE);
                     break;
                 case UPDATE_HOTDATA:
                     mHotAdapter.setList(mHotList);
-//                    autoGridView.setHistoryList(mHistoryList);
                     break;
                 case UPDATE_HISTORY:
                     autoGridView.setHistoryList(mHistoryList);
@@ -132,12 +152,13 @@ public class SearchFragment extends BaseFragment
         }
     };
 
-    private View.OnClickListener onClickListener=new View.OnClickListener()
+    private View.OnClickListener onClickListener = new View.OnClickListener()
     {
         @Override
         public void onClick(View v)
         {
-            switch (v.getId()){
+            switch (v.getId())
+            {
                 case R.id.iv_search:
                     onSearch();
                     break;
@@ -147,13 +168,15 @@ public class SearchFragment extends BaseFragment
                     SharedPreferencesUtil.clearSearchHistory(mContext);
                     break;
                 case R.id.tv_cancel:
-                    if (!TextUtils.isEmpty(mEditText.getText().toString().trim())){
+                    if (!TextUtils.isEmpty(mEditText.getText().toString().trim()))
+                    {
                         if (inputMethodManager.isActive())
-                            inputMethodManager.hideSoftInputFromWindow(((MainActivity)mContext).getWindow().peekDecorView().getApplicationWindowToken(),0);
+                            inputMethodManager.hideSoftInputFromWindow(((MainActivity) mContext).getWindow().peekDecorView().getApplicationWindowToken(), 0);
                         onSearch();
-                    }else {
+                    } else
+                    {
                         mEditText.setShakeAnimation();
-                        Toast.makeText(mContext,"请输入搜索关键词",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, "请输入搜索关键词", Toast.LENGTH_SHORT).show();
                     }
                     break;
                 case R.id.ll_back:
@@ -168,42 +191,40 @@ public class SearchFragment extends BaseFragment
         }
     };
 
-    private AdapterView.OnItemClickListener onItemClickListener=new AdapterView.OnItemClickListener()
+    private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener()
     {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id)
         {
-            Adapter adapter =parent.getAdapter();
-            String item =(String)adapter.getItem(position);
+            Adapter adapter = parent.getAdapter();
+            String item = (String) adapter.getItem(position);
             mEditText.setText(item);
             onSearch();
         }
     };
 
-    private SearchSortFragment.RefreshDataListener refreshDataListener=new SearchSortFragment.RefreshDataListener()
+    private SearchSortFragment.RefreshDataListener refreshDataListener = new SearchSortFragment.RefreshDataListener()
     {
         @Override
         public void refreshData(int index)
         {
-            sort=index;
+            sort = index;
             mViewPager.setFocusable(true);
             int page = mViewPager.getCurrentItem();
-            if (page==0)
+            if (page == 0)
             {
-                mSpecialGoodsFragment.FetchSpecialData(keyWord, index, 1);
-            }
-            else if (page==1)
+                mSpecialGoodsFragment.FetchSpecialData(search_Str, index, 1);
+            } else if (page == 1)
             {
-                mtaobaoGoodsFragment.FetchData(keyWord,index,1);
-            }
-            else
+                mtaobaoGoodsFragment.FetchData(search_Str, index, 1);
+            } else
             {
-                mStrategyFragment.FetchData(keyWord,index,1);
+                mStrategyFragment.FetchData(search_Str, index, 1);
             }
         }
     };
 
-    private AutoGridView.OnHistoryItemClickListener onHistoryItemClickListener=new AutoGridView.OnHistoryItemClickListener()
+    private AutoGridView.OnHistoryItemClickListener onHistoryItemClickListener = new AutoGridView.OnHistoryItemClickListener()
     {
         @Override
         public void onHistoryItemClick(int position, String history)
@@ -213,7 +234,8 @@ public class SearchFragment extends BaseFragment
         }
     };
 
-    public static SearchFragment newInstance(String page, String index) {
+    public static SearchFragment newInstance(String page, String index)
+    {
         SearchFragment fragment = new SearchFragment();
         Bundle args = new Bundle();
         args.putSerializable(DATA, page);
@@ -222,13 +244,16 @@ public class SearchFragment extends BaseFragment
         return fragment;
     }
 
-    public SearchFragment() {
+    public SearchFragment()
+    {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        if (getArguments() != null)
+        {
             mPage = getArguments().getString(DATA);
             mIndex = getArguments().getString(INDEX);
         }
@@ -237,14 +262,16 @@ public class SearchFragment extends BaseFragment
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        if (mView == null) {
+        if (mView == null)
+        {
             mView = inflater.inflate(R.layout.activity_search, container, false);
             mContext = getActivity();
             initView();
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
         ViewGroup parent = (ViewGroup) mView.getParent();
-        if (parent != null) {
+        if (parent != null)
+        {
             parent.removeView(mView);
         }
         return mView;
@@ -253,33 +280,34 @@ public class SearchFragment extends BaseFragment
     private void initView()
     {
 
-        mEditText=(CustomEditText)mView.findViewById(R.id.et_search);
-        mSearchiv=(ImageView)mView.findViewById(R.id.iv_search);
-        mDeleteView=(TextView)mView.findViewById(R.id.tv_delete);
-        mSearchView=(TextView)mView.findViewById(R.id.tv_cancel);
-        mBackView=(LinearLayout)mView.findViewById(R.id.ll_back);
-        mSortView=(ImageView)mView.findViewById(R.id.iv_sort);
-        mSearchLayout=(LinearLayout)mView.findViewById(R.id.ll_history);
-        indicator = (TabPageIndicator)mView.findViewById(R.id.indicator);
-        mViewPager=(ViewPager)mView.findViewById(R.id.vp_search);
-        ll_viewpager=(LinearLayout)mView.findViewById(R.id.ll_viewpager);
-        mSharedPreferences=mContext.getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
-
-
-        mHistorys = mSharedPreferences.getStringSet("history",new LinkedHashSet<String>());
-        historyCount=(Integer) SharedPreferencesUtil.getData(mContext, "historyCount", 0);
+        mEditText = (CustomEditText) mView.findViewById(R.id.et_search);
+        mSearchiv = (ImageView) mView.findViewById(R.id.iv_search);
+        mDeleteView = (TextView) mView.findViewById(R.id.tv_delete);
+        mSearchView = (TextView) mView.findViewById(R.id.tv_cancel);
+        mBackView = (LinearLayout) mView.findViewById(R.id.ll_back);
+        mSortView = (ImageView) mView.findViewById(R.id.iv_sort);
+        mSearchLayout = (LinearLayout) mView.findViewById(R.id.ll_history);
+        indicator = (TabPageIndicator) mView.findViewById(R.id.indicator);
+        mViewPager = (ViewPager) mView.findViewById(R.id.vp_search);
+        ll_viewpager = (LinearLayout) mView.findViewById(R.id.ll_viewpager);
+        mSharedPreferences = mContext.getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
+        mHistorys = mSharedPreferences.getStringSet("history", new LinkedHashSet<String>());
+        historyCount = (Integer) SharedPreferencesUtil.getData(mContext, "historyCount", 0);
         mSearchLayout.setVisibility(View.GONE);
-        if (historyCount!=0){
-            for (int i=0;i<historyCount;i++){
-                String history=(String)SharedPreferencesUtil.getData(mContext,"history_"+i,"");
-                if (!TextUtils.isEmpty(history)){
+        if (historyCount != 0)
+        {
+            for (int i = 0; i < historyCount; i++)
+            {
+                String history = (String) SharedPreferencesUtil.getData(mContext, "history_" + i, "");
+                if (!TextUtils.isEmpty(history))
+                {
                     mHistoryList.add(history);
                 }
             }
             mSearchLayout.setVisibility(View.VISIBLE);
         }
 
-        autoGridView=(AutoGridView)mView.findViewById(R.id.ag_search_history);
+        autoGridView = (AutoGridView) mView.findViewById(R.id.ag_search_history);
         autoGridView.setOnHistoryItemClickListener(onHistoryItemClickListener);
         new Handler().postDelayed(new Runnable()
         {
@@ -288,10 +316,10 @@ public class SearchFragment extends BaseFragment
             {
                 mHandler.sendEmptyMessage(UPDATE_HISTORY);
             }
-        },500);
+        }, 500);
 
         mFragments = new ArrayList<Fragment>();
-        mSearchFragmentAdapter=new SearchFragmentAdapter(getChildFragmentManager());
+        mSearchFragmentAdapter = new SearchFragmentAdapter(getChildFragmentManager());
         mViewPager.setAdapter(mSearchFragmentAdapter);
         indicator.setViewPager(mViewPager);
         mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener()
@@ -300,11 +328,13 @@ public class SearchFragment extends BaseFragment
             public void onPageScrolled(int i, float v, int i2)
             {
             }
+
             @Override
             public void onPageSelected(int i)
             {
                 indicator.setCurrentItem(i);
             }
+
             @Override
             public void onPageScrollStateChanged(int i)
             {
@@ -317,28 +347,29 @@ public class SearchFragment extends BaseFragment
         mBackView.setOnClickListener(onClickListener);
         mSortView.setOnClickListener(onClickListener);
 
-        gv_hot=(GridView)mView.findViewById(R.id.gv_hot_search);
-        mHotAdapter=new SearchAdapter(mContext,mHotList);
+        gv_hot = (GridView) mView.findViewById(R.id.gv_hot_search);
+        mHotAdapter = new SearchAdapter(mContext, mHotList);
         gv_hot.setAdapter(mHotAdapter);
         gv_hot.setOnItemClickListener(onItemClickListener);
-        inputMethodManager=(InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
 
         if (inputMethodManager.isActive())
-            inputMethodManager.hideSoftInputFromWindow(((MainActivity)mContext).getWindow().peekDecorView().getApplicationWindowToken(),0);
-        mEditText.setOnKeyListener(new View.OnKeyListener() {
+            inputMethodManager.hideSoftInputFromWindow(((MainActivity) mContext).getWindow().peekDecorView().getApplicationWindowToken(), 0);
+        mEditText.setOnKeyListener(new View.OnKeyListener()
+        {
             @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                if (i==KeyEvent.KEYCODE_ENTER){
-
-//                    if(inputMethodManager.isActive()){
-//                        inputMethodManager.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
-//                    }
-                    if (isHidenKeyBoard=!isHidenKeyBoard){
-                        if (!TextUtils.isEmpty(mEditText.getText().toString().trim())){
+            public boolean onKey(View view, int i, KeyEvent keyEvent)
+            {
+                if (i == KeyEvent.KEYCODE_ENTER)
+                {
+                    if (isHidenKeyBoard = !isHidenKeyBoard)
+                    {
+                        if (!TextUtils.isEmpty(mEditText.getText().toString().trim()))
+                        {
                             onSearch();
-                        }else {
+                        } else
+                        {
                             mEditText.setShakeAnimation();
-                            Toast.makeText(mContext, "请输入搜索关键词", Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -347,22 +378,30 @@ public class SearchFragment extends BaseFragment
                 return false;
             }
         });
-        mEditText.addTextChangedListener(new TextWatcher() {
+        mEditText.addTextChangedListener(new TextWatcher()
+        {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3)
+            {
             }
+
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3)
+            {
+                search_Str=charSequence.toString();
             }
+
             @Override
-            public void afterTextChanged(Editable editable) {
+            public void afterTextChanged(Editable editable)
+            {
                 mSortView.setVisibility(View.GONE);
                 mSearchView.setVisibility(View.VISIBLE);
             }
         });
 
-        getHotSearch();
-        if (mSearchSortFragment ==null)
+        mRequestQueue = Volley.newRequestQueue(mContext);
+        FetchHotsData();
+        if (mSearchSortFragment == null)
             mSearchSortFragment = SearchSortFragment.newInstance("", 0);
         mSearchSortFragment.setRefreshDataListener(refreshDataListener);
         getChildFragmentManager().beginTransaction().add(R.id.rl_sort, mSearchSortFragment, SearchSortFragment.TAG)
@@ -370,42 +409,57 @@ public class SearchFragment extends BaseFragment
 
     }
 
-    private void onSearch(){
-
+    private void onSearch()
+    {
         mBackView.setVisibility(View.VISIBLE);
         mSortView.setVisibility(View.VISIBLE);
         mSearchView.setVisibility(View.GONE);
-
-        keyWord= mEditText.getText().toString().trim();
-        if (mHistoryList.contains(keyWord)){
-            mHistoryList.remove(keyWord);
+        if (mHistoryList.contains(search_Str))
+        {
+            mHistoryList.remove(search_Str);
         }
-        mHistoryList.add(keyWord);
-        SharedPreferencesUtil.saveHistoryData(mContext,mHistoryList);
-
-        Message message = new Message();
-        message.what=UPDATE_CONTENT;
-        message.obj=keyWord;
-        mHandler.sendMessage(message);
+        mHistoryList.add(search_Str);
+        SharedPreferencesUtil.saveHistoryData(mContext, mHistoryList);
+        mHandler.sendEmptyMessage(UPDATE_CONTENT);
     }
-    private void getHotSearch(){
-        new Thread(){
+
+    public void FetchHotsData()
+    {
+        JsonObjectRequest newMissRequest = new JsonObjectRequest(ZhaiDou.SearchHotUrl, new Response.Listener<JSONObject>()
+        {
             @Override
-            public void run() {
-                try {
-                    URL url = new URL(ZhaiDou.HOT_SEARCH_URL);
-                    String jsonContent = HtmlFetcher.fetch(url);
-                    JSONArray array = new JSONArray(jsonContent);
-                    for (int i=0;i<array.length();i++){
-                        mHotList.add(array.getString(i));
+            public void onResponse(JSONObject json)
+            {
+                if (json != null)
+                {
+                    JSONArray array = json.optJSONArray("data");
+                    for (int i = 0; i < array.length(); i++)
+                    {
+                        mHotList.add(array.optString(i));
                     }
                     mHandler.sendEmptyMessage(UPDATE_HOTDATA);
-                }catch (Exception e){
-                    Log.e("HOT", "不能加载数据: " + e);
                 }
             }
-        }.start();
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
+        if (mRequestQueue == null) mRequestQueue = Volley.newRequestQueue(mContext);
+        mRequestQueue.add(newMissRequest);
     }
+
 
     /**
      * 切换到淘宝页面
@@ -417,25 +471,30 @@ public class SearchFragment extends BaseFragment
 
     private class SearchFragmentAdapter extends FragmentPagerAdapter
     {
-        public SearchFragmentAdapter(FragmentManager fragmentManager) {
+        public SearchFragmentAdapter(FragmentManager fragmentManager)
+        {
             super(fragmentManager);
         }
+
         @Override
-        public Fragment getItem(int i) {
+        public Fragment getItem(int i)
+        {
             return mFragments.get(i);
         }
+
         @Override
-        public int getCount() {
+        public int getCount()
+        {
             return mFragments.size();
         }
+
         @Override
         public CharSequence getPageTitle(int position)
         {
             if (position == 0)
             {
                 return "特卖单品";
-            }
-            else
+            } else
             {
                 return "淘宝单品";
             }
@@ -443,29 +502,35 @@ public class SearchFragment extends BaseFragment
 //            {
 //                return "攻略";
 //            }
-        };
+        }
+
+        ;
     }
 
-    public void toggleSortMenu(){
+    public void toggleSortMenu()
+    {
         mViewPager.setOnTouchListener(null);
         if (mSearchSortFragment.isHidden())
         {
-            mSearchSortFragment.setData(mViewPager.getCurrentItem(),0);
+            mSearchSortFragment.setData(mViewPager.getCurrentItem(), 0);
             getChildFragmentManager().beginTransaction().show(mSearchSortFragment).commit();
-        }else {
+        } else
+        {
             getChildFragmentManager().beginTransaction().hide(mSearchSortFragment).commit();
         }
     }
 
     @Override
-    public void onResume() {
+    public void onResume()
+    {
         super.onResume();
         MobclickAgent.onPageStart("搜索单品、攻略页面");
         MobclickAgent.onResume(mContext);
     }
 
     @Override
-    public void onPause() {
+    public void onPause()
+    {
         super.onPause();
         MobclickAgent.onPageEnd("搜索单品、攻略页面");
         MobclickAgent.onPause(mContext);
