@@ -30,7 +30,10 @@ public class ZhaiDou {
     public static String CartGoodsDeleteUrl="http://121.42.206.45:7082/cart/deleteUserCart.action?businessType=01&version=1.0.0&userId=1&productSKUId=";
     //修改购物车商品详情接口
     public static String CartGoodsEditUrl="http://121.42.206.45:7082/cart/editUserCart.action?businessType=01&version=1.0.0&clientType=app&userId=1&quantity=";
-
+    //搜索商品接口
+    public static String SearchGoodsUrl="http://121.42.206.45:7082/product/searchProduct.action?businessType=01&searchType=10&pageSize=20&keyword=";
+    //热搜词
+    public static String SearchHotUrl="http://121.42.206.45:7082/product/getHotKeywordList.action";
     //提交订单接口
     public static String CommitOrdersUrl="http://121.42.206.45:7082/order/addMallOrder.action";
     //获取支付方式
@@ -54,14 +57,15 @@ public class ZhaiDou {
     public static String ORDER_ADDRESS_URL="http://121.42.206.45:7082/user/provider.action";
 
 
+
     //首页三个专题tag
     public static String HOME_SPECIAL_BANNER_URL=HOME_BASE_URL+"special_mall/api/sales/topic_sales?topic=true";
 
-    public static String ApkUrl = HOME_BASE_URL+"api/v1/app_versions?os=2";
+    public static String ApkUrl = "http://121.42.206.45:7082/user/app_versions.action?os=2";
     //0元特卖页面：status=0,普通特卖页面：status=1,首页：status=2
     public static String BannerUrl=HOME_BASE_URL+"special_mall/api/sales/sale_banner?status=";
     //APP换量
-    public static String settingRecommendAppUrl=HOME_BASE_URL+"api/v1/app_exchanges?sys=2";
+    public static String settingRecommendAppUrl="http://121.42.206.45:7082/user/app_exchanges.action?sys=2";
 
     public static String HOT_SEARCH_URL=HOME_BASE_URL+"article/api/articles/hot_search";
     public static String INDEX_CATEGORY_FILTER=HOME_BASE_URL+"article/api/article_categories";

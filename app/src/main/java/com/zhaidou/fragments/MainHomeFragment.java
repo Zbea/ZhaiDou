@@ -160,7 +160,7 @@ public class MainHomeFragment extends BaseFragment implements
             TextView codeName = (TextView) mView.findViewById(R.id.codeName);
             codeName.setText(codes.get(i).title);
             ImageView imageIv = (ImageView) mView.findViewById(R.id.codeImage);
-            ToolUtils.setImageUrl(codes.get(i).imageUrl, imageIv);
+            ToolUtils.setImageUrl(codes.get(i).imageUrl, imageIv,R.drawable.icon_loading_circle);
             mView.setOnClickListener(new View.OnClickListener()
             {
                 @Override
@@ -374,15 +374,7 @@ public class MainHomeFragment extends BaseFragment implements
         if (viewId == R.id.image1 || viewId == R.id.image2 || viewId == R.id.image3)
         {
             SwitchImage item = (SwitchImage) view.getTag();
-            if (item != null && item.template_type == 0)
-            {
-                SpecialSaleFragment1 specialSaleFragment1 = SpecialSaleFragment1.newInstance(item.title, item.typeValue, item.imageUrl);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment1);
-            } else if (item != null && item.template_type == 1)
-            {
-                ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title, item.typeValue, item.imageUrl);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
-            }
+            ToolUtils.setBannerGoto(item,mContext);
         }
     }
 

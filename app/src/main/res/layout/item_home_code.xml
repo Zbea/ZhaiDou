@@ -14,10 +14,10 @@
 
         <ImageView
             android:id="@+id/codeImage"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
+            android:layout_width="@dimen/home_code_dimen"
+            android:layout_height="@dimen/home_code_dimen"
             android:scaleType="fitXY"
-            android:src="@drawable/icon_zhuanfa"/>
+            android:src="@drawable/icon_loading_circle"/>
 
         <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/codeName"

@@ -23,6 +23,7 @@ import com.zhaidou.fragments.GoodsDetailsFragment;
 import com.zhaidou.fragments.HomeArticleListFragment;
 import com.zhaidou.fragments.ShopTodaySpecialFragment;
 import com.zhaidou.fragments.SpecialSaleFragment;
+import com.zhaidou.fragments.SpecialSaleFragment1;
 import com.zhaidou.model.Category;
 import com.zhaidou.model.SwitchImage;
 
@@ -326,6 +327,11 @@ public class ToolUtils
         {
             ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title,  item.typeValue, item.imageUrl);
             ((MainActivity) mContext).navigationToFragmentWithAnim(shopTodaySpecialFragment);
+        }
+        else if(item.type==6)
+        {
+            SpecialSaleFragment1 specialSaleFragment1 = SpecialSaleFragment1.newInstance(item.title, item.typeValue, item.imageUrl);
+            ((MainActivity) mContext).navigationToFragmentWithAnim(specialSaleFragment1);
         }
         else
         {
