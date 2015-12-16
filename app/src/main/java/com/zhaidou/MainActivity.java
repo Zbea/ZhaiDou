@@ -608,12 +608,14 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         try
         {
             JSONObject jsonObject = new JSONObject(json);
-            serverName = jsonObject.optString("app_version");
-            serverCode = jsonObject.optInt("code_version");
-            serverUrl = jsonObject.optString("package_url");
-            ToolUtils.setLog(serverName);
-            ToolUtils.setLog("" + serverCode);
-            ToolUtils.setLog(serverUrl);
+            if (jsonObject!=null)
+            {
+                JSONObject object=jsonObject.optJSONObject("data");
+                if(object!=null)
+                serverName = object.optString("app_version");
+                serverCode = object.optInt("code_version");
+                serverUrl = object.optString("package_url");
+            }
         } catch (Exception e)
         {
             e.printStackTrace();

@@ -312,7 +312,7 @@ public class ToolUtils
         {
             GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0+"");
             Bundle bundle = new Bundle();
-            bundle.putInt("index", Integer.valueOf(item.typeValue));
+            bundle.putString("index",item.typeValue);
             bundle.putString("page", item.title);
             goodsDetailsFragment.setArguments(bundle);
             ((MainActivity) mContext).navigationToFragment(goodsDetailsFragment);
