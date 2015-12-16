@@ -144,8 +144,8 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
                 final Order order = (Order) values;
                 if ("4".equalsIgnoreCase(order.getStatus())) {
 
-                    OrderLogisticsMsgFragment logisticsMsgFragment = OrderLogisticsMsgFragment.newInstance("", "",order);
-                    ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
+//                    OrderLogisticsMsgFragment logisticsMsgFragment = OrderLogisticsMsgFragment.newInstance("", "",order);
+//                    ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
 
                 } else if ("1".equalsIgnoreCase(order.getStatus())) {
 //                    AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(order.getOrderId() + "", order.getStatus());
@@ -314,7 +314,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
         params.put("clientType","ANDROID");
         params.put("clientVersion","45");
         params.put("businessType","01");
-        params.put("type", ZhaiDou.TYPE_ORDER_PREDELIVERY);
+        params.put("type", ZhaiDou.TYPE_ORDER_PRERECEIVE);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,ZhaiDou.URL_ORDER_LIST ,new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {

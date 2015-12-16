@@ -219,8 +219,8 @@ public class ShopOrderOkFragment extends BaseFragment
                         DecimalFormat df = new DecimalFormat("###.00");
                         double fare = moneyYF;
                         int status=orderObj.optInt("status");
-                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId,orderCode ,amount, fare,((mContext.getResources().getInteger(R.integer.timer_countdown)) / 1000), null, 1);
-                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
+//                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId,orderCode ,amount, fare,((mContext.getResources().getInteger(R.integer.timer_countdown)) / 1000), null, 1);
+//                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
                     } catch (Exception e)
                     {
 

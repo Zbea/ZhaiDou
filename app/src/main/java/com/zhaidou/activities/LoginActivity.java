@@ -44,7 +44,6 @@ import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomEditText;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -242,14 +241,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                             mDialog.dismiss();
                         if (volleyError.getMessage() != null && volleyError.getMessage().contains("authentication")) {
                             Toast.makeText(LoginActivity.this, "密码错误", Toast.LENGTH_LONG).show();
-                        } else if (401 == volleyError.networkResponse.statusCode) {
-                            try {
-                                JSONObject jsonObject = new JSONObject(new String(volleyError.networkResponse.data));
-                                String message = jsonObject.optString("message");
-                                Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
                         }
                     }
                 });

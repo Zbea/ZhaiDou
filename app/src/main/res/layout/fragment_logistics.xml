@@ -67,6 +67,7 @@
             android:paddingLeft="10dp">
 
             <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/deliveryName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="百世汇通"

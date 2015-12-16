@@ -32,6 +32,7 @@ import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.alipay.PayDemoActivity;
 import com.zhaidou.base.BaseActivity;
@@ -282,8 +283,8 @@ mDialogUtils=new DialogUtils(mContext);
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 System.out.println("StoreAdapter.OnClickListener-------bt_logistics");
                 Store store=(Store)values;
-                if (ZhaiDou.STATUS_DEAL_SUCCESS==store.status){
-                    OrderLogisticsMsgFragment logisticsMsgFragment=OrderLogisticsMsgFragment.newInstance("","",null);
+                if (ZhaiDou.STATUS_DEAL_SUCCESS==store.status||ZhaiDou.STATUS__DELIVERYED==store.status){
+                    OrderLogisticsMsgFragment logisticsMsgFragment=OrderLogisticsMsgFragment.newInstance("","",store);
                     ((BaseActivity)getActivity()).navigationToFragment(logisticsMsgFragment);
                 }
             }
@@ -292,12 +293,40 @@ mDialogUtils=new DialogUtils(mContext);
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 System.out.println("parentV = [" + parentV + "], v = [" + v + "], position = [" + position + "], values = [" + values + "]");
-                Store store = (Store)values;
+                final Store store = (Store)values;
                 if (ZhaiDou.STATUS_DEAL_SUCCESS==store.status){
                     mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_apply_return_goods),new DialogUtils.PositiveListener() {
                         @Override
                         public void onPositive() {
 
+                        }
+                    },null);
+                }else if (ZhaiDou.STATUS__DELIVERYED==store.status){
+                    mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_confirm),new DialogUtils.PositiveListener() {
+                        @Override
+                        public void onPositive() {
+                            System.out.println("OrderAllOrdersFragment.onPositive");
+                            Map<String, String> params = new HashMap();
+                            params.put("businessType", "01");
+                            params.put("clientType", "ANDROID");
+                            params.put("userId", ZhaiDou.TESTUSERID);
+                            params.put("clientVersion", "45");
+                            params.put("orderCode", store.orderCode);
+                            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_CONFIRM, new JSONObject(params), new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject jsonObject) {
+                                    int status = jsonObject.optInt("status");
+                                    String message = jsonObject.optString("message");
+                                    if (200 == status) {
+//                                        order.status = 50;
+//                                        order.orderShowStatus = "交易完成";
+//                                        allOrderAdapter.notifyDataSetChanged();
+                                    } else {
+                                        ShowToast(message);
+                                    }
+                                }
+                            }, null);
+                            requestQueue.add(request);
                         }
                     },null);
                 }
@@ -311,8 +340,8 @@ mDialogUtils=new DialogUtils(mContext);
             case R.id.tv_cancel_order:
                 if (ZhaiDou.STATUS_DEAL_SUCCESS == mOrder.status) {
 
-                    OrderLogisticsMsgFragment logisticsMsgFragment = OrderLogisticsMsgFragment.newInstance("", "", order);
-                    ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
+//                    OrderLogisticsMsgFragment logisticsMsgFragment = OrderLogisticsMsgFragment.newInstance("", "", order);
+//                    ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
                     return;
                 } else if (mContext.getResources().getString(R.string.order_return_money).equalsIgnoreCase(mCancelOrder.getText().toString())) {
                     final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
@@ -375,8 +404,8 @@ mDialogUtils=new DialogUtils(mContext);
                     return;
                 } else if (mContext.getResources().getString(R.string.order_logistics).equalsIgnoreCase(mCancelOrder.getText().toString())) {
 
-                    OrderLogisticsMsgFragment logisticsMsgFragment = OrderLogisticsMsgFragment.newInstance("", "", order);
-                    ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
+//                    OrderLogisticsMsgFragment logisticsMsgFragment = OrderLogisticsMsgFragment.newInstance("", "", order);
+//                    ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
                     return;
                 }
                 if (mOrder != null && "3678".contains(mOrder.status + "")) {
@@ -652,7 +681,6 @@ mDialogUtils=new DialogUtils(mContext);
         public View bindView(int position, View convertView, ViewGroup parent) {
             if (convertView == null)
                 convertView = mInflater.inflate(R.layout.item_order_detail, null);
-            System.out.println("OrderItemAdapter.bindView");
             TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
             TextView tv_specification = ViewHolder.get(convertView, R.id.tv_specification);
             TextView tv_count = ViewHolder.get(convertView, R.id.tv_count);
@@ -794,6 +822,10 @@ mDialogUtils=new DialogUtils(mContext);
                 btn1.setBackgroundResource(R.drawable.btn_green_click_bg);
             }else if (ZhaiDou.STATUS_UNDELIVERY==store.status||ZhaiDou.STATUS_UNPAY==store.status){
                 mBottomLayout.setVisibility(View.GONE);
+            }else if (ZhaiDou.STATUS__DELIVERYED==store.status){
+                mBottomLayout.setVisibility(View.VISIBLE);
+                btn2.setText("查看物流");
+                btn1.setText("确认收货");
             }
 
             final OrderItemAdapter adapter = new OrderItemAdapter(mContext,store.orderItemPOList){
@@ -808,6 +840,7 @@ mDialogUtils=new DialogUtils(mContext);
                 }
             };
             mListView.setAdapter(adapter);
+            final View finalConvertView = convertView;
             setOnInViewClickListener(R.id.moreDetail,new onInternalClickListener() {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
@@ -815,11 +848,41 @@ mDialogUtils=new DialogUtils(mContext);
 //                    if (store1.orderItemPOList!=null&&store1.orderItemPOList.size()<2)
 //                    store1.orderItemPOList.addAll(store1.orderItemPOList);
                     store1.isExpand=!store1.isExpand;
+                    System.out.println("parentV = " + parentV);
+                    FetchOrderDetail(finalConvertView,store);
                     adapter.notifyDataSetChanged();
                 }
             });
 
             return convertView;
         }
+    }
+
+    private void FetchOrderDetail(View convertView,Store store){
+        final TextView mReceiverName=ViewHolder.get(convertView,R.id.tv_receiver_name);
+        final TextView mReceiverPhone=ViewHolder.get(convertView,R.id.tv_receiver_phone);
+        final TextView mReceiverAddress=ViewHolder.get(convertView,R.id.tv_receiver_address);
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("userId", ZhaiDou.TESTUSERID);
+        params.put("clientType", "ANDROID");
+        params.put("clientVersion", "45");
+        params.put("businessType", "01");
+        params.put("orderCode", store.orderCode);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_DETAIL, new JSONObject(params), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                JSONObject data = jsonObject.optJSONObject("data");
+                Store store = JSON.parseObject(data.toString(), Store.class);
+                mReceiverName.setText(store.deliveryAddressPO.realName);
+                mReceiverPhone.setText(store.deliveryAddressPO.mobile);
+                mReceiverAddress.setText(store.deliveryAddressPO.provinceName+store.deliveryAddressPO.cityName+store.deliveryAddressPO.regionName);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        });
+        ((ZDApplication) getActivity().getApplication()).mRequestQueue.add(request);
     }
 }

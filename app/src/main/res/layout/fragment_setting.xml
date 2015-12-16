@@ -1,9 +1,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="#f1f1f1"
-              android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f1f1f1"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/rl_back"
@@ -15,43 +15,43 @@
             android:id="@+id/ll_back"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:gravity="center_vertical"
             android:clickable="true"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_marginLeft="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:src="@drawable/icon_back_selector"/>
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/icon_back_selector" />
 
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:gravity="center"
-                android:textSize="16sp"
-                android:drawablePadding="2dp"
-                android:layout_marginLeft="6dp"
-                android:textColor="@color/white"
                 android:layout_alignParentLeft="true"
-                android:text="返回"/>
+                android:layout_marginLeft="6dp"
+                android:drawablePadding="2dp"
+                android:gravity="center"
+                android:text="返回"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
         </LinearLayout>
 
         <com.zhaidou.view.TypeFaceTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:textSize="18sp"
+            android:text="@string/title_setting"
             android:textColor="@color/white"
-            android:text="@string/title_setting"/>
+            android:textSize="18sp" />
     </RelativeLayout>
 
     <ScrollView
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@color/transparent"
-        android:scrollbars="none"
-        android:layout_height="match_parent">
+        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -59,373 +59,410 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white">
+                android:layout_marginTop="10dp"
+                android:background="@color/white"
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:id="@+id/ll_profile"
                     android:layout_width="match_parent"
-                    android:background="@drawable/item_click_selector"
-                    android:layout_height="@dimen/list_height_dimen">
+                    android:layout_height="@dimen/list_height_dimen"
+                    android:background="@drawable/item_click_selector">
 
                     <ImageView
-                        android:layout_marginLeft="20dp"
                         android:layout_width="18dp"
                         android:layout_height="18dp"
-                        android:scaleType="fitXY"
                         android:layout_gravity="center_vertical"
-                        android:src="@drawable/icon_setting_profile"/>
+                        android:layout_marginLeft="20dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/icon_setting_profile" />
 
                     <com.zhaidou.view.TypeFaceTextView
-                        android:paddingLeft="10dp"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="match_parent"
+                        android:layout_weight="1"
                         android:gravity="center_vertical"
-                        android:textColor="@color/text_main_color"
-                        android:text="资料修改"/>
+                        android:paddingLeft="10dp"
+                        android:text="资料修改"
+                        android:textColor="@color/text_main_color" />
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:scaleType="center"
                         android:layout_gravity="center_vertical"
                         android:paddingRight="15dp"
-                        android:src="@drawable/icon_arrow_right"/>
+                        android:scaleType="center"
+                        android:src="@drawable/icon_arrow_right" />
                 </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginLeft="48dp"
+                    android:background="@color/page_bg" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_psw_change"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/list_height_dimen"
+                android:background="@drawable/item_click_selector">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="20dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/icon_psw_change" />
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:text="修改密码"
+                    android:textColor="@color/text_main_color" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingRight="15dp"
+                    android:scaleType="center"
+                    android:src="@drawable/icon_arrow_right" />
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:visibility="gone"
-                android:background="@color/line_bottom"/>
+                android:background="@color/line_bottom"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/ll_competition"
                 android:layout_width="match_parent"
+                android:layout_height="40dp"
                 android:background="@color/white"
-                android:visibility="gone"
-                android:layout_height="40dp">
+                android:visibility="gone">
 
                 <ImageView
                     android:layout_width="18dp"
                     android:layout_height="18dp"
-                    android:scaleType="fitXY"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="10dp"
-                    android:src="@drawable/icon_setting_compete"/>
+                    android:scaleType="fitXY"
+                    android:src="@drawable/icon_setting_compete" />
 
                 <com.zhaidou.view.TypeFaceTextView
-                    android:paddingLeft="10dp"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
                     android:text="拼贴大赛"
-                    android:textColor="@color/text_main_color"
-                    android:gravity="center_vertical"/>
+                    android:textColor="@color/text_main_color" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:scaleType="fitXY"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/icon_arrow_right"
-                    android:paddingRight="10dp"/>
+                    android:paddingRight="10dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/icon_arrow_right" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/ll_bbs_question"
-                android:visibility="gone"
-                android:layout_marginTop="18dp"
-                android:layout_marginBottom="10dp"
                 android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="18dp"
                 android:background="@color/white"
-                android:layout_height="40dp">
+                android:visibility="gone">
 
                 <ImageView
                     android:layout_width="18dp"
                     android:layout_height="18dp"
-                    android:scaleType="fitXY"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/icon_bbs_question"
-                    android:layout_marginLeft="10dp"/>
+                    android:layout_marginLeft="10dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/icon_bbs_question" />
 
                 <TextView
-                    android:paddingLeft="10dp"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
                     android:text="问答社区"
-                    android:textColor="@color/text_main_color"
-                    android:gravity="center_vertical"/>
+                    android:textColor="@color/text_main_color" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:scaleType="fitXY"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/icon_arrow_right"
-                    android:paddingRight="10dp"/>
+                    android:paddingRight="10dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/icon_arrow_right" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:background="@color/white">
+                android:background="@color/white"
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:id="@+id/ll_collocation"
                     android:layout_width="match_parent"
-                    android:background="@drawable/item_click_selector"
-                    android:layout_height="@dimen/list_height_dimen">
+                    android:layout_height="@dimen/list_height_dimen"
+                    android:background="@drawable/item_click_selector">
 
                     <ImageView
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:layout_gravity="center_vertical"
-                        android:src="@drawable/icon_setting_course"
-                        android:layout_marginLeft="20dp"/>
+                        android:layout_marginLeft="20dp"
+                        android:src="@drawable/icon_setting_course" />
 
                     <com.zhaidou.view.TypeFaceTextView
-                        android:paddingLeft="10dp"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="10dp"
                         android:text="豆搭教程"
-                        android:textColor="@color/text_main_color"
-                        android:gravity="center_vertical"/>
+                        android:textColor="@color/text_main_color" />
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:src="@drawable/icon_arrow_right"
+                        android:paddingRight="15dp"
                         android:scaleType="center"
-                        android:paddingRight="15dp"/>
+                        android:src="@drawable/icon_arrow_right" />
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_marginLeft="48dp"
                     android:layout_height="1dp"
-                    android:background="@color/page_bg"/>
+                    android:layout_marginLeft="48dp"
+                    android:background="@color/page_bg" />
 
                 <LinearLayout
                     android:id="@+id/ll_add_v"
                     android:layout_width="match_parent"
-                    android:background="@drawable/item_click_selector"
-                    android:layout_height="@dimen/list_height_dimen">
+                    android:layout_height="@dimen/list_height_dimen"
+                    android:background="@drawable/item_click_selector">
 
                     <ImageView
                         android:layout_width="18dp"
                         android:layout_height="18dp"
-                        android:scaleType="fitXY"
                         android:layout_gravity="center_vertical"
-                        android:src="@drawable/icon_setting_add_v"
-                        android:layout_marginLeft="20dp"/>
+                        android:layout_marginLeft="20dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/icon_setting_add_v" />
 
                     <com.zhaidou.view.TypeFaceTextView
-                        android:paddingLeft="10dp"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="10dp"
                         android:text="如何加V"
-                        android:textColor="@color/text_main_color"
-                        android:gravity="center_vertical"/>
+                        android:textColor="@color/text_main_color" />
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:src="@drawable/icon_arrow_right"
                         android:paddingRight="15dp"
-                        android:scaleType="fitXY"/>
+                        android:scaleType="fitXY"
+                        android:src="@drawable/icon_arrow_right" />
                 </LinearLayout>
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:visibility="gone"
-                android:background="@color/line_bottom"/>
+                android:background="@color/line_bottom"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/ll_award_history"
-                android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
                 android:background="@color/white"
-                android:visibility="gone"
-                android:layout_height="40dp">
+                android:visibility="gone">
 
                 <ImageView
                     android:layout_width="18dp"
                     android:layout_height="18dp"
-                    android:scaleType="fitXY"
-                    android:layout_marginLeft="10dp"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/icon_award"/>
+                    android:layout_marginLeft="10dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/icon_award" />
 
                 <TextView
-                    android:paddingLeft="10dp"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
                     android:text="获奖记录"
-                    android:textColor="@color/text_main_color"
-                    android:gravity="center_vertical"/>
+                    android:textColor="@color/text_main_color" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/icon_arrow_right"
                     android:paddingRight="10dp"
-                    android:scaleType="fitXY"/>
+                    android:scaleType="fitXY"
+                    android:src="@drawable/icon_arrow_right" />
             </LinearLayout>
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:layout_marginTop="10dp"
-                android:background="@color/white">
+                android:background="@color/white"
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:id="@+id/ll_version"
                     android:layout_width="match_parent"
-                    android:background="@drawable/item_click_selector"
-                    android:layout_height="@dimen/list_height_dimen">
+                    android:layout_height="@dimen/list_height_dimen"
+                    android:background="@drawable/item_click_selector">
 
                     <ImageView
                         android:layout_width="18dp"
                         android:layout_height="18dp"
-                        android:scaleType="fitXY"
                         android:layout_gravity="center_vertical"
-                        android:src="@drawable/icon_setting_update"
-                        android:layout_marginLeft="20dp"/>
+                        android:layout_marginLeft="20dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/icon_setting_update" />
 
                     <com.zhaidou.view.TypeFaceTextView
-                        android:paddingLeft="10dp"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="10dp"
                         android:text="版本更新"
-                        android:textColor="@color/text_main_color"
-                        android:gravity="center_vertical"/>
+                        android:textColor="@color/text_main_color" />
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:src="@drawable/icon_arrow_right"
                         android:paddingRight="15dp"
-                        android:scaleType="fitXY"/>
+                        android:scaleType="fitXY"
+                        android:src="@drawable/icon_arrow_right" />
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/page_bg"
                     android:layout_marginLeft="48dp"
-                    ></View>
+                    android:background="@color/page_bg"></View>
 
                 <LinearLayout
                     android:id="@+id/ll_about"
                     android:layout_width="match_parent"
-                    android:background="@drawable/item_click_selector"
-                    android:layout_height="@dimen/list_height_dimen">
+                    android:layout_height="@dimen/list_height_dimen"
+                    android:background="@drawable/item_click_selector">
 
                     <ImageView
                         android:layout_width="18dp"
                         android:layout_height="18dp"
-                        android:scaleType="fitXY"
                         android:layout_gravity="center_vertical"
-                        android:src="@drawable/icon_setting_about"
-                        android:layout_marginLeft="20dp"/>
+                        android:layout_marginLeft="20dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/icon_setting_about" />
 
                     <com.zhaidou.view.TypeFaceTextView
-                        android:paddingLeft="10dp"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="10dp"
                         android:text="关于"
-                        android:textColor="@color/text_main_color"
-                        android:gravity="center_vertical"/>
+                        android:textColor="@color/text_main_color" />
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:src="@drawable/icon_arrow_right"
                         android:paddingRight="15dp"
-                        android:scaleType="fitXY"/>
+                        android:scaleType="fitXY"
+                        android:src="@drawable/icon_arrow_right" />
                 </LinearLayout>
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:visibility="gone"
-                android:background="@color/line_bottom"/>
+                android:background="@color/line_bottom"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/ll_recommend"
-                android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
-                android:background="@drawable/item_click_selector"
-                android:layout_height="@dimen/list_height_dimen">
+                android:layout_height="@dimen/list_height_dimen"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/item_click_selector">
 
                 <ImageView
-                    android:layout_marginLeft="20dp"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
-                    android:scaleType="fitXY"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/icon_setting_load"/>
+                    android:layout_marginLeft="20dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/icon_setting_load" />
 
                 <com.zhaidou.view.TypeFaceTextView
-                    android:paddingLeft="10dp"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:textColor="@color/text_main_color"
-                    android:text="精品推荐"/>
+                    android:paddingLeft="10dp"
+                    android:text="精品推荐"
+                    android:textColor="@color/text_main_color" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:scaleType="center"
                     android:layout_gravity="center_vertical"
                     android:paddingRight="15dp"
-                    android:src="@drawable/icon_arrow_right"/>
+                    android:scaleType="center"
+                    android:src="@drawable/icon_arrow_right" />
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:visibility="gone"
-                android:background="@color/line_bottom"/>
+                android:background="@color/line_bottom"
+                android:visibility="gone" />
 
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/bt_logout"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/list_height_dimen"
                 android:layout_marginLeft="@dimen/default_margin"
-                android:layout_marginTop="20dp"
                 android:layout_marginRight="@dimen/default_margin"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/btn_red_click_selector"
                 android:gravity="center"
                 android:text="退出登录"
-                android:textSize="16sp"
                 android:textColor="@color/white"
-                android:background="@drawable/btn_red_click_selector"
-                />
+                android:textSize="16sp" />
         </LinearLayout>
     </ScrollView>
 

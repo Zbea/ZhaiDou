@@ -24,6 +24,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -40,22 +42,13 @@ import com.zhaidou.model.User;
 import com.zhaidou.utils.NativeHttpUtil;
 import com.zhaidou.utils.PhotoUtil;
 import com.zhaidou.utils.ToolUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
+
 import org.json.JSONObject;
-import java.io.BufferedReader;
+
 import java.io.File;
-import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ProfileFragment extends BaseFragment implements View.OnClickListener, PhotoMenuFragment.MenuSelectListener,
@@ -81,7 +74,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     private TextView tv_mobile;
     private TextView tv_addr_username;
     private TextView tv_addr_mobile;
-    private TextView tv_addr, tv_delete, tv_edit,tv_addr_null;
+    private TextView tv_addr, tv_delete, tv_edit, tv_addr_null;
 
     private RelativeLayout mWorkLayout;
 
@@ -124,9 +117,9 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     tv_mobile.setText(TextUtils.isEmpty(user.getMobile()) ? "" : user.getMobile());
                     tv_job.setText(user.isVerified() ? "宅豆认证设计师" : "未认证设计师");
 
-                    tv_addr_mobile.setText(TextUtils.isEmpty(user.getMobile()) ? "" :user.getMobile());
-                    tv_addr.setText(TextUtils.isEmpty(user.getAddress2()) ? "" :user.getAddress2());
-                    tv_addr_username.setText(TextUtils.isEmpty(user.getFirst_name()) ? "" :user.getFirst_name());
+                    tv_addr_mobile.setText(TextUtils.isEmpty(user.getMobile()) ? "" : user.getMobile());
+                    tv_addr.setText(TextUtils.isEmpty(user.getAddress2()) ? "" : user.getAddress2());
+                    tv_addr_username.setText(TextUtils.isEmpty(user.getFirst_name()) ? "" : user.getFirst_name());
 
                     if (TextUtils.isEmpty(user.getAddress2()) || "null".equals(user.getAddress2())) {
                         ll_addr_info.setVisibility(View.GONE);
@@ -189,8 +182,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         return view;
     }
 
-    private void initView()
-    {
+    private void initView() {
         setStartLoading();
 
         mMenuContainer = (FrameLayout) view.findViewById(R.id.rl_header_menu);
@@ -212,11 +204,11 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         tv_addr_username = (TextView) view.findViewById(R.id.tv_addr_username);
         tv_addr = (TextView) view.findViewById(R.id.tv_addr);
         ll_addr_info = (LinearLayout) view.findViewById(R.id.ll_addr_info);
-        tv_addr_null= (TextView) view.findViewById(R.id.tv_addr_null);
+        tv_addr_null = (TextView) view.findViewById(R.id.tv_addr_null);
         tv_delete = (TextView) view.findViewById(R.id.tv_delete);
         tv_edit = (TextView) view.findViewById(R.id.tv_edit);
 
-        tv_addr_null= (TextView) view.findViewById(R.id.tv_addr_null);
+        tv_addr_null = (TextView) view.findViewById(R.id.tv_addr_null);
 
         mWorkLayout = (RelativeLayout) view.findViewById(R.id.rl_job);
         mWorkLayout.setOnClickListener(this);
@@ -245,10 +237,10 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 @Override
                 public void run() {
 
-            getUserData();
-            getUserInfo();
+                    getUserData();
+                    getUserInfo();
                 }
-            },300);
+            }, 300);
         }
         token = mSharedPreferences.getString("token", null);
     }
@@ -266,7 +258,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             case R.id.ll_add_v:
                 break;
             case R.id.rl_nickname:
-                ProfileEditFragment profileFragment = ProfileEditFragment.newInstance("nick_name", tv_nick.getText().toString().trim(), profileId, "个人昵称");
+                ProfileEditFragment profileFragment = ProfileEditFragment.newInstance("nick_name", tv_nick.getText().toString().trim(), id+"", "个人昵称");
                 profileFragment.setRefreshDataListener(this);
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container, profileFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
@@ -284,14 +276,16 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 }
                 break;
             case R.id.rl_manage_address:
-                ProfileAddrFragment fragment=ProfileAddrFragment.newInstance(user.getFirst_name(), user.getMobile(), user.getAddress2(), profileId);
-                ((MainActivity)getActivity()).navigationToFragmentWithAnim(fragment);
+                ProfileAddrFragment fragment = ProfileAddrFragment.newInstance(user.getFirst_name(), user.getMobile(), user.getAddress2(), profileId);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(fragment);
                 fragment.setAddressListener(new ProfileAddrFragment.AddressListener() {
                     @Override
                     public void onAddressDataChange(String name, String mobile, String address) {
-                        user.setFirst_name(name);user.setMobile(mobile);user.setAddress2(address);
-                        ll_addr_info.setVisibility(TextUtils.isEmpty(address)?View.GONE:View.VISIBLE);
-                        tv_addr_null.setVisibility(TextUtils.isEmpty(address)?View.VISIBLE:View.GONE);
+                        user.setFirst_name(name);
+                        user.setMobile(mobile);
+                        user.setAddress2(address);
+                        ll_addr_info.setVisibility(TextUtils.isEmpty(address) ? View.GONE : View.VISIBLE);
+                        tv_addr_null.setVisibility(TextUtils.isEmpty(address) ? View.VISIBLE : View.GONE);
                         System.out.println("name = [" + name + "], mobile = [" + mobile + "], address = [" + address + "]");
                         tv_addr_username.setText(name);
                         tv_addr_mobile.setText(mobile);
@@ -301,7 +295,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 break;
             case R.id.tv_edit:
                 AddrManageFragment editFragment = AddrManageFragment.newInstance(user.getFirst_name(), user.getMobile(), user.getAddress2(), profileId, 1);
-               getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container, editFragment).addToBackStack(null).commit();
+                getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container, editFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
                 break;
             case R.id.tv_delete:
@@ -320,7 +314,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
      * 设置开始加载进度
      */
     private void setStartLoading() {
-        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading",true);
+        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading", true);
     }
 
     /**
@@ -370,65 +364,115 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                this.startActivityForResult(intent,MENU_CAMERA_SELECTED);
+                this.startActivityForResult(intent, MENU_CAMERA_SELECTED);
                 break;
             case MENU_PHOTO_SELECTED:
                 Intent intent1 = new Intent(Intent.ACTION_PICK, null);
                 intent1.setDataAndType(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-                this.startActivityForResult(intent1,MENU_PHOTO_SELECTED);
+                this.startActivityForResult(intent1, MENU_PHOTO_SELECTED);
                 break;
         }
         toggleMenu();
     }
 
     public void getUserData() {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL + id + "/profile", new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_DETAIL_PROFILE_URL +"?id="+id, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("getUserData--->", jsonObject.toString());
-                JSONObject userObj = jsonObject.optJSONObject("profile");
-                if (userObj==null) return;
-                String mobile = userObj.optString("mobile");
-                mobile = mobile.equals("null") ? "" : mobile;
-                String description = userObj.optString("description");
-                description = description.equals("null") ? "" : description;
-                profileId = userObj.optString("id");
-                boolean verified = userObj.optBoolean("verified");
-                String first_name = userObj.optString("first_name");
-                String address2 = userObj.optString("address2");
-                User user = new User(null, null, null, verified, mobile, description);
-                user.setAddress2(address2);
-                user.setFirst_name(first_name);
-                Message message = new Message();
-                message.what = UPDATE_PROFILE_INFO;
-                message.obj = user;
-                mHandler.sendMessage(message);
+                int status = jsonObject.optInt("status");
+                String msg = jsonObject.optString("message");
+                if (status==200){
+                    JSONObject dataObj = jsonObject.optJSONObject("data");
+                    JSONObject userObj = dataObj.optJSONObject("profile");
+                    if (userObj == null) return;
+                    String mobile = userObj.optString("mobile");
+                    mobile = mobile.equals("null") ? "" : mobile;
+                    String description = userObj.optString("description");
+                    description = description.equals("null") ? "" : description;
+                    profileId = userObj.optString("id");
+                    boolean verified = userObj.optBoolean("verified");
+                    String first_name = userObj.optString("first_name");
+                    String address2 = userObj.optString("address2");
+                    User user = new User(null, null, null, verified, mobile, description);
+                    user.setAddress2(address2);
+                    user.setFirst_name(first_name);
+                    Message message = new Message();
+                    message.what = UPDATE_PROFILE_INFO;
+                    message.obj = user;
+                    mHandler.sendMessage(message);
+
+                }else {
+                    ShowToast(msg);
+                }
+
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                Log.i("volleyError---------->", volleyError.toString());
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         mRequestQueue.add(request);
     }
+//        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL + id + "/profile", new Response.Listener<JSONObject>() {
+//            @Override
+//            public void onResponse(JSONObject jsonObject) {
+//                Log.i("getUserData--->", jsonObject.toString());
+//                JSONObject userObj = jsonObject.optJSONObject("profile");
+//                if (userObj == null) return;
+//                String mobile = userObj.optString("mobile");
+//                mobile = mobile.equals("null") ? "" : mobile;
+//                String description = userObj.optString("description");
+//                description = description.equals("null") ? "" : description;
+//                profileId = userObj.optString("id");
+//                boolean verified = userObj.optBoolean("verified");
+//                String first_name = userObj.optString("first_name");
+//                String address2 = userObj.optString("address2");
+//                User user = new User(null, null, null, verified, mobile, description);
+//                user.setAddress2(address2);
+//                user.setFirst_name(first_name);
+//                Message message = new Message();
+//                message.what = UPDATE_PROFILE_INFO;
+//                message.obj = user;
+//                mHandler.sendMessage(message);
+//            }
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError volleyError) {
+//                Log.i("volleyError---------->", volleyError.toString());
+//            }
+//        });
+
+//    }
 
     public void getUserInfo() {
 
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL + id, new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL + "?id="+id, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("getUserInfo--->", jsonObject.toString());
-                JSONObject userObj = jsonObject.optJSONObject("user");
-                String email = userObj.optString("email");
-                String nick = userObj.optString("nick_name");
-                String avatar = userObj.optJSONObject("avatar").optString("url");
-                User user = new User(avatar, email, nick, false, null, null);
-                Message message = new Message();
-                message.what = UPDATE_USER_INFO;
-                message.obj = user;
-                mHandler.sendMessage(message);
+                int status = jsonObject.optInt("status");
+                String msg = jsonObject.optString("message");
+                if (status==200){
+                    JSONObject dataObj = jsonObject.optJSONObject("data");
+                    JSONObject userObj = dataObj.optJSONObject("user");
+                    String email = userObj.optString("email");
+                    String nick = userObj.optString("nick_name");
+                    String avatar = userObj.optJSONObject("avatar").optString("url");
+                    User user = new User(avatar, email, nick, false, null, null);
+                    Message message = new Message();
+                    message.what = UPDATE_USER_INFO;
+                    message.obj = user;
+                    mHandler.sendMessage(message);
+                }else {
+                    ShowToast(msg);
+                }
             }
         }, new Response.ErrorListener() {
             @Override
@@ -555,99 +599,48 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
             String base64str = PhotoUtil.bitmapToBase64(bitmap);
             Log.i("base64str0---------->", base64str);
-            new UpLoadAvatar().execute(base64str);
+            UpLoadTask(base64str);
         }
     }
 
-    private class UpLoadAvatar extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected void onPreExecute() {
-            setStartLoading();
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-            String s = null;
-            try {
-                s = executeHttpPost(strings[0]);
-            } catch (Exception e) {
-
-            }
-            return s;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            if (s == null) return;
-            try {
-                JSONObject jsonObject = new JSONObject(s);
-                JSONObject userJson = jsonObject.optJSONObject("user");
-                String avatar = userJson.optJSONObject("avatar").optJSONObject("thumb").optString("url");
-                String email = userJson.optString("email");
-                User user = new User();
-                user.setAvatar(avatar);
-                user.setEmail(email);
-                user.setNickName(tv_nick.getText().toString());
-                Message message = new Message();
-                message.what = UPDATE_USER_INFO;
-                message.obj = user;
-                mHandler.sendMessage(message);
-                profileListener.onProfileChange(user);
-            } catch (Exception e) {
-
-            }
-        }
-    }
-
-    public String executeHttpPost(String base64) throws Exception {
+    private void UpLoadTask(String base64) {
         token = mSharedPreferences.getString("token", null);
         id = mSharedPreferences.getInt("userId", -1);
-        BufferedReader in = null;
-        try {
-            // 定义HttpClient
-            HttpClient client = new DefaultHttpClient();
-
-            // 实例化HTTP方法
-            HttpPost request = new HttpPost(ZhaiDou.USER_REGISTER_URL + "/" + id);
-
-            request.addHeader("SECAuthorization", token);
-            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-            // 创建名/值组列表
-            List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-
-
-            parameters.add(new BasicNameValuePair("_method", "PUT"));
-            parameters.add(new BasicNameValuePair("user[avatar]", "data:image/png;base64," + base64));
-
-            // 创建UrlEncodedFormEntity对象
-            UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
-                    parameters);
-            request.setEntity(formEntiry);
-            // 执行请求
-            HttpResponse response = client.execute(request);
-
-            in = new BufferedReader(new InputStreamReader(response.getEntity()
-                    .getContent()));
-            StringBuffer sb = new StringBuffer("");
-            String line = "";
-            String NL = System.getProperty("line.separator");
-            while ((line = in.readLine()) != null) {
-                sb.append(line + NL);
-            }
-            in.close();
-            String result = sb.toString();
-            return result;
-
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("id", id + "");
+        Map<String, String> userParams = new HashMap<String, String>();
+        userParams.put("avatar", "data:image/png;base64," + base64);
+        params.put("user", userParams.toString());
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.USER_UPDATE_AVATAR_URL, new JSONObject(params), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                int status = jsonObject.optInt("status");
+                String msg = jsonObject.optString("message");
+                if (status == 200) {
+                    JSONObject dataObj = jsonObject.optJSONObject("data");
+                    JSONObject userJson = dataObj.optJSONObject("user");
+                    String avatar = userJson.optJSONObject("avatar").optJSONObject("thumb").optString("url");
+                    String email = userJson.optString("email");
+                    User user = new User();
+                    user.setAvatar(avatar);
+                    user.setEmail(email);
+                    user.setNickName(tv_nick.getText().toString());
+                    Message message = new Message();
+                    message.what = UPDATE_USER_INFO;
+                    message.obj = user;
+                    mHandler.sendMessage(message);
+                    profileListener.onProfileChange(user);
+                } else {
+                    ShowToast(msg);
                 }
             }
-        }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        });
+        mRequestQueue.add(request);
     }
 
     public void setProfileListener(ProfileListener profileListener) {
@@ -697,10 +690,12 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             }
         }
     }
+
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_profile));
     }
+
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_profile));

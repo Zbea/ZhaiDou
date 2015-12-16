@@ -119,11 +119,13 @@ public class ZhaiDou {
     public static String CATEGORY_ITEM_URL=HOME_BASE_URL+"article/api/item_categories";
 
     //用户简单信息
-    public static String USER_SIMPLE_PROFILE_URL=HOME_BASE_URL+"api/v1/users/";
+    public static String USER_SIMPLE_PROFILE_URL=HOME_BASE_URL+"user/get_users.action";
     //用户简单信息INFO
-    public static String USER_SIMPLE_INFO_URL=HOME_BASE_URL+"/user/queryUserInfo.action";
-    //用户编辑信息
-    public static String USER_EDIT_PROFILE_URL=HOME_BASE_URL+"api/v1/profiles/";
+    public static String USER_SIMPLE_INFO_URL=HOME_BASE_URL+"user/queryUserInfo.action";
+    //获取用户详细信息
+    public static String USER_DETAIL_PROFILE_URL=HOME_BASE_URL+"user/get_users_profile.action";
+    //修改用户信息
+    public static String USER_EDIT_PROFILE_URL=HOME_BASE_URL+"user/profiles.action";
     //用户退出登录
     public static String USER_LOGOUT_URL=HOME_BASE_URL+"api/v1/user_tokens/logout";
     //用户登录
@@ -132,6 +134,10 @@ public class ZhaiDou {
     public static String USER_LOGIN_THIRD_VERIFY_URL=HOME_BASE_URL+"user/verification_other.action";
     //用户注册
     public static String USER_REGISTER_URL=HOME_BASE_URL+"api/v1/users";
+    //修改密码
+    public static String USER_PSW_CHANGE_URL=HOME_BASE_URL+"user/change_password.action";
+    //修改用户头像
+    public static String USER_UPDATE_AVATAR_URL=HOME_BASE_URL+"user/update_head_img.action";
     //
     public static String USER_REGISTER_WITH_PHONE_URL=HOME_BASE_URL+"user/phone_register.action";
     //用户收藏
@@ -227,6 +233,7 @@ public class ZhaiDou {
     public final static String TYPE_ORDER_ALL="0";
     public final static String TYPE_ORDER_PREPAY="1";
     public final static String TYPE_ORDER_PREDELIVERY="2";
+    public final static String TYPE_ORDER_PRERECEIVE="3";
     public final static String TYPE_ORDER_SUCCESS="4";
     public final static String TYPE_ORDER_CANCEL="5";
 
@@ -297,6 +304,6 @@ public class ZhaiDou {
      * 商品详情普通特卖购买后刷新
      */
     public static String IntentRefreshGoodsDetailsTag="com.zhaidou.home.refesh.o.goods.details";
-    public static String TESTUSERID="16665";//28129//16665//64410
+    public static String TESTUSERID="28325";//28129//16665//64410//28325
     public static String TESTTYPE="2";
 }

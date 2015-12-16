@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,42 +32,24 @@ import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
-import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.alipay.PayResult;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.Order;
-import com.zhaidou.model.OrderItem;
-import com.zhaidou.model.Receiver;
+import com.zhaidou.model.Order1;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -122,6 +103,7 @@ public class ShopPaymentFragment extends BaseFragment
     private long payOrderId;
     private String payOrderCode;
     private Dialog mDialog;
+    private Order1 mOrder1;
 
     private Handler mHandler = new Handler()
     {
@@ -232,6 +214,18 @@ public class ShopPaymentFragment extends BaseFragment
         fragment.setArguments(args);
         return fragment;
     }
+    public static ShopPaymentFragment newInstance(Order1 order,String orderCode,int timeLeft,int flags)
+    {
+        ShopPaymentFragment fragment = new ShopPaymentFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_ORDER, order);
+        args.putString("orderCode", orderCode);
+        args.putInt("flags", flags);
+        args.putLong(ARG_TIME, timeLeft);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
 
     public ShopPaymentFragment()
     {
@@ -248,7 +242,7 @@ public class ShopPaymentFragment extends BaseFragment
             payMoney= mAmount = getArguments().getDouble(ARG_AMOUNT);
             mFare = getArguments().getDouble(ARG_FARE);
             initTime = getArguments().getLong(ARG_TIME);
-            mOrder = (Order) getArguments().getSerializable(ARG_ORDER);
+            mOrder1 = (Order1) getArguments().getSerializable(ARG_ORDER);
             flags = getArguments().getInt("flags");
         }
     }
@@ -330,8 +324,7 @@ public class ShopPaymentFragment extends BaseFragment
             }
         });
         TextView mAccountView = (TextView) mView.findViewById(R.id.tv_cash);
-        DecimalFormat df = new DecimalFormat("###.00");
-        mAccountView.setText("￥" + ToolUtils.isIntPrice("" + Double.parseDouble(df.format(mAmount))));
+        mAccountView.setText("￥" + mOrder1.orderActualAmount);
         mView.findViewById(R.id.tv_pinkage).setVisibility(View.GONE);
 
         mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"");
