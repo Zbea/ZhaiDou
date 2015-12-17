@@ -10,6 +10,8 @@ public class ZhaiDou {
 //        public static String HOME_BASE_URL = "http://www.zhaidou.com/";
     public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
 
+    //美丽家
+    public static String HomeBeautifulUrl="http://121.42.206.45:7082/zd/getPosts.action?plug=006&pageSize=10&pageNo=";
     //首页banner
     public static String HomeBannerUrl="http://121.42.206.45:7082/index/getBoardContent.action?boardCodes=";
     //首页特卖列表

@@ -25,8 +25,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
-import com.zhaidou.activities.SearchActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -220,7 +220,8 @@ public class MainCategoryFragment extends BaseFragment {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.searchLayout:
-                startActivity(new Intent(getActivity(), SearchActivity.class));
+                SearchFragment searchFragment = SearchFragment.newInstance("", "");
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
                 break;
         }
     }

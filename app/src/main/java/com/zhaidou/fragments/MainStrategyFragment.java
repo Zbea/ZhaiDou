@@ -18,6 +18,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -28,10 +31,13 @@ import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.model.SwitchImage;
 import com.zhaidou.utils.HtmlFetcher;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ListViewForScrollView;
 
 import org.json.JSONArray;
@@ -58,9 +64,10 @@ public class MainStrategyFragment extends BaseFragment
     private PullToRefreshScrollView mScrollView;
     private String targetUrl="http://buy.zhaidou.com/?zdclient=ios&tag=006&count=10&json=1&page={0}";
     private int currentPage=1;
+    private int pageTotal=0;
     private boolean loadedAll;
     private final int LOADED = 1;
-    private List<JSONObject> listItem;
+    private List<JSONObject> listItem=new ArrayList<JSONObject>();
     private RequestQueue mRequestQueue;
     private ImageAdapter homeItemsAdapter;
 
@@ -73,15 +80,11 @@ public class MainStrategyFragment extends BaseFragment
     {
         public void handleMessage(Message msg)
         {
-            if (msg.what == LOADED)
+            if (msg.what == 1)
             {
-                if (loading.isShowing())
-                {
-                    loading.dismiss();
-                }
+                homeItemsAdapter.notifyDataSetChanged();
             }
-            mScrollView.onRefreshComplete();
-            homeItemsAdapter.notifyDataSetChanged();
+
         }
     };
 
@@ -91,15 +94,16 @@ public class MainStrategyFragment extends BaseFragment
         @Override
         public void onPullDownToRefresh(PullToRefreshBase refreshView)
         {
+            listItem.clear();
             currentPage = 1;
-            loadMoreData(STATUS_REFRESH);
+            loadMoreData();
         }
 
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView)
         {
             currentPage++;
-            loadMoreData(STATUS_LOAD_MORE);
+            loadMoreData();
         }
     };
 
@@ -112,11 +116,11 @@ public class MainStrategyFragment extends BaseFragment
             {
                 JSONObject item = listItem.get(i);
                 Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
-                detailIntent.putExtra("id", item.get("id").toString());
-                detailIntent.putExtra("title", item.get("title").toString());
-                detailIntent.putExtra("cover_url", URLDecoder.decode(item.get("thumbnail").toString()));
+                detailIntent.putExtra("id", item.optInt("id"));
+                detailIntent.putExtra("title", item.optString("title").toString());
+                detailIntent.putExtra("cover_url", item.optString("imageUrl").toString());
                 detailIntent.putExtra("from","product");
-                detailIntent.putExtra("url", item.get("url").toString());
+                detailIntent.putExtra("url", item.optString("url").toString());
                 detailIntent.putExtra("show_header", false);
                 startActivity(detailIntent);
             } catch (Exception ex)
@@ -190,59 +194,61 @@ public class MainStrategyFragment extends BaseFragment
             }
         });
 
-        loadMoreData(STATUS_REFRESH);
+        loadMoreData();
         loading = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
     }
 
 
     /**
      * 开始数据请求
-     * @param status
      */
-    private void loadMoreData(final int status)
+    private void loadMoreData()
     {
-        new Thread()
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeBeautifulUrl +currentPage, new Response.Listener<JSONObject>()
         {
-            public void run()
+            @Override
+            public void onResponse(JSONObject response)
             {
-                if (loadedAll)
+                if (loading.isShowing())
                 {
-                    return;
+                    loading.dismiss();
                 }
-                try
+                mScrollView.onRefreshComplete();
+                if (response != null)
                 {
-                    String requestUrl = MessageFormat.format(targetUrl, currentPage);
-                    java.net.URL url = new URL(requestUrl);
-                    String jsonContent = HtmlFetcher.fetch(url);
-                    try
+                    ToolUtils.setLog(response.toString());
+                    JSONObject jsonObject=response.optJSONObject("data");
+                     pageTotal=jsonObject.optInt("totalCount");
+                    JSONArray jsonArray = jsonObject.optJSONArray("postsPOList");
+                    if (jsonArray != null)
                     {
-                        JSONObject root = new JSONObject(jsonContent);
-                        JSONArray items = root.getJSONArray("posts");
-                        if (currentPage == 1)
-                            listItem.clear();
-                        for (int i = 0; i < items.length(); i++)
+                        for (int i = 0; i < jsonArray.length(); i++)
                         {
-                            listItem.add(items.getJSONObject(i));
+                            JSONObject jsonObj = jsonArray.optJSONObject(i);
+                            listItem.add(jsonObj);
                         }
-                        Message msg = new Message();
-                        msg.what = LOADED;
-                        msg.arg1 = status;
-                        handler.sendMessage(msg);
-                        int count = Integer.valueOf(root.get("count").toString());
-                        int pages = Integer.valueOf(root.get("pages").toString());
-                        if (listItem.size() >= count * pages)
-                        {
-                            loadedAll = true;
-                        }
-                    } catch (Exception ex)
-                    {
-                        Log.e("Debug Info", ex.getMessage());
+                        handler.sendEmptyMessage(1);
                     }
-                } catch (Exception ex)
-                {
                 }
             }
-        }.start();
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                if (loading.isShowing())
+                {
+                    loading.dismiss();
+                }
+                mScrollView.onRefreshComplete();
+                if(currentPage>1)
+                {
+                    currentPage=currentPage-1;
+                }
+                ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+            }
+        });
+        mRequestQueue.add(request);
     }
 
     public class ImageAdapter extends BaseAdapter
@@ -296,9 +302,7 @@ public class MainStrategyFragment extends BaseFragment
             try
             {
                 title.setText(item.get("title").toString());
-                JSONObject customFields = item.getJSONObject("custom_fields");
-                articleViews.setText(customFields.getJSONArray("views").get(0).toString());
-                System.out.println("ImageAdapter.getView------->"+customFields.getJSONArray("views").get(0).toString());
+                articleViews.setText(item.optString("views"));
                 DisplayImageOptions options=new DisplayImageOptions.Builder()
                         .showImageOnLoading(R.drawable.icon_loading_item)
                         .showImageForEmptyUri(R.drawable.icon_loading_item)
@@ -310,7 +314,7 @@ public class MainStrategyFragment extends BaseFragment
                         .displayer(new RoundedBitmapDisplayer(8))
                         .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
                         .build();
-                ImageLoader.getInstance().displayImage(URLDecoder.decode(item.get("thumbnail").toString(), "utf-8"), cover,options);
+                ImageLoader.getInstance().displayImage(item.optString("imageUrl"), cover,options);
 
             } catch (Exception e)
             {
@@ -329,7 +333,9 @@ public class MainStrategyFragment extends BaseFragment
         {
             if (listItem==null|listItem.size()<1)
             {
-                loadMoreData(STATUS_REFRESH);
+                listItem.clear();
+                currentPage = 1;
+                loadMoreData();
             }
         }
 

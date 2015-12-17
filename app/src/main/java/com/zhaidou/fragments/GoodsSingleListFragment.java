@@ -288,7 +288,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                     pageTotal=pageObject.optInt("totalCount");
                     pageSize=pageObject.optInt("pageSize");
                     JSONArray jsonArray = pageObject.optJSONArray("items");
-                    if (jsonArray==null||jsonArray.length()<5)
+                    if (jsonArray==null||jsonArray.toString().length()<5)
                         {
                             if (currentpage==1)
                             {
@@ -311,16 +311,21 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                         product.goodsId=productId;
                         products.add(product);
                     }
+                    handler.sendEmptyMessage(0);
                 }
-                handler.sendEmptyMessage(0);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 setEndLoading();
+                gv_single.onRefreshComplete();
                 if (products.size() == 0)
                 {
                     nullLine.setVisibility(View.VISIBLE);
+                }
+                if(currentpage>1)
+                {
+                    currentpage=currentpage-1;
                 }
             }
         })
@@ -420,10 +425,13 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
             @Override
             public void onErrorResponse(VolleyError error) {
                 setEndLoading();
+                gv_single.onRefreshComplete();
                 if (products.size() == 0)
                 {
                     nullLine.setVisibility(View.VISIBLE);
                 }
+
+
             }
         })
         {
