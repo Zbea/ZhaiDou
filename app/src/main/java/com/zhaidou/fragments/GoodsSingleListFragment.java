@@ -262,6 +262,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                 if (json!=null)
                 {
                     JSONObject dataObject=json.optJSONObject("data");
+
                     if (dataObject==null)
                     {
                         if (currentpage==1)
