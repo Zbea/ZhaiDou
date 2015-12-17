@@ -3,7 +3,6 @@ package com.zhaidou.fragments;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,7 +25,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
-import com.zhaidou.activities.SearchActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -188,11 +186,6 @@ public class MainCategoryFragment extends BaseFragment {
                     JSONArray children = jsonObject.optJSONObject("data").optJSONArray("children");
                     List<Category> mCategoryList = JSON.parseArray(children.toString(), Category.class);
                     categoryList.addAll(mCategoryList);
-//                    mHandler.sendEmptyMessage(UPDATE_CATEGORY_DATA);
-                    categoryList.addAll(categoryList);
-                    categoryList.addAll(categoryList);
-                    categoryList.addAll(categoryList);
-                    categoryList.addAll(categoryList);
                     mCategoryAdapter.notifyDataSetChanged();
                 } else {
                     ShowToast(message);
@@ -220,7 +213,7 @@ public class MainCategoryFragment extends BaseFragment {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.searchLayout:
-                startActivity(new Intent(getActivity(), SearchActivity.class));
+//                startActivity(new Intent(getActivity(), SearchActivity.class));
                 break;
         }
     }

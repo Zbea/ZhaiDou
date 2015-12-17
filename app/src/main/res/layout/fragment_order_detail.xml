@@ -163,7 +163,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="1dp"
                     android:background="@color/white"
                     android:orientation="vertical">
 
@@ -191,6 +191,7 @@
                     android:scrollbars="none" />
 
                 <LinearLayout
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="38dp"
                     android:orientation="horizontal"
@@ -222,6 +223,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -250,6 +252,7 @@
                 android:orientation="horizontal"
                 android:paddingBottom="10dp"
                 android:paddingLeft="15dp"
+                android:visibility="gone"
                 android:paddingTop="10dp">
 
                 <LinearLayout
@@ -365,6 +368,7 @@
             </RelativeLayout>
 
             <View
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"></View>
 
@@ -375,13 +379,13 @@
         android:id="@+id/fl_bottom"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:visibility="gone"
         android:layout_alignParentBottom="true"
         android:background="#ffffff">
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"
-            android:visibility="gone"
             android:background="@color/click_gray"></View>
 
         <LinearLayout

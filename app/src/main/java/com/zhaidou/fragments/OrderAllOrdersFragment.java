@@ -603,7 +603,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         params.put("clientType", "ANDROID");
         params.put("clientVersion", "45");
         params.put("businessType", "01");
-        params.put("type", ZhaiDou.TYPE_ORDER_PRERECEIVE);
+        params.put("type", ZhaiDou.TYPE_ORDER_ALL);
         params.put("pageNo", page + "");
         params.put("pageSize", "10");// ZhaiDou.URL_ORDER_LIST,
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST, new JSONObject(params), new Response.Listener<JSONObject>() {
@@ -643,7 +643,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 //                }
                 JSONArray dataArray = jsonObject.optJSONArray("data");
                 int pageNo = jsonObject.optInt("pageNo");
-                if (dataArray.length()<10){
+                if (dataArray!=null&&dataArray.length()<10){
                     ShowToast("订单加载完毕");
                     mListView.onRefreshComplete();
                     mListView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);

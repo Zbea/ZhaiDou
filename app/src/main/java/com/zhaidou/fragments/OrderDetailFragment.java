@@ -206,16 +206,11 @@ public class OrderDetailFragment extends BaseFragment {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-
                 FetchOrderDetail(mOrderId);
             }
         }, 300);
 
         mCancelOrder.setOnClickListener(this);
-//        if (mOrder != null && "678".contains(mOrder.getStatus())) {
-//            view.findViewById(R.id.tv_order_time_left).setVisibility(View.GONE);
-//            ((TextView) view.findViewById(R.id.tv_cancel_order)).setText(getResources().getString(R.string.sale_service_personal));
-//        }
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
 
         if (ZhaiDou.STATUS_PAYED == mOrder.status) {
@@ -366,18 +361,18 @@ public class OrderDetailFragment extends BaseFragment {
                 break;
             case R.id.tv_order_time_left:
                 if (("" + ZhaiDou.STATUS_DEAL_SUCCESS).equalsIgnoreCase(mOrder.status + "")) {
-                    OrderAfterSaleFragment afterSaleFragment = OrderAfterSaleFragment.newInstance(mOrderId, mOrder.status + "");
-                    ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
-                    afterSaleFragment.setOrderListener(new Order.OrderListener() {
-                        @Override
-                        public void onOrderStatusChange(Order order) {
-//                            mOrder.setStatus(order.getStatus());
-                            mOrderStatus.setText("申请退货");
-                            mOrderTimer.setVisibility(View.GONE);
-                            mCancelOrder.setText(getResources().getString(R.string.sale_service_personal));
-                        }
-                    });
-                    return;
+//                    OrderAfterSaleFragment afterSaleFragment = OrderAfterSaleFragment.newInstance(mOrderId, mOrder.status + "");
+//                    ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
+//                    afterSaleFragment.setOrderListener(new Order.OrderListener() {
+//                                             @Override
+//                                             public void onOrderStatusChange(Order order) {
+//                     //                            mOrder.setStatus(order.getStatus());
+//                                                 mOrderStatus.setText("申请退货");
+//                                                 mOrderTimer.setVisibility(View.GONE);
+//                                                 mCancelOrder.setText(getResources().getString(R.string.sale_service_personal));
+//                                             }
+//                                         });
+//                    return;
                 } else if (mContext.getResources().getString(R.string.order_received).equalsIgnoreCase(mOrderTimer.getText().toString())) {
                     orderOkReciver();
                     return;
