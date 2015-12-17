@@ -1,15 +1,14 @@
 package com.zhaidou.fragments;
 
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +41,6 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
 import com.zhaidou.model.Order1;
-import com.zhaidou.model.OrderDetail;
 import com.zhaidou.model.OrderItem1;
 import com.zhaidou.model.Store;
 import com.zhaidou.utils.DeviceUtils;
@@ -66,10 +64,9 @@ public class OrderDetailFragment1 extends BaseFragment {
     private Order1 mOrder;
     private int flags = 0;
 
-
     private RequestQueue requestQueue;
     private TextView mOrderNumber, mOrderTime, mOrderStatus,
-            mReceiverName, mReceiverPhone, mReceiverAddress, mReceiverTime,mTotalView,
+            mReceiverName, mReceiverPhone, mReceiverAddress, mReceiverTime, mTotalView,
             mOrderAmount, mOrderEdit, mCancelOrder, mOrderTimer, goodsInfo;
     private ListView mListView;
     private TextView mSaleServiceTV;
@@ -77,12 +74,11 @@ public class OrderDetailFragment1 extends BaseFragment {
     private OrderItemAdapter orderItemAdapter;
     private final int UPDATE_COUNT_DOWN_TIME = 2;
     private final int UPDATE_UI_TIMER_FINISH = 3;
-    private MyTimer timer;
+
     private boolean isTimerStart = false;
     private OrderListener orderListener;
     private LinearLayout loadingView;
 
-    private OnColseSuccess onColseSuccess;
     private long timeLeft;
     double amount;
     private View rootView;
@@ -101,31 +97,31 @@ public class OrderDetailFragment1 extends BaseFragment {
                 case 1:
                     mStoreList.setAdapter(mStoreAdapter);
                     loadingView.setVisibility(View.GONE);
-//                    OrderDetail orderDetail = (OrderDetail) msg.obj;
-//                    mOrderNumber.setText(orderDetail.orderCode);
-//                    mOrderTime.setText(orderDetail.creationTime);
-//                    mOrderStatus.setText(orderDetail.orderShowStatus);
-//                    goodsInfo.setText(orderDetail.remark);
-//                    if (orderDetail.status == ZhaiDou.STATUS_UNPAY && mParam2 <= 0) {
-//                        mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
-//                    }
-//                    mReceiverName.setText(mOrder.childOrderPOList.get(0).buyerNick);
-//                    mReceiverPhone.setText(mOrder.childOrderPOList.get(0).buyerMobile);
-//                    mTotalView.setText("￥"+mOrder.orderActualAmount);
-//                    mReceiverAddress.setText(orderDetail.deliveryAddressPO.provinceName + orderDetail.deliveryAddressPO.cityName + orderDetail.deliveryAddressPO.address);
-//                    orderItemAdapter.notifyDataSetChanged();
+                    //                    OrderDetail orderDetail = (OrderDetail) msg.obj;
+                    //                    mOrderNumber.setText(orderDetail.orderCode);
+                    //                    mOrderTime.setText(orderDetail.creationTime);
+                    //                    mOrderStatus.setText(orderDetail.orderShowStatus);
+                    //                    goodsInfo.setText(orderDetail.remark);
+                    //                    if (orderDetail.status == ZhaiDou.STATUS_UNPAY && mParam2 <= 0) {
+                    //                        mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
+                    //                    }
+                    //                    mReceiverName.setText(mOrder.childOrderPOList.get(0).buyerNick);
+                    //                    mReceiverPhone.setText(mOrder.childOrderPOList.get(0).buyerMobile);
+                    //                    mTotalView.setText("￥"+mOrder.orderActualAmount);
+                    //                    mReceiverAddress.setText(orderDetail.deliveryAddressPO.provinceName + orderDetail.deliveryAddressPO.cityName + orderDetail.deliveryAddressPO.address);
+                    //                    orderItemAdapter.notifyDataSetChanged();
                     break;
-//                case UPDATE_COUNT_DOWN_TIME:
-//                    String time = (String) msg.obj;
-//                    mOrderTimer.setText(time);
-//                    break;
-//                case UPDATE_UI_TIMER_FINISH:
-//                    mOrderTimer.setText(mContext.getResources().getString(R.string.timer_finish));
-//                    mOrderTimer.setBackgroundResource(R.drawable.btn_no_click_selector);
-//                    mOrderTimer.setClickable(true);
-//                    mOrder.setStatus("" + ZhaiDou.STATUS_DEAL_CLOSE);
-//                    mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
-//                    break;
+                //                case UPDATE_COUNT_DOWN_TIME:
+                //                    String time = (String) msg.obj;
+                //                    mOrderTimer.setText(time);
+                //                    break;
+                //                case UPDATE_UI_TIMER_FINISH:
+                //                    mOrderTimer.setText(mContext.getResources().getString(R.string.timer_finish));
+                //                    mOrderTimer.setBackgroundResource(R.drawable.btn_no_click_selector);
+                //                    mOrderTimer.setClickable(true);
+                //                    mOrder.setStatus("" + ZhaiDou.STATUS_DEAL_CLOSE);
+                //                    mOrderStatus.setText(mContext.getResources().getString(R.string.order_colse));
+                //                    break;
             }
         }
     };
@@ -133,17 +129,17 @@ public class OrderDetailFragment1 extends BaseFragment {
     private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//            if (flags != 1) {
-//                GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(orderItems.get(i).getMerchandise(), orderItems.get(i).getId());
-//                Bundle bundle = new Bundle();
-//                if (orderItems.get(i).getSale_cate() == 1) {
-//                    bundle.putInt("flags", 1);
-//                }
-//                bundle.putInt("index", orderItems.get(i).getMerchandise_id());
-//                bundle.putString("page", orderItems.get(i).getMerchandise());
-//                goodsDetailsFragment.setArguments(bundle);
-//                ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
-//            }
+            //            if (flags != 1) {
+            //                GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(orderItems.get(i).getMerchandise(), orderItems.get(i).getId());
+            //                Bundle bundle = new Bundle();
+            //                if (orderItems.get(i).getSale_cate() == 1) {
+            //                    bundle.putInt("flags", 1);
+            //                }
+            //                bundle.putInt("index", orderItems.get(i).getMerchandise_id());
+            //                bundle.putString("page", orderItems.get(i).getMerchandise());
+            //                goodsDetailsFragment.setArguments(bundle);
+            //                ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
+            //            }
         }
     };
 
@@ -183,126 +179,56 @@ public class OrderDetailFragment1 extends BaseFragment {
         } else {
             rootView = inflater.inflate(R.layout.fragment_order_detail_list, container, false);
             initView(rootView);
+
         }
         return rootView;
     }
 
     private void initView(View view) {
         mContext = getActivity();
-        System.out.println("OrderDetailFragment1.initView----------->"+getActivity());
-//        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading", true);
+        //        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading", true);
         loadingView = (LinearLayout) view.findViewById(R.id.loadingView);
-mDialogUtils=new DialogUtils(mContext);
-        mStoreList=(ListView)view.findViewById(R.id.storeList);
+        mDialogUtils = new DialogUtils(mContext);
+        mStoreList = (ListView) view.findViewById(R.id.storeList);
 
-        mStoreAdapter=new StoreAdapter(mContext,new ArrayList<Store>());
-//        mStoreList.setAdapter(mStoreAdapter);
+        mStoreAdapter = new StoreAdapter(mContext, new ArrayList<Store>());
+        //        mStoreList.setAdapter(mStoreAdapter);
         requestQueue = Volley.newRequestQueue(getActivity());
         mReceiverName = (TextView) view.findViewById(R.id.tv_receiver_name);
         mReceiverPhone = (TextView) view.findViewById(R.id.tv_receiver_phone);
         mReceiverAddress = (TextView) view.findViewById(R.id.tv_receiver_address);
         mReceiverTime = (TextView) view.findViewById(R.id.tv_receiver_name);
         mOrderAmount = (TextView) view.findViewById(R.id.tv_order_amount);
-        mTotalView=(TextView)view.findViewById(R.id.total);
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        mTotalView = (TextView) view.findViewById(R.id.total);
 
-                FetchOrderDetail(mOrderId);
-            }
-        }, 300);
-
-//        if (mOrder != null && "678".contains(mOrder.getStatus())) {
-//            view.findViewById(R.id.tv_order_time_left).setVisibility(View.GONE);
-//            ((TextView) view.findViewById(R.id.tv_cancel_order)).setText(getResources().getString(R.string.sale_service_personal));
-//        }
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
 
-        if (ZhaiDou.STATUS_PAYED == mOrder.status) {
-            mBottomLayout.setVisibility(View.GONE);
-        }
-
-//        switch (mOrder.status) {
-//            case ZhaiDou.STATUS_UNPAY:
-//                if (mOrder.status == ZhaiDou.STATUS_UNPAY && mParam2 < 1) {
-//                    mBottomLayout.setVisibility(View.GONE);
-//                }
-//                break;
-//            case ZhaiDou.STATUS_PAYED:
-//                mCancelOrder.setText(mContext.getResources().getString(R.string.order_return_money));
-//                mOrderTimer.setVisibility(View.GONE);
-//                mCancelOrder.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_green_click_bg));
-//                break;
-//            case ZhaiDou.STATUS_OVER_TIME:
-//                mBottomLayout.setVisibility(View.GONE);
-//                break;
-//            case ZhaiDou.STATUS_ORDER_CANCEL_PAYED:
-//                mBottomLayout.setVisibility(View.VISIBLE);
-//                mCancelOrder.setText(mContext.getResources().getString(R.string.after_sale_service));
-//                mOrderTimer.setVisibility(View.GONE);
-//                break;
-//            case ZhaiDou.STATUS_DELIVERY:
-//                mCancelOrder.setText(mContext.getResources().getString(R.string.order_logistics));
-//                mOrderTimer.setText(mContext.getResources().getString(R.string.order_received));
-//                mCancelOrder.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_green_click_bg));
-//                mOrderTimer.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_red_click_selector));
-//                break;
-//            case ZhaiDou.STATUS_DEAL_SUCCESS:
-//                Log.i("STATUS_DELIVERY----------------->", "STATUS_DELIVERY");
-//                mCancelOrder.setText(mContext.getResources().getString(R.string.order_logistics));
-//                mOrderTimer.setText(mContext.getResources().getString(R.string.order_return_good));
-//                mCancelOrder.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_green_click_bg));
-//                mOrderTimer.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_green_click_bg));
-//                break;
-//            case ZhaiDou.STATUS_APPLY_GOOD_RETURN:
-//                mOrderTimer.setVisibility(View.GONE);
-//                mCancelOrder.setText(getResources().getString(R.string.sale_service_personal));
-//                break;
-//            case ZhaiDou.STATUS_GOOD_RETURNING:
-//                mOrderTimer.setVisibility(View.GONE);
-//                mCancelOrder.setText(getResources().getString(R.string.sale_service_personal));
-//                break;
-//            case ZhaiDou.STATUS_RETURN_GOOD_SUCCESS:
-//                mOrderTimer.setVisibility(View.GONE);
-//                mCancelOrder.setText(getResources().getString(R.string.sale_service_personal));
-//                break;
-//            case ZhaiDou.STATUS_UNPAY_CANCEL:
-//                mBottomLayout.setVisibility(View.GONE);
-//                break;
-//            case ZhaiDou.STATUS_DEAL_CLOSE:
-//                mBottomLayout.setVisibility(View.GONE);
-//                break;
-//            case ZhaiDou.STATUS_RETURN_MONEY_SUCCESS:
-//                mBottomLayout.setVisibility(View.GONE);
-//                break;
-
-//        }
         loadingView.setVisibility(View.GONE);
-        mStoreAdapter.setOnInViewClickListener(R.id.bt_logistics,new BaseListAdapter.onInternalClickListener() {
+        mStoreAdapter.setOnInViewClickListener(R.id.bt_logistics, new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                System.out.println("StoreAdapter.OnClickListener-------bt_logistics");
-                Store store=(Store)values;
-                if (ZhaiDou.STATUS_DEAL_SUCCESS==store.status||ZhaiDou.STATUS__DELIVERYED==store.status){
-                    OrderLogisticsMsgFragment logisticsMsgFragment=OrderLogisticsMsgFragment.newInstance("","",store);
-                    ((BaseActivity)getActivity()).navigationToFragment(logisticsMsgFragment);
+                Store store = (Store) values;
+                if (ZhaiDou.STATUS_DEAL_SUCCESS == store.status || ZhaiDou.STATUS__DELIVERYED == store.status) {
+                    OrderLogisticsMsgFragment logisticsMsgFragment = OrderLogisticsMsgFragment.newInstance("", "", store);
+                    ((BaseActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
                 }
             }
         });
-        mStoreAdapter.setOnInViewClickListener(R.id.bt_received,new BaseListAdapter.onInternalClickListener() {
+        mStoreAdapter.setOnInViewClickListener(R.id.bt_received, new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                System.out.println("parentV = [" + parentV + "], v = [" + v + "], position = [" + position + "], values = [" + values + "]");
-                final Store store = (Store)values;
-                if (ZhaiDou.STATUS_DEAL_SUCCESS==store.status){
-                    mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_apply_return_goods),new DialogUtils.PositiveListener() {
-                        @Override
-                        public void onPositive() {
-
-                        }
-                    },null);
-                }else if (ZhaiDou.STATUS__DELIVERYED==store.status){
-                    mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_confirm),new DialogUtils.PositiveListener() {
+                final Store store = (Store) values;
+                if (ZhaiDou.STATUS_DEAL_SUCCESS == store.status) {
+//                     mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_apply_return_goods), new DialogUtils.PositiveListener() {
+//                         @Override
+//                         public void onPositive() {
+//
+//                         }
+//                     }, null);
+                    OrderAfterSaleFragment afterSaleFragment = OrderAfterSaleFragment.newInstance(store, "");
+                    ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
+                } else if (ZhaiDou.STATUS__DELIVERYED == store.status) {
+                    mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_confirm), new DialogUtils.PositiveListener() {
                         @Override
                         public void onPositive() {
                             System.out.println("OrderAllOrdersFragment.onPositive");
@@ -318,9 +244,9 @@ mDialogUtils=new DialogUtils(mContext);
                                     int status = jsonObject.optInt("status");
                                     String message = jsonObject.optString("message");
                                     if (200 == status) {
-//                                        order.status = 50;
-//                                        order.orderShowStatus = "交易完成";
-//                                        allOrderAdapter.notifyDataSetChanged();
+                                        //                                        order.status = 50;
+                                        //                                        order.orderShowStatus = "交易完成";
+                                        //                                        allOrderAdapter.notifyDataSetChanged();
                                     } else {
                                         ShowToast(message);
                                     }
@@ -328,10 +254,14 @@ mDialogUtils=new DialogUtils(mContext);
                             }, null);
                             requestQueue.add(request);
                         }
-                    },null);
+                    }, null);
                 }
             }
         });
+        mStoreList.setAdapter(mStoreAdapter);
+        mStoreAdapter.addAll(mOrder.childOrderPOList);
+        loadingView.setVisibility(View.GONE);
+        mStoreAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -340,8 +270,8 @@ mDialogUtils=new DialogUtils(mContext);
             case R.id.tv_cancel_order:
                 if (ZhaiDou.STATUS_DEAL_SUCCESS == mOrder.status) {
 
-//                    OrderLogisticsMsgFragment logisticsMsgFragment = OrderLogisticsMsgFragment.newInstance("", "", order);
-//                    ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
+                    //                    OrderLogisticsMsgFragment logisticsMsgFragment = OrderLogisticsMsgFragment.newInstance("", "", order);
+                    //                    ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
                     return;
                 } else if (mContext.getResources().getString(R.string.order_return_money).equalsIgnoreCase(mCancelOrder.getText().toString())) {
                     final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
@@ -368,11 +298,11 @@ mDialogUtils=new DialogUtils(mContext);
                                     if (orderObj != null) {
                                         String status = orderObj.optString("status");
                                         if ("5".equalsIgnoreCase(status)) {
-//                                            orders.remove(order);
+                                            //                                            orders.remove(order);
                                         } else {
                                             ToolUtils.setToast(getActivity(), "抱歉,确认收货失败");
                                         }
-//                                        handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
+                                        //                                        handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
                                         mDialog.dismiss();
 
                                     }
@@ -399,13 +329,13 @@ mDialogUtils=new DialogUtils(mContext);
                     dialog.setCancelable(true);
                     dialog.addContentView(dialogView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                     dialog.show();
-//                    AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(mOrderId, mOrder.getStatus());
-//                    ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
+                    //                    AfterSaleFragment afterSaleFragment = AfterSaleFragment.newInstance(mOrderId, mOrder.getStatus());
+                    //                    ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
                     return;
                 } else if (mContext.getResources().getString(R.string.order_logistics).equalsIgnoreCase(mCancelOrder.getText().toString())) {
 
-//                    OrderLogisticsMsgFragment logisticsMsgFragment = OrderLogisticsMsgFragment.newInstance("", "", order);
-//                    ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
+                    //                    OrderLogisticsMsgFragment logisticsMsgFragment = OrderLogisticsMsgFragment.newInstance("", "", order);
+                    //                    ((MainActivity) getActivity()).navigationToFragment(logisticsMsgFragment);
                     return;
                 }
                 if (mOrder != null && "3678".contains(mOrder.status + "")) {
@@ -421,18 +351,18 @@ mDialogUtils=new DialogUtils(mContext);
                 break;
             case R.id.tv_order_time_left:
                 if (("" + ZhaiDou.STATUS_DEAL_SUCCESS).equalsIgnoreCase(mOrder.status + "")) {
-                    OrderAfterSaleFragment afterSaleFragment = OrderAfterSaleFragment.newInstance(mOrderId, mOrder.status + "");
-                    ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
-                    afterSaleFragment.setOrderListener(new Order.OrderListener() {
-                        @Override
-                        public void onOrderStatusChange(Order order) {
-//                            mOrder.setStatus(order.getStatus());
-                            mOrderStatus.setText("申请退货");
-                            mOrderTimer.setVisibility(View.GONE);
-                            mCancelOrder.setText(getResources().getString(R.string.sale_service_personal));
-                        }
-                    });
-                    return;
+//                     OrderAfterSaleFragment afterSaleFragment = OrderAfterSaleFragment.newInstance(mOrderId, mOrder.status + "");
+//                     ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
+//                     afterSaleFragment.setOrderListener(new Order.OrderListener() {
+//                         @Override
+//                         public void onOrderStatusChange(Order order) {
+// //                            mOrder.setStatus(order.getStatus());
+//                             mOrderStatus.setText("申请退货");
+//                             mOrderTimer.setVisibility(View.GONE);
+//                             mCancelOrder.setText(getResources().getString(R.string.sale_service_personal));
+//                         }
+//                     });
+//                     return;
                 } else if (mContext.getResources().getString(R.string.order_received).equalsIgnoreCase(mOrderTimer.getText().toString())) {
                     orderOkReciver();
                     return;
@@ -443,70 +373,26 @@ mDialogUtils=new DialogUtils(mContext);
                 Intent intent1 = new Intent(getActivity(), PayDemoActivity.class);
                 intent1.putExtra("id", Integer.parseInt(mOrderId + ""));
                 intent1.putExtra("amount", mOrder.orderPayAmount);
-//                ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(Integer.parseInt(mOrderId), amount, 10, 1000, null, 2);
-//                ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
-//                shopPaymentFragment.setOrderListener(new Order.OrderListener() {
-//                    @Override
-//                    public void onOrderStatusChange(Order order) {
-//                        if (order.getStatus().equals("" + ZhaiDou.STATUS_PAYED)) {
-//                            order.setStatus("" + ZhaiDou.STATUS_PAYED);
-//                            order.setOver_at(0);
-//                            mCancelOrder.setText(mContext.getResources().getString(R.string.order_return_money));
-//                            mOrderTimer.setVisibility(View.GONE);
-//                            mCancelOrder.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_green_click_bg));
-//                            mOrderStatus.setText("已付款");
-//                        } else {
-//                            mParam2 = order.getOver_at();
-//                        }
-//                    }
-//                });
+                //                ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(Integer.parseInt(mOrderId), amount, 10, 1000, null, 2);
+                //                ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
+                //                shopPaymentFragment.setOrderListener(new Order.OrderListener() {
+                //                    @Override
+                //                    public void onOrderStatusChange(Order order) {
+                //                        if (order.getStatus().equals("" + ZhaiDou.STATUS_PAYED)) {
+                //                            order.setStatus("" + ZhaiDou.STATUS_PAYED);
+                //                            order.setOver_at(0);
+                //                            mCancelOrder.setText(mContext.getResources().getString(R.string.order_return_money));
+                //                            mOrderTimer.setVisibility(View.GONE);
+                //                            mCancelOrder.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.btn_green_click_bg));
+                //                            mOrderStatus.setText("已付款");
+                //                        } else {
+                //                            mParam2 = order.getOver_at();
+                //                        }
+                //                    }
+                //                });
                 break;
         }
         super.onClick(view);
-    }
-
-    private void FetchOrderDetail(String id) {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("userId", ZhaiDou.TESTUSERID);
-        params.put("clientType", "ANDROID");
-        params.put("clientVersion", "45");
-        params.put("businessType", "01");
-        params.put("orderCode", mOrder.orderCode);//"MCMST3407850_1"
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_DETAIL, new JSONObject(params), new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject jsonObject) {
-                if (mDialog != null)
-                    mDialog.dismiss();
-                JSONObject dataObj = jsonObject.optJSONObject("data");
-//                Order1 order = JSON.toJavaObject(dataObj, Order1.class);
-                OrderDetail orderDetail = JSON.parseObject(dataObj.toString(), OrderDetail.class);
-
-                mStoreAdapter.addAll(mOrder.childOrderPOList);
-                if (orderDetail.orderItemPOList != null)
-                    orderItems.addAll(orderDetail.orderItemPOList);
-                Message message = new Message();
-                message.obj = orderDetail;
-                message.what = 1;
-                handler.sendMessage(message);
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                mDialog.dismiss();
-                if (getActivity() != null)
-                    Toast.makeText(mContext, "加载失败", Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        requestQueue.add(request);
     }
 
     /**
@@ -530,8 +416,8 @@ mDialogUtils=new DialogUtils(mContext);
                         int status = jsonObject.optInt("status");
                         String message = jsonObject.optString("message");
                         ShowToast(status == 200 ? "取消订单成功" : message);
-                        mOrder.status=ZhaiDou.STATUS_ORDER_CANCEL;
-                        mOrder.orderShowStatus="已取消";
+                        mOrder.status = ZhaiDou.STATUS_ORDER_CANCEL;
+                        mOrder.orderShowStatus = "已取消";
                         if (orderListener != null)
                             orderListener.onOrderStatusChange(mOrder);
                         ((MainActivity) getActivity()).popToStack(OrderDetailFragment1.this);
@@ -547,128 +433,128 @@ mDialogUtils=new DialogUtils(mContext);
         }, null);
 
 
-//        final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
-//        View dialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
-//        TextView textView = (TextView) dialogView.findViewById(R.id.tv_msg);
-//        textView.setText(mContext.getResources().getString(R.string.order_cancel_ok));
-//        TextView cancelTv = (TextView) dialogView.findViewById(R.id.cancelTv);
-//        cancelTv.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                dialog.dismiss();
-//            }
-//        });
-//
-//        TextView okTv = (TextView) dialogView.findViewById(R.id.okTv);
-//        okTv.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                mDialog.show();
-//                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + mOrder.orderId + "/update_status?status=" + ("0".equalsIgnoreCase(mOrder.status + "") ? "9" : "3"), new Response.Listener<JSONObject>() {
-//                    @Override
-//                    public void onResponse(JSONObject jsonObject) {
-//                        mDialog.dismiss();
-//                        int status = jsonObject.optInt("status");
-//                        if (201 == status) {
-//                            JSONObject orderObj = jsonObject.optJSONObject("order");
-//                            if (orderObj != null) {
-//                                double amount = orderObj.optDouble("amount");
-//                                int id = orderObj.optInt("id");
-//                                long over_at = orderObj.optLong("over_at");
-//                                String status1 = orderObj.optString("status");
-//                                String created_at_for = orderObj.optString("created_at_for");
-//                                String created_at = orderObj.optString("created_at");
-//                                String status_ch = orderObj.optString("status_ch");
-//                                String number = orderObj.optString("number");
-//                                Order order = new Order(id, number, amount, status1, status_ch, created_at_for, created_at, "", 0);
-//                                order.setOver_at(0);
-//                                if (orderListener != null)
-//                                    orderListener.onOrderStatusChange(order);
-//                                ((MainActivity) getActivity()).popToStack(OrderDetailFragment.this);
-//                            }
-//                        }
-//                        dialog.dismiss();
-//                    }
-//                }, new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError volleyError) {
-//                        dialog.dismiss();
-//                        ToolUtils.setToast(mContext, "加载失败");
-//                    }
-//                }) {
-//                    @Override
-//                    public Map<String, String> getHeaders() throws AuthFailureError {
-//                        Map<String, String> headers = new HashMap<String, String>();
-//                        headers.put("SECAuthorization", token);
-//                        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-//                        return headers;
-//                    }
-//                };
-//                requestQueue.add(request);
-//
-//            }
-//        });
-//        dialog.setCanceledOnTouchOutside(true);
-//        dialog.setCancelable(true);
-//        dialog.addContentView(dialogView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-//        dialog.show();
+        //        final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
+        //        View dialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
+        //        TextView textView = (TextView) dialogView.findViewById(R.id.tv_msg);
+        //        textView.setText(mContext.getResources().getString(R.string.order_cancel_ok));
+        //        TextView cancelTv = (TextView) dialogView.findViewById(R.id.cancelTv);
+        //        cancelTv.setOnClickListener(new View.OnClickListener() {
+        //            @Override
+        //            public void onClick(View view) {
+        //                dialog.dismiss();
+        //            }
+        //        });
+        //
+        //        TextView okTv = (TextView) dialogView.findViewById(R.id.okTv);
+        //        okTv.setOnClickListener(new View.OnClickListener() {
+        //            @Override
+        //            public void onClick(View view) {
+        //                mDialog.show();
+        //                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + mOrder.orderId + "/update_status?status=" + ("0".equalsIgnoreCase(mOrder.status + "") ? "9" : "3"), new Response.Listener<JSONObject>() {
+        //                    @Override
+        //                    public void onResponse(JSONObject jsonObject) {
+        //                        mDialog.dismiss();
+        //                        int status = jsonObject.optInt("status");
+        //                        if (201 == status) {
+        //                            JSONObject orderObj = jsonObject.optJSONObject("order");
+        //                            if (orderObj != null) {
+        //                                double amount = orderObj.optDouble("amount");
+        //                                int id = orderObj.optInt("id");
+        //                                long over_at = orderObj.optLong("over_at");
+        //                                String status1 = orderObj.optString("status");
+        //                                String created_at_for = orderObj.optString("created_at_for");
+        //                                String created_at = orderObj.optString("created_at");
+        //                                String status_ch = orderObj.optString("status_ch");
+        //                                String number = orderObj.optString("number");
+        //                                Order order = new Order(id, number, amount, status1, status_ch, created_at_for, created_at, "", 0);
+        //                                order.setOver_at(0);
+        //                                if (orderListener != null)
+        //                                    orderListener.onOrderStatusChange(order);
+        //                                ((MainActivity) getActivity()).popToStack(OrderDetailFragment.this);
+        //                            }
+        //                        }
+        //                        dialog.dismiss();
+        //                    }
+        //                }, new Response.ErrorListener() {
+        //                    @Override
+        //                    public void onErrorResponse(VolleyError volleyError) {
+        //                        dialog.dismiss();
+        //                        ToolUtils.setToast(mContext, "加载失败");
+        //                    }
+        //                }) {
+        //                    @Override
+        //                    public Map<String, String> getHeaders() throws AuthFailureError {
+        //                        Map<String, String> headers = new HashMap<String, String>();
+        //                        headers.put("SECAuthorization", token);
+        //                        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+        //                        return headers;
+        //                    }
+        //                };
+        //                requestQueue.add(request);
+        //
+        //            }
+        //        });
+        //        dialog.setCanceledOnTouchOutside(true);
+        //        dialog.setCancelable(true);
+        //        dialog.addContentView(dialogView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        //        dialog.show();
     }
 
     /**
      * ??????
      */
     private void orderOkReciver() {
-//        final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
-//
-//        View dialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
-//        TextView textView = (TextView) dialogView.findViewById(R.id.tv_msg);
-//        textView.setText(mContext.getResources().getString(R.string.order_confirm));
-//        TextView cancelTv = (TextView) dialogView.findViewById(R.id.cancelTv);
-//        cancelTv.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                dialog.dismiss();
-//            }
-//        });
-//
-//        TextView okTv = (TextView) dialogView.findViewById(R.id.okTv);
-//        okTv.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + mOrder.getOrderId() + "/update_status?status=5", new Response.Listener<JSONObject>() {
-//                    @Override
-//                    public void onResponse(JSONObject jsonObject) {
-//                        JSONObject orderObj = jsonObject.optJSONObject("order");
-//                        if (orderObj != null) {
-//                            String status = orderObj.optString("status");
-//                            mOrder.setStatus(status);
-//                            if (orderListener != null)
-//                                orderListener.onOrderStatusChange(mOrder);
-//                            ((BaseActivity) getActivity()).popToStack(OrderDetailFragment.this);
-//                        }
-//                    }
-//                }, new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError volleyError) {
-//                        ToolUtils.setToast(mContext, "加载失败");
-//                    }
-//                }) {
-//                    @Override
-//                    public Map<String, String> getHeaders() throws AuthFailureError {
-//                        Map<String, String> headers = new HashMap<String, String>();
-//                        headers.put("SECAuthorization", token);
-//                        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-//                        return headers;
-//                    }
-//                };
-//                requestQueue.add(request);
-//                dialog.dismiss();
-//            }
-//        });
-//        dialog.setCanceledOnTouchOutside(true);
-//        dialog.setCancelable(true);
-//        dialog.addContentView(dialogView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-//        dialog.show();
+        //        final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
+        //
+        //        View dialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
+        //        TextView textView = (TextView) dialogView.findViewById(R.id.tv_msg);
+        //        textView.setText(mContext.getResources().getString(R.string.order_confirm));
+        //        TextView cancelTv = (TextView) dialogView.findViewById(R.id.cancelTv);
+        //        cancelTv.setOnClickListener(new View.OnClickListener() {
+        //            @Override
+        //            public void onClick(View view) {
+        //                dialog.dismiss();
+        //            }
+        //        });
+        //
+        //        TextView okTv = (TextView) dialogView.findViewById(R.id.okTv);
+        //        okTv.setOnClickListener(new View.OnClickListener() {
+        //            @Override
+        //            public void onClick(View view) {
+        //                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + mOrder.getOrderId() + "/update_status?status=5", new Response.Listener<JSONObject>() {
+        //                    @Override
+        //                    public void onResponse(JSONObject jsonObject) {
+        //                        JSONObject orderObj = jsonObject.optJSONObject("order");
+        //                        if (orderObj != null) {
+        //                            String status = orderObj.optString("status");
+        //                            mOrder.setStatus(status);
+        //                            if (orderListener != null)
+        //                                orderListener.onOrderStatusChange(mOrder);
+        //                            ((BaseActivity) getActivity()).popToStack(OrderDetailFragment.this);
+        //                        }
+        //                    }
+        //                }, new Response.ErrorListener() {
+        //                    @Override
+        //                    public void onErrorResponse(VolleyError volleyError) {
+        //                        ToolUtils.setToast(mContext, "加载失败");
+        //                    }
+        //                }) {
+        //                    @Override
+        //                    public Map<String, String> getHeaders() throws AuthFailureError {
+        //                        Map<String, String> headers = new HashMap<String, String>();
+        //                        headers.put("SECAuthorization", token);
+        //                        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+        //                        return headers;
+        //                    }
+        //                };
+        //                requestQueue.add(request);
+        //                dialog.dismiss();
+        //            }
+        //        });
+        //        dialog.setCanceledOnTouchOutside(true);
+        //        dialog.setCancelable(true);
+        //        dialog.addContentView(dialogView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        //        dialog.show();
     }
 
 
@@ -696,46 +582,14 @@ mDialogUtils=new DialogUtils(mContext);
             tv_count.setText(item.quantity + "");
             ToolUtils.setImageCacheUrl(item.pictureMiddleUrl, iv_order_img, R.drawable.icon_loading_defalut);
             mPrice.setText("￥" + ToolUtils.isIntPrice("" + item.price));
-            mOldPrice.setText("￥" + ToolUtils.isIntPrice("" + item.price));
+            mOldPrice.setText("￥" + ToolUtils.isIntPrice("" + item.marketPrice));
             mOldPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
             return convertView;
         }
     }
 
-
-    private class MyTimer extends CountDownTimer {
-        private MyTimer(long millisInFuture, long countDownInterval) {
-            super(millisInFuture, countDownInterval);
-        }
-
-        @Override
-        public void onTick(long l) {
-            timeLeft = l;
-//            mOrder.setOver_at(l / 1000);
-//            Message message = new Message();
-//            String data = getResources().getString(R.string.timer_start);
-//            data = String.format(data, new SimpleDateFormat("mm:ss").format(new Date(l)));
-//            message.what = UPDATE_COUNT_DOWN_TIME;
-//            message.obj = data;
-//            handler.sendMessage(message);
-        }
-
-        @Override
-        public void onFinish() {
-            handler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
-        }
-    }
-
     @Override
     public void onResume() {
-        if ((ZhaiDou.STATUS_UNPAY + "").equalsIgnoreCase(mOrder.status + "")) {
-            if (timer == null)
-                timer = new MyTimer(mParam2 * 1000, 1000);
-            if (!isTimerStart) {
-                isTimerStart = true;
-                timer.start();
-            }
-        }
         super.onResume();
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_order_detail));
     }
@@ -745,45 +599,11 @@ mDialogUtils=new DialogUtils(mContext);
         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_order_detail));
     }
 
-    @Override
-    public void onDestroyView() {
-        if (timer != null) {
-            timer.cancel();
-            timer = null;
-        }
-//        if (orderListener != null)
-//            orderListener.onOrderStatusChange(mOrder);
-        if (onColseSuccess != null)
-            onColseSuccess.colsePage();
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onStop() {
-        if (timer != null) {
-            timer.cancel();
-            isTimerStart = false;
-        }
-        super.onStop();
-    }
-
-    public void setOrderListener(OrderListener orderListener) {
-        this.orderListener = orderListener;
-    }
-
     public interface OrderListener {
         public void onOrderStatusChange(Order1 order);
     }
 
-    public void setOnColseSuccess(OnColseSuccess OnColseSuccess) {
-        this.onColseSuccess = OnColseSuccess;
-    }
-
-    public interface OnColseSuccess {
-        public void colsePage();
-    }
-
-    private class StoreAdapter extends BaseListAdapter<Store>{
+    private class StoreAdapter extends BaseListAdapter<Store> {
 
         public StoreAdapter(Context context, List<Store> list) {
             super(context, list);
@@ -791,47 +611,51 @@ mDialogUtils=new DialogUtils(mContext);
 
         @Override
         public View bindView(final int position, View convertView, ViewGroup parent) {
-            if (convertView==null)
-                convertView=mInflater.inflate(R.layout.item_order_detail1,null);
-            TextView mOrderNumber=ViewHolder.get(convertView,R.id.tv_order_number);
-            TextView mOrderTime = ViewHolder.get(convertView,R.id.tv_order_time);
-            TextView mOrderStatus =ViewHolder.get(convertView,R.id.tv_order_status);
-            ListView mListView =ViewHolder.get(convertView,R.id.lv_order_list);
-            TextView btn1=ViewHolder.get(convertView,R.id.bt_received);
-            TextView btn2=ViewHolder.get(convertView,R.id.bt_logistics);
-            LinearLayout mBottomLayout =ViewHolder.get(convertView,R.id.ll_bottom);
+            if (convertView == null)
+                convertView = mInflater.inflate(R.layout.item_order_detail1, null);
+            TextView mOrderNumber = ViewHolder.get(convertView, R.id.tv_order_number);
+            TextView mOrderTime = ViewHolder.get(convertView, R.id.tv_order_time);
+            TextView mOrderStatus = ViewHolder.get(convertView, R.id.tv_order_status);
+            ListView mListView = ViewHolder.get(convertView, R.id.lv_order_list);
+            TextView btn1 = ViewHolder.get(convertView, R.id.bt_received);
+            TextView btn2 = ViewHolder.get(convertView, R.id.bt_logistics);
+            LinearLayout mBottomLayout = ViewHolder.get(convertView, R.id.ll_bottom);
 
-            final LinearLayout detailContainer=ViewHolder.get(convertView,R.id.detailContainer);
-            TextView mReceiverName=ViewHolder.get(convertView,R.id.tv_receiver_name);
-            TextView mReceiverPhone=ViewHolder.get(convertView,R.id.tv_receiver_phone);
-            TextView mReceiverAddress=ViewHolder.get(convertView,R.id.tv_receiver_address);
-            TextView mOrderAmount=ViewHolder.get(convertView,R.id.total);
+            final LinearLayout detailContainer = ViewHolder.get(convertView, R.id.detailContainer);
+            TextView mReceiverName = ViewHolder.get(convertView, R.id.tv_receiver_name);
+            TextView mReceiverPhone = ViewHolder.get(convertView, R.id.tv_receiver_phone);
+            final TextView mReceiverAddress = ViewHolder.get(convertView, R.id.tv_receiver_address);
+            TextView mOrderAmount = ViewHolder.get(convertView, R.id.total);
             mReceiverName.setText(mOrder.childOrderPOList.get(0).buyerNick);
             mReceiverPhone.setText(mOrder.childOrderPOList.get(0).buyerMobile);
-            mOrderAmount.setText("￥"+mOrder.orderActualAmount);
-//            mReceiverAddress.setText(orderDetail.deliveryAddressPO.provinceName + orderDetail.deliveryAddressPO.cityName + orderDetail.deliveryAddressPO.address);
+            mOrderAmount.setText("￥" + mOrder.orderActualAmount);
+            //            mReceiverAddress.setText(orderDetail.deliveryAddressPO.provinceName + orderDetail.deliveryAddressPO.cityName + orderDetail.deliveryAddressPO.address);
 
             final Store store = getList().get(position);
-            mOrderNumber.setText(store.orderCode+"");
+            mOrderNumber.setText(store.orderCode + "");
             mOrderTime.setText(store.creationTime);
             mOrderStatus.setText(store.orderShowStatus);
 
-            if (ZhaiDou.STATUS_DEAL_SUCCESS==store.status){
+            if (ZhaiDou.STATUS_DEAL_SUCCESS == store.status) {
                 btn1.setText("申请退货");
                 btn2.setText("查看物流");
                 btn1.setBackgroundResource(R.drawable.btn_green_click_bg);
-            }else if (ZhaiDou.STATUS_UNDELIVERY==store.status||ZhaiDou.STATUS_UNPAY==store.status){
+                if (store.returnGoodsFlag==1)
+                    mBottomLayout.setVisibility(View.GONE);
+            } else if (ZhaiDou.STATUS_UNDELIVERY == store.status || ZhaiDou.STATUS_UNPAY == store.status) {
                 mBottomLayout.setVisibility(View.GONE);
-            }else if (ZhaiDou.STATUS__DELIVERYED==store.status){
+            } else if (ZhaiDou.STATUS__DELIVERYED == store.status) {
                 mBottomLayout.setVisibility(View.VISIBLE);
                 btn2.setText("查看物流");
                 btn1.setText("确认收货");
+            } else if (ZhaiDou.STATUS_ORDER_CANCEL == store.status) {//已取消
+                mBottomLayout.setVisibility(View.GONE);
             }
 
-            final OrderItemAdapter adapter = new OrderItemAdapter(mContext,store.orderItemPOList){
+            final OrderItemAdapter adapter = new OrderItemAdapter(mContext, store.orderItemPOList) {
                 @Override
                 public int getCount() {
-                    if (!store.isExpand){
+                    if (!store.isExpand) {
                         detailContainer.setVisibility(View.GONE);
                         return 1;
                     }
@@ -841,15 +665,14 @@ mDialogUtils=new DialogUtils(mContext);
             };
             mListView.setAdapter(adapter);
             final View finalConvertView = convertView;
-            setOnInViewClickListener(R.id.moreDetail,new onInternalClickListener() {
+            setOnInViewClickListener(R.id.moreDetail, new onInternalClickListener() {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                    Store store1= (Store) values;
-//                    if (store1.orderItemPOList!=null&&store1.orderItemPOList.size()<2)
-//                    store1.orderItemPOList.addAll(store1.orderItemPOList);
-                    store1.isExpand=!store1.isExpand;
+                    Store store1 = (Store) values;
+                    store1.isExpand = !store1.isExpand;
                     System.out.println("parentV = " + parentV);
-                    FetchOrderDetail(finalConvertView,store);
+                    if (TextUtils.isEmpty(mReceiverAddress.getText().toString().trim()))
+                        FetchOrderDetail(finalConvertView, store);
                     adapter.notifyDataSetChanged();
                 }
             });
@@ -858,10 +681,11 @@ mDialogUtils=new DialogUtils(mContext);
         }
     }
 
-    private void FetchOrderDetail(View convertView,Store store){
-        final TextView mReceiverName=ViewHolder.get(convertView,R.id.tv_receiver_name);
-        final TextView mReceiverPhone=ViewHolder.get(convertView,R.id.tv_receiver_phone);
-        final TextView mReceiverAddress=ViewHolder.get(convertView,R.id.tv_receiver_address);
+    private void FetchOrderDetail(View convertView, Store store) {
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading", true);
+        final TextView mReceiverName = ViewHolder.get(convertView, R.id.tv_receiver_name);
+        final TextView mReceiverPhone = ViewHolder.get(convertView, R.id.tv_receiver_phone);
+        final TextView mReceiverAddress = ViewHolder.get(convertView, R.id.tv_receiver_address);
         Map<String, String> params = new HashMap<String, String>();
         params.put("userId", ZhaiDou.TESTUSERID);
         params.put("clientType", "ANDROID");
@@ -871,11 +695,13 @@ mDialogUtils=new DialogUtils(mContext);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_DETAIL, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+                if (mDialog != null)
+                    mDialog.dismiss();
                 JSONObject data = jsonObject.optJSONObject("data");
                 Store store = JSON.parseObject(data.toString(), Store.class);
                 mReceiverName.setText(store.deliveryAddressPO.realName);
                 mReceiverPhone.setText(store.deliveryAddressPO.mobile);
-                mReceiverAddress.setText(store.deliveryAddressPO.provinceName+store.deliveryAddressPO.cityName+store.deliveryAddressPO.regionName);
+                mReceiverAddress.setText(store.deliveryAddressPO.provinceName + store.deliveryAddressPO.cityName + store.deliveryAddressPO.address);
             }
         }, new Response.ErrorListener() {
             @Override

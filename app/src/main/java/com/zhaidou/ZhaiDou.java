@@ -232,7 +232,7 @@ public class ZhaiDou {
     public final static int STATUS_RETURN_MONEY_SUCCESS=11;
 
     /** 订单类型 0：全部 1待付款  2待发货  3待收货 4交易完成 5已取消  */
-    public final static String TYPE_ORDER_ALL="0";
+    public final static String TYPE_ORDER_ALL="4";
     public final static String TYPE_ORDER_PREPAY="1";
     public final static String TYPE_ORDER_PREDELIVERY="2";
     public final static String TYPE_ORDER_PRERECEIVE="3";
@@ -252,7 +252,10 @@ public class ZhaiDou {
     public static String URL_ORDER_CONFIRM=HOME_BASE_URL+"order/confirmReceived.action";
     //订单详情
     public static String URL_ORDER_DETAIL=HOME_BASE_URL+"order/getOrderDetail.action";
-
+    //退换货申请
+    public static String URL_ORDER_RETURN_APPLY=HOME_BASE_URL+"afterSeller/applyReturnFlow.action";
+    //退换货列表
+    public static String URL_ORDER_RETURN_LIST=HOME_BASE_URL+"afterSeller/getReturnFlowList.action";
     // 淘宝订单
     public static String URL_TAOBAO_ORDER="https://login.m.taobao.com/login.htm?tpl_redirect_url=https://h5.m.taobao.com/mlapp/olist.html";
 

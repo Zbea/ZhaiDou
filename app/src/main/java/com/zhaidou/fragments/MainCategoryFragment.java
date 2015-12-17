@@ -3,7 +3,6 @@ package com.zhaidou.fragments;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -188,11 +187,6 @@ public class MainCategoryFragment extends BaseFragment {
                     JSONArray children = jsonObject.optJSONObject("data").optJSONArray("children");
                     List<Category> mCategoryList = JSON.parseArray(children.toString(), Category.class);
                     categoryList.addAll(mCategoryList);
-//                    mHandler.sendEmptyMessage(UPDATE_CATEGORY_DATA);
-                    categoryList.addAll(categoryList);
-                    categoryList.addAll(categoryList);
-                    categoryList.addAll(categoryList);
-                    categoryList.addAll(categoryList);
                     mCategoryAdapter.notifyDataSetChanged();
                 } else {
                     ShowToast(message);

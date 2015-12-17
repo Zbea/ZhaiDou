@@ -40,6 +40,13 @@ public class Store implements Serializable{
     public String updatedTime;
     public int orderType;
     public boolean isExpand;
+    public int returnGoodsFlag;
+
+    //退换货
+    public String createTime;
+    public String statusShowName;
+    public String returnFlowCode;
+    public List<OrderItem1> mallReturnFlowDetailDTOList;
 
     public Delivery deliveryPO;
     public DeliveryAddress deliveryAddressPO;
@@ -76,7 +83,10 @@ public class Store implements Serializable{
                 ", updatedTime='" + updatedTime + '\'' +
                 ", orderType=" + orderType +
                 ", isExpand=" + isExpand +
+                ", returnFlowCode='" + returnFlowCode + '\'' +
+                ", mallReturnFlowDetailDTOList=" + mallReturnFlowDetailDTOList +
                 ", deliveryPO=" + deliveryPO +
+                ", deliveryAddressPO=" + deliveryAddressPO +
                 ", orderItemPOList=" + orderItemPOList +
                 '}';
     }

@@ -1,4 +1,7 @@
 package com.zhaidou.model;
+
+import java.io.Serializable;
+
 /**
  * User: Scoield(553899626@qq.com)
  * Date: 2015-12-14
@@ -6,7 +9,7 @@ package com.zhaidou.model;
  * Description:物流实体类
  * FIXME
  */
-public class Delivery {
+public class Delivery implements Serializable{
 
     public String deliveryNo;
     public String deliveryCode;
