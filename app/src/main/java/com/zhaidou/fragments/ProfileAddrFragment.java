@@ -417,6 +417,7 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
         params.put("profile[first_name]", username);
         params.put("profile[mobile]", mobile);
         params.put("profile[address2]", address);
+
         params.put("profile[id]", profileId);
         params.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
         ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_EDIT_PROFILE_URL + profileId, params, new Response.Listener<JSONObject>() {
