@@ -287,13 +287,13 @@ public class GoodsDetailsFragment extends BaseFragment
                     {
                         setSizeView();
                     }
-                    if (isOver)
-                    {
-                        setAddOrBuyShow("已卖光", false);
-                    }
                     if (isPublish)
                     {
                         setAddOrBuyShow("此商品已下架", false);
+                    }
+                    if (isOver)
+                    {
+                        setAddOrBuyShow("已卖光", false);
                     }
                     shareBtn.setVisibility(template_type != 0 ? View.VISIBLE : View.GONE);
                     try
@@ -1602,7 +1602,7 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     public void FetchCountData()
     {
-        String url = ZhaiDou.CartGoodsCountUrl;
+        String url = ZhaiDou.CartGoodsCountUrl+userId;
         ToolUtils.setLog("url:" + url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
@@ -1631,6 +1631,7 @@ public class GoodsDetailsFragment extends BaseFragment
             {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                headers.put("SECAuthorization", token);
                 return headers;
             }
         };
@@ -1642,7 +1643,7 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     public void FetchAddCartData()
     {
-        String url = ZhaiDou.GoodsDetailsAddUrl + mSpecification2.sizeId;
+        String url = ZhaiDou.GoodsDetailsAddUrl+userId+"&productSKUId="+ mSpecification2.sizeId;
         ToolUtils.setLog(url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {

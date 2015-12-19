@@ -103,6 +103,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     private int pageSize;
     private int cartCount;//购物车商品数量
     private boolean isFristCount = true;
+    private String token;
+    private int userId;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -324,9 +326,9 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 
     public boolean checkLogin()
     {
-        String token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
-        int id = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
-        boolean isLogin = !TextUtils.isEmpty(token) && id > -1;
+        token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
+        userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
+        boolean isLogin = !TextUtils.isEmpty(token) && userId > -1;
         return isLogin;
     }
 
@@ -587,7 +589,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
      */
     public void FetchCountData()
     {
-        String url = ZhaiDou.CartGoodsCountUrl;
+        String url = ZhaiDou.CartGoodsCountUrl+userId;
         ToolUtils.setLog("url:" + url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
@@ -616,6 +618,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                headers.put("SECAuthorization", token);
                 return headers;
             }
         };

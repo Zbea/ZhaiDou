@@ -339,6 +339,7 @@ public class ShopPaymentFragment extends BaseFragment
         JSONObject json=null;
         try
         {
+
             json=new JSONObject();
             json.put("businessType","01");
             json.put("userId",userId);

@@ -7,68 +7,68 @@ public class ZhaiDou {
 
     public static String HOME_PAGE_URL = "http://buy.zhaidou.com/?json=get_category_posts&slug=%E5%AE%B6%E9%A5%B0%E4%BC%98%E9%80%89&status=publish";
 //    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
-//        public static String HOME_BASE_URL = "http://www.zhaidou.com/";
-    public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
-//    public static String HOME_BASE_URL = "http://portal-web.zhaidou.com/portal-web/";
+//    public static String HOME_BASE_URL = "http://www.zhaidou.com/";
+    public static String HOME_BASE_URL = "http://portal-web.zhaidou.com/";
+
 
     //美丽家
-    public static String HomeBeautifulUrl="http://121.42.206.45:7082/zd/getPosts.action?plug=006&pageSize=10&pageNo=";
+    public static String HomeBeautifulUrl=HOME_BASE_URL+"zd/getPosts.action?plug=006&pageSize=10&pageNo=";
     //首页banner
-    public static String HomeBannerUrl="http://121.42.206.45:7082/index/getBoardContent.action?boardCodes=";
+    public static String HomeBannerUrl=HOME_BASE_URL+"index/getBoardContent.action?boardCodes=";
     //首页特卖列表
-    public static String HomeShopListUrl="http://121.42.206.45:7082/index/getSpecialSaleList.action?pageSize=20&pageNo=";
+    public static String HomeShopListUrl=HOME_BASE_URL+"index/getSpecialSaleList.action?pageSize=20&pageNo=";
     //首页特卖商品列表
-    public static String HomeGoodsListUrl="http://121.42.206.45:7082/index/getActivityProductList.action?activityCode=";
+    public static String HomeGoodsListUrl=HOME_BASE_URL+"index/getActivityProductList.action?activityCode=";
     //商品加入购物车
-    public static String GoodsDetailsAddUrl="http://121.42.206.45:7082/cart/addUserCart.action?businessType=01&version=1.0.0&clientType=app&quantity=1&userId=1&productSKUId=";
+    public static String GoodsDetailsAddUrl=HOME_BASE_URL+"cart/addUserCart.action?businessType=01&version=1.0.0&clientType=app&quantity=1&userId=";
     //商品详情接口
-    public static String HomeGoodsDetailsUrl="http://121.42.206.45:7082/product/getProductInfo.action?businessType=01&version=1.0.0&productId=";
+    public static String HomeGoodsDetailsUrl=HOME_BASE_URL+"product/getProductInfo.action?businessType=01&version=1.0.0&productId=";
     //判断是否是0元特卖商品是否已经购买了
-    public static String  IsBuyOSaleUrl="http://121.42.206.45:7082/product/checkProduct.action?version=1.0.0&userId=";
+    public static String  IsBuyOSaleUrl=HOME_BASE_URL+"product/checkProduct.action?version=1.0.0&userId=";
     //购物车数量接口
-    public static String CartGoodsCountUrl="http://121.42.206.45:7082/cart/countUserCartQuantity.action?businessType=01&version=1.0.0&userId=1";
+    public static String CartGoodsCountUrl=HOME_BASE_URL+"cart/countUserCartQuantity.action?businessType=01&version=1.0.0&userId=";
     //购物车列表接口
-    public static String CartGoodsListUrl="http://121.42.206.45:7082/cart/queryUserCart.action?businessType=01&version=1.0.0&clientType=app&userId=1";
+    public static String CartGoodsListUrl=HOME_BASE_URL+"cart/queryUserCart.action?businessType=01&version=1.0.0&clientType=app&userId=";
     //删除购物车接口
-    public static String CartGoodsDeleteUrl="http://121.42.206.45:7082/cart/deleteUserCart.action?businessType=01&version=1.0.0&userId=1&productSKUId=";
+    public static String CartGoodsDeleteUrl=HOME_BASE_URL+"cart/deleteUserCart.action?businessType=01&version=1.0.0&userId=";
     //修改购物车商品详情接口
-    public static String CartGoodsEditUrl="http://121.42.206.45:7082/cart/editUserCart.action?businessType=01&version=1.0.0&clientType=app&userId=1&quantity=";
+    public static String CartGoodsEditUrl=HOME_BASE_URL+"cart/editUserCart.action?businessType=01&version=1.0.0&clientType=app&userId=";
     //搜索商品接口
-    public static String SearchGoodsUrl="http://121.42.206.45:7082/product/searchProduct.action?businessType=01&searchType=10&pageSize=20&keyword=";
+    public static String SearchGoodsUrl=HOME_BASE_URL+"product/searchProduct.action?businessType=01&searchType=10&pageSize=20&keyword=";
     //热搜词
-    public static String SearchHotUrl="http://121.42.206.45:7082/product/getHotKeywordList.action";
+    public static String SearchHotUrl=HOME_BASE_URL+"product/getHotKeywordList.action";
     //提交订单接口
-    public static String CommitOrdersUrl="http://121.42.206.45:7082/order/addMallOrder.action";
+    public static String CommitOrdersUrl=HOME_BASE_URL+"order/addMallOrder.action";
     //获取支付方式
-    public static String CommitPaymentGetCodeUrl="http://121.42.206.45:7082/pay/queryThirdpartyPayType.action";
+    public static String CommitPaymentGetCodeUrl=HOME_BASE_URL+"pay/queryThirdpartyPayType.action";
     //支付
-    public static String CommitPaymentUrl="http://121.42.206.45:7082/pay/payConfirm.action";
+    public static String CommitPaymentUrl=HOME_BASE_URL+"pay/payConfirm.action";
     //获取订单详情
-    public static String GetOrderDetailsUrl="http://121.42.206.45:7082/order/getOrderDetail.action";
+    public static String GetOrderDetailsUrl=HOME_BASE_URL+"order/getOrderDetail.action";
 
     //地址列表
-    public static String AddressListUrl="http://121.42.206.45:7082/user/receivers.action";
+    public static String AddressListUrl=HOME_BASE_URL+"user/receivers.action";
     //设为默认地址
-    public static String AddressIsDefultUrl="http://121.42.206.45:7082/user/receivers_default.action";
+    public static String AddressIsDefultUrl=HOME_BASE_URL+"user/receivers_default.action";
     //新建地址
-    public static String AddressNewUrl="http://121.42.206.45:7082/user/receivers_add.action";
+    public static String AddressNewUrl=HOME_BASE_URL+"user/receivers_add.action";
     //删除地址
-    public static String AddressDeleteUrl="http://121.42.206.45:7082/user/receivers_delete.action";
+    public static String AddressDeleteUrl=HOME_BASE_URL+"user/receivers_delete.action";
     //编辑地址
-    public static String AddressEditUrl="http://121.42.206.45:7082/user/receivers_update.action";
+    public static String AddressEditUrl=HOME_BASE_URL+"user/receivers_update.action";
     //省市区
-    public static String ORDER_ADDRESS_URL="http://121.42.206.45:7082/user/provider.action";
+    public static String ORDER_ADDRESS_URL=HOME_BASE_URL+"user/provider.action";
 
 
 
     //首页三个专题tag
     public static String HOME_SPECIAL_BANNER_URL=HOME_BASE_URL+"special_mall/api/sales/topic_sales?topic=true";
 
-    public static String ApkUrl = "http://121.42.206.45:7082/user/app_versions.action?os=2";
+    public static String ApkUrl = HOME_BASE_URL+"user/app_versions.action?os=2";
     //0元特卖页面：status=0,普通特卖页面：status=1,首页：status=2
     public static String BannerUrl=HOME_BASE_URL+"special_mall/api/sales/sale_banner?status=";
     //APP换量
-    public static String settingRecommendAppUrl="http://121.42.206.45:7082/user/app_exchanges.action?sys=2";
+    public static String settingRecommendAppUrl=HOME_BASE_URL+"user/app_exchanges.action?sys=2";
 
     public static String HOT_SEARCH_URL=HOME_BASE_URL+"article/api/articles/hot_search";
     public static String INDEX_CATEGORY_FILTER=HOME_BASE_URL+"article/api/article_categories";
@@ -114,9 +114,9 @@ public class ZhaiDou {
     //确认订单获取短信接口
     public static String OrderGetSMS = "http://portal-web.zhaidou.com/user/vilidate_phone.action?flag=1&phone=";
     //判断手机是否需要验证接口
-    public static String OrderAccountOrPhone = "http://121.42.206.45:7082/user/validation_phone.action";
+    public static String OrderAccountOrPhone = HOME_BASE_URL+"user/validation_phone.action";
     //提交手机验证接口
-    public static String OrderBlindPhone = "http://121.42.206.45:7082/user/user_blinding_phone.action";
+    public static String OrderBlindPhone = HOME_BASE_URL+"user/user_blinding_phone.action";
 
     //TAB分类
     public static String CATEGORY_ITEM_URL=HOME_BASE_URL+"article/api/item_categories";
