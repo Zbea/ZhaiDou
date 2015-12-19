@@ -217,28 +217,29 @@ public class OrderUnPayFragment extends BaseFragment implements View.OnClickList
                         ShowToast(mContext.getResources().getString(R.string.order_had_order_time));
                         return;
                     }
-                    ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.getOrderId(),"", order.getAmount(), 0, order.getOver_at(), order, 2);
-                    ((BaseActivity) getActivity()).navigationToFragment(shopPaymentFragment);
-                    shopPaymentFragment.setOrderListener(new Order.OrderListener() {
-                        @Override
-                        public void onOrderStatusChange(Order ordera) {
-                            if (ordera.getStatus().equals("" + ZhaiDou.STATUS_PAYED)) {
-                                orders.remove(order);
-                                if (orders.size() < 1) {
-                                    mListView.setVisibility(View.GONE);
-                                    loadingView.setVisibility(View.VISIBLE);
-                                }
-                            } else {
-                                long time = ordera.getOver_at();
-                                order.setStatus(ordera.getStatus());
-                                order.setOver_at(ordera.getOver_at());
-                                if (!isTimerStart) {
-                                    timeStmp = preTime - time;
-                                    timerMap.clear();
-                                }
-                            }
-                        }
-                    });
+////                    ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.getOrderId(),order. ,order.getAmount(), order.getOver_at(), null, 2);
+////                    ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.getOrderId(),"", order.getAmount(), 0, order.getOver_at(), order, 2);
+//                    ((BaseActivity) getActivity()).navigationToFragment(shopPaymentFragment);
+//                    shopPaymentFragment.setOrderListener(new Order.OrderListener() {
+//                        @Override
+//                        public void onOrderStatusChange(Order ordera) {
+//                            if (ordera.getStatus().equals("" + ZhaiDou.STATUS_PAYED)) {
+//                                orders.remove(order);
+//                                if (orders.size() < 1) {
+//                                    mListView.setVisibility(View.GONE);
+//                                    loadingView.setVisibility(View.VISIBLE);
+//                                }
+//                            } else {
+//                                long time = ordera.getOver_at();
+//                                order.setStatus(ordera.getStatus());
+//                                order.setOver_at(ordera.getOver_at());
+//                                if (!isTimerStart) {
+//                                    timeStmp = preTime - time;
+//                                    timerMap.clear();
+//                                }
+//                            }
+//                        }
+//                    });
                 }
             });
             timer = new MyTimer((mContext.getResources().getInteger(R.integer.timer_countdown)), 1000);
