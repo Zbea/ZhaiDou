@@ -87,6 +87,7 @@ public class ShopCartFragment extends BaseFragment
     private RequestQueue mRequestQueue;
 
     private int userId;
+    private String token;
     private List<CartGoodsItem> items = new ArrayList<CartGoodsItem>();
     private ArrayList<CartArrayItem> arrays = new ArrayList<CartArrayItem>();
     private ArrayList<CartArrayItem> arraysCheck = new ArrayList<CartArrayItem>();
@@ -120,6 +121,9 @@ public class ShopCartFragment extends BaseFragment
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
             {
                 isBuySuccess = true;
+                refreshData();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshAddCartTag)) {
                 refreshData();
             }
         }
@@ -319,12 +323,13 @@ public class ShopCartFragment extends BaseFragment
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshAddCartTag);
         mContext.registerReceiver(broadcastReceiver, intentFilter);
     }
 
     public boolean checkLogin()
     {
-        String token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
+        token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
         boolean isLogin = !TextUtils.isEmpty(token) && userId > -1;
         return isLogin;
@@ -422,7 +427,11 @@ public class ShopCartFragment extends BaseFragment
         items.clear();
         boxs.removeAll(boxs);
         itemsCheck.removeAll(itemsCheck);
-        items = arrays.get(0).goodsItems;
+        if (arrays.size()>0)
+        for (int i = 0; i < arrays.size(); i++)
+        {
+            items.addAll(arrays.get(i).goodsItems);
+        }
         for (int position = 0; position < items.size(); position++)
         {
             final int tag = position;
@@ -623,6 +632,10 @@ public class ShopCartFragment extends BaseFragment
                arraysCheck.remove(i);
            }
         }
+        for (int i = 0; i < arraysCheck.size(); i++)
+        {
+            ToolUtils.setLog("测试"+i+":"+arraysCheck.get(i).goodsItems.size());
+        }
         ShopOrderOkFragment shopOrderOkFragment = ShopOrderOkFragment.newInstance("", 0);
         Bundle bundle = new Bundle();
         bundle.putSerializable("goodsList",arraysCheck);
@@ -671,7 +684,7 @@ public class ShopCartFragment extends BaseFragment
      */
     public void FetchDetailData()
     {
-        String url = ZhaiDou.CartGoodsListUrl;
+        String url = ZhaiDou.CartGoodsListUrl+userId;
         ToolUtils.setLog("url:" + url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
@@ -703,13 +716,14 @@ public class ShopCartFragment extends BaseFragment
                                 for (int j = 0; j < goodsArray.length(); j++)
                                 {
                                     JSONObject goodsObject = goodsArray.optJSONObject(j);
-                                    String userId = goodsObject.optString("userId");
+                                    String useId = goodsObject.optString("userId");
                                     String goodsId = goodsObject.optString("productId");
                                     String goodsName = goodsObject.optString("productName");
                                     String goodsUrl = goodsObject.optString("productSKUPicUrl");
                                     String goodsSKU = goodsObject.optString("productSKUId");
                                     String specification = goodsObject.optString("productSKUSpecification");
                                     String isOSale=goodsObject.optString("businessType").equals("01")?"false":"true";
+                                    ToolUtils.setLog(isOSale);
                                     double goodsPrice = goodsObject.optDouble("salePrice");
                                     double formalPrice = goodsObject.optDouble("markerPrice");
                                     int goodsCount = goodsObject.optInt("quantity");
@@ -717,7 +731,7 @@ public class ShopCartFragment extends BaseFragment
                                     String isPublish = goodsObject.optString("productShelves").equals("1")?"false":"true";
                                     String isOver = goodsObject.optInt("stock")>0?"false":"true";
                                     CartGoodsItem goodsItem = new CartGoodsItem();
-                                    goodsItem.userId = userId;
+                                    goodsItem.userId = useId;
                                     goodsItem.storeId = storeId;
                                     goodsItem.goodsId = goodsId;
                                     goodsItem.name = goodsName;
@@ -747,10 +761,11 @@ public class ShopCartFragment extends BaseFragment
                             storeItem.storeMoney = storeMoney;
                             storeItem.goodsItems = goodsItems;
                             arrays.add(storeItem);
-                            mHandler.sendEmptyMessage(1);
-                        }
-                    }
 
+                        }
+
+                    }
+                    mHandler.sendEmptyMessage(1);
                 }
             }
         }, new Response.ErrorListener()
@@ -769,6 +784,7 @@ public class ShopCartFragment extends BaseFragment
             public Map<String, String> getHeaders() throws AuthFailureError
             {
                 Map<String, String> headers = new HashMap<String, String>();
+                headers.put("SECAuthorization", token);
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }
@@ -781,7 +797,7 @@ public class ShopCartFragment extends BaseFragment
      */
     public void FetchCountData()
     {
-        String url = ZhaiDou.CartGoodsCountUrl;
+        String url = ZhaiDou.CartGoodsCountUrl+userId;
         ToolUtils.setLog("url:" + url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
@@ -809,6 +825,7 @@ public class ShopCartFragment extends BaseFragment
             public Map<String, String> getHeaders() throws AuthFailureError
             {
                 Map<String, String> headers = new HashMap<String, String>();
+                headers.put("SECAuthorization", token);
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }
@@ -822,7 +839,7 @@ public class ShopCartFragment extends BaseFragment
     public void FetchGoodsDeleteData(final CartGoodsItem cartGoodsItem,final View childeView,final CheckBox itemCheck)
     {
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
-        String url = ZhaiDou.CartGoodsDeleteUrl + "[" + cartGoodsItem.sizeId + "]";
+        String url = ZhaiDou.CartGoodsDeleteUrl+userId+"&productSKUId="+ "[" + cartGoodsItem.sizeId + "]";
         ToolUtils.setLog("url:" + url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
@@ -860,6 +877,7 @@ public class ShopCartFragment extends BaseFragment
             public Map<String, String> getHeaders() throws AuthFailureError
             {
                 Map<String, String> headers = new HashMap<String, String>();
+                headers.put("SECAuthorization", token);
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }
@@ -876,7 +894,7 @@ public class ShopCartFragment extends BaseFragment
     private void FetchEditDate(final TextView itemNum, final int num, final CartGoodsItem mCartGoodsItem)
     {
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
-        String url = ZhaiDou.CartGoodsEditUrl +num+ "&productSKUId="+mCartGoodsItem.sizeId;
+        String url = ZhaiDou.CartGoodsEditUrl+userId+"&quantity=" +num+ "&productSKUId="+mCartGoodsItem.sizeId;
         ToolUtils.setLog("url:" + url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
@@ -914,6 +932,7 @@ public class ShopCartFragment extends BaseFragment
             public Map<String, String> getHeaders() throws AuthFailureError
             {
                 Map<String, String> headers = new HashMap<String, String>();
+                headers.put("SECAuthorization", token);
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }

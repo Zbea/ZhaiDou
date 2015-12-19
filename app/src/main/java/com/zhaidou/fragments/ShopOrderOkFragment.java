@@ -219,8 +219,8 @@ public class ShopOrderOkFragment extends BaseFragment
                         DecimalFormat df = new DecimalFormat("###.00");
                         double fare = moneyYF;
                         int status=orderObj.optInt("status");
-//                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId,orderCode ,amount, fare,((mContext.getResources().getInteger(R.integer.timer_countdown)) / 1000), null, 1);
-//                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
+                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId,orderCode ,amount, fare,((mContext.getResources().getInteger(R.integer.timer_countdown)) / 1000), null, 1);
+                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
                     } catch (Exception e)
                     {
 
@@ -809,12 +809,13 @@ public class ShopOrderOkFragment extends BaseFragment
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("businessType", "01"));
             params.add(new BasicNameValuePair("userId", userId+""));
-            params.add(new BasicNameValuePair("orderPayAmount", totalMoney+""));
+            params.add(new BasicNameValuePair("orderPayAmount", money+""));
             params.add(new BasicNameValuePair("userAddressId", address.getId()+""));
             params.add(new BasicNameValuePair("token", token));
             params.add(new BasicNameValuePair("version", mContext.getResources().getString(R.string.app_versionName).substring(1)));
             params.add(new BasicNameValuePair("clientType", "ANDROID"));
-            params.add(new BasicNameValuePair("clientVersion", ZDApplication.localVersionCode+""));
+            params.add(new BasicNameValuePair("clientVersion", (ZDApplication.localVersionCode+3)+""));
+            params.add(new BasicNameValuePair("remark", bzInfo_Str+""));
 
             JSONArray storeArray=new JSONArray();
             for (int i = 0; i < cartArrayItems.size(); i++)
@@ -823,8 +824,7 @@ public class ShopOrderOkFragment extends BaseFragment
                 storeObject.put("storeId",cartArrayItems.get(i).storeId);
                 storeObject.put("storeDeliveryId",2);
                 storeObject.put("storeDeliveryFee",moneyYF);
-                storeObject.put("messageToStore",bzInfo_Str);
-
+//                storeObject.put("messageToStore",bzInfo_Str);
                 JSONArray goodsArray=new JSONArray();
                 for (int j = 0; j <cartArrayItems.get(i).goodsItems.size(); j++)
                 {

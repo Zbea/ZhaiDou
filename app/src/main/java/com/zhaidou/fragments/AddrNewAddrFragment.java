@@ -361,7 +361,6 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_ADDRESS_URL, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("FetchCityData---->", jsonObject.toString());
                 if (jsonObject != null) {
                     JSONArray providerArr = jsonObject.optJSONArray("providers");
                     for (int i = 0; i < providerArr.length(); i++) {
@@ -403,6 +402,8 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
                         }
                         province.setCityList(cityList);
                         provinceList.add(province);
+                        Log.i("provinceList---->", provinceList.size()+"");
+
                     }
 
                 }

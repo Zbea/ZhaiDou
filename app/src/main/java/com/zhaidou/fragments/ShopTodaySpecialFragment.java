@@ -103,6 +103,8 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private ShopSpecialItem shopSpecialItem;
     private int cartCount;//购物车商品数量
     private boolean isFristCount=true;
+    private int userId;
+    private String token;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -346,9 +348,9 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     }
 
     public boolean checkLogin() {
-        String token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
-        int id = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
-        boolean isLogin = !TextUtils.isEmpty(token) && id > -1;
+       token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
+        userId= (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
+        boolean isLogin = !TextUtils.isEmpty(token) && userId > -1;
         return isLogin;
     }
 
@@ -495,7 +497,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
      */
     public void FetchCountData()
     {
-        String url = ZhaiDou.CartGoodsCountUrl;
+        String url = ZhaiDou.CartGoodsCountUrl+userId;
         ToolUtils.setLog("url:" + url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
@@ -523,6 +525,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
             public Map<String, String> getHeaders() throws AuthFailureError
             {
                 Map<String, String> headers = new HashMap<String, String>();
+                headers.put("SECAuthorization", token);
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }

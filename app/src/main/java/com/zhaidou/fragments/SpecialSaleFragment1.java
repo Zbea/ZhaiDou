@@ -269,14 +269,21 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (screenWidth * bitmap.getHeight() / bitmap.getWidth()));
                     bannerLine.setLayoutParams(params);
                     imageView1.setLayoutParams(params);
-                    if (imageView1.getDrawingCache() != null) {
-                        imageView1.setImageBitmapLarge(bitmap);
-                    } else {
-                        if (bitmap.isRecycled()) {
-                            bitmap.recycle();
-                            bitmap = null;
-                        }
-                    }
+                     if (bitmap.getHeight() < 4000)
+                            {
+                                imageView1.setImageBitmap(bitmap);
+                            } else
+                            {
+                                imageView1.setImageBitmapLarge(bitmap);
+                            }
+//                    if (imageView1.getDrawingCache() != null) {
+//                        imageView1.setImageBitmapLarge(bitmap);
+//                    } else {
+//                        if (bitmap.isRecycled()) {
+//                            bitmap.recycle();
+//                            bitmap = null;
+//                        }
+//                    }
                 }
             }
             @Override
