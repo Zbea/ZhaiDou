@@ -67,10 +67,8 @@ public class ShopPaymentFragment extends BaseFragment
     private long mOrderId;
     private String orderCode;
     private double mAmount;
-    private double mFare;
     private int flags;
-    private Order mOrder;
-    private Order netOrder;//获取网络订单
+    private Order mOrder=new Order();
     private View mView;
     private Context mContext;
 
@@ -103,7 +101,6 @@ public class ShopPaymentFragment extends BaseFragment
     private long payOrderId;
     private String payOrderCode;
     private Dialog mDialog;
-    private Order1 mOrder1;
 
     private Handler mHandler = new Handler()
     {
@@ -140,7 +137,7 @@ public class ShopPaymentFragment extends BaseFragment
                     } else if (TextUtils.equals(resultStatus, "4000"))
                     {
                         // 其他值就可以判断为支付失败，包括用户主动取消支付，或者系统返回的错误
-                        ShopPaymentFailFragment shopPaymentFailFragment = ShopPaymentFailFragment.newInstance(mOrderId, mAmount, mFare, initTime, payOrderCode);
+                        ShopPaymentFailFragment shopPaymentFailFragment = ShopPaymentFailFragment.newInstance(mOrderId, mAmount, 0, initTime, payOrderCode);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
                     } else if (TextUtils.equals(resultStatus, "6002"))
                     {
@@ -200,28 +197,16 @@ public class ShopPaymentFragment extends BaseFragment
         }
     };
 
-    public static ShopPaymentFragment newInstance(long orderId,String orderCode, double amount, double fare, long timeLeft, Order order, int flags)
+    public static ShopPaymentFragment newInstance(long orderId,String orderCode, double amount, long timeLeft, Order order, int flags)
     {
         ShopPaymentFragment fragment = new ShopPaymentFragment();
         Bundle args = new Bundle();
         args.putLong(ARG_ORDERID, orderId);
         args.putString("orderCode", orderCode);
         args.putDouble(ARG_AMOUNT, amount);
-        args.putDouble(ARG_FARE, fare);
         args.putLong(ARG_TIME, timeLeft);
         args.putSerializable(ARG_ORDER, order);
         args.putInt("flags", flags);
-        fragment.setArguments(args);
-        return fragment;
-    }
-    public static ShopPaymentFragment newInstance(Order1 order,String orderCode,int timeLeft,int flags)
-    {
-        ShopPaymentFragment fragment = new ShopPaymentFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(ARG_ORDER, order);
-        args.putString("orderCode", orderCode);
-        args.putInt("flags", flags);
-        args.putLong(ARG_TIME, timeLeft);
         fragment.setArguments(args);
         return fragment;
     }
@@ -240,9 +225,7 @@ public class ShopPaymentFragment extends BaseFragment
             payOrderId=mOrderId = getArguments().getLong(ARG_ORDERID);
             payOrderCode=orderCode = getArguments().getString("orderCode");
             payMoney= mAmount = getArguments().getDouble(ARG_AMOUNT);
-            mFare = getArguments().getDouble(ARG_FARE);
             initTime = getArguments().getLong(ARG_TIME);
-            mOrder1 = (Order1) getArguments().getSerializable(ARG_ORDER);
             flags = getArguments().getInt("flags");
         }
     }
@@ -324,76 +307,12 @@ public class ShopPaymentFragment extends BaseFragment
             }
         });
         TextView mAccountView = (TextView) mView.findViewById(R.id.tv_cash);
-        mAccountView.setText("￥" + mOrder1.orderActualAmount);
+        mAccountView.setText("￥" +payMoney);
         mView.findViewById(R.id.tv_pinkage).setVisibility(View.GONE);
-
-        mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"");
-        FetchOrderDetail();
+        mHandler.sendEmptyMessage(UPDATE_ORDER_DETAILS);
     }
 
-    /**
-     * 获取订单详情
-     */
-    private void FetchOrderDetail()
-    {
-        JSONObject json=null;
-        try
-        {
 
-            json=new JSONObject();
-            json.put("businessType","01");
-            json.put("userId",userId);
-            json.put("orderCode",orderCode);
-
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,ZhaiDou.GetOrderDetailsUrl,json, new Response.Listener<JSONObject>()
-        {
-            @Override
-            public void onResponse(JSONObject jsonObject)
-            {
-                mDialog.dismiss();
-                if (jsonObject != null)
-                {
-                    int status=jsonObject.optInt("status");
-                    if(status==200)
-                    {
-                        JSONObject dataObject=jsonObject.optJSONObject("data");
-                        if (dataObject!=null)
-                        payMoney=dataObject.optDouble("orderTotalAmount");
-                        payOrderId=dataObject.optLong("orderId");
-                        payOrderCode=dataObject.optString("orderCode");
-                        initTime=dataObject.optInt("orderRemainingTime");
-                    }
-                }
-                mHandler.sendEmptyMessage(UPDATE_ORDER_DETAILS);
-            }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-                mDialog.dismiss();
-                mHandler.sendEmptyMessage(UPDATE_ORDER_DETAILS);
-                if (mContext != null)
-                    ToolUtils.setToast(mContext,R.string.loading_fail_txt);
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
-    }
 
     /**
      * 发送刷新代付加一
@@ -707,12 +626,12 @@ public class ShopPaymentFragment extends BaseFragment
                 isSuccess = true;
                 setUnPayDesCount();
                 notificationPaySuccess();
-                ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, mAmount + mFare, mOrder);
+                ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, mAmount , mOrder);
                 ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                 break;
             case -1://支付失败
                 Log.i("----->", "支付失败");
-                ShopPaymentFailFragment shopPaymentFailFragment = ShopPaymentFailFragment.newInstance(mOrderId, mAmount, mFare, initTime, payOrderCode);
+                ShopPaymentFailFragment shopPaymentFailFragment = ShopPaymentFailFragment.newInstance(mOrderId, mAmount, 0, initTime, payOrderCode);
                 ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
                 break;
             case -2://取消支付

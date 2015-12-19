@@ -216,10 +216,8 @@ public class ShopOrderOkFragment extends BaseFragment
                         int orderId = orderObj.optInt("orderId");
                         String orderCode = orderObj.optString("orderCode");
                         double amount = orderObj.optDouble("orderTotalAmount");
-                        DecimalFormat df = new DecimalFormat("###.00");
-                        double fare = moneyYF;
-                        int status=orderObj.optInt("status");
-                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId,orderCode ,amount, fare,((mContext.getResources().getInteger(R.integer.timer_countdown)) / 1000), null, 1);
+                        long time = orderObj.optLong("orderRemainingTime");
+                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId,orderCode ,amount,time, null, 1);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
                     } catch (Exception e)
                     {
@@ -824,7 +822,7 @@ public class ShopOrderOkFragment extends BaseFragment
                 storeObject.put("storeId",cartArrayItems.get(i).storeId);
                 storeObject.put("storeDeliveryId",2);
                 storeObject.put("storeDeliveryFee",moneyYF);
-//                storeObject.put("messageToStore",bzInfo_Str);
+                storeObject.put("messageToStore",bzInfo_Str);
                 JSONArray goodsArray=new JSONArray();
                 for (int j = 0; j <cartArrayItems.get(i).goodsItems.size(); j++)
                 {
