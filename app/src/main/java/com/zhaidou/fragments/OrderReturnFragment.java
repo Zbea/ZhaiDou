@@ -61,6 +61,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
     private Context mContext;
     private View mEmptyView,mNetErrorView;
     private WeakHashMap<Integer,View> mHashMap=new WeakHashMap<Integer, View>();
+    private String mUserId;
     private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -121,6 +122,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
         mListView.setAdapter(returnAdapter);
         mRequestQueue= Volley.newRequestQueue(getActivity());
         token=(String) SharedPreferencesUtil.getData(getActivity(),"token","");
+        mUserId=SharedPreferencesUtil.getData(mContext, "userId", -1)+"";
 //        initData();
         returnAdapter.setOnInViewClickListener(R.id.orderlayout,new BaseListAdapter.onInternalClickListener() {
             @Override
@@ -254,7 +256,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
     }
     private void FetchReturnData(){
         Map<String,String> params = new HashMap();
-        params.put("userId",ZhaiDou.TESTUSERID);
+        params.put("userId",mUserId);
         params.put("clientType","ANDROID");
         params.put("clientVersion","45");
         params.put("businessType","01");
