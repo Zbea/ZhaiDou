@@ -78,6 +78,7 @@ public class OrderDetailFragment1 extends BaseFragment {
     private StoreAdapter mStoreAdapter;
     private DialogUtils mDialogUtils;
     private Dialog mDialog;
+    private String mUserId;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -178,6 +179,7 @@ public class OrderDetailFragment1 extends BaseFragment {
         requestQueue = Volley.newRequestQueue(getActivity());
 
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
+        mUserId=SharedPreferencesUtil.getData(mContext, "userId", -1)+"";
 
         loadingView.setVisibility(View.GONE);
         mStoreAdapter.setOnInViewClickListener(R.id.bt_logistics, new BaseListAdapter.onInternalClickListener() {
@@ -205,7 +207,7 @@ public class OrderDetailFragment1 extends BaseFragment {
                             Map<String, String> params = new HashMap();
                             params.put("businessType", "01");
                             params.put("clientType", "ANDROID");
-                            params.put("userId", ZhaiDou.TESTUSERID);
+                            params.put("userId", mUserId);
                             params.put("clientVersion", "45");
                             params.put("orderCode", store.orderCode);
                             JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_CONFIRM, new JSONObject(params), new Response.Listener<JSONObject>() {
@@ -217,6 +219,8 @@ public class OrderDetailFragment1 extends BaseFragment {
                                         //                                        order.status = 50;
                                         //                                        order.orderShowStatus = "交易完成";
                                         //                                        allOrderAdapter.notifyDataSetChanged();
+                                        ShowToast("确认收货成功");
+                                        ((MainActivity)getActivity()).popToStack(OrderDetailFragment1.this);
                                     } else {
                                         ShowToast(message);
                                     }
@@ -239,7 +243,7 @@ public class OrderDetailFragment1 extends BaseFragment {
         params.put("businessType", "01");
         params.put("clientType", "ANDROID");
         params.put("version", "1.0.1");
-        params.put("userId",ZhaiDou.TESTUSERID);
+        params.put("userId",mUserId);
         params.put("orderCode",orderCode);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,new ZhaiDou().URL_ORDER_DETAIL_LIST_URL,new JSONObject(params),new Response.Listener<JSONObject>() {
             @Override

@@ -89,6 +89,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     private String mCurrentType;
     private int initTime = 900;
     private boolean isDataLoaded = false;
+    private String mUserId;
     private Map<Integer, Long> timerMapStamp = new HashMap<Integer, Long>();
     private Handler handler = new Handler() {
         @Override
@@ -164,7 +165,8 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             mRequestQueue = Volley.newRequestQueue(getActivity());
             allOrderAdapter = new AllOrderAdapter(getActivity(), mOrderList);
             mListView.setAdapter(allOrderAdapter);
-            token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
+            token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
+            mUserId=SharedPreferencesUtil.getData(mContext, "userId", -1)+"";
 
             initData();
             allOrderAdapter.setOnInViewClickListener(R.id.orderlayout, new BaseListAdapter.onInternalClickListener() {
@@ -221,7 +223,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                                 params.put("businessType", "01");
                                 params.put("clientType", "ANDROID");
                                 params.put("version", "1.0.1");
-                                params.put("userId", ZhaiDou.TESTUSERID);
+                                params.put("userId", mUserId);
                                 params.put("clientVersion", "45");
                                 params.put("orderCode", order.orderCode);
                                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_APPLY_CANCEL, new JSONObject(params), new Response.Listener<JSONObject>() {
@@ -244,7 +246,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         params.put("businessType", "01");
                         params.put("clientType", "ANDROID");
                         params.put("version", "1.0.1");
-                        params.put("userId", ZhaiDou.TESTUSERID);
+                        params.put("userId",mUserId);
                         params.put("clientVersion", "45");
                         params.put("orderCode", order.orderCode);
                         mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_cancel_ok), new DialogUtils.PositiveListener() {
@@ -355,7 +357,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                                 Map<String, String> params = new HashMap();
                                 params.put("businessType", "01");
                                 params.put("clientType", "ANDROID");
-                                params.put("userId", ZhaiDou.TESTUSERID);
+                                params.put("userId",mUserId);
                                 params.put("clientVersion", "45");
                                 params.put("orderCode", order.orderCode);
                                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_CONFIRM, new JSONObject(params), new Response.Listener<JSONObject>() {
@@ -384,7 +386,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     final Order1 order = (Order1) values;
                     final Map<String, String> params = new HashMap();
                     params.put("businessType", "01");
-                    params.put("userId", ZhaiDou.TESTUSERID);
+                    params.put("userId",mUserId);
                     params.put("orderCode", order.orderCode);
                     DialogUtils mDialogUtils = new DialogUtils(getActivity());
                     mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_delete), new DialogUtils.PositiveListener() {
@@ -498,7 +500,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
     private void FetchOrderList(int page, String type) {
         Map<String, String> params = new HashMap();//28129
-        params.put("userId", ZhaiDou.TESTUSERID);//64410//16665
+        params.put("userId",mUserId);//64410//16665
         params.put("clientType", "ANDROID");
         params.put("clientVersion", "45");
         params.put("businessType", "01");
