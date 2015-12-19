@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +31,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomePTActivity;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.User;
@@ -63,7 +63,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     private final int UPDATE_USER_COLLOCATION = 4;
     private final int UPDATE_UNPAY_COUNT = 5;
     private final int UPDATE_UNPAY_COUNT_REFRESH = 6;
-    private final int UPDATE_CARTCAR_DATA=7;
+    private final int UPDATE_CARTCAR_DATA = 7;
 
     private Map<String, String> cityMap = new HashMap<String, String>();
 
@@ -83,10 +83,10 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     private TextView mCartCount;
     private int userId;
     private String token;
-    private int count=0;
-    private int collectNum=0;
-    private int cartNum=0;
-//    private int num;
+    private int count = 0;
+    private int collectNum = 0;
+    private int cartNum = 0;
+    //    private int num;
     private List<CartGoodsItem> cartGoodsItems = new ArrayList<CartGoodsItem>();
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -94,7 +94,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(ZhaiDou.IntentRefreshLoginExitTag)) {
-                count=0;
+                count = 0;
                 exitLoginEvent();
             }
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag)) {
@@ -116,8 +116,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                     tv_unpay_count.setText(count + "");
                 }
             }
-            if (action.equals(ZhaiDou.IntentRefreshUnPayTag))
-            {
+            if (action.equals(ZhaiDou.IntentRefreshUnPayTag)) {
                 ToolUtils.setLog("开始好刷新count");
                 FetchUnPayCount(UPDATE_UNPAY_COUNT_REFRESH);
             }
@@ -130,7 +129,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             switch (msg.what) {
                 case UPDATE_USER_INFO:
                     User user = (User) msg.obj;
-                    ToolUtils.setImageCacheUrl("http://" + user.getAvatar(), iv_header,R.drawable.icon_header_default);
+                    ToolUtils.setImageCacheUrl("http://" + user.getAvatar(), iv_header, R.drawable.icon_header_default);
                     if (!TextUtils.isEmpty(user.getNickName()))
                         tv_nickname.setText(user.getNickName());
                     break;
@@ -139,30 +138,30 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                     tv_desc.setText("null".equalsIgnoreCase(u.getDescription()) || u.getDescription() == null ? "" : u.getDescription());
                     break;
                 case UPDATE_USER_COLLECT_COUNT:
-                    collectNum=msg.arg1;
-                    ToolUtils.setLog("收藏"+msg.arg1);
+                    collectNum = msg.arg1;
+                    ToolUtils.setLog("收藏" + msg.arg1);
                     tv_collect.setText(msg.arg1 + "");
                     break;
                 case UPDATE_USER_COLLOCATION:
-                    ToolUtils.setLog("豆搭："+msg.arg1);
+                    ToolUtils.setLog("豆搭：" + msg.arg1);
                     tv_collocation.setText(msg.arg1 + "");
                     break;
                 case UPDATE_UNPAY_COUNT:
                     count = msg.arg1;
-                    ToolUtils.setLog("代付款："+count);
+                    ToolUtils.setLog("代付款：" + count);
                     tv_unpay_count.setVisibility(View.VISIBLE);
                     ((MainActivity) getActivity()).hideTip(View.VISIBLE);
                     tv_unpay_count.setText(count + "");
                     break;
                 case UPDATE_UNPAY_COUNT_REFRESH:
                     count = msg.arg1;
-                    ToolUtils.setLog("代付款："+count);
+                    ToolUtils.setLog("代付款：" + count);
                     tv_unpay_count.setVisibility(View.VISIBLE);
                     tv_unpay_count.setText(count + "");
                     break;
                 case UPDATE_CARTCAR_DATA:
-                    int num=msg.arg2;
-                    mCartCount.setVisibility(num>0?View.VISIBLE:View.GONE);
+                    int num = msg.arg2;
+                    mCartCount.setVisibility(num > 0 ? View.VISIBLE : View.GONE);
                     mCartCount.setText("" + num);
                     break;
             }
@@ -286,7 +285,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopCartFragment);
                 break;
             case R.id.all_order:
-                OrderAllOrdersFragment allOrdersFragment = OrderAllOrdersFragment.newInstance("", "");
+                OrderAllOrdersFragment allOrdersFragment = OrderAllOrdersFragment.newInstance(ZhaiDou.TYPE_ORDER_ALL, "");
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(allOrdersFragment);
                 break;
             case R.id.rl_collocation:
@@ -294,28 +293,27 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(collocationFragment);
                 break;
             case R.id.tv_pre_pay:
-                ToolUtils.setLog("count:"+count);
-                OrderUnPayFragment unPayFragment = OrderUnPayFragment.newInstance("", "",count);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(unPayFragment);
-                unPayFragment.setBackClickListener(new OrderUnPayFragment.BackCountListener()
-                {
-                    @Override
-                    public void onBackCount(int counts)
-                    {
-                        if (counts>0)
-                        {
-                            tv_unpay_count.setText(""+counts);
-                        }
-                        else
-                        {
-                            tv_unpay_count.setVisibility(View.GONE);
-                        }
-                    }
-                });
-                ((MainActivity) getActivity()).hideTip(View.GONE);
+                ToolUtils.setLog("count:" + count);
+                OrderAllOrdersFragment unPayFragment = OrderAllOrdersFragment.newInstance(ZhaiDou.TYPE_ORDER_PREPAY,"");
+                ((BaseActivity)getActivity()).navigationToFragment(unPayFragment);
+//                OrderUnPayFragment unPayFragment = OrderUnPayFragment.newInstance("", "", count);
+//                ((MainActivity) getActivity()).navigationToFragmentWithAnim(unPayFragment);
+//                unPayFragment.setBackClickListener(new OrderUnPayFragment.BackCountListener() {
+//                    @Override
+//                    public void onBackCount(int counts) {
+//                        if (counts > 0) {
+//                            tv_unpay_count.setText("" + counts);
+//                        } else {
+//                            tv_unpay_count.setVisibility(View.GONE);
+//                        }
+//                    }
+//                });
+//                ((MainActivity) getActivity()).hideTip(View.GONE);
                 break;
             case R.id.tv_pre_received:
-                OrderUnReceiveFragment unReceiveFragment = OrderUnReceiveFragment.newInstance("", "");
+//                OrderUnReceiveFragment unReceiveFragment = OrderUnReceiveFragment.newInstance("", "");
+//                ((MainActivity) getActivity()).navigationToFragmentWithAnim(unReceiveFragment);
+                OrderAllOrdersFragment unReceiveFragment = OrderAllOrdersFragment.newInstance(ZhaiDou.TYPE_ORDER_PRERECEIVE, "");
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(unReceiveFragment);
                 break;
             case R.id.tv_return:
@@ -327,16 +325,16 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(addrManageFragment);
                 break;
             case R.id.rl_setting:
-                SettingFragment mSettingFragment=SettingFragment.newInstance("","");
+                SettingFragment mSettingFragment = SettingFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(mSettingFragment);
                 mSettingFragment.setProfileListener(new SettingFragment.ProfileListener() {
                     @Override
                     public void onProfileChange(User user) {
-                        if (!TextUtils.isEmpty(user.getDescription())){
+                        if (!TextUtils.isEmpty(user.getDescription())) {
                             tv_desc.setText(user.getDescription());
-                        }else if (!TextUtils.isEmpty(user.getAvatar())){
+                        } else if (!TextUtils.isEmpty(user.getAvatar())) {
                             ToolUtils.setImageCacheUrl("http://" + user.getAvatar(), iv_header);
-                        }else if (!TextUtils.isEmpty(user.getNickName())){
+                        } else if (!TextUtils.isEmpty(user.getNickName())) {
                             tv_nickname.setText(user.getNickName());
                         }
                     }
@@ -347,17 +345,23 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(contactUsFragment);
                 break;
             case R.id.accountInfoBtn:
-                mProfileFragment=ProfileFragment.newInstance("","");
-                mProfileFragment.setProfileListener(new ProfileFragment.ProfileListener()
-                {
+                mProfileFragment = ProfileFragment.newInstance("", "");
+                mProfileFragment.setProfileListener(new ProfileFragment.ProfileListener() {
                     @Override
-                    public void onProfileChange(User user)
-                    {
-//                            ToolUtils.se());
-//                        }
+                    public void onProfileChange(User user) {
+                        System.out.println("MainPersonalFragment.onProfileChange");
+                        if (!TextUtils.isEmpty(user.getDescription())) {
+                            tv_desc.setText(user.getDescription());
+                        }
+                        if (!TextUtils.isEmpty(user.getAvatar())) {
+                            ToolUtils.setImageCacheUrl("http://" + user.getAvatar(), iv_header);
+                        }
+                        if (!TextUtils.isEmpty(user.getNickName())) {
+                            tv_nickname.setText(user.getNickName());
+                        }
                     }
                 });
-                ((MainActivity)getActivity()).navigationToFragmentWithAnim(mProfileFragment);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(mProfileFragment);
                 break;
             case R.id.rl_competition:
                 Intent intent = new Intent(getActivity(), HomePTActivity.class);
@@ -373,19 +377,15 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 collectFragment.setCollectCountChangeListener(new CollectFragment.CollectCountChangeListener() {
                     @Override
                     public void onCountChange(int count, Fragment fragment) {
-                        tv_collect.setText(collectNum-1<=0?0+"":""+--collectNum);
+                        tv_collect.setText(collectNum - 1 <= 0 ? 0 + "" : "" + --collectNum);
                     }
                 });
                 break;
-//            case R.id.ll_collocation:
-//                CollocationFragment collocationFragment = CollocationFragment.newInstance("", "");
-//                ((MainActivity) getActivity()).navigationToFragmentWithAnim(collocationFragment);
-//                break;
             case R.id.rl_service:
-                if (DeviceUtils.isApkInstalled(getActivity(), "com.tencent.mobileqq")){
+                if (DeviceUtils.isApkInstalled(getActivity(), "com.tencent.mobileqq")) {
                     String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_Number);
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                }else {
+                } else {
                     ShowToast("没有安装QQ客户端哦");
                 }
                 break;
@@ -396,12 +396,12 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     public void getUserInfo() {
 
         Object id = SharedPreferencesUtil.getData(getActivity(), "userId", 0);
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL + "?id="+id, new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL + "?id=" + id, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
                 String msg = jsonObject.optString("message");
-                if (status==200){
+                if (status == 200) {
                     JSONObject dataObj = jsonObject.optJSONObject("data");
                     JSONObject userObj = dataObj.optJSONObject("user");
                     String email = userObj.optString("email");
@@ -418,7 +418,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                     message.what = UPDATE_USER_INFO;
                     message.obj = user;
                     mHandler.sendMessage(message);
-                }else {
+                } else {
                     ShowToast(msg);
                 }
             }
@@ -426,10 +426,10 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             @Override
             public void onErrorResponse(VolleyError volleyError) {
             }
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers=new HashMap<String, String>();
+                Map<String, String> headers = new HashMap<String, String>();
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }
@@ -439,12 +439,12 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
 
     public void getUserDetail() {
         Object id = SharedPreferencesUtil.getData(getActivity(), "userId", 0);
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_DETAIL_PROFILE_URL +"?id="+id, new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_DETAIL_PROFILE_URL + "?id=" + id, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
                 String msg = jsonObject.optString("message");
-                if (status==200){
+                if (status == 200) {
                     JSONObject dataObj = jsonObject.optJSONObject("data");
                     JSONObject userObj = dataObj.optJSONObject("profile");
                     if (userObj != null) {
@@ -459,7 +459,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                         mHandler.sendMessage(message);
                     }
 
-                }else {
+                } else {
                     ShowToast(msg);
                 }
 
@@ -468,15 +468,15 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             @Override
             public void onErrorResponse(VolleyError volleyError) {
             }
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers=new HashMap<String, String>();
+                Map<String, String> headers = new HashMap<String, String>();
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }
         };
-        ((ZDApplication)getActivity().getApplication()).mRequestQueue.add(request);
+        ((ZDApplication) getActivity().getApplication()).mRequestQueue.add(request);
     }
 
     @Override
@@ -511,91 +511,24 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     }
 
     @Override
-    public void onDestroyView()
-    {
-        if (broadcastReceiver!=null)
+    public void onDestroyView() {
+        if (broadcastReceiver != null)
             getActivity().unregisterReceiver(broadcastReceiver);
         super.onDestroyView();
     }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
+        System.out.println("MainPersonalFragment.onHiddenChanged");
         userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         if (!hidden && userId != -1) {
-//            FetchCollectData();
-//            FetchCollocationData();
             FetchUnPayCount(UPDATE_UNPAY_COUNT_REFRESH);
             getUserDetail();
             getUserInfo();
         }
         super.onHiddenChanged(hidden);
     }
-
-    private void FetchCollectData() {
-        ToolUtils.setLog("查看收藏");
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_COLLECT_ITEM_URL + 1, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject jsonObject) {
-                Log.i("FetchCollectData-------->", jsonObject.toString());
-                if (jsonObject != null) {
-                    JSONObject meta = jsonObject.optJSONObject("meta");
-                    int count = meta == null ? 0 : meta.optInt("count");
-                    Message message = new Message();
-                    message.what = UPDATE_USER_COLLECT_COUNT;
-                    message.arg1 = count;
-                    mHandler.sendMessage(message);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
-    }
-
-    private void FetchCollocationData() {
-        ToolUtils.setLog("查看豆搭");
-        final String token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
-//        final int userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_COLLOCATION_ITEM_URL + userId + "/bean_collocations?page=" + 1
-                , new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject jsonObject) {
-                if (jsonObject != null) {
-                    JSONObject meta = jsonObject.optJSONObject("meta");
-                    int count = meta == null ? 0 : meta.optInt("count");
-                    Message message = new Message();
-                    message.arg1 = count;
-                    message.what = UPDATE_USER_COLLOCATION;
-                    mHandler.sendMessage(message);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-            }
-        }){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers=new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
-    }
-
     private void FetchUnPayCount(final int f) {
         ToolUtils.setLog("查看代付款数量");
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?count=1&status=0", new Response.Listener<JSONObject>() {
@@ -604,16 +537,13 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 if (jsonObject != null) {
                     ToolUtils.setLog(jsonObject.toString());
                     int count = jsonObject.optInt("count");
-                    ToolUtils.setLog("个人页面count:"+count);
-                    if (count > 0)
-                    {
+                    ToolUtils.setLog("个人页面count:" + count);
+                    if (count > 0) {
                         Message message = new Message();
                         message.what = f;
                         message.arg1 = count;
                         mHandler.sendMessage(message);
-                    }
-                    else
-                    {
+                    } else {
                         tv_unpay_count.setVisibility(View.GONE);
                     }
                 }
@@ -634,11 +564,13 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
         };
         mRequestQueue.add(request);
     }
+
     public void onResume() {
         System.out.println("PersonalFragment.onResume");
         super.onResume();
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_personal));
     }
+
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_personal));

@@ -9,6 +9,7 @@ public class ZhaiDou {
 //    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
 //        public static String HOME_BASE_URL = "http://www.zhaidou.com/";
     public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
+//    public static String HOME_BASE_URL = "http://portal-web.zhaidou.com/portal-web/";
 
     //美丽家
     public static String HomeBeautifulUrl="http://121.42.206.45:7082/zd/getPosts.action?plug=006&pageSize=10&pageNo=";
@@ -198,6 +199,8 @@ public class ZhaiDou {
     public final static int STATUS_UNCHECK=20;
     /**待发货*/
     public final static int STATUS_UNDELIVERY=30;
+    /**已拣货*/
+    public final static int STATUS_PICKINGUP=70;
     /**部分发货*/
     public final static int STATUS_PART_DELIVERY=31;
     /**已发货*/
@@ -232,7 +235,7 @@ public class ZhaiDou {
     public final static int STATUS_RETURN_MONEY_SUCCESS=11;
 
     /** 订单类型 0：全部 1待付款  2待发货  3待收货 4交易完成 5已取消  */
-    public final static String TYPE_ORDER_ALL="4";
+    public final static String TYPE_ORDER_ALL="0";
     public final static String TYPE_ORDER_PREPAY="1";
     public final static String TYPE_ORDER_PREDELIVERY="2";
     public final static String TYPE_ORDER_PRERECEIVE="3";
@@ -242,6 +245,8 @@ public class ZhaiDou {
 
     //订单列表
     public static String URL_ORDER_LIST=HOME_BASE_URL+"order/orderList.action";
+    //订单详情列表
+    public static String URL_ORDER_DETAIL_LIST_URL=HOME_BASE_URL+"order/getOrderDetailList.action";
     //取消订单
     public static String URL_ORDER_CANCEL=HOME_BASE_URL+"order/cancelOrder.action";
     //申请取消订单
@@ -311,4 +316,5 @@ public class ZhaiDou {
     public static String IntentRefreshGoodsDetailsTag="com.zhaidou.home.refesh.o.goods.details";
     public static String TESTUSERID="28325";//28129//16665//64410//28325
     public static String TESTTYPE="2";
+
 }
