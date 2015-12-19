@@ -1,5 +1,6 @@
 package com.zhaidou.fragments;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -16,7 +17,9 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 
 import org.json.JSONObject;
@@ -31,6 +34,7 @@ public class ModifyPswFragment extends BaseFragment {
 
     private TextView mCurrentPsw, mNewPsw, mConfirmPsw;
 
+    private DialogUtils mDialogUtils;
     public ModifyPswFragment() {
     }
 
@@ -44,6 +48,7 @@ public class ModifyPswFragment extends BaseFragment {
         mCurrentPsw = (TextView) view.findViewById(R.id.current);
 
         view.findViewById(R.id.commit).setOnClickListener(this);
+        mDialogUtils=new DialogUtils(getActivity());
         return view;
     }
 
@@ -60,25 +65,27 @@ public class ModifyPswFragment extends BaseFragment {
     }
 
     private void doModifyTask(String mCurrentText, String mNewText, String confirmText) {
+        final Dialog dialog = mDialogUtils.showLoadingDialog();
         final String token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
-        Map<String,String> params = new HashMap<String, String>();
-        params.put("current_password",mCurrentText);
-        params.put("password",mNewText);
-        params.put("password_confirmation",confirmText);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,ZhaiDou.USER_PSW_CHANGE_URL,new JSONObject(params), new Response.Listener<JSONObject>() {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("current_password", mCurrentText);
+        params.put("password", mNewText);
+        params.put("password_confirmation", confirmText);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.USER_PSW_CHANGE_URL, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+                if (dialog!=null)
+                    dialog.dismiss();
                 int status = jsonObject.optInt("status");
-                String message=jsonObject.optString("message");
-                if (200==status){
+                String message = jsonObject.optString("message");
+                if (200 == status) {
                     JSONObject data = jsonObject.optJSONObject("data");
                     int pswStatus = data.optInt("status");
-                    String msg=data.optString("message");
-//                    if (pswStatus!=200){
-                        ShowToast(msg);
-                    System.out.println("ModifyPswFragment.onResponse--->"+msg);
-//                    }
-                }else {
+                    String msg = data.optString("message");
+                    ShowToast(msg);
+                    if (200==pswStatus)
+                    ((BaseActivity)getActivity()).popToStack(ModifyPswFragment.this);
+                } else {
                     ShowToast(message);
                 }
             }
@@ -87,11 +94,11 @@ public class ModifyPswFragment extends BaseFragment {
             public void onErrorResponse(VolleyError volleyError) {
                 ShowToast("网络出现异常");
             }
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers= new HashMap<String, String>();
-                headers.put("SECAuthorization",token);
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("SECAuthorization", token);
                 return headers;
             }
         };
@@ -114,10 +121,10 @@ public class ModifyPswFragment extends BaseFragment {
         } else if (!TextUtils.isEmpty(mNewText) && mNewText.length() < 6) {
             ShowToast("密码最少6位");
             return;
-        }else if (!TextUtils.isEmpty(mNewText) && mNewText.length() >16) {
+        } else if (!TextUtils.isEmpty(mNewText) && mNewText.length() > 16) {
             ShowToast("密码最长16位");
             return;
         }
-        doModifyTask(mCurrentText,mNewText,mConfirmText);
+        doModifyTask(mCurrentText, mNewText, mConfirmText);
     }
 }

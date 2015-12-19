@@ -190,6 +190,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
 
             }
         });
+        initData();
     }
     private void initData() {
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading",isDialogFirstVisible);
@@ -337,7 +338,6 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
 
     @Override
     public void onStart() {
-        initData();
         super.onStart();
     }
     public void onResume() {

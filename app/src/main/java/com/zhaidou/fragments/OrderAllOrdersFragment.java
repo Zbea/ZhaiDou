@@ -57,11 +57,10 @@ import java.util.Map;
 
 
 public class OrderAllOrdersFragment extends BaseFragment implements View.OnClickListener, PullToRefreshBase.OnRefreshListener2<ListView> {
-    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_TYPE = "type";
     private static final String ARG_PARAM2 = "param2";
 
 
-    private String mParam1;
     private String mParam2;
 
     private Dialog mDialog;
@@ -87,6 +86,10 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     private List<Order1> mOrderList;
     private DialogUtils mDialogUtils;
     private int mCurrentPage;
+    private String mCurrentType;
+    private int initTime = 900;
+    private boolean isDataLoaded = false;
+    private Map<Integer, Long> timerMapStamp = new HashMap<Integer, Long>();
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -97,9 +100,10 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     mListView.setVisibility(View.VISIBLE);
                     allOrderAdapter.notifyDataSetChanged();
                     mListView.onRefreshComplete();
-//                    if (timer == null)
-//                        timer = new MyTimer(15 * 60 * 1000, 1000);
-//                    timer.start();
+                    if (timer == null) {
+                        timer = new MyTimer(15 * 60 * 1000, 1000);
+                    }
+                    timer.start();
                     break;
                 case UPDATE_COUNT_DOWN_TIME:
                     if (mOrderList != null && mOrderList.size() > 0) {
@@ -114,10 +118,10 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         }
     };
 
-    public static OrderAllOrdersFragment newInstance(String param1, String param2) {
+    public static OrderAllOrdersFragment newInstance(String type, String param2) {
         OrderAllOrdersFragment fragment = new OrderAllOrdersFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_TYPE, type);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
@@ -131,7 +135,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            mCurrentType = getArguments().getString(ARG_TYPE);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
@@ -174,9 +178,9 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 //                        ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
 //                        return;
 //                    }
-//                    if (btn2.getTag() != null)
-//                        preTime = Long.parseLong(btn2.getTag().toString());
-                    OrderDetailFragment1 orderDetailFragment = OrderDetailFragment1.newInstance(order.orderId + "", 1000, order, 2);
+                    if (btn2.getTag() != null)
+                        preTime = Long.parseLong(btn2.getTag().toString());
+                    OrderDetailFragment1 orderDetailFragment = OrderDetailFragment1.newInstance(order.orderCode, 2);
                     ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
 //                    orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
 //                        @Override
@@ -336,66 +340,14 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
                     final Order1 order = (Order1) values;
                     final TextView btn2 = (TextView) v;
-//                    if (btn2.getTag() != null)
-//                        preTime = Long.parseLong(btn2.getTag().toString());
-//                    if (("" + ZhaiDou.STATUS_DEAL_SUCCESS).equalsIgnoreCase(order.getStatus())) {
-//                        if (order.isZero()) {
-//                            ShowToast(mContext.getResources().getString(R.string.order_zero_unreturn_msg));
-//                            return;
-//                        }
-//                        final OrderAfterSaleFragment afterSaleFragment = OrderAfterSaleFragment.newInstance(order.getOrderId() + "", order.getStatus() + "");
-//                        ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
-//                        afterSaleFragment.setOrderListener(new Order.OrderListener() {
-//                            @Override
-//                            public void onOrderStatusChange(Order o) {
-//                                Log.i("AllOrdersFragment---------o-->", o.toString());
-//
-//                                order.setStatus(o.getStatus());
-//                                order.setStatus_ch(o.getStatus_ch());
-//                            }
-//                        });
-//                        return;
-//                    } else if (("" + ZhaiDou.STATUS_UNPAY).equalsIgnoreCase(order.getStatus())) {
-//                        Log.i("textview---------------->", btn2.getText().toString() + "----" + btn2.getTag().toString());
-//                        if (mContext.getResources().getString(R.string.timer_finish).equalsIgnoreCase(btn2.getText().toString())) {
-//                            ShowToast(mContext.getResources().getString(R.string.order_had_order_time));
-//                            return;
-//                        }
-//                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.getOrderId(), order.getAmount(), 0, order.getOver_at(), order,2);
-//                        ((BaseActivity) getActivity()).navigationToFragment(shopPaymentFragment);
-//                        shopPaymentFragment.setOrderListener(new Order.OrderListener() {
-//                            @Override
-//                            public void onOrderStatusChange(Order o) {
-//                                if(o.getStatus().equals(""+ZhaiDou.STATUS_PAYED))
-//                                {
-//                                    order.setStatus(""+ZhaiDou.STATUS_PAYED);
-//                                    order.setOver_at(0);
-//                                }
-//                                else
-//                                {
-//                                    long time = o.getOver_at();
-//                                    if (!isTimerStart)
-//                                    {
-//                                        timeStmp = preTime - time;
-//                                        isViewDestroy = false;
-//                                        timerMap.clear();
-//                                    } else {
-//                                        btn2.setTag(o.getOver_at());
-//                                        order.setOver_at(o.getOver_at());
-//                                        order.setStatus(o.getStatus());
-//                                    }
-//                                }
-//
-//                            }
-//                        });
-//                        return;
-//                    }
-                    if (ZhaiDou.STATUS_UNPAY==order.status){
-//                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.getOrderId(), order.getAmount(), 0, order.getOver_at(), order,2);
-                        System.out.println("OrderAllOrdersFragment.OnClickListener--->"+btn2.getTag());
-                        ShopPaymentFragment shopPaymentFragment=ShopPaymentFragment.newInstance(order,order.orderCode,2,Integer.parseInt(btn2.getTag().toString()));
-                        ((BaseActivity)getActivity()).navigationToFragment(shopPaymentFragment);
-                    }else if (ZhaiDou.STATUS__DELIVERYED==order.status){
+                    if (ZhaiDou.STATUS_UNPAY == order.status) {
+                        if (order.orderRemainingTime<=0){
+                            ShowToast("订单已超时");
+                            return;
+                        }
+                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order, order.orderCode, 2, Integer.parseInt(order.orderRemainingTime+""));
+                        ((BaseActivity) getActivity()).navigationToFragment(shopPaymentFragment);
+                    } else if (ZhaiDou.STATUS__DELIVERYED == order.status) {
                         mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_confirm), new DialogUtils.PositiveListener() {
                             @Override
                             public void onPositive() {
@@ -424,65 +376,11 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                             }
                         }, null);
                     }
-
-
-//                    final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
-//
-//                    View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
-//                    TextView textView = (TextView) view.findViewById(R.id.tv_msg);
-//                    textView.setText(mContext.getResources().getString(R.string.order_confirm));
-//                    TextView cancelTv = (TextView) view.findViewById(R.id.cancelTv);
-//                    cancelTv.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View view) {
-//                            dialog.dismiss();
-//                        }
-//                    });
-//
-//                    TextView okTv = (TextView) view.findViewById(R.id.okTv);
-//                    okTv.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View view) {
-//                            dialog.dismiss();
-//                            mDialog.show();
-//                            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + order.getOrderId() + "/update_status?status=5", new Response.Listener<JSONObject>() {
-//                                @Override
-//                                public void onResponse(JSONObject jsonObject) {
-//                                    mDialog.dismiss();
-//                                    JSONObject orderObj = jsonObject.optJSONObject("order");
-//                                    if (orderObj != null) {
-//                                        String status = orderObj.optString("status");
-//                                        order.setStatus(status);
-//                                    }
-//                                }
-//                            }, new Response.ErrorListener() {
-//                                @Override
-//                                public void onErrorResponse(VolleyError volleyError) {
-//                                    mDialog.dismiss();
-//                                }
-//                            }) {
-//                                @Override
-//                                public Map<String, String> getHeaders() throws AuthFailureError {
-//                                    Map<String, String> headers = new HashMap<String, String>();
-//                                    headers.put("SECAuthorization", token);
-//                                    headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-//                                    return headers;
-//                                }
-//                            };
-//                            mRequestQueue.add(request);
-//
-//                        }
-//                    });
-//                    dialog.setCanceledOnTouchOutside(true);
-//                    dialog.setCancelable(true);
-//                    dialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-//                    dialog.show();
                 }
             });
             allOrderAdapter.setOnInViewClickListener(R.id.iv_delete, new BaseListAdapter.onInternalClickListener() {
                 @Override
                 public void OnClickListener(View parentV, View v, final Integer position, Object values) {
-                    Log.i("position--------->", position + "");
                     final Order1 order = (Order1) values;
                     final Map<String, String> params = new HashMap();
                     params.put("businessType", "01");
@@ -572,9 +470,10 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     private void initData() {
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading", true);
         if (NetworkUtils.isNetworkAvailable(mContext)) {
+            isDataLoaded = true;
             mNetErrorView.setVisibility(View.GONE);
             loadingView.setVisibility(View.GONE);
-            FetchAllOrder(mCurrentPage = 0);
+            FetchOrderList(mCurrentPage = 0, mCurrentType);
         } else {
             if (mDialog != null)
                 mDialog.dismiss();
@@ -597,53 +496,23 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         }
     }
 
-    private void FetchAllOrder(int page) {
+    private void FetchOrderList(int page, String type) {
         Map<String, String> params = new HashMap();//28129
         params.put("userId", ZhaiDou.TESTUSERID);//64410//16665
         params.put("clientType", "ANDROID");
         params.put("clientVersion", "45");
         params.put("businessType", "01");
-        params.put("type", ZhaiDou.TYPE_ORDER_ALL);
+        params.put("type", "4");
         params.put("pageNo", page + "");
         params.put("pageSize", "10");// ZhaiDou.URL_ORDER_LIST,
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null) mDialog.dismiss();
-                Log.i("FetchAllOrder----------->", jsonObject.toString());
-//                if (jsonObject != null) {
-//                    JSONArray orderArr = jsonObject.optJSONArray("orders");
-//                    if (orderArr != null && orderArr.length() > 0) {
-//                        for (int i = 0; i < orderArr.length(); i++) {
-//                            JSONObject orderObj = orderArr.optJSONObject(i);
-//                            int id = orderObj.optInt("id");
-//                            String number = orderObj.optString("number");
-//                            String logNum = orderObj.optString("deliver_number");
-//                            double amount = orderObj.optDouble("amount");
-//                            String status = orderObj.optString("status");
-//                            String status_ch = orderObj.optString("status_ch");
-//                            String created_at = orderObj.optString("created_at");
-//                            String created_at_for = orderObj.optString("created_at_for");
-//                            String img = orderObj.optString("merch_img");
-//                            long over_at = orderObj.optLong("over_at");
-//                            boolean is_zero = orderObj.optBoolean("is_zero");
-//                            Order order = new Order(id, number, amount, status, status_ch, created_at_for, created_at, "", 0);
-//                            order.logisticsNum = logNum;
-//                            order.setImg(img);
-//                            order.setOver_at(over_at);
-//                            order.setZero(is_zero);
-//                            orders.add(order);
-//                        }
-//                        handler.sendEmptyMessage(UPDATE_ORDER_LIST);
-//                    } else {
-//                        mListView.setVisibility(View.GONE);
-//                        loadingView.setVisibility(View.VISIBLE);
-//                        mEmptyView.setVisibility(View.VISIBLE);
-//                    }
-//                }
+                isDataLoaded = false;
                 JSONArray dataArray = jsonObject.optJSONArray("data");
                 int pageNo = jsonObject.optInt("pageNo");
-                if (dataArray!=null&&dataArray.length()<10){
+                if (dataArray != null && dataArray.length() < 10) {
                     ShowToast("订单加载完毕");
                     mListView.onRefreshComplete();
                     mListView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
@@ -657,6 +526,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                 }
                 if (pageNo == 0) {
                     mOrderList.clear();
+                    timerMapStamp.clear();
                 }
                 mOrderList.addAll(orderList);
                 if (mOrderList.size() > 0) {
@@ -671,6 +541,12 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 if (mDialog != null) mDialog.dismiss();
+                if (allOrderAdapter.getCount()>0){
+                    if (timer == null) {
+                        timer = new MyTimer(15 * 60 * 1000, 1000);
+                    }
+                    timer.start();
+                }
                 Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
             }
         }) {
@@ -688,13 +564,13 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     @Override
     public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
         System.out.println("OrderAllOrdersFragment.onPullDownToRefresh");
-        FetchAllOrder(mCurrentPage = 0);
+        FetchOrderList(mCurrentPage = 0, mCurrentType);
     }
 
     @Override
     public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
         System.out.println("OrderAllOrdersFragment.onPullUpToRefresh");
-        FetchAllOrder(++mCurrentPage);
+        FetchOrderList(++mCurrentPage, mCurrentType);
     }
 
     public class AllOrderAdapter extends BaseListAdapter<Order1> {
@@ -835,36 +711,20 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     btn1.setVisibility(View.VISIBLE);
                     btn2.setVisibility(View.VISIBLE);
                     btn1.setText("取消订单");
-                    if (btn2.getTag() == null)
-                        btn2.setTag(order.orderRemainingTime);
-                    long l = Long.parseLong(btn2.getTag() + "");
+                    if (timerMapStamp.get(position) == null) {
+                        timerMapStamp.put(position, order.orderRemainingTime);
+                    }
+                    long l = Long.parseLong(timerMapStamp.get(position) + "");
                     if (l > 0) {
-                        if (timeStmp > 0 && timerMap != null && (timerMap.get(position) == null || !timerMap.get(position))) {
-                            l = l - timeStmp;
-                            btn2.setTag(l);
-                            order.orderRemainingTime = l;
-                            timerMap.put(position, true);
-                        } else {
-                            btn2.setTag(Long.parseLong(btn2.getTag() + "") - 1);
-                            order.orderRemainingTime = (Long.parseLong(btn2.getTag() + "") - 1);
-                        }
+                        timerMapStamp.put(position, timerMapStamp.get(position) - 1);
+                        order.orderRemainingTime = timerMapStamp.get(position) - 1;
+
                         btn2.setText("支付" + new SimpleDateFormat("mm:ss").format(new Date(l * 1000)));
                         btn2.setBackgroundResource(R.drawable.btn_red_click_selector);
                     } else {
                         btn2.setText("超时过期");
-//                        order.setStatus(ZhaiDou.STATUS_DEAL_CLOSE + "");
+                        btn2.setBackgroundResource(R.drawable.btn_no_click_selector);
                     }
-//                    btn2.setText("超时过期");
-//                    btn2.setBackgroundResource(R.drawable.btn_red_click_selector);
-                    break;
-                case ZhaiDou.STATUS_PAYED:
-                    ll_btn.setVisibility(View.VISIBLE);
-                    iv_delete.setVisibility(View.GONE);
-                    tv_order_status.setText("已付款");
-                    btn2.setVisibility(View.GONE);
-//                    btn1.setVisibility(order.isZero() ? View.GONE : View.VISIBLE);
-                    btn1.setText("申请退款");
-                    btn1.setBackgroundResource(R.drawable.btn_green_click_bg);
                     break;
                 case ZhaiDou.STATUS_OVER_TIME:
                     iv_delete.setVisibility(View.VISIBLE);
@@ -892,7 +752,6 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     tv_order_status.setText("交易完成");
                     ll_btn.setVisibility(View.GONE);
                     btn1.setVisibility(View.VISIBLE);
-//                    btn2.setVisibility(order.isZero() ? View.GONE : View.VISIBLE);
                     btn2.setText("申请退货");
                     btn2.setBackgroundResource(R.drawable.btn_green_click_bg);
                     btn1.setText("查看物流");
@@ -930,19 +789,16 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     break;
                 case ZhaiDou.STATUS_UNDELIVERY:
                     iv_delete.setVisibility(View.GONE);
-//                    tv_order_status.setText("退款成功");
                     ll_btn.setVisibility(View.VISIBLE);
                     btn2.setVisibility(View.GONE);
                     btn1.setText("申请退款");
                     break;
                 case ZhaiDou.STATUS_PART_DELIVERY:
                     iv_delete.setVisibility(View.GONE);
-//                    tv_order_status.setText("退款成功");
                     ll_btn.setVisibility(View.GONE);
                     break;
                 case ZhaiDou.STATUS_ORDER_CANCEL:
                     iv_delete.setVisibility(View.VISIBLE);
-//                    tv_order_status.setText("退款成功");
                     ll_btn.setVisibility(View.GONE);
                     break;
                 case ZhaiDou.STATUS_ORDER_APPLY_CANCEL://申请取消中
@@ -967,11 +823,15 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
     @Override
     public void onResume() {
-        if (timer == null)
-            timer = new MyTimer((mContext.getResources().getInteger(R.integer.timer_countdown)), 1000);
-        if (!isTimerStart) {
-            isTimerStart = true;
-            timer.start();
+//        if (timer == null)
+//            timer = new MyTimer((mContext.getResources().getInteger(R.integer.timer_countdown)), 1000);
+//        if (!isTimerStart) {
+//            isTimerStart = true;
+//            timer.start();
+//        }
+        System.out.println("OrderAllOrdersFragment.onResume");
+        if (!isDataLoaded) {
+            FetchOrderList(mCurrentPage = 0, mCurrentType);
         }
         super.onResume();
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_all_order));
@@ -989,6 +849,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
     @Override
     public void onStop() {
+        System.out.println("OrderAllOrdersFragment.onStop");
         if (timer != null) {
             timer.cancel();
             isTimerStart = false;
@@ -1011,6 +872,4 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             handler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
         }
     }
-
-
 }

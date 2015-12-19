@@ -286,7 +286,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
 //                    }
 //                });
                 Order1 order =(Order1)values;
-                OrderDetailFragment1 orderDetailFragment = OrderDetailFragment1.newInstance(order.orderId + "", 1000, order, 2);
+                OrderDetailFragment1 orderDetailFragment = OrderDetailFragment1.newInstance(order.orderCode , 2);
                 ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
             }
         });

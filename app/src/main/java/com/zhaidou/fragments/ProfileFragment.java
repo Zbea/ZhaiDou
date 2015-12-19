@@ -39,6 +39,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.User;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.NativeHttpUtil;
 import com.zhaidou.utils.PhotoUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -493,9 +494,9 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         Log.i(type, type);
         Log.i(msg, msg);
         Log.i("json", json);
-        User user = new User();
         if ("mobile".equalsIgnoreCase(type)) {
             tv_mobile.setText(msg);
+            user.setMobile(msg);
         } else if ("description".equalsIgnoreCase(type)) {
             user.setDescription(msg);
             tv_intro.setText(msg);
@@ -610,8 +611,9 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         params.put("id", id + "");
         Map<String, String> userParams = new HashMap<String, String>();
         userParams.put("avatar", "data:image/png;base64," + base64);
-        params.put("user", userParams.toString());
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.USER_UPDATE_AVATAR_URL, new JSONObject(params), new Response.Listener<JSONObject>() {
+        JSONObject jsonObject = new JSONObject(userParams);
+        params.put("user",jsonObject.toString());
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_UPDATE_AVATAR_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
@@ -639,7 +641,14 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             public void onErrorResponse(VolleyError volleyError) {
 
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers= new HashMap<String, String>();
+                headers.put("SECAuthorization",token);
+                return headers;
+            }
+        };
         mRequestQueue.add(request);
     }
 
@@ -689,6 +698,14 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 }
             }
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        System.out.println("ProfileFragment.onDestroyView");
+        if (profileListener!=null)
+            profileListener.onProfileChange(user);
+        super.onDestroyView();
     }
 
     public void onResume() {
