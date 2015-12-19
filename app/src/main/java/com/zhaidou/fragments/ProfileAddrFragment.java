@@ -281,9 +281,11 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
     }
 
     private void FetchCityData() {
+        mDialog=mDialogUtils.showLoadingDialog();
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_ADDRESS_URL, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+                mDialog.dismiss();
                 if (jsonObject != null) {
                     JSONArray providerArr = jsonObject.optJSONArray("providers");
                     for (int i = 0; i < providerArr.length(); i++) {
@@ -328,6 +330,7 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
                     }
 
                 }
+                mContainer.setVisibility(View.GONE);
             }
         }, new Response.ErrorListener() {
             @Override
