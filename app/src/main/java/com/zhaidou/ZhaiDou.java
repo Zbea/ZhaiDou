@@ -9,7 +9,7 @@ public class ZhaiDou {
 //    public static String HOME_BASE_URL = "http://stg.zhaidou.com/";
 //    public static String HOME_BASE_URL = "http://www.zhaidou.com/";
     public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
-
+//    public static String HOME_BASE_URL = "http://portal-web.zhaidou.com/";
 
     //美丽家
     public static String HomeBeautifulUrl=HOME_BASE_URL+"zd/getPosts.action?plug=006&pageSize=10&pageNo=";
@@ -25,6 +25,8 @@ public class ZhaiDou {
     public static String HomeGoodsDetailsUrl=HOME_BASE_URL+"product/getProductInfo.action?businessType=01&version=1.0.0&productId=";
     //判断是否是0元特卖商品是否已经购买了
     public static String  IsBuyOSaleUrl=HOME_BASE_URL+"product/checkProduct.action?version=1.0.0&userId=";
+    //判断是否是0元特卖商品是否已经加入购物车
+    public static String  IsAddOSaleUrl=HOME_BASE_URL+"cart/queryZeroCart.action?businessType=01&version=1.0.0&clientType=app&userId=";
     //购物车数量接口
     public static String CartGoodsCountUrl=HOME_BASE_URL+"cart/countUserCartQuantity.action?businessType=01&version=1.0.0&userId=";
     //购物车列表接口
@@ -162,7 +164,7 @@ public class ZhaiDou {
 
 
     //后台统计
-    public static String URL_STATISTICS=HOME_BASE_URL+"api/v1/device_tokens";
+    public static String URL_STATISTICS="http://www.zhaidou.com/api/v1/device_tokens";
 
     //搜索单品列表
     public static String SEARCH_PRODUCT_URL=HOME_BASE_URL+"article/api/article_items/search";

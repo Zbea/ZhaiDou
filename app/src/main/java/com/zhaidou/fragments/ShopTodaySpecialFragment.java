@@ -102,7 +102,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private ShopTodaySpecialAdapter adapter;
     private ShopSpecialItem shopSpecialItem;
     private int cartCount;//购物车商品数量
-    private boolean isFristCount=true;
     private int userId;
     private String token;
 
@@ -117,10 +116,10 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                 FetchCountData();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
+                checkLogin();
                 FetchCountData();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginExitTag)) {
-                checkLogin();
                 initCartTips();
             }
         }
@@ -156,14 +155,13 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     {
                        timeTvs.setText("已结束");
                     }
-                    if (isFristCount)
-                    {
-                        isFristCount=false;
-                        FetchCountData();
-                    }
                     break;
                 case UPDATE_CARTCAR_DATA:
                     initCartTips();
+                    if ((((MainActivity)mContext).cart_dot).getVisibility()==View.GONE)
+                    {
+                        ((MainActivity)mContext).CartTip(cartCount);
+                    }
                     break;
             }
         }
@@ -286,21 +284,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         mContext.registerReceiver(broadcastReceiver, intentFilter);
     }
 
-    /**
-     * 初始化数据
-     */
-    private void initData() {
-        if (NetworkUtils.isNetworkAvailable(mContext)) {
-            mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading", isDialogFirstVisible);
-            isDialogFirstVisible = false;
-            FetchData();
-        } else {
-            if (mDialog != null)
-                mDialog.dismiss();
-            nullView.setVisibility(View.GONE);
-            nullNetView.setVisibility(View.VISIBLE);
-        }
-    }
 
     /**
      * 初始化数据
@@ -341,7 +324,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
 
         mRequestQueue = Volley.newRequestQueue(mContext);
 
-
         initData();
 
 
@@ -352,6 +334,26 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         userId= (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
         boolean isLogin = !TextUtils.isEmpty(token) && userId > -1;
         return isLogin;
+    }
+
+    /**
+     * 初始化数据
+     */
+    private void initData() {
+        if (NetworkUtils.isNetworkAvailable(mContext)) {
+            mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading", isDialogFirstVisible);
+            isDialogFirstVisible = false;
+            FetchData();
+            if (checkLogin())
+            {
+                FetchCountData();
+            }
+        } else {
+            if (mDialog != null)
+                mDialog.dismiss();
+            nullView.setVisibility(View.GONE);
+            nullNetView.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -371,6 +373,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         }
         else
         {
+            cartCount=0;
             myCartTips.setVisibility(View.GONE);
         }
     }
@@ -474,7 +477,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                 }
                 else
                 {
-                    isFristCount=true;
                     nullView.setVisibility(View.VISIBLE);
                     nullNetView.setVisibility(View.GONE);
                 }

@@ -80,18 +80,18 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
     private Dialog mDialog;
 
     private ImageView myCartBtn;
-
+    private TextView titleTv;
     private View rootView;
     private boolean isLogin;
-    private long time;
     private Context mContext;
-
     private LargeImgView bannerLine;
     private PullToRefreshScrollView mScrollView;
     private int page = 1;
     private int pageSize;
     private int pageCount;
     private String imageUrl;
+    private ShopSpecialItem shopSpecialItem;
+
 
     private Handler mHandler = new Handler() {
         @Override
@@ -99,6 +99,7 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
             switch (msg.what) {
                 case UPDATE_ADAPTER:
                     setAddImage();
+                    titleTv.setText(shopSpecialItem.title);
                     if (pageCount > pageSize * page)
                     {
                         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
@@ -189,7 +190,8 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
             mGridView.setAdapter(mAdapter);
             rootView.findViewById(R.id.ll_back).setOnClickListener(this);
 
-            ((TextView) rootView.findViewById(R.id.tv_title)).setText(mTitle);
+            titleTv=(TextView) rootView.findViewById(R.id.tv_title);
+            titleTv.setText(mTitle);
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
             nullNetView = (LinearLayout) rootView.findViewById(R.id.nullNetline);
             nullView = (LinearLayout) rootView.findViewById(R.id.nullline);
@@ -346,7 +348,7 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
                             int overTime = Integer.parseInt((String.valueOf((endTime-startTime)/(24*60*60*1000))));
                             String introduce = jsonObject.optString("description");
                             int isNew = jsonObject.optInt("newFlag");
-                            ShopSpecialItem shopSpecialItem = new ShopSpecialItem(id, title, null,startTime, endTime, overTime, null,isNew);
+                            shopSpecialItem = new ShopSpecialItem(id, title, null,startTime, endTime, overTime, null,isNew);
 
                             JSONObject jsonObject2 = jsonObject1.optJSONObject("pagePO");
                             pageCount=jsonObject2.optInt("totalCount");

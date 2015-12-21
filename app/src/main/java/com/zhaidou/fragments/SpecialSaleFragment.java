@@ -102,7 +102,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     private int pageTotal;
     private int pageSize;
     private int cartCount;//购物车商品数量
-    private boolean isFristCount = true;
     private String token;
     private int userId;
 
@@ -122,6 +121,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag))
             {
+                checkLogin();
                 FetchCountData();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
@@ -148,11 +148,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     {
                         mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                     }
-                    if (isFristCount)
-                    {
-                        isFristCount = false;
-                        FetchCountData();
-                    }
                     break;
                 case UPDATE_TIMER_START:
                     time = end_date - System.currentTimeMillis();
@@ -175,6 +170,11 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     break;
                 case UPDATE_CARTCAR_DATA:
                     initCartTips();
+                    if ((((MainActivity)mContext).cart_dot).getVisibility()==View.GONE)
+                {
+                    ((MainActivity)mContext).CartTip(cartCount);
+                }
+
                     break;
             }
         }
@@ -342,6 +342,10 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         {
             getBannerData();
             FetchData();
+            if (checkLogin())
+            {
+                FetchCountData();
+            }
         } else
         {
             if (mDialog != null)
@@ -394,6 +398,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             }
         } else
         {
+            cartCount=0;
             cartTipsTv.setVisibility(View.GONE);
         }
     }
@@ -495,7 +500,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     page--;
                 } else
                 {
-                    isFristCount=true;
                     nullView.setVisibility(View.VISIBLE);
                     nullNetView.setVisibility(View.GONE);
                 }

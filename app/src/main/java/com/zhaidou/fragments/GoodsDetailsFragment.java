@@ -26,6 +26,7 @@ import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.webkit.WebView;
+import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -112,6 +113,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private View myCartBtn;
 
     private Dialog mDialog;
+    private DialogUtils mDialogUtil;
     private RequestQueue mRequestQueue;
 
     private ArrayList<GoodInfo> goodInfos = new ArrayList<GoodInfo>();
@@ -123,6 +125,8 @@ public class GoodsDetailsFragment extends BaseFragment
     private final int UPDATE_LJBUY_ISOSALEBUY = 3;//零元特卖立即购买时候判断是否已经购买郭
     private final int UPDATE_LOGIN_ISOSALEBUY = 4;//判断进来时候零元特卖是否已经购买了，购买了才让按钮不能点击
     private final int UPDATE_ADD_CART = 5;//加入购物车
+    private final int UPDATE_ISADD_CART = 6;//零元特卖是否已经加入购物车了
+    private final int UPDATE_OSALE_DELETE= 7;//删除购物车里面的零元特卖
 
     private ScrollView scrollView;
     private ImageView topBtn;
@@ -173,7 +177,9 @@ public class GoodsDetailsFragment extends BaseFragment
     private List<Specification> specificationList;
 
     private boolean isOSaleBuy;//是否购买过零元特卖
-    private boolean isBuy;//是否购买过普通特卖该商品规格
+    private boolean isOSaleAdd;//是否添加过零元特卖
+    private boolean isOver = true;//是否卖光
+    private boolean isAddOrBuy = true;//是添加还是立即购买
 
     private String integrityDesc;
     private long initTime;
@@ -188,7 +194,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private List<Specification> subclassSizes = new ArrayList<Specification>();
     private CartArrayItem cartArrayItem = new CartArrayItem();
     private CartGoodsItem cartGoodsItem = new CartGoodsItem();
-    boolean isOver = true;
+    private String sku;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -312,19 +318,19 @@ public class GoodsDetailsFragment extends BaseFragment
                         Log.i("Exception e", e.getMessage());
                     }
                     break;
-                case UPDATE_CARTCAR_DATA:
+                case UPDATE_CARTCAR_DATA://更新购物车数量
                     initCartTips();
                     break;
-                case UPDATE_LJBUY_ISOSALEBUY:
-                    if (mDialog != null)
-                        mDialog.dismiss();
+                case UPDATE_LJBUY_ISOSALEBUY://零元特卖
                     if (isOSaleBuy)
                     {
+                        if (mDialog != null)
+                            mDialog.dismiss();
                         setAddOrBuyShow("不能重复购买", false);
                     }
                     else
                     {
-                        commitLjBuy();
+                        FetchOSaleAddData();
                     }
                     break;
                 case UPDATE_ISOSALEBUY:
@@ -337,7 +343,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     }
                     break;
 
-                case UPDATE_ADD_CART:
+                case UPDATE_ADD_CART://添加商品成功
                     cartCount = cartCount + 1;
                     Intent intent = new Intent(ZhaiDou.IntentRefreshAddCartTag);
                     mContext.sendBroadcast(intent);
@@ -345,6 +351,47 @@ public class GoodsDetailsFragment extends BaseFragment
                     mTipView.getLocationInWindow(location);
                     Drawable drawable = mTipView.getDrawable();
                     doAnim(drawable, location);
+                    break;
+                case UPDATE_ISADD_CART://校正是否零元特卖已经加入购物车
+                    mDialog.dismiss();
+                    if (isOSaleAdd)//如果已经存在零元特卖
+                    {
+                        String delStr=isAddOrBuy==true?"购物车已有一件零元特卖商品继续添加则会删除该商品，是否继续?":"购物车已有一件零元特卖商品继续购买则会删除该商品，是否继续?";
+                        mDialogUtil.showDialog(delStr,new DialogUtils.PositiveListener()
+                        {
+                            @Override
+                            public void onPositive()
+                            {
+                                mDialog.show();
+                                FetchGoodsDeleteData();
+                            }
+                        },null);
+                    }
+                    else
+                    {
+                        if (isAddOrBuy)//如果是添加
+                        {
+                            FetchAddCartData();
+                        }
+                        else
+                        {
+                            CommitLjBuy();
+                        }
+                    }
+                    break;
+                case UPDATE_OSALE_DELETE://删除成功后
+                    cartCount = cartCount - 1;
+                    Intent delete = new Intent(ZhaiDou.IntentRefreshAddCartTag);
+                    mContext.sendBroadcast(delete);
+                    if (isAddOrBuy)//如果已经存在零元特卖
+                    {
+                        mDialog.show();
+                        FetchAddCartData();
+                    }
+                    else
+                    {
+                        CommitLjBuy();
+                    }
                     break;
 
             }
@@ -398,45 +445,15 @@ public class GoodsDetailsFragment extends BaseFragment
                     }
                     break;
                 case R.id.goodsLjBuyBtn:
-                    if (checkLogin())
-                    {
-                        if (detail != null)
-                            if (isTwoSize())
-                            {
-                                if (mSpecification1 == null)
-                                {
-                                    scrollView.scrollTo(0, 450);
-                                    ToolUtils.setToast(mContext, "抱歉，请先选择" + sizeName1);
-                                    return;
-                                }
-                            }
-                        if (mSpecification2 != null)
-                        {
-                            if (flags == 1)//判断零元特卖是否已经购买郭
-                            {
-                                mDialog.show();
-                                FetchOSaleData(UPDATE_LJBUY_ISOSALEBUY);
-                            } else
-                            {
-                                commitLjBuy();
-                            }
-                        } else
-                        {
-                            scrollView.scrollTo(0, 700);
-                            Toast.makeText(mContext, "抱歉,先选择" + sizeName2, Toast.LENGTH_SHORT).show();
-                        }
-                    } else
-                    {
-                        Intent intent = new Intent(mContext, LoginActivity.class);
-                        intent.setFlags(3);
-                        startActivityForResult(intent, 5001);
-                    }
+                    isAddOrBuy=false;
+                    PrepareAddOrBuy();
                     break;
                 case R.id.goodsAddBuyBtn:
                     if ((System.currentTimeMillis() - mTime) > 1000)
                     {
                         mTime = System.currentTimeMillis();
-                        AddCart();
+                        isAddOrBuy=true;
+                        PrepareAddOrBuy();
                     }
                     break;
                 case R.id.goodsTop:
@@ -509,7 +526,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private void initView()
     {
         shareUrl = shareUrl + mIndex;
-
+        mDialogUtil=new DialogUtils(mContext);
         shareBtn = (ImageView) mView.findViewById(R.id.share_iv);
         shareBtn.setOnClickListener(onClickListener);
         shareBtn.setVisibility(canShare ? View.VISIBLE : View.GONE);
@@ -1304,9 +1321,9 @@ public class GoodsDetailsFragment extends BaseFragment
     }
 
     /**
-     * 加入购物车
+     * 添加或者购买前准备
      */
-    private void AddCart()
+    private void PrepareAddOrBuy()
     {
         if (checkLogin())
         {
@@ -1322,8 +1339,22 @@ public class GoodsDetailsFragment extends BaseFragment
                 }
             if (mSpecification2 != null)
             {
-                mDialog.show();
-                FetchAddCartData();
+                if (isAddOrBuy)
+                {
+                     AddCart();
+                }
+                else//立即购买
+                {
+                    if (flags == 1)//判断零元特卖是否已经购买过
+                    {
+                        mDialog.show();
+//                        FetchOSaleData(UPDATE_LJBUY_ISOSALEBUY);
+                        FetchOSaleAddData();
+                    } else
+                    {
+                        CommitLjBuy();
+                    }
+                }
             } else
             {
                 scrollView.scrollTo(0, 700);
@@ -1338,9 +1369,25 @@ public class GoodsDetailsFragment extends BaseFragment
     }
 
     /**
+     * 加入购物车
+     */
+    private void AddCart()
+    {
+        mDialog.show();
+        if (flags==1)
+        {
+            FetchOSaleAddData();
+        }
+        else
+        {
+            FetchAddCartData();
+        }
+    }
+
+    /**
      * 立即购买
      */
-    private void commitLjBuy()
+    private void CommitLjBuy()
     {
         arrayItems.clear();
         cartGoodsItem.num = 1;
@@ -1738,6 +1785,92 @@ public class GoodsDetailsFragment extends BaseFragment
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 headers.put("SECAuthorization", token);
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
+    }
+
+    /**
+     * 零元特卖是否已经加入购物车了
+     */
+    public void FetchOSaleAddData()
+    {
+        String url = ZhaiDou.IsAddOSaleUrl+userId;
+        ToolUtils.setLog(url);
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                mDialog.dismiss();
+                if (jsonObject != null)
+                {
+                    sku = jsonObject.optString("productSKUId");
+                    isOSaleAdd=sku.length()>0?true:false;
+                }
+                handler.sendEmptyMessage(UPDATE_ISADD_CART);
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+                ToolUtils.setToastLong(mContext, R.string.loading_fail_txt);
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                headers.put("SECAuthorization", token);
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
+    }
+
+    /**
+     * 删除商品数据
+     */
+    public void FetchGoodsDeleteData()
+    {
+        String url = ZhaiDou.CartGoodsDeleteUrl+userId+"&productSKUId="+ "[" + sku + "]";
+        ToolUtils.setLog("url:" + url);
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (jsonObject != null)
+                {
+                    int status = jsonObject.optInt("status");
+                    if (status == 200)
+                    {
+                        handler.sendEmptyMessage(UPDATE_OSALE_DELETE);
+                    }
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("SECAuthorization", token);
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }
         };

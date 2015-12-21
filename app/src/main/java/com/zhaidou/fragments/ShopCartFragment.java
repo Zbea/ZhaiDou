@@ -341,6 +341,7 @@ public class ShopCartFragment extends BaseFragment
      */
     public void refreshData()
     {
+        isGoods=false;
         arrays.clear();
         arraysCheck.clear();
         itemsCheck.clear();

@@ -27,6 +27,7 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.model.User;
+import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -51,6 +52,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     SharedPreferences mSharedPreferences;
     RequestQueue requestQueue;
     private ProfileListener profileListener;
+    private DialogUtils mDialogUtil;
     private Dialog mDialog;
     private boolean isNetState;
     private Context mContext;
@@ -67,10 +69,10 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                     SharedPreferencesUtil.clearUser(getActivity());
 
                     Intent intent=new Intent(ZhaiDou.IntentRefreshLoginExitTag);
-                    getActivity().sendBroadcast(intent);
+                    mContext.sendBroadcast(intent);
 
-                    ((MainActivity)getActivity()).logout(SettingFragment.this);
-                    ((MainActivity)getActivity()).CartTip(0);
+                    ((MainActivity)mContext).logout(SettingFragment.this);
+                    ((MainActivity)mContext).CartTip(0);
                     break;
                 case 1:
                     serverCode = parseJosn(msg.obj.toString());
@@ -114,7 +116,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         View view=inflater.inflate(R.layout.fragment_setting, container, false);
 
         mContext=getActivity();
-
+        mDialogUtil=new DialogUtils(mContext);
         LinearLayout versionBtn=(LinearLayout)view.findViewById(R.id.ll_version);
         versionBtn.setOnClickListener(this);
 
@@ -175,8 +177,16 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                 ((MainActivity)getActivity()).navigationToFragmentWithAnim(aboutFragment);
                 break;
             case R.id.bt_logout:
-                mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"注销中");
-                logout();
+//                mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"注销中");
+//                logout();
+                mDialogUtil.showDialog("确定退出登录？",new DialogUtils.PositiveListener()
+                {
+                    @Override
+                    public void onPositive()
+                    {
+                        mHandler.sendEmptyMessage(CLEAR_USER_DATA);
+                    }
+                },null);
                 break;
             case R.id.ll_version:
                 if (NetworkUtils.isNetworkAvailable(mContext))
