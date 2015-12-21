@@ -38,7 +38,6 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
 import com.zhaidou.model.Order1;
-import com.zhaidou.model.OrderItem1;
 import com.zhaidou.model.Store;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
@@ -512,31 +511,31 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null) mDialog.dismiss();
                 isDataLoaded = false;
-                JSONArray dataArray = jsonObject.optJSONArray("data");
-                int pageNo = jsonObject.optInt("pageNo");
-                if (dataArray != null && dataArray.length() < 10) {
-                    ShowToast("订单加载完毕");
-                    mListView.onRefreshComplete();
-                    mListView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
-                }
-                List<Order1> orderList = JSON.parseArray(dataArray.toString(), Order1.class);
-                for (Order1 order : orderList) {
-                    List<Store> childOrderPOList = order.childOrderPOList;
-                    for (Store store : childOrderPOList) {
-                        List<OrderItem1> orderItemList = store.orderItemPOList;
+                int status = jsonObject.optInt("status");
+                String message = jsonObject.optString("message");
+                if (status==200){
+                    JSONArray dataArray = jsonObject.optJSONArray("data");
+                    int pageNo = jsonObject.optInt("pageNo");
+                    if (dataArray != null && dataArray.length() < 10) {
+                        ShowToast("订单加载完毕");
+                        mListView.onRefreshComplete();
+                        mListView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                     }
-                }
-                if (pageNo == 0) {
-                    mOrderList.clear();
-                    timerMapStamp.clear();
-                }
-                mOrderList.addAll(orderList);
-                if (mOrderList.size() > 0) {
-                    handler.sendEmptyMessage(UPDATE_ORDER_LIST);
-                } else {
-                    mListView.setVisibility(View.GONE);
-                    loadingView.setVisibility(View.VISIBLE);
-                    mEmptyView.setVisibility(View.VISIBLE);
+                    List<Order1> orderList = JSON.parseArray(dataArray.toString(), Order1.class);
+                    if (pageNo == 0) {
+                        mOrderList.clear();
+                        timerMapStamp.clear();
+                    }
+                    mOrderList.addAll(orderList);
+                    if (mOrderList.size() > 0) {
+                        handler.sendEmptyMessage(UPDATE_ORDER_LIST);
+                    } else {
+                        mListView.setVisibility(View.GONE);
+                        loadingView.setVisibility(View.VISIBLE);
+                        mEmptyView.setVisibility(View.VISIBLE);
+                    }
+                }else {
+                    ShowToast(message);
                 }
             }
         }, new Response.ErrorListener() {
