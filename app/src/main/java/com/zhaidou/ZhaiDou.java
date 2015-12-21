@@ -11,6 +11,7 @@ public class ZhaiDou {
     public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
 //    public static String HOME_BASE_URL = "http://portal-web.zhaidou.com/";
 
+
     //美丽家
     public static String HomeBeautifulUrl=HOME_BASE_URL+"zd/getPosts.action?plug=006&pageSize=10&pageNo=";
     //首页banner

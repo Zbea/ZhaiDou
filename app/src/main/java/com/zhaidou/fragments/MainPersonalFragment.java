@@ -294,8 +294,8 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 break;
             case R.id.tv_pre_pay:
                 ToolUtils.setLog("count:" + count);
-                OrderAllOrdersFragment unPayFragment = OrderAllOrdersFragment.newInstance(ZhaiDou.TYPE_ORDER_PREPAY,"");
-                ((BaseActivity)getActivity()).navigationToFragment(unPayFragment);
+                OrderAllOrdersFragment unPayFragment = OrderAllOrdersFragment.newInstance(ZhaiDou.TYPE_ORDER_PREPAY, "");
+                ((BaseActivity) getActivity()).navigationToFragment(unPayFragment);
 //                OrderUnPayFragment unPayFragment = OrderUnPayFragment.newInstance("", "", count);
 //                ((MainActivity) getActivity()).navigationToFragmentWithAnim(unPayFragment);
 //                unPayFragment.setBackClickListener(new OrderUnPayFragment.BackCountListener() {
@@ -350,14 +350,16 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                     @Override
                     public void onProfileChange(User user) {
                         System.out.println("MainPersonalFragment.onProfileChange");
-                        if (!TextUtils.isEmpty(user.getDescription())) {
-                            tv_desc.setText(user.getDescription());
-                        }
-                        if (!TextUtils.isEmpty(user.getAvatar())) {
-                            ToolUtils.setImageCacheUrl("http://" + user.getAvatar(), iv_header);
-                        }
-                        if (!TextUtils.isEmpty(user.getNickName())) {
-                            tv_nickname.setText(user.getNickName());
+                        if (user != null) {
+                            if (!TextUtils.isEmpty(user.getDescription())) {
+                                tv_desc.setText(user.getDescription());
+                            }
+                            if (!TextUtils.isEmpty(user.getAvatar())) {
+                                ToolUtils.setImageCacheUrl("http://" + user.getAvatar(), iv_header);
+                            }
+                            if (!TextUtils.isEmpty(user.getNickName())) {
+                                tv_nickname.setText(user.getNickName());
+                            }
                         }
                     }
                 });
@@ -529,6 +531,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
         }
         super.onHiddenChanged(hidden);
     }
+
     private void FetchUnPayCount(final int f) {
         ToolUtils.setLog("查看代付款数量");
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "?count=1&status=0", new Response.Listener<JSONObject>() {
