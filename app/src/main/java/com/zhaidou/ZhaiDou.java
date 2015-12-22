@@ -37,7 +37,7 @@ public class ZhaiDou {
     //修改购物车商品详情接口
     public static String CartGoodsEditUrl=HOME_BASE_URL+"cart/editUserCart.action?businessType=01&version=1.0.0&clientType=app&userId=";
     //搜索商品接口
-    public static String SearchGoodsUrl=HOME_BASE_URL+"product/searchProduct.action?businessType=01&searchType=10&pageSize=20&keyword=";
+    public static String SearchGoodsUrl=HOME_BASE_URL+"product/searchProduct.action?businessType=01&searchType=10&pageSize=10&keyword=";
     //热搜词
     public static String SearchHotUrl=HOME_BASE_URL+"product/getHotKeywordList.action";
     //提交订单接口
