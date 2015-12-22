@@ -24,6 +24,6 @@ public class GoodDetail implements Serializable
     public List<Specification> specifications;
     public ArrayList<GoodInfo> goodsInfo;
     public ArrayList<String> imgs;
-
+    public String webUrl;//图文详情
 
 }
