@@ -10,7 +10,8 @@
         android:layout_gravity="center_horizontal"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:scaleType="fitXY"/>
+        android:src="@drawable/icon_loading_category"
+        android:scaleType="centerInside"/>
 
     <com.zhaidou.view.TypeFaceTextView
         android:id="@+id/categoryName"

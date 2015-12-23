@@ -184,7 +184,14 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
             }
         });
         mRequestQueue= Volley.newRequestQueue(mContext);
-        FetchSpecialData(mParam1, sort, currentpage=1);
+        if (mFlag==1)
+        {
+            FetchSpecialData(mParam1, sort, currentpage=1);
+        }
+            else
+        {
+            FetchSpecialIdData(mParam1, sort, currentpage = 1);
+        }
 //        if ("category".equalsIgnoreCase(mParam2))//全分类
 //        {
 //            FetchCategoryData(mParam1, sort, currentpage = 1);
@@ -251,7 +258,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         String url= null;
         try
         {
-            url = ZhaiDou.SearchGoodsUrl+ URLEncoder.encode(msg, "UTF-8")+"&pageNo="+currentpage;
+            url = ZhaiDou.SearchGoodsKeyWordUrl+ URLEncoder.encode(msg, "UTF-8")+"&pageNo="+currentpage;
         } catch (UnsupportedEncodingException e)
         {
             e.printStackTrace();
@@ -303,6 +310,130 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                             }
                             return;
                         }
+                    for (int i = 0; i <jsonArray.length() ; i++)
+                    {
+                        JSONObject merchandise=jsonArray.optJSONObject(i);
+                        int id = merchandise.optInt("id");
+                        String productId = merchandise.optString("productId");
+                        String title = merchandise.optString("productName");
+                        double price = merchandise.optDouble("price");
+                        double cost_price = merchandise.optDouble("price");
+                        String imgUrl=merchandise.optString("productPicUrl");
+                        JSONObject countObject = merchandise.optJSONObject("expandedResponse");
+                        int remaining = countObject.optInt("stock");
+                        Product product = new Product();
+                        product.goodsId=productId;
+                        product.setId(id);
+                        product.setPrice(price);
+                        product.setCost_price(cost_price);
+                        product.setTitle(title);
+                        product.setImage(imgUrl);
+                        product.setRemaining(remaining);
+                        products.add(product);
+                    }
+                    handler.sendEmptyMessage(0);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                setEndLoading();
+                gv_single.onRefreshComplete();
+                if (products.size() == 0)
+                {
+                    nullLine.setVisibility(View.VISIBLE);
+                }
+                if(currentpage>1)
+                {
+                    currentpage=currentpage-1;
+                }
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                headers.put("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+                return headers;
+            }
+        };
+        if (mRequestQueue==null) mRequestQueue=Volley.newRequestQueue(mContext);
+        mRequestQueue.add(newMissRequest);
+    }
+
+    /**
+     * 特卖列表请求数据
+     * @param categoryId
+     * @param sort
+     * @param page
+     */
+    public void FetchSpecialIdData(String categoryId,int sort,int page){
+        mParam1=categoryId;
+        this.sort=sort;
+        currentpage=page;
+        if (page==1) products.clear();
+        String url= null;
+        JSONObject json=new JSONObject();
+        try
+        {
+            json.put("categoryId",categoryId);
+            json.put("brandId",null);
+            json.put("storeId",null);
+            json.put("regionId",null);
+            url = ZhaiDou.SearchGoodsIdUrl+ json+"&pageNo="+currentpage;
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        ToolUtils.setLog(url);
+        JsonObjectRequest newMissRequest = new JsonObjectRequest(Request.Method.GET,url, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject json) {
+                setEndLoading();
+                gv_single.onRefreshComplete();
+                if (json!=null)
+                {
+                    JSONObject dataObject=json.optJSONObject("data");
+
+                    if (dataObject==null)
+                    {
+                        if (currentpage==1)
+                        {
+                            if (products.size() == 0)
+                            {
+                                nullLine.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        return;
+                    }
+                    JSONObject pageObject=dataObject.optJSONObject("pagePO");
+                    if (pageObject==null)
+                    {
+                        if (currentpage==1)
+                        {
+                            if (products.size() == 0)
+                            {
+                                nullLine.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        return;
+                    }
+                    pageTotal=pageObject.optInt("totalCount");
+                    pageSize=pageObject.optInt("pageSize");
+                    JSONArray jsonArray = pageObject.optJSONArray("items");
+                    if (jsonArray==null||jsonArray.toString().length()<5)
+                    {
+                        if (currentpage==1)
+                        {
+                            if (products.size() == 0)
+                            {
+                                nullLine.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        return;
+                    }
                     for (int i = 0; i <jsonArray.length() ; i++)
                     {
                         JSONObject merchandise=jsonArray.optJSONObject(i);
@@ -563,7 +694,14 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         }
         else if ("goods".equalsIgnoreCase(mParam2))//搜索特卖商城
         {
-            FetchSpecialData(mParam1, sort, currentpage=1);
+            if (mFlag==1)
+            {
+                FetchSpecialData(mParam1, sort, currentpage=1);
+            }
+            else
+            {
+                FetchSpecialIdData(mParam1, sort, currentpage=1);
+            }
         }
         else {
             FetchData(mParam1, sort, currentpage=1);
@@ -579,7 +717,14 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         }
         else if ("goods".equalsIgnoreCase(mParam2))//搜索特卖商城
         {
-            FetchSpecialData(mParam1, sort, ++currentpage);
+            if (mFlag==1)
+            {
+                FetchSpecialData(mParam1, sort, currentpage++);
+            }
+            else
+            {
+                FetchSpecialIdData(mParam1, sort, currentpage++);
+            }
         }
         else {
             FetchData(mParam1, sort, ++currentpage);

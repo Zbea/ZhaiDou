@@ -333,7 +333,7 @@ public class MainHomeFragment extends BaseFragment implements
         switch (view.getId())
         {
             case R.id.iv_search:
-                SearchFragment searchFragment = SearchFragment.newInstance("", "");
+                SearchFragment searchFragment = SearchFragment.newInstance("", 1);
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
                 break;
             case R.id.ll_lottery:

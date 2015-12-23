@@ -67,7 +67,7 @@ public class SearchFragment extends BaseFragment
     private static final String INDEX = "index";
     private View mView;
     private String mPage;
-    private String mIndex;
+    private int mIndex;
     private Context mContext;
     private GridView gv_hot;
     private CustomEditText mEditText;
@@ -118,12 +118,19 @@ public class SearchFragment extends BaseFragment
                 case UPDATE_CONTENT:
                     if (mSpecialGoodsFragment==null)
                     {
-                        mSpecialGoodsFragment = GoodsSingleListFragment.newInstance(search_Str, "goods", 1);
+                        mSpecialGoodsFragment = GoodsSingleListFragment.newInstance(search_Str, "goods", mIndex);
                         mFragments.add(mSpecialGoodsFragment);
                     }
                     else
                     {
-                        mSpecialGoodsFragment.FetchSpecialData(search_Str, sort, 1);
+                        if (mIndex==1)
+                        {
+                            mSpecialGoodsFragment.FetchSpecialData(search_Str, sort, 1);
+                        }
+                            else
+                        {
+                            mSpecialGoodsFragment.FetchSpecialIdData(search_Str, sort, 1);
+                        }
                     }
 //                    if (mFragments.size()<2){
 //                    mSpecialGoodsFragment = GoodsSingleListFragment.newInstance(text, "goods", 1);
@@ -160,6 +167,7 @@ public class SearchFragment extends BaseFragment
             switch (v.getId())
             {
                 case R.id.iv_search:
+                    mIndex=1;
                     onSearch();
                     break;
                 case R.id.tv_delete:
@@ -172,6 +180,7 @@ public class SearchFragment extends BaseFragment
                     {
                         if (inputMethodManager.isActive())
                             inputMethodManager.hideSoftInputFromWindow(((MainActivity) mContext).getWindow().peekDecorView().getApplicationWindowToken(), 0);
+                        mIndex=1;
                         onSearch();
                     } else
                     {
@@ -213,7 +222,15 @@ public class SearchFragment extends BaseFragment
             int page = mViewPager.getCurrentItem();
             if (page == 0)
             {
-                mSpecialGoodsFragment.FetchSpecialData(search_Str, index, 1);
+                if (mIndex==1)
+                {
+                    mSpecialGoodsFragment.FetchSpecialData(search_Str, index, mIndex);
+                }
+                else
+                {
+                    mSpecialGoodsFragment.FetchSpecialIdData(search_Str, index, mIndex);
+                }
+
             } else if (page == 1)
             {
                 mtaobaoGoodsFragment.FetchData(search_Str, index, 1);
@@ -234,7 +251,7 @@ public class SearchFragment extends BaseFragment
         }
     };
 
-    public static SearchFragment newInstance(String page, String index)
+    public static SearchFragment newInstance(String page, int index)
     {
         SearchFragment fragment = new SearchFragment();
         Bundle args = new Bundle();
@@ -255,7 +272,7 @@ public class SearchFragment extends BaseFragment
         if (getArguments() != null)
         {
             mPage = getArguments().getString(DATA);
-            mIndex = getArguments().getString(INDEX);
+            mIndex = getArguments().getInt(INDEX);//1为普通搜索2为分类搜索
         }
     }
 
@@ -279,7 +296,6 @@ public class SearchFragment extends BaseFragment
 
     private void initView()
     {
-
         mEditText = (CustomEditText) mView.findViewById(R.id.et_search);
         mSearchiv = (ImageView) mView.findViewById(R.id.iv_search);
         mDeleteView = (TextView) mView.findViewById(R.id.tv_delete);
@@ -366,6 +382,7 @@ public class SearchFragment extends BaseFragment
                     {
                         if (!TextUtils.isEmpty(mEditText.getText().toString().trim()))
                         {
+                            mIndex=1;
                             onSearch();
                         } else
                         {
@@ -400,7 +417,13 @@ public class SearchFragment extends BaseFragment
         });
 
         mRequestQueue = Volley.newRequestQueue(mContext);
-        FetchHotsData();
+        if (mIndex==1)
+        {
+            FetchHotsData();
+        } else
+        {
+            onSearch();
+        }
         if (mSearchSortFragment == null)
             mSearchSortFragment = SearchSortFragment.newInstance("", 0);
         mSearchSortFragment.setRefreshDataListener(refreshDataListener);
@@ -414,12 +437,20 @@ public class SearchFragment extends BaseFragment
         mBackView.setVisibility(View.VISIBLE);
         mSortView.setVisibility(View.VISIBLE);
         mSearchView.setVisibility(View.GONE);
-        if (mHistoryList.contains(search_Str))
+
+        if (mIndex==1)
         {
-            mHistoryList.remove(search_Str);
+            if (mHistoryList.contains(search_Str))
+            {
+                mHistoryList.remove(search_Str);
+            }
+            mHistoryList.add(search_Str);
+            SharedPreferencesUtil.saveHistoryData(mContext, mHistoryList);
         }
-        mHistoryList.add(search_Str);
-        SharedPreferencesUtil.saveHistoryData(mContext, mHistoryList);
+        else
+        {
+            search_Str=mPage;
+        }
         mHandler.sendEmptyMessage(UPDATE_CONTENT);
     }
 
@@ -491,13 +522,14 @@ public class SearchFragment extends BaseFragment
         @Override
         public CharSequence getPageTitle(int position)
         {
-            if (position == 0)
-            {
-                return "特卖单品";
-            } else
-            {
-                return "淘宝单品";
-            }
+            return "特卖单品";
+//            if (position == 0)
+//            {
+//
+//            } else
+//            {
+//                return "淘宝单品";
+//            }
 //            else
 //            {
 //                return "攻略";

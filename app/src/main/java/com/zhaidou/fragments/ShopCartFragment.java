@@ -973,5 +973,15 @@ public class ShopCartFragment extends BaseFragment
         super.onDestroy();
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            if (arrays == null | arrays.size() < 1) {
+                refreshData();
+            }
+        }
+
+    }
 
 }

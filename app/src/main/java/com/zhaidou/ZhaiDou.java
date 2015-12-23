@@ -36,8 +36,10 @@ public class ZhaiDou {
     public static String CartGoodsDeleteUrl=HOME_BASE_URL+"cart/deleteUserCart.action?businessType=01&version=1.0.0&userId=";
     //修改购物车商品详情接口
     public static String CartGoodsEditUrl=HOME_BASE_URL+"cart/editUserCart.action?businessType=01&version=1.0.0&clientType=app&userId=";
-    //搜索商品接口
-    public static String SearchGoodsUrl=HOME_BASE_URL+"product/searchProduct.action?businessType=01&searchType=10&pageSize=10&keyword=";
+    //搜索商品接口keyword
+    public static String SearchGoodsKeyWordUrl=HOME_BASE_URL+"product/searchProduct.action?businessType=01&searchType=10&pageSize=10&keyword=";
+    //搜索商品接口Id
+    public static String SearchGoodsIdUrl=HOME_BASE_URL+"product/searchProduct.action?businessType=01&searchType=10&pageSize=10&expandedRequest=";
     //热搜词
     public static String SearchHotUrl=HOME_BASE_URL+"product/getHotKeywordList.action";
     //提交订单接口
