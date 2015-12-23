@@ -48,6 +48,7 @@
             android:layout_height="17dp"
             android:layout_marginLeft="10dp"
             android:layout_weight="0.00001"
+            android:visibility="gone"
             android:src="@drawable/icon_search_taobao"/>
 
         <LinearLayout
@@ -58,6 +59,7 @@
             android:orientation="horizontal"
             android:gravity="right|center_vertical"
             android:background="@color/white"
+            android:visibility="gone"
             android:layout_height="wrap_content">
             <ImageView
                 android:id="@+id/iv_heart"

@@ -11,7 +11,6 @@
     <dimen name="home_item_dimen">150dp</dimen>
     <dimen name="goods_height_dimen">240dp</dimen>
     <dimen name="image_height_dimen">120dp</dimen>
-    <dimen name="image_width_dimen">120dp</dimen>
     <dimen name="goods_bottom_height_dimen">58dp</dimen>
     <dimen name="payment_success_height_dimen">640dp</dimen>
     <!--购物车按钮高度-->
