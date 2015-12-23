@@ -98,7 +98,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private TextView titleView;
     private LinearLayout mTabContainer;
     private ImageView iv_dot;
-    private TextView cart_dot;
+    public TextView cart_dot;
     private LinearLayout viewLayout;
 
     private String token;
@@ -111,7 +111,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     private long mTime;
     private Activity mContext;
-    private CreatCartDB creatCartDB;
     private String serverName;
     private String serverInfo;
     private String serverUrl;
@@ -123,7 +122,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     public static List<Province> provinceList = new ArrayList<Province>();
 
     public int num = 0;
-    public List<CartGoodsItem> items = new ArrayList<CartGoodsItem>();
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -133,21 +131,16 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             String action = intent.getAction();
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
             {
-                initCartTips();
             }
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
             {
-                initCartTips();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag))
             {
-                initCartTips();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
             {
-                initCartTips();
             }
-
             if (action.equalsIgnoreCase(ZhaiDou.BROADCAST_WXAPI_FILTER))
             {
                 System.out.println("MainActivity.onReceive");
@@ -235,6 +228,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         setContentView(R.layout.main_layout);
         iv_dot = (ImageView) findViewById(R.id.iv_dot);
         cart_dot = (TextView) findViewById(R.id.cartTipsTv);
+        CartTip(0);
         viewLayout = (LinearLayout) findViewById(R.id.content);
         mContext = this;
         init();
@@ -243,7 +237,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         getVersionServer();
 
         initComponents();
-       commitActiveData();
+//       commitActiveData();
         AlibabaSDK.asyncInit(this, new InitResultCallback()
         {
             @Override
@@ -338,62 +332,18 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     public void init()
     {
-        creatCartDB = new CreatCartDB(mContext);
-        initCartTips();
         mRequestQueue = Volley.newRequestQueue(this, new HttpClientStack(new DefaultHttpClient()));
         FetchCityData();
     }
 
 
 
-    /**
-     * 红色标识提示显示数量
-     */
-    private void initCartTips()
-    {
-        num = 0;
-        if (checkLogin())
-        {
-            getGoodsItems();
-            for (int i = 0; i < items.size(); i++)
-            {
-                if (items.get(i).isPublish.equals("false") && items.get(i).isOver.equals("false"))
-                {
-                    num = num + items.get(i).num;
-                }
-            }
-            cart_dot.setVisibility(View.VISIBLE);
-        }
-        if (num!=0)
-        {
-            cart_dot.setText(""+num);
-            cart_dot.setVisibility(View.VISIBLE);
-        }
-        else
-        {
-            cart_dot.setVisibility(View.GONE);
-        }
 
-    }
 
-    /**
-     * 获得当前userId的所有商品
-     */
-    private void getGoodsItems()
-    {
-        items.removeAll(items);
-        //遍历获得这个当前uesrId的所有商品
-        items = CreatCartTools.selectByAll(creatCartDB, id);
-    }
 
     public int getNum()
     {
         return num;
-    }
-
-    public List<CartGoodsItem> getItems()
-    {
-        return items;
     }
 
     public void initComponents()

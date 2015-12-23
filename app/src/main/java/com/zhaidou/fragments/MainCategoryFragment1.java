@@ -420,7 +420,7 @@ public class MainCategoryFragment1 extends BaseFragment
         switch (view.getId())
         {
             case R.id.iv_search:
-                SearchFragment searchFragment = SearchFragment.newInstance("", "");
+                SearchFragment searchFragment = SearchFragment.newInstance("", 1);
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
                 break;
         }

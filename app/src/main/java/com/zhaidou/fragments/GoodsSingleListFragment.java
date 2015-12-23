@@ -4,6 +4,7 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +38,7 @@ import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.adapter.ProductAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
+import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Product;
 import com.zhaidou.utils.DialogUtils;
@@ -169,7 +172,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         tv_money=(TextView)view.findViewById(R.id.tv_money);
         gv_single=(PullToRefreshGridView)view.findViewById(R.id.gv_single);
         nullLine=(LinearLayout)view.findViewById(R.id.nullline);
-        productAdapter = new ProductAdapter(getActivity(),products,1,screenWidth,mFlag);
+        productAdapter = new ProductAdapter(mContext,products);
         gv_single.setAdapter(productAdapter);
         gv_single.setOnRefreshListener(this);
         productAdapter.setOnInViewClickListener(R.id.ll_single_layout,new BaseListAdapter.onInternalClickListener() {
@@ -181,7 +184,14 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
             }
         });
         mRequestQueue= Volley.newRequestQueue(mContext);
-        FetchSpecialData(mParam1, sort, currentpage=1);
+        if (mFlag==1)
+        {
+            FetchSpecialData(mParam1, sort, currentpage=1);
+        }
+            else
+        {
+            FetchSpecialIdData(mParam1, sort, currentpage = 1);
+        }
 //        if ("category".equalsIgnoreCase(mParam2))//全分类
 //        {
 //            FetchCategoryData(mParam1, sort, currentpage = 1);
@@ -248,7 +258,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         String url= null;
         try
         {
-            url = ZhaiDou.SearchGoodsUrl+ URLEncoder.encode(msg, "UTF-8")+"&pageNo="+currentpage;
+            url = ZhaiDou.SearchGoodsKeyWordUrl+ URLEncoder.encode(msg, "UTF-8")+"&pageNo="+currentpage;
         } catch (UnsupportedEncodingException e)
         {
             e.printStackTrace();
@@ -307,9 +317,142 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                         String productId = merchandise.optString("productId");
                         String title = merchandise.optString("productName");
                         double price = merchandise.optDouble("price");
+                        double cost_price = merchandise.optDouble("price");
                         String imgUrl=merchandise.optString("productPicUrl");
-                        Product product = new Product(id,title,price,imgUrl,0,null,imgUrl);
+                        JSONObject countObject = merchandise.optJSONObject("expandedResponse");
+                        int remaining = countObject.optInt("stock");
+                        Product product = new Product();
                         product.goodsId=productId;
+                        product.setId(id);
+                        product.setPrice(price);
+                        product.setCost_price(cost_price);
+                        product.setTitle(title);
+                        product.setImage(imgUrl);
+                        product.setRemaining(remaining);
+                        products.add(product);
+                    }
+                    handler.sendEmptyMessage(0);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                setEndLoading();
+                gv_single.onRefreshComplete();
+                if (products.size() == 0)
+                {
+                    nullLine.setVisibility(View.VISIBLE);
+                }
+                if(currentpage>1)
+                {
+                    currentpage=currentpage-1;
+                }
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                headers.put("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+                return headers;
+            }
+        };
+        if (mRequestQueue==null) mRequestQueue=Volley.newRequestQueue(mContext);
+        mRequestQueue.add(newMissRequest);
+    }
+
+    /**
+     * 特卖列表请求数据
+     * @param categoryId
+     * @param sort
+     * @param page
+     */
+    public void FetchSpecialIdData(String categoryId,int sort,int page){
+        mParam1=categoryId;
+        this.sort=sort;
+        currentpage=page;
+        if (page==1) products.clear();
+        String url= null;
+        JSONObject json=new JSONObject();
+        try
+        {
+            json.put("categoryId",categoryId);
+            json.put("brandId",null);
+            json.put("storeId",null);
+            json.put("regionId",null);
+            url = ZhaiDou.SearchGoodsIdUrl+ json+"&pageNo="+currentpage;
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        ToolUtils.setLog(url);
+        JsonObjectRequest newMissRequest = new JsonObjectRequest(Request.Method.GET,url, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject json) {
+                setEndLoading();
+                gv_single.onRefreshComplete();
+                if (json!=null)
+                {
+                    JSONObject dataObject=json.optJSONObject("data");
+
+                    if (dataObject==null)
+                    {
+                        if (currentpage==1)
+                        {
+                            if (products.size() == 0)
+                            {
+                                nullLine.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        return;
+                    }
+                    JSONObject pageObject=dataObject.optJSONObject("pagePO");
+                    if (pageObject==null)
+                    {
+                        if (currentpage==1)
+                        {
+                            if (products.size() == 0)
+                            {
+                                nullLine.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        return;
+                    }
+                    pageTotal=pageObject.optInt("totalCount");
+                    pageSize=pageObject.optInt("pageSize");
+                    JSONArray jsonArray = pageObject.optJSONArray("items");
+                    if (jsonArray==null||jsonArray.toString().length()<5)
+                    {
+                        if (currentpage==1)
+                        {
+                            if (products.size() == 0)
+                            {
+                                nullLine.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        return;
+                    }
+                    for (int i = 0; i <jsonArray.length() ; i++)
+                    {
+                        JSONObject merchandise=jsonArray.optJSONObject(i);
+                        int id = merchandise.optInt("id");
+                        String productId = merchandise.optString("productId");
+                        String title = merchandise.optString("productName");
+                        double price = merchandise.optDouble("price");
+                        double cost_price = merchandise.optDouble("price");
+                        String imgUrl=merchandise.optString("productPicUrl");
+                        JSONObject countObject = merchandise.optJSONObject("expandedResponse");
+                        int remaining = countObject.optInt("stock");
+                        Product product = new Product();
+                        product.goodsId=productId;
+                        product.setId(id);
+                        product.setPrice(price);
+                        product.setCost_price(cost_price);
+                        product.setTitle(title);
+                        product.setImage(imgUrl);
+                        product.setRemaining(remaining);
                         products.add(product);
                     }
                     handler.sendEmptyMessage(0);
@@ -503,6 +646,40 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         mRequestQueue.add(fetchCategoryTask);
     }
 
+    private Map<Integer, View> mHashMap = new HashMap<Integer, View>();
+    public class ProductAdapter extends BaseListAdapter<Product>
+    {
+        public ProductAdapter(Context context, List<Product> list)
+        {
+            super(context, list);
+        }
+
+        @Override
+        public View bindView(int position, View convertView, ViewGroup parent)
+        {
+            convertView = mHashMap.get(position);
+            if (convertView == null)
+                convertView = mInflater.inflate(R.layout.item_fragment_sale, null);
+            TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
+            ImageView image = ViewHolder.get(convertView, R.id.iv_single_item);
+            image.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / 2 - 1, screenWidth / 2 - 1));
+            TextView tv_money = ViewHolder.get(convertView, R.id.tv_money);
+            TextView tv_price = ViewHolder.get(convertView, R.id.tv_price);
+            TextView tv_count = ViewHolder.get(convertView, R.id.tv_count);
+            ImageView ll_sale_out = ViewHolder.get(convertView, R.id.ll_sale_out);
+            ll_sale_out.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / 2 - 1, screenWidth / 2 - 1));
+            Product product = getList().get(position);
+            tv_name.setText(product.getTitle());
+            ToolUtils.setImageCacheUrl(product.getImage(), image, R.drawable.icon_loading_defalut);
+            tv_price.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
+            tv_money.setText("￥" + ToolUtils.isIntPrice("" + product.getCost_price()));
+            tv_price.setText("￥" + ToolUtils.isIntPrice("" + product.getCost_price()));
+
+            ll_sale_out.setVisibility(product.getRemaining() == 0 ? View.VISIBLE : View.GONE);
+            mHashMap.put(position, convertView);
+            return convertView;
+        }
+    }
 
 
     @Override
@@ -517,7 +694,14 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         }
         else if ("goods".equalsIgnoreCase(mParam2))//搜索特卖商城
         {
-            FetchSpecialData(mParam1, sort, currentpage=1);
+            if (mFlag==1)
+            {
+                FetchSpecialData(mParam1, sort, currentpage=1);
+            }
+            else
+            {
+                FetchSpecialIdData(mParam1, sort, currentpage=1);
+            }
         }
         else {
             FetchData(mParam1, sort, currentpage=1);
@@ -533,7 +717,14 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         }
         else if ("goods".equalsIgnoreCase(mParam2))//搜索特卖商城
         {
-            FetchSpecialData(mParam1, sort, ++currentpage);
+            if (mFlag==1)
+            {
+                FetchSpecialData(mParam1, sort, currentpage++);
+            }
+            else
+            {
+                FetchSpecialIdData(mParam1, sort, currentpage++);
+            }
         }
         else {
             FetchData(mParam1, sort, ++currentpage);

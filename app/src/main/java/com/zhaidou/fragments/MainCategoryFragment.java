@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -110,25 +111,17 @@ public class MainCategoryFragment extends BaseFragment {
         mCategoryListView.setAdapter(mCategoryAdapter);
         mCategoryItemAdapter = new CategoryItemAdapter(getActivity(), new ArrayList<CategoryItem>());
         mGridView.setAdapter(mCategoryItemAdapter);
+        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                SearchFragment searchFragment = SearchFragment.newInstance(mCategoryItemAdapter.getList().get(position).categoryId, 2);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
+            }
+        });
         mRequestQueue = Volley.newRequestQueue(getActivity());
         getCategoryData();
-//        expandableListView = (ExpandableListView) view.findViewById(R.id.el_category);
-//        categoryExpandeAdapter = new CategoryExpandeAdapter(getActivity(), categoryList);
-//        expandableListView.setAdapter(categoryExpandeAdapter);
-//        // 子类点击事件
-//        expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-//            @Override
-//            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-//                return true;
-//            }
-//        });
-//        // 父类点击事件
-//        expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
-//            @Override
-//            public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-//                return true;
-//            }
-//        });
         mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
         mCategoryAdapter.setOnInViewClickListener(R.id.categoryView, new BaseListAdapter.onInternalClickListener() {
             @Override
@@ -214,7 +207,7 @@ public class MainCategoryFragment extends BaseFragment {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.searchLayout:
-                SearchFragment searchFragment = SearchFragment.newInstance("", "");
+                SearchFragment searchFragment = SearchFragment.newInstance("", 1);
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
                 break;
         }
@@ -279,9 +272,8 @@ public class MainCategoryFragment extends BaseFragment {
             TextView mCategoryName = ViewHolder.get(convertView, R.id.categoryName);
             ImageView mIcon = ViewHolder.get(convertView, R.id.icon);
             CategoryItem categoryItem = getList().get(position);
-            System.out.println("CategoryItemAdapter.bindView--->" + categoryItem);
             mCategoryName.setText(categoryItem.categoryName);
-            ToolUtils.setImageCacheUrl(categoryItem.categoryPicUrl, mIcon);
+            ToolUtils.setImageCacheUrl(categoryItem.categoryPicUrl, mIcon,R.drawable.icon_loading_category);
             mCategoryItemView.put(position, convertView);
             return convertView;
         }

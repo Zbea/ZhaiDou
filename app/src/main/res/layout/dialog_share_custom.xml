@@ -22,9 +22,11 @@
         android:id="@+id/tv_cancel"
         android:layout_width="match_parent"
         android:text="取消"
-        android:textSize="15sp"
+        android:textSize="16sp"
         android:textColor="@color/text_gary_color"
         android:gravity="center"
-        android:layout_height="88px" />
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

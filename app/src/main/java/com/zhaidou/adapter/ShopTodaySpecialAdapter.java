@@ -128,7 +128,7 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
                 viewHolder.buyProgressBarRed.setVisibility(View.GONE);
             }
         }
-        viewHolder.itemName.setText(todayShopItem.title);
+        viewHolder.itemName.setText("            "+todayShopItem.title);
         viewHolder.itemCurrentPrice.setText("￥"+ToolUtils.isIntPrice(""+todayShopItem.currentPrice));
         viewHolder.itemFormerPrice.getPaint().setAntiAlias(true);//去锯齿
         viewHolder.itemFormerPrice.setText("￥"+ToolUtils.isIntPrice(""+todayShopItem.formerPrice));

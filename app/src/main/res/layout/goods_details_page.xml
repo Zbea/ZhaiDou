@@ -185,10 +185,12 @@
             <LinearLayout
                 android:id="@+id/iconView"
                 android:layout_width="match_parent"
-                android:layout_height="26dp"
+                android:layout_height="wrap_content"
                 android:background="@color/page_bg"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp">
 
@@ -222,12 +224,14 @@
             <LinearLayout
                 android:id="@+id/iconOSaleView"
                 android:layout_width="match_parent"
-                android:layout_height="26dp"
+                android:layout_height="wrap_content"
                 android:background="@color/page_bg"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
                 android:visibility="gone">
 
                 <ImageView
@@ -681,7 +685,6 @@
                 android:marqueeRepeatLimit="marquee_forever"
                 android:singleLine="true"
                 android:text="立即购买"
-
                 android:textColor="@color/white"/>
         </LinearLayout>
 
@@ -692,6 +695,7 @@
         layout="@layout/content_null_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="visible"
         android:layout_below="@+id/headLine"></include>
 
 </RelativeLayout>

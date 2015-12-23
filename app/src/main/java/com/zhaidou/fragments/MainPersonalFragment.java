@@ -197,7 +197,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (view == null) {
-            view = inflater.inflate(R.layout.personal, container, false);
+            view = inflater.inflate(R.layout.main_personal, container, false);
 
             initBroadcastReceiver();
 

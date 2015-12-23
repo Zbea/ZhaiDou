@@ -12,7 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
@@ -20,14 +24,19 @@ import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.model.User;
+import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SettingFragment extends BaseFragment implements View.OnClickListener,ProfileFragment.ProfileListener{
     private static final String ARG_PARAM1 = "param1";
@@ -43,6 +52,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     SharedPreferences mSharedPreferences;
     RequestQueue requestQueue;
     private ProfileListener profileListener;
+    private DialogUtils mDialogUtil;
     private Dialog mDialog;
     private boolean isNetState;
     private Context mContext;
@@ -59,10 +69,10 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                     SharedPreferencesUtil.clearUser(getActivity());
 
                     Intent intent=new Intent(ZhaiDou.IntentRefreshLoginExitTag);
-                    getActivity().sendBroadcast(intent);
+                    mContext.sendBroadcast(intent);
 
-                    ((MainActivity)getActivity()).logout(SettingFragment.this);
-                    ((MainActivity)getActivity()).CartTip(0);
+                    ((MainActivity)mContext).logout(SettingFragment.this);
+                    ((MainActivity)mContext).CartTip(0);
                     break;
                 case 1:
                     serverCode = parseJosn(msg.obj.toString());
@@ -106,7 +116,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         View view=inflater.inflate(R.layout.fragment_setting, container, false);
 
         mContext=getActivity();
-
+        mDialogUtil=new DialogUtils(mContext);
         LinearLayout versionBtn=(LinearLayout)view.findViewById(R.id.ll_version);
         versionBtn.setOnClickListener(this);
 
@@ -168,7 +178,15 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                 break;
             case R.id.bt_logout:
 //                mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"注销中");
-                logout();
+//                logout();
+                mDialogUtil.showDialog("确定退出登录？",new DialogUtils.PositiveListener()
+                {
+                    @Override
+                    public void onPositive()
+                    {
+                        mHandler.sendEmptyMessage(CLEAR_USER_DATA);
+                    }
+                },null);
                 break;
             case R.id.ll_version:
                 if (NetworkUtils.isNetworkAvailable(mContext))
@@ -214,7 +232,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
             {
                 JSONObject object=jsonObject.optJSONObject("data");
                 if(object!=null)
-                serverName = object.optString("app_version");
+                    serverName = object.optString("app_version");
                 serverCode = object.optInt("code_version");
                 serverUrl = object.optString("package_url");
             }
@@ -225,30 +243,30 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     }
 
     public void logout(){
-                mHandler.sendEmptyMessage(CLEAR_USER_DATA);
 
-//        JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_LOGOUT_URL
-//         ,new Response.Listener<JSONObject>() {
-//            @Override
-//            public void onResponse(JSONObject jsonObject) {
-//                if (mDialog!=null) mDialog.dismiss();
-//
-//            }
-//        },new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError volleyError) {
-//
-//            }
-//        })        {
-//            @Override
-//            public Map<String, String> getHeaders() throws AuthFailureError
-//            {
-//                Map<String, String> headers = new HashMap<String, String>();
-//                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-//                return headers;
-//            }
-//        };
-//        requestQueue.add(request);
+        JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_LOGOUT_URL
+                ,new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (mDialog!=null) mDialog.dismiss();
+
+                mHandler.sendEmptyMessage(CLEAR_USER_DATA);
+            }
+        },new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        })        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
+        requestQueue.add(request);
     }
 
     @Override

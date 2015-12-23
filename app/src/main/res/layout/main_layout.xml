@@ -51,7 +51,7 @@
                 android:layout_centerInParent="true"
                 android:contentDescription="@string/app_name"
                 android:drawablePadding="4dp"
-                android:text="单品"
+                android:text="分类"
                 android:textSize="10sp"
                 android:drawableTop="@drawable/category_icon"
                 android:gravity="center_horizontal"
