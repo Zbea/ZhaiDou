@@ -71,10 +71,41 @@
     </ScrollView>
 
 
-    <include
-        layout="@layout/content_null_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/common_actionbar" />
+    <LinearLayout
+        android:id="@+id/noNetWork"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_centerInParent="true">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/icon_null_net"/>
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_gary_color"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="80dp"
+            android:layout_gravity="center_horizontal"
+            android:text="抱歉,网络连接失败"/>
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/reload"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:layout_marginBottom="30dp"
+            android:gravity="center"
+            android:clickable="true"
+            android:padding="10dp"
+            android:background="@drawable/btn_green_click_bg"
+            android:text="重新加载"/>
+    </LinearLayout>
 
 </RelativeLayout>

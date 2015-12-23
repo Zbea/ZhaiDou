@@ -29,6 +29,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -48,11 +49,14 @@ import com.zhaidou.model.Order;
 import com.zhaidou.model.OrderItem1;
 import com.zhaidou.model.ReturnItem;
 import com.zhaidou.model.Store;
+import com.zhaidou.utils.DialogUtils;
+import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.PhotoUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -97,7 +101,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
     private Context mContext;
     private List<String> imagePath = new ArrayList<String>();
     private Order.OrderListener orderListener;
-    private Dialog mDialog;
+    private DialogUtils mDialogUtils;
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private Handler handler = new Handler() {
         @Override
@@ -160,7 +164,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
 
     private void initView(View view) {
         mContext = getActivity();
-//        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        mDialogUtils = new DialogUtils(mContext);
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         tv_commit = (TextView) view.findViewById(R.id.tv_commit);
         tv_commit.setOnClickListener(this);
@@ -307,16 +311,19 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                     ShowToast("请选择退货商品");
                     return;
                 }
-//                if (TextUtils.isEmpty(mEditText.getText().toString().trim())) {
-//                    ShowToast("请填写描述");
-//                    return;
-//                }
-//                if ((imagePath != null && imagePath.size() == 0) || (imagePath != null && imagePath.size() == 1 && TextUtils.isEmpty(imagePath.get(0).toString().trim()))) {
-//                    ShowToast("请上传图片");
-//                    return;
-//                }
-//                new CommitTask().execute();
-                applyReturn();
+                if (TextUtils.isEmpty(mEditText.getText().toString().trim())) {
+                    ShowToast("请填写描述");
+                    return;
+                }
+                if ((imagePath != null && imagePath.size() == 0) || (imagePath != null && imagePath.size() == 1 && TextUtils.isEmpty(imagePath.get(0).toString().trim()))) {
+                    ShowToast("请上传图片");
+                    return;
+                }
+                if (NetworkUtils.isNetworkAvailable(mContext)) {
+                    applyReturn();
+                } else {
+                    ShowToast("网络异常");
+                }
                 break;
         }
     }
@@ -448,7 +455,6 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                     File file = new File(filePath);
                     Log.i("MENU_CAMERA_SELECTED-------------->", filePath + "------->" + imagePath.size());
                     degree = PhotoUtil.readPictureDegree(file.getAbsolutePath());
-//                    ToolUtils.setImageCacheUrl("file://" + filePath, iv_return_img);
                     if (imagePath != null && !TextUtils.isEmpty(filePath.trim()) && imagePath.size() < 3) {
                         imagePath.remove("");
                         imagePath.add(filePath);
@@ -560,101 +566,28 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
             } else {
                 ToolUtils.setImageCacheUrl("file://" + img, iv_img);
             }
-//            }
             mHashMap.put(position, convertView);
             return convertView;
         }
     }
 
     private void applyReturn() {
-//        Map<String, String> map = new HashMap<String, String>();
-//        map.put("sale_return_item[return_category_id]", "" + mOrderId);
-//        map.put("sale_return_item[node]", mEditText.getText().toString().trim());
-//        for (int i = 0; i < imagePath.size(); i++) {
-//            String path = imagePath.get(i);
-//            if (!TextUtils.isEmpty(path)) {
-//                Bitmap bitmap = BitmapFactory.decodeFile(path);
-//                File file=new File(path);
-//                long length = file.length();
-//                if (length/(1024*1024)>3){
-//                    ShowToast("图片过大");
-//                    return;
-//                }
-//                String base64Str = PhotoUtil.bitmapToBase64(bitmap);
-//                map.put("sale_return_item[attachments_attributes][][picture]", "data:image/png;base64," + base64Str);
-//            }
-//        }
-//        for (int k = 0; k < returnItem.size(); k++) {
-//            map.put("sale_return_item[order_item_ids][]", orderItems.get(k).getId() + "");
-//        }
-//        if (mDialog != null)
-//            mDialog.show();
-//        ZhaiDouRequest request1 = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST + "/" + mOrderId + "/return_items", map, new Response.Listener<JSONObject>() {
-//            @Override
-//            public void onResponse(JSONObject jsonObject) {
-//                if (mDialog != null)
-//                    mDialog.hide();
-//                int status = jsonObject.optInt("status");
-//                if (201 == status) {
-//                    String msg = jsonObject.optString("message");
-//                    JSONObject orderObj = jsonObject.optJSONObject("order");
-//                    int id = orderObj.optInt("id");
-//                    String number = orderObj.optString("number");
-//                    double amount = orderObj.optDouble("amount");
-//                    String orderStatus = orderObj.optString("status");
-//                    String merch_img = orderObj.optString("merch_img");
-//                    String status_ch = orderObj.optString("status_ch");
-//                    String created_at = orderObj.optString("created_at");
-//                    String over_at = orderObj.optString("over_at");
-//                    String created_at_for = orderObj.optString("created_at_for");
-//                    String deliver_number = orderObj.optString("deliver_number");
-//                    Order order = new Order(id, number, amount, orderStatus, status_ch, created_at_for, created_at, over_at, 0);
-//                    Message message = new Message();
-//                    message.what = ORDER_RETURN_SUCCESS;
-//                    message.obj = order;
-//                    handler.sendMessage(message);
-//                } else if (400 == status) {
-//                    ShowToast("申请退货失败");
-//                }
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError volleyError) {
-//                if (mDialog != null)
-//                    mDialog.hide();
-//                System.out.println("OrderAfterSaleFragment.onErrorResponse------->"+volleyError.networkResponse.headers.toString());
-//                System.out.println("OrderAfterSaleFragment.onErrorResponse------->"+new String(volleyError.networkResponse.data));
-//            }
-//        }) {
-//            @Override
-//            public Map<String, String> getHeaders() throws AuthFailureError {
-//                Map<String, String> header = new HashMap<String, String>();
-//                header.put("SECAuthorization", token);
-//                header.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-//                return header;
-//            }
-//        };
-//        requestQueue.add(request1);
+        final Dialog dialog = mDialogUtils.showLoadingDialog();
         List<ReturnItem> items = new ArrayList<ReturnItem>();
         MultipartRequestParams params = new MultipartRequestParams();
         JSONArray array = new JSONArray(items);
         for (int k = 0; k < returnItem.size(); k++) {
             OrderItem1 item1 = returnItem.get(k);
             int orderItemId = item1.orderItemId;
-            System.out.println("OrderAfterSaleFragment.applyReturn--->item1----->"+item1);
             int quantity = item1.quantity;
             String remark = mEditText.getText().toString().trim();
-//            ReturnItem returnItem = new ReturnItem(orderItemId+"",quantity,remark);
-//            System.out.println("returnItem------>"+returnItem.toString());
-//            items.add(returnItem);
-            Map<String,String> map = new HashMap<String, String>();
-            map.put("orderItemId",orderItemId+"");
-            map.put("quantity",quantity+"");
-            map.put("remark",remark);
+            Map<String, String> map = new HashMap<String, String>();
+            map.put("orderItemId", orderItemId + "");
+            map.put("quantity", quantity + "");
+            map.put("remark", remark);
             JSONObject object = new JSONObject(map);
             array.put(object);
         }
-        System.out.println("OrderAfterSaleFragment.applyReturn------->" + array.toString());
         params.put("businessType", "01");
         params.put("clientType", "ANDROID");
         params.put("version", "1.0.1");
@@ -663,32 +596,41 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
         params.put("mallReturnFlowDetailPOList", array.toString());
         params.put("userId", ZhaiDou.TESTUSERID);
         params.put("orderCode", mStore.orderCode);
+        JSONArray jsonArray = new JSONArray();
         for (int i = 0; i < imagePath.size(); i++) {
             String path = imagePath.get(i);
-//            if (!TextUtils.isEmpty(path)) {
-//                Bitmap bitmap = BitmapFactory.decodeFile(path);
-//                File file=new File(path);
-//                long length = file.length();
-//                if (length/(1024*1024)>3){
-//                    ShowToast("图片过大");
-//                    return;
-//                }
-//                String base64Str = PhotoUtil.bitmapToBase64(bitmap);
-//                map.put("sale_return_item[attachments_attributes][][picture]", "data:image/png;base64," + base64Str);
-//            }
-            params.put("uploadfile", new File(path));
+            Bitmap bitmap = PhotoUtil.getImageThumbnail(path, 480, 800);
+            byte[] bytes = PhotoUtil.Bitmap2Bytes(bitmap);
+            jsonArray.put(bytes.toString());
+            PhotoUtil.recycle(bitmap);
         }
+        params.put("uploadfile", jsonArray.toString());
         MultipartRequest multipartRequest = new MultipartRequest(Request.Method.POST, params, ZhaiDou.URL_ORDER_RETURN_APPLY, new Response.Listener<String>() {
-                     @Override
-                     public void onResponse(String s) {
-                         System.out.println("OrderAfterSaleFragment.onResponse--->" + s);
-                     }
-                 }, new Response.ErrorListener() {
-                     @Override
-                     public void onErrorResponse(VolleyError volleyError) {
-
-                     }
-                 });
+            @Override
+            public void onResponse(String s) {
+                dialog.dismiss();
+                try {
+                    JSONObject jsonObject = new JSONObject(s);
+                    int status = jsonObject.optInt("status");
+                    String message = jsonObject.optString("message");
+                    if (200 == status) {
+                        ShowToast("退货申请成功");
+                        ((MainActivity) getActivity()).navigationToFragment(OrderAfterSaleFragment.this);
+                    } else {
+                        ShowToast(message);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                dialog.dismiss();
+                ShowToast("网络错误");
+            }
+        });
+        multipartRequest.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 1, 1.0f));
         requestQueue.add(multipartRequest);
     }
 

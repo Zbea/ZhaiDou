@@ -311,13 +311,11 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     String nick1 = login_user.optString("s_nick_name");
                     Log.i("0==flag", "0==flag");
                     Map<String, String> registers = new HashMap<String, String>();
-                    registers.put("user[email]", email);
-                    registers.put("user[nick_name]", nick1);
-                    registers.put("user[uid]", userId);
-                    registers.put("user[provider]", tag);
+                    registers.put("email", email);
+                    registers.put("nick_name", nick1);
+                    registers.put("uid", userId);
+                    registers.put("provider", tag);
                     registers.put("profile_image", avatarUrl);
-
-//                    new RegisterTask().execute(registers);
                     thirdPartyRegisterTask(registers);
                 } else {
                     JSONObject userJson = dataObj.optJSONObject("user");
@@ -428,7 +426,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             @Override
             public void onResponse(JSONObject jsonObject) {
                 JSONObject dataObj = jsonObject.optJSONObject("data");
-                String message=jsonObject.optString("message");
+                String message = jsonObject.optString("message");
                 if (jsonObject.isNull("code")) {
                     String msg = dataObj.optString("message");
                     int status = dataObj.optInt("status");
@@ -437,7 +435,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                         return;
                     } else {
                         mDialog.findViewById(R.id.iv_close).setVisibility(View.VISIBLE);
-                        Toast.makeText(LoginActivity.this, TextUtils.isEmpty(msg)?message:msg, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, TextUtils.isEmpty(msg) ? message : msg, Toast.LENGTH_SHORT).show();
                     }
 
                 } else {
@@ -521,14 +519,27 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (jsonObject != null) {
-                    JSONObject userJson = jsonObject.optJSONObject("user");
-                    int id = userJson.optInt("id");
-                    String email = userJson.optString("email");
-                    String token = userJson.optString("authentication_token");
+                    int status = jsonObject.optInt("status");
+                    String message = jsonObject.optString("message");
+                    if (status == 200) {
+                        JSONObject dataObj = jsonObject.optJSONObject("data");
+                        JSONArray errMsg = jsonObject.optJSONArray("message");
+                        if (errMsg!=null){
+                            Toast.makeText(LoginActivity.this, errMsg.optString(0), Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+                        JSONObject userJson = dataObj.optJSONObject("user");
+                        int id = userJson.optInt("id");
+                        String email = userJson.optString("email");
+                        String token = userJson.optString("authentication_token");
 //                    String avatar = userJson.optJSONObject("avatar").optString("url","");
-                    String nick = userJson.optString("nick_name");
-                    User user = new User(id, email, token, nick, "");
-                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+                        String nick = userJson.optString("nick_name");
+                        User user = new User(id, email, token, nick, "");
+                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+                    } else {
+                        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         }, new Response.ErrorListener() {
@@ -575,7 +586,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     String token = data.getStringExtra("token");
                     String nick = data.getStringExtra("nick");
                     User user = new User(id, email, token, nick, null);
-
                     Message message = new Message();
                     message.what = 0;
                     message.obj = user;

@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -44,8 +44,6 @@ import com.zhaidou.view.WheelViewContainer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,6 +87,7 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
 
     private FrameLayout mContainer;
     private final int LOAD_ADDRESS_COMPLITED = 0;
+    private final int UPDATE_USER_LOCATION = 1;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -96,6 +95,10 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
             switch (msg.what) {
                 case LOAD_ADDRESS_COMPLITED:
                     mContainer.setVisibility(View.GONE);
+                    break;
+                case UPDATE_USER_LOCATION:
+                    String loc = (String) msg.obj;
+                    et_location.setText(loc);
                     break;
             }
         }
@@ -171,24 +174,14 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
 
         mSharedPreferences = getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         token = mSharedPreferences.getString("token", null);
+        getUserDetail();
         if (MainActivity.provinceList != null && MainActivity.provinceList.size() > 1) {
             ToolUtils.setLog("加载已经添加的");
             provinceList = MainActivity.provinceList;
+            mContainer.setVisibility(View.GONE);
         } else {
             ToolUtils.setLog("重新加载地址");
             FetchCityData();
-//        if (provinceList==null||provinceList.size()==0){
-//            mDialog = mDialogUtils.showLoadingDialog();
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    String data = getFromAssets("province.txt");
-//                    if (mDialog != null) {
-//                        mDialog.dismiss();
-//                        mHandler.sendEmptyMessage(LOAD_ADDRESS_COMPLITED);
-//                    }
-//                }
-//            }).start();
         }
         return view;
     }
@@ -200,11 +193,15 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
                 String name = et_name.getText().toString().trim();
                 String mobile = et_mobile.getText().toString().trim();
                 String address = et_addr.getText().toString().trim();
+                String loc = et_location.getText().toString().trim();
                 if (TextUtils.isEmpty(name)) {
                     Toast.makeText(getActivity(), "收货人信息不能为空", Toast.LENGTH_SHORT).show();
                     return;
                 } else if (TextUtils.isEmpty(mobile)) {
                     Toast.makeText(getActivity(), "联系方式不能为空", Toast.LENGTH_SHORT).show();
+                    return;
+                } else if (TextUtils.isEmpty(loc)) {
+                    Toast.makeText(getActivity(), "省市区不能为空", Toast.LENGTH_SHORT).show();
                     return;
                 } else if (TextUtils.isEmpty(address)) {
                     Toast.makeText(getActivity(), "收货地址不能为空", Toast.LENGTH_SHORT).show();
@@ -213,9 +210,7 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
                 mNickName = name;
                 mMobile = mobile;
                 mAddress = address;
-//                new MyTask().execute(name,mobile,address,mProfileId);
                 mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
-                ;
                 PostData(name, mobile, address, mProfileId);
                 break;
             case R.id.tv_edit:
@@ -227,16 +222,11 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
                 et_name.setText(mNickName);
                 break;
             case R.id.tv_delete:
-                Log.i("tv_addr_username.getText().toString()--->", tv_addr_username.getText().toString());
-                Log.i("tv_addr_mobile.getText().toString()--->", tv_addr_mobile.getText().toString());
-//                new MyTask().execute(tv_addr_username.getText().toString(),tv_addr_mobile.getText().toString(),"",mProfileId);
                 mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
-                ;
                 PostData(tv_addr_username.getText().toString(), tv_addr_mobile.getText().toString(), "", mProfileId);
                 break;
             case R.id.ll_address:
                 final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
-
                 Window dialogWindow = dialog.getWindow();
                 dialogWindow.setGravity(Gravity.BOTTOM);
                 dialogWindow.setWindowAnimations(R.style.pop_anim_style);
@@ -281,7 +271,7 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
     }
 
     private void FetchCityData() {
-        mDialog=mDialogUtils.showLoadingDialog();
+        mDialog = mDialogUtils.showLoadingDialog();
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_ADDRESS_URL, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -328,6 +318,7 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
                         province.setCityList(cityList);
                         provinceList.add(province);
                     }
+                    MainActivity.provinceList = provinceList;
 
                 }
                 mContainer.setVisibility(View.GONE);
@@ -335,6 +326,7 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
+                mDialog.dismiss();
                 ToolUtils.setToast(mContext, "抱歉,加载城市失败");
             }
         }) {
@@ -345,69 +337,8 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
                 return headers;
             }
         };
+        request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 1, 1.0f));
         ZDApplication.mRequestQueue.add(request);
-    }
-
-    public String getFromAssets(String fileName) {
-        try {
-            InputStreamReader inputReader = new InputStreamReader(getResources().getAssets().open(fileName));
-            BufferedReader bufReader = new BufferedReader(inputReader);
-            String line = "";
-            String Result = "";
-            while ((line = bufReader.readLine()) != null)
-                Result += line;
-            JSONObject jsonObject = new JSONObject(Result);
-            if (jsonObject != null) {
-                JSONArray providerArr = jsonObject.optJSONArray("providers");
-                for (int i = 0; i < providerArr.length(); i++) {
-                    JSONObject provinceObj = providerArr.optJSONObject(i);
-                    int provinceId = provinceObj.optInt("id");
-                    String provinceName = provinceObj.optString("name");
-                    Province province = new Province();
-                    province.setId(provinceId);
-                    province.setName(provinceName);
-                    List<City> cityList = new ArrayList<City>();
-                    JSONArray cityArr = provinceObj.optJSONArray("cities");
-                    if (cityArr != null && cityArr.length() > 0) {
-                        for (int k = 0; k < cityArr.length(); k++) {
-                            JSONObject cityObj = cityArr.optJSONObject(k);
-                            int cityId = cityObj.optInt("id");
-                            String cityName = cityObj.optString("name");
-                            JSONArray areaArr = cityObj.optJSONArray("children");
-                            City city = new City();
-                            city.setId(cityId);
-                            city.setName(cityName);
-                            List<Area> areaList = new ArrayList<Area>();
-                            if (areaArr != null && areaArr.length() > 0) {
-                                for (int j = 0; j < areaArr.length(); j++) {
-                                    JSONObject areaObj = areaArr.optJSONObject(j);
-                                    int areaId = areaObj.optInt("id");
-                                    String areaName = areaObj.optString("name");
-                                    double areaPrice = areaObj.optDouble("price");
-                                    areaObj.remove("price");
-                                    Area area = new Area();
-                                    area.setId(areaId);
-                                    area.setName(areaName);
-                                    area.setPrice(areaPrice);
-                                    areaList.add(area);
-                                }
-                                city.setAreas(areaList);
-                                cityList.add(city);
-                            }
-
-                        }
-                    }
-                    System.out.println("ProfileAddrFragment.getFromAssets----->" + provinceObj);
-                    province.setCityList(cityList);
-                    provinceList.add(province);
-                }
-
-            }
-            return Result;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     private void PostData(String username, String mobile, String address, String profileId) {
@@ -417,10 +348,10 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
         params.put("profile[first_name]", username);
         params.put("profile[mobile]", mobile);
         params.put("profile[address2]", address);
-
+        params.put("profile[address1]", mProviderId + "");
         params.put("profile[id]", profileId);
         params.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_EDIT_PROFILE_URL + profileId, params, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_EDIT_PROFILE_ADDR_URL + profileId, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 mDialog.dismiss();
@@ -443,6 +374,38 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("SECAuthorization", token);
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
+        ZDApplication.mRequestQueue.add(request);
+    }
+
+    public void getUserDetail() {
+        Object id = SharedPreferencesUtil.getData(getActivity(), "userId", 0);
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HOME_URL + "api/v1/users/" + id + "/profile", new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                JSONObject userObj = jsonObject.optJSONObject("profile");
+                if (userObj != null) {
+                    String province_name = userObj.optString("province_name");
+                    String city_name = userObj.optString("city_name");
+                    String provider_name = userObj.optString("provider_name");
+
+                    Message message = new Message();
+                    message.obj = province_name + "-" + city_name + "-" + provider_name;
+                    message.what = UPDATE_USER_LOCATION;
+                    mHandler.sendMessage(message);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }

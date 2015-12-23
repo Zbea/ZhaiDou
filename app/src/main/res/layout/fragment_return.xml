@@ -40,7 +40,7 @@
             android:textColor="@color/white"
             android:text="@string/title_order_return"/>
     </RelativeLayout>
-    <ListView
+    <com.pulltorefresh.PullToRefreshListView
         android:layout_below="@id/rl_back"
         android:id="@+id/lv_return"
         android:listSelector="@android:color/transparent"

@@ -10,7 +10,7 @@ public class ZhaiDou {
 //    public static String HOME_BASE_URL = "http://www.zhaidou.com/";//http://portal-web.zhaidou.com/
     public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
 //    public static String HOME_BASE_URL = "http://portal-web.zhaidou.com/";
-
+    public static String HOME_URL="http://stg.zhaidou.com/";
 
     //美丽家
     public static String HomeBeautifulUrl=HOME_BASE_URL+"zd/getPosts.action?plug=006&pageSize=10&pageNo=";
@@ -137,13 +137,15 @@ public class ZhaiDou {
     //第三方登录--验证
     public static String USER_LOGIN_THIRD_VERIFY_URL=HOME_BASE_URL+"user/verification_other.action";
     //用户注册
-    public static String USER_REGISTER_URL=HOME_BASE_URL+"api/v1/users";
+    public static String USER_REGISTER_URL=HOME_BASE_URL+"user/register_other.action";
     //修改密码
     public static String USER_PSW_CHANGE_URL=HOME_BASE_URL+"user/change_password.action";
     //修改用户头像
     public static String USER_UPDATE_AVATAR_URL=HOME_BASE_URL+"user/update_head_img.action";
     //
     public static String USER_REGISTER_WITH_PHONE_URL=HOME_BASE_URL+"user/phone_register.action";
+    //用户获奖地址
+    public static String USER_EDIT_PROFILE_ADDR_URL=HOME_URL+"api/v1/profiles/";
     //用户收藏
     public static String USER_COLLECT_ITEM_URL=HOME_BASE_URL+"article/api/article_items/like_article_items?per_page=10&page=";
     //用户取消收藏
@@ -160,7 +162,6 @@ public class ZhaiDou {
     public static String USER_REGISTER_CHECK_PHONE_URL=HOME_BASE_URL+"user/next_to_register.action";
     //登陆用户进行绑定手机接口
     public static String USER_LOGIN_BINE_PHONE_URL=HOME_BASE_URL+"user/user_blinding_phone.action";
-
 
     //后台统计
     public static String URL_STATISTICS=HOME_BASE_URL+"api/v1/device_tokens";
