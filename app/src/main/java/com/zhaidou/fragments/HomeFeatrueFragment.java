@@ -15,7 +15,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
@@ -39,7 +38,6 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.model.Product;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.ShopTodayItem;
 import com.zhaidou.utils.NetworkUtils;
@@ -55,7 +53,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickListener {
+public class HomeFeatrueFragment extends BaseFragment implements View.OnClickListener {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String ARG_TITLE = "title";
@@ -72,7 +70,7 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
     private RequestQueue requestQueue;
     private List<ShopTodayItem> items = new ArrayList<ShopTodayItem>();
 
-    private LinearLayout loadingView, nullNetView, nullView;
+    private LinearLayout loadingView, nullNetView, nullView,nullDataView;
     private TextView reloadBtn, reloadNetBtn;
 
     private final int UPDATE_ADAPTER = 0;
@@ -146,8 +144,8 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
     };
 
 
-    public static SpecialSaleFragment1 newInstance(String title, String param1, String param2) {
-        SpecialSaleFragment1 fragment = new SpecialSaleFragment1();
+    public static HomeFeatrueFragment newInstance(String title, String param1, String param2) {
+        HomeFeatrueFragment fragment = new HomeFeatrueFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -156,7 +154,7 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
         return fragment;
     }
 
-    public SpecialSaleFragment1() {
+    public HomeFeatrueFragment() {
     }
 
     @Override
@@ -175,10 +173,10 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
 
         if (rootView == null) {
             mContext = getActivity();
-            rootView = inflater.inflate(R.layout.fragment_special_sale_list, container, false);
+            rootView = inflater.inflate(R.layout.fragment_home_featrue, container, false);
 
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
-            bannerLine = (LargeImgView) rootView.findViewById(R.id.bannerView);
+            bannerLine = (LargeImgView) rootView.findViewById(R.id.bannersView);
             bannerLine.setDrawingCacheEnabled(true);
 
             mScrollView = (PullToRefreshScrollView)rootView.findViewById(R.id.scrollView);
@@ -194,6 +192,7 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
             titleTv.setText(mTitle);
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
             nullNetView = (LinearLayout) rootView.findViewById(R.id.nullNetline);
+            nullDataView = (LinearLayout) rootView.findViewById(R.id.nullDataline);
             nullView = (LinearLayout) rootView.findViewById(R.id.nullline);
             reloadBtn = (TextView) rootView.findViewById(R.id.nullReload);
             reloadBtn.setOnClickListener(onClickListener);
@@ -243,6 +242,7 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
                 mDialog.dismiss();
             nullView.setVisibility(View.GONE);
             nullNetView.setVisibility(View.VISIBLE);
+            nullDataView.setVisibility(View.GONE);
         }
     }
 
@@ -304,7 +304,7 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.ll_back:
-                ((MainActivity) getActivity()).popToStack(SpecialSaleFragment1.this);
+                ((MainActivity) getActivity()).popToStack(HomeFeatrueFragment.this);
                 break;
 
             case R.id.myCartBtn:
@@ -329,12 +329,15 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
                         if (mDialog != null)
                             mDialog.dismiss();
                         mScrollView.onRefreshComplete();
-                        if (response == null) {
+                        if (response == null)
+                        {
                             nullNetView.setVisibility(View.GONE);
                             nullView.setVisibility(View.VISIBLE);
+                            nullDataView.setVisibility(View.GONE);
                             return;
                         }
                         JSONObject obj;
+                        int status = response.optInt("status");
                         JSONObject jsonObject1 = response.optJSONObject("data");
                         if (jsonObject1!=null)
                         {
@@ -375,10 +378,23 @@ public class SpecialSaleFragment1 extends BaseFragment implements View.OnClickLi
                                         items.add(shopTodayItem);
                                     }
                             }
-
+                            mHandler.sendEmptyMessage(UPDATE_ADAPTER);
                         }
-                        mHandler.sendEmptyMessage(UPDATE_ADAPTER);
-
+                        else
+                        {
+                            if (status==200)
+                            {
+                                nullNetView.setVisibility(View.GONE);
+                                nullView.setVisibility(View.GONE);
+                                nullDataView.setVisibility(View.VISIBLE);
+                            }
+                            else
+                            {
+                                nullNetView.setVisibility(View.GONE);
+                                nullView.setVisibility(View.VISIBLE);
+                                nullDataView.setVisibility(View.GONE);
+                            }
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override

@@ -439,12 +439,16 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                         mDialog.dismiss();
                         mScrollView.onRefreshComplete();
                         ToolUtils.setLog(jsonObject.toString());
+                        int status = jsonObject.optInt("status");
                         JSONObject object = jsonObject.optJSONObject("data");
                         if (object == null)
                         {
+                            if (status!=200)
+                            {
+                                ToolUtils.setToast(mContext, R.string.loading_fail_txt);
+                            }
                             nullNetView.setVisibility(View.GONE);
                             mTimerView.setText("已结束");
-                            ToolUtils.setToast(mContext, R.string.loading_fail_txt);
                             return;
                         }
                         JSONObject totalObject = object.optJSONObject("activityPO");
