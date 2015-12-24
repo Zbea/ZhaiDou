@@ -20,6 +20,13 @@
             android:text="@string/title_beauty"/>
     </RelativeLayout>
 
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:focusableInTouchMode="true"
+        android:focusable="true"
+        ></View>
+
     <com.pulltorefresh.PullToRefreshScrollView
         android:id="@+id/sv_scrollview"
         android:orientation="horizontal"
