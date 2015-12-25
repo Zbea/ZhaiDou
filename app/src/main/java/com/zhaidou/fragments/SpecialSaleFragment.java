@@ -446,8 +446,13 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                             if (status!=200)
                             {
                                 ToolUtils.setToast(mContext, R.string.loading_fail_txt);
+                                nullNetView.setVisibility(View.GONE);
+                                nullView.setVisibility(View.VISIBLE);
                             }
-                            nullNetView.setVisibility(View.GONE);
+                            else
+                            {
+                                loadingView.setVisibility(View.GONE);
+                            }
                             mTimerView.setText("已结束");
                             return;
                         }
