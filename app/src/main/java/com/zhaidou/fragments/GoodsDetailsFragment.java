@@ -1472,6 +1472,7 @@ public class GoodsDetailsFragment extends BaseFragment
                             mDialog.dismiss();
                         nullView.setVisibility(View.VISIBLE);
                         nullNetView.setVisibility(View.GONE);
+                        return;
                     }
                     String goodsId = dataObject.optString("productId");
                     String goodsName = dataObject.optString("productName");
