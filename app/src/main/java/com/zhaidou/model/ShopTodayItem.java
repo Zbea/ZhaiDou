@@ -11,6 +11,8 @@ public class ShopTodayItem implements Serializable
     public String goodsId;
     //标题
     public String title;
+    //评论
+    public String comment;
     //图片地址
     public String imageUrl;
     //当前价格

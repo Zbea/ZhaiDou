@@ -85,6 +85,30 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/nullDataline"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:src="@drawable/icon_null_search"/>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_main_color"
+                android:layout_marginTop="50dp"
+                android:layout_marginBottom="80dp"
+                android:text="抱歉,暂时没有相关内容"/>
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

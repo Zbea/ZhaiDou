@@ -21,9 +21,9 @@ import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.fragments.GoodsDetailsFragment;
 import com.zhaidou.fragments.HomeArticleListFragment;
+import com.zhaidou.fragments.HomeFeatrueFragment;
 import com.zhaidou.fragments.ShopTodaySpecialFragment;
 import com.zhaidou.fragments.SpecialSaleFragment;
-import com.zhaidou.fragments.SpecialSaleFragment1;
 import com.zhaidou.model.Category;
 import com.zhaidou.model.SwitchImage;
 
@@ -330,8 +330,8 @@ public class ToolUtils
         }
         else if(item.type==6)
         {
-            SpecialSaleFragment1 specialSaleFragment1 = SpecialSaleFragment1.newInstance(item.title, item.typeValue, item.imageUrl);
-            ((MainActivity) mContext).navigationToFragmentWithAnim(specialSaleFragment1);
+            HomeFeatrueFragment homeFeatrueFragment = HomeFeatrueFragment.newInstance(item.title, item.typeValue, item.imageUrl);
+            ((MainActivity) mContext).navigationToFragmentWithAnim(homeFeatrueFragment);
         }
         else
         {

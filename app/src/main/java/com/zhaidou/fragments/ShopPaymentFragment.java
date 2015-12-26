@@ -67,7 +67,7 @@ public class ShopPaymentFragment extends BaseFragment
     private long mOrderId;
     private String orderCode;
     private double mAmount;
-    private int flags;
+    private int flags;//1为确认订单下单2为代付款支付
     private Order mOrder=new Order();
     private View mView;
     private Context mContext;

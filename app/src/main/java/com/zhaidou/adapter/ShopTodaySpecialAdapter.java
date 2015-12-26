@@ -132,6 +132,7 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
         viewHolder.itemCurrentPrice.setText("￥"+ToolUtils.isIntPrice(""+todayShopItem.currentPrice));
         viewHolder.itemFormerPrice.getPaint().setAntiAlias(true);//去锯齿
         viewHolder.itemFormerPrice.setText("￥"+ToolUtils.isIntPrice(""+todayShopItem.formerPrice));
+        viewHolder.itemIntorduce.setText(todayShopItem.comment);
         if(todayShopItem.formerPrice!=0)
         {
             DecimalFormat df = new DecimalFormat("##.0");

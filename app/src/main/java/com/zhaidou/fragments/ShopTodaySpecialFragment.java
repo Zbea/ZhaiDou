@@ -449,12 +449,15 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                                 double price = obj.optDouble("price");
                                 double cost_price = obj.optDouble("marketPrice");
                                 String imageUrl = obj.optString("productPicUrl");
+                                String comment = obj.optString("comment");
                                 JSONObject jsonObject3=obj.optJSONObject("expandedResponse");
+
                                 int num = jsonObject3.optInt("stock");
                                 int totalCount = 100;
                                 int percentum =obj.optInt("progressPercentage");
                                 ShopTodayItem shopTodayItem = new ShopTodayItem(Baseid, Listtitle, imageUrl, price, cost_price, num, totalCount);
                                 shopTodayItem.percentum=percentum;
+                                shopTodayItem.comment=comment;
                                 items.add(shopTodayItem);
                             }
                     }

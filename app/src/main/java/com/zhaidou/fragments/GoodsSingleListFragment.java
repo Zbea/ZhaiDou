@@ -317,7 +317,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                         String productId = merchandise.optString("productId");
                         String title = merchandise.optString("productName");
                         double price = merchandise.optDouble("price");
-                        double cost_price = merchandise.optDouble("price");
+                        double cost_price = merchandise.optDouble("marketingPrice");
                         String imgUrl=merchandise.optString("productPicUrl");
                         JSONObject countObject = merchandise.optJSONObject("expandedResponse");
                         int remaining = countObject.optInt("stock");
@@ -441,7 +441,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                         String productId = merchandise.optString("productId");
                         String title = merchandise.optString("productName");
                         double price = merchandise.optDouble("price");
-                        double cost_price = merchandise.optDouble("price");
+                        double cost_price = merchandise.optDouble("marketingPrice");
                         String imgUrl=merchandise.optString("productPicUrl");
                         JSONObject countObject = merchandise.optJSONObject("expandedResponse");
                         int remaining = countObject.optInt("stock");
@@ -672,7 +672,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
             tv_name.setText(product.getTitle());
             ToolUtils.setImageCacheUrl(product.getImage(), image, R.drawable.icon_loading_defalut);
             tv_price.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
-            tv_money.setText("￥" + ToolUtils.isIntPrice("" + product.getCost_price()));
+            tv_money.setText("￥" + ToolUtils.isIntPrice("" + product.getPrice()));
             tv_price.setText("￥" + ToolUtils.isIntPrice("" + product.getCost_price()));
 
             ll_sale_out.setVisibility(product.getRemaining() == 0 ? View.VISIBLE : View.GONE);
