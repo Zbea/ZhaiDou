@@ -24,7 +24,6 @@ import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.DialogUtils;
@@ -184,7 +183,8 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                     @Override
                     public void onPositive()
                     {
-                        mHandler.sendEmptyMessage(CLEAR_USER_DATA);
+//                        mHandler.sendEmptyMessage(CLEAR_USER_DATA);
+                        logout();
                     }
                 },null);
                 break;
@@ -243,14 +243,21 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     }
 
     public void logout(){
-
-        JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_LOGOUT_URL
+        final String token= (String) SharedPreferencesUtil.getData(mContext,"token","");
+        JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_LOGOUT_URL+"?token="+token
                 ,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog!=null) mDialog.dismiss();
-
-                mHandler.sendEmptyMessage(CLEAR_USER_DATA);
+                int status = jsonObject.optInt("status");
+                String message = jsonObject.optString("message");
+                if (status==200){
+                    String msg = jsonObject.optJSONObject("data").optString("message");
+                    ShowToast(msg);
+                    mHandler.sendEmptyMessage(CLEAR_USER_DATA);
+                }else {
+                    ShowToast(message);
+                }
             }
         },new Response.ErrorListener() {
             @Override
@@ -263,6 +270,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
             {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                headers.put("token",token);
                 return headers;
             }
         };

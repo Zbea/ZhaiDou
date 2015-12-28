@@ -35,9 +35,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.alipay.PayResult;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
-import com.zhaidou.model.Order1;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
@@ -123,7 +121,7 @@ public class ShopPaymentFragment extends BaseFragment
                         isSuccess = true;
                         notificationPaySuccess();
                         setUnPayDesCount();
-                        ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, 0, mOrder);
+                        ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, mAmount+"");
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
 //                        ((MainActivity) getActivity()).popToStack(ShopPaymentFragment.this);
                         // 判断resultStatus 为非“9000”则代表可能支付失败
@@ -149,6 +147,8 @@ public class ShopPaymentFragment extends BaseFragment
                         // 其他值就可以判断为支付失败，包括用户主动取消支付，或者系统返回的错误
                         Toast.makeText(getActivity(), "支付取消",
                                 Toast.LENGTH_SHORT).show();
+                        ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, mAmount+"");
+                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                     }
                     break;
                 case SDK_CHECK_FLAG:
@@ -626,7 +626,7 @@ public class ShopPaymentFragment extends BaseFragment
                 isSuccess = true;
                 setUnPayDesCount();
                 notificationPaySuccess();
-                ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(mOrderId, mAmount , mOrder);
+                ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, mAmount+"");
                 ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                 break;
             case -1://支付失败
