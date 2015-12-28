@@ -89,6 +89,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     private int initTime = 900;
     private boolean isDataLoaded = false;
     private String mUserId;
+    private TextView mTitle;
     private Map<Integer, Long> timerMapStamp = new HashMap<Integer, Long>();
     private boolean hasUnPayOrder=false;
     private Handler handler = new Handler() {
@@ -165,6 +166,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             mRequestQueue = Volley.newRequestQueue(getActivity());
             allOrderAdapter = new AllOrderAdapter(getActivity(), mOrderList);
             mListView.setAdapter(allOrderAdapter);
+            mTitle= (TextView) rootView.findViewById(R.id.title);
             token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
             mUserId=SharedPreferencesUtil.getData(mContext, "userId", -1)+"";
 
@@ -325,6 +327,8 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             });
         }
 
+        mTitle.setText(ZhaiDou.TYPE_ORDER_ALL.equalsIgnoreCase(mCurrentType)?"全部订单"
+                :ZhaiDou.TYPE_ORDER_PREPAY.equalsIgnoreCase(mCurrentType)?"待支付":"待收货");
         return rootView;
     }
 
