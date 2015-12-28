@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -171,6 +172,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             allOrderAdapter.setOnInViewClickListener(R.id.orderlayout, new BaseListAdapter.onInternalClickListener() {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                    System.out.println("OrderAllOrdersFragment.OnClickListener");
                     final Order1 order = (Order1) values;
                     final TextView btn2 = (TextView) parentV.findViewById(R.id.bt_received);
                     if (btn2.getTag() != null)
@@ -440,6 +442,8 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             TextView tv_order_amount = ViewHolder.get(convertView, R.id.tv_order_amount);
             TextView tv_order_status = ViewHolder.get(convertView, R.id.tv_order_status);
             ImageView iv_order_img = ViewHolder.get(convertView, R.id.iv_order_img);
+            LinearLayout remarkLayout=ViewHolder.get(convertView,R.id.remarkLayout);
+            TextView mRemarkView = ViewHolder.get(convertView,R.id.remark);
             TextView btn1 = ViewHolder.get(convertView, R.id.bt_logistics);
             TextView btn2 = ViewHolder.get(convertView, R.id.bt_received);
             ImageView iv_delete = ViewHolder.get(convertView, R.id.iv_delete);
@@ -450,6 +454,12 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             tv_order_amount.setText("￥" + order.orderPayAmount);
             tv_order_status.setText(order.orderShowStatus);
             ToolUtils.setImageCacheUrl(order.childOrderPOList.get(0).orderItemPOList.get(0).pictureMiddleUrl, iv_order_img, R.drawable.icon_loading_defalut);
+            if (TextUtils.isEmpty(order.remark)){
+                remarkLayout.setVisibility(View.GONE);
+            }else {
+                remarkLayout.setVisibility(View.VISIBLE);
+                mRemarkView.setText("备注:"+order.remark);
+            }
             hasUnPayOrder=false;
             switch (order.status) {
                 case ZhaiDou.STATUS_UNPAY:

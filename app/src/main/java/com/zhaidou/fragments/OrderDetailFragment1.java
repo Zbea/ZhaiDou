@@ -65,6 +65,7 @@ public class OrderDetailFragment1 extends BaseFragment {
     private boolean isTimerStart = false;
     private OrderListener orderListener;
     private LinearLayout mNetWorkLayout;
+    private OnColseSuccess onColseSuccess;
 
     double amount;
     private View rootView;
@@ -128,7 +129,6 @@ public class OrderDetailFragment1 extends BaseFragment {
         } else {
             rootView = inflater.inflate(R.layout.fragment_order_detail_list, container, false);
             initView(rootView);
-
         }
         return rootView;
     }
@@ -136,7 +136,7 @@ public class OrderDetailFragment1 extends BaseFragment {
     private void initView(View view) {
         mContext = getActivity();
         mNetWorkLayout = (LinearLayout) view.findViewById(R.id.noNetWork);
-        findViewById(R.id.reload).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.reload).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 CheckNetWork();
@@ -202,7 +202,7 @@ public class OrderDetailFragment1 extends BaseFragment {
             }
         });
         mStoreList.setAdapter(mStoreAdapter);
-
+        CheckNetWork();
     }
 
     private void CheckNetWork() {
@@ -283,6 +283,13 @@ public class OrderDetailFragment1 extends BaseFragment {
         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_order_detail));
     }
 
+    @Override
+    public void onDestroyView() {
+        if (onColseSuccess != null)
+            onColseSuccess.colsePage();
+        super.onDestroyView();
+    }
+
     public interface OrderListener {
         public void onOrderStatusChange(Order1 order);
     }
@@ -357,8 +364,33 @@ public class OrderDetailFragment1 extends BaseFragment {
                     adapter.notifyDataSetChanged();
                 }
             });
+            adapter.setOnInViewClickListener(R.id.itemLayout, new onInternalClickListener() {
+                @Override
+                public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                    OrderItem1 item = (OrderItem1) values;
+                    if (flags != 1) {
+                        GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(item.productName, item.productId + "");
+                        Bundle bundle = new Bundle();
+                        if (item.productType == 2) {
+                            bundle.putInt("flags", 1);
+                        }
+                        bundle.putInt("index", item.productId);
+                        bundle.putString("page", item.productName);
+                        goodsDetailsFragment.setArguments(bundle);
+                        ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
+                    }
+                }
+            });
 
             return convertView;
         }
+    }
+
+    public void setOnColseSuccess(OnColseSuccess OnColseSuccess) {
+        this.onColseSuccess = OnColseSuccess;
+    }
+
+    public interface OnColseSuccess {
+        public void colsePage();
     }
 }

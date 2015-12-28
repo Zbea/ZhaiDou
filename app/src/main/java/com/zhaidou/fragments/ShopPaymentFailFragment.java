@@ -38,12 +38,10 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.Order;
 import com.zhaidou.model.OrderItem;
-import com.zhaidou.model.Receiver;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -95,7 +93,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
     private View rootView;
     private static final int SDK_PAY_FLAG = 1;
     private static final int SDK_CHECK_FLAG = 2;
-    private static final int UPDATE_FEE_DETAIL=3;
+    private static final int UPDATE_FEE_DETAIL = 3;
 
     private double payMoney;//订单获取的金额
     private double payGoodsMoney;//商品金额
@@ -120,7 +118,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
                     if (TextUtils.equals(resultStatus, "9000")) {
                         Toast.makeText(getActivity(), "支付成功",
                                 Toast.LENGTH_SHORT).show();
-                        ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderId, 0, mOrder);
+                        ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, payGoodsMoney + "");
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                         // 判断resultStatus 为非“9000”则代表可能支付失败
                         // “8000”代表支付结果因为支付渠道原因或者系统原因还在等待支付结果确认，最终交易是否成功以服务端异步通知为准（小概率状态）
@@ -151,9 +149,9 @@ public class ShopPaymentFailFragment extends BaseFragment {
                 case UPDATE_FEE_DETAIL:
                     DecimalFormat df = new DecimalFormat("###.00");
                     tv_amount.setText("￥" + ToolUtils.isIntPrice("" + payGoodsMoney));
-                    if (payYFMoney>=0)
-                    tv_fare.setText("￥" + ToolUtils.isIntPrice("" +Double.parseDouble(df.format(payYFMoney)+"")));
-                    tv_total.setText("￥" + ToolUtils.isIntPrice("" +payMoney));
+                    if (payYFMoney >= 0)
+                        tv_fare.setText("￥" + ToolUtils.isIntPrice("" + Double.parseDouble(df.format(payYFMoney) + "")));
+                    tv_total.setText("￥" + ToolUtils.isIntPrice("" + payMoney));
                     mTimer = new Timer();
                     mTimer.schedule(new MyTimer(), 1000, 1000);
                     break;
@@ -197,9 +195,9 @@ public class ShopPaymentFailFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-           payOrderId=getArguments().getLong(ARG_ORDERID);
-            payMoney=getArguments().getDouble(ARG_AMOUNT);
-            payYFMoney=getArguments().getDouble(ARG_FARE);
+            payOrderId = getArguments().getLong(ARG_ORDERID);
+            payMoney = getArguments().getDouble(ARG_AMOUNT);
+            payYFMoney = getArguments().getDouble(ARG_FARE);
             mTimeStamp = getArguments().getLong(ARG_TIMER);
 
             payOrderCode = (String) getArguments().getSerializable(ARG_ORDER);
@@ -263,7 +261,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
                 }
             }
         });
-        mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"");
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "");
         FetchOrderDetail();
 
     }
@@ -291,58 +289,47 @@ public class ShopPaymentFailFragment extends BaseFragment {
     /**
      * 获取订单详情
      */
-    private void FetchOrderDetail()
-    {
-        JSONObject json=null;
-        try
-        {
-            json=new JSONObject();
-            json.put("businessType","01");
-            json.put("userId",userId);
-            json.put("orderCode",payOrderCode);
+    private void FetchOrderDetail() {
+        JSONObject json = null;
+        try {
+            json = new JSONObject();
+            json.put("businessType", "01");
+            json.put("userId", userId);
+            json.put("orderCode", payOrderCode);
 
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,ZhaiDou.GetOrderDetailsUrl,json, new Response.Listener<JSONObject>()
-        {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.GetOrderDetailsUrl, json, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(JSONObject jsonObject)
-            {
+            public void onResponse(JSONObject jsonObject) {
                 mDialog.dismiss();
-                if (jsonObject != null)
-                {
-                    int status=jsonObject.optInt("status");
-                    if(status==200)
-                    {
-                        JSONObject dataObject=jsonObject.optJSONObject("data");
-                        if (dataObject!=null)
-                        payMoney=dataObject.optDouble("orderTotalAmount");
-                        payGoodsMoney=dataObject.optDouble("itemTotalAmount");
-                        payYFMoney=payMoney-payGoodsMoney;
-                        payOrderId=dataObject.optLong("orderId");
-                        payOrderCode=dataObject.optString("orderCode");
-                        mTimeStamp=dataObject.optInt("orderRemainingTime");
+                if (jsonObject != null) {
+                    int status = jsonObject.optInt("status");
+                    if (status == 200) {
+                        JSONObject dataObject = jsonObject.optJSONObject("data");
+                        if (dataObject != null)
+                            payMoney = dataObject.optDouble("orderTotalAmount");
+                        payGoodsMoney = dataObject.optDouble("itemTotalAmount");
+                        payYFMoney = payMoney - payGoodsMoney;
+                        payOrderId = dataObject.optLong("orderId");
+                        payOrderCode = dataObject.optString("orderCode");
+                        mTimeStamp = dataObject.optInt("orderRemainingTime");
                     }
                 }
                 mHandler.sendEmptyMessage(UPDATE_FEE_DETAIL);
             }
-        }, new Response.ErrorListener()
-        {
+        }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
+            public void onErrorResponse(VolleyError volleyError) {
                 mDialog.dismiss();
                 mHandler.sendEmptyMessage(UPDATE_FEE_DETAIL);
                 if (mContext != null)
-                    ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+                    ToolUtils.setToast(mContext, R.string.loading_fail_txt);
             }
-        })
-        {
+        }) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
+            public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("SECAuthorization", token);
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
@@ -358,23 +345,19 @@ public class ShopPaymentFailFragment extends BaseFragment {
         bt_pay.setBackgroundResource(R.drawable.btn_no_click_selector);
     }
 
-    private void payment()
-    {
+    private void payment() {
         JSONObject json = null;
         JSONObject maps = new JSONObject();
-        try
-        {
+        try {
             json = new JSONObject();
             json.put("userName", "朱烽");
             json.put("cashAmount", payMoney + "");
             json.put("orderId", payOrderId + "");
             json.put("userId", userId + "");
             json.put("orderCode", payOrderCode);
-            if (mCheckPosition == 0)
-            {
+            if (mCheckPosition == 0) {
                 json.put("channelCode", "WXMALLANDROID");
-            } else
-            {
+            } else {
                 json.put("channelCode", "ZFBMALLANDROID");
             }
             json.put("notifyUrl", "");
@@ -384,29 +367,21 @@ public class ShopPaymentFailFragment extends BaseFragment {
             maps.put("data ", json);
             maps.put("version ", "1.0.0");
 
-        } catch (JSONException e)
-        {
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.CommitPaymentUrl, maps, new Response.Listener<JSONObject>()
-        {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.CommitPaymentUrl, maps, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(JSONObject jsonObject)
-            {
-                if (jsonObject != null)
-                {
+            public void onResponse(JSONObject jsonObject) {
+                if (jsonObject != null) {
                     int status = jsonObject.optInt("status");
-                    if (status == 200)
-                    {
+                    if (status == 200) {
                         JSONObject object = jsonObject.optJSONObject("data");
-                        if (object != null)
-                        {
-                            if (mCheckPosition == 0)
-                            {
-                                if (api.isWXAppInstalled())
-                                {
-                                    final String appId =object.optString("appid");
+                        if (object != null) {
+                            if (mCheckPosition == 0) {
+                                if (api.isWXAppInstalled()) {
+                                    final String appId = object.optString("appid");
                                     final String timeStamp = object.optString("timestamp");
                                     final String signType = object.optString("signType");
                                     final String mpackage = object.optString("packageValue");
@@ -424,49 +399,37 @@ public class ShopPaymentFailFragment extends BaseFragment {
                                     request.timeStamp = timeStamp;
                                     request.sign = paySign;
                                     api.sendReq(request);
-                                    ToolUtils.setLog("request:"+request.checkArgs());
-                                    ToolUtils.setLog("api:"+api.sendReq(request));
+                                    ToolUtils.setLog("request:" + request.checkArgs());
+                                    ToolUtils.setLog("api:" + api.sendReq(request));
 
-                                } else
-                                {
+                                } else {
                                     ShowToast("没有安装微信客户端哦");
                                 }
 
-                            } else if (mCheckPosition == 1)
-                            {
+                            } else if (mCheckPosition == 1) {
                                 final String url = object.optString("notifyUrl");
-                                mHandler.postDelayed(new Runnable()
-                                {
+                                mHandler.postDelayed(new Runnable() {
                                     @Override
-                                    public void run()
-                                    {
+                                    public void run() {
                                         pay(url);
                                     }
                                 }, 0);
                             }
+                        } else {
+                            ToolUtils.setToast(mContext, R.string.loading_fail_txt);
                         }
-                        else
-                        {
-                            ToolUtils.setToast(mContext,R.string.loading_fail_txt);
-                        }
-                    }
-                    else
-                    {
-                        ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+                    } else {
+                        ToolUtils.setToast(mContext, R.string.loading_fail_txt);
                     }
                 }
             }
-        }, new Response.ErrorListener()
-        {
+        }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
+            public void onErrorResponse(VolleyError volleyError) {
             }
-        })
-        {
+        }) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
+            public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("SECAuthorization", token);
                 map.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
@@ -504,7 +467,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
                 break;
             case 0://支付成功
                 Log.i("----->", "支付成功");
-                ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderId, payMoney, mOrder);
+                ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, payGoodsMoney + "");
                 ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                 break;
             case -1://支付失败
@@ -524,6 +487,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
         super.onResume();
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.shop_payment_fail_text));
     }
+
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.shop_payment_fail_text));

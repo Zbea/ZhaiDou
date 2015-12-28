@@ -175,7 +175,6 @@
         <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/remark"
             android:gravity="center_vertical"
-            android:text="备注:返回键阿海珐接撒公交卡睡个觉熬枯受淡个房间啊康师傅噶"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:paddingTop="10dp"

@@ -135,7 +135,7 @@ public class ZhaiDou {
     //修改用户信息
     public static String USER_EDIT_PROFILE_URL=HOME_BASE_URL+"user/profiles.action";
     //用户退出登录
-    public static String USER_LOGOUT_URL=HOME_BASE_URL+"api/v1/user_tokens/logout";
+    public static String USER_LOGOUT_URL=HOME_BASE_URL+"user/login_out.action";
     //用户登录
     public static String USER_LOGIN_URL=HOME_BASE_URL+"user/user_tokens.action";
     //第三方登录--验证
