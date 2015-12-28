@@ -220,7 +220,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     mSpecificationSubclass.num = mSpecificationSubclass.num - 1;
                 } else
                 {
-                    mSpecificationParent.num = mSpecificationSubclass.num - 1;
+                    mSpecificationParent.num = mSpecificationParent.num - 1;
                 }
                 setRefreshSpecification();
             }
@@ -914,7 +914,7 @@ public class GoodsDetailsFragment extends BaseFragment
                         {
                             sigleClickPosition = -1;
                             textView.setSelected(false);
-                            mSpecificationSubclass = null;
+                            mSpecificationParent = null;
                             mCurrentPrice.setText("￥" + ToolUtils.isIntPrice(detail.price + ""));
                             mOldPrice.setText("￥" + ToolUtils.isIntPrice(detail.cost_price + ""));
                             setDiscount(detail.price, detail.cost_price);
@@ -922,7 +922,6 @@ public class GoodsDetailsFragment extends BaseFragment
                             {
                                 setAddOrBuyShow("此商品已下架", false);
                             }
-
                         }
                     } else
                     {
@@ -944,13 +943,19 @@ public class GoodsDetailsFragment extends BaseFragment
                 textView.setClickable(false);
             } else
             {
-                if (sigleClickPosition == position)
+                if (specificationList.size()==1)
                 {
+                    sigleClickPosition = position;
                     textView.setSelected(true);
-                } else
-                {
-                    textView.setSelected(false);
+                    sizeEvent(specification);
                 }
+//                if (sigleClickPosition == position)
+//                {
+//                    textView.setSelected(true);
+//                } else
+//                {
+//                    textView.setSelected(false);
+//                }
                 textSingleTvs.add(textView);
             }
             if (isSizeSubclass)
@@ -1092,9 +1097,9 @@ public class GoodsDetailsFragment extends BaseFragment
                     }
                 } else
                 {
-                    if (specificationList.get(i).sizeId.equals(mSpecificationSubclass.sizeId))
+                    if (specificationList.get(i).sizeId.equals(mSpecificationParent.sizeId))
                     {
-                        specificationList.get(i).num = mSpecificationSubclass.num;
+                        specificationList.get(i).num = mSpecificationParent.num;
                     }
                     if (mSpecificationParent.num < 1)
                     {
@@ -1344,7 +1349,6 @@ public class GoodsDetailsFragment extends BaseFragment
                             if (flags == 1)//判断零元特卖是否已经购买过
                             {
                                 mDialog.show();
-//                        FetchOSaleData(UPDATE_LJBUY_ISOSALEBUY);
                                 FetchOSaleAddData();
                             } else
                             {

@@ -86,7 +86,7 @@
             android:gravity="center"
             android:paddingTop="2dp"
             android:paddingBottom="2dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginRight="10dp"
             android:background="@drawable/btn_green_click_bg"
             android:visibility="gone"
             android:id="@+id/shopSaleTv"/>
