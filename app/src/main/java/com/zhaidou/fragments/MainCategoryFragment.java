@@ -27,6 +27,7 @@ import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -167,9 +168,7 @@ public class MainCategoryFragment extends BaseFragment {
 
 
     private void getCategoryData() {
-
-//        String url = ZhaiDou.CATEGORY_ITEM_URL;
-        JsonObjectRequest request = new JsonObjectRequest("http://121.42.206.45:7082/category/queryCategory.action", new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeCategoryUrl, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null)
