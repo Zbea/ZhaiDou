@@ -317,7 +317,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                         String productId = merchandise.optString("productId");
                         String title = merchandise.optString("productName");
                         double price = merchandise.optDouble("price");
-                        double cost_price = merchandise.optDouble("marketingPrice");
+                        String cost_price = merchandise.optString("marketingPrice")=="null"?"0":merchandise.optString("marketingPrice");
                         String imgUrl=merchandise.optString("productPicUrl");
                         JSONObject countObject = merchandise.optJSONObject("expandedResponse");
                         int remaining = countObject.optInt("stock");
@@ -325,7 +325,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                         product.goodsId=productId;
                         product.setId(id);
                         product.setPrice(price);
-                        product.setCost_price(cost_price);
+                        product.setCost_price(Double.parseDouble(cost_price));
                         product.setTitle(title);
                         product.setImage(imgUrl);
                         product.setRemaining(remaining);
@@ -441,7 +441,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                         String productId = merchandise.optString("productId");
                         String title = merchandise.optString("productName");
                         double price = merchandise.optDouble("price");
-                        double cost_price = merchandise.optDouble("marketingPrice");
+                        String cost_price = merchandise.optString("marketingPrice")=="null"?"0":merchandise.optString("marketingPrice");
                         String imgUrl=merchandise.optString("productPicUrl");
                         JSONObject countObject = merchandise.optJSONObject("expandedResponse");
                         int remaining = countObject.optInt("stock");
@@ -449,7 +449,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                         product.goodsId=productId;
                         product.setId(id);
                         product.setPrice(price);
-                        product.setCost_price(cost_price);
+                        product.setCost_price(Double.parseDouble(cost_price));
                         product.setTitle(title);
                         product.setImage(imgUrl);
                         product.setRemaining(remaining);

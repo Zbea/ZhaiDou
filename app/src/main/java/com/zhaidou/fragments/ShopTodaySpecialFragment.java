@@ -457,7 +457,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                                 double price = obj.optDouble("price");
                                 double cost_price = obj.optDouble("marketPrice");
                                 String imageUrl = obj.optString("productPicUrl");
-                                String comment = obj.optString("comment");
+                                String comment = obj.optString("comment")=="null"?"":obj.optString("comment");
                                 JSONObject jsonObject3=obj.optJSONObject("expandedResponse");
 
                                 int num = jsonObject3.optInt("stock");

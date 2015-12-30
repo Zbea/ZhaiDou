@@ -426,7 +426,7 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
                                         int num = jsonObject3.optInt("stock");
                                         int totalCount = 100;
                                         int percentum =obj.optInt("progressPercentage");
-                                        String comment = obj.optString("comment");
+                                        String comment = obj.optString("comment")=="null"?"":obj.optString("comment");
                                         ShopTodayItem shopTodayItem = new ShopTodayItem(Baseid, Listtitle, imageUrl, price, cost_price, num, totalCount);
                                         shopTodayItem.percentum=percentum;
                                         shopTodayItem.comment=comment;

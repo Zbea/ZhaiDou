@@ -43,7 +43,7 @@
             android:text="如何加V"/>
     </RelativeLayout>
 <ScrollView
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:fillViewport="true"
     android:scrollbars="none">
