@@ -34,6 +34,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.alipay.PayResult;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.base.CountManage;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.Order;
@@ -118,6 +119,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
                     if (TextUtils.equals(resultStatus, "9000")) {
                         Toast.makeText(getActivity(), "支付成功",
                                 Toast.LENGTH_SHORT).show();
+                        CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
                         ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, payGoodsMoney + "");
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                         // 判断resultStatus 为非“9000”则代表可能支付失败
@@ -280,6 +282,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
                             timeInfoTv.setText("00:00");
                             stopView();
                         }
+                        CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
                     }
                 }
             });
@@ -467,6 +470,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
                 break;
             case 0://支付成功
                 Log.i("----->", "支付成功");
+                CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
                 ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, payGoodsMoney + "");
                 ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                 break;

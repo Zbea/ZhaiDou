@@ -33,6 +33,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.base.CountManage;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.DeviceUtils;
@@ -47,7 +48,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MainPersonalFragment extends BaseFragment implements View.OnClickListener, CollectFragment.CollectCountChangeListener,
-        CollocationFragment.CollocationCountChangeListener, SettingFragment.ProfileListener {
+        CollocationFragment.CollocationCountChangeListener, SettingFragment.ProfileListener, CountManage.onCountChangeListener {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_CONTEXT = "context";
@@ -239,7 +240,11 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
 
 //            FetchCollectData();
 //            FetchCollocationData();
-            FetchUnPayCount(UPDATE_UNPAY_COUNT);
+//            FetchUnPayCount(UPDATE_UNPAY_COUNT);
+            int value = CountManage.getInstance().value(CountManage.TYPE.TAG_PREPAY);
+            tv_unpay_count.setText(value+"");
+            tv_unpay_count.setVisibility(value==0?View.GONE:View.VISIBLE);
+            CountManage.getInstance().setOnCountChangeListener(this);
 
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
@@ -296,6 +301,12 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 ToolUtils.setLog("count:" + count);
                 OrderAllOrdersFragment unPayFragment = OrderAllOrdersFragment.newInstance(ZhaiDou.TYPE_ORDER_PREPAY, "");
                 ((BaseActivity) getActivity()).navigationToFragment(unPayFragment);
+                unPayFragment.setOnFragmentCloseListener(new onFragmentCloseListener() {
+                    @Override
+                    public void onClose() {
+                        onCount(0);
+                    }
+                });
 //                OrderUnPayFragment unPayFragment = OrderUnPayFragment.newInstance("", "", count);
 //                ((MainActivity) getActivity()).navigationToFragmentWithAnim(unPayFragment);
 //                unPayFragment.setBackClickListener(new OrderUnPayFragment.BackCountListener() {
@@ -518,6 +529,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
 
     @Override
     public void onDestroyView() {
+        System.out.println("MainPersonalFragment.onDestroyView");
         if (broadcastReceiver != null)
             getActivity().unregisterReceiver(broadcastReceiver);
         super.onDestroyView();
@@ -529,7 +541,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
         userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         if (!hidden && userId != -1) {
-            FetchUnPayCount(UPDATE_UNPAY_COUNT_REFRESH);
+//            FetchUnPayCount(UPDATE_UNPAY_COUNT_REFRESH);
             getUserDetail();
             getUserInfo();
         }
@@ -579,7 +591,16 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     }
 
     public void onPause() {
+        System.out.println("MainPersonalFragment.onPause");
         super.onPause();
         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_personal));
+    }
+
+    @Override
+    public void onCount(int count) {
+        int value = CountManage.getInstance().value(CountManage.TYPE.TAG_PREPAY);
+        System.out.println("MainPersonalFragment.onCount---------->"+value);
+        tv_unpay_count.setText(value+"");
+        tv_unpay_count.setVisibility(value==0?View.GONE:View.VISIBLE);
     }
 }

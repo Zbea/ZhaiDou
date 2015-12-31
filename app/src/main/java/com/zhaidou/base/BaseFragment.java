@@ -62,6 +62,7 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     public Context mContext;
     protected boolean isDialogFirstVisible=true;
 
+    private onFragmentCloseListener onFragmentCloseListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -297,5 +298,13 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     public void colseFragment(Fragment fragment)
     {
         ((MainActivity) getActivity()).popToStack(fragment);
+    }
+
+    public void setOnFragmentCloseListener(BaseFragment.onFragmentCloseListener onFragmentCloseListener) {
+        this.onFragmentCloseListener = onFragmentCloseListener;
+    }
+
+    public interface onFragmentCloseListener{
+        public void onClose();
     }
 }
