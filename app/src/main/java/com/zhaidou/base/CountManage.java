@@ -19,6 +19,7 @@ public class CountManage {
     private List<onCountChangeListener> mListeners=new ArrayList<CountManage.onCountChangeListener>();
 
     private CountManage() {
+
     }
 
     public static CountManage getInstance() {
