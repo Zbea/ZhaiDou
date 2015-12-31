@@ -159,7 +159,10 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
         view.findViewById(R.id.ll_address).setOnClickListener(this);
         tv_delete.setOnClickListener(this);
         tv_delete.setVisibility(View.GONE);
-        tv_save.setVisibility(View.GONE);
+        if(mNickName.length()>0)
+        {
+            tv_save.setVisibility(View.GONE);
+        }
         if (TextUtils.isEmpty(mAddress)) {
             ll_edit_addr.setVisibility(View.VISIBLE);
             ll_manage_address.setVisibility(View.GONE);

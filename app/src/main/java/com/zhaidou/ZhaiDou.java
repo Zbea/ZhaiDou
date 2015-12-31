@@ -14,6 +14,8 @@ public class ZhaiDou {
 
     //美丽家
     public static String HomeBeautifulUrl=HOME_BASE_URL+"zd/getPosts.action?plug=006&pageSize=10&pageNo=";
+    //分类
+    public static String HomeCategoryUrl=HOME_BASE_URL+"category/queryCategory.action";
     //首页banner
     public static String HomeBannerUrl=HOME_BASE_URL+"index/getBoardContent.action?boardCodes=";
     //首页特卖列表
@@ -117,7 +119,7 @@ public class ZhaiDou {
     public static String orderCheckGoodsUrl=HOME_BASE_URL+"special_mall/api/merchandises/";
 
     //确认订单获取短信接口
-    public static String OrderGetSMS = "http://portal-web.zhaidou.com/user/vilidate_phone.action?flag=1&phone=";
+    public static String OrderGetSMS = HOME_BASE_URL+"user/vilidate_phone.action?flag=1&phone=";
     //判断手机是否需要验证接口
     public static String OrderAccountOrPhone = HOME_BASE_URL+"user/validation_phone.action";
     //提交手机验证接口

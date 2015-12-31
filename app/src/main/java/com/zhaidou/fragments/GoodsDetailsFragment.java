@@ -174,6 +174,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private boolean isOSaleAdd;//是否添加过零元特卖
     private boolean isOver = true;//是否卖光
     private boolean isAddOrBuy = true;//是添加还是立即购买
+    private boolean isFristSubclass = true;//二维第一次但是展示加入
 
     private long initTime;
     private long systemTime;
@@ -1052,6 +1053,17 @@ public class GoodsDetailsFragment extends BaseFragment
             } else
             {
                 textView.setSelected(false);
+                if( isFristSubclass)
+                {
+                    isFristSubclass=false;
+                    if (specificationList.size()==1)
+                        if (specificationList.get(0).sizess.size()==1)
+                        {
+                            sigleClickPosition=0;
+                            textView.setSelected(true);
+                            sizeEvent(specification);
+                        }
+                }
                 textSubclassTvs.add(textView);
             }
             flowLayoutSubclass.addView(view, lp);
@@ -1559,6 +1571,7 @@ public class GoodsDetailsFragment extends BaseFragment
                                 }
                             }
                             JSONArray imageArray = specificationObj.optJSONArray("productSKUImagArray");
+                            List<String> sizeImages=new ArrayList<String>();
                             if (imageArray != null && imageArray.length() > 0)
                             {
                                 for (int j = 0; j < imageArray.length(); j++)
@@ -1567,6 +1580,7 @@ public class GoodsDetailsFragment extends BaseFragment
                                     if (imageObj != null)
                                     {
                                         String url = imageObj.optString("imageArray") + imageObj.optString("imageFileType");
+                                        sizeImages.add(url);
                                     }
                                 }
                             }
@@ -1589,6 +1603,7 @@ public class GoodsDetailsFragment extends BaseFragment
                                 specificationSubclassItem.price = sizePrice;
                                 specificationSubclassItem.oldPrice = sizeOldPrice;
                                 specificationSubclassItem.num = num;
+                                specificationSubclassItem.images.addAll(sizeImages);
                                 subclassSizes.add(specificationSubclassItem);
 
                                 Specification specification = new Specification();
@@ -1616,6 +1631,7 @@ public class GoodsDetailsFragment extends BaseFragment
                                 specification.price = sizePrice;
                                 specification.oldPrice = sizeOldPrice;
                                 specification.num = num;
+                                specification.images.addAll(sizeImages);
                                 specificationList.add(specification);
                             }
 
@@ -1839,12 +1855,20 @@ public class GoodsDetailsFragment extends BaseFragment
             public void onResponse(JSONObject jsonObject)
             {
                 mDialog.dismiss();
-                if (jsonObject != null)
+                int status=jsonObject.optInt("status");
+                if (status==200)
                 {
-                    sku = jsonObject.optString("productSKUId");
-                    isOSaleAdd = sku.length() > 0 ? true : false;
+                    if (jsonObject != null)
+                    {
+                        sku = jsonObject.optString("productSKUId");
+                        isOSaleAdd = sku.length() > 0 ? true : false;
+                    }
+                    handler.sendEmptyMessage(UPDATE_ISADD_CART);
                 }
-                handler.sendEmptyMessage(UPDATE_ISADD_CART);
+                else
+                {
+                    ToolUtils.setToastLong(mContext, R.string.loading_fail_txt);
+                }
             }
         }, new Response.ErrorListener()
         {

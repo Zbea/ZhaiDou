@@ -415,7 +415,15 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     mDialog.dismiss();
                 mScrollView.onRefreshComplete();
                 if (response == null) {
-                    nullNetView.setVisibility(View.GONE);
+                    if (page==1)
+                    {
+                        nullView.setVisibility(View.VISIBLE);
+                        nullNetView.setVisibility(View.GONE);
+                    }
+                    else
+                    {
+                        ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+                    }
                     return;
                 }
                 JSONObject obj;
@@ -423,8 +431,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                 if (jsonObject1!=null)
                 {
                     JSONObject jsonObject = jsonObject1.optJSONObject("activityPO");
-                    pageCount=jsonObject.optInt("totalCount");
-                    pageSize=jsonObject.optInt("pageSize");
                     String id = jsonObject.optString("activityCode");
                     String title = jsonObject.optString("activityName");
                     long startTime = jsonObject.optLong("startTime");
@@ -439,6 +445,8 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                     if (jsonObject2!=null)
                     {
                         JSONArray jsonArray = jsonObject2.optJSONArray("items");
+                        pageCount=jsonObject2.optInt("totalCount");
+                        pageSize=jsonObject2.optInt("pageSize");
                         if (jsonArray!=null)
 
                             for (int i = 0; i < jsonArray.length(); i++)
@@ -449,7 +457,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                                 double price = obj.optDouble("price");
                                 double cost_price = obj.optDouble("marketPrice");
                                 String imageUrl = obj.optString("productPicUrl");
-                                String comment = obj.optString("comment");
+                                String comment = obj.optString("comment")=="null"?"":obj.optString("comment");
                                 JSONObject jsonObject3=obj.optJSONObject("expandedResponse");
 
                                 int num = jsonObject3.optInt("stock");
@@ -477,6 +485,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                 if (page>1)
                 {
                     page--;
+                    ToolUtils.setToast(mContext,R.string.loading_fail_txt);
                 }
                 else
                 {

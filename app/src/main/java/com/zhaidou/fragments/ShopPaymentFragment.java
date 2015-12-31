@@ -35,6 +35,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.alipay.PayResult;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.CountManage;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -90,14 +91,14 @@ public class ShopPaymentFragment extends BaseFragment
     private static final int SDK_PAY_FLAG = 1;
 
     private static final int SDK_CHECK_FLAG = 2;
-    private String token;
+    private String token,userName;
     private int userId;
     private IWXAPI api;
     private boolean isSuccess;
     private double payMoney;//订单获取的金额
     private long payOrderId;
     private String payOrderCode;
-    private Dialog mDialog;
+    public Dialog mDialog;
 
     private Handler mHandler = new Handler()
     {
@@ -146,8 +147,6 @@ public class ShopPaymentFragment extends BaseFragment
                         // 其他值就可以判断为支付失败，包括用户主动取消支付，或者系统返回的错误
                         Toast.makeText(getActivity(), "支付取消",
                                 Toast.LENGTH_SHORT).show();
-                        ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, mAmount+"");
-                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                     }
                     break;
                 case SDK_CHECK_FLAG:
@@ -188,6 +187,7 @@ public class ShopPaymentFragment extends BaseFragment
                         Toast.makeText(mContext, "您已经购买过了，请勿重新支付", Toast.LENGTH_LONG).show();
                     } else
                     {
+                        mDialog.show();
                         paymentBtn.setClickable(false);
                         payment();
                     }
@@ -257,6 +257,7 @@ public class ShopPaymentFragment extends BaseFragment
         api.registerApp("wxce03c66622e5b243");
         ToolUtils.setLog("api:"+api.registerApp("wxce03c66622e5b243"));
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
+        userName = (String) SharedPreferencesUtil.getData(getActivity(), "nickName", "");
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
         mRequestQueue = Volley.newRequestQueue(mContext);
         backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
@@ -302,6 +303,8 @@ public class ShopPaymentFragment extends BaseFragment
         TextView mAccountView = (TextView) mView.findViewById(R.id.tv_cash);
         mAccountView.setText("￥" +payMoney);
         mView.findViewById(R.id.tv_pinkage).setVisibility(View.GONE);
+        mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"");
+        mDialog.dismiss();
         mHandler.sendEmptyMessage(UPDATE_ORDER_DETAILS);
     }
 
@@ -442,7 +445,7 @@ public class ShopPaymentFragment extends BaseFragment
         try
         {
             json = new JSONObject();
-            json.put("userName", "朱烽");
+            json.put("userName", userName);
             json.put("cashAmount", payMoney + "");
             json.put("orderId", payOrderId + "");
             json.put("userId", userId + "");
@@ -511,6 +514,7 @@ public class ShopPaymentFragment extends BaseFragment
                                 } else
                                 {
                                     paymentBtn.setClickable(true);
+                                    setDialogDismiss();
                                     ShowToast("没有安装微信客户端哦");
                                 }
 
@@ -545,6 +549,7 @@ public class ShopPaymentFragment extends BaseFragment
             @Override
             public void onErrorResponse(VolleyError volleyError)
             {
+                mDialog.dismiss();
             }
         })
         {
@@ -584,6 +589,8 @@ public class ShopPaymentFragment extends BaseFragment
         Thread payThread = new Thread(payRunnable);
         payThread.start();
     }
+
+
 
     public void handleWXPayResult(int result)
     {
@@ -662,9 +669,17 @@ public class ShopPaymentFragment extends BaseFragment
         paymentBtn.setClickable(true);
     }
 
+    public void setDialogDismiss()
+    {
+        if (mDialog!=null)
+        mDialog.dismiss();
+    }
+
     public void onPause()
     {
         super.onPause();
+        setDialogDismiss();
+        setPayment();
         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.shop_payment_text));
     }
 }

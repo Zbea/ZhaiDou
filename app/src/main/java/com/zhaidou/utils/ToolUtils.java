@@ -66,6 +66,11 @@ public class ToolUtils
                        mPrice=price.substring(0,i);
                        return mPrice;
                    }
+                   if (!String.valueOf(price.charAt(i+1)).equals(""+0)&&String.valueOf(price.charAt(i+2)).equals(""+0))
+                   {
+                       mPrice=price.substring(0,i+2);
+                       return mPrice;
+                   }
                }
             }
         }

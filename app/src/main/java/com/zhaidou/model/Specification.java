@@ -17,5 +17,6 @@ public class Specification implements Serializable
     public double price;
     public double oldPrice;
     public boolean isBuy;
+    public List<String> images=new ArrayList<String>();
     public List<Specification> sizess=new ArrayList<Specification>();
 }

@@ -11,6 +11,7 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -34,6 +35,7 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
+import com.zhaidou.adapter.ShopTodaySpecialAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -43,6 +45,8 @@ import com.zhaidou.model.ShopTodayItem;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.LargeImgView;
+import com.zhaidou.view.ListViewForScrollView;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -61,10 +65,10 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
     private String mParam1;
     private String mParam2;
     private String mTitle;
-
+    private int type=1;//如果type=1则为特卖列表 type=2则为专题页
 
     private GridView mGridView;
-    private TextView mTimerView;
+    private TypeFaceTextView introduceTv;
     private ProductAdapter mAdapter;
     private Map<Integer, View> mHashMap = new HashMap<Integer, View>();
     private RequestQueue requestQueue;
@@ -74,6 +78,7 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
     private TextView reloadBtn, reloadNetBtn;
 
     private final int UPDATE_ADAPTER = 0;
+    private final int UPDATE_TIMER_START_AND_DETAIL_DATA = 1;
 
     private Dialog mDialog;
 
@@ -83,7 +88,10 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
     private boolean isLogin;
     private Context mContext;
     private LargeImgView bannerLine;
-    private PullToRefreshScrollView mScrollView;
+    private PullToRefreshScrollView mScrollView,mScrollView1;
+    private ListViewForScrollView mListView;
+    private ShopTodaySpecialAdapter adapter;
+    private String introduce;//引文介绍
     private int page = 1;
     private int pageSize;
     private int pageCount;
@@ -107,6 +115,31 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
                     }
                     loadingView.setVisibility(View.GONE);
                     mAdapter.notifyDataSetChanged();
+                    mScrollView.setVisibility(View.VISIBLE);
+                    mScrollView1.setVisibility(View.GONE);
+                    break;
+            }
+        }
+    };
+
+    private Handler handler = new Handler() {
+        public void handleMessage(final Message msg) {
+            switch (msg.what)
+            {
+                case UPDATE_TIMER_START_AND_DETAIL_DATA:
+                    adapter.notifyDataSetChanged();
+                    titleTv.setText(shopSpecialItem.title);
+                    if (pageCount > pageSize * page)
+                    {
+                        mScrollView1.setMode(PullToRefreshBase.Mode.BOTH);
+                    } else
+                    {
+                        mScrollView1.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+                    }
+                    introduceTv.setText(introduce);
+                    loadingView.setVisibility(View.GONE);
+                    mScrollView.setVisibility(View.GONE);
+                    mScrollView1.setVisibility(View.VISIBLE);
                     break;
             }
         }
@@ -143,6 +176,21 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
         }
     };
 
+    /**
+     * adapter短点击事件
+     */
+    private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(i).title, items.get(i).goodsId);
+            Bundle bundle=new Bundle();
+            bundle.putString("page",items.get(i).title);
+            bundle.putString("index",items.get(i).goodsId);
+            bundle.putBoolean("canShare",false);
+            goodsDetailsFragment.setArguments(bundle);
+            ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
+        }
+    };
 
     public static HomeFeatrueFragment newInstance(String title, String param1, String param2) {
         HomeFeatrueFragment fragment = new HomeFeatrueFragment();
@@ -198,6 +246,15 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
             reloadBtn.setOnClickListener(onClickListener);
             reloadNetBtn = (TextView) rootView.findViewById(R.id.netReload);
             reloadNetBtn.setOnClickListener(onClickListener);
+
+            introduceTv = (TypeFaceTextView) rootView.findViewById(R.id.adText);
+
+            mListView = (ListViewForScrollView) rootView.findViewById(R.id.shopListView);
+            mListView.setOnItemClickListener(onItemClickListener);
+            adapter = new ShopTodaySpecialAdapter(mContext, items);
+            mListView.setAdapter(adapter);
+            mScrollView1 = (PullToRefreshScrollView) rootView.findViewById(R.id.scrollView1);
+            mScrollView1.setOnRefreshListener(onRefreshListener);
 
             requestQueue = Volley.newRequestQueue(getActivity());
             myCartBtn = (ImageView) rootView.findViewById(R.id.myCartBtn);
@@ -278,14 +335,6 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
                             {
                                 imageView1.setImageBitmapLarge(bitmap);
                             }
-//                    if (imageView1.getDrawingCache() != null) {
-//                        imageView1.setImageBitmapLarge(bitmap);
-//                    } else {
-//                        if (bitmap.isRecycled()) {
-//                            bitmap.recycle();
-//                            bitmap = null;
-//                        }
-//                    }
                 }
             }
             @Override
@@ -293,11 +342,6 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
                 FetchData();
             }
         });
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
     }
 
     @Override
@@ -329,11 +373,19 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
                         if (mDialog != null)
                             mDialog.dismiss();
                         mScrollView.onRefreshComplete();
+                        mScrollView1.onRefreshComplete();
                         if (response == null)
                         {
-                            nullNetView.setVisibility(View.GONE);
-                            nullView.setVisibility(View.VISIBLE);
-                            nullDataView.setVisibility(View.GONE);
+                            if (page==1)
+                            {
+                                nullNetView.setVisibility(View.GONE);
+                                nullView.setVisibility(View.VISIBLE);
+                                nullDataView.setVisibility(View.GONE);
+                            }
+                            else
+                            {
+                                ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+                            }
                             return;
                         }
                         JSONObject obj;
@@ -347,9 +399,10 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
                             long startTime = jsonObject.optLong("startTime");
                             long endTime = jsonObject.optLong("endTime");
                             imageUrl= jsonObject.optString("mainPic");
-                            ToolUtils.setLog(""+endTime);
+                            type= jsonObject.optInt("composingType");
+                            ToolUtils.setLog(""+type);
                             int overTime = Integer.parseInt((String.valueOf((endTime-startTime)/(24*60*60*1000))));
-                            String introduce = jsonObject.optString("description");
+                            introduce = jsonObject.optString("description");
                             int isNew = jsonObject.optInt("newFlag");
                             shopSpecialItem = new ShopSpecialItem(id, title, null,startTime, endTime, overTime, null,isNew);
 
@@ -373,26 +426,49 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
                                         int num = jsonObject3.optInt("stock");
                                         int totalCount = 100;
                                         int percentum =obj.optInt("progressPercentage");
+                                        String comment = obj.optString("comment")=="null"?"":obj.optString("comment");
                                         ShopTodayItem shopTodayItem = new ShopTodayItem(Baseid, Listtitle, imageUrl, price, cost_price, num, totalCount);
                                         shopTodayItem.percentum=percentum;
+                                        shopTodayItem.comment=comment;
                                         items.add(shopTodayItem);
                                     }
                             }
-                            mHandler.sendEmptyMessage(UPDATE_ADAPTER);
+                            if (type==1)
+                            {
+                                handler.sendEmptyMessage(UPDATE_TIMER_START_AND_DETAIL_DATA);
+                            }
+                            else
+                            {
+                                mHandler.sendEmptyMessage(UPDATE_ADAPTER);
+                            }
                         }
                         else
                         {
                             if (status==200)
                             {
-                                nullNetView.setVisibility(View.GONE);
-                                nullView.setVisibility(View.GONE);
-                                nullDataView.setVisibility(View.VISIBLE);
+                                if (page==1)
+                                {
+                                    nullNetView.setVisibility(View.GONE);
+                                    nullView.setVisibility(View.GONE);
+                                    nullDataView.setVisibility(View.VISIBLE);
+                                }
+                                else
+                                {
+                                    ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+                                }
                             }
                             else
                             {
-                                nullNetView.setVisibility(View.GONE);
-                                nullView.setVisibility(View.VISIBLE);
-                                nullDataView.setVisibility(View.GONE);
+                                if (page==1)
+                                {
+                                    nullNetView.setVisibility(View.GONE);
+                                    nullView.setVisibility(View.VISIBLE);
+                                    nullDataView.setVisibility(View.GONE);
+                                }
+                                else
+                                {
+                                    ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+                                }
                             }
                         }
                     }
@@ -401,12 +477,17 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
             public void onErrorResponse(VolleyError volleyError) {
                 mDialog.dismiss();
                 mScrollView.onRefreshComplete();
-                if (page>1)
+                if (page==1)
+                {
+                    nullNetView.setVisibility(View.GONE);
+                    nullView.setVisibility(View.VISIBLE);
+                    nullDataView.setVisibility(View.GONE);
+                }
+                else
                 {
                     page--;
+                    ToolUtils.setToast(mContext,R.string.loading_fail_txt);
                 }
-                nullNetView.setVisibility(View.GONE);
-                nullView.setVisibility(View.VISIBLE);
             }
         }
         ) {
