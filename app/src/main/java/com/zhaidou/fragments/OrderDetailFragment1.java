@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -63,7 +62,6 @@ public class OrderDetailFragment1 extends BaseFragment {
     private final int UPDATE_UI_TIMER_FINISH = 3;
 
     private boolean isTimerStart = false;
-    private OrderListener orderListener;
     private LinearLayout mNetWorkLayout;
     private OnColseSuccess onColseSuccess;
 
@@ -79,23 +77,6 @@ public class OrderDetailFragment1 extends BaseFragment {
     private DialogUtils mDialogUtils;
     private Dialog mDialog;
     private String mUserId;
-
-    private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            //            if (flags != 1) {
-            //                GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(orderItems.get(i).getMerchandise(), orderItems.get(i).getId());
-            //                Bundle bundle = new Bundle();
-            //                if (orderItems.get(i).getSale_cate() == 1) {
-            //                    bundle.putInt("flags", 1);
-            //                }
-            //                bundle.putInt("index", orderItems.get(i).getMerchandise_id());
-            //                bundle.putString("page", orderItems.get(i).getMerchandise());
-            //                goodsDetailsFragment.setArguments(bundle);
-            //                ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
-            //            }
-        }
-    };
 
     public static OrderDetailFragment1 newInstance(String orderCode, int flags) {
         OrderDetailFragment1 fragment = new OrderDetailFragment1();
@@ -172,12 +153,12 @@ public class OrderDetailFragment1 extends BaseFragment {
                     mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_confirm), new DialogUtils.PositiveListener() {
                         @Override
                         public void onPositive() {
-                            System.out.println("OrderAllOrdersFragment.onPositive");
                             Map<String, String> params = new HashMap();
                             params.put("businessType", "01");
                             params.put("clientType", "ANDROID");
                             params.put("userId", mUserId);
-                            params.put("clientVersion", "45");
+                            params.put("version", versionName);
+                            params.put("clientVersion", versionCode);
                             params.put("orderCode", store.orderCode);
                             JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_CONFIRM, new JSONObject(params), new Response.Listener<JSONObject>() {
                                 @Override
@@ -185,9 +166,6 @@ public class OrderDetailFragment1 extends BaseFragment {
                                     int status = jsonObject.optInt("status");
                                     String message = jsonObject.optString("message");
                                     if (200 == status) {
-                                        //                                        order.status = 50;
-                                        //                                        order.orderShowStatus = "交易完成";
-                                        //                                        allOrderAdapter.notifyDataSetChanged();
                                         ShowToast("确认收货成功");
                                         ((MainActivity) getActivity()).popToStack(OrderDetailFragment1.this);
                                     } else {
@@ -219,7 +197,8 @@ public class OrderDetailFragment1 extends BaseFragment {
         Map<String, String> params = new HashMap<String, String>();
         params.put("businessType", "01");
         params.put("clientType", "ANDROID");
-        params.put("version", "1.0.1");
+        params.put("version", versionName);
+        params.put("clientVersion", versionCode);
         params.put("userId", mUserId);
         params.put("orderCode", orderCode);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, new ZhaiDou().URL_ORDER_DETAIL_LIST_URL, new JSONObject(params), new Response.Listener<JSONObject>() {
@@ -259,7 +238,6 @@ public class OrderDetailFragment1 extends BaseFragment {
             TextView tv_zero_msg = ViewHolder.get(convertView, R.id.tv_zero_msg);
             TextView mPrice = ViewHolder.get(convertView, R.id.orderItemCurrentPrice);
             TextView mOldPrice = ViewHolder.get(convertView, R.id.orderItemFormalPrice);
-
             OrderItem1 item = getList().get(position);
             tv_name.setText(item.productName);
             tv_specification.setText(item.specifications);
@@ -288,10 +266,6 @@ public class OrderDetailFragment1 extends BaseFragment {
         if (onColseSuccess != null)
             onColseSuccess.colsePage();
         super.onDestroyView();
-    }
-
-    public interface OrderListener {
-        public void onOrderStatusChange(Order1 order);
     }
 
     private class StoreAdapter extends BaseListAdapter<Store> {

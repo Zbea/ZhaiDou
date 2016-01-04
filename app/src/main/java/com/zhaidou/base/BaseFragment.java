@@ -3,6 +3,8 @@ package com.zhaidou.base;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -62,6 +64,9 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     public Context mContext;
     protected boolean isDialogFirstVisible=true;
 
+    public String versionCode;
+    public String versionName;
+
     private onFragmentCloseListener onFragmentCloseListener;
 
     @Override
@@ -75,6 +80,14 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
         screenWidth=dm.widthPixels;
         screenHeight=dm.heightPixels;
+        PackageInfo packageInfo= null;
+        try {
+            packageInfo = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(),0);
+            versionCode = packageInfo.versionCode+"";
+            versionName = packageInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
 

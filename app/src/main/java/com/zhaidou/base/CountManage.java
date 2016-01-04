@@ -53,6 +53,10 @@ public class CountManage {
         int i = integer.intValue();
         init(type, --i);
     }
+    public void clearCache(){
+        map.clear();
+        refreshData();
+    }
 
     public int value(TYPE type) {
         Integer integer = map.get(type);

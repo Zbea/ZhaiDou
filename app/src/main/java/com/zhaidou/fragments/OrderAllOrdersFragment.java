@@ -172,7 +172,6 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             allOrderAdapter.setOnInViewClickListener(R.id.orderlayout, new BaseListAdapter.onInternalClickListener() {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                    System.out.println("OrderAllOrdersFragment.OnClickListener");
                     final Order1 order = (Order1) values;
                     final TextView btn2 = (TextView) parentV.findViewById(R.id.bt_received);
                     if (btn2.getTag() != null)
@@ -191,6 +190,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                             ShowToast("零元特卖商品不可以退哦！");
                             return;
                         }
+
                         mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_apply_return_money), new DialogUtils.PositiveListener() {
                             @Override
                             public void onPositive() {
@@ -327,8 +327,6 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
         mTitle.setText(ZhaiDou.TYPE_ORDER_ALL.equalsIgnoreCase(mCurrentType)?"全部订单"
                 :ZhaiDou.TYPE_ORDER_PREPAY.equalsIgnoreCase(mCurrentType)?"待支付":"待收货");
-
-//        CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
         return rootView;
     }
 
