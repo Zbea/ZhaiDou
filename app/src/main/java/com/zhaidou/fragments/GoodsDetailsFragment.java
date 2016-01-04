@@ -1856,12 +1856,12 @@ public class GoodsDetailsFragment extends BaseFragment
             {
                 mDialog.dismiss();
                 int status=jsonObject.optInt("status");
-                if (status==200)
+                if (status!=500)
                 {
                     if (jsonObject != null)
                     {
                         sku = jsonObject.optString("productSKUId");
-                        isOSaleAdd = sku.length() > 0 ? true : false;
+                        isOSaleAdd = sku.length()> 0 ? true : false;
                     }
                     handler.sendEmptyMessage(UPDATE_ISADD_CART);
                 }

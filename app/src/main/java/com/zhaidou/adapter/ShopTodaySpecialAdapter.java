@@ -150,7 +150,7 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
         }
         else
         {
-            viewHolder.itemSales.setVisibility(View.GONE);
+            viewHolder.itemSales.setText("0折");
         }
 
         DisplayImageOptions options=new DisplayImageOptions.Builder()

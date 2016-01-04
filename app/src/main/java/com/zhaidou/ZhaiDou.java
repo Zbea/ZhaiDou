@@ -22,8 +22,12 @@ public class ZhaiDou {
     public static String HomeShopListUrl=HOME_BASE_URL+"index/getSpecialSaleList.action?pageSize=20&pageNo=";
     //首页特卖商品列表
     public static String HomeGoodsListUrl=HOME_BASE_URL+"index/getActivityProductList.action?activityCode=";
+    //特卖列表share
+    public static String shopSpecialListShareUrl="http://m.zhaidou.com/mall_list.html?id=";
     //商品加入购物车
     public static String GoodsDetailsAddUrl=HOME_BASE_URL+"cart/addUserCart.action?businessType=01&version=1.0.0&clientType=app&quantity=1&userId=";
+    //商品详情share
+    public static String goodsDetailsShareUrl="http://m.zhaidou.com/mall_content.html?id=";
     //商品详情接口
     public static String HomeGoodsDetailsUrl=HOME_BASE_URL+"product/getProductInfo.action?businessType=01&version=1.0.0&productId=";
     //判断是否是0元特卖商品是否已经购买了
@@ -94,14 +98,10 @@ public class ZhaiDou {
 
     //特卖首页
     public static String shopHomeSpecialUrl=HOME_BASE_URL+"special_mall/api/sales/new_sale";
-    //特卖列表share
-    public static String shopSpecialListShareUrl=HOME_BASE_URL+"mall/list.html?id=";
     //特卖列表
     public static String shopSpecialListUrl=HOME_BASE_URL+"special_mall/api/sales?sale_cate=0";
     //特卖详情
     public static String shopSpecialTadayUrl=HOME_BASE_URL+"special_mall/api/sales/";
-    //商品详情share
-    public static String goodsDetailsShareUrl=HOME_BASE_URL+"mall/index.html?id=";
     //商品详情
     public static String goodsDetailsUrlUrl=HOME_BASE_URL+"special_mall/api/merchandises/";
     //购物车商品详情

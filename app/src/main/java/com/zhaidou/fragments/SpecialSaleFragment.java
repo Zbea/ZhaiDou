@@ -297,6 +297,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     bundle.putInt("flags", 1);
                     bundle.putString("index", products.get(position).goodsId);
                     bundle.putString("page", products.get(position).getTitle());
+                    bundle.putBoolean("canShare", false);
                     goodsDetailsFragment.setArguments(bundle);
                     ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
                 }
