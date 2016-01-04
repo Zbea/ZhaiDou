@@ -1,7 +1,5 @@
 package com.zhaidou.model;
 
-import android.util.Log;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -17,10 +15,14 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
 /**
- * Created by root on 15-9-16.
- */
+*
+* Author Scoield(553899626@qq.com)
+* Created at 15/12/8 11:58
+* Description:文件上传请求Request
+* Param   参数说明
+* FIXME
+*/
 public class MultipartRequest extends Request<String>{
     private Response.ErrorListener errorListener = null;
     private Response.Listener mListener = null;
@@ -28,7 +30,7 @@ public class MultipartRequest extends Request<String>{
     private HttpEntity httpEntity = null;
 
 
-    public MultipartRequest(int method,MultipartRequestParams params, String url,Response.Listener<String> listener, Response.ErrorListener errorListener) {
+    public MultipartRequest(int method, MultipartRequestParams params, String url, Response.Listener<String> listener, Response.ErrorListener errorListener) {
         super(method, url, errorListener);
         this.params = params;
         this.mListener = listener;
@@ -47,7 +49,6 @@ public class MultipartRequest extends Request<String>{
                 e.printStackTrace();
             }
             String str = new String(baos.toByteArray());
-            Log.e("test", "bodyString is :" + str);
         }
         return baos.toByteArray();
     }

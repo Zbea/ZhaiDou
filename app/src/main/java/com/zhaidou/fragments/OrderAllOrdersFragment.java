@@ -34,9 +34,9 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
+import com.zhaidou.base.CountManage;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.model.Order;
 import com.zhaidou.model.Order1;
 import com.zhaidou.model.Store;
 import com.zhaidou.utils.DialogUtils;
@@ -67,7 +67,6 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
     private RequestQueue mRequestQueue;
     private PullToRefreshListView mListView;
-    private List<Order> orders = new ArrayList<Order>();
     AllOrderAdapter allOrderAdapter;
     private final int UPDATE_ORDER_LIST = 1;
     private final int UPDATE_COUNT_DOWN_TIME = 2;
@@ -86,7 +85,6 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     private DialogUtils mDialogUtils;
     private int mCurrentPage;
     private String mCurrentType;
-    private int initTime = 900;
     private boolean isDataLoaded = false;
     private String mUserId;
     private TextView mTitle;
@@ -174,7 +172,6 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             allOrderAdapter.setOnInViewClickListener(R.id.orderlayout, new BaseListAdapter.onInternalClickListener() {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                    System.out.println("OrderAllOrdersFragment.OnClickListener");
                     final Order1 order = (Order1) values;
                     final TextView btn2 = (TextView) parentV.findViewById(R.id.bt_received);
                     if (btn2.getTag() != null)
@@ -193,10 +190,11 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                             ShowToast("零元特卖商品不可以退哦！");
                             return;
                         }
+
                         mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_apply_return_money), new DialogUtils.PositiveListener() {
                             @Override
                             public void onPositive() {
-                                final Map<String, String> params = new HashMap();
+                                final Map<String, String> params = new HashMap<String,String>();
                                 params.put("businessType", "01");
                                 params.put("clientType", "ANDROID");
                                 params.put("version", "1.0.1");
@@ -219,7 +217,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                             }
                         }, null);
                     } else if (ZhaiDou.STATUS_UNPAY == order.status) {
-                        final Map<String, String> params = new HashMap();
+                        final Map<String, String> params = new HashMap<String, String>();
                         params.put("businessType", "01");
                         params.put("clientType", "ANDROID");
                         params.put("version", "1.0.1");
@@ -237,6 +235,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                                         if (200 == status) {
                                             order.status = ZhaiDou.STATUS_ORDER_CANCEL;
                                             order.orderShowStatus = "已取消";
+                                            CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
                                         }
                                         ShowToast(status == 200 ? "取消订单成功" : message);
                                     }
@@ -256,20 +255,19 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
                     final Order1 order = (Order1) values;
-                    final TextView btn2 = (TextView) v;
                     if (ZhaiDou.STATUS_UNPAY == order.status) {
                         if (order.orderRemainingTime<=0){
                             ShowToast("订单已超时");
                             return;
                         }
-                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.orderId,order.orderCode ,Double.parseDouble(order.orderTotalAmount), Integer.parseInt(order.orderRemainingTime+""), null, 2);
+                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.orderId,order.orderCode ,Double.parseDouble(order.orderTotalAmount), Integer.parseInt(order.orderRemainingTime+""), null);
                         ((BaseActivity) getActivity()).navigationToFragment(shopPaymentFragment);
                     } else if (ZhaiDou.STATUS__DELIVERYED == order.status) {
                         mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_confirm), new DialogUtils.PositiveListener() {
                             @Override
                             public void onPositive() {
                                 System.out.println("OrderAllOrdersFragment.onPositive");
-                                Map<String, String> params = new HashMap();
+                                Map<String, String> params = new HashMap<String, String>();
                                 params.put("businessType", "01");
                                 params.put("clientType", "ANDROID");
                                 params.put("userId",mUserId);
@@ -299,7 +297,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                 @Override
                 public void OnClickListener(View parentV, View v, final Integer position, Object values) {
                     final Order1 order = (Order1) values;
-                    final Map<String, String> params = new HashMap();
+                    final Map<String, String> params = new HashMap<String, String>();
                     params.put("businessType", "01");
                     params.put("userId",mUserId);
                     params.put("orderCode", order.orderCode);
@@ -357,8 +355,8 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         }
     }
 
-    private void FetchOrderList(int page, String type) {
-        Map<String, String> params = new HashMap();//28129
+    private void FetchOrderList(int page, final String type) {
+        Map<String, String> params = new HashMap<String, String>();//28129
         params.put("userId",mUserId);//64410//16665
         params.put("clientType", "ANDROID");
         params.put("clientVersion", "45");
@@ -373,6 +371,9 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                 isDataLoaded = false;
                 int status = jsonObject.optInt("status");
                 String message = jsonObject.optString("message");
+                int totalCount = jsonObject.optInt("totalCount");
+                if (type.equalsIgnoreCase(ZhaiDou.TYPE_ORDER_PREPAY))
+                    CountManage.getInstance().init(CountManage.TYPE.TAG_PREPAY,totalCount);
                 if (status==200){
                     JSONArray dataArray = jsonObject.optJSONArray("data");
                     int pageNo = jsonObject.optInt("pageNo");
@@ -474,7 +475,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     btn2.setVisibility(View.VISIBLE);
                     btn1.setText("取消订单");
                     if (timerMapStamp.get(position) == null) {
-                        timerMapStamp.put(position, order.orderRemainingTime);
+                        timerMapStamp.put(position,order.orderRemainingTime);// order.orderRemainingTime//(long)(new Random().nextInt(60)+20)
                     }
                     long l = Long.parseLong(timerMapStamp.get(position) + "");
                     if (l > 0) {
@@ -484,6 +485,8 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         btn2.setText("支付" + new SimpleDateFormat("mm:ss").format(new Date(l * 1000)));
                         btn2.setBackgroundResource(R.drawable.btn_red_click_selector);
                     } else {
+                        if (!btn2.getText().toString().equalsIgnoreCase("超时过期"))
+                           CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
                         btn2.setText("超时过期");
                         btn2.setBackgroundResource(R.drawable.btn_no_click_selector);
                     }
@@ -540,6 +543,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
     @Override
     public void onDestroyView() {
+        System.out.println("OrderAllOrdersFragment.onDestroyView");
         if (timer != null) {
             timer.cancel();
             timer = null;
@@ -592,4 +596,5 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             handler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
         }
     }
+
 }

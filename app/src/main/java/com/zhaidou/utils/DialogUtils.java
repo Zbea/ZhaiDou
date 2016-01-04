@@ -232,7 +232,7 @@ public class DialogUtils {
                 if (ToolUtils.isPhoneOk(phone)) {
 //                    codeTimer();
                     if (verifyCodeListener != null) {
-                        verifyCodeListener.onVerify(phone,mDialog);
+                        verifyCodeListener.onVerify(phone, mDialog);
                     }
                 } else {
                     ToolUtils.setToast(mContext, "抱歉,无效手机号码");
@@ -271,7 +271,7 @@ public class DialogUtils {
         return mDialog;
     }
 
-    public void showShareDialog(final String title, final String content, final String imageUrl, final String url,final PlatformActionListener platformActionListener) {
+    public void showShareDialog(final String title, final String content, final String imageUrl, final String url, final PlatformActionListener platformActionListener) {
         ShareSDK.initSDK(mContext);
         View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_share_custom, null);
         GridView mGridView = (GridView) view.findViewById(R.id.gv_share);
@@ -309,25 +309,25 @@ public class DialogUtils {
                 switch (position) {
                     case 0:
                         mDialog.dismiss();
-                        Wechat.ShareParams weChatSP=new Wechat.ShareParams();
+                        Wechat.ShareParams weChatSP = new Wechat.ShareParams();
                         weChatSP.setTitle(title);
                         weChatSP.setText(content);
                         weChatSP.setImageUrl(imageUrl);
                         weChatSP.setUrl(url);
                         weChatSP.setShareType(Platform.SHARE_WEBPAGE);
-                        Platform wechat=ShareSDK.getPlatform(Wechat.NAME);
+                        Platform wechat = ShareSDK.getPlatform(Wechat.NAME);
                         wechat.setPlatformActionListener(platformActionListener);
                         wechat.share(weChatSP);
                         break;
                     case 1:
                         mDialog.dismiss();
-                        WechatMoments.ShareParams WMSP=new WechatMoments.ShareParams();
+                        WechatMoments.ShareParams WMSP = new WechatMoments.ShareParams();
                         WMSP.setShareType(Platform.SHARE_WEBPAGE);
                         WMSP.setTitle(title);
                         WMSP.setText(content);
                         WMSP.setImageUrl(imageUrl);
                         WMSP.setUrl(url);
-                        Platform wm=ShareSDK.getPlatform(WechatMoments.NAME);
+                        Platform wm = ShareSDK.getPlatform(WechatMoments.NAME);
                         wm.setPlatformActionListener(platformActionListener);
                         wm.share(WMSP);
                         break;
@@ -342,7 +342,7 @@ public class DialogUtils {
                         break;
                     case 3:
                         mDialog.dismiss();
-                        QQ.ShareParams QQSp=new QQ.ShareParams();
+                        QQ.ShareParams QQSp = new QQ.ShareParams();
                         QQSp.setTitle(title);
                         QQSp.setTitleUrl(url);
                         QQSp.setText(content);
@@ -353,14 +353,14 @@ public class DialogUtils {
                         break;
                     case 4:
                         mDialog.dismiss();
-                        QZone.ShareParams QZoneSP =new QZone.ShareParams();
+                        QZone.ShareParams QZoneSP = new QZone.ShareParams();
                         QZoneSP.setTitle(title);
                         QZoneSP.setTitleUrl(url); // 标题的超链接
                         QZoneSP.setText(content);
                         QZoneSP.setImageUrl(imageUrl);
                         QZoneSP.setSite(mContext.getString(R.string.app_name));
                         QZoneSP.setSiteUrl(url);
-                        Platform qzone = ShareSDK.getPlatform (QZone.NAME);
+                        Platform qzone = ShareSDK.getPlatform(QZone.NAME);
                         qzone.setPlatformActionListener(platformActionListener); // 设置分享事件回调
                         qzone.share(QZoneSP);
                         break;
@@ -376,10 +376,6 @@ public class DialogUtils {
         private int[] drawableId;
         private List<String> titles;
 
-        public ShareAdapter(Context context, List<String> list) {
-            super(context, list);
-        }
-
         public ShareAdapter(Context context, List<String> titles, int[] drawableId) {
             super(context, titles);
             this.drawableId = drawableId;
@@ -393,7 +389,7 @@ public class DialogUtils {
             TextView textView = ViewHolder.get(convertView, R.id.tv_plat);
             String title = getList().get(position);
             textView.setText(title);
-            imageView.setBackgroundResource(drawableId[position]);
+            imageView.setImageResource(drawableId[position]);
             imageView.setVisibility(TextUtils.isEmpty(title) ? View.INVISIBLE : View.VISIBLE);
             return convertView;
         }
@@ -431,7 +427,7 @@ public class DialogUtils {
     }
 
     public interface VerifyCodeListener {
-        public void onVerify(String phone,Dialog mDialog);
+        public void onVerify(String phone, Dialog mDialog);
 
     }
 

@@ -2,7 +2,6 @@ package com.zhaidou.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -35,11 +34,11 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.alipay.PayResult;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.base.CountManage;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
-import com.zhaidou.view.CustomBannerView;
 import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
@@ -67,7 +66,6 @@ public class ShopPaymentFragment extends BaseFragment
     private long mOrderId;
     private String orderCode;
     private double mAmount;
-    private int flags;//1为确认订单下单2为代付款支付
     private Order mOrder=new Order();
     private View mView;
     private Context mContext;
@@ -122,7 +120,7 @@ public class ShopPaymentFragment extends BaseFragment
                     {
                         isSuccess = true;
                         notificationPaySuccess();
-                        setUnPayDesCount();
+                        CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
                         ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, mAmount+"");
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
 //                        ((MainActivity) getActivity()).popToStack(ShopPaymentFragment.this);
@@ -198,7 +196,7 @@ public class ShopPaymentFragment extends BaseFragment
         }
     };
 
-    public static ShopPaymentFragment newInstance(long orderId,String orderCode, double amount, long timeLeft, Order order, int flags)
+    public static ShopPaymentFragment newInstance(long orderId,String orderCode, double amount, long timeLeft, Order order)
     {
         ShopPaymentFragment fragment = new ShopPaymentFragment();
         Bundle args = new Bundle();
@@ -207,7 +205,6 @@ public class ShopPaymentFragment extends BaseFragment
         args.putDouble(ARG_AMOUNT, amount);
         args.putLong(ARG_TIME, timeLeft);
         args.putSerializable(ARG_ORDER, order);
-        args.putInt("flags", flags);
         fragment.setArguments(args);
         return fragment;
     }
@@ -227,7 +224,6 @@ public class ShopPaymentFragment extends BaseFragment
             payOrderCode=orderCode = getArguments().getString("orderCode");
             payMoney= mAmount = getArguments().getDouble(ARG_AMOUNT);
             initTime = getArguments().getLong(ARG_TIME);
-            flags = getArguments().getInt("flags");
         }
     }
 
@@ -257,10 +253,6 @@ public class ShopPaymentFragment extends BaseFragment
      */
     private void initView()
     {
-        if (flags == 1)
-        {
-            setUnPayAddCount();
-        }
         api = WXAPIFactory.createWXAPI(mContext, null);
         api.registerApp("wxce03c66622e5b243");
         ToolUtils.setLog("api:"+api.registerApp("wxce03c66622e5b243"));
@@ -316,26 +308,6 @@ public class ShopPaymentFragment extends BaseFragment
         mHandler.sendEmptyMessage(UPDATE_ORDER_DETAILS);
     }
 
-
-
-    /**
-     * 发送刷新代付加一
-     */
-    private void setUnPayAddCount()
-    {
-        Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayAddTag);
-        mContext.sendBroadcast(intent);
-    }
-
-    /**
-     * 发送刷新代付减一
-     */
-    private void setUnPayDesCount()
-    {
-        Intent intent = new Intent(ZhaiDou.IntentRefreshUnPayDesTag);
-        mContext.sendBroadcast(intent);
-    }
-
     class MyTimer extends TimerTask
     {
         @Override
@@ -356,6 +328,7 @@ public class ShopPaymentFragment extends BaseFragment
                             timeInfoTv.setText("00:00");
                             stopView();
                         }
+                        CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
                     }
                 }
             });
@@ -632,7 +605,7 @@ public class ShopPaymentFragment extends BaseFragment
             case 0://支付成功
                 Log.i("----->", "支付成功");
                 isSuccess = true;
-                setUnPayDesCount();
+                CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
                 notificationPaySuccess();
                 ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, mAmount+"");
                 ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
@@ -690,11 +663,6 @@ public class ShopPaymentFragment extends BaseFragment
         super.onDestroyView();
     }
 
-
-    public void setOrderListener(Order.OrderListener orderListener)
-    {
-        this.orderListener = orderListener;
-    }
 
     public void setPayment()
     {

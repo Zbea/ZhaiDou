@@ -9,8 +9,13 @@ import java.io.InputStream;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by root on 15-9-16.
- */
+*
+* Author Scoield(553899626@qq.com)
+* Created at 16/12/8 12:00
+* Description:文件上传请求参数param
+* Param   参数说明
+* FIXME
+*/
 public class MultipartRequestParams {
     protected ConcurrentHashMap<String, String> urlParams;
     protected ConcurrentHashMap<String, FileWrapper> fileParams;

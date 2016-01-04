@@ -4,13 +4,11 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,21 +33,9 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.ToolUtils;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -181,7 +167,7 @@ public class ProfileEditFragment extends BaseFragment implements View.OnClickLis
                 if (mTitle.equals("手机号码")) {
                     if (ToolUtils.isPhoneOk(tv_edit_msg.getText().toString())) {
                         hideInputMethod();
-                        new MyTask().execute(mParam1, tv_edit_msg.getText().toString().trim(), mProfileId);
+                        UpdateUserInfo(mParam1,tv_edit_msg.getText().toString().trim(), mProfileId);
                     } else {
                         ToolUtils.setToast(getActivity(), "抱歉,手机号码格式输入不正确");
                     }
@@ -191,7 +177,6 @@ public class ProfileEditFragment extends BaseFragment implements View.OnClickLis
                         return;
                     }
                     hideInputMethod();
-//                    new MyTask().execute(mParam1, mParam2, mProfileId);
                     UpdateUserInfo(mParam1, "description".equalsIgnoreCase(mParam1) ? tv_description.getText().toString().trim()
                             : tv_edit_msg.getText().toString().trim(), mProfileId);
                 }
@@ -242,100 +227,6 @@ public class ProfileEditFragment extends BaseFragment implements View.OnClickLis
         };
         mRequestQueue.add(request);
     }
-
-    private class MyTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected void onPreExecute() {
-            mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-
-            String s = null;
-            try {
-                s = executeHttpPost(strings[0], strings[1], strings[2]);
-            } catch (Exception e) {
-
-            }
-            return s;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            mDialog.dismiss();
-            if (s != null && s.contains("message")) {
-                Toast.makeText(getActivity(), "昵称已经被使用", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if ("description".equalsIgnoreCase(mParam1)) {
-                refreshDataListener.onRefreshData(mParam1, tv_description.getText().toString(), s);
-            } else {
-                refreshDataListener.onRefreshData(mParam1, tv_edit_msg.getText().toString(), s);
-            }
-        }
-    }
-
-    public String executeHttpPost(String type, String msg, String id) throws Exception {
-
-        BufferedReader in = null;
-        try {
-            // 定义HttpClient
-            HttpClient client = new DefaultHttpClient();
-
-
-            // 实例化HTTP方法
-            HttpPost request = new HttpPost(ZhaiDou.USER_EDIT_PROFILE_URL + id);
-            request.addHeader("SECAuthorization", token);
-            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-
-            // 创建名/值组列表
-            List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-
-            parameters.add(new BasicNameValuePair("_method", "PUT"));
-            if ("description".equalsIgnoreCase(type)) {
-                String old = tv_description.getText().toString().trim();
-                String newStr = new String(old.getBytes("UTF-8"));
-                parameters.add(new BasicNameValuePair("profile[" + type + "]", newStr));
-            } else {
-                String old = tv_edit_msg.getText().toString().trim();
-                String newStr = new String(old.getBytes("UTF-8"));
-                parameters.add(new BasicNameValuePair("profile[" + type + "]", newStr));
-            }
-            parameters.add(new BasicNameValuePair("profile[id]", id));
-
-            // 创建UrlEncodedFormEntity对象
-            UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
-                    parameters, HTTP.UTF_8);//这里要设置，不然回来乱码
-            request.setEntity(formEntiry);
-            // 执行请求
-            HttpResponse response = client.execute(request);
-
-            in = new BufferedReader(new InputStreamReader(response.getEntity()
-                    .getContent()));
-            StringBuffer sb = new StringBuffer("");
-            String line = "";
-            String NL = System.getProperty("line.separator");
-            while ((line = in.readLine()) != null) {
-                sb.append(line + NL);
-            }
-            in.close();
-            String result = sb.toString();
-            Log.i("EditProfileFragment--------->", result);
-            return result;
-
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
     public void setRefreshDataListener(RefreshDataListener refreshDataListener) {
         this.refreshDataListener = refreshDataListener;
     }

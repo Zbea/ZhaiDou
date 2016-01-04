@@ -8,7 +8,6 @@ import android.os.Environment;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.nostra13.universalimageloader.cache.disc.impl.LimitedAgeDiscCache;
-import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -63,7 +62,6 @@ public class ZDApplication extends Application{
         setImageLoad();
         mRequestQueue=Volley.newRequestQueue(this);
     }
-
 
     /**
      * universal_image_loader基本配置

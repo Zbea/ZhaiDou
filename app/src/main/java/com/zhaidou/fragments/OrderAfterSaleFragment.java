@@ -572,6 +572,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
     }
 
     private void applyReturn() {
+        Object id = SharedPreferencesUtil.getData(getActivity(), "userId", 0);
         final Dialog dialog = mDialogUtils.showLoadingDialog();
         List<ReturnItem> items = new ArrayList<ReturnItem>();
         MultipartRequestParams params = new MultipartRequestParams();
@@ -590,11 +591,11 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
         }
         params.put("businessType", "01");
         params.put("clientType", "ANDROID");
-        params.put("version", "1.0.1");
+        params.put("version", versionName);
         params.put("isHasInvoice", "0");
         params.put("operationType", "1");
         params.put("mallReturnFlowDetailPOList", array.toString());
-        params.put("userId", ZhaiDou.TESTUSERID);
+        params.put("userId",id+"");
         params.put("orderCode", mStore.orderCode);
         JSONArray jsonArray = new JSONArray();
         for (int i = 0; i < imagePath.size(); i++) {

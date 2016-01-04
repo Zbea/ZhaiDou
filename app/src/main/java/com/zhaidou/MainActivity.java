@@ -39,6 +39,7 @@ import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.base.BaseActivity;
+import com.zhaidou.base.CountManage;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.fragments.DiyFragment;
 import com.zhaidou.fragments.HomeCategoryFragment;
@@ -54,18 +55,14 @@ import com.zhaidou.fragments.ShopPaymentFragment;
 import com.zhaidou.fragments.ShopPaymentSuccessFragment;
 import com.zhaidou.fragments.WebViewFragment;
 import com.zhaidou.model.Area;
-import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.City;
 import com.zhaidou.model.Province;
 import com.zhaidou.model.User;
 import com.zhaidou.model.ZhaiDouRequest;
-import com.zhaidou.sqlite.CreatCartDB;
-import com.zhaidou.sqlite.CreatCartTools;
 import com.zhaidou.utils.DeviceUtils;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.SharedPreferencesUtil;
-import com.zhaidou.utils.ToolUtils;
 
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
@@ -79,8 +76,7 @@ import java.util.Map;
 /**
  */
 public class MainActivity extends BaseActivity implements DiyFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
-        MainHomeFragment.OnFragmentInteractionListener, MainCategoryFragment.OnFragmentInteractionListener, RegisterFragment.RegisterOrLoginListener
-{
+        MainHomeFragment.OnFragmentInteractionListener, MainCategoryFragment.OnFragmentInteractionListener, RegisterFragment.RegisterOrLoginListener, CountManage.onCountChangeListener {
 
     private Fragment utilityFragment;
     private Fragment beautyHomeFragment;
@@ -251,6 +247,36 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             {
             }
         });
+        CountManage.getInstance().setOnCountChangeListener(this);
+        FetchUnPayData();
+
+    }
+    private void FetchUnPayData() {
+        String mUserId= SharedPreferencesUtil.getData(this, "userId", -1)+"";
+        Map<String, String> params = new HashMap();
+        params.put("userId",mUserId);
+        params.put("clientType", "ANDROID");
+        params.put("clientVersion", "45");
+        params.put("businessType", "01");
+        params.put("type", ZhaiDou.TYPE_ORDER_PREPAY);
+        params.put("pageNo","0");
+        params.put("pageSize", "0");
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST, new JSONObject(params), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                int status = jsonObject.optInt("status");
+                int totalCount = jsonObject.optInt("totalCount");
+                if (status==200){
+                    CountManage.getInstance().init(CountManage.TYPE.TAG_PREPAY,totalCount);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        });
+        mRequestQueue.add(request);
     }
 
     private void commitActiveData()
@@ -823,4 +849,9 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         MobclickAgent.onPause(this);
     }
 
+    @Override
+    public void onCount(int count) {
+        int value = CountManage.getInstance().value(CountManage.TYPE.TAG_PREPAY);
+        iv_dot.setVisibility(value==0?View.GONE:View.VISIBLE);
+    }
 }
