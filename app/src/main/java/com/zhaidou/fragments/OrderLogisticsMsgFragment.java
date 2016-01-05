@@ -8,12 +8,14 @@ import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.Store;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomProgressWebview;
 
 public class OrderLogisticsMsgFragment extends BaseFragment {
@@ -22,6 +24,7 @@ public class OrderLogisticsMsgFragment extends BaseFragment {
     private Context context;
     private CustomProgressWebview mWebView;
     private TextView logisticsNum, orderNum,deliveryName;
+    private ImageView mDeliveryLogo;
     private Store mStore;
 
     public static OrderLogisticsMsgFragment newInstance(Store store) {
@@ -52,6 +55,8 @@ public class OrderLogisticsMsgFragment extends BaseFragment {
         orderNum = (TextView) view.findViewById(R.id.tv_order_number);
         logisticsNum = (TextView) view.findViewById(R.id.tv_order_amount);
         deliveryName= (TextView) view.findViewById(R.id.deliveryName);
+        mDeliveryLogo=(ImageView)view.findViewById(R.id.deliveryLogo);
+        ToolUtils.setImageCacheUrl(mStore.deliveryPO.logoUrl,mDeliveryLogo);
 
         mWebView = (CustomProgressWebview) view.findViewById(R.id.wv_logistics);
         mWebView.getSettings().setJavaScriptEnabled(true);

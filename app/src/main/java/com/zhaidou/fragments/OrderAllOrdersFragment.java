@@ -549,6 +549,8 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             timer = null;
         }
         isViewDestroy = true;
+        if (ZhaiDou.TYPE_ORDER_PREPAY.equalsIgnoreCase(mCurrentType))
+            CountManage.getInstance().refreshData();
         super.onDestroyView();
     }
 

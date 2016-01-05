@@ -26,7 +26,6 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.CountManage;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
-import com.zhaidou.model.User;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.NetworkUtils;
@@ -38,7 +37,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SettingFragment extends BaseFragment implements View.OnClickListener, ProfileFragment.ProfileListener {
+public class SettingFragment extends BaseFragment implements View.OnClickListener{
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -51,7 +50,6 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
 
     SharedPreferences mSharedPreferences;
     RequestQueue requestQueue;
-    private ProfileListener profileListener;
     private DialogUtils mDialogUtil;
     private Dialog mDialog;
     private boolean isNetState;
@@ -143,7 +141,6 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                 break;
             case R.id.ll_profile:
                 mProfileFragment = ProfileFragment.newInstance("", "");
-                mProfileFragment.setProfileListener(this);
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(mProfileFragment);
                 break;
             case R.id.ll_psw_change:
@@ -264,19 +261,6 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
             }
         };
         requestQueue.add(request);
-    }
-
-    @Override
-    public void onProfileChange(User user) {
-        profileListener.onProfileChange(user);
-    }
-
-    public void setProfileListener(ProfileListener profileListener) {
-        this.profileListener = profileListener;
-    }
-
-    public interface ProfileListener {
-        public void onProfileChange(User user);
     }
 
     public void onResume() {

@@ -52,11 +52,10 @@
         android:paddingTop="10dp">
 
         <ImageView
-            android:id="@+id/iv_order_img"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:src="@drawable/icon_order_logics" />
+            android:id="@+id/deliveryLogo"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_margin="5dp" />
 
         <LinearLayout
             android:layout_width="0dp"

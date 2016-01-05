@@ -29,6 +29,7 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.base.ProfileManage;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.ToolUtils;
@@ -40,15 +41,15 @@ import java.util.Map;
 
 
 public class ProfileEditFragment extends BaseFragment implements View.OnClickListener {
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_TAG = "tag";
     private static final String PROFILE_ID = "profileId";
     private static final String ARG_TITLE = "title";
+    private static final String ARG_PARAMS="map";
 
-    private String mParam1;
-    private String mParam2;
+    private ProfileManage.TAG mTag;
     private String mProfileId;
     private String mTitle;
+    private HashMap<String,String> mParams;
 
     private String token;
 
@@ -62,16 +63,13 @@ public class ProfileEditFragment extends BaseFragment implements View.OnClickLis
     private LinearLayout ll_input_msg;
     private RelativeLayout rl_description;
 
-    RefreshDataListener refreshDataListener;
-
     private Dialog mDialog;
-    private String str_phone;
 
-    public static ProfileEditFragment newInstance(String param1, String param2, String profileId, String title) {
+    public static ProfileEditFragment newInstance(ProfileManage.TAG tag, HashMap<String,String> map, String profileId, String title) {
         ProfileEditFragment fragment = new ProfileEditFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putSerializable(ARG_TAG, tag);
+        args.putSerializable(ARG_PARAMS, map);
         args.putString(PROFILE_ID, profileId);
         args.putString(ARG_TITLE, title);
         fragment.setArguments(args);
@@ -85,8 +83,8 @@ public class ProfileEditFragment extends BaseFragment implements View.OnClickLis
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mTag = (ProfileManage.TAG) getArguments().getSerializable(ARG_TAG);
+            mParams = (HashMap<String, String>) getArguments().getSerializable(ARG_PARAMS);
             mProfileId = getArguments().getString(PROFILE_ID);
             mTitle = getArguments().getString(ARG_TITLE);
         }
@@ -107,7 +105,7 @@ public class ProfileEditFragment extends BaseFragment implements View.OnClickLis
             tv_edit_msg.setInputType(InputType.TYPE_CLASS_PHONE);
             tv_edit_msg.setMaxEms(11);
         }
-        tv_edit_msg.setText(TextUtils.isEmpty(mParam2) ? "" : mParam2);
+        tv_edit_msg.setText(ProfileManage.TAG.NICK==mTag?mParams.get("nick_name"): mParams.get("mobile"));
 
         tv_description = (EditText) view.findViewById(R.id.tv_description);
         tv_length = (TextView) view.findViewById(R.id.tv_length);
@@ -127,10 +125,10 @@ public class ProfileEditFragment extends BaseFragment implements View.OnClickLis
             public void afterTextChanged(Editable editable) {
             }
         });
-        if ("description".equalsIgnoreCase(mParam1)) {
+        if (ProfileManage.TAG.DESC==mTag) {
             ll_input_msg.setVisibility(View.GONE);
             rl_description.setVisibility(View.VISIBLE);
-            tv_description.setText(TextUtils.isEmpty(mParam2) ? "" : mParam2);
+            tv_description.setText(mParams.get("description"));
             tv_length.setText((75 - (!TextUtils.isEmpty(tv_description.getText().toString()) ? tv_description.getText().toString().length() : 0)) + "");
         } else {
             ll_input_msg.setVisibility(View.VISIBLE);
@@ -155,42 +153,43 @@ public class ProfileEditFragment extends BaseFragment implements View.OnClickLis
                 tv_edit_msg.setText("");
                 break;
             case R.id.tv_done:
-                if ("description".equalsIgnoreCase(mParam1)) {
+                if (ProfileManage.TAG.DESC==mTag) {//"description".equalsIgnoreCase(mParam1)
                     if (TextUtils.isEmpty(tv_description.getText().toString().trim())) {
                         ShowToast(mTitle + "不能为空");
                         return;
                     }
+                    mParams.put("description",tv_description.getText().toString().trim());
+                    UpdateUserInfo("description",mParams, mProfileId);
                 } else if (TextUtils.isEmpty(tv_edit_msg.getText().toString().trim())) {
                     ShowToast(mTitle + "不能为空");
                     return;
                 }
-                if (mTitle.equals("手机号码")) {
+                if (ProfileManage.TAG.MOBILE==mTag) {
                     if (ToolUtils.isPhoneOk(tv_edit_msg.getText().toString())) {
                         hideInputMethod();
-                        UpdateUserInfo(mParam1,tv_edit_msg.getText().toString().trim(), mProfileId);
+                        mParams.put("mobile",tv_edit_msg.getText().toString().trim());
+                        UpdateUserInfo("mobile",mParams, mProfileId);
                     } else {
                         ToolUtils.setToast(getActivity(), "抱歉,手机号码格式输入不正确");
                     }
-                } else {
-                    if (mTitle.equals("个人昵称") && tv_edit_msg.getText().toString().length() > 15) {
-                        ShowToast(mTitle + "不能超过15个字");
+                } else if (ProfileManage.TAG.NICK==mTag){
+                    if (tv_edit_msg.getText().toString().length() > 15) {
+                        ShowToast("个人昵称不能超过15个字");
                         return;
                     }
                     hideInputMethod();
-                    UpdateUserInfo(mParam1, "description".equalsIgnoreCase(mParam1) ? tv_description.getText().toString().trim()
-                            : tv_edit_msg.getText().toString().trim(), mProfileId);
+                    mParams.put("nick_name",tv_edit_msg.getText().toString().trim());
+                    UpdateUserInfo("nick_name",mParams, mProfileId);
                 }
                 break;
         }
     }
 
-    private void UpdateUserInfo(String type, String msg, String id) {
+    private void UpdateUserInfo(String type,HashMap<String,String> map, String id) {
         mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
         Map<String, String> params = new HashMap<String, String>();
         params.put("id", id);
-        Map<String, String> userParams = new HashMap<String, String>();
-        userParams.put(type, msg);
-        params.put("profile", new JSONObject(userParams).toString());
+        params.put("profile", new JSONObject(map).toString());
         ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_EDIT_PROFILE_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -200,13 +199,14 @@ public class ProfileEditFragment extends BaseFragment implements View.OnClickLis
                 if (status == 200) {
                     JSONObject dataObj = jsonObject.optJSONObject("data");
                     if (dataObj.optJSONObject("profile") == null) {
-                        Toast.makeText(getActivity(), "昵称已经被使用", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), mTitle+"已经被使用", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    if ("description".equalsIgnoreCase(mParam1)) {
-                        refreshDataListener.onRefreshData(mParam1, tv_description.getText().toString(), dataObj.toString());
+                    if (ProfileManage.TAG.DESC==mTag) {
+                        ProfileManage.getInstance().notify(ProfileManage.TAG.DESC,tv_description.getText().toString());
+
                     } else {
-                        refreshDataListener.onRefreshData(mParam1, tv_edit_msg.getText().toString(), dataObj.toString());
+                        ProfileManage.getInstance().notify(mTag,tv_edit_msg.getText().toString());
                     }
                 } else {
                     ShowToast(message);
@@ -226,13 +226,6 @@ public class ProfileEditFragment extends BaseFragment implements View.OnClickLis
             }
         };
         mRequestQueue.add(request);
-    }
-    public void setRefreshDataListener(RefreshDataListener refreshDataListener) {
-        this.refreshDataListener = refreshDataListener;
-    }
-
-    public interface RefreshDataListener {
-        public void onRefreshData(String type, String msg, String json);
     }
 
     public void onResume() {

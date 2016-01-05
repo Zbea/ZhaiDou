@@ -15,4 +15,5 @@ public class Delivery implements Serializable{
     public String deliveryCode;
     public String deliveryName;
     public int status;
+    public String logoUrl;
 }

@@ -73,7 +73,7 @@ public class CountManage {
         mListeners.add(onCountChangeListener);
     }
 
-    private void refreshData(){
+    public void refreshData(){
         for (onCountChangeListener listener:mListeners) {
             listener.onCount(value(TYPE.TAG_PREPAY));
         }

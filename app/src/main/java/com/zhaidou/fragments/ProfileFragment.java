@@ -37,6 +37,7 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.base.ProfileManage;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.User;
 import com.zhaidou.model.ZhaiDouRequest;
@@ -52,8 +53,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.zhaidou.base.ProfileManage.TAG.DESC;
+import static com.zhaidou.base.ProfileManage.TAG.HEADER;
+import static com.zhaidou.base.ProfileManage.TAG.MOBILE;
+import static com.zhaidou.base.ProfileManage.TAG.NICK;
+
+
 public class ProfileFragment extends BaseFragment implements View.OnClickListener, PhotoMenuFragment.MenuSelectListener,
-        ProfileEditFragment.RefreshDataListener {
+        ProfileManage.OnProfileChange {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -102,8 +109,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     boolean isFromCamera = false;// 区分拍照旋转
     int degree = 0;
     public String filePath = "";
-
-    private ProfileListener profileListener;
 
     private Dialog mDialog;
     private User user;
@@ -244,6 +249,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             }, 300);
         }
         token = mSharedPreferences.getString("token", null);
+        ProfileManage.getInstance().register(this);
     }
 
     @Override
@@ -259,14 +265,18 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             case R.id.ll_add_v:
                 break;
             case R.id.rl_nickname:
-                ProfileEditFragment profileFragment = ProfileEditFragment.newInstance("nick_name", tv_nick.getText().toString().trim(), id+"", "个人昵称");
-                profileFragment.setRefreshDataListener(this);
+                HashMap<String,String> params =new HashMap<String, String>();
+                params.put("nick_name",tv_nick.getText().toString().trim());
+                params.put("mobile",tv_mobile.getText().toString().trim());
+                ProfileEditFragment profileFragment = ProfileEditFragment.newInstance(NICK,params, id + "", "个人昵称");
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container, profileFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
                 break;
             case R.id.rl_mobile:
-                ProfileEditFragment mobileFragment = ProfileEditFragment.newInstance("mobile", tv_mobile.getText().toString().trim(), profileId, "手机号码");
-                mobileFragment.setRefreshDataListener(this);
+                HashMap<String,String> mobileParam =new HashMap<String, String>();
+                mobileParam.put("nick_name",tv_nick.getText().toString().trim());
+                mobileParam.put("mobile",tv_mobile.getText().toString().trim());
+                ProfileEditFragment mobileFragment = ProfileEditFragment.newInstance(MOBILE,mobileParam, profileId, "手机号码");
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container, mobileFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
                 break;
@@ -303,8 +313,9 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 new DeleteAddressTask().execute();
                 break;
             case R.id.rl_into:
-                ProfileEditFragment introFragment = ProfileEditFragment.newInstance("description", tv_intro.getText().toString().trim(), profileId, "个人简介");
-                introFragment.setRefreshDataListener(this);
+                HashMap<String,String> descParam=new HashMap<String, String>();
+                descParam.put("description",tv_intro.getText().toString().trim());
+                ProfileEditFragment introFragment = ProfileEditFragment.newInstance(DESC, descParam, profileId, "个人简介");
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container, introFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
                 break;
@@ -378,12 +389,12 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     }
 
     public void getUserData() {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_DETAIL_PROFILE_URL +"?id="+id, new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_DETAIL_PROFILE_URL + "?id=" + id, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
                 String msg = jsonObject.optString("message");
-                if (status==200){
+                if (status == 200) {
                     JSONObject dataObj = jsonObject.optJSONObject("data");
                     JSONObject userObj = dataObj.optJSONObject("profile");
                     if (userObj == null) return;
@@ -403,7 +414,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     message.obj = user;
                     mHandler.sendMessage(message);
 
-                }else {
+                } else {
                     ShowToast(msg);
                 }
 
@@ -412,55 +423,25 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             @Override
             public void onErrorResponse(VolleyError volleyError) {
             }
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers=new HashMap<String, String>();
+                Map<String, String> headers = new HashMap<String, String>();
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }
         };
         mRequestQueue.add(request);
     }
-//        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL + id + "/profile", new Response.Listener<JSONObject>() {
-//            @Override
-//            public void onResponse(JSONObject jsonObject) {
-//                Log.i("getUserData--->", jsonObject.toString());
-//                JSONObject userObj = jsonObject.optJSONObject("profile");
-//                if (userObj == null) return;
-//                String mobile = userObj.optString("mobile");
-//                mobile = mobile.equals("null") ? "" : mobile;
-//                String description = userObj.optString("description");
-//                description = description.equals("null") ? "" : description;
-//                profileId = userObj.optString("id");
-//                boolean verified = userObj.optBoolean("verified");
-//                String first_name = userObj.optString("first_name");
-//                String address2 = userObj.optString("address2");
-//                User user = new User(null, null, null, verified, mobile, description);
-//                user.setAddress2(address2);
-//                user.setFirst_name(first_name);
-//                Message message = new Message();
-//                message.what = UPDATE_PROFILE_INFO;
-//                message.obj = user;
-//                mHandler.sendMessage(message);
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError volleyError) {
-//                Log.i("volleyError---------->", volleyError.toString());
-//            }
-//        });
-
-//    }
 
     public void getUserInfo() {
 
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL + "?id="+id, new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL + "?id=" + id, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
                 String msg = jsonObject.optString("message");
-                if (status==200){
+                if (status == 200) {
                     JSONObject dataObj = jsonObject.optJSONObject("data");
                     JSONObject userObj = dataObj.optJSONObject("user");
                     String email = userObj.optString("email");
@@ -471,7 +452,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     message.what = UPDATE_USER_INFO;
                     message.obj = user;
                     mHandler.sendMessage(message);
-                }else {
+                } else {
                     ShowToast(msg);
                 }
             }
@@ -487,25 +468,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     public void popToStack() {
         FragmentManager childFragmentManager = getChildFragmentManager();
         childFragmentManager.popBackStack();
-    }
-
-    @Override
-    public void onRefreshData(String type, String msg, String json) {
-        Log.i(type, type);
-        Log.i(msg, msg);
-        Log.i("json", json);
-        if ("mobile".equalsIgnoreCase(type)) {
-            tv_mobile.setText(msg);
-            user.setMobile(msg);
-        } else if ("description".equalsIgnoreCase(type)) {
-            user.setDescription(msg);
-            tv_intro.setText(msg);
-        } else {
-            tv_nick.setText(msg);
-            user.setNickName(msg);
-        }
-        profileListener.onProfileChange(user);
-        popToStack();
     }
 
     @Override
@@ -612,7 +574,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         Map<String, String> userParams = new HashMap<String, String>();
         userParams.put("avatar", "data:image/png;base64," + base64);
         JSONObject jsonObject = new JSONObject(userParams);
-        params.put("user",jsonObject.toString());
+        params.put("user", jsonObject.toString());
         ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_UPDATE_AVATAR_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -631,7 +593,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     message.what = UPDATE_USER_INFO;
                     message.obj = user;
                     mHandler.sendMessage(message);
-                    profileListener.onProfileChange(user);
+                    ProfileManage.getInstance().notify(HEADER, "http://" + avatar);
                 } else {
                     ShowToast(msg);
                 }
@@ -641,23 +603,35 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             public void onErrorResponse(VolleyError volleyError) {
 
             }
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers= new HashMap<String, String>();
-                headers.put("SECAuthorization",token);
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("SECAuthorization", token);
                 return headers;
             }
         };
         mRequestQueue.add(request);
     }
 
-    public void setProfileListener(ProfileListener profileListener) {
-        this.profileListener = profileListener;
-    }
-
-    public interface ProfileListener {
-        public void onProfileChange(User user);
+    @Override
+    public void onProfileChange(ProfileManage.TAG tag, String message) {
+        switch (tag) {
+            case NICK:
+                tv_nick.setText(message);
+                user.setNickName(message);
+                break;
+            case MOBILE:
+                tv_mobile.setText(message);
+                user.setMobile(message);
+                break;
+            case DESC:
+                user.setDescription(message);
+                tv_intro.setText(message);
+                break;
+        }
+        if (mChildContainer.isShown() == true)
+            popToStack();
     }
 
     private class DeleteAddressTask extends AsyncTask<Void, Void, String> {
@@ -702,9 +676,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
     @Override
     public void onDestroyView() {
-        System.out.println("ProfileFragment.onDestroyView");
-        if (profileListener!=null)
-            profileListener.onProfileChange(user);
         super.onDestroyView();
     }
 

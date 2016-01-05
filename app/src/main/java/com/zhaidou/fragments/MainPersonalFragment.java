@@ -31,6 +31,7 @@ import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.CountManage;
+import com.zhaidou.base.ProfileManage;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.DeviceUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -41,7 +42,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainPersonalFragment extends BaseFragment implements View.OnClickListener, SettingFragment.ProfileListener, CountManage.onCountChangeListener {
+public class MainPersonalFragment extends BaseFragment implements View.OnClickListener, CountManage.onCountChangeListener, ProfileManage.OnProfileChange {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_CONTEXT = "context";
@@ -185,6 +186,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             tv_unpay_count.setText(value + "");
             tv_unpay_count.setVisibility(value == 0 ? View.GONE : View.VISIBLE);
             CountManage.getInstance().setOnCountChangeListener(this);
+            ProfileManage.getInstance().register(this);
 
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
@@ -213,12 +215,6 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             case R.id.tv_pre_pay:
                 OrderAllOrdersFragment unPayFragment = OrderAllOrdersFragment.newInstance(ZhaiDou.TYPE_ORDER_PREPAY, "");
                 ((BaseActivity) getActivity()).navigationToFragment(unPayFragment);
-                unPayFragment.setOnFragmentCloseListener(new onFragmentCloseListener() {
-                    @Override
-                    public void onClose() {
-                        onCount(0);
-                    }
-                });
                 break;
             case R.id.tv_pre_received:
                 OrderAllOrdersFragment unReceiveFragment = OrderAllOrdersFragment.newInstance(ZhaiDou.TYPE_ORDER_PRERECEIVE, "");
@@ -235,18 +231,6 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             case R.id.rl_setting:
                 SettingFragment mSettingFragment = SettingFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(mSettingFragment);
-                mSettingFragment.setProfileListener(new SettingFragment.ProfileListener() {
-                    @Override
-                    public void onProfileChange(User user) {
-                        if (!TextUtils.isEmpty(user.getDescription())) {
-                            tv_desc.setText(user.getDescription());
-                        } else if (!TextUtils.isEmpty(user.getAvatar())) {
-                            ToolUtils.setImageCacheUrl("http://" + user.getAvatar(), iv_header);
-                        } else if (!TextUtils.isEmpty(user.getNickName())) {
-                            tv_nickname.setText(user.getNickName());
-                        }
-                    }
-                });
                 break;
             case R.id.rl_contact:
                 ContactUsFragment contactUsFragment = ContactUsFragment.newInstance("", "");
@@ -254,22 +238,6 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 break;
             case R.id.accountInfoBtn:
                 mProfileFragment = ProfileFragment.newInstance("", "");
-                mProfileFragment.setProfileListener(new ProfileFragment.ProfileListener() {
-                    @Override
-                    public void onProfileChange(User user) {
-                        if (user != null) {
-                            if (!TextUtils.isEmpty(user.getDescription())) {
-                                tv_desc.setText(user.getDescription());
-                            }
-                            if (!TextUtils.isEmpty(user.getAvatar())) {
-                                ToolUtils.setImageCacheUrl("http://" + user.getAvatar(), iv_header);
-                            }
-                            if (!TextUtils.isEmpty(user.getNickName())) {
-                                tv_nickname.setText(user.getNickName());
-                            }
-                        }
-                    }
-                });
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(mProfileFragment);
                 break;
             case R.id.rl_competition:
@@ -384,17 +352,6 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
         };
         ((ZDApplication) getActivity().getApplication()).mRequestQueue.add(request);
     }
-
-    @Override
-    public void onProfileChange(User user) {
-        if (!TextUtils.isEmpty(user.getNickName()))
-            tv_nickname.setText(user.getNickName());
-        if (!TextUtils.isEmpty(user.getAvatar()))
-            ToolUtils.setImageCacheUrl("http://" + user.getAvatar(), iv_header);
-        if (!TextUtils.isEmpty(user.getDescription()))
-            tv_desc.setText(user.getDescription());
-    }
-
     public void refreshData(Activity activity) {
         userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
@@ -433,5 +390,22 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
         int value = CountManage.getInstance().value(CountManage.TYPE.TAG_PREPAY);
         tv_unpay_count.setText(value + "");
         tv_unpay_count.setVisibility(value == 0 ? View.GONE : View.VISIBLE);
+    }
+
+    @Override
+    public void onProfileChange(ProfileManage.TAG tag, String message) {
+        System.out.println("MainPersonalFragment.onProfileChange---->"+tag+"---------"+message);
+        switch (tag) {
+            case HEADER:
+                ToolUtils.setImageCacheUrl(message, iv_header, R.drawable.icon_header_default);
+                break;
+            case NICK:
+                if (!TextUtils.isEmpty(message))
+                    tv_nickname.setText(message);
+                break;
+            case DESC:
+                tv_desc.setText("null".equalsIgnoreCase(message) || message== null ? "" : message);
+                break;
+        }
     }
 }
