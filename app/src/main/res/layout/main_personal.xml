@@ -283,7 +283,31 @@
             android:layout_height="1dp"
             android:background="@color/line_bottom"
             android:visibility="gone" />
+        <RelativeLayout
+            android:id="@+id/rl_addr_manage"
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/default_margin"
+            android:layout_height="@dimen/list_height_dimen"
+            android:background="@drawable/item_click_selector"
+            android:gravity="center_vertical">
 
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/icon_addr"
+                android:drawablePadding="10dp"
+                android:gravity="center_vertical"
+                android:paddingLeft="15dp"
+                android:text="地址管理"
+                android:textColor="@color/text_main_color" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:paddingRight="15dp"
+                android:src="@drawable/icon_arrow_right" />
+        </RelativeLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -354,31 +378,7 @@
             android:background="@color/line_bottom"
             android:visibility="gone" />
 
-        <RelativeLayout
-            android:id="@+id/rl_addr_manage"
-            android:layout_width="match_parent"
-            android:layout_marginTop="@dimen/default_margin"
-            android:layout_height="@dimen/list_height_dimen"
-            android:background="@drawable/item_click_selector"
-            android:gravity="center_vertical">
 
-            <com.zhaidou.view.TypeFaceTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/icon_addr"
-                android:drawablePadding="10dp"
-                android:gravity="center_vertical"
-                android:paddingLeft="15dp"
-                android:text="地址管理"
-                android:textColor="@color/text_main_color" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:paddingRight="15dp"
-                android:src="@drawable/icon_arrow_right" />
-        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
