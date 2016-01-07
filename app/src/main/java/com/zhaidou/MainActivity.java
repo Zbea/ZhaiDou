@@ -411,7 +411,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             public void onClick(View view)
             {
 
-//                titleView.setText("专业家居美化方案");
                 if (beautyHomeFragment == null)
                 {
                     beautyHomeFragment = new MainStrategyFragment();
@@ -429,15 +428,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             public void onClick(View view)
             {
 //                titleView.setText("全类别");
+                gotoCategory();
 
-                if (categoryFragment == null)
-                {
-                    categoryFragment = MainCategoryFragment.newInstance("", "");
-                }
-
-
-                selectFragment(currentFragment, categoryFragment);
-                setButton(view);
             }
         });
 
@@ -502,6 +494,20 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         lastButton = button;
 
         lastButton.setSelected(true);
+
+    }
+
+    /**
+     * 跳转分类
+     */
+    public void gotoCategory()
+    {
+        if (categoryFragment == null)
+        {
+            categoryFragment = MainCategoryFragment.newInstance("", "");
+        }
+        selectFragment(currentFragment, categoryFragment);
+        setButton(categoryButton);
 
     }
 

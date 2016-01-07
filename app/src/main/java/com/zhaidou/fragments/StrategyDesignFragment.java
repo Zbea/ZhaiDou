@@ -72,12 +72,14 @@ public class StrategyDesignFragment extends BaseFragment {
                     ((MainActivity) getActivity()).popToStack(StrategyDesignFragment.this);
                     break;
                 case R.id.design_rl:
-                    if (DeviceUtils.isApkInstalled(getActivity(), "com.tencent.mobileqq")){
-                        String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_design);
-                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                    }else {
-                        ShowToast("没有安装QQ客户端哦");
-                    }
+//                    if (DeviceUtils.isApkInstalled(getActivity(), "com.tencent.mobileqq")){
+//                        String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_design);
+//                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+//                    }else {
+//                        ShowToast("没有安装QQ客户端哦");
+//                    }
+                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("宅豆软装设计方案", "191100570001");
+                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
                     break;
             }
         }

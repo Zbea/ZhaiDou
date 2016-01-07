@@ -22,6 +22,7 @@ import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.fragments.GoodsDetailsFragment;
 import com.zhaidou.fragments.HomeArticleListFragment;
 import com.zhaidou.fragments.HomeFeatrueFragment;
+import com.zhaidou.fragments.HomeWeixinListFragment;
 import com.zhaidou.fragments.ShopTodaySpecialFragment;
 import com.zhaidou.fragments.SpecialSaleFragment;
 import com.zhaidou.model.Category;
@@ -336,6 +337,11 @@ public class ToolUtils
         else if(item.type==6)
         {
             HomeFeatrueFragment homeFeatrueFragment = HomeFeatrueFragment.newInstance(item.title, item.typeValue, item.imageUrl);
+            ((MainActivity) mContext).navigationToFragmentWithAnim(homeFeatrueFragment);
+        }
+        else if(item.type==7)
+        {
+            HomeWeixinListFragment homeFeatrueFragment = HomeWeixinListFragment.newInstance(item.title, item.typeValue);
             ((MainActivity) mContext).navigationToFragmentWithAnim(homeFeatrueFragment);
         }
         else

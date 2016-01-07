@@ -271,12 +271,14 @@ public class GoodsDetailsFragment extends BaseFragment
                         iconOSaleView.setVisibility(View.VISIBLE);
                         commentView.setVisibility(View.GONE);
                         tv_baoyou.setVisibility(View.GONE);
+                        shareBtn.setVisibility(View.GONE);
                     } else
                     {
                         iconView.setVisibility(View.VISIBLE);
                         iconOSaleView.setVisibility(View.GONE);
                         commentView.setVisibility(View.VISIBLE);
                         tv_baoyou.setVisibility(View.VISIBLE);
+                        shareBtn.setVisibility(View.VISIBLE);
                     }
                     detail = (GoodDetail) msg.obj;
                     setChildFargment(detail, goodInfos);

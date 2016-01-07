@@ -18,8 +18,10 @@ public class ZhaiDou {
     public static String HomeCategoryUrl=HOME_BASE_URL+"category/queryCategory.action";
     //首页banner
     public static String HomeBannerUrl=HOME_BASE_URL+"index/getBoardContent.action?boardCodes=";
+    //首页微信文章列表
+    public static String HomeWeixinListUrl=HOME_BASE_URL+"zd/getArticles.action?type=W&pageSize=10&pageNo=";
     //首页特卖列表
-    public static String HomeShopListUrl=HOME_BASE_URL+"index/getSpecialSaleList.action?pageSize=20&pageNo=";
+    public static String HomeShopListUrl=HOME_BASE_URL+"index/getSpecialSaleList.action?pageSize=10&pageNo=";
     //首页特卖商品列表
     public static String HomeGoodsListUrl=HOME_BASE_URL+"index/getActivityProductList.action?activityCode=";
     //特卖列表share
@@ -70,53 +72,18 @@ public class ZhaiDou {
     //省市区
     public static String ORDER_ADDRESS_URL=HOME_BASE_URL+"user/provider.action";
 
-
-
-    //首页三个专题tag
-    public static String HOME_SPECIAL_BANNER_URL=HOME_BASE_URL+"special_mall/api/sales/topic_sales?topic=true";
-
     public static String ApkUrl = HOME_BASE_URL+"user/app_versions.action?os=2";
-    //0元特卖页面：status=0,普通特卖页面：status=1,首页：status=2
-    public static String BannerUrl=HOME_BASE_URL+"special_mall/api/sales/sale_banner?status=";
     //APP换量
     public static String settingRecommendAppUrl=HOME_BASE_URL+"user/app_exchanges.action?sys=2";
-
-    public static String HOT_SEARCH_URL=HOME_BASE_URL+"article/api/articles/hot_search";
     public static String INDEX_CATEGORY_FILTER=HOME_BASE_URL+"article/api/article_categories";
     //拼贴大赛
     public static String COMPETITION_URL="http://www.zhaidou.com/competitions/current?zdclient=ios";
-
     //天天刮奖
     public static String PRIZE_SCRAPING_URL=HOME_BASE_URL+"lotteries";
-    //获取0元特卖数据
-    public static String SPECIAL_SALE_URL=HOME_BASE_URL+"special_mall/api/sales/zero_sale";
     //首页分类文章
     public static String HOME_CATEGORY_URL=HOME_BASE_URL+"article/api/articles?page=";
-
     //文章页面
     public static String ARTICLE_DETAIL_URL=HOME_BASE_URL+"article/articles/";
-
-    //特卖首页
-    public static String shopHomeSpecialUrl=HOME_BASE_URL+"special_mall/api/sales/new_sale";
-    //特卖列表
-    public static String shopSpecialListUrl=HOME_BASE_URL+"special_mall/api/sales?sale_cate=0";
-    //特卖详情
-    public static String shopSpecialTadayUrl=HOME_BASE_URL+"special_mall/api/sales/";
-    //商品详情
-    public static String goodsDetailsUrlUrl=HOME_BASE_URL+"special_mall/api/merchandises/";
-    //购物车商品详情
-    public static String goodsCartGoodsUrl=HOME_BASE_URL+"special_mall/api/merchandises/cart_merchandises?ids=";
-    //购物车商品数量修改接口
-    public static String goodsCartEditGoodsUrl=HOME_BASE_URL+"special_mall/api/merchandises/";
-    //地址管理接口
-    public static String addressManageUrl=HOME_BASE_URL+"special_mall/api/receivers";
-
-    //提交订单接口
-    public static String orderCommitUrl=HOME_BASE_URL+"special_mall/api/orders";
-    //查看当天是否已经购买了0元特卖商品
-    public static String orderCheckOSaleUrl=HOME_BASE_URL+"special_mall/api/orders/order_items_0_status";
-    //查看当天是否已经购买了普通特卖商品
-    public static String orderCheckGoodsUrl=HOME_BASE_URL+"special_mall/api/merchandises/";
 
     //确认订单获取短信接口
     public static String OrderGetSMS = HOME_BASE_URL+"user/vilidate_phone.action?flag=1&phone=";
@@ -174,8 +141,6 @@ public class ZhaiDou {
 
     //搜索单品列表
     public static String SEARCH_PRODUCT_URL=HOME_BASE_URL+"article/api/article_items/search";
-    //搜索特卖商城商品列表
-    public static String SEARCH_SPECACIAL_PRODUCT_URL=HOME_BASE_URL+"special_mall/api/merchandises/search";
     //
     public static String ARTICLE_ITEM_WITH_CATEGORY=HOME_BASE_URL+"article/api/article_items?item_catetory_id=";
 

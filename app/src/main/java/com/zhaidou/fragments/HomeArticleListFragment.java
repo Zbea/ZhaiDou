@@ -3,7 +3,6 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -105,7 +104,7 @@ public class HomeArticleListFragment extends BaseFragment implements PullToRefre
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view=inflater.inflate(R.layout.fragment_special, container, false);
+        View view=inflater.inflate(R.layout.fragment_home_article_list, container, false);
 
         mContext=getActivity();
 
@@ -231,7 +230,6 @@ public class HomeArticleListFragment extends BaseFragment implements PullToRefre
             ImageView newView = ViewHolder.get(convertView,R.id.newsView);
 
             Article article = getList().get(position);
-
 
             title.setText(article.getTitle());
             articleViews.setText(article.getReviews()+"");

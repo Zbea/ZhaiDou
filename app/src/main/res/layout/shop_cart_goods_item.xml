@@ -181,6 +181,17 @@
                     android:clickable="true"
                     android:background="@drawable/shop_cart_add_selector"/>
 
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/cartItemNumLimit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="''本品限购''"
+                    android:textColor="@color/red"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="13sp"
+                    android:singleLine="true"
+                    />
+
                 </LinearLayout>
 
             <LinearLayout
