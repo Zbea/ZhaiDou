@@ -447,7 +447,7 @@ public class ShopCartFragment extends BaseFragment
                         Bundle bundle = new Bundle();
                         if (items.get(tag).isPublish.equals("true"))
                         {
-                            bundle.putInt("flags", 2);
+                            bundle.putInt("flags", 3);
                         }
                         ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
                     }

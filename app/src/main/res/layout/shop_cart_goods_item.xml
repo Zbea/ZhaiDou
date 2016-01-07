@@ -76,7 +76,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="8dp"
             android:layout_marginBottom="10dp"
             android:layout_weight="0.00001">
 
@@ -162,12 +162,12 @@
 
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/cartItemSubBtn"
-                    android:layout_width="30dp"
+                    android:layout_width="28dp"
                     android:layout_height="wrap_content"
                     android:background="@drawable/shop_cart_sub_selector"/>
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/cartItemNum"
-                    android:layout_width="40dp"
+                    android:layout_width="36dp"
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:gravity="center"
@@ -176,7 +176,7 @@
                     android:background="@drawable/shop_cart_num"/>
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/cartItemAddBtn"
-                    android:layout_width="30dp"
+                    android:layout_width="28dp"
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:background="@drawable/shop_cart_add_selector"/>
@@ -187,8 +187,8 @@
                     android:layout_height="wrap_content"
                     android:text="''本品限购''"
                     android:textColor="@color/red"
-                    android:layout_marginLeft="10dp"
-                    android:textSize="13sp"
+                    android:layout_marginLeft="5dp"
+                    android:textSize="12sp"
                     android:singleLine="true"
                     />
 
