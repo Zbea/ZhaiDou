@@ -224,11 +224,11 @@ public class SearchFragment extends BaseFragment
             {
                 if (mIndex==1)
                 {
-                    mSpecialGoodsFragment.FetchSpecialData(search_Str, index, mIndex);
+                    mSpecialGoodsFragment.FetchSpecialData(search_Str, index, 1);
                 }
                 else
                 {
-                    mSpecialGoodsFragment.FetchSpecialIdData(search_Str, index, mIndex);
+                    mSpecialGoodsFragment.FetchSpecialIdData(search_Str, 0, 1);
                 }
 
             } else if (page == 1)
@@ -420,7 +420,8 @@ public class SearchFragment extends BaseFragment
         if (mIndex==1)
         {
             FetchHotsData();
-        } else
+        }
+        else
         {
             onSearch();
         }
@@ -435,11 +436,10 @@ public class SearchFragment extends BaseFragment
     private void onSearch()
     {
         mBackView.setVisibility(View.VISIBLE);
-        mSortView.setVisibility(View.VISIBLE);
-        mSearchView.setVisibility(View.GONE);
-
         if (mIndex==1)
         {
+            mSortView.setVisibility(View.VISIBLE);
+            mSearchView.setVisibility(View.GONE);
             if (mHistoryList.contains(search_Str))
             {
                 mHistoryList.remove(search_Str);
@@ -449,6 +449,8 @@ public class SearchFragment extends BaseFragment
         }
         else
         {
+            mSortView.setVisibility(View.GONE);
+            mSearchView.setVisibility(View.VISIBLE);
             search_Str=mPage;
         }
         mHandler.sendEmptyMessage(UPDATE_CONTENT);

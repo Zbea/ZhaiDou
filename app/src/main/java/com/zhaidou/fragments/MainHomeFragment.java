@@ -100,7 +100,7 @@ public class MainHomeFragment extends BaseFragment implements
                 if (mDialog != null)
                     mDialog.dismiss();
                 loadingView.setVisibility(View.GONE);
-                if (pageCount > pageSize * currentPage)
+                if (pageCount > items.size())
                 {
                     mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
                 } else
@@ -132,7 +132,6 @@ public class MainHomeFragment extends BaseFragment implements
                 public void onClick(int postion)
                 {
                     SwitchImage item = banners.get(postion);
-                    ToolUtils.setLog("banner:"+item.type);
                     ToolUtils.setBannerGoto(item, mContext);
                 }
             });
@@ -167,7 +166,6 @@ public class MainHomeFragment extends BaseFragment implements
                 public void onClick(View v)
                 {
                     SwitchImage item = codes.get(pos);
-                    ToolUtils.setLog("code"+item.type);
                     ToolUtils.setBannerGoto(item, mContext);
                 }
             });
@@ -333,8 +331,9 @@ public class MainHomeFragment extends BaseFragment implements
         switch (view.getId())
         {
             case R.id.iv_search:
-                SearchFragment searchFragment = SearchFragment.newInstance("", 1);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
+//                SearchFragment searchFragment = SearchFragment.newInstance("", 1);
+//                ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
+                ((MainActivity) getActivity()).gotoCategory();
                 break;
             case R.id.ll_lottery:
                 Intent detailIntent = new Intent(getActivity(), HomeCompetitionActivity.class);
@@ -395,9 +394,11 @@ public class MainHomeFragment extends BaseFragment implements
                     if (mDialog != null)
                         mDialog.dismiss();
                     mScrollView.onRefreshComplete();
-                    mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
-                    nullView.setVisibility(View.VISIBLE);
-                    nullNetView.setVisibility(View.GONE);
+                    if (currentPage==1)
+                    {
+                        nullView.setVisibility(View.VISIBLE);
+                        nullNetView.setVisibility(View.GONE);
+                    }
                     return;
                 }
                 ToolUtils.setLog(response.toString());
@@ -413,8 +414,8 @@ public class MainHomeFragment extends BaseFragment implements
                     return;
                 }
                 JSONObject jsonObject = response.optJSONObject("data");
-                pageCount = response.optInt("totalCount");
-                pageSize = response.optInt("pageSize");
+                pageCount = jsonObject.optInt("totalCount");
+                pageSize = jsonObject.optInt("pageSize");
                 if (jsonObject!=null)
                 {
                     JSONArray jsonArray = jsonObject.optJSONArray("themeList");

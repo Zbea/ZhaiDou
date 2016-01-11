@@ -22,6 +22,7 @@ import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.fragments.GoodsDetailsFragment;
 import com.zhaidou.fragments.HomeArticleListFragment;
 import com.zhaidou.fragments.HomeFeatrueFragment;
+import com.zhaidou.fragments.HomeWeixinListFragment;
 import com.zhaidou.fragments.ShopTodaySpecialFragment;
 import com.zhaidou.fragments.SpecialSaleFragment;
 import com.zhaidou.model.Category;
@@ -291,7 +292,7 @@ public class ToolUtils
             if (item.title.equals("天天刮奖"))
             {
                 Intent detailIntent = new Intent(mContext, HomeCompetitionActivity.class);
-                detailIntent.putExtra("url", ZhaiDou.PRIZE_SCRAPING_URL);
+                detailIntent.putExtra("url", item.typeValue);
                 detailIntent.putExtra("from", "lottery");
                 detailIntent.putExtra("title", "天天刮奖");
                 mContext.startActivity(detailIntent);
@@ -336,6 +337,11 @@ public class ToolUtils
         else if(item.type==6)
         {
             HomeFeatrueFragment homeFeatrueFragment = HomeFeatrueFragment.newInstance(item.title, item.typeValue, item.imageUrl);
+            ((MainActivity) mContext).navigationToFragmentWithAnim(homeFeatrueFragment);
+        }
+        else if(item.type==7)
+        {
+            HomeWeixinListFragment homeFeatrueFragment = HomeWeixinListFragment.newInstance(item.title, item.typeValue);
             ((MainActivity) mContext).navigationToFragmentWithAnim(homeFeatrueFragment);
         }
         else

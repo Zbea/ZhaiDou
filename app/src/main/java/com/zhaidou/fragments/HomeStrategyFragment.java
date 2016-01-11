@@ -234,7 +234,7 @@ public class HomeStrategyFragment extends BaseFragment
         mContext = getActivity();
         if (mView == null)
         {
-            mView = inflater.inflate(R.layout.home_strategy_fragment, container, false);
+            mView = inflater.inflate(R.layout.fragment_home_strategy_list, container, false);
             initView();
             initData();
         }

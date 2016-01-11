@@ -423,7 +423,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:visibility="gone"
                     android:orientation="vertical"></LinearLayout>
 
 
@@ -517,7 +516,7 @@
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="10dp"
                         android:layout_marginTop="10dp"
-                        android:text="客服时间：9:00 ~ 23:00"
+                        android:text="客服时间：9:30 ~ 21:00"
                         android:textColor="@color/text_normal_color"/>
 
 

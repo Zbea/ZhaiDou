@@ -93,7 +93,6 @@ public class ShopCartFragment extends BaseFragment
     private ArrayList<CartArrayItem> arraysCheck = new ArrayList<CartArrayItem>();
     private List<CartGoodsItem> itemsCheck = new ArrayList<CartGoodsItem>();
     private List<CheckBox> boxs = new ArrayList<CheckBox>();
-    private boolean isBuySuccess;
     private DialogUtils mDialogUtil;
     private int totalCount;
     private double totalMoney;
@@ -120,7 +119,6 @@ public class ShopCartFragment extends BaseFragment
             }
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
             {
-                isBuySuccess = true;
                 refreshData();
             }
             if (action.equals(ZhaiDou.IntentRefreshAddCartTag)) {
@@ -449,7 +447,7 @@ public class ShopCartFragment extends BaseFragment
                         Bundle bundle = new Bundle();
                         if (items.get(tag).isPublish.equals("true"))
                         {
-                            bundle.putInt("flags", 2);
+                            bundle.putInt("flags", 3);
                         }
                         ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
                     }
@@ -464,6 +462,7 @@ public class ShopCartFragment extends BaseFragment
             TypeFaceTextView itemAddBtn = (TypeFaceTextView) childeView.findViewById(R.id.cartItemAddBtn);
             final TypeFaceTextView itemNum = (TypeFaceTextView) childeView.findViewById(R.id.cartItemNum);
             TypeFaceTextView itemLoseNum = (TypeFaceTextView) childeView.findViewById(R.id.cartItemLoseNum);
+            TypeFaceTextView numLimit = (TypeFaceTextView) childeView.findViewById(R.id.cartItemNumLimit);
             ImageView itemImage = (ImageView) childeView.findViewById(R.id.cartImageItemTv);
             final CheckBox itemCheck = (CheckBox) childeView.findViewById(R.id.chatItemCB);
             itemCheck.setId(position);
@@ -526,7 +525,7 @@ public class ShopCartFragment extends BaseFragment
                     }
                 });
             }
-
+            numLimit.setVisibility(cartGoodsItem.num>cartGoodsItem.count?View.VISIBLE:View.GONE);
             if (cartGoodsItem.isOver.equals("true"))
             {
                 isOver.setVisibility(View.VISIBLE);
@@ -724,13 +723,13 @@ public class ShopCartFragment extends BaseFragment
                                     String goodsSKU = goodsObject.optString("productSKUId");
                                     String specification = goodsObject.optString("productSKUSpecification");
                                     String isOSale=goodsObject.optString("businessType").equals("01")?"false":"true";
-                                    ToolUtils.setLog(isOSale);
                                     double goodsPrice = goodsObject.optDouble("salePrice");
                                     double formalPrice = goodsObject.optDouble("markerPrice");
                                     int goodsCount = goodsObject.optInt("quantity");
+                                    int count = goodsObject.optInt("stock");
                                     double goodsTotal = goodsObject.optDouble("subTotal");
                                     String isPublish = goodsObject.optString("productShelves").equals("1")?"false":"true";
-                                    String isOver = goodsObject.optInt("stock")>0?"false":"true";
+                                    String isOver = count>0?"false":"true";
                                     CartGoodsItem goodsItem = new CartGoodsItem();
                                     goodsItem.userId = useId;
                                     goodsItem.storeId = storeId;
@@ -742,6 +741,7 @@ public class ShopCartFragment extends BaseFragment
                                     goodsItem.currentPrice = goodsPrice;
                                     goodsItem.formalPrice = formalPrice;
                                     goodsItem.num = goodsCount;
+                                    goodsItem.count = count;
                                     goodsItem.totalMoney = goodsTotal;
                                     goodsItem.isOver = isOver;
                                     goodsItem.isPublish = isPublish;
@@ -944,24 +944,13 @@ public class ShopCartFragment extends BaseFragment
     @Override
     public void onResume()
     {
-        if (isBuySuccess)
-        {
-            isBuySuccess = false;
-            for (int i = 0; i < boxs.size(); i++)
-            {
-                boxs.get(i).setChecked(false);
-            }
-            if (allCb.isChecked())
-            {
-                allCb.setChecked(false);
-            }
-        }
         super.onResume();
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.shop_cart_text));
     }
 
     public void onPause()
     {
+        refreshData();
         super.onPause();
         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.shop_cart_text));
     }
