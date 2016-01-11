@@ -55,6 +55,7 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
     private String profileId;
     private String token;
     private String nickName;
+    private String mLocationStr;
 
     private boolean isProfileLoad=false;
     private LoginFragment loginFragment;
@@ -122,12 +123,14 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
                         System.out.println("HomeCompetitionActivity.shouldOverrideUrlLoading--------->" + user.getAddress2());
                         System.out.println("HomeCompetitionActivity.shouldOverrideUrlLoading--------->" + profileId);
                         String address = TextUtils.isEmpty(user.getAddress2()) || "null".equalsIgnoreCase(user.getAddress2()) ? "" : user.getAddress2();
-                        ProfileAddrFragment profileAddrFragment = ProfileAddrFragment.newInstance(user.getFirst_name(), user.getMobile(), address, profileId);
+                        String locationStr=TextUtils.isEmpty(mLocationStr)?user.getProvince()+"-"+user.getCity()+"-"+user.getProvider():mLocationStr;
+                        ProfileAddrFragment profileAddrFragment = ProfileAddrFragment.newInstance(user.getFirst_name(), user.getMobile(),locationStr,address, profileId);
                         getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, profileAddrFragment)
                                 .addToBackStack(null).commit();
                         profileAddrFragment.setAddressListener(new ProfileAddrFragment.AddressListener() {
                             @Override
-                            public void onAddressDataChange(String name, String mobile, String address) {
+                            public void onAddressDataChange(String name, String mobile,String locationStr, String address) {
+                                mLocationStr=locationStr;
                                 System.out.println("name = [" + name + "], mobile = [" + mobile + "], address = [" + address + "]");
                                 user.setFirst_name(name);
                                 user.setMobile(mobile);
@@ -244,24 +247,37 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
         userId = mSharedPreferences.getInt("userId", -1);
         token = mSharedPreferences.getString("token", null);
         nickName = mSharedPreferences.getString("nickName", "");
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL + userId + "/profile", new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_DETAIL_PROFILE_URL + "?id=" + userId, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("getUserData--->", jsonObject.toString());
-                JSONObject userObj = jsonObject.optJSONObject("profile");
-                if (userObj==null) return;
-                String mobile = userObj.optString("mobile");
-                mobile = mobile.equals("null") ? "" : mobile;
-                String description = userObj.optString("description");
-                description = description.equals("null") ? "" : description;
-                profileId = userObj.optString("id");
-                boolean verified = userObj.optBoolean("verified");
-                String first_name = userObj.optString("first_name");
-                String address2 = userObj.optString("address2");
-                user = new User(null, null, null, verified, mobile, description);
-                user.setAddress2(address2);
-                user.setFirst_name(first_name);
-                isProfileLoad=true;
+                int status = jsonObject.optInt("status");
+                String msg = jsonObject.optString("message");
+                if (status == 200) {
+                    JSONObject dataObj = jsonObject.optJSONObject("data");
+                    JSONObject userObj = dataObj.optJSONObject("profile");
+                    if (userObj == null) return;
+                    String mobile = userObj.optString("mobile");
+                    mobile = mobile.equals("null") ? "" : mobile;
+                    String description = userObj.optString("description");
+                    description = description.equals("null") ? "" : description;
+                    profileId = userObj.optString("id");
+                    boolean verified = userObj.optBoolean("verified");
+                    String first_name = userObj.optString("first_name");
+                    String address2 = userObj.optString("address2");
+                    String city_name = userObj.optString("city_name");
+                    String province_name = userObj.optString("province_name");
+                    String provider_name = userObj.optString("provider_name");
+                    user= new User(null, null, null, verified, mobile, description);
+                    user.setAddress2(address2);
+                    user.setFirst_name(first_name);
+                    user.setCity(city_name);
+                    user.setProvince(province_name);
+                    user.setProvider(provider_name);
+                    isProfileLoad=true;
+
+                } else {
+                    Toast.makeText(HomeCompetitionActivity.this,msg,Toast.LENGTH_SHORT).show();
+                }
             }
         }, new Response.ErrorListener() {
             @Override
@@ -284,7 +300,6 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        CallbackContext.onActivityResult(requestCode, resultCode, data);
         switch (resultCode) {
             case 2000:
                 token = mSharedPreferences.getString("token", null);
