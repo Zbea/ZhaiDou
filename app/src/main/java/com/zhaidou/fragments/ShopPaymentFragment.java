@@ -63,9 +63,6 @@ public class ShopPaymentFragment extends BaseFragment
     private static final String ARG_TIME = "timeLeft";
     private static final String ARG_ORDER = "order";
 
-    private long mOrderId;
-    private String orderCode;
-    private double mAmount;
     private Order mOrder=new Order();
     private View mView;
     private Context mContext;
@@ -121,7 +118,7 @@ public class ShopPaymentFragment extends BaseFragment
                         isSuccess = true;
                         notificationPaySuccess();
                         CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
-                        ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, mAmount+"");
+                        ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, payMoney+"");
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
 //                        ((MainActivity) getActivity()).popToStack(ShopPaymentFragment.this);
                         // 判断resultStatus 为非“9000”则代表可能支付失败
@@ -135,7 +132,7 @@ public class ShopPaymentFragment extends BaseFragment
                     } else if (TextUtils.equals(resultStatus, "4000"))
                     {
                         // 其他值就可以判断为支付失败，包括用户主动取消支付，或者系统返回的错误
-                        ShopPaymentFailFragment shopPaymentFailFragment = ShopPaymentFailFragment.newInstance(mOrderId, mAmount, 0, initTime, payOrderCode);
+                        ShopPaymentFailFragment shopPaymentFailFragment = ShopPaymentFailFragment.newInstance(payOrderId, payMoney, 0, initTime, payOrderCode);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
                     } else if (TextUtils.equals(resultStatus, "6002"))
                     {
@@ -220,9 +217,9 @@ public class ShopPaymentFragment extends BaseFragment
         super.onCreate(savedInstanceState);
         if (getArguments() != null)
         {
-            payOrderId=mOrderId = getArguments().getLong(ARG_ORDERID);
-            payOrderCode=orderCode = getArguments().getString("orderCode");
-            payMoney= mAmount = getArguments().getDouble(ARG_AMOUNT);
+            payOrderId=getArguments().getLong(ARG_ORDERID);
+            payOrderCode=getArguments().getString("orderCode");
+            payMoney=getArguments().getDouble(ARG_AMOUNT);
             initTime = getArguments().getLong(ARG_TIME);
         }
     }
@@ -607,12 +604,12 @@ public class ShopPaymentFragment extends BaseFragment
                 isSuccess = true;
                 CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
                 notificationPaySuccess();
-                ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, mAmount+"");
+                ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, payMoney+"");
                 ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                 break;
             case -1://支付失败
                 Log.i("----->", "支付失败");
-                ShopPaymentFailFragment shopPaymentFailFragment = ShopPaymentFailFragment.newInstance(mOrderId, mAmount, 0, initTime, payOrderCode);
+                ShopPaymentFailFragment shopPaymentFailFragment = ShopPaymentFailFragment.newInstance(payOrderId, payMoney, 0, initTime, payOrderCode);
                 ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
                 break;
             case -2://取消支付

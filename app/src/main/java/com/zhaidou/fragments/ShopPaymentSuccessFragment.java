@@ -206,7 +206,6 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 mDialog.dismiss();
-//                mNetWorkLayout.setVisibility(View.VISIBLE);
             }
         });
         mRequestQueue.add(request);
