@@ -327,77 +327,6 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                 break;
         }
     }
-
-//    private void FetchOrderDetail(String id) {
-//        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "/" + id, new Response.Listener<JSONObject>() {
-//            @Override
-//            public void onResponse(JSONObject jsonObject) {
-//                System.out.println("OrderAfterSaleFragment.onResponse-------->" + jsonObject.toString());
-//                if (jsonObject != null) {
-//                    JSONObject orderObj = jsonObject.optJSONObject("order");
-//                    double amount = orderObj.optDouble("amount");
-//                    int id = orderObj.optInt("id");
-//                    String status = orderObj.optString("status");
-//                    String created_at_for = orderObj.optString("created_at_for");
-//                    String receiver_address = orderObj.optString("receiver_address");
-//                    String created_at = orderObj.optString("created_at");
-//                    String status_ch = orderObj.optString("status_ch");
-//                    String number = orderObj.optString("number");
-//                    String receiver_phone = orderObj.optString("receiver_phone");
-//                    String deliver_number = orderObj.optString("deliver_number");
-//                    String receiver_name = orderObj.optString("receiver_name");
-//
-//                    JSONObject receiverObj = orderObj.optJSONObject("receiver");
-//                    int receiverId = receiverObj.optInt("id");
-//                    String address = receiverObj.optString("address");
-//                    String phone = receiverObj.optString("phone");
-//                    String name = receiverObj.optString("name");
-//                    Receiver receiver = new Receiver(receiverId, address, phone, name);
-//
-//
-//                    JSONArray order_items = orderObj.optJSONArray("order_items");
-//                    if (order_items != null && order_items.length() > 0) {
-//                        for (int i = 0; i < order_items.length(); i++) {
-//                            JSONObject item = order_items.optJSONObject(i);
-//                            int itemId = item.optInt("id");
-//                            double itemPrice = item.optDouble("price");
-//                            int count = item.optInt("count");
-//                            double cost_price = item.optDouble("cost_price");
-//                            String merchandise = item.optString("merchandise");
-//                            String specification = item.optString("specification");
-//                            int merchandise_id = item.optInt("merchandise_id");
-//                            String merch_img = item.optString("merch_img");
-//                            int sale_cate = item.optInt("sale_cate");
-//                            OrderItem orderItem = new OrderItem(itemId, itemPrice, count, cost_price, merchandise, specification, merchandise_id, merch_img);
-//                            orderItem.setSale_cate(sale_cate);
-//                            orderItems.add(orderItem);
-//                        }
-//                    }
-//                    Order order = new Order("", id, number, amount, status, status_ch, created_at_for, created_at, receiver, orderItems, receiver_address, receiver_phone, deliver_number, receiver_name);
-//                    Message message = new Message();
-//                    message.obj = order;
-//                    message.what = UPDATE_RETURN_LIST;
-//                    handler.sendMessage(message);
-//                }
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError volleyError) {
-//                if (mDialog != null) mDialog.dismiss();
-//                Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
-//            }
-//        }) {
-//            @Override
-//            public Map<String, String> getHeaders() throws AuthFailureError {
-//                Map<String, String> headers = new HashMap<String, String>();
-//                headers.put("SECAuthorization", token);
-//                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-//                return headers;
-//            }
-//        };
-//        requestQueue.add(request);
-//    }
-
     public class AfterSaleAdapter extends BaseListAdapter<OrderItem1> {
         public AfterSaleAdapter(Context context, List<OrderItem1> list) {
             super(context, list);
@@ -431,7 +360,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
             tv_specification.setText(item.specifications);
             tv_count.setText(item.quantity + "");
             tv_price.setText("￥" + item.price);
-            tv_old_price.setText("￥" + item.price);
+            tv_old_price.setText("￥" + item.marketPrice);
             TextPaint textPaint = tv_old_price.getPaint();
             textPaint.setAntiAlias(true);
             textPaint.setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
