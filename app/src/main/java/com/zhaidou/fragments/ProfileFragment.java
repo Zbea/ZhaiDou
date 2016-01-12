@@ -112,6 +112,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
     private Dialog mDialog;
     private User user;
+    private String mLocationStr;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -287,11 +288,13 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 }
                 break;
             case R.id.rl_manage_address:
-                ProfileAddrFragment fragment = ProfileAddrFragment.newInstance(user.getFirst_name(), user.getMobile(), user.getAddress2(), profileId);
+                String str=TextUtils.isEmpty(mLocationStr)?user.getProvince()+"-"+user.getCity()+"-"+user.getProvider():mLocationStr;
+                ProfileAddrFragment fragment = ProfileAddrFragment.newInstance(user.getFirst_name(), user.getMobile(),str,user.getAddress2(), profileId);
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(fragment);
                 fragment.setAddressListener(new ProfileAddrFragment.AddressListener() {
                     @Override
-                    public void onAddressDataChange(String name, String mobile, String address) {
+                    public void onAddressDataChange(String name, String mobile,String locationStr,String address) {
+                        mLocationStr=locationStr;
                         user.setFirst_name(name);
                         user.setMobile(mobile);
                         user.setAddress2(address);
@@ -406,9 +409,15 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     boolean verified = userObj.optBoolean("verified");
                     String first_name = userObj.optString("first_name");
                     String address2 = userObj.optString("address2");
+                    String city_name = userObj.optString("city_name");
+                    String province_name = userObj.optString("province_name");
+                    String provider_name = userObj.optString("provider_name");
                     User user = new User(null, null, null, verified, mobile, description);
                     user.setAddress2(address2);
                     user.setFirst_name(first_name);
+                    user.setCity(city_name);
+                    user.setProvince(province_name);
+                    user.setProvider(provider_name);
                     Message message = new Message();
                     message.what = UPDATE_PROFILE_INFO;
                     message.obj = user;

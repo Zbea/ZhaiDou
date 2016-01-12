@@ -855,9 +855,12 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         MobclickAgent.onPause(this);
     }
 
+    int currentPrePayCount = 0;
+
     @Override
     public void onCount(int count) {
-        int value = CountManage.getInstance().value(CountManage.TYPE.TAG_PREPAY);
-        iv_dot.setVisibility(value==0?View.GONE:View.VISIBLE);
+        if (count > currentPrePayCount)
+            iv_dot.setVisibility(View.VISIBLE);
+        currentPrePayCount=count;
     }
 }

@@ -10,7 +10,6 @@ public class ZhaiDou {
 //    public static String HOME_BASE_URL = "http://www.zhaidou.com/";
 //    public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
     public static String HOME_BASE_URL = "http://portal-web.zhaidou.com/";
-    public static String HOME_URL="http://stg.zhaidou.com/";
 
     //美丽家
     public static String HomeBeautifulUrl=HOME_BASE_URL+"zd/getPosts.action?plug=006&pageSize=10&pageNo=";
@@ -117,8 +116,7 @@ public class ZhaiDou {
     public static String USER_UPDATE_AVATAR_URL=HOME_BASE_URL+"user/update_head_img.action";
     //
     public static String USER_REGISTER_WITH_PHONE_URL=HOME_BASE_URL+"user/phone_register.action";
-    //用户获奖地址
-    public static String USER_EDIT_PROFILE_ADDR_URL=HOME_URL+"api/v1/profiles/";
+
     //用户收藏
     public static String USER_COLLECT_ITEM_URL=HOME_BASE_URL+"article/api/article_items/like_article_items?per_page=10&page=";
     //用户取消收藏
@@ -236,7 +234,6 @@ public class ZhaiDou {
     public static String URL_ORDER_RETURN_LIST=HOME_BASE_URL+"afterSeller/getReturnFlowList.action";
     // 淘宝订单
     public static String URL_TAOBAO_ORDER="https://login.m.taobao.com/login.htm?tpl_redirect_url=https://h5.m.taobao.com/mlapp/olist.html";
-
 
     public static String BROADCAST_WXAPI_FILTER="com.zhaidou.wxapi.pay";
 

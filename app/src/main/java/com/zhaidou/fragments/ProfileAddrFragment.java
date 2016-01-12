@@ -35,13 +35,13 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Area;
 import com.zhaidou.model.City;
 import com.zhaidou.model.Province;
-import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.WheelViewContainer;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -60,11 +60,13 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
     private static final String ARG_NickName = "nickname";
     private static final String ARG_MOBILE = "mobile";
     private static final String ARG_ADDRESS = "address";
+    private static final String ARG_LOCATION = "location";
     private static final String ARG_PROFILE_ID = "profileId";
 
     private String mNickName;
     private String mMobile;
     private String mAddress;
+    private String mLocation;
     private String mProfileId;
 
     private LinearLayout ll_edit_addr, tv_edit, tv_delete;
@@ -111,12 +113,13 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
      * @param profileId 用户的profileId
      * @return A new instance of fragment ProfileAddrFragment.
      */
-    public static ProfileAddrFragment newInstance(String nickname, String mobile, String address, String profileId) {
+    public static ProfileAddrFragment newInstance(String nickname, String mobile, String location, String address, String profileId) {
         ProfileAddrFragment fragment = new ProfileAddrFragment();
         Bundle args = new Bundle();
         args.putString(ARG_NickName, nickname);
         args.putString(ARG_MOBILE, mobile);
         args.putString(ARG_ADDRESS, address);
+        args.putString(ARG_LOCATION, location);
         args.putString(ARG_PROFILE_ID, profileId);
         fragment.setArguments(args);
         return fragment;
@@ -132,6 +135,7 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
             mNickName = getArguments().getString(ARG_NickName);
             mMobile = getArguments().getString(ARG_MOBILE);
             mAddress = getArguments().getString(ARG_ADDRESS);
+            mLocation = getArguments().getString(ARG_LOCATION);
             mProfileId = getArguments().getString(ARG_PROFILE_ID);
         }
     }
@@ -159,8 +163,7 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
         view.findViewById(R.id.ll_address).setOnClickListener(this);
         tv_delete.setOnClickListener(this);
         tv_delete.setVisibility(View.GONE);
-        if(mNickName.length()>0)
-        {
+        if (mNickName.length() > 0) {
             tv_save.setVisibility(View.GONE);
         }
         if (TextUtils.isEmpty(mAddress)) {
@@ -172,12 +175,13 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
             tv_addr_username.setText(mNickName);
             tv_addr_mobile.setText(mMobile);
             tv_addr.setText(mAddress);
+            et_location.setText(mLocation);
+
         }
         mDialogUtils = new DialogUtils(mContext);
 
         mSharedPreferences = getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         token = mSharedPreferences.getString("token", null);
-        getUserDetail();
         if (MainActivity.provinceList != null && MainActivity.provinceList.size() > 1) {
             ToolUtils.setLog("加载已经添加的");
             provinceList = MainActivity.provinceList;
@@ -344,26 +348,33 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
         ZDApplication.mRequestQueue.add(request);
     }
 
-    private void PostData(String username, String mobile, String address, String profileId) {
+    private void PostData(String username, String mobile, final String address, String profileId) {
         final String token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
         Map<String, String> params = new HashMap<String, String>();
-        params.put("_method", "PUT");
-        params.put("profile[first_name]", username);
-        params.put("profile[mobile]", mobile);
-        params.put("profile[address2]", address);
-        params.put("profile[address1]", mProviderId + "");
-        params.put("profile[id]", profileId);
-        params.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_EDIT_PROFILE_ADDR_URL + profileId, params, new Response.Listener<JSONObject>() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            params.put("address1", mProviderId + "");
+            params.put("first_name", username);
+            params.put("mobile", mobile);
+            params.put("address2", address);
+            jsonObject.put("id", profileId + "");
+            jsonObject.put("_method", "PUT");
+            jsonObject.put("profile", new JSONObject(params));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.USER_EDIT_PROFILE_URL, jsonObject, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 mDialog.dismiss();
-                if (jsonObject != null) {
-                    JSONObject profile = jsonObject.optJSONObject("profile");
-                    String mobile = profile.optString("mobile");
-                    String address = profile.optString("address2");
+                int status = jsonObject.optInt("status");
+                if (status == 200) {
+                    JSONObject profileObj = jsonObject.optJSONObject("data").optJSONObject("profile");
+                    String first_name = profileObj.optString("first_name");
+                    String address2 = profileObj.optString("address2");
+                    String mobile = profileObj.optString("mobile");
                     if (addressListener != null)
-                        addressListener.onAddressDataChange(mNickName, mMobile, address);
+                        addressListener.onAddressDataChange(first_name, mobile, et_location.getText().toString(), address2);
                     ((BaseActivity) getActivity()).popToStack(ProfileAddrFragment.this);
                 }
             }
@@ -384,43 +395,11 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
         ZDApplication.mRequestQueue.add(request);
     }
 
-    public void getUserDetail() {
-        Object id = SharedPreferencesUtil.getData(getActivity(), "userId", 0);
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HOME_URL + "api/v1/users/" + id + "/profile", new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject jsonObject) {
-                JSONObject userObj = jsonObject.optJSONObject("profile");
-                if (userObj != null) {
-                    String province_name = userObj.optString("province_name");
-                    String city_name = userObj.optString("city_name");
-                    String provider_name = userObj.optString("provider_name");
-
-                    Message message = new Message();
-                    message.obj = province_name + "-" + city_name + "-" + provider_name;
-                    message.what = UPDATE_USER_LOCATION;
-                    mHandler.sendMessage(message);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        ZDApplication.mRequestQueue.add(request);
-    }
-
     public void setAddressListener(AddressListener addressListener) {
         this.addressListener = addressListener;
     }
 
     public interface AddressListener {
-        public void onAddressDataChange(String name, String mobile, String address);
+        public void onAddressDataChange(String name, String mobile, String locationStr, String address);
     }
 }
