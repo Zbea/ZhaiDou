@@ -334,7 +334,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             isDataLoaded = true;
             mNetErrorView.setVisibility(View.GONE);
             loadingView.setVisibility(View.GONE);
-            FetchOrderList(mCurrentPage = 0, mCurrentType);
+            FetchOrderList(mCurrentPage = 1, mCurrentType);
         } else {
             mEmptyView.setVisibility(View.GONE);
             mNetErrorView.setVisibility(View.VISIBLE);
@@ -354,7 +354,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     private void FetchOrderList(int page, final String type) {
         mDialog = mDialogUtils.showLoadingDialog();
         Map<String, String> params = new HashMap<String, String>();//28129
-        params.put("userId", mUserId);//64410//16665//29650//mUserId
+        params.put("userId", 29650+"");//64410//16665//29650//mUserId
         params.put("clientType", "ANDROID");
         params.put("clientVersion", "45");
         params.put("businessType", "01");
@@ -422,7 +422,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
     @Override
     public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
-        FetchOrderList(mCurrentPage = 0, mCurrentType);
+        FetchOrderList(mCurrentPage = 1, mCurrentType);
     }
 
     @Override
@@ -485,7 +485,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         if (!btn2.getText().toString().equalsIgnoreCase("超时过期"))
                             CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
                         btn2.setText("超时过期");
-                        btn1.setVisibility(View.GONE);
+                        ll_btn.setVisibility(View.GONE);
                         btn2.setBackgroundResource(R.drawable.btn_no_click_selector);
                     }
                     hasUnPayOrder = true;

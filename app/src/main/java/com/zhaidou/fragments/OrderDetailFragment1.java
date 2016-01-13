@@ -160,6 +160,9 @@ public class OrderDetailFragment1 extends BaseFragment {
                             params.put("version", versionName);
                             params.put("clientVersion", versionCode);
                             params.put("orderCode", store.orderCode);
+                            store.orderShowStatus="交易完成";
+                            store.status=ZhaiDou.STATUS_DEAL_SUCCESS;
+                            mStoreAdapter.notifyDataSetChanged();
                             JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_CONFIRM, new JSONObject(params), new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject jsonObject) {
@@ -167,14 +170,14 @@ public class OrderDetailFragment1 extends BaseFragment {
                                     String message = jsonObject.optString("message");
                                     if (200 == status) {
                                         ShowToast("确认收货成功");
-//                                        store.status=
-                                        ((MainActivity) getActivity()).popToStack(OrderDetailFragment1.this);
+                                        store.status=ZhaiDou.STATUS_DEAL_SUCCESS;
+                                        mStoreAdapter.notifyDataSetChanged();
                                     } else {
                                         ShowToast(message);
                                     }
                                 }
                             }, null);
-                            requestQueue.add(request);
+//                            requestQueue.add(request);
                         }
                     }, null);
                 }
@@ -200,7 +203,7 @@ public class OrderDetailFragment1 extends BaseFragment {
         params.put("clientType", "ANDROID");
         params.put("version", versionName);
         params.put("clientVersion", versionCode);
-        params.put("userId", mUserId);
+        params.put("userId", 29650+"");//mUserId
         params.put("orderCode", orderCode);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, new ZhaiDou().URL_ORDER_DETAIL_LIST_URL, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
