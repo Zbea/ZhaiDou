@@ -278,6 +278,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 String msg = jsonObject.optString("message");
                 if (status == 200) {
                     JSONObject dataObj = jsonObject.optJSONObject("data");
+
                     JSONObject userObj = dataObj.optJSONObject("user");
                     String avatar = userObj.optJSONObject("avatar").optString("url");
                     String nick_name = userObj.optString("nick_name");

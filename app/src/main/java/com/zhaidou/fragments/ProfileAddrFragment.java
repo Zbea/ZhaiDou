@@ -62,12 +62,14 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
     private static final String ARG_ADDRESS = "address";
     private static final String ARG_LOCATION = "location";
     private static final String ARG_PROFILE_ID = "profileId";
+    private static final String ARG_PROVIDERID="providerId";
 
     private String mNickName;
     private String mMobile;
     private String mAddress;
     private String mLocation;
     private String mProfileId;
+    private String mProviderId;
 
     private LinearLayout ll_edit_addr, tv_edit, tv_delete;
     private LinearLayout ll_manage_address;
@@ -83,7 +85,6 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
     private Province selectedProvince = new Province();
     private City selectedCity = new City();
     private Area selectedArea = new Area();
-    private int mProviderId;
     private TextView et_location;
     private DialogUtils mDialogUtils;
 
@@ -113,7 +114,7 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
      * @param profileId 用户的profileId
      * @return A new instance of fragment ProfileAddrFragment.
      */
-    public static ProfileAddrFragment newInstance(String nickname, String mobile, String location, String address, String profileId) {
+    public static ProfileAddrFragment newInstance(String nickname, String mobile, String location, String address,String providerId, String profileId) {
         ProfileAddrFragment fragment = new ProfileAddrFragment();
         Bundle args = new Bundle();
         args.putString(ARG_NickName, nickname);
@@ -121,6 +122,7 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
         args.putString(ARG_ADDRESS, address);
         args.putString(ARG_LOCATION, location);
         args.putString(ARG_PROFILE_ID, profileId);
+        args.putString(ARG_PROFILE_ID,providerId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -137,6 +139,7 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
             mAddress = getArguments().getString(ARG_ADDRESS);
             mLocation = getArguments().getString(ARG_LOCATION);
             mProfileId = getArguments().getString(ARG_PROFILE_ID);
+            mProviderId=getArguments().getString(ARG_PROVIDERID);
         }
     }
 
@@ -213,6 +216,9 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
                 } else if (TextUtils.isEmpty(address)) {
                     Toast.makeText(getActivity(), "收货地址不能为空", Toast.LENGTH_SHORT).show();
                     return;
+                }else if (mobile.length()!=11){
+                    Toast.makeText(getActivity(), "手机号码格式错误", Toast.LENGTH_SHORT).show();
+                    return;
                 }
                 mNickName = name;
                 mMobile = mobile;
@@ -262,7 +268,7 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
                             selectedProvince = wheelView.getProvince();
                             selectedCity = wheelView.getCity();
                             selectedArea = wheelView.getArea();
-                            mProviderId = selectedArea.getId();
+                            mProviderId = selectedArea.getId()+"";
                             ToolUtils.setLog("ok mProviderId:" + mProviderId);
                             et_location.setText(selectedProvince.getName() + "-" + selectedCity.getName() + "-" + selectedArea.getName());
                         }
