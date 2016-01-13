@@ -422,6 +422,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
     @Override
     public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+        mOrderList.clear();
         FetchOrderList(mCurrentPage = 1, mCurrentType);
     }
 
