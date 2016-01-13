@@ -808,7 +808,7 @@ public class ShopOrderOkFragment extends BaseFragment
             params.add(new BasicNameValuePair("version", mContext.getResources().getString(R.string.app_versionName).substring(1)));
             params.add(new BasicNameValuePair("clientType", "ANDROID"));
             params.add(new BasicNameValuePair("clientVersion", (ZDApplication.localVersionCode+3)+""));
-            params.add(new BasicNameValuePair("remark", bzInfo_Str+""));
+            params.add(new BasicNameValuePair("remark", bzInfo.getText().toString()));
 
             JSONArray storeArray=new JSONArray();
             for (int i = 0; i < cartArrayItems.size(); i++)

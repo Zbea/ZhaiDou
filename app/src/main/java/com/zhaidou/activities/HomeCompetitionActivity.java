@@ -124,7 +124,7 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
                         System.out.println("HomeCompetitionActivity.shouldOverrideUrlLoading--------->" + profileId);
                         String address = TextUtils.isEmpty(user.getAddress2()) || "null".equalsIgnoreCase(user.getAddress2()) ? "" : user.getAddress2();
                         String locationStr=TextUtils.isEmpty(mLocationStr)?user.getProvince()+"-"+user.getCity()+"-"+user.getProvider():mLocationStr;
-                        ProfileAddrFragment profileAddrFragment = ProfileAddrFragment.newInstance(user.getFirst_name(), user.getMobile(),locationStr,address, profileId);
+                        ProfileAddrFragment profileAddrFragment = ProfileAddrFragment.newInstance(user.getFirst_name(), user.getMobile(),locationStr,address,user.getAddress1(), profileId);
                         getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, profileAddrFragment)
                                 .addToBackStack(null).commit();
                         profileAddrFragment.setAddressListener(new ProfileAddrFragment.AddressListener() {
@@ -267,12 +267,14 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
                     String city_name = userObj.optString("city_name");
                     String province_name = userObj.optString("province_name");
                     String provider_name = userObj.optString("provider_name");
+                    String address1 = userObj.optString("address1");
                     user= new User(null, null, null, verified, mobile, description);
                     user.setAddress2(address2);
                     user.setFirst_name(first_name);
                     user.setCity(city_name);
                     user.setProvince(province_name);
                     user.setProvider(provider_name);
+                    user.setAddress1(address1);
                     isProfileLoad=true;
 
                 } else {

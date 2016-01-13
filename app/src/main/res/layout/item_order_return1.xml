@@ -89,10 +89,13 @@
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:id="@+id/tv_specification"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingRight="5dp"
                         android:layout_below="@id/tv_name"
                         android:layout_marginTop="5dp"
+                        android:ellipsize="end"
                         android:text="L"
                         android:textColor="@color/text_gary_color"
                         android:textSize="13sp" />

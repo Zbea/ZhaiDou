@@ -125,7 +125,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     tv_job.setText(user.isVerified() ? "宅豆认证设计师" : "未认证设计师");
 
                     tv_addr_mobile.setText(TextUtils.isEmpty(user.getMobile()) ? "" : user.getMobile());
-                    tv_addr.setText(TextUtils.isEmpty(user.getAddress2()) ? "" : user.getAddress2());
+                    tv_addr.setText(TextUtils.isEmpty(user.getAddress2()) ? "" : user.getProvince()+user.getCity()+user.getProvince()+user.getAddress2());
                     tv_addr_username.setText(TextUtils.isEmpty(user.getFirst_name()) ? "" : user.getFirst_name());
 
                     if (TextUtils.isEmpty(user.getAddress2()) || "null".equals(user.getAddress2())) {
@@ -289,7 +289,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 break;
             case R.id.rl_manage_address:
                 String str=TextUtils.isEmpty(mLocationStr)?user.getProvince()+"-"+user.getCity()+"-"+user.getProvider():mLocationStr;
-                ProfileAddrFragment fragment = ProfileAddrFragment.newInstance(user.getFirst_name(), user.getMobile(),str,user.getAddress2(), profileId);
+                ProfileAddrFragment fragment = ProfileAddrFragment.newInstance(user.getFirst_name(), user.getMobile(),str,user.getAddress2(),user.getAddress1(), profileId);
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(fragment);
                 fragment.setAddressListener(new ProfileAddrFragment.AddressListener() {
                     @Override
@@ -409,11 +409,13 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     boolean verified = userObj.optBoolean("verified");
                     String first_name = userObj.optString("first_name");
                     String address2 = userObj.optString("address2");
+                    String address1 = userObj.optString("address1");
                     String city_name = userObj.optString("city_name");
                     String province_name = userObj.optString("province_name");
                     String provider_name = userObj.optString("provider_name");
                     User user = new User(null, null, null, verified, mobile, description);
                     user.setAddress2(address2);
+                    user.setAddress1(address1);
                     user.setFirst_name(first_name);
                     user.setCity(city_name);
                     user.setProvince(province_name);

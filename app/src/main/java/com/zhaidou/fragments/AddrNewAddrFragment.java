@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -33,6 +33,7 @@ import com.zhaidou.model.Area;
 import com.zhaidou.model.City;
 import com.zhaidou.model.HttpPatch;
 import com.zhaidou.model.Province;
+import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomEditText;
 import com.zhaidou.view.WheelViewContainer;
@@ -87,6 +88,8 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
     private AddrSaveSuccessListener addrSaveSuccessListener;
     private int UPDATE_ADDRESS_INFO=1;
     private int CREATE_NEW_ADDRESS=2;
+    private DialogUtils mDialogUtils;
+    private View mContainer;
 
     public static AddrNewAddrFragment newInstance(int id,String nickname, String mobile,String location,String address, int profileId, int status) {
         AddrNewAddrFragment fragment = new AddrNewAddrFragment();
@@ -144,9 +147,11 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
 
         view.findViewById(R.id.tv_save).setOnClickListener(this);
         view.findViewById(R.id.ll_address).setOnClickListener(this);
+        mContainer=view.findViewById(R.id.container);
         mRequestQueue = Volley.newRequestQueue(getActivity(), new HttpClientStack(new DefaultHttpClient()));
         mSharedPreferences = getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         token = mSharedPreferences.getString("token", null);
+        mDialogUtils=new DialogUtils(getActivity());
 
         if (MainActivity.provinceList!=null&&MainActivity.provinceList.size()>1)
         {
@@ -156,6 +161,7 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
         else
         {
             ToolUtils.setLog("重新加载地址");
+            mContainer.setVisibility(View.GONE);
             FetchCityData();
         }
         return view;
@@ -358,9 +364,11 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
     }
 
     private void FetchCityData() {
+        mDialog=mDialogUtils.showLoadingDialog();
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_ADDRESS_URL, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+                mDialog.dismiss();
                 if (jsonObject != null) {
                     JSONArray providerArr = jsonObject.optJSONArray("providers");
                     for (int i = 0; i < providerArr.length(); i++) {
@@ -402,15 +410,15 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
                         }
                         province.setCityList(cityList);
                         provinceList.add(province);
-                        Log.i("provinceList---->", provinceList.size()+"");
-
                     }
 
                 }
+                mContainer.setVisibility(View.VISIBLE);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
+                mDialog.dismiss();
                 ToolUtils.setToast(mContext,"抱歉,加载城市失败");
             }
         }){
@@ -421,6 +429,7 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
                 return headers;
             }
         };
+        request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 1, 1.0f));
         mRequestQueue.add(request);
     }
 

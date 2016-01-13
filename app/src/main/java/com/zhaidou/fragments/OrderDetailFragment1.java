@@ -167,7 +167,9 @@ public class OrderDetailFragment1 extends BaseFragment {
                                     String message = jsonObject.optString("message");
                                     if (200 == status) {
                                         ShowToast("确认收货成功");
-                                        ((MainActivity) getActivity()).popToStack(OrderDetailFragment1.this);
+                                        store.orderShowStatus="交易完成";
+                                        store.status=ZhaiDou.STATUS_DEAL_SUCCESS;
+                                        mStoreAdapter.notifyDataSetChanged();
                                     } else {
                                         ShowToast(message);
                                     }
@@ -199,7 +201,7 @@ public class OrderDetailFragment1 extends BaseFragment {
         params.put("clientType", "ANDROID");
         params.put("version", versionName);
         params.put("clientVersion", versionCode);
-        params.put("userId", mUserId);
+        params.put("userId", 29650+"");//mUserId
         params.put("orderCode", orderCode);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, new ZhaiDou().URL_ORDER_DETAIL_LIST_URL, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
@@ -342,17 +344,19 @@ public class OrderDetailFragment1 extends BaseFragment {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
                     OrderItem1 item = (OrderItem1) values;
-                    if (flags != 1) {
-                        GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(item.productName, item.productId + "");
-                        Bundle bundle = new Bundle();
-                        if (item.productType == 2) {
-                            bundle.putInt("flags", 1);
-                        }
-                        bundle.putInt("index", item.productId);
-                        bundle.putString("page", item.productName);
-                        goodsDetailsFragment.setArguments(bundle);
-                        ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
-                    }
+//                    if (flags != 1) {
+//                        GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(item.productName, item.productId + "");
+//                        Bundle bundle = new Bundle();
+//                        if (item.productType == 2) {
+//                            bundle.putInt("flags", 1);
+//                        }
+//                        bundle.putInt("index", item.productId);
+//                        bundle.putString("page", item.productName);
+//                        goodsDetailsFragment.setArguments(bundle);
+//                        ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
+//                    }
+                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(item.productName, item.productCode+"");
+                    ((BaseActivity) mContext).navigationToFragment(goodsDetailsFragment);
                 }
             });
 

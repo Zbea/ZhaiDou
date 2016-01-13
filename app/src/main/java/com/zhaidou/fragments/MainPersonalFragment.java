@@ -213,6 +213,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(collocationFragment);
                 break;
             case R.id.tv_pre_pay:
+                ((MainActivity)getActivity()).hideTip(View.GONE);
                 OrderAllOrdersFragment unPayFragment = OrderAllOrdersFragment.newInstance(ZhaiDou.TYPE_ORDER_PREPAY, "");
                 ((BaseActivity) getActivity()).navigationToFragment(unPayFragment);
                 break;
@@ -278,6 +279,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 String msg = jsonObject.optString("message");
                 if (status == 200) {
                     JSONObject dataObj = jsonObject.optJSONObject("data");
+
                     JSONObject userObj = dataObj.optJSONObject("user");
                     String avatar = userObj.optJSONObject("avatar").optString("url");
                     String nick_name = userObj.optString("nick_name");

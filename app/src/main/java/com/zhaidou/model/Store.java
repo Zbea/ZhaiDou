@@ -46,7 +46,9 @@ public class Store implements Serializable{
     public String createTime;
     public String statusShowName;
     public String returnFlowCode;
+    public String actualAmount;
     public List<OrderItem1> mallReturnFlowDetailDTOList;
+    //退换货----------------------end
 
     public Delivery deliveryPO;
     public DeliveryAddress deliveryAddressPO;
