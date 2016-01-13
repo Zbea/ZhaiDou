@@ -160,9 +160,6 @@ public class OrderDetailFragment1 extends BaseFragment {
                             params.put("version", versionName);
                             params.put("clientVersion", versionCode);
                             params.put("orderCode", store.orderCode);
-                            store.orderShowStatus="交易完成";
-                            store.status=ZhaiDou.STATUS_DEAL_SUCCESS;
-                            mStoreAdapter.notifyDataSetChanged();
                             JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_CONFIRM, new JSONObject(params), new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject jsonObject) {
@@ -170,6 +167,7 @@ public class OrderDetailFragment1 extends BaseFragment {
                                     String message = jsonObject.optString("message");
                                     if (200 == status) {
                                         ShowToast("确认收货成功");
+                                        store.orderShowStatus="交易完成";
                                         store.status=ZhaiDou.STATUS_DEAL_SUCCESS;
                                         mStoreAdapter.notifyDataSetChanged();
                                     } else {
@@ -177,7 +175,7 @@ public class OrderDetailFragment1 extends BaseFragment {
                                     }
                                 }
                             }, null);
-//                            requestQueue.add(request);
+                            requestQueue.add(request);
                         }
                     }, null);
                 }
