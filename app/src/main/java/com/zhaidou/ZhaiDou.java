@@ -80,9 +80,9 @@ public class ZhaiDou {
     //天天刮奖
     public static String PRIZE_SCRAPING_URL=HOME_BASE_URL+"lotteries";
     //首页分类文章
-    public static String HOME_CATEGORY_URL=HOME_BASE_URL+"article/api/articles?page=";
+    public static String HOME_CATEGORY_URL="http://www.zhaidou.com/article/api/articles?page=";
     //文章页面
-    public static String ARTICLE_DETAIL_URL=HOME_BASE_URL+"article/articles/";
+    public static String ARTICLE_DETAIL_URL="http://www.zhaidou.com/article/articles/";
 
     //确认订单获取短信接口
     public static String OrderGetSMS = HOME_BASE_URL+"user/vilidate_phone.action?flag=1&phone=";

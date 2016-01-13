@@ -237,7 +237,7 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
             rootView.findViewById(R.id.ll_back).setOnClickListener(this);
 
             titleTv=(TextView) rootView.findViewById(R.id.tv_title);
-            titleTv.setText(mTitle);
+//            titleTv.setText(mTitle);
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
             nullNetView = (LinearLayout) rootView.findViewById(R.id.nullNetline);
             nullDataView = (LinearLayout) rootView.findViewById(R.id.nullDataline);

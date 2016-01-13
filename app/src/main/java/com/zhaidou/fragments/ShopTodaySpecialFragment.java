@@ -104,6 +104,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     private int cartCount;//购物车商品数量
     private int userId;
     private String token;
+    private boolean isChlick;//防止重复点击
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -140,6 +141,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
                         mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                     }
                     introduceTv.setText(introduce);
+                    titleTv.setText(shopSpecialItem.title);
                     loadingView.setVisibility(View.GONE);
                     if (shopSpecialItem != null)
                     initTime =  shopSpecialItem.endTime - System.currentTimeMillis();
@@ -190,9 +192,15 @@ public class ShopTodaySpecialFragment extends BaseFragment {
      */
     private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(i).title, items.get(i).goodsId);
-            ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
+        {
+            if(!isChlick)
+            {
+                isChlick=true;
+                GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(i).title, items.get(i).goodsId);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
+            }
+
         }
     };
 
@@ -305,7 +313,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
         backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
-        titleTv.setText(mTitle);
+
         timeTvs = (TimerTextView) mView.findViewById(R.id.shopTime1Tv);
 
         mListView = (ListViewForScrollView) mView.findViewById(R.id.shopListView);
@@ -563,6 +571,7 @@ public class ShopTodaySpecialFragment extends BaseFragment {
 
     @Override
     public void onPause() {
+        isChlick=false;
         systemTime=System.currentTimeMillis();
         isFrist=true;
         super.onPause();

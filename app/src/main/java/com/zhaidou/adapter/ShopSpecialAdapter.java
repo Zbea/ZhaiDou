@@ -16,6 +16,7 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.zhaidou.R;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
 
 import java.util.List;
@@ -89,7 +90,6 @@ public class ShopSpecialAdapter extends BaseAdapter
             viewHolder.itemLine = (View) convertView.findViewById(R.id.itemsLine);
             viewHolder.itemLine1 = (View) convertView.findViewById(R.id.itemsLine1);
             viewHolder.isNewsView=(ImageView)convertView.findViewById(R.id.newsView);
-            viewHolder.newView = (ImageView) convertView.findViewById(R.id.newsView);
             convertView.setTag(viewHolder);
         }
         else
@@ -113,12 +113,12 @@ public class ShopSpecialAdapter extends BaseAdapter
 
         if (shopSpecialItem.isNew==1)
         {
-            if (!(Boolean) SharedPreferencesUtil.getData(context, "is_new_" + shopSpecialItem.id, true))
+            if (!(Boolean) SharedPreferencesUtil.getData(context, "homeNews_" + shopSpecialItem.goodsId, true))
             {
                 viewHolder.isNewsView.setVisibility(View.GONE);
             } else
             {
-                viewHolder. isNewsView.setVisibility(View.VISIBLE);
+                viewHolder.isNewsView.setVisibility(View.VISIBLE);
             }
         } else
         {

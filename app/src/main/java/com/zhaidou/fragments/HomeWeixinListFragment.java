@@ -180,6 +180,7 @@ public class HomeWeixinListFragment extends BaseFragment implements PullToRefres
                 detailIntent.putExtra("cover_url", article.getImg_url());
                 detailIntent.putExtra("show_header", true);
                 detailIntent.putExtra("url", article.getIs_new());
+                detailIntent.putExtra("show_header", false);
                 startActivity(detailIntent);
             }
         });

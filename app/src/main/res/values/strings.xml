@@ -70,7 +70,7 @@
     <string name="title_activity_search">SearchActivity</string>
 
     <!-- Search -->
-    <string name="search_hint">搜索单品</string>
+    <string name="search_hint">搜索</string>
     <string name="search_history_clear">清除历史记录</string>
     <string name="title_activity_search_tab">SearchTabActivity</string>
     <string name="title_section1">Section 1</string>

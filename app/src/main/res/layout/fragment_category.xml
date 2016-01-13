@@ -23,7 +23,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:text="椅子"
+                android:text="搜索"
                 android:textColor="#D0D0D0"
                 android:drawableLeft="@drawable/icon_search_gray"
                 android:drawablePadding="10dp"

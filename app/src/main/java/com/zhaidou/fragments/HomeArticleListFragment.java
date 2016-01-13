@@ -154,9 +154,8 @@ public class HomeArticleListFragment extends BaseFragment implements PullToRefre
 
     private void FetchData(final int page,Category category){
         String categoryId=(category==null?"":category.getId()+"");
-        String url;
-        url= ZhaiDou.HOME_CATEGORY_URL+page+((category==null)?"&catetory_id":"&catetory_id="+categoryId);
-
+        String url= ZhaiDou.HOME_CATEGORY_URL+page+((category==null)?"&catetory_id":"&catetory_id="+categoryId);
+        ToolUtils.setLog(url);
         JsonObjectRequest jr = new JsonObjectRequest(url,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {

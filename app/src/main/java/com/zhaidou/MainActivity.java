@@ -708,6 +708,24 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         }, null);
     }
 
+    /**
+     * 关闭代付款页面
+     */
+    public void ColsePaymentPage()
+    {
+        FragmentManager manager = getSupportFragmentManager();
+        List<Fragment> fragments = manager.getFragments();
+        if (fragments.size() > 0)
+        {
+            Fragment shopPaymentFragment = manager.findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
+            if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment)
+            {
+                //ShopPaymentFragment返回弹出提示
+                popToStack(shopPaymentFragment);
+            }
+        }
+    }
+
     public void toHomeFragment()
     {
         if (currentFragment instanceof MainHomeFragment)

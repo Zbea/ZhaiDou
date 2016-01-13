@@ -314,6 +314,10 @@ public class GoodsDetailsFragment extends BaseFragment
                     {
                         Log.i("Exception e", e.getMessage());
                     }
+                    goodsImage.setFocusable(true);
+                    goodsImage.setFocusableInTouchMode(true);
+                    goodsImage.requestFocus();
+                    goodsImage.requestFocusFromTouch();
                     break;
                 case UPDATE_CARTCAR_DATA://更新购物车数量
                     initCartTips();
@@ -1219,7 +1223,7 @@ public class GoodsDetailsFragment extends BaseFragment
             for (int i = 0; i < detail.imgs.size(); i++)
             {
                 LargeImgView imageView = new LargeImgView(mContext);
-                imageView.setScaleType(ImageView.ScaleType.MATRIX);
+                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                 ImageLoader.getInstance().displayImage(detail.imgs.get(i), imageView, options,new ImageLoadingListener()
                 {
                     @Override

@@ -89,7 +89,7 @@
 
             <TextView
                 android:id="@+id/cartItemIsFlags"
-                android:layout_width="94dp"
+                android:layout_width="90dp"
                 android:layout_height="90dp"
                 android:visibility="gone"
                 android:background="#99333333"/>

@@ -113,8 +113,10 @@ public class ShopCartFragment extends BaseFragment
                     setGoodsCheckChange();
                 } else
                 {
+                    cartCount=0;
                     nullView.setVisibility(View.VISIBLE);
                     contentView.setVisibility(View.GONE);
+                    ((MainActivity) mContext).CartTip(cartCount);
                 }
             }
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
@@ -444,12 +446,7 @@ public class ShopCartFragment extends BaseFragment
                     if (items != null && items.size() > 0)
                     {
                         GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(tag).name, items.get(tag).goodsId);
-                        Bundle bundle = new Bundle();
-                        if (items.get(tag).isPublish.equals("true"))
-                        {
-                            bundle.putInt("flags", 3);
-                        }
-                        ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
+                        ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
                     }
                 }
             });
@@ -583,7 +580,7 @@ public class ShopCartFragment extends BaseFragment
                 {
                     if (cartGoodsItem.num - 1 > 0)
                     {
-                        FetchEditDate(itemNum, cartGoodsItem.num - 1, cartGoodsItem);
+                        FetchEditDate(itemNum, cartGoodsItem.num - 1, cartGoodsItem,2);
                     }
                 }
             });
@@ -592,7 +589,7 @@ public class ShopCartFragment extends BaseFragment
                 @Override
                 public void onClick(View view)
                 {
-                    FetchEditDate(itemNum, cartGoodsItem.num + 1, cartGoodsItem);
+                    FetchEditDate(itemNum, cartGoodsItem.num + 1, cartGoodsItem,1);
                 }
             });
             cartGoodsLine.addView(childeView);
@@ -616,26 +613,27 @@ public class ShopCartFragment extends BaseFragment
      */
     private void commitCartOrder()
     {
+        ToolUtils.setLog("itemsCheck:"+itemsCheck.size());
+        ToolUtils.setLog("arrays:"+arrays.size());
         arraysCheck=arrays;
         for (int i = 0; i <arraysCheck.size() ; i++)
         {
             arraysCheck.get(i).goodsItems.clear();
+
             for (int j = 0; j < itemsCheck.size(); j++)
             {
-                if (arraysCheck.get(i).storeId.equals(itemsCheck.get(j).storeId))
+                if (arraysCheck.get(i).storeId.equalsIgnoreCase(itemsCheck.get(j).storeId))
                 {
                     arraysCheck.get(i).goodsItems.add(itemsCheck.get(j));
                 }
             }
-           if (arraysCheck.get(i).goodsItems.size()==0)
-           {
-               arraysCheck.remove(i);
-           }
+//           if (arraysCheck.get(i).goodsItems.size()==0)
+//           {
+//               ToolUtils.setLog("删除"+i);
+//               arraysCheck.remove(i);
+//           }
         }
-        for (int i = 0; i < arraysCheck.size(); i++)
-        {
-            ToolUtils.setLog("测试"+i+":"+arraysCheck.get(i).goodsItems.size());
-        }
+
         ShopOrderOkFragment shopOrderOkFragment = ShopOrderOkFragment.newInstance("", 0);
         Bundle bundle = new Bundle();
         bundle.putSerializable("goodsList",arraysCheck);
@@ -665,17 +663,6 @@ public class ShopCartFragment extends BaseFragment
 
         totalMoneyTv.setText("  ￥" + ToolUtils.isIntPrice("" + totalMoney));
         saveMoneyTv.setText("  ￥" + ToolUtils.isIntPrice("" + saveMoney));
-
-        //刷新购物车总数
-        cartCount=0;
-        for (int i = 0; i <arrays.size(); i++)
-        {
-            for (int j = 0; j <arrays.get(i).goodsItems.size() ; j++)
-            {
-                cartCount=cartCount+arrays.get(i).goodsItems.get(j).num;
-            }
-        }
-        ((MainActivity) mContext).CartTip(cartCount);
 
     }
 
@@ -707,6 +694,7 @@ public class ShopCartFragment extends BaseFragment
                         {
                             JSONObject storeObject = storeArray.optJSONObject(i);
                             String storeId = storeObject.optString("storeId");
+                            ToolUtils.setLog("storeId:"+storeId);
                             String storeName = storeObject.optString("storeName");
                             int storeCount = storeObject.optInt("subQuantity");
                             double storeMoney = storeObject.optDouble("subAmount");
@@ -859,6 +847,8 @@ public class ShopCartFragment extends BaseFragment
                         boxs.remove(itemCheck);
                         refreshItems(cartGoodsItem, 1);
                         cartGoodsLine.removeView(childeView);
+                        cartCount=cartCount-cartGoodsItem.num;
+                        ((MainActivity) mContext).CartTip(cartCount);
                         //发送广播
                         sendBroadCastEditAll();
                     }
@@ -892,7 +882,7 @@ public class ShopCartFragment extends BaseFragment
      * @param itemNum
      * @param mCartGoodsItem
      */
-    private void FetchEditDate(final TextView itemNum, final int num, final CartGoodsItem mCartGoodsItem)
+    private void FetchEditDate(final TextView itemNum, final int num, final CartGoodsItem mCartGoodsItem,final int type)
     {
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
         String url = ZhaiDou.CartGoodsEditUrl+userId+"&quantity=" +num+ "&productSKUId="+mCartGoodsItem.sizeId;
@@ -911,6 +901,15 @@ public class ShopCartFragment extends BaseFragment
                     itemNum.setText(""+num);
                     mCartGoodsItem.num=num;
                     refreshItems(mCartGoodsItem, 2);
+                    if (type==1)
+                    {
+                        cartCount=cartCount+1;
+                    }
+                    else
+                    {
+                        cartCount=cartCount-1;
+                    }
+                    ((MainActivity) mContext).CartTip(cartCount);
                     sendBroadCastEditAll();
                 }
                 else
@@ -950,7 +949,6 @@ public class ShopCartFragment extends BaseFragment
 
     public void onPause()
     {
-        refreshData();
         super.onPause();
         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.shop_cart_text));
     }

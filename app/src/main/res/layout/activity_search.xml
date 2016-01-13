@@ -105,6 +105,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
     <com.zhaidou.view.TypeFaceTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -112,7 +123,7 @@
         android:layout_margin="10dp"
         android:textColor="#535353"
         android:textSize="16sp"/>
-    <GridView
+    <com.zhaidou.view.ChildGridView
         android:id="@+id/gv_hot_search"
         android:layout_width="match_parent"
         android:minHeight="150dp"
@@ -123,7 +134,7 @@
         android:layout_marginRight="10dp"
         android:listSelector="@drawable/search_item_selector"
         android:numColumns="5">
-    </GridView>
+    </com.zhaidou.view.ChildGridView>
     <LinearLayout
             android:id="@+id/ll_history"
             android:layout_width="match_parent"
@@ -157,6 +168,8 @@
         android:onClick="onHistoryCancel"
         android:text="@string/search_history_clear"/>
     </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
     <FrameLayout
         android:layout_width="match_parent"

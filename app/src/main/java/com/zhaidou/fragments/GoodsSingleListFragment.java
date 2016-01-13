@@ -73,7 +73,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
 
     private String mParam1;
     private String mParam2;
-    private int mFlag;//当为1是特卖商城的商品，当未2是淘宝商城
+    private int mFlag;//当为1是特卖商城搜索的商品，当未2是分类 ID商城
     private int id = -1;
     private View mView;
     private Context mContext;
@@ -268,6 +268,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         mParam1 = msg;
         this.sort = sort;
         currentpage = page;
+        mFlag=1;
         if (page == 1) products.clear();
         String url = null;
 
@@ -406,6 +407,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         mParam1 = categoryId;
         this.sort = sort;
         currentpage = page;
+        mFlag=2;
         if (page == 1) products.clear();
         String url = null;
         JSONObject json = new JSONObject();

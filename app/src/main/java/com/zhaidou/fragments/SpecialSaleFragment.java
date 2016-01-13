@@ -141,7 +141,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                 case UPDATE_ADAPTER:
                     loadingView.setVisibility(View.GONE);
                     mAdapter.notifyDataSetChanged();
-                    if (page * pageSize < pageTotal)
+                    if (products.size()< pageTotal)
                     {
                         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
                     } else
@@ -468,8 +468,8 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                             mHandler.sendEmptyMessage(UPDATE_ADAPTER);
                         }
                         JSONObject itemObject = object.optJSONObject("pagePO");
-                        pageSize = totalObject.optInt("pageSize");
-                        pageTotal = totalObject.optInt("totalCount");
+                        pageSize = itemObject.optInt("pageSize");
+                        pageTotal = itemObject.optInt("totalCount");
                         JSONArray items = itemObject.optJSONArray("items");
                         if (items != null && items.length() > 0)
                         {

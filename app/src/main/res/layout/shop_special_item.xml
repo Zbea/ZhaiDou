@@ -43,7 +43,7 @@
                 android:layout_width="@dimen/home_tips_dimen"
                 android:layout_height="@dimen/home_tips_dimen"
                 android:src="@drawable/home_info_news_icon"
-                android:visibility="gone" />
+                />
         </RelativeLayout>
 
         <LinearLayout

@@ -382,8 +382,8 @@ public class MainHomeFragment extends BaseFragment implements
      */
     private void FetchData(final int page)
     {
-        final String url;
-        url = ZhaiDou.HomeShopListUrl + page + "&typeEnum=1";
+        final String url = ZhaiDou.HomeShopListUrl + page + "&typeEnum=1";
+        ToolUtils.setLog(url);
         JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
@@ -436,7 +436,7 @@ public class MainHomeFragment extends BaseFragment implements
                             }
 
                             String imageUrl = obj.optString("mainPic");
-                            int isNew = jsonObject.optInt("newFlag");
+                            int isNew = obj.optInt("newFlag");
                             ShopSpecialItem shopSpecialItem = new ShopSpecialItem(id, title, sales, startTime, endTime, overTime, imageUrl, isNew);
 
                             items.add(shopSpecialItem);
@@ -552,7 +552,7 @@ public class MainHomeFragment extends BaseFragment implements
         ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
         if ("1".equalsIgnoreCase(items.get(position).isNew + ""))
         {
-            SharedPreferencesUtil.saveData(mContext, "is_new_" + items.get(position).id, false);
+            SharedPreferencesUtil.saveData(mContext, "homeNews_" + items.get(position).goodsId, false);
             view.findViewById(R.id.newsView).setVisibility(View.GONE);
         }
     }
