@@ -477,7 +477,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     }
                     selectFragment(currentFragment, persoanlFragment);
                     setButton(view);
-                    hideTip(View.GONE);
                 }
 
             }

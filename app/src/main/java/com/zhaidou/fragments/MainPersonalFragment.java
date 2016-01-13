@@ -213,6 +213,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(collocationFragment);
                 break;
             case R.id.tv_pre_pay:
+                ((MainActivity)getActivity()).hideTip(View.GONE);
                 OrderAllOrdersFragment unPayFragment = OrderAllOrdersFragment.newInstance(ZhaiDou.TYPE_ORDER_PREPAY, "");
                 ((BaseActivity) getActivity()).navigationToFragment(unPayFragment);
                 break;

@@ -88,7 +88,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     private String mUserId;
     private TextView mTitle;
     private Map<Integer, Long> timerMapStamp = new HashMap<Integer, Long>();
-    private boolean hasUnPayOrder=false;
+    private boolean hasUnPayOrder = false;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -101,8 +101,8 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     mListView.onRefreshComplete();
                     if (timer == null) {
                         timer = new MyTimer(15 * 60 * 1000, 1000);
+                        timer.start();
                     }
-                    timer.start();
                     break;
                 case UPDATE_COUNT_DOWN_TIME:
                     if (mOrderList != null && mOrderList.size() > 0) {
@@ -163,9 +163,9 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             mRequestQueue = Volley.newRequestQueue(getActivity());
             allOrderAdapter = new AllOrderAdapter(getActivity(), mOrderList);
             mListView.setAdapter(allOrderAdapter);
-            mTitle= (TextView) rootView.findViewById(R.id.title);
+            mTitle = (TextView) rootView.findViewById(R.id.title);
             token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
-            mUserId=SharedPreferencesUtil.getData(mContext, "userId", -1)+"";
+            mUserId = SharedPreferencesUtil.getData(mContext, "userId", -1) + "";
 
             initData();
             allOrderAdapter.setOnInViewClickListener(R.id.orderlayout, new BaseListAdapter.onInternalClickListener() {
@@ -193,7 +193,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_apply_return_money), new DialogUtils.PositiveListener() {
                             @Override
                             public void onPositive() {
-                                final Map<String, String> params = new HashMap<String,String>();
+                                final Map<String, String> params = new HashMap<String, String>();
                                 params.put("businessType", "01");
                                 params.put("clientType", "ANDROID");
                                 params.put("version", "1.0.1");
@@ -207,7 +207,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                                         String message = jsonObject.optString("message");
                                         if (200 == status) {
                                             order.status = ZhaiDou.STATUS_ORDER_APPLY_CANCEL;
-                                            order.orderShowStatus = "申请取消中";
+                                            order.orderShowStatus = "退款申请中";
                                         }
                                         ShowToast(status == 200 ? "正在申请退款" : message);
                                     }
@@ -220,7 +220,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         params.put("businessType", "01");
                         params.put("clientType", "ANDROID");
                         params.put("version", "1.0.1");
-                        params.put("userId",mUserId);
+                        params.put("userId", mUserId);
                         params.put("clientVersion", "45");
                         params.put("orderCode", order.orderCode);
                         mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_cancel_ok), new DialogUtils.PositiveListener() {
@@ -255,11 +255,11 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
                     final Order1 order = (Order1) values;
                     if (ZhaiDou.STATUS_UNPAY == order.status) {
-                        if (order.orderRemainingTime<=0){
+                        if (order.orderRemainingTime <= 0) {
                             ShowToast("订单已超时");
                             return;
                         }
-                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.orderId,order.orderCode ,Double.parseDouble(order.orderTotalAmount), Integer.parseInt(order.orderRemainingTime+""), null);
+                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.orderId, order.orderCode, Double.parseDouble(order.orderTotalAmount), Integer.parseInt(order.orderRemainingTime + ""), null);
                         ((BaseActivity) getActivity()).navigationToFragment(shopPaymentFragment);
                     } else if (ZhaiDou.STATUS__DELIVERYED == order.status) {
                         mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_confirm), new DialogUtils.PositiveListener() {
@@ -269,7 +269,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                                 Map<String, String> params = new HashMap<String, String>();
                                 params.put("businessType", "01");
                                 params.put("clientType", "ANDROID");
-                                params.put("userId",mUserId);
+                                params.put("userId", mUserId);
                                 params.put("clientVersion", "45");
                                 params.put("orderCode", order.orderCode);
                                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_CONFIRM, new JSONObject(params), new Response.Listener<JSONObject>() {
@@ -298,7 +298,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     final Order1 order = (Order1) values;
                     final Map<String, String> params = new HashMap<String, String>();
                     params.put("businessType", "01");
-                    params.put("userId",mUserId);
+                    params.put("userId", mUserId);
                     params.put("orderCode", order.orderCode);
                     DialogUtils mDialogUtils = new DialogUtils(getActivity());
                     mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_delete), new DialogUtils.PositiveListener() {
@@ -324,8 +324,8 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             });
         }
 
-        mTitle.setText(ZhaiDou.TYPE_ORDER_ALL.equalsIgnoreCase(mCurrentType)?"全部订单"
-                :ZhaiDou.TYPE_ORDER_PREPAY.equalsIgnoreCase(mCurrentType)?"待支付":"待收货");
+        mTitle.setText(ZhaiDou.TYPE_ORDER_ALL.equalsIgnoreCase(mCurrentType) ? "全部订单"
+                : ZhaiDou.TYPE_ORDER_PREPAY.equalsIgnoreCase(mCurrentType) ? "待支付" : "待收货");
         return rootView;
     }
 
@@ -352,13 +352,13 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     }
 
     private void FetchOrderList(int page, final String type) {
-        mDialog=mDialogUtils.showLoadingDialog();
+        mDialog = mDialogUtils.showLoadingDialog();
         Map<String, String> params = new HashMap<String, String>();//28129
-        params.put("userId",mUserId);//64410//16665//29650//mUserId
+        params.put("userId", mUserId);//64410//16665//29650//mUserId
         params.put("clientType", "ANDROID");
         params.put("clientVersion", "45");
         params.put("businessType", "01");
-        params.put("type",type);
+        params.put("type", type);
         params.put("pageNo", page + "");
         params.put("pageSize", "10");// ZhaiDou.URL_ORDER_LIST,
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST, new JSONObject(params), new Response.Listener<JSONObject>() {
@@ -370,8 +370,8 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                 String message = jsonObject.optString("message");
                 int totalCount = jsonObject.optInt("totalCount");
                 if (type.equalsIgnoreCase(ZhaiDou.TYPE_ORDER_PREPAY))
-                    CountManage.getInstance().init(CountManage.TYPE.TAG_PREPAY,totalCount);
-                if (status==200){
+                    CountManage.getInstance().init(CountManage.TYPE.TAG_PREPAY, totalCount);
+                if (status == 200) {
                     JSONArray dataArray = jsonObject.optJSONArray("data");
                     int pageNo = jsonObject.optInt("pageNo");
                     if (dataArray != null && dataArray.length() < 10) {
@@ -392,7 +392,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         loadingView.setVisibility(View.VISIBLE);
                         mEmptyView.setVisibility(View.VISIBLE);
                     }
-                }else {
+                } else {
                     ShowToast(message);
                 }
             }
@@ -400,7 +400,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 if (mDialog != null) mDialog.dismiss();
-                if (allOrderAdapter.getCount()>0){
+                if (allOrderAdapter.getCount() > 0) {
                     if (timer == null) {
                         timer = new MyTimer(15 * 60 * 1000, 1000);
                     }
@@ -444,8 +444,8 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             TextView tv_order_amount = ViewHolder.get(convertView, R.id.tv_order_amount);
             TextView tv_order_status = ViewHolder.get(convertView, R.id.tv_order_status);
             ImageView iv_order_img = ViewHolder.get(convertView, R.id.iv_order_img);
-            LinearLayout remarkLayout=ViewHolder.get(convertView,R.id.remarkLayout);
-            TextView mRemarkView = ViewHolder.get(convertView,R.id.remark);
+            LinearLayout remarkLayout = ViewHolder.get(convertView, R.id.remarkLayout);
+            TextView mRemarkView = ViewHolder.get(convertView, R.id.remark);
             TextView btn1 = ViewHolder.get(convertView, R.id.bt_logistics);
             TextView btn2 = ViewHolder.get(convertView, R.id.bt_received);
             ImageView iv_delete = ViewHolder.get(convertView, R.id.iv_delete);
@@ -456,13 +456,13 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             tv_order_amount.setText("￥" + order.orderPayAmount);
             tv_order_status.setText(order.orderShowStatus);
             ToolUtils.setImageCacheUrl(order.childOrderPOList.get(0).orderItemPOList.get(0).pictureMiddleUrl, iv_order_img, R.drawable.icon_loading_defalut);
-            if (TextUtils.isEmpty(order.remark)){
+            if (TextUtils.isEmpty(order.remark)) {
                 remarkLayout.setVisibility(View.GONE);
-            }else {
+            } else {
                 remarkLayout.setVisibility(View.VISIBLE);
-                mRemarkView.setText("备注:"+order.remark);
+                mRemarkView.setText("备注:" + order.remark);
             }
-            hasUnPayOrder=false;
+            hasUnPayOrder = false;
             switch (order.status) {
                 case ZhaiDou.STATUS_UNPAY:
                     iv_delete.setVisibility(View.GONE);
@@ -472,7 +472,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     btn2.setVisibility(View.VISIBLE);
                     btn1.setText("取消订单");
                     if (timerMapStamp.get(position) == null) {
-                        timerMapStamp.put(position,order.orderRemainingTime);// order.orderRemainingTime//(long)(new Random().nextInt(60)+20)
+                        timerMapStamp.put(position, order.orderRemainingTime);// order.orderRemainingTime//(long)(new Random().nextInt(60)+20)
                     }
                     long l = Long.parseLong(timerMapStamp.get(position) + "");
                     if (l > 0) {
@@ -483,11 +483,12 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         btn2.setBackgroundResource(R.drawable.btn_red_click_selector);
                     } else {
                         if (!btn2.getText().toString().equalsIgnoreCase("超时过期"))
-                           CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
+                            CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
                         btn2.setText("超时过期");
+                        btn1.setVisibility(View.GONE);
                         btn2.setBackgroundResource(R.drawable.btn_no_click_selector);
                     }
-                    hasUnPayOrder=true;
+                    hasUnPayOrder = true;
                     break;
                 case ZhaiDou.STATUS_DELIVERY:
                     iv_delete.setVisibility(View.GONE);
@@ -558,7 +559,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     @Override
     public void onResume() {
         if (!isDataLoaded) {//&&hasUnPayOrder
-            System.out.println("OrderAllOrdersFragment.onResume--->"+isDataLoaded);
+            System.out.println("OrderAllOrdersFragment.onResume--->" + isDataLoaded);
             FetchOrderList(mCurrentPage = 0, mCurrentType);
         }
         super.onResume();
