@@ -39,6 +39,7 @@ public class CountManage {
         Integer integer = map.get(type);
         if (integer == null) {
             init(type, 0);
+            integer=0;
         }
         int i = integer.intValue();
         init(type, ++i);
