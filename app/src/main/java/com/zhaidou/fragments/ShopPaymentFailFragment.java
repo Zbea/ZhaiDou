@@ -86,7 +86,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
     private TextView tv_total, tv_fare, tv_amount;
     private int mCheckPosition = 0;
     private Button bt_pay;
-    private String token;
+    private String token,userName;
     private int userId;
     private IWXAPI api;
     private RequestQueue mRequestQueue;
@@ -120,7 +120,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
                         Toast.makeText(getActivity(), "支付成功",
                                 Toast.LENGTH_SHORT).show();
                         CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
-                        ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, payGoodsMoney + "");
+                        ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, payMoney + "");
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                         // 判断resultStatus 为非“9000”则代表可能支付失败
                         // “8000”代表支付结果因为支付渠道原因或者系统原因还在等待支付结果确认，最终交易是否成功以服务端异步通知为准（小概率状态）
@@ -172,6 +172,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
                     ((MainActivity) getActivity()).popToStack(ShopPaymentFailFragment.this);
                     break;
                 case R.id.bt_pay:
+                    mDialog.show();
                     payment();
                     break;
             }
@@ -201,7 +202,6 @@ public class ShopPaymentFailFragment extends BaseFragment {
             payMoney = getArguments().getDouble(ARG_AMOUNT);
             payYFMoney = getArguments().getDouble(ARG_FARE);
             mTimeStamp = getArguments().getLong(ARG_TIMER);
-
             payOrderCode = (String) getArguments().getSerializable(ARG_ORDER);
         }
     }
@@ -230,6 +230,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
         api.registerApp("wxce03c66622e5b243");
         mRequestQueue = Volley.newRequestQueue(getActivity());
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
+        userName = (String) SharedPreferencesUtil.getData(getActivity(), "nickName", "");
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
         backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(onClickListener);
@@ -263,7 +264,8 @@ public class ShopPaymentFailFragment extends BaseFragment {
                 }
             }
         });
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "");
+
+        mDialog=CustomLoadingDialog.setLoadingDialog(mContext,"");
         FetchOrderDetail();
 
     }
@@ -312,11 +314,11 @@ public class ShopPaymentFailFragment extends BaseFragment {
                     if (status == 200) {
                         JSONObject dataObject = jsonObject.optJSONObject("data");
                         if (dataObject != null)
-                            payMoney = dataObject.optDouble("orderTotalAmount");
+                            payMoney = dataObject.optDouble("orderTotalAmount")!=0?dataObject.optDouble("orderTotalAmount"):payMoney;
                         payGoodsMoney = dataObject.optDouble("itemTotalAmount");
                         payYFMoney = payMoney - payGoodsMoney;
-                        payOrderId = dataObject.optLong("orderId");
-                        payOrderCode = dataObject.optString("orderCode");
+                        payOrderId = dataObject.optLong("orderId")!=0?dataObject.optLong("orderId"):payOrderId;
+                        payOrderCode = dataObject.optString("orderCode")!=""?dataObject.optString("orderCode"):payOrderCode;
                         mTimeStamp = dataObject.optInt("orderRemainingTime");
                     }
                 }
@@ -353,7 +355,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
         JSONObject maps = new JSONObject();
         try {
             json = new JSONObject();
-            json.put("userName", "朱烽");
+            json.put("userName", userName);
             json.put("cashAmount", payMoney + "");
             json.put("orderId", payOrderId + "");
             json.put("userId", userId + "");
@@ -471,7 +473,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
             case 0://支付成功
                 Log.i("----->", "支付成功");
                 CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
-                ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, payGoodsMoney + "");
+                ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, payMoney + "");
                 ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                 break;
             case -1://支付失败
@@ -493,6 +495,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
     }
 
     public void onPause() {
+        mDialog.dismiss();
         super.onPause();
         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.shop_payment_fail_text));
     }
