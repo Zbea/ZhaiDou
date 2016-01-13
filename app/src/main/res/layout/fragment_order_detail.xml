@@ -372,14 +372,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"></View>
 
-        </LinearLayout>
-    </ScrollView>
-
     <FrameLayout
         android:id="@+id/fl_bottom"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
         android:layout_alignParentBottom="true"
         android:background="#ffffff">
 
@@ -390,12 +387,14 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="right|center_vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             android:orientation="horizontal">
 
             <com.zhaidou.view.TypeFaceTextView
-                android:id="@+id/tv_cancel_order"
+                android:id="@+id/tv_service"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="15dp"
@@ -404,7 +403,7 @@
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
                 android:paddingTop="6dp"
-                android:text="取消订单"
+                android:text="售后客服"
                 android:textColor="@color/white" />
 
             <com.zhaidou.view.TypeFaceTextView
@@ -416,11 +415,15 @@
                 android:paddingBottom="6dp"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
+                android:visibility="gone"
                 android:paddingTop="6dp"
                 android:text="支付15:00"
                 android:textColor="@color/white" />
         </LinearLayout>
     </FrameLayout>
+        </LinearLayout>
+    </ScrollView>
+
 
     <include
         layout="@layout/content_null_layout"

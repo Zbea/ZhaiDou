@@ -15,7 +15,7 @@ android {
     productFlavors {
         Androiddefault { "Androiddefault" }
         AndroidUpdate { "AndroidUpdate" }
-        wandoujiaAD{"wandoujiaAD"}
+        wandoujiaAD { "wandoujiaAD" }
         AndroidWan { "AndroidWan" }
         Android360 { "Android360" }
         AndroidOqq { "AndroidOqq" }
@@ -25,8 +25,8 @@ android {
         AndroidFm { "AndroidFm" }
         AndroidAz { "AndroidAz" }
         AndroidHW { "AndroidHW" }
-        AndroidOap{"AndroidOap"}
-        AndroidLenovo{"AndroidLenovo"}
+        AndroidOap { "AndroidOap" }
+        AndroidLenovo { "AndroidLenovo" }
     }
     productFlavors.all { flavor ->
         flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
@@ -37,6 +37,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+
 }
 task copyNativeLibs(type: Copy) {
     from fileTree(dir: 'libs', include: 'armeabi/*.so') into 'build/lib'
@@ -70,4 +75,5 @@ dependencies {
     compile files('libs/mta-mid-sdk-2.20.jar')
     compile files('libs/mta-stats-sdk-2.0.4.jar')
     compile files('libs/fastjson-1.2.7.jar')
+    compile files('libs/httpmime-4.1.jar')
 }

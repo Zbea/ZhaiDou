@@ -167,6 +167,7 @@ public class OrderDetailFragment1 extends BaseFragment {
                                     String message = jsonObject.optString("message");
                                     if (200 == status) {
                                         ShowToast("确认收货成功");
+//                                        store.status=
                                         ((MainActivity) getActivity()).popToStack(OrderDetailFragment1.this);
                                     } else {
                                         ShowToast(message);
@@ -342,17 +343,19 @@ public class OrderDetailFragment1 extends BaseFragment {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
                     OrderItem1 item = (OrderItem1) values;
-                    if (flags != 1) {
-                        GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(item.productName, item.productId + "");
-                        Bundle bundle = new Bundle();
-                        if (item.productType == 2) {
-                            bundle.putInt("flags", 1);
-                        }
-                        bundle.putInt("index", item.productId);
-                        bundle.putString("page", item.productName);
-                        goodsDetailsFragment.setArguments(bundle);
-                        ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
-                    }
+//                    if (flags != 1) {
+//                        GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(item.productName, item.productId + "");
+//                        Bundle bundle = new Bundle();
+//                        if (item.productType == 2) {
+//                            bundle.putInt("flags", 1);
+//                        }
+//                        bundle.putInt("index", item.productId);
+//                        bundle.putString("page", item.productName);
+//                        goodsDetailsFragment.setArguments(bundle);
+//                        ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
+//                    }
+                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(item.productName, item.productCode+"");
+                    ((BaseActivity) mContext).navigationToFragment(goodsDetailsFragment);
                 }
             });
 

@@ -1,7 +1,9 @@
 package com.zhaidou.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +21,7 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.OrderItem1;
 import com.zhaidou.model.Store;
+import com.zhaidou.utils.DeviceUtils;
 import com.zhaidou.utils.ToolUtils;
 
 import java.util.List;
@@ -71,7 +74,6 @@ public class ReturnDetailFragment extends BaseFragment {
     }
     private void initView(View view) {
         mContext = getActivity();
-//        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading", true);
         loadingView = (LinearLayout) view.findViewById(R.id.loadingView);
         mOrderNumber = (TextView) view.findViewById(R.id.tv_order_number);
         mOrderTime = (TextView) view.findViewById(R.id.tv_order_time);
@@ -82,28 +84,18 @@ public class ReturnDetailFragment extends BaseFragment {
         mReceiverTime = (TextView) view.findViewById(R.id.tv_receiver_name);
         mOrderAmount = (TextView) view.findViewById(R.id.tv_order_amount);
         mOrderEdit = (TextView) view.findViewById(R.id.tv_order_edit);
-        mCancelOrder = (TextView) view.findViewById(R.id.tv_cancel_order);
         goodsInfo = (TextView) view.findViewById(R.id.goodsInfo);
         mListView = (ListView) view.findViewById(R.id.lv_order_list);
         orderItemAdapter = new OrderItemAdapter(getActivity(), mStore.mallReturnFlowDetailDTOList);
         mListView.setAdapter(orderItemAdapter);
-//        mListView.setOnItemClickListener(onItemClickListener);
         requestQueue = Volley.newRequestQueue(getActivity());
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//                FetchOrderDetail(mOrderId);
-//            }
-//        }, 300);
-
-        mCancelOrder.setOnClickListener(this);
 
         loadingView.setVisibility(View.GONE);
 
         mOrderNumber.setText(mStore.orderCode);
         mOrderTime.setText(mStore.createTime);
         mOrderStatus.setText(mStore.statusShowName);
+        view.findViewById(R.id.tv_service).setOnClickListener(this);
     }
 
     public class OrderItemAdapter extends BaseListAdapter<OrderItem1> {
@@ -133,6 +125,20 @@ public class ReturnDetailFragment extends BaseFragment {
             mOldPrice.setText("￥" + ToolUtils.isIntPrice("" + item.price));
             mOldPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
             return convertView;
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.tv_service:
+                if (DeviceUtils.isApkInstalled(getActivity(), "com.tencent.mobileqq")) {
+                    String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_Number);
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                } else {
+                    ShowToast("没有安装QQ客户端哦");
+                }
+                break;
         }
     }
 }

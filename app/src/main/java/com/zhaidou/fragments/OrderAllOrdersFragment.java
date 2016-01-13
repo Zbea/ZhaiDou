@@ -36,7 +36,6 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.CountManage;
 import com.zhaidou.base.ViewHolder;
-import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order1;
 import com.zhaidou.model.Store;
 import com.zhaidou.utils.DialogUtils;
@@ -331,15 +330,12 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     }
 
     private void initData() {
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading", true);
         if (NetworkUtils.isNetworkAvailable(mContext)) {
             isDataLoaded = true;
             mNetErrorView.setVisibility(View.GONE);
             loadingView.setVisibility(View.GONE);
             FetchOrderList(mCurrentPage = 0, mCurrentType);
         } else {
-            if (mDialog != null)
-                mDialog.dismiss();
             mEmptyView.setVisibility(View.GONE);
             mNetErrorView.setVisibility(View.VISIBLE);
             loadingView.setVisibility(View.VISIBLE);
@@ -356,12 +352,13 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     }
 
     private void FetchOrderList(int page, final String type) {
+        mDialog=mDialogUtils.showLoadingDialog();
         Map<String, String> params = new HashMap<String, String>();//28129
-        params.put("userId",mUserId);//64410//16665
+        params.put("userId",mUserId);//64410//16665//29650//mUserId
         params.put("clientType", "ANDROID");
         params.put("clientVersion", "45");
         params.put("businessType", "01");
-        params.put("type", type);
+        params.put("type", 4+"");
         params.put("pageNo", page + "");
         params.put("pageSize", "10");// ZhaiDou.URL_ORDER_LIST,
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST, new JSONObject(params), new Response.Listener<JSONObject>() {
@@ -494,8 +491,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     break;
                 case ZhaiDou.STATUS_DELIVERY:
                     iv_delete.setVisibility(View.GONE);
-                    tv_order_status.setText("已发货");
-                    ll_btn.setVisibility(View.VISIBLE);
+                    ll_btn.setVisibility(View.GONE);
                     btn1.setVisibility(View.VISIBLE);
                     btn2.setVisibility(View.VISIBLE);
                     btn2.setText("确认收货");
@@ -557,7 +553,8 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
     @Override
     public void onResume() {
-        if (!isDataLoaded&&hasUnPayOrder) {
+        if (!isDataLoaded) {//&&hasUnPayOrder
+            System.out.println("OrderAllOrdersFragment.onResume--->"+isDataLoaded);
             FetchOrderList(mCurrentPage = 0, mCurrentType);
         }
         super.onResume();

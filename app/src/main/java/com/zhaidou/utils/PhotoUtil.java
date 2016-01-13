@@ -13,6 +13,7 @@ import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
 import android.util.Base64;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,7 +26,6 @@ import java.io.IOException;
 public class PhotoUtil {
     /**
      * 回收垃圾 recycle
-     *
      * @throws
      */
     public static void recycle(Bitmap bitmap) {
@@ -336,6 +336,26 @@ public class PhotoUtil {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
         return baos.toByteArray();
+    }
+    public static File saveBitmapFile(Bitmap bitmap,String fileName){
+        File file=new File(fileName);//将要保存图片的路径
+        try {
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+            bos.flush();
+            bos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+
+    public static BitmapFactory.Options getBitmapOption(int inSampleSize){
+        System.gc();
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPurgeable = true;
+        options.inSampleSize = inSampleSize;
+        return options;
     }
 }
 

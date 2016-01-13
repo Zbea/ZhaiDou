@@ -239,7 +239,8 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
             tv_order_time.setText(store.createTime);
             tv_order_number.setText(store.orderCode);
             remark.setText("备注:" + store.mallReturnFlowDetailDTOList.get(0).remark);
-            tv_order_amount.setText("￥"+store.orderPayAmount);
+            remark.setVisibility(View.GONE);
+            tv_order_amount.setText("￥"+ store.actualAmount);
             tv_order_status.setText(store.statusShowName);
             ToolUtils.setImageCacheUrl(store.mallReturnFlowDetailDTOList.get(0).thumbnailPicUrl, iv_order_img, R.drawable.icon_loading_defalut);
             mBottomLayout.setVisibility(View.GONE);
@@ -251,7 +252,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
 
     private void FetchReturnData(final int page) {
         Map<String, String> params = new HashMap();
-        params.put("userId", mUserId);
+        params.put("userId", mUserId);//mUserId
         params.put("clientType", "ANDROID");
         params.put("clientVersion", "45");
         params.put("businessType", "01");

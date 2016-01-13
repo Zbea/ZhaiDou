@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,7 +31,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -43,8 +43,7 @@ import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
-import com.zhaidou.model.MultipartRequest;
-import com.zhaidou.model.MultipartRequestParams;
+import com.zhaidou.model.MultipartRequest1;
 import com.zhaidou.model.Order;
 import com.zhaidou.model.OrderItem1;
 import com.zhaidou.model.ReturnItem;
@@ -327,6 +326,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                 break;
         }
     }
+
     public class AfterSaleAdapter extends BaseListAdapter<OrderItem1> {
         public AfterSaleAdapter(Context context, List<OrderItem1> list) {
             super(context, list);
@@ -501,10 +501,12 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
     }
 
     private void applyReturn() {
+
         Object id = SharedPreferencesUtil.getData(getActivity(), "userId", 0);
         final Dialog dialog = mDialogUtils.showLoadingDialog();
         List<ReturnItem> items = new ArrayList<ReturnItem>();
-        MultipartRequestParams params = new MultipartRequestParams();
+        Map<String, String> params = new HashMap<String, String>();
+        List<File> files = new ArrayList<File>();
         JSONArray array = new JSONArray(items);
         for (int k = 0; k < returnItem.size(); k++) {
             OrderItem1 item1 = returnItem.get(k);
@@ -524,18 +526,27 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
         params.put("isHasInvoice", "0");
         params.put("operationType", "1");
         params.put("mallReturnFlowDetailPOList", array.toString());
-        params.put("userId",id+"");
+        params.put("userId", id + "");
         params.put("orderCode", mStore.orderCode);
-        JSONArray jsonArray = new JSONArray();
+        Bitmap bitmap;
         for (int i = 0; i < imagePath.size(); i++) {
             String path = imagePath.get(i);
-            Bitmap bitmap = PhotoUtil.getImageThumbnail(path, 480, 800);
-            byte[] bytes = PhotoUtil.Bitmap2Bytes(bitmap);
-            jsonArray.put(bytes.toString());
-            PhotoUtil.recycle(bitmap);
+            if (!TextUtils.isEmpty(path)) {
+                File file = new File(path);
+                String absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + System.currentTimeMillis() + file.getName();
+                bitmap = BitmapFactory.decodeFile(path, PhotoUtil.getBitmapOption(2));
+                File thumbFile = PhotoUtil.saveBitmapFile(bitmap, absolutePath);
+                files.add(thumbFile);
+            }
         }
-        params.put("uploadfile", jsonArray.toString());
-        MultipartRequest multipartRequest = new MultipartRequest(Request.Method.POST, params, ZhaiDou.URL_ORDER_RETURN_APPLY, new Response.Listener<String>() {
+
+        MultipartRequest1 multipartRequest1 = new MultipartRequest1(ZhaiDou.URL_ORDER_RETURN_APPLY, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                dialog.dismiss();
+                ShowToast("网络错误");
+            }
+        }, new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
                 dialog.dismiss();
@@ -553,15 +564,10 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                     e.printStackTrace();
                 }
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                dialog.dismiss();
-                ShowToast("网络错误");
-            }
-        });
-        multipartRequest.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 1, 1.0f));
-        requestQueue.add(multipartRequest);
+        }, "uploadfile", files, params);
+        multipartRequest1.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 1, 1.0f));
+        requestQueue.add(multipartRequest1);
+
     }
 
     public void setOrderListener(Order.OrderListener orderListener) {
