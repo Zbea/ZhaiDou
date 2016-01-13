@@ -122,7 +122,7 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
         args.putString(ARG_ADDRESS, address);
         args.putString(ARG_LOCATION, location);
         args.putString(ARG_PROFILE_ID, profileId);
-        args.putString(ARG_PROFILE_ID,providerId);
+        args.putString(ARG_PROVIDERID,providerId);
         fragment.setArguments(args);
         return fragment;
     }

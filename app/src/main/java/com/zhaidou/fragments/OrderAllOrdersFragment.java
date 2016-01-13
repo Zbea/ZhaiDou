@@ -532,6 +532,10 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     iv_delete.setVisibility(View.GONE);
                     ll_btn.setVisibility(View.GONE);
                     break;
+                case ZhaiDou.STATUS_PICKINGUP:
+                    iv_delete.setVisibility(View.GONE);
+                    ll_btn.setVisibility(View.GONE);
+                    break;
             }
             return convertView;
         }
