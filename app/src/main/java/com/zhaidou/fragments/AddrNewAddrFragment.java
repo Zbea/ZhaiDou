@@ -190,6 +190,9 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
                 } else if (TextUtils.isEmpty(location)) {
                     Toast.makeText(getActivity(), "省市区不能为空", Toast.LENGTH_SHORT).show();
                     return;
+                }else if (mobile.length()!=11){
+                    Toast.makeText(getActivity(), "手机号码格式错误", Toast.LENGTH_SHORT).show();
+                    return;
                 }
                 mNickName = name;
                 mMobile = mobile;
