@@ -201,7 +201,7 @@ public class OrderDetailFragment1 extends BaseFragment {
         params.put("clientType", "ANDROID");
         params.put("version", versionName);
         params.put("clientVersion", versionCode);
-        params.put("userId", 29650+"");//mUserId
+        params.put("userId", mUserId);//mUserId//29650+""
         params.put("orderCode", orderCode);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, new ZhaiDou().URL_ORDER_DETAIL_LIST_URL, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
@@ -308,6 +308,7 @@ public class OrderDetailFragment1 extends BaseFragment {
                 btn1.setText("申请退货");
                 btn2.setText("查看物流");
                 btn1.setBackgroundResource(R.drawable.btn_green_click_bg);
+                btn2.setBackgroundResource(R.drawable.btn_green_click_bg);
                 if (store.returnGoodsFlag == 1)
                     mBottomLayout.setVisibility(View.GONE);
             } else if (ZhaiDou.STATUS_UNDELIVERY == store.status || ZhaiDou.STATUS_PICKINGUP == store.status || ZhaiDou.STATUS_UNPAY == store.status) {/**待发货,已拣货,待支付*/
@@ -316,6 +317,8 @@ public class OrderDetailFragment1 extends BaseFragment {
                 mBottomLayout.setVisibility(View.VISIBLE);
                 btn2.setText("查看物流");
                 btn1.setText("确认收货");
+                btn2.setBackgroundResource(R.drawable.btn_green_click_bg);
+                btn1.setBackgroundResource(R.drawable.btn_red_click_selector);
             } else if (ZhaiDou.STATUS_ORDER_CANCEL == store.status) {//已取消
                 mBottomLayout.setVisibility(View.GONE);
             }
