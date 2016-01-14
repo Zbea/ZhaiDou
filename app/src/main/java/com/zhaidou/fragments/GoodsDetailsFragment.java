@@ -660,7 +660,6 @@ public class GoodsDetailsFragment extends BaseFragment
     {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshGoodsDetailsTag);

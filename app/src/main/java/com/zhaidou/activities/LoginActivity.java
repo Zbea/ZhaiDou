@@ -68,6 +68,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     private TextView headTitle;
     private TextView mLoginView;
     private Dialog mDialog;
+    protected InputMethodManager inputMethodManager;
     private RegisterFragment.RegisterOrLoginListener mRegisterOrLoginListener;
 
     //dialog相关
@@ -139,7 +140,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         flags = getIntent().getFlags();
 
         strEmail = getEmail();
-
+        inputMethodManager=(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         headTitle = (TextView) findViewById(R.id.title_tv);
         headTitle.setText(R.string.title_login);
 
@@ -617,5 +618,14 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         super.onPause();
         MobclickAgent.onPageEnd(getResources().getString(R.string.title_login));
         MobclickAgent.onPause(this);
+    }
+
+    @Override
+    public void finish()
+    {
+        super.finish();
+
+        if (inputMethodManager.isActive())
+            inputMethodManager.hideSoftInputFromWindow(getWindow().peekDecorView().getApplicationWindowToken(),0);
     }
 }

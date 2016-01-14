@@ -99,6 +99,7 @@ public class ShopCartFragment extends BaseFragment
     private boolean isGoods;//是否存在商品
     private boolean isFrist=true;
     private int cartCount;//购物车商品数量
+    private boolean isRefresh=true;//更新其他购物车加载后刷新购物车
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -108,20 +109,26 @@ public class ShopCartFragment extends BaseFragment
             String action = intent.getAction();
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
             {
-                if (items.size() > 0)
+                if (isRefresh)
                 {
-                    setGoodsCheckChange();
-                } else
+                    refreshData();
+                }
+                else
                 {
-                    cartCount=0;
-                    nullView.setVisibility(View.VISIBLE);
-                    contentView.setVisibility(View.GONE);
-                    ((MainActivity) mContext).CartTip(cartCount);
+                    if (items.size() > 0)
+                    {
+                        setGoodsCheckChange();
+                    } else
+                    {
+                        cartCount=0;
+                        nullView.setVisibility(View.VISIBLE);
+                        contentView.setVisibility(View.GONE);
+                        ((MainActivity) mContext).CartTip(cartCount);
+                    }
                 }
             }
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
             {
-                refreshData();
             }
             if (action.equals(ZhaiDou.IntentRefreshAddCartTag)) {
                 refreshData();
@@ -351,6 +358,7 @@ public class ShopCartFragment extends BaseFragment
             allCb.setChecked(false);
         }
         checkLogin();
+        setGoodsCheckChange();
         FetchDetailData();
         FetchCountData();
     }
@@ -606,6 +614,7 @@ public class ShopCartFragment extends BaseFragment
         //发送数量修改广播
         Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsCheckTag);
         mContext.sendBroadcast(intent);
+        isRefresh=false;
     }
 
     /**

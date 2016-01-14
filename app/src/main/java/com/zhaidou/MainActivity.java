@@ -48,6 +48,7 @@ import com.zhaidou.fragments.MainCategoryFragment;
 import com.zhaidou.fragments.MainHomeFragment;
 import com.zhaidou.fragments.MainPersonalFragment;
 import com.zhaidou.fragments.MainStrategyFragment;
+import com.zhaidou.fragments.OrderDetailFragment1;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.fragments.ShopCartFragment;
 import com.zhaidou.fragments.ShopPaymentFailFragment;
@@ -63,6 +64,7 @@ import com.zhaidou.utils.DeviceUtils;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
@@ -126,9 +128,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         {
             String action = intent.getAction();
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
-            {
-            }
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
             {
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag))
@@ -351,7 +350,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
         intentFilter.addAction(ZhaiDou.BROADCAST_WXAPI_FILTER);
         mContext.registerReceiver(broadcastReceiver, intentFilter);
@@ -632,20 +630,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         FragmentManager manager = getSupportFragmentManager();
         int num = manager.getBackStackEntryCount();
         List<Fragment> fragments = manager.getFragments();
-        //当分类显示时候，返回先隐藏
-        for (Fragment fragment : fragments)
-        {
-            if (fragment instanceof HomeStrategyFragment)
-            {
-                Fragment homeCategoryFragment = fragment.getChildFragmentManager().findFragmentByTag(HomeCategoryFragment.class.getSimpleName());
-                if (!homeCategoryFragment.isHidden())
-                {
-                    ((HomeStrategyFragment) fragment).getHomeCategory();
-                    fragment.getChildFragmentManager().beginTransaction().hide(homeCategoryFragment).commit();
-                    return true;
-                }
-            }
-        }
         if (num == 0)
         {
             if (keyCode == KeyEvent.KEYCODE_BACK)
@@ -664,21 +648,47 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         {
             if (fragments.size() > 0)
             {
+                Fragment orderDetailFragment = manager.findFragmentByTag(OrderDetailFragment1.class.getSimpleName());
                 Fragment shopPaymentSuccessFragmen = manager.findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
                 Fragment shopPaymentFailFragment = manager.findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
                 Fragment shopPaymentFragment = manager.findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
-                if ((shopPaymentSuccessFragmen != null && shopPaymentSuccessFragmen instanceof ShopPaymentSuccessFragment))
+
+                if ((orderDetailFragment != null && orderDetailFragment instanceof OrderDetailFragment1))
+                {
+                    //orderDetailFragment
+                    ToolUtils.setLog("关闭orderDetailFragment");
+                    popToStack(orderDetailFragment);
+                    return true;
+                }
+                else if ((shopPaymentSuccessFragmen != null && shopPaymentSuccessFragmen instanceof ShopPaymentSuccessFragment))
                 {
                     //ShopPaymentSuccessFragment关闭
+                    ToolUtils.setLog("关闭shopPaymentSuccessFragmen");
                     popToStack(shopPaymentSuccessFragmen);
+//                    if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment)
+//                    {
+//                        //ShopPaymentSuccessFragment关闭
+//                        popToStack(shopPaymentFragment);
+//                    }
                     return true;
-                } else if (shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment)
+
+                }
+                 else if ((shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment))
                 {
-                    //ShopPaymentFailFragment关闭
+                    ToolUtils.setLog("关闭shopPaymentFailFragment");
+                    //ShopPaymentSuccessFragment关闭
                     popToStack(shopPaymentFailFragment);
+//                    if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment)
+//                    {
+//                        //ShopPaymentSuccessFragment关闭
+//                        popToStack(shopPaymentFragment);
+//
+//                    }
                     return true;
-                } else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment)
+                }
+                else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment)
                 {
+                    ToolUtils.setLog("关闭shopPaymentFragment");
                     //ShopPaymentFragment返回弹出提示
                     BackPaymentDialog(shopPaymentFragment);
                     return true;
@@ -708,24 +718,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         }, null);
     }
 
-    /**
-     * 关闭代付款页面
-     */
-    public void ColsePaymentPage()
-    {
-        FragmentManager manager = getSupportFragmentManager();
-        List<Fragment> fragments = manager.getFragments();
-        if (fragments.size() > 0)
-        {
-            Fragment shopPaymentFragment = manager.findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
-            if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment)
-            {
-                //ShopPaymentFragment返回弹出提示
-                popToStack(shopPaymentFragment);
-            }
-        }
-    }
-
     public void toHomeFragment()
     {
         if (currentFragment instanceof MainHomeFragment)
@@ -750,12 +742,11 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         List<Fragment> fragments = manager.getFragments();
         for (Fragment fragment : fragments)
         {
-            if (fragment instanceof MainHomeFragment || fragment instanceof MainPersonalFragment || fragment instanceof MainStrategyFragment || fragment instanceof MainCategoryFragment || fragment instanceof DiyFragment)
+            if (fragment instanceof MainHomeFragment || fragment instanceof MainPersonalFragment || fragment instanceof MainStrategyFragment || fragment instanceof MainCategoryFragment || fragment instanceof ShopCartFragment)
             {
             } else
             {
-                manager.popBackStack();
-                manager.beginTransaction().remove(fragment).commit();
+                popToStack(fragment);
             }
         }
     }

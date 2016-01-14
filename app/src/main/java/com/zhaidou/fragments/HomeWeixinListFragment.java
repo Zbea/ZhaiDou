@@ -9,6 +9,7 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -24,6 +25,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshListView;
+import com.pulltorefresh.PullToRefreshScrollView;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
@@ -35,6 +37,7 @@ import com.zhaidou.model.Article;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.ListViewForScrollView;
 import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
@@ -49,7 +52,7 @@ import java.util.WeakHashMap;
 /**
  * 微信文章列表
  */
-public class HomeWeixinListFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<ListView>
+public class HomeWeixinListFragment extends BaseFragment
 {
     private static final String ARG_PARAM = "param";
     private static final String ARG_STRING = "string";
@@ -60,7 +63,8 @@ public class HomeWeixinListFragment extends BaseFragment implements PullToRefres
     private TypeFaceTextView titleTv;
 
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
-    private PullToRefreshListView listView;
+    private PullToRefreshScrollView scrollView;
+    private ListViewForScrollView listView;
     private int currentPage = 1;
     private int pageSize;
     private int pageCount;
@@ -81,18 +85,34 @@ public class HomeWeixinListFragment extends BaseFragment implements PullToRefres
             switch (msg.what)
             {
                 case UPDATE_HOMELIST:
-                    ToolUtils.setLog("11111");
                     mHomeAdapter.setList(articleList);
                     mHomeAdapter.notifyDataSetChanged();
                     if (pageCount > articleList.size())
                     {
-                        listView.setMode(PullToRefreshBase.Mode.BOTH);
+                        scrollView.setMode(PullToRefreshBase.Mode.BOTH);
                     } else
                     {
-                        listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+                        scrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                     }
                     break;
             }
+        }
+    };
+
+    private PullToRefreshBase.OnRefreshListener2 onRefreshListener=new PullToRefreshBase.OnRefreshListener2()
+    {
+        @Override
+        public void onPullDownToRefresh(PullToRefreshBase refreshView)
+        {
+            currentPage = 1;
+            FetchData();
+        }
+
+        @Override
+        public void onPullUpToRefresh(PullToRefreshBase refreshView)
+        {
+            ++currentPage;
+            FetchData();
         }
     };
 
@@ -145,10 +165,11 @@ public class HomeWeixinListFragment extends BaseFragment implements PullToRefres
         titleTv = (TypeFaceTextView) view.findViewById(R.id.tv_title);
         titleTv.setText(mParam);
 
-        listView = (PullToRefreshListView) view.findViewById(R.id.lv_special_list);
-        listView.setMode(PullToRefreshBase.Mode.BOTH);
-        listView.setOnRefreshListener(this);
-        mHomeAdapter = new HomeAdapter(mContext, articleList);
+        scrollView=(PullToRefreshScrollView)view.findViewById(R.id.scrollView);
+        scrollView.setMode(PullToRefreshBase.Mode.BOTH);
+        scrollView.setOnRefreshListener(onRefreshListener);
+        listView=(ListViewForScrollView)view.findViewById(R.id.lv_special_list);
+        mHomeAdapter = new HomeAdapter(mContext,articleList);
         listView.setAdapter(mHomeAdapter);
 
         mRequestQueue = Volley.newRequestQueue(mContext);
@@ -161,16 +182,16 @@ public class HomeWeixinListFragment extends BaseFragment implements PullToRefres
         {
             Toast.makeText(mContext, "抱歉,网络链接失败", Toast.LENGTH_SHORT).show();
         }
-        mHomeAdapter.setOnInViewClickListener(R.id.rl_fragment_strategy, new BaseListAdapter.onInternalClickListener()
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
-            public void OnClickListener(View parentV, View v, Integer position, Object values)
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                Article article = (Article) values;
+                Article article = articleList.get(position);
                 if ("true".equalsIgnoreCase(article.getIs_new()))
                 {
                     SharedPreferencesUtil.saveData(mContext, "WeixinList_" + article.getId(), false);
-                    parentV.findViewById(R.id.newsView).setVisibility(View.GONE);
+                    parent.findViewById(R.id.newsView).setVisibility(View.GONE);
                 }
                 Intent detailIntent = new Intent(mContext, ItemDetailActivity.class);
                 detailIntent.putExtra("article", article);
@@ -178,12 +199,12 @@ public class HomeWeixinListFragment extends BaseFragment implements PullToRefres
                 detailIntent.putExtra("from", "product");
                 detailIntent.putExtra("title", article.getTitle());
                 detailIntent.putExtra("cover_url", article.getImg_url());
-                detailIntent.putExtra("show_header", true);
                 detailIntent.putExtra("url", article.getIs_new());
                 detailIntent.putExtra("show_header", false);
                 startActivity(detailIntent);
             }
         });
+
     }
 
     private void FetchData()
@@ -197,7 +218,7 @@ public class HomeWeixinListFragment extends BaseFragment implements PullToRefres
                 {
                     mDialog.dismiss();
                 }
-                listView.onRefreshComplete();
+                scrollView.onRefreshComplete();
                 if (currentPage == 1)
                     articleList.clear();
                 if (response != null)
@@ -241,7 +262,7 @@ public class HomeWeixinListFragment extends BaseFragment implements PullToRefres
                 {
                     mDialog.dismiss();
                 }
-                listView.onRefreshComplete();
+                scrollView.onRefreshComplete();
                 if (currentPage > 1)
                 {
                     currentPage--;
@@ -310,17 +331,4 @@ public class HomeWeixinListFragment extends BaseFragment implements PullToRefres
         }
     }
 
-    @Override
-    public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView)
-    {
-        currentPage = 1;
-        FetchData();
-    }
-
-    @Override
-    public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView)
-    {
-        ++currentPage;
-        FetchData();
-    }
 }

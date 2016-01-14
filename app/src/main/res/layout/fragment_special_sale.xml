@@ -60,14 +60,15 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"></LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="35dp"
+        android:background="@color/white"
         android:orientation="horizontal">
         <LinearLayout
-            android:background="@color/white"
-            android:layout_width="0dp"
-            android:layout_height="35dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
             android:gravity="center_vertical|left"
             android:layout_weight="1">
             <ImageView
@@ -83,12 +84,11 @@
                 android:text="限时特卖 疯狂抢购"/>
         </LinearLayout>
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_alignParentRight="true"
             android:gravity="right|center_vertical"
-            android:paddingRight="10dp"
-            android:background="@color/white">
+            android:paddingRight="10dp">
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
@@ -104,7 +104,7 @@
                 android:text="计时中"
                 android:textColor="#666666"/>
         </LinearLayout>
-    </LinearLayout>
+    </RelativeLayout>
     <com.zhaidou.view.ChildGridView
         android:id="@+id/gv_sale"
         android:layout_width="match_parent"

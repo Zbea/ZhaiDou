@@ -311,7 +311,7 @@ public class ToolUtils
             detailIntent.putExtra("from", "product");
             detailIntent.putExtra("title", item.title);
             detailIntent.putExtra("cover_url", item.imageUrl);
-            detailIntent.putExtra("url", ZhaiDou.ARTICLE_DETAIL_URL + item.id);
+            detailIntent.putExtra("url", ZhaiDou.ARTICLE_DETAIL_URL + item.typeValue);
             detailIntent.putExtra("show_header", true);
             mContext.startActivity(detailIntent);
         } else if (item.type == 3)
