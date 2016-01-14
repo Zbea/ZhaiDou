@@ -69,13 +69,14 @@
                     android:textSize="16sp" />
 
             </LinearLayout>
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/rl_name"
                 android:orientation="horizontal">
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
                     <com.zhaidou.view.TypeFaceTextView
@@ -84,18 +85,18 @@
                         android:layout_marginRight="5dp"
                         android:layout_marginTop="5dp"
                         android:text="规格:"
+                        android:visibility="gone"
                         android:textColor="@color/text_gary_color"
                         android:textSize="13sp" />
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:id="@+id/tv_specification"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:paddingRight="5dp"
-                        android:layout_below="@id/tv_name"
                         android:layout_marginTop="5dp"
                         android:ellipsize="end"
+                        android:singleLine="true"
                         android:text="L"
                         android:textColor="@color/text_gary_color"
                         android:textSize="13sp" />
@@ -104,13 +105,13 @@
                     android:id="@+id/orderItemFormalPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
+                    android:layout_marginTop="5dp"
                     android:text="￥123.5"
                     android:textColor="@color/text_gary_color"
                     android:layout_alignParentRight="true"
                     android:textSize="13sp" />
 
-            </RelativeLayout>
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
