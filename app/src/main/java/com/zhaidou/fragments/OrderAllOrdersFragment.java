@@ -354,7 +354,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     private void FetchOrderList(int page, final String type) {
         mDialog = mDialogUtils.showLoadingDialog();
         Map<String, String> params = new HashMap<String, String>();//28129
-        params.put("userId", mUserId);//64410//16665//29650//mUserId
+        params.put("userId", 29650+"");//64410//16665//29650//mUserId
         params.put("clientType", "ANDROID");
         params.put("clientVersion", "45");
         params.put("businessType", "01");
@@ -521,6 +521,9 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     ll_btn.setVisibility(View.VISIBLE);
                     btn2.setVisibility(View.GONE);
                     btn1.setText("申请退款");
+                    if (order.childOrderPOList.size() == 1 && order.childOrderPOList.get(0).orderItemPOList.size() == 1 && order.childOrderPOList.get(0).orderItemPOList.get(0).productType == 2) {
+                        ll_btn.setVisibility(View.GONE);
+                    }
                     break;
                 case ZhaiDou.STATUS_PART_DELIVERY:
                     iv_delete.setVisibility(View.GONE);
