@@ -123,9 +123,8 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     tv_intro.setText(TextUtils.isEmpty(user.getDescription()) ? "" : user.getDescription());
                     tv_mobile.setText(TextUtils.isEmpty(user.getMobile()) ? "" : user.getMobile());
                     tv_job.setText(user.isVerified() ? "宅豆认证设计师" : "未认证设计师");
-
                     tv_addr_mobile.setText(TextUtils.isEmpty(user.getMobile()) ? "" : user.getMobile());
-                    tv_addr.setText(TextUtils.isEmpty(user.getAddress2()) ? "" : user.getProvince()+user.getCity()+user.getProvince()+user.getAddress2());
+                    tv_addr.setText(TextUtils.isEmpty(user.getAddress2()) ? "" : user.getProvince()+user.getCity()+user.getProvider()+user.getAddress2());
                     tv_addr_username.setText(TextUtils.isEmpty(user.getFirst_name()) ? "" : user.getFirst_name());
 
                     if (TextUtils.isEmpty(user.getAddress2()) || "null".equals(user.getAddress2())) {
@@ -308,7 +307,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 });
                 break;
             case R.id.tv_edit:
-                AddrManageFragment editFragment = AddrManageFragment.newInstance(user.getFirst_name(), user.getMobile(), user.getAddress2(), profileId, 1);
+                AddrManageFragment editFragment = AddrManageFragment.newInstance(user.getFirst_name(), user.getMobile(),user.getAddress2(), profileId, 1);
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container, editFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
                 break;

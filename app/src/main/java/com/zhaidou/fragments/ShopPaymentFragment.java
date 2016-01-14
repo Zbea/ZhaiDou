@@ -134,6 +134,7 @@ public class ShopPaymentFragment extends BaseFragment
                         // 其他值就可以判断为支付失败，包括用户主动取消支付，或者系统返回的错误
                         ShopPaymentFailFragment shopPaymentFailFragment = ShopPaymentFailFragment.newInstance(payOrderId, payMoney, 0, initTime, payOrderCode);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
+
                     } else if (TextUtils.equals(resultStatus, "6002"))
                     {
                         // 其他值就可以判断为支付失败，包括用户主动取消支付，或者系统返回的错误
@@ -370,6 +371,9 @@ public class ShopPaymentFragment extends BaseFragment
             {
                 dialog.dismiss();
                 ((MainActivity) getActivity()).popToStack(ShopPaymentFragment.this);
+//                CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
+//                ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, payMoney+"");
+//                ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
             }
         });
         dialog.setCanceledOnTouchOutside(true);
@@ -601,11 +605,13 @@ public class ShopPaymentFragment extends BaseFragment
                 break;
             case 0://支付成功
                 Log.i("----->", "支付成功");
-                isSuccess = true;
+                if (!isSuccess){
                 CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
                 notificationPaySuccess();
                 ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, payMoney+"");
                 ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
+                }
+                isSuccess = true;
                 break;
             case -1://支付失败
                 Log.i("----->", "支付失败");

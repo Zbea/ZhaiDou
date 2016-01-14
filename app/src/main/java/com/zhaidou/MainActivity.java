@@ -188,7 +188,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                         }
                         selectFragment(currentFragment, persoanlFragment);
                         setButton(personalButton);
-                        hideTip(View.GONE);
+//                        hideTip(View.GONE);
                     }
                     else
                     {
@@ -202,7 +202,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                         selectFragment(currentFragment, shopCartFragment);
                         setButton(diyButton);
                     }
-
+                    FetchUnPayData();
                     break;
 
                 case 1:
@@ -617,6 +617,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     public void logout(Fragment fragment)
     {
         popToStack(fragment);
+        hideTip(View.GONE);
         if (utilityFragment == null)
         {
             utilityFragment = MainHomeFragment.newInstance(ZhaiDou.HOME_PAGE_URL, ZhaiDou.ListType.HOME.toString());
@@ -876,7 +877,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     @Override
     public void onCount(int count) {
-        if (count > currentPrePayCount)
+        if (count>0&&count > currentPrePayCount)
             iv_dot.setVisibility(View.VISIBLE);
         currentPrePayCount=count;
     }

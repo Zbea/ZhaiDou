@@ -177,7 +177,12 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
             ll_manage_address.setVisibility(View.VISIBLE);
             tv_addr_username.setText(mNickName);
             tv_addr_mobile.setText(mMobile);
-            tv_addr.setText(mAddress);
+            String[] split = mLocation.split("-");
+            String address="";
+            for (String string:split) {
+                address+=string;
+            }
+            tv_addr.setText(address+mAddress);
             et_location.setText(mLocation);
 
         }
