@@ -188,23 +188,6 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     };
 
     /**
-     * adapter短点击事件
-     */
-    private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
-        {
-            if(!isChlick)
-            {
-                isChlick=true;
-                GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(i).title, items.get(i).goodsId);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
-            }
-
-        }
-    };
-
-    /**
      * 点击事件
      */
     private View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -316,10 +299,8 @@ public class ShopTodaySpecialFragment extends BaseFragment {
 
         timeTvs = (TimerTextView) mView.findViewById(R.id.shopTime1Tv);
 
-        mListView = (ListViewForScrollView) mView.findViewById(R.id.shopListView);
-        mListView.setOnItemClickListener(onItemClickListener);
-        adapter = new ShopTodaySpecialAdapter(mContext, items);
-        mListView.setAdapter(adapter);
+
+
 
         introduceTv = (TypeFaceTextView) mView.findViewById(R.id.adText);
 
@@ -329,6 +310,24 @@ public class ShopTodaySpecialFragment extends BaseFragment {
 
         mScrollView = (PullToRefreshScrollView) mView.findViewById(R.id.scrollView);
         mScrollView.setOnRefreshListener(onRefreshListener);
+        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+
+        mListView = (ListViewForScrollView) mView.findViewById(R.id.shopListView);
+        adapter = new ShopTodaySpecialAdapter(mContext, items);
+        mListView.setAdapter(adapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                if(!isChlick)
+                {
+                    isChlick=true;
+                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).title, items.get(position).goodsId);
+                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
+                }
+            }
+        });
 
         mRequestQueue = Volley.newRequestQueue(mContext);
 

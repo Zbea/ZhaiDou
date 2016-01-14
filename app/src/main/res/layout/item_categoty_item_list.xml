@@ -17,5 +17,6 @@
         android:id="@+id/categoryName"
         android:layout_width="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_normal_color"/>
 </LinearLayout>

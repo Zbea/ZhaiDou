@@ -277,7 +277,10 @@ public class ShopPaymentFragment extends BaseFragment
             {
                 if (b)
                 {
+                    cb_weixin.setChecked(true);
+                    cb_weixin.setEnabled(false);
                     cb_zhifubao.setChecked(false);
+                    cb_zhifubao.setEnabled(true);
                     mCheckPosition = 0;
                     paymentBtn.setClickable(true);
                 }
@@ -292,9 +295,12 @@ public class ShopPaymentFragment extends BaseFragment
                 if (b)
                 {
                     cb_weixin.setChecked(false);
-                    paymentBtn.setClickable(true);
+                    cb_weixin.setEnabled(true);
+                    cb_zhifubao.setEnabled(false);
                     mCheckPosition = 1;
+                    paymentBtn.setClickable(true);
                 }
+
             }
         });
         TextView mAccountView = (TextView) mView.findViewById(R.id.tv_cash);

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/shop_today_item"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:background="@drawable/item_click_selector"
@@ -127,7 +128,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="马上抢"
-                    android:clickable="true"
                     android:textSize="14sp"
                     android:layout_weight="0.0001"
                     android:textColor="@color/white"

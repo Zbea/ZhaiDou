@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -24,6 +25,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshListView;
+import com.pulltorefresh.PullToRefreshScrollView;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
@@ -36,6 +38,7 @@ import com.zhaidou.model.Category;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.ListViewForScrollView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -49,7 +52,7 @@ import java.util.WeakHashMap;
 /**
  * 文章列表（最实用）
  */
-public class HomeArticleListFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<ListView>{
+public class HomeArticleListFragment extends BaseFragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_CATEGORY = "category";
 
@@ -57,9 +60,9 @@ public class HomeArticleListFragment extends BaseFragment implements PullToRefre
     private Category mCategory;
 
     private WeakHashMap<Integer,View> mHashMap = new WeakHashMap<Integer, View>();
-    private PullToRefreshListView listView;
+    private PullToRefreshScrollView scrollView;
+    private ListViewForScrollView listView;
     private int currentPage=1;
-    private int count=-1;
 
     private Dialog mDialog;
     private Context mContext;
@@ -72,14 +75,39 @@ public class HomeArticleListFragment extends BaseFragment implements PullToRefre
 
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
-            mHomeAdapter.notifyDataSetChanged();
-            listView.onRefreshComplete();
             if (mDialog!=null)
             {
                 mDialog.dismiss();
             }
+            mHomeAdapter.notifyDataSetChanged();
+            scrollView.onRefreshComplete();
+            if (articleList.size()<currentPage*10)
+            {
+                scrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+            }
+            else
+            {
+                scrollView.setMode(PullToRefreshBase.Mode.BOTH);
+            }
+
         }
     };
+
+    private PullToRefreshBase.OnRefreshListener2 onRefreshListener=new PullToRefreshBase.OnRefreshListener2()
+    {
+        @Override
+        public void onPullDownToRefresh(PullToRefreshBase refreshView)
+        {
+            FetchData(currentPage = 1, mCategory);
+        }
+
+        @Override
+        public void onPullUpToRefresh(PullToRefreshBase refreshView)
+        {
+            FetchData(++currentPage, mCategory);
+        }
+    };
+
     public static HomeArticleListFragment newInstance(String param1, Category category) {
         HomeArticleListFragment fragment = new HomeArticleListFragment();
         Bundle args = new Bundle();
@@ -108,10 +136,10 @@ public class HomeArticleListFragment extends BaseFragment implements PullToRefre
 
         mContext=getActivity();
 
-        listView=(PullToRefreshListView)view.findViewById(R.id.lv_special_list);
-        listView.setMode(PullToRefreshBase.Mode.BOTH);
-        listView.setOnRefreshListener(this);
-        listView.setEmptyView(mEmptyView);
+        scrollView=(PullToRefreshScrollView)view.findViewById(R.id.scrollView);
+        scrollView.setMode(PullToRefreshBase.Mode.BOTH);
+        scrollView.setOnRefreshListener(onRefreshListener);
+        listView=(ListViewForScrollView)view.findViewById(R.id.lv_special_list);
         mHomeAdapter = new HomeAdapter(getActivity(),articleList);
         listView.setAdapter(mHomeAdapter);
 
@@ -128,15 +156,15 @@ public class HomeArticleListFragment extends BaseFragment implements PullToRefre
             Toast.makeText(getActivity(),"抱歉,网络链接失败",Toast.LENGTH_SHORT).show();
         }
 
-
-
-        mHomeAdapter.setOnInViewClickListener(R.id.rl_fragment_strategy,new BaseListAdapter.onInternalClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
             @Override
-            public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                Article article=(Article)values;
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                Article article=articleList.get(position);
                 if ("true".equalsIgnoreCase(article.getIs_new())){
                     SharedPreferencesUtil.saveData(mContext,"is_new_"+article.getId(),false);
-                    parentV.findViewById(R.id.newsView).setVisibility(View.GONE);
+                    parent.findViewById(R.id.newsView).setVisibility(View.GONE);
                 }
                 Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
                 detailIntent.putExtra("article", article);
@@ -162,10 +190,10 @@ public class HomeArticleListFragment extends BaseFragment implements PullToRefre
                 Log.i("FetchData--->data---->",response.toString());
                 if (page==1)
                     articleList.clear();
-                listView.onRefreshComplete();
+                scrollView.onRefreshComplete();
                 JSONArray articles = response.optJSONArray("articles");
                 JSONObject meta = response.optJSONObject("meta");
-                count=meta==null?0:meta.optInt("count");
+//                count=meta==null?0:meta.optInt("count");
                 if (articles==null||articles.length()<=0){
                     articleList.clear();
                     handler.sendEmptyMessage(UPDATE_HOMELIST);
@@ -251,25 +279,5 @@ public class HomeArticleListFragment extends BaseFragment implements PullToRefre
             mHashMap.put(position,convertView);
             return convertView;
         }
-    }
-
-    @Override
-    public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
-        String label = DateUtils.formatDateTime(getActivity(), System.currentTimeMillis(),
-                DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
-        refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
-        FetchData(currentPage = 1, mCategory);
-        listView.setMode(PullToRefreshBase.Mode.BOTH);
-    }
-
-    @Override
-    public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
-        if (count!=-1&&mHomeAdapter.getCount()==count){
-            Toast.makeText(getActivity(),"已经加载完毕",Toast.LENGTH_SHORT).show();
-            listView.onRefreshComplete();
-            listView.setMode(PullToRefreshBase.Mode.BOTH);
-            return;
-        }
-        FetchData(++currentPage, mCategory);
     }
 }

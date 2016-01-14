@@ -105,6 +105,7 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
             switch (msg.what) {
                 case UPDATE_ADAPTER:
                     setAddImage();
+                    mScrollView.onRefreshComplete();
                     titleTv.setText(shopSpecialItem.title);
                     if (pageCount > pageSize * page)
                     {
@@ -128,6 +129,7 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
             {
                 case UPDATE_TIMER_START_AND_DETAIL_DATA:
                     adapter.notifyDataSetChanged();
+                    mScrollView1.onRefreshComplete();
                     titleTv.setText(shopSpecialItem.title);
                     if (pageCount > pageSize * page)
                     {
@@ -176,21 +178,6 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
         }
     };
 
-    /**
-     * adapter短点击事件
-     */
-    private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(i).title, items.get(i).goodsId);
-            Bundle bundle=new Bundle();
-            bundle.putString("page",items.get(i).title);
-            bundle.putString("index",items.get(i).goodsId);
-            bundle.putBoolean("canShare",false);
-            goodsDetailsFragment.setArguments(bundle);
-            ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
-        }
-    };
 
     public static HomeFeatrueFragment newInstance(String title, String param1, String param2) {
         HomeFeatrueFragment fragment = new HomeFeatrueFragment();
@@ -248,13 +235,39 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
             reloadNetBtn.setOnClickListener(onClickListener);
 
             introduceTv = (TypeFaceTextView) rootView.findViewById(R.id.adText);
-
-            mListView = (ListViewForScrollView) rootView.findViewById(R.id.shopListView);
-            mListView.setOnItemClickListener(onItemClickListener);
-            adapter = new ShopTodaySpecialAdapter(mContext, items);
-            mListView.setAdapter(adapter);
             mScrollView1 = (PullToRefreshScrollView) rootView.findViewById(R.id.scrollView1);
             mScrollView1.setOnRefreshListener(onRefreshListener);
+            mListView = (ListViewForScrollView) rootView.findViewById(R.id.shopListView);
+            adapter = new ShopTodaySpecialAdapter(mContext, items);
+            mListView.setAdapter(adapter);
+            mListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+            {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+                {
+                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).title, items.get(position).goodsId);
+                    Bundle bundle=new Bundle();
+                    bundle.putString("page",items.get(position).title);
+                    bundle.putString("index",items.get(position).goodsId);
+                    bundle.putBoolean("canShare",false);
+                    goodsDetailsFragment.setArguments(bundle);
+                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
+                }
+            });
+//            adapter.setOnInViewClickListener(R.id.shop_today_item,new BaseListAdapter.onInternalClickListener()
+//            {
+//                @Override
+//                public void OnClickListener(View parentV, View v, Integer position, Object values)
+//                {
+//                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).title, items.get(position).goodsId);
+//                    Bundle bundle=new Bundle();
+//                    bundle.putString("page",items.get(position).title);
+//                    bundle.putString("index",items.get(position).goodsId);
+//                    bundle.putBoolean("canShare",false);
+//                    goodsDetailsFragment.setArguments(bundle);
+//                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
+//                }
+//            });
 
             requestQueue = Volley.newRequestQueue(getActivity());
             myCartBtn = (ImageView) rootView.findViewById(R.id.myCartBtn);
@@ -477,6 +490,7 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
             public void onErrorResponse(VolleyError volleyError) {
                 mDialog.dismiss();
                 mScrollView.onRefreshComplete();
+                mScrollView1.onRefreshComplete();
                 if (page==1)
                 {
                     nullNetView.setVisibility(View.GONE);
