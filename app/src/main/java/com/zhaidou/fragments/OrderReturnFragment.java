@@ -252,7 +252,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
 
     private void FetchReturnData(final int page) {
         Map<String, String> params = new HashMap();
-        params.put("userId", mUserId);//mUserId
+        params.put("userId",mUserId);//mUserId//29650+""
         params.put("clientType", "ANDROID");
         params.put("clientVersion", "45");
         params.put("businessType", "01");
@@ -265,15 +265,19 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
                 String message = jsonObject.optString("message");
                 if (status == 200) {
                     JSONObject dataObj = jsonObject.optJSONObject("data");
+                    int pageSize = dataObj.optInt("pageSize");
                     JSONArray array = dataObj.optJSONArray("items");
                     List<Store> stores = JSON.parseArray(array == null ? "" : array.toString(), Store.class);
                     if (stores.size() == 0 && page == 1) {
                         mListView.setVisibility(View.GONE);
                         mEmptyView.setVisibility(View.VISIBLE);
                         loadingView.setVisibility(View.VISIBLE);
+                    }else if (stores.size()<pageSize){
+                        mListView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                     }
                     mStoreList.addAll(stores);
                     returnAdapter.notifyDataSetChanged();
+                    mListView.onRefreshComplete();
                 } else {
                     ShowToast(message);
                 }

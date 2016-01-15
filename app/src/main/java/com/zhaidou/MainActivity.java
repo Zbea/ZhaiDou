@@ -642,7 +642,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         } else
         {
-            if (fragments.size() > 0)
+            if (fragments.size() > 0&&keyCode == KeyEvent.KEYCODE_BACK)
             {
                 Fragment orderDetailFragment = manager.findFragmentByTag(OrderDetailFragment1.class.getSimpleName());
                 Fragment shopPaymentSuccessFragmen = manager.findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
