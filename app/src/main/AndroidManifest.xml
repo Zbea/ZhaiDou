@@ -27,6 +27,7 @@
             </intent-filter>
         </activity>
         <activity
+
             android:name=".WelcomeGuidancePage"
             android:configChanges="orientation|keyboardHidden|"
             android:screenOrientation="portrait"
