@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class AccountManage {
     private static AccountManage mAccountManage = null;
-    private List<AccountListener> mAccountListenner=new ArrayList<AccountListener>();
+    private List<AccountListener> mAccountListener=new ArrayList<AccountListener>();
 
     public static AccountManage getInstance() {
         if (mAccountManage==null)
@@ -24,11 +24,11 @@ public class AccountManage {
     }
 
     public void register(AccountListener accountListener){
-        mAccountListenner.add(accountListener);
+        mAccountListener.add(accountListener);
     }
 
     public void notifyLogOut(){
-        for (AccountListener listener:mAccountListenner) {
+        for (AccountListener listener:mAccountListener) {
             listener.onLogOut();
         }
     }

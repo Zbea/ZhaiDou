@@ -234,7 +234,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
             TextView remark = ViewHolder.get(convertView, R.id.remark);
             RelativeLayout mBottomLayout = ViewHolder.get(convertView, R.id.rl_btn);
             ImageView iv_order_img = ViewHolder.get(convertView, R.id.iv_order_img);
-            ImageView iv_delete = ViewHolder.get(convertView, R.id.iv_delete);
+            LinearLayout iv_delete = ViewHolder.get(convertView, R.id.iv_delete);
             Store store = getList().get(position);
             tv_order_time.setText(store.createTime);
             tv_order_number.setText(store.orderCode);
