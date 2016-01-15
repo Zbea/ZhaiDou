@@ -311,7 +311,7 @@ public class OrderDetailFragment1 extends BaseFragment {
                 btn2.setBackgroundResource(R.drawable.btn_green_click_bg);
                 if (store.returnGoodsFlag == 1)
                     mBottomLayout.setVisibility(View.GONE);
-            } else if (ZhaiDou.STATUS_UNDELIVERY == store.status || ZhaiDou.STATUS_PICKINGUP == store.status || ZhaiDou.STATUS_UNPAY == store.status) {/**待发货,已拣货,待支付*/
+            } else if (ZhaiDou.STATUS_UNDELIVERY == store.status || ZhaiDou.STATUS_PICKINGUP == store.status || ZhaiDou.STATUS_UNPAY == store.status||ZhaiDou.STATUS_ORDER_APPLY_CANCEL==store.status) {/**待发货,已拣货,待支付,退款申请*/
                 mBottomLayout.setVisibility(View.GONE);
             } else if (ZhaiDou.STATUS__DELIVERYED == store.status) {
                 mBottomLayout.setVisibility(View.VISIBLE);

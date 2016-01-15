@@ -45,11 +45,11 @@
             <LinearLayout
                 android:id="@+id/iv_delete"
                 android:layout_width="80dp"
-                android:layout_height="match_parent"
+                android:layout_height="35dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="15dp"
-                android:gravity="right"
+                android:gravity="center_vertical|right"
                 android:clickable="true">
 
                 <ImageView
