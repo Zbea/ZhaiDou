@@ -247,7 +247,8 @@ public class MainCategoryFragment extends BaseFragment {
             System.out.println("position = [" + position + "], convertView = [" + convertView + "], parent = [" + parent + "]");
             Category category = getList().get(position);
             tv_item.setText(category.categoryName);
-            convertView.setBackgroundColor(getResources().getColor(mCheckPosition == position ? R.color.white : R.color.base_bg));
+            tv_item.setTextColor(getResources().getColor(mCheckPosition == position ? R.color.green_color : R.color.text_main_color));
+            convertView.setBackgroundResource(mCheckPosition == position ? R.drawable.icon_category_list_bg : R.color.base_bg);
             if (mCheckPosition == position) {
                 List<CategoryItem> children = category.children;
                 mCategoryItemAdapter.setList(children);

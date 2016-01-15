@@ -28,6 +28,7 @@ import com.pulltorefresh.PullToRefreshListView;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.ArticleWebViewActivity;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
@@ -193,14 +194,14 @@ public class HomeWeixinListFragment extends BaseFragment
                     SharedPreferencesUtil.saveData(mContext, "WeixinList_" + article.getId(), false);
                     parent.findViewById(R.id.newsView).setVisibility(View.GONE);
                 }
-                Intent detailIntent = new Intent(mContext, ItemDetailActivity.class);
-                detailIntent.putExtra("article", article);
-                detailIntent.putExtra("id", article.getId() + "");
-                detailIntent.putExtra("from", "product");
+
+                Intent detailIntent = new Intent(getActivity(), ArticleWebViewActivity.class);
+                detailIntent.putExtra("id", article.getId());
                 detailIntent.putExtra("title", article.getTitle());
-                detailIntent.putExtra("cover_url", article.getImg_url());
+                detailIntent.putExtra("imageUrl", article.getImg_url());
                 detailIntent.putExtra("url", article.getIs_new());
-                detailIntent.putExtra("show_header", false);
+                detailIntent.putExtra("show_share", true);
+                detailIntent.putExtra("show_title", false);
                 startActivity(detailIntent);
             }
         });
