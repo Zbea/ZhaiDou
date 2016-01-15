@@ -80,6 +80,7 @@ import java.util.Map;
 public class MainActivity extends BaseActivity implements DiyFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
         MainHomeFragment.OnFragmentInteractionListener, MainCategoryFragment.OnFragmentInteractionListener, RegisterFragment.RegisterOrLoginListener, CountManage.onCountChangeListener {
 
+    private FragmentManager manager = getSupportFragmentManager();
     private Fragment utilityFragment;
     private Fragment beautyHomeFragment;
     private Fragment categoryFragment;
@@ -627,7 +628,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
-        FragmentManager manager = getSupportFragmentManager();
+
+
         int num = manager.getBackStackEntryCount();
         List<Fragment> fragments = manager.getFragments();
         if (num == 0)
@@ -722,7 +724,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     {
         if (currentFragment instanceof MainHomeFragment)
         {
-            FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
             transaction.show(currentFragment).commit();
         } else
@@ -738,7 +739,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
      */
     public void allfragment()
     {
-        FragmentManager manager = getSupportFragmentManager();
         List<Fragment> fragments = manager.getFragments();
         for (Fragment fragment : fragments)
         {

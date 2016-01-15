@@ -51,8 +51,8 @@
             android:id="@+id/category"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:background="#F6F6F6"
+            android:layout_height="match_parent"
+            android:background="@color/base_bg"
             android:divider="@null"
             android:scrollbars="none" />
 

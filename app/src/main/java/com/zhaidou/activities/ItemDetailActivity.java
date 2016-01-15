@@ -129,16 +129,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         webSettings.setLoadWithOverviewMode(true);
         webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
-        if (!"lottery".equalsIgnoreCase(from))
-            webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-        webView.setVerticalScrollBarEnabled(false);
-        webView.setVerticalScrollbarOverlay(false);
-        webView.setHorizontalScrollbarOverlay(false);
-        webView.setHorizontalFadingEdgeEnabled(false);
-        webView.setInitialScale(1);
-        webView.setWebChromeClient(new WebChromeClient() {
 
-        });
         webView.setWebViewClient(new WebViewClient() {
 
             @Override
@@ -146,9 +137,6 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
                 Log.i("shouldOverrideUrlLoading---------------->", url);
                 getDeviceId();
                 if ("mobile://login?false".equalsIgnoreCase(url)) {
-//                    getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, loginFragment)
-//                            .addToBackStack(null).commit();
-//                    mChildContainer.setVisibility(View.VISIBLE);
                     Intent intent = new Intent(ItemDetailActivity.this, LoginActivity.class);
                     intent.setFlags(2);
                     startActivityForResult(intent, 10000);
@@ -253,15 +241,6 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
             mHeaderText.setText(title);
             imageView.setVisibility(View.VISIBLE);
         }
-        if ("lottery".equals(from) || "beauty".equals(from) || "competition".equalsIgnoreCase(from)) {
-            iv_share.setVisibility(View.GONE);
-        }
-        if ("beauty1".equalsIgnoreCase(from)) {
-            iv_share.setVisibility(View.VISIBLE);
-            imageView.setVisibility(View.GONE);
-        }
-
-
 
     }
 
@@ -285,32 +264,6 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     }
 
     private void doShare() {
-//        ShareSDK.initSDK(this);
-//        OnekeyShare oks = new OnekeyShare();
-//        //关闭sso授权
-//        oks.disableSSOWhenAuthorize();
-//
-//// 分享时Notification的图标和文字  2.5.9以后的版本不调用此方法
-//        //oks.setNotification(R.drawable.ic_launcher, getString(R.string.app_name));
-//        // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
-//        oks.setTitle(title);
-//        // titleUrl是标题的网络链接，仅在人人网和QQ空间使用
-//        oks.setTitleUrl(url);
-//        // text是分享文本，所有平台都需要这个字段
-//        oks.setText(title + "   " + url);
-//        // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
-//        oks.setImageUrl(coverUrl);//确保SDcard下面存在此张图片
-//        // url仅在微信（包括好友和朋友圈）中使用
-//        oks.setUrl(url);
-//        // comment是我对这条分享的评论，仅在人人网和QQ空间使用
-////            oks.setComment("我是测试评论文本");
-//        // site是分享此内容的网站名称，仅在QQ空间使用
-//        oks.setSite(getString(R.string.app_name));
-//        // siteUrl是分享此内容的网站地址，仅在QQ空间使用
-//        oks.setSiteUrl(url);
-//
-//        oks.show(this);
-
         DialogUtils mDialogUtils=new DialogUtils(this);
         mDialogUtils.showShareDialog(title,title+"  "+url,coverUrl,url,new PlatformActionListener() {
             @Override

@@ -32,6 +32,7 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.ArticleWebViewActivity;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
@@ -65,16 +66,12 @@ public class MainStrategyFragment extends BaseFragment
     private String targetUrl="http://buy.zhaidou.com/?zdclient=ios&tag=006&count=10&json=1&page={0}";
     private int currentPage=1;
     private int pageTotal=0;
-    private boolean loadedAll;
-    private final int LOADED = 1;
     private List<JSONObject> listItem=new ArrayList<JSONObject>();
     private RequestQueue mRequestQueue;
     private ImageAdapter homeItemsAdapter;
 
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
 
-    private static final int STATUS_REFRESH = 0;
-    private static final int STATUS_LOAD_MORE = 1;
 
     private Handler handler = new Handler()
     {
@@ -115,13 +112,13 @@ public class MainStrategyFragment extends BaseFragment
             try
             {
                 JSONObject item = listItem.get(i);
-                Intent detailIntent = new Intent(getActivity(), ItemDetailActivity.class);
+                Intent detailIntent = new Intent(getActivity(), ArticleWebViewActivity.class);
                 detailIntent.putExtra("id", item.optInt("id"));
                 detailIntent.putExtra("title", item.optString("title").toString());
-                detailIntent.putExtra("cover_url", item.optString("imageUrl").toString());
-                detailIntent.putExtra("from","product");
+                detailIntent.putExtra("imageUrl", item.optString("imageUrl").toString());
                 detailIntent.putExtra("url", item.optString("url").toString());
-                detailIntent.putExtra("show_header", false);
+                detailIntent.putExtra("show_share", true);
+                detailIntent.putExtra("show_title", false);
                 startActivity(detailIntent);
             } catch (Exception ex)
             {
