@@ -1,13 +1,16 @@
 package com.zhaidou.fragments;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +46,7 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.ShopTodayItem;
 import com.zhaidou.utils.NetworkUtils;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.LargeImgView;
 import com.zhaidou.view.ListViewForScrollView;
@@ -79,9 +83,10 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
 
     private final int UPDATE_ADAPTER = 0;
     private final int UPDATE_TIMER_START_AND_DETAIL_DATA = 1;
-
+    private final int UPDATE_CARTCAR_DATA = 3;
     private Dialog mDialog;
 
+    private TextView cartTipsTv;
     private ImageView myCartBtn;
     private TextView titleTv;
     private View rootView;
@@ -97,7 +102,35 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
     private int pageCount;
     private String imageUrl;
     private ShopSpecialItem shopSpecialItem;
+    private String token;
+    private int userId;
+    private int cartCount;//购物车商品数量
 
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            String action = intent.getAction();
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
+            {
+                FetchCountData();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshAddCartTag))
+            {
+                FetchCountData();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshLoginTag))
+            {
+                checkLogina();
+                FetchCountData();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
+            {
+                initCartTips();
+            }
+        }
+    };
 
     private Handler mHandler = new Handler() {
         @Override
@@ -118,6 +151,14 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
                     mAdapter.notifyDataSetChanged();
                     mScrollView.setVisibility(View.VISIBLE);
                     mScrollView1.setVisibility(View.GONE);
+                    break;
+                case UPDATE_CARTCAR_DATA:
+                    initCartTips();
+                    if ((((MainActivity)mContext).cart_dot).getVisibility()==View.GONE)
+                    {
+                        ((MainActivity)mContext).CartTip(cartCount);
+                    }
+
                     break;
             }
         }
@@ -155,6 +196,7 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
             items.clear();
             page=1;
             FetchData();
+            FetchCountData();
         }
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView)
@@ -254,27 +296,14 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
                     ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
                 }
             });
-//            adapter.setOnInViewClickListener(R.id.shop_today_item,new BaseListAdapter.onInternalClickListener()
-//            {
-//                @Override
-//                public void OnClickListener(View parentV, View v, Integer position, Object values)
-//                {
-//                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).title, items.get(position).goodsId);
-//                    Bundle bundle=new Bundle();
-//                    bundle.putString("page",items.get(position).title);
-//                    bundle.putString("index",items.get(position).goodsId);
-//                    bundle.putBoolean("canShare",false);
-//                    goodsDetailsFragment.setArguments(bundle);
-//                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
-//                }
-//            });
-
             requestQueue = Volley.newRequestQueue(getActivity());
             myCartBtn = (ImageView) rootView.findViewById(R.id.myCartBtn);
             myCartBtn.setOnClickListener(this);
-
+            cartTipsTv = (TextView) rootView.findViewById(R.id.myCartTipsTv);
+            checkLogina();
             initData();
 
+            initBroadcastReceiver();
             mAdapter.setOnInViewClickListener(R.id.ll_single_layout, new BaseListAdapter.onInternalClickListener() {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
@@ -297,6 +326,18 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
         }
         return rootView;
     }
+    /**
+     * 注册广播
+     */
+    private void initBroadcastReceiver()
+    {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshAddCartTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
+        getActivity().registerReceiver(broadcastReceiver, intentFilter);
+    }
 
     /**
      * 初始化收据
@@ -306,6 +347,10 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
         if (NetworkUtils.isNetworkAvailable(getActivity())) {
 
             FetchData();
+            if (checkLogina())
+            {
+                FetchCountData();
+            }
 
         } else {
             if (mDialog != null)
@@ -314,6 +359,14 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
             nullNetView.setVisibility(View.VISIBLE);
             nullDataView.setVisibility(View.GONE);
         }
+    }
+
+    public boolean checkLogina()
+    {
+        token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
+        userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
+        boolean isLogin = !TextUtils.isEmpty(token) && userId > -1;
+        return isLogin;
     }
 
     private void setAddImage()
@@ -356,6 +409,27 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
             }
         });
     }
+    /**
+     * 红色标识提示显示数量
+     */
+    private void initCartTips()
+    {
+        if (checkLogina())
+        {
+            if (cartCount > 0)
+            {
+                cartTipsTv.setVisibility(View.VISIBLE);
+                cartTipsTv.setText("" + cartCount);
+            } else
+            {
+                cartTipsTv.setVisibility(View.GONE);
+            }
+        } else
+        {
+            cartCount=0;
+            cartTipsTv.setVisibility(View.GONE);
+        }
+    }
 
     @Override
     public void onClick(View view) {
@@ -365,10 +439,12 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
                 break;
 
             case R.id.myCartBtn:
-                if (isLogin) {
+                if (checkLogina())
+                {
                     ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
                     ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
-                } else {
+                } else
+                {
                     Intent intent = new Intent(getActivity(), LoginActivity.class);
                     intent.setFlags(1);
                     getActivity().startActivity(intent);
@@ -514,6 +590,48 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
         };
         requestQueue.add(request);
     }
+
+    /**
+     * 请求购物车列表数据
+     */
+    public void FetchCountData()
+    {
+        String url = ZhaiDou.CartGoodsCountUrl+userId;
+        ToolUtils.setLog("url:" + url);
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (jsonObject != null)
+                {
+                    JSONObject object = jsonObject.optJSONObject("data");
+                    cartCount = object.optInt("totalQuantity");
+                    mHandler.sendEmptyMessage(UPDATE_CARTCAR_DATA);
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                headers.put("SECAuthorization", token);
+                return headers;
+            }
+        };
+        requestQueue.add(request);
+    }
+
 
     public class ProductAdapter extends BaseListAdapter<ShopTodayItem> {
         public ProductAdapter(Context context, List<ShopTodayItem> list) {

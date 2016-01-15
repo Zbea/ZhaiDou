@@ -512,12 +512,6 @@ public class ShopPaymentFragment extends BaseFragment
                                     request.timeStamp = timeStamp;
                                     request.sign = paySign;
                                     api.sendReq(request);
-                                    ToolUtils.setLog("request:"+request.checkArgs());
-                                    ToolUtils.setLog("api:"+api.sendReq(request));
-                                    if (!api.sendReq(request))
-                                    {
-                                        paymentBtn.setClickable(true);
-                                    }
                                 } else
                                 {
                                     paymentBtn.setClickable(true);

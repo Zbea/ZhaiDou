@@ -185,7 +185,7 @@
                     android:id="@+id/cartItemNumLimit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="''本品限购''"
+                    android:text="''商品限购''"
                     android:textColor="@color/red"
                     android:layout_marginLeft="5dp"
                     android:textSize="12sp"
@@ -237,7 +237,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:textColor="@color/red"
                 android:text="$123.5"
                 />
@@ -247,14 +247,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:textColor="@color/text_gary_color"
                 android:text="$ 123.5"
                 />
 
             <ImageView
                 android:id="@+id/cartItemDelBtn"
-                android:layout_width="45dp"
+                android:layout_width="35dp"
                 android:layout_height="26dp"
                 android:layout_marginTop="20dp"
                 android:paddingLeft="20dp"

@@ -210,7 +210,7 @@ public class GoodsDetailsFragment extends BaseFragment
             if (action.equals(ZhaiDou.IntentRefreshOGoodsDetailsTag))
             {
                 isOSaleBuy = true;
-                setAddOrBuyShow("不能重复购买", false);
+                setAddOrBuyShow("您今天已经购买过零元特卖商品", false);
                 setRefreshSpecification();
             }
             if (action.equals(ZhaiDou.IntentRefreshGoodsDetailsTag))
@@ -327,7 +327,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     {
                         if (mDialog != null)
                             mDialog.dismiss();
-                        setAddOrBuyShow("不能重复购买", false);
+                        setAddOrBuyShow("您今天已经购买过零元特卖商品", false);
                     } else
                     {
                         FetchOSaleAddData();
@@ -339,7 +339,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     loadingView.setVisibility(View.GONE);
                     if (isOSaleBuy)
                     {
-                        setAddOrBuyShow("不能重复购买", false);
+                        setAddOrBuyShow("您今天已经购买过零元特卖商品", false);
                     }
                     break;
 
@@ -1155,7 +1155,7 @@ public class GoodsDetailsFragment extends BaseFragment
         setDiscount(spe.price, spe.oldPrice);
         if (isOSaleBuy)
         {
-            setAddOrBuyShow("不能重复购买", false);
+            setAddOrBuyShow("您今天已经购买过零元特卖商品", false);
         }
         if (isPublish)
         {

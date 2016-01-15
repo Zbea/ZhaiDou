@@ -447,6 +447,13 @@ public class ShopOrderOkFragment extends BaseFragment
     private void initView()
     {
 
+        if (flags==0)
+        {
+            ToolUtils.setLog("执行刷新");
+            Intent intent = new Intent(ZhaiDou.IntentRefreshAddCartTag);
+            mContext.sendBroadcast(intent);
+        }
+
         loadingView = (LinearLayout) mView.findViewById(R.id.loadingView);
         nullNetView = (LinearLayout) mView.findViewById(R.id.nullNetline);
         nullView = (LinearLayout) mView.findViewById(R.id.nullline);
