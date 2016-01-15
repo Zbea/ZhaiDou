@@ -38,12 +38,11 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.activities.LoginActivity;
+import com.zhaidou.base.AccountManage;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.CountManage;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.fragments.DiyFragment;
-import com.zhaidou.fragments.HomeCategoryFragment;
-import com.zhaidou.fragments.HomeStrategyFragment;
 import com.zhaidou.fragments.MainCategoryFragment;
 import com.zhaidou.fragments.MainHomeFragment;
 import com.zhaidou.fragments.MainPersonalFragment;
@@ -78,7 +77,7 @@ import java.util.Map;
 /**
  */
 public class MainActivity extends BaseActivity implements DiyFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
-        MainHomeFragment.OnFragmentInteractionListener, MainCategoryFragment.OnFragmentInteractionListener, RegisterFragment.RegisterOrLoginListener, CountManage.onCountChangeListener {
+        MainHomeFragment.OnFragmentInteractionListener, MainCategoryFragment.OnFragmentInteractionListener, RegisterFragment.RegisterOrLoginListener, CountManage.onCountChangeListener, AccountManage.AccountListener {
 
     private FragmentManager manager = getSupportFragmentManager();
     private Fragment utilityFragment;
@@ -234,20 +233,18 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         getVersionServer();
 
         initComponents();
-//       commitActiveData();
-        AlibabaSDK.asyncInit(this, new InitResultCallback()
-        {
+       commitActiveData();
+        AlibabaSDK.asyncInit(this, new InitResultCallback() {
             @Override
-            public void onSuccess()
-            {
+            public void onSuccess() {
             }
 
             @Override
-            public void onFailure(int i, String s)
-            {
+            public void onFailure(int i, String s) {
             }
         });
         CountManage.getInstance().setOnCountChangeListener(this);
+        AccountManage.getInstance().register(this);
         FetchUnPayData();
 
     }
@@ -616,7 +613,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     public void logout(Fragment fragment)
     {
         popToStack(fragment);
-        hideTip(View.GONE);
         if (utilityFragment == null)
         {
             utilityFragment = MainHomeFragment.newInstance(ZhaiDou.HOME_PAGE_URL, ZhaiDou.ListType.HOME.toString());
@@ -871,5 +867,10 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         if (count>0&&count > currentPrePayCount)
             iv_dot.setVisibility(View.VISIBLE);
         currentPrePayCount=count;
+    }
+
+    @Override
+    public void onLogOut() {
+        iv_dot.setVisibility(View.GONE);
     }
 }

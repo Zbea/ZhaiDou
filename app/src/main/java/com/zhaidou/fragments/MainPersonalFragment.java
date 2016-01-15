@@ -28,6 +28,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomePTActivity;
+import com.zhaidou.base.AccountManage;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.CountManage;
@@ -42,7 +43,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainPersonalFragment extends BaseFragment implements View.OnClickListener, CountManage.onCountChangeListener, ProfileManage.OnProfileChange {
+public class MainPersonalFragment extends BaseFragment implements View.OnClickListener, CountManage.onCountChangeListener, ProfileManage.OnProfileChange, AccountManage.AccountListener {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_CONTEXT = "context";
@@ -186,6 +187,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             tv_unpay_count.setText(value + "");
             tv_unpay_count.setVisibility(value == 0 ? View.GONE : View.VISIBLE);
             CountManage.getInstance().setOnCountChangeListener(this);
+            AccountManage.getInstance().register(this);
             ProfileManage.getInstance().register(this);
 
         }
@@ -409,5 +411,13 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 tv_desc.setText("null".equalsIgnoreCase(message) || message== null ? "" : message);
                 break;
         }
+    }
+
+    @Override
+    public void onLogOut() {
+        tv_unpay_count.setVisibility(View.GONE);
+        tv_nickname.setText("");
+        tv_desc.setText("");
+        iv_header.setBackgroundResource(R.drawable.icon_header_default);
     }
 }

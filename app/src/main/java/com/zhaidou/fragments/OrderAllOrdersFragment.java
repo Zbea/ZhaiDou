@@ -423,6 +423,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     @Override
     public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
         mOrderList.clear();
+        mListView.setMode(PullToRefreshBase.Mode.BOTH);
         FetchOrderList(mCurrentPage = 1, mCurrentType);
     }
 
@@ -449,7 +450,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             TextView mRemarkView = ViewHolder.get(convertView, R.id.remark);
             TextView btn1 = ViewHolder.get(convertView, R.id.bt_logistics);
             TextView btn2 = ViewHolder.get(convertView, R.id.bt_received);
-            ImageView iv_delete = ViewHolder.get(convertView, R.id.iv_delete);
+            LinearLayout iv_delete = ViewHolder.get(convertView, R.id.iv_delete);
             RelativeLayout ll_btn = ViewHolder.get(convertView, R.id.rl_btn);
             Order1 order = getList().get(position);
             tv_order_time.setText(order.creationTime);
@@ -521,6 +522,9 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     ll_btn.setVisibility(View.VISIBLE);
                     btn2.setVisibility(View.GONE);
                     btn1.setText("申请退款");
+                    if (order.childOrderPOList.size() == 1 && order.childOrderPOList.get(0).orderItemPOList.size() == 1 && order.childOrderPOList.get(0).orderItemPOList.get(0).productType == 2) {
+                        ll_btn.setVisibility(View.GONE);
+                    }
                     break;
                 case ZhaiDou.STATUS_PART_DELIVERY:
                     iv_delete.setVisibility(View.GONE);
@@ -561,7 +565,8 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     public void onResume() {
         if (!isDataLoaded) {//&&hasUnPayOrder
             System.out.println("OrderAllOrdersFragment.onResume--->" + isDataLoaded);
-            FetchOrderList(mCurrentPage = 0, mCurrentType);
+            mOrderList.clear();
+            FetchOrderList(mCurrentPage = 1, mCurrentType);
         }
         super.onResume();
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_all_order));

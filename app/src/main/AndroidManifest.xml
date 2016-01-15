@@ -69,12 +69,6 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".activities.ArticleWebViewActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:label="@string/title_activity_item_detail"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
             android:name=".activities.HomeCompetitionActivity"
             android:configChanges="orientation|keyboardHidden"
             android:windowSoftInputMode="adjustPan|stateHidden"

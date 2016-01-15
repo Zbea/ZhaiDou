@@ -90,6 +90,7 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
     private int CREATE_NEW_ADDRESS=2;
     private DialogUtils mDialogUtils;
     private View mContainer;
+    private TextView mTitle;
 
     public static AddrNewAddrFragment newInstance(int id,String nickname, String mobile,String location,String address, int profileId, int status) {
         AddrNewAddrFragment fragment = new AddrNewAddrFragment();
@@ -130,10 +131,12 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
         et_address_detail = (CustomEditText) view.findViewById(R.id.tv_addr_detail);
         et_mobile = (CustomEditText) view.findViewById(R.id.tv_addr_mobile);
         et_location = (TextView) view.findViewById(R.id.tv_addr_loc);
+        mTitle=(TextView)view.findViewById(R.id.title);
 
         et_name.setText(mNickName);
         et_mobile.setText(mMobile);
         et_location.setText(mLocation);
+        mTitle.setText(TextUtils.isEmpty(mNickName)?"新建地址":"编辑地址");
 
         if (mLocation!=null&&mLocation.length()>8)
         {
