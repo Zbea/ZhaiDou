@@ -79,7 +79,7 @@ import java.util.Map;
 public class MainActivity extends BaseActivity implements DiyFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
         MainHomeFragment.OnFragmentInteractionListener, MainCategoryFragment.OnFragmentInteractionListener, RegisterFragment.RegisterOrLoginListener, CountManage.onCountChangeListener, AccountManage.AccountListener {
 
-    private FragmentManager manager = getSupportFragmentManager();
+    private FragmentManager manager;
     private Fragment utilityFragment;
     private Fragment beautyHomeFragment;
     private Fragment categoryFragment;
@@ -222,6 +222,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main_layout);
+        manager = getSupportFragmentManager();
         iv_dot = (ImageView) findViewById(R.id.iv_dot);
         cart_dot = (TextView) findViewById(R.id.cartTipsTv);
         CartTip(0);
@@ -516,7 +517,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         if (currentFragment != to)
         {
             currentFragment = to;
-            FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
             if (!to.isAdded())
             {
@@ -624,8 +624,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
-
-
         int num = manager.getBackStackEntryCount();
         List<Fragment> fragments = manager.getFragments();
         if (num == 0)
@@ -663,25 +661,13 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     //ShopPaymentSuccessFragment关闭
                     ToolUtils.setLog("关闭shopPaymentSuccessFragmen");
                     popToStack(shopPaymentSuccessFragmen);
-//                    if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment)
-//                    {
-//                        //ShopPaymentSuccessFragment关闭
-//                        popToStack(shopPaymentFragment);
-//                    }
                     return true;
-
                 }
                  else if ((shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment))
                 {
                     ToolUtils.setLog("关闭shopPaymentFailFragment");
                     //ShopPaymentSuccessFragment关闭
                     popToStack(shopPaymentFailFragment);
-//                    if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment)
-//                    {
-//                        //ShopPaymentSuccessFragment关闭
-//                        popToStack(shopPaymentFragment);
-//
-//                    }
                     return true;
                 }
                 else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment)
@@ -691,9 +677,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     BackPaymentDialog(shopPaymentFragment);
                     return true;
                 }
-
             }
-
         }
         return super.onKeyDown(keyCode, event);
     }

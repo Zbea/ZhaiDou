@@ -194,7 +194,6 @@ public class HomeWeixinListFragment extends BaseFragment
                     SharedPreferencesUtil.saveData(mContext, "WeixinList_" + article.getId(), false);
                     parent.findViewById(R.id.newsView).setVisibility(View.GONE);
                 }
-
                 Intent detailIntent = new Intent(getActivity(), ArticleWebViewActivity.class);
                 detailIntent.putExtra("id", article.getId());
                 detailIntent.putExtra("title", article.getTitle());
