@@ -120,6 +120,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     public static List<Province> provinceList = new ArrayList<Province>();
 
     public int num = 0;
+//    private boolean isFirstUnPayVisible=false;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -734,6 +735,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     public void hideTip(int v)
     {
         iv_dot.setVisibility(v);
+//        isFirstUnPayVisible=false;
     }
 
     /**
@@ -849,6 +851,9 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     @Override
     public void onCount(int count) {
 //        if (count>0&&count > currentPrePayCount)
+//        if (iv_dot.isShown())
+//            return;
+//        if (!isFirstUnPayVisible)
         iv_dot.setVisibility(count>0&&count > currentPrePayCount?View.VISIBLE:View.GONE);
         currentPrePayCount=count;
     }
