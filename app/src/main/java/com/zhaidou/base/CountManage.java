@@ -10,7 +10,6 @@ import java.util.Map;
  * Date: 2015-12-31
  * Time: 10:45
  * Description:计数管理类
- * FIXME
  */
 public class CountManage {
     private static CountManage mCountManage = null;
