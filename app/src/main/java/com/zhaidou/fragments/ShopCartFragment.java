@@ -22,7 +22,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
@@ -38,11 +37,8 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.dialog.CustomToastDialog;
 import com.zhaidou.model.CartArrayItem;
 import com.zhaidou.model.CartGoodsItem;
-import com.zhaidou.sqlite.CreatCartDB;
-import com.zhaidou.sqlite.CreatCartTools;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -97,14 +93,14 @@ public class ShopCartFragment extends BaseFragment
     private int totalCount;
     private double totalMoney;
     private boolean isGoods;//是否存在商品
-    private boolean isFrist=true;
+    private boolean isFrist = true;
     private int cartCount;//购物车商品数量
-    private boolean isUnCheck=true;//判断当数量减少时候，全选按钮不选中切不执行不全选事件
-    private boolean isCheck=true//allBox切换点击事件
-            ,isClick;//allBox判断是否选中状态
-    private Map<String,Boolean> checkPoss;//记录选中的按钮
-    private Map<String,Boolean> checkChange;
-    private boolean isUnRefresh;//不刷新自身
+    private boolean isUnCheck = true;//判断当数量减少时候，全选按钮不选中切不执行不全选事件
+    private boolean isCheck = true//allBox切换点击事件
+            , isClick;//allBox判断是否选中状态
+    private Map<String, Boolean> checkPoss;//记录选中的按钮
+    private Map<String, Boolean> checkChange;
+    private boolean isUnRefresh=false;//不刷新自身
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -112,32 +108,41 @@ public class ShopCartFragment extends BaseFragment
         public void onReceive(Context context, Intent intent)
         {
             String action = intent.getAction();
+            if (action.equals(ZhaiDou.IntentRefreshLoginTag))
+            {
+                refreshData();
+            }
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
             {
-                    if (items.size() > 0)
-                    {
-                        setGoodsCheckChange();
-                    } else
-                    {
-                        cartCount=0;
-                        nullView.setVisibility(View.VISIBLE);
-                        contentView.setVisibility(View.GONE);
-                        ((MainActivity) mContext).CartTip(cartCount);
-                    }
+                if (items.size() > 0)
+                {
+                    setGoodsCheckChange();
+                } else
+                {
+                    cartCount = 0;
+                    nullView.setVisibility(View.VISIBLE);
+                    contentView.setVisibility(View.GONE);
+                    ((MainActivity) mContext).CartTip(cartCount);
+                }
             }
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
             {
-
                 refreshData();
             }
-            if (action.equals(ZhaiDou.IntentRefreshAddCartTag)) {
+            if (action.equals(ZhaiDou.IntentRefreshCartPaySuccessTag))
+            {
+                checkPoss.clear();
+                refreshData();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshAddCartTag))
+            {
+                ToolUtils.setLog("isUnRefresh+"+isUnRefresh);
                 if (!isUnRefresh)
                 {
-                    isUnRefresh=false;
                     //发送数量修改广播
                     refreshData();
                 }
-
+                isUnRefresh = false;
             }
         }
     };
@@ -155,12 +160,12 @@ public class ShopCartFragment extends BaseFragment
                         addCartGoods();
                         if (isFrist)
                         {
-                            isFrist=false;
+                            isFrist = false;
                             FetchCountData();
                         }
-
                     } else
                     {
+
                         loadingView.setVisibility(View.GONE);
                         nullView.setVisibility(View.VISIBLE);
                         contentView.setVisibility(View.GONE);
@@ -175,15 +180,15 @@ public class ShopCartFragment extends BaseFragment
         }
     };
 
-    private PullToRefreshBase.OnRefreshListener2 onRefreshListener=new PullToRefreshBase.OnRefreshListener2()
+    private PullToRefreshBase.OnRefreshListener2 onRefreshListener = new PullToRefreshBase.OnRefreshListener2()
     {
         @Override
         public void onPullDownToRefresh(PullToRefreshBase refreshView)
         {
-            arrays.clear();
             refreshData();
 
         }
+
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView)
         {
@@ -217,31 +222,30 @@ public class ShopCartFragment extends BaseFragment
                     break;
 
                 case R.id.allCB:
-                        if (isCheck)
+                    if (isCheck)
+                    {
+                        isCheck = false;
+                        isClick = true;
+                        for (int i = 0; i < boxs.size(); i++)
                         {
-                            isCheck=false;
-                            isClick=true;
+                            boxs.get(i).setChecked(true);
+                        }
+
+                    } else
+                    {
+                        isCheck = true;
+                        isClick = false;
+                        if (isUnCheck)
+                        {
                             for (int i = 0; i < boxs.size(); i++)
                             {
-                                boxs.get(i).setChecked(true);
+                                boxs.get(i).setChecked(false);
                             }
-
                         } else
                         {
-                            isCheck=true;
-                            isClick=false;
-                            if (isUnCheck)
-                            {
-                                for (int i = 0; i < boxs.size(); i++)
-                                {
-                                    boxs.get(i).setChecked(false);
-                                }
-                            }
-                                else
-                                {
-                                    isUnCheck=true;
-                                }
+                            isUnCheck = true;
                         }
+                    }
 
                     break;
             }
@@ -298,7 +302,7 @@ public class ShopCartFragment extends BaseFragment
      */
     private void initView()
     {
-        checkPoss=new HashMap<String, Boolean>();
+        checkPoss = new HashMap<String, Boolean>();
         mRequestQueue = Volley.newRequestQueue(mContext);
         mDialogUtil = new DialogUtils(mContext);
 
@@ -326,7 +330,7 @@ public class ShopCartFragment extends BaseFragment
 //        allCb.setOnCheckedChangeListener(onCheckedChangeListener);
         allCb.setOnClickListener(onClickListener);
 
-        mScrollView=(PullToRefreshScrollView)mView.findViewById(R.id.scrollView);
+        mScrollView = (PullToRefreshScrollView) mView.findViewById(R.id.scrollView);
         mScrollView.setOnRefreshListener(onRefreshListener);
         mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
 
@@ -341,9 +345,11 @@ public class ShopCartFragment extends BaseFragment
     private void initBroadcastReceiver()
     {
         IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshAddCartTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartPaySuccessTag);
         mContext.registerReceiver(broadcastReceiver, intentFilter);
     }
 
@@ -361,18 +367,18 @@ public class ShopCartFragment extends BaseFragment
      */
     public void refreshData()
     {
-        checkChange=new HashMap<String, Boolean>();
+        checkChange = new HashMap<String, Boolean>();
         checkChange.putAll(checkPoss);
-        isGoods=false;
+        isGoods = false;
         arrays.clear();
         arraysCheck.clear();
         itemsCheck.clear();
         items.clear();
         allCb.setChecked(false);
         checkPoss.putAll(checkChange);
-        isUnCheck=true;
-        isClick=false;
-        isCheck=true;
+        isUnCheck = true;
+        isClick = false;
+        isCheck = true;
         checkLogin();
         FetchDetailData();
         FetchCountData();
@@ -384,35 +390,33 @@ public class ShopCartFragment extends BaseFragment
      */
     private void refreshItems(CartGoodsItem mCartGoodsItem, int flags)
     {
-        for (int i = 0; i <arrays.size(); i++)
+        for (int i = 0; i < arrays.size(); i++)
         {
-            for (int j = 0; j <arrays.get(i).goodsItems.size(); j++)
+            for (int j = 0; j < arrays.get(i).goodsItems.size(); j++)
             {
                 if (arrays.get(i).goodsItems.get(j).sizeId.equals(mCartGoodsItem.sizeId))
                 {
-                    if (flags==1)
+                    if (flags == 1)
                     {
                         arrays.get(i).goodsItems.remove(j);
-                    }
-                    else
+                    } else
                     {
-                        arrays.get(i).goodsItems.get(j).num=mCartGoodsItem.num;
+                        arrays.get(i).goodsItems.get(j).num = mCartGoodsItem.num;
                     }
 
                 }
             }
         }
-        for (int i = 0; i <itemsCheck.size(); i++)
+        for (int i = 0; i < itemsCheck.size(); i++)
         {
             if (itemsCheck.get(i).sizeId.equals(mCartGoodsItem.sizeId))
             {
-                if (flags==1)
+                if (flags == 1)
                 {
                     itemsCheck.remove(i);
-                }
-                else
+                } else
                 {
-                    itemsCheck.get(i).num=mCartGoodsItem.num;
+                    itemsCheck.get(i).num = mCartGoodsItem.num;
                 }
             }
         }
@@ -452,11 +456,11 @@ public class ShopCartFragment extends BaseFragment
         items.clear();
         boxs.removeAll(boxs);
         itemsCheck.removeAll(itemsCheck);
-        if (arrays.size()>0)
-        for (int i = 0; i < arrays.size(); i++)
-        {
-            items.addAll(arrays.get(i).goodsItems);
-        }
+        if (arrays.size() > 0)
+            for (int i = 0; i < arrays.size(); i++)
+            {
+                items.addAll(arrays.get(i).goodsItems);
+            }
         for (int position = 0; position < items.size(); position++)
         {
             final int tag = position;
@@ -538,28 +542,27 @@ public class ShopCartFragment extends BaseFragment
                         {
                             cartGoodsItem.isCheck = true;
                             itemsCheck.add(cartGoodsItem);
-                            checkPoss.put(cartGoodsItem.sizeId,true);
+                            checkPoss.put(cartGoodsItem.sizeId, true);
                         } else
                         {
                             cartGoodsItem.isCheck = false;
                             itemsCheck.remove(cartGoodsItem);
                             checkPoss.remove(cartGoodsItem.sizeId);
                         }
-                        if (boxs.size()==itemsCheck.size())
+                        if (boxs.size() == itemsCheck.size())
                         {
                             allCb.setChecked(true);
-                            isUnCheck=true;
-                            isCheck=false;
-                            isClick=true;
-                        }
-                        else
+                            isUnCheck = true;
+                            isCheck = false;
+                            isClick = true;
+                        } else
                         {
                             if (isClick)
                             {
                                 allCb.setChecked(false);
-                                isCheck=true;
-                                isClick=false;
-                                isUnCheck=false;
+                                isCheck = true;
+                                isClick = false;
+                                isUnCheck = false;
                             }
                         }
                         setGoodsCheckChange();
@@ -567,37 +570,22 @@ public class ShopCartFragment extends BaseFragment
                 });
             }
             boxs.add(itemCheck);
-            if (checkPoss.get(cartGoodsItem.sizeId)!=null)
+            if (checkPoss.get(cartGoodsItem.sizeId) != null)
             {
                 //判断商品是否下架或者卖光处理
-                if (cartGoodsItem.isOver.equals("true") | cartGoodsItem.isPublish.equals("true") | cartGoodsItem.isDate.equals("true"))
+                if (cartGoodsItem.isOver.equals("true") && cartGoodsItem.isPublish.equals("true") && cartGoodsItem.isDate.equals("true"))
                 {
 
-                }
-                else
+                } else
                 {
                     itemCheck.setChecked(checkPoss.get(cartGoodsItem.sizeId));
                 }
 
-                 if (position==items.size()-1)
-                    {
-                        if (boxs.size()==itemsCheck.size())
-                        {
-                            allCb.setChecked(true);
-                            isUnCheck=true;
-                            isCheck=false;
-                            isClick=true;
-                        }
-                    }
+
             }
 
-            numLimit.setVisibility(cartGoodsItem.num>cartGoodsItem.count?View.VISIBLE:View.GONE);
-            if (cartGoodsItem.isOver.equals("true"))
-            {
-                isOver.setVisibility(View.VISIBLE);
-                islose.setVisibility(View.GONE);
-                isDate.setVisibility(View.GONE);
-            }
+            numLimit.setVisibility(cartGoodsItem.num > cartGoodsItem.count ? View.VISIBLE : View.GONE);
+
             if (cartGoodsItem.isPublish.equals("true"))
             {
                 isOver.setVisibility(View.GONE);
@@ -610,7 +598,12 @@ public class ShopCartFragment extends BaseFragment
                 islose.setVisibility(View.GONE);
                 isDate.setVisibility(View.VISIBLE);
             }
-
+            if (cartGoodsItem.isOver.equals("true"))
+            {
+                isOver.setVisibility(View.VISIBLE);
+                islose.setVisibility(View.GONE);
+                isDate.setVisibility(View.GONE);
+            }
             if (cartGoodsItem.isOSale.equals("true"))
             {
                 cartNumView.setVisibility(View.GONE);
@@ -636,7 +629,7 @@ public class ShopCartFragment extends BaseFragment
                         @Override
                         public void onPositive()
                         {
-                            FetchGoodsDeleteData(cartGoodsItem,childeView,itemCheck);
+                            FetchGoodsDeleteData(cartGoodsItem, childeView, itemCheck);
                         }
                     }, null);
 
@@ -649,7 +642,7 @@ public class ShopCartFragment extends BaseFragment
                 {
                     if (cartGoodsItem.num - 1 > 0)
                     {
-                        FetchEditDate(itemNum, cartGoodsItem.num - 1, cartGoodsItem,2);
+                        FetchEditDate(itemNum, cartGoodsItem.num - 1, cartGoodsItem, 2);
                     }
                 }
             });
@@ -658,10 +651,20 @@ public class ShopCartFragment extends BaseFragment
                 @Override
                 public void onClick(View view)
                 {
-                    FetchEditDate(itemNum, cartGoodsItem.num + 1, cartGoodsItem,1);
+                    FetchEditDate(itemNum, cartGoodsItem.num + 1, cartGoodsItem, 1);
                 }
             });
             cartGoodsLine.addView(childeView);
+        }
+        if (boxs.size() == checkPoss.size())
+        {
+            allCb.setChecked(true);
+            isUnCheck = true;
+            isCheck = false;
+            isClick = true;
+        } else
+        {
+            allCb.setChecked(false);
         }
         if (mDialog != null)
             mDialog.dismiss();
@@ -675,8 +678,6 @@ public class ShopCartFragment extends BaseFragment
         //发送数量修改广播
         Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsCheckTag);
         mContext.sendBroadcast(intent);
-
-
         Intent intent1 = new Intent(ZhaiDou.IntentRefreshAddCartTag);
         mContext.sendBroadcast(intent1);
 
@@ -687,31 +688,32 @@ public class ShopCartFragment extends BaseFragment
      */
     private void commitCartOrder()
     {
-        ToolUtils.setLog("itemsCheck:"+itemsCheck.size());
-        ToolUtils.setLog("arrays:"+arrays.size());
-        arraysCheck=arrays;
-        for (int i = 0; i <arraysCheck.size() ; i++)
+        ToolUtils.setLog("itemsCheck:" + itemsCheck.size());
+        ToolUtils.setLog("arrays:" + arrays.size());
+        arraysCheck = arrays;
+        ArrayList<CartArrayItem> deleteArrays = new ArrayList<CartArrayItem>();
+        for (int i = 0; i < arraysCheck.size(); i++)
         {
-            arraysCheck.get(i).goodsItems.clear();
-
+            CartArrayItem cartArrayItem = arraysCheck.get(i);
+            cartArrayItem.goodsItems.clear();
             for (int j = 0; j < itemsCheck.size(); j++)
             {
-                if (arraysCheck.get(i).storeId.equalsIgnoreCase(itemsCheck.get(j).storeId))
+                if (cartArrayItem.storeId.equalsIgnoreCase(itemsCheck.get(j).storeId))
                 {
-                    arraysCheck.get(i).goodsItems.add(itemsCheck.get(j));
+                    cartArrayItem.goodsItems.add(itemsCheck.get(j));
                 }
             }
-//           if (arraysCheck.get(i).goodsItems.size()==0)
-//           {
-//               ToolUtils.setLog("删除"+i);
-//               arraysCheck.remove(i);
-//           }
+            if (cartArrayItem.goodsItems.size() == 0)
+            {
+                deleteArrays.add(cartArrayItem);
+            }
         }
+        arraysCheck.removeAll(deleteArrays);
 
         ShopOrderOkFragment shopOrderOkFragment = ShopOrderOkFragment.newInstance("", 0);
         Bundle bundle = new Bundle();
-        bundle.putInt("flags", 0);
-        bundle.putSerializable("goodsList",arraysCheck);
+        bundle.putInt("flags", 2);
+        bundle.putSerializable("goodsList", arraysCheck);
         shopOrderOkFragment.setArguments(bundle);
         ((MainActivity) getActivity()).navigationToFragment(shopOrderOkFragment);
     }
@@ -721,7 +723,6 @@ public class ShopCartFragment extends BaseFragment
      */
     private void setGoodsCheckChange()
     {
-        ToolUtils.setLog("选中数量改变");
         int num = 0;
         double totalMoney = 0;
         double saveMoney = 0;
@@ -747,7 +748,7 @@ public class ShopCartFragment extends BaseFragment
      */
     public void FetchDetailData()
     {
-        String url = ZhaiDou.CartGoodsListUrl+userId;
+        String url = ZhaiDou.CartGoodsListUrl + userId;
         ToolUtils.setLog("url:" + url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
@@ -770,7 +771,7 @@ public class ShopCartFragment extends BaseFragment
                         {
                             JSONObject storeObject = storeArray.optJSONObject(i);
                             String storeId = storeObject.optString("storeId");
-                            ToolUtils.setLog("storeId:"+storeId);
+                            ToolUtils.setLog("storeId:" + storeId);
                             String storeName = storeObject.optString("storeName");
                             int storeCount = storeObject.optInt("subQuantity");
                             double storeMoney = storeObject.optDouble("subAmount");
@@ -786,14 +787,14 @@ public class ShopCartFragment extends BaseFragment
                                     String goodsUrl = goodsObject.optString("productSKUPicUrl");
                                     String goodsSKU = goodsObject.optString("productSKUId");
                                     String specification = goodsObject.optString("productSKUSpecification");
-                                    String isOSale=goodsObject.optString("businessType").equals("01")?"false":"true";
+                                    String isOSale = goodsObject.optString("businessType").equals("01") ? "false" : "true";
                                     double goodsPrice = goodsObject.optDouble("salePrice");
                                     double formalPrice = goodsObject.optDouble("markerPrice");
                                     int goodsCount = goodsObject.optInt("quantity");
                                     int count = goodsObject.optInt("stock");
                                     double goodsTotal = goodsObject.optDouble("subTotal");
-                                    String isPublish = goodsObject.optString("productShelves").equals("1")?"false":"true";
-                                    String isOver = count>0?"false":"true";
+                                    String isPublish = goodsObject.optString("productShelves").equals("1") ? "false" : "true";
+                                    String isOver = count > 0 ? "false" : "true";
                                     CartGoodsItem goodsItem = new CartGoodsItem();
                                     goodsItem.userId = useId;
                                     goodsItem.storeId = storeId;
@@ -810,7 +811,7 @@ public class ShopCartFragment extends BaseFragment
                                     goodsItem.isOver = isOver;
                                     goodsItem.isPublish = isPublish;
                                     goodsItem.isDate = "false";
-                                    goodsItem.isOSale=isOSale;
+                                    goodsItem.isOSale = isOSale;
 
                                     goodsItems.add(goodsItem);
                                     if (goodsItems.size() > 0)
@@ -862,7 +863,7 @@ public class ShopCartFragment extends BaseFragment
      */
     public void FetchCountData()
     {
-        String url = ZhaiDou.CartGoodsCountUrl+userId;
+        String url = ZhaiDou.CartGoodsCountUrl + userId;
         ToolUtils.setLog("url:" + url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
@@ -901,10 +902,10 @@ public class ShopCartFragment extends BaseFragment
     /**
      * 删除商品数据
      */
-    public void FetchGoodsDeleteData(final CartGoodsItem cartGoodsItem,final View childeView,final CheckBox itemCheck)
+    public void FetchGoodsDeleteData(final CartGoodsItem cartGoodsItem, final View childeView, final CheckBox itemCheck)
     {
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
-        String url = ZhaiDou.CartGoodsDeleteUrl+userId+"&productSKUId="+ "[" + cartGoodsItem.sizeId + "]";
+        String url = ZhaiDou.CartGoodsDeleteUrl + userId + "&productSKUId=" + "[" + cartGoodsItem.sizeId + "]";
         ToolUtils.setLog("url:" + url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
@@ -923,10 +924,10 @@ public class ShopCartFragment extends BaseFragment
                         boxs.remove(itemCheck);
                         refreshItems(cartGoodsItem, 1);
                         cartGoodsLine.removeView(childeView);
-                        cartCount=cartCount-cartGoodsItem.num;
+                        cartCount = cartCount - cartGoodsItem.num;
                         ((MainActivity) mContext).CartTip(cartCount);
                         checkPoss.remove(cartGoodsItem.sizeId);
-                        isUnRefresh=true;
+                        isUnRefresh = true;
                         //发送广播
                         sendBroadCastEditAll();
                     }
@@ -960,38 +961,36 @@ public class ShopCartFragment extends BaseFragment
      * @param itemNum
      * @param mCartGoodsItem
      */
-    private void FetchEditDate(final TextView itemNum, final int num, final CartGoodsItem mCartGoodsItem,final int type)
+    private void FetchEditDate(final TextView itemNum, final int num, final CartGoodsItem mCartGoodsItem, final int type)
     {
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
-        String url = ZhaiDou.CartGoodsEditUrl+userId+"&quantity=" +num+ "&productSKUId="+mCartGoodsItem.sizeId;
+        String url = ZhaiDou.CartGoodsEditUrl + userId + "&quantity=" + num + "&productSKUId=" + mCartGoodsItem.sizeId;
         ToolUtils.setLog("url:" + url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
             {
-                if (mDialog!=null)
-                mDialog.dismiss();
+                if (mDialog != null)
+                    mDialog.dismiss();
                 int status = jsonObject.optInt("status");
-                String message=jsonObject.optString("message");
+                String message = jsonObject.optString("message");
                 if (status == 200)
                 {
-                    itemNum.setText(""+num);
-                    mCartGoodsItem.num=num;
+                    itemNum.setText("" + num);
+                    mCartGoodsItem.num = num;
                     refreshItems(mCartGoodsItem, 2);
-                    if (type==1)
+                    if (type == 1)
                     {
-                        cartCount=cartCount+1;
-                    }
-                    else
+                        cartCount = cartCount + 1;
+                    } else
                     {
-                        cartCount=cartCount-1;
+                        cartCount = cartCount - 1;
                     }
                     ((MainActivity) mContext).CartTip(cartCount);
-                    isUnRefresh=true;
+                    isUnRefresh = true;
                     sendBroadCastEditAll();
-                }
-                else
+                } else
                 {
                     ToolUtils.setToastLong(mContext, message);
                 }
@@ -1001,9 +1000,9 @@ public class ShopCartFragment extends BaseFragment
             @Override
             public void onErrorResponse(VolleyError volleyError)
             {
-                if (mDialog!=null)
-                mDialog.dismiss();
-                ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+                if (mDialog != null)
+                    mDialog.dismiss();
+                ToolUtils.setToast(mContext, R.string.loading_fail_txt);
             }
         })
         {
@@ -1040,10 +1039,13 @@ public class ShopCartFragment extends BaseFragment
     }
 
     @Override
-    public void onHiddenChanged(boolean hidden) {
+    public void onHiddenChanged(boolean hidden)
+    {
         super.onHiddenChanged(hidden);
-        if (!hidden) {
-            if (arrays == null | arrays.size() < 1) {
+        if (!hidden)
+        {
+            if (arrays == null | arrays.size() < 1)
+            {
                 refreshData();
             }
         }

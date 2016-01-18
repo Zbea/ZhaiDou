@@ -249,6 +249,10 @@ public class ZhaiDou {
      */
     public static String IntentRefreshAddCartTag="com.zhaidou.home.refesh.goods.add.cart";
     /**
+     * 购物车商品支付成功
+     */
+    public static String IntentRefreshCartPaySuccessTag ="com.zhaidou.home.refesh.cart.pay.success";
+    /**
      * 购物车商品刷新
      */
     public static String IntentRefreshCartGoodsTag ="com.zhaidou.home.refesh.cart.goods";
@@ -260,22 +264,6 @@ public class ZhaiDou {
      * 登录退出
      */
     public static String IntentRefreshLoginExitTag="com.zhaidou.home.refesh.login.exit";
-    /**
-     * 代付款加一
-     */
-    public static String IntentRefreshUnPayAddTag="com.zhaidou.home.refesh.unpay.add";
-    /**
-     * 代付款减一
-     */
-    public static String IntentRefreshUnPayDesTag="com.zhaidou.home.refesh.unpay.des";
-    /**
-     * 收藏减一
-     */
-    public static String IntentRefreshCollectDesTag="com.zhaidou.home.refesh.collect.des";
-    /**
-     * 代付款减一
-     */
-    public static String IntentRefreshUnPayTag="com.zhaidou.home.refesh.unpay.count";
     /**
      * 商品详情零元特卖购买后刷新
      */

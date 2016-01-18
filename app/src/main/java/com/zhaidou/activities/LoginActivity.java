@@ -93,10 +93,9 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                         mDialog.dismiss();
                     }
                     User u = (User) msg.obj;//id,email,token,nick,null
-                    Log.i("handleMessage------------>", u.toString());
                     SharedPreferencesUtil.saveUser(getApplicationContext(), u);
-
                     ToolUtils.setLog("要刷新登录了");
+
                     Intent intent1 = new Intent(ZhaiDou.IntentRefreshLoginTag);
                     sendBroadcast(intent1);
 

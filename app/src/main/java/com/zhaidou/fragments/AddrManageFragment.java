@@ -204,6 +204,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                     @Override
                     public void onPositive()
                     {
+                        mDialog.show();
                         String url = ZhaiDou.AddressDeleteUrl + "?id=" + address.getId();
                         JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, new Response.Listener<JSONObject>()
                         {
@@ -216,6 +217,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                                 if (code != 200)
                                 {
                                     ToolUtils.setToast(mContext, "抱歉，删除失败");
+                                    return;
                                 }
                                 JSONObject dataObject = jsonObject.optJSONObject("data");
                                 if (dataObject != null)
