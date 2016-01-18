@@ -165,6 +165,7 @@ public class ShopCartFragment extends BaseFragment
                         }
                     } else
                     {
+
                         loadingView.setVisibility(View.GONE);
                         nullView.setVisibility(View.VISIBLE);
                         contentView.setVisibility(View.GONE);
