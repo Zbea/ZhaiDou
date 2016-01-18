@@ -120,6 +120,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     public static List<Province> provinceList = new ArrayList<Province>();
 
     public int num = 0;
+    public int cartCount=0;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -138,10 +139,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
             if (action.equalsIgnoreCase(ZhaiDou.BROADCAST_WXAPI_FILTER))
             {
-                System.out.println("MainActivity.onReceive");
                 List<Fragment> fragments = getSupportFragmentManager().getFragments();
                 int result = intent.getIntExtra("code", -2);
-                Log.i("result---------------->", result + "------" + fragments.size());
                 if (fragments.size() > 1)
                 {
                     Fragment fragment = fragments.get(fragments.size() - 1);
@@ -187,7 +186,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                         }
                         selectFragment(currentFragment, persoanlFragment);
                         setButton(personalButton);
-//                        hideTip(View.GONE);
                     }
                     else
                     {
@@ -213,6 +211,9 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     }
 
                     break;
+                case 3:
+                    ((MainActivity) mContext).CartTip(cartCount);
+                    break;
             }
         }
     };
@@ -234,7 +235,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         getVersionServer();
 
         initComponents();
-       commitActiveData();
+        commitActiveData();
         AlibabaSDK.asyncInit(this, new InitResultCallback() {
             @Override
             public void onSuccess() {
@@ -247,7 +248,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         CountManage.getInstance().setOnCountChangeListener(this);
         AccountManage.getInstance().register(this);
         FetchUnPayData();
-
+        if (checkLogin())
+        FetchCountData();
     }
     private void FetchUnPayData() {
         String mUserId= SharedPreferencesUtil.getData(this, "userId", -1)+"";
@@ -823,6 +825,45 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             public Map<String, String> getHeaders() throws AuthFailureError
             {
                 Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
+    }
+
+    /**
+     * 请求购物车列表数据
+     */
+    public void FetchCountData()
+    {
+        String url = ZhaiDou.CartGoodsCountUrl+id;
+        ToolUtils.setLog("url:" + url);
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (jsonObject != null)
+                {
+                    JSONObject object = jsonObject.optJSONObject("data");
+                    cartCount = object.optInt("totalQuantity");
+                    mHandler.sendEmptyMessage(3);
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("SECAuthorization", token);
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }

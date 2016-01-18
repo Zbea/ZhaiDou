@@ -1099,17 +1099,20 @@ public class GoodsDetailsFragment extends BaseFragment
                 //判断是否为二维
                 if (isTwoSize())
                 {
-                    for (int j = 0; j < specificationList.get(i).sizess.size(); j++)
+                    if (mSpecificationSubclass!=null)
                     {
-                        if (specificationList.get(i).sizess.get(j).sizeId.equals(mSpecificationSubclass.sizeId))
+                        for (int j = 0; j < specificationList.get(i).sizess.size(); j++)
                         {
-                            specificationList.get(i).sizess.get(j).num = mSpecificationSubclass.num;
+                            if (specificationList.get(i).sizess.get(j).sizeId.equals(mSpecificationSubclass.sizeId))
+                            {
+                                specificationList.get(i).sizess.get(j).num = mSpecificationSubclass.num;
+                            }
                         }
-                    }
-                    if (mSpecificationSubclass.num < 1)
-                    {
-                        mSpecificationSubclass = null;
-                        addSizeParentView();
+                        if (mSpecificationSubclass.num < 1)
+                        {
+                            mSpecificationSubclass = null;
+                            addSizeParentView();
+                        }
                     }
                 } else
                 {

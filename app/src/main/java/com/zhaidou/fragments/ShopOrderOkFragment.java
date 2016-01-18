@@ -132,8 +132,9 @@ public class ShopOrderOkFragment extends BaseFragment
     private Address address;
     private String token;
     private int userId;
-    private int flags = 0;//1代表立即购买
+    private int flags = 2;//1代表立即购买
     private ArrayList<CartArrayItem> cartArrayItems=new ArrayList<CartArrayItem>();
+    private List<CartArrayItem> orderArrayItems=new ArrayList<CartArrayItem>();
 
     private Handler handler = new Handler()
     {
@@ -176,7 +177,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     break;
                 case UPDATE_LOADING_FAIL:
                     mDialog.dismiss();
-                    ToolUtils.setToastLong(mContext, "抱歉,提交订单失败");
+                    CustomToastDialog.setToastDialog(mContext,"抱歉,提交订单失败");
                     break;
                 case UPDATE_COMMIT_SUCCESS:
                     mDialog.dismiss();
@@ -193,7 +194,7 @@ public class ShopOrderOkFragment extends BaseFragment
                         mContext.sendBroadcast(intent);
                     }
                     //发送刷新购物车广播
-                    Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
+                    Intent intent = new Intent(ZhaiDou.IntentRefreshCartPaySuccessTag);
                     mContext.sendBroadcast(intent);
                     //发送刷新购物车数量广播
                     Intent intent1 = new Intent(ZhaiDou.IntentRefreshCartGoodsCheckTag);
@@ -446,11 +447,10 @@ public class ShopOrderOkFragment extends BaseFragment
      */
     private void initView()
     {
-
-        if (flags==0)
+        ToolUtils.setLog("flags"+flags);
+        if (flags!=1)
         {
-            ToolUtils.setLog("执行刷新");
-            Intent intent = new Intent(ZhaiDou.IntentRefreshAddCartTag);
+            Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
             mContext.sendBroadcast(intent);
         }
 
@@ -480,6 +480,7 @@ public class ShopOrderOkFragment extends BaseFragment
         {
             items.addAll(cartArrayItems.get(i).goodsItems);
         }
+        orderArrayItems.addAll(cartArrayItems);
 
         if (flags == 1)
         {
@@ -739,7 +740,8 @@ public class ShopOrderOkFragment extends BaseFragment
             }
         } else
         {
-            ToolUtils.setToast(mContext, "抱歉,您未填写收货地址");
+            mDialog.dismiss();
+            CustomToastDialog.setToastDialog(mContext, "抱歉,您未填写收货地址");
         }
 
     }
@@ -818,17 +820,20 @@ public class ShopOrderOkFragment extends BaseFragment
             params.add(new BasicNameValuePair("remark", bzInfo.getText().toString()));
 
             JSONArray storeArray=new JSONArray();
-            for (int i = 0; i < cartArrayItems.size(); i++)
+            ToolUtils.setLog("orderArrayItems.size()1+"+orderArrayItems.size());
+            for (int i = 0; i < orderArrayItems.size(); i++)
             {
+                CartArrayItem cartArrays=orderArrayItems.get(i);
                 JSONObject storeObject=new JSONObject();
-                storeObject.put("storeId",cartArrayItems.get(i).storeId);
+                storeObject.put("storeId",cartArrays.storeId);
                 storeObject.put("storeDeliveryId",2);
                 storeObject.put("storeDeliveryFee",moneyYF);
                 storeObject.put("messageToStore",bzInfo_Str);
                 JSONArray goodsArray=new JSONArray();
-                for (int j = 0; j <cartArrayItems.get(i).goodsItems.size(); j++)
+
+                for (int j = 0; j <cartArrays.goodsItems.size(); j++)
                 {
-                    CartGoodsItem cartGoodsItem=cartArrayItems.get(i).goodsItems.get(j);
+                    CartGoodsItem cartGoodsItem=cartArrays.goodsItems.get(j);
                     JSONObject goodsObject=new JSONObject();
                     goodsObject.put("productSKUCode",cartGoodsItem.sizeId);
                     goodsObject.put("quantity",cartGoodsItem.num);

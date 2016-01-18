@@ -295,6 +295,7 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                         if (code!=200)
                         {
                             ToolUtils.setToast(mContext,"抱歉，删除失败");
+                            return;
                         }
                         JSONObject dataObject=jsonObject.optJSONObject("data");
                         if (dataObject != null)
@@ -306,6 +307,7 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                                 addressAdapter.notifyDataSetChanged();
                                 if (addressList.size() == 0)
                                 {
+                                    if(addressListener!=null)
                                     addressListener.onDeleteFinishAddress();
                                 }
                             }
