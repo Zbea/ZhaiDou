@@ -889,8 +889,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     @Override
     public void onCount(int count) {
-        if (count>0&&count > currentPrePayCount)
-            iv_dot.setVisibility(View.VISIBLE);
+//        if (count>0&&count > currentPrePayCount)
+        iv_dot.setVisibility(count>0&&count > currentPrePayCount?View.VISIBLE:View.GONE);
         currentPrePayCount=count;
     }
 

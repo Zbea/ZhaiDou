@@ -564,8 +564,9 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     @Override
     public void onResume() {
         if (!isDataLoaded) {//&&hasUnPayOrder
-            System.out.println("OrderAllOrdersFragment.onResume--->" + isDataLoaded);
+            System.out.println("OrderAllOrdersFragment.onResume----------------------------->" + isDataLoaded);
             mOrderList.clear();
+            timerMapStamp.clear();
             FetchOrderList(mCurrentPage = 1, mCurrentType);
         }
         super.onResume();
@@ -587,6 +588,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         if (timer != null) {
             timer.cancel();
             isTimerStart = false;
+            timer=null;
         }
         super.onStop();
     }

@@ -223,18 +223,22 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                                 if (dataObject != null)
                                 {
                                     int status = dataObject.optInt("status");
+                                    String msg = dataObject.optString("message");
                                     if (status == 201)
                                     {
+                                        ToolUtils.setToast(mContext, msg);
                                         addressList.remove(address);
                                         addressAdapter.notifyDataSetChanged();
                                         if (addressList.size() == 0)
                                         {
-                                            if(addressListener!=null)
+                                            if (addressListener!=null)
                                             addressListener.onDeleteFinishAddress();
                                         }
-                                    }
+                                    }else {
+
                                     String message = jsonObject.optString("message");
                                     ToolUtils.setToast(mContext, message);
+                                    }
                                 }
                             }
                         }, new Response.ErrorListener()
