@@ -52,7 +52,7 @@ public class CountManage {
             return;
         }
         int i = integer.intValue();
-        init(type, --i);
+        init(type, i>0?--i:0);
     }
     public void clearCache(){
         map.clear();

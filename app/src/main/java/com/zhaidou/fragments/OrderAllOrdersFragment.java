@@ -588,6 +588,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         if (timer != null) {
             timer.cancel();
             isTimerStart = false;
+            timer=null;
         }
         super.onStop();
     }
