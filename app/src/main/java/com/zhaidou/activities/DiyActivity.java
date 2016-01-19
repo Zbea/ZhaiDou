@@ -23,7 +23,6 @@ public class DiyActivity extends FragmentActivity
 
     }
 
-
     public void openDrawer(){
         mDrawerLayout.openDrawer(Gravity.RIGHT);
     }
