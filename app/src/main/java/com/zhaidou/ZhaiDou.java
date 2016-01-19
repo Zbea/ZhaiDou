@@ -10,6 +10,7 @@ public class ZhaiDou {
 //    public static String HOME_BASE_URL = "http://www.zhaidou.com/";
 //    public static String HOME_BASE_URL = "http://121.42.206.45:7082/";
     public static String HOME_BASE_URL = "http://portal-web.zhaidou.com/";
+    public static String HOME_BASE="http://www.zhaidou.com/";
 
     //美丽家
     public static String HomeBeautifulUrl=HOME_BASE_URL+"zd/getPosts.action?plug=006&pageSize=10&pageNo=";
@@ -122,7 +123,7 @@ public class ZhaiDou {
     //用户取消收藏
     public static String USER_DELETE_COLLECT_ITEM_URL=HOME_BASE_URL+"article/api/article_items/like";
     //用户豆搭
-    public static String USER_COLLOCATION_ITEM_URL=HOME_BASE_URL+"api/v1/users/";
+    public static String USER_COLLOCATION_ITEM_URL=HOME_BASE+"api/v1/users/";
     //获取验证码
     public static String USER_REGISTER_VERIFY_CODE_URL=HOME_BASE_URL+"user/vilidate_phone.action";
     //修改密码验证码验证

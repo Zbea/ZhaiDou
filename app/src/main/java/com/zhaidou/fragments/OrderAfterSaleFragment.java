@@ -555,8 +555,11 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                     int status = jsonObject.optInt("status");
                     String message = jsonObject.optString("message");
                     if (200 == status) {
-                        ShowToast("退货申请成功");
-                        ((MainActivity) getActivity()).navigationToFragment(OrderAfterSaleFragment.this);
+                        ShowToast("退货申请成功,请前往退款/退货订单中查看");
+                        mStore.returnGoodsFlag=1;
+                        if (onReturnSuccess!=null)
+                            onReturnSuccess.onSuccess(mStore);
+                        ((MainActivity) getActivity()).popToStack(OrderAfterSaleFragment.this);
                     } else {
                         ShowToast(message);
                     }

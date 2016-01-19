@@ -110,7 +110,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private int type = 1; //1跳转我的账户2跳转购物车
 
     private long mTime;
-    public long clickTime;
     private Activity mContext;
     private String serverName;
     private String serverInfo;
@@ -240,53 +239,43 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
         initComponents();
         commitActiveData();
-        AlibabaSDK.asyncInit(this, new InitResultCallback()
-        {
+        AlibabaSDK.asyncInit(this, new InitResultCallback() {
             @Override
-            public void onSuccess()
-            {
+            public void onSuccess() {
             }
 
             @Override
-            public void onFailure(int i, String s)
-            {
+            public void onFailure(int i, String s) {
             }
         });
         CountManage.getInstance().setOnCountChangeListener(this);
         AccountManage.getInstance().register(this);
         FetchUnPayData();
         if (checkLogin())
-            FetchCountData();
+        FetchCountData();
     }
-
-    private void FetchUnPayData()
-    {
-        String mUserId = SharedPreferencesUtil.getData(this, "userId", -1) + "";
+    private void FetchUnPayData() {
+        String mUserId= SharedPreferencesUtil.getData(this, "userId", -1)+"";
         Map<String, String> params = new HashMap();
-        params.put("userId", mUserId);
+        params.put("userId",mUserId);
         params.put("clientType", "ANDROID");
         params.put("clientVersion", "45");
         params.put("businessType", "01");
         params.put("type", ZhaiDou.TYPE_ORDER_PREPAY);
-        params.put("pageNo", "0");
+        params.put("pageNo","0");
         params.put("pageSize", "0");
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST, new JSONObject(params), new Response.Listener<JSONObject>()
-        {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(JSONObject jsonObject)
-            {
+            public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
                 int totalCount = jsonObject.optInt("totalCount");
-                if (status == 200)
-                {
-                    CountManage.getInstance().init(CountManage.TYPE.TAG_PREPAY, totalCount);
+                if (status==200){
+                    CountManage.getInstance().init(CountManage.TYPE.TAG_PREPAY,totalCount);
                 }
             }
-        }, new Response.ErrorListener()
-        {
+        }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
+            public void onErrorResponse(VolleyError volleyError) {
 
             }
         });
@@ -466,7 +455,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         });
 
-        personalButton = (TextView) findViewById(R.id.tab_personal);
+        personalButton = (TextView)findViewById(R.id.tab_personal);
         personalButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -618,7 +607,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         try
         {
             JSONObject jsonObject = new JSONObject(json);
-            if (jsonObject != null)
+            if (jsonObject!=null)
             {
                 JSONObject object = jsonObject.optJSONObject("data");
                 if (object != null)
@@ -673,7 +662,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         } else
         {
-            if (fragments.size() > 0 && keyCode == KeyEvent.KEYCODE_BACK)
+            if (fragments.size() > 0&&keyCode == KeyEvent.KEYCODE_BACK)
             {
                 Fragment orderDetailFragment = manager.findFragmentByTag(OrderDetailFragment1.class.getSimpleName());
                 Fragment shopPaymentSuccessFragmen = manager.findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
@@ -686,19 +675,22 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     ToolUtils.setLog("关闭orderDetailFragment");
                     popToStack(orderDetailFragment);
                     return true;
-                } else if ((shopPaymentSuccessFragmen != null && shopPaymentSuccessFragmen instanceof ShopPaymentSuccessFragment))
+                }
+                else if ((shopPaymentSuccessFragmen != null && shopPaymentSuccessFragmen instanceof ShopPaymentSuccessFragment))
                 {
                     //ShopPaymentSuccessFragment关闭
                     ToolUtils.setLog("关闭shopPaymentSuccessFragmen");
                     popToStack(shopPaymentSuccessFragmen);
                     return true;
-                } else if ((shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment))
+                }
+                 else if ((shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment))
                 {
                     ToolUtils.setLog("关闭shopPaymentFailFragment");
                     //ShopPaymentSuccessFragment关闭
                     popToStack(shopPaymentFailFragment);
                     return true;
-                } else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment)
+                }
+                else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment)
                 {
                     ToolUtils.setLog("关闭shopPaymentFragment");
                     //ShopPaymentFragment返回弹出提示
@@ -771,12 +763,13 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
      */
     public void CartTip(int ty)
     {
-        if (ty == 0)
+        if (ty==0)
         {
             cart_dot.setVisibility(View.GONE);
-        } else
+        }
+        else
         {
-            cart_dot.setText("" + ty);
+            cart_dot.setText(""+ty);
             cart_dot.setVisibility(View.VISIBLE);
         }
     }
@@ -914,16 +907,17 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     int currentPrePayCount = 0;
 
     @Override
-    public void onCount(int count)
-    {
+    public void onCount(int count) {
 //        if (count>0&&count > currentPrePayCount)
-        iv_dot.setVisibility(count > 0 && count > currentPrePayCount ? View.VISIBLE : View.GONE);
-        currentPrePayCount = count;
+//        if (iv_dot.isShown())
+//            return;
+//        if (!isFirstUnPayVisible)
+        iv_dot.setVisibility(count>0&&count > currentPrePayCount?View.VISIBLE:View.GONE);
+        currentPrePayCount=count;
     }
 
     @Override
-    public void onLogOut()
-    {
+    public void onLogOut() {
         iv_dot.setVisibility(View.GONE);
     }
 }
