@@ -107,9 +107,9 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
             switch (msg.what)
             {
                 case 0:
+                    productAdapter.notifyDataSetChanged();
                     if (products.size() > 0)
                     {
-                        productAdapter.setList(products);
                         nullLine.setVisibility(View.GONE);
                         if (products.size() < pageTotal)
                         {
@@ -178,10 +178,11 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         tv_count = (TextView) view.findViewById(R.id.tv_count);
         tv_money = (TextView) view.findViewById(R.id.tv_money);
         gv_single = (PullToRefreshGridView) view.findViewById(R.id.gv_single);
+        gv_single.setOnRefreshListener(this);
+        gv_single.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
         nullLine = (LinearLayout) view.findViewById(R.id.nullline);
         productAdapter = new ProductAdapter(mContext, products);
         gv_single.setAdapter(productAdapter);
-        gv_single.setOnRefreshListener(this);
         productAdapter.setOnInViewClickListener(R.id.ll_single_layout, new BaseListAdapter.onInternalClickListener()
         {
             @Override
@@ -740,6 +741,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
             ll_sale_out.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / 2 - 1, screenWidth / 2 - 1));
             Product product = getList().get(position);
             tv_name.setText(product.getTitle());
+            ToolUtils.setLog("position:"+position);
             ToolUtils.setImageCacheUrl(product.getImage(), image, R.drawable.icon_loading_defalut);
             tv_price.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
             tv_money.setText("￥" + ToolUtils.isIntPrice("" + product.getPrice()));

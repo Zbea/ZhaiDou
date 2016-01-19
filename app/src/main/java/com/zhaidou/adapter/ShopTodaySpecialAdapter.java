@@ -8,14 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.viewpagerindicator.LinePageIndicator;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.fragments.GoodsDetailsFragment;
@@ -35,7 +33,7 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
     private List<ShopTodayItem> items;
     private ViewHolder viewHolder;
     private Context context;
-    private WeakHashMap<Integer,View> map=new WeakHashMap<Integer, View>();
+    private WeakHashMap<Integer,View> viewMaps = new WeakHashMap<Integer, View>();
 
     public void clear()
     {
@@ -51,8 +49,8 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
 
     class ViewHolder
     {
-        TypeFaceTextView itemIntorduce;
         TypeFaceTextView itemName;
+        TypeFaceTextView itemIntorduce;
         ImageView itemImage,itemNull;
         TypeFaceTextView itemBuy;
         TextView itemCurrentPrice;
@@ -84,7 +82,7 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
     @Override
     public View getView(final int position, View convertView, ViewGroup parent)
     {
-//        convertView=map.get(position);
+//        convertView=viewMaps.get(position);
         if (convertView == null)
         {
             convertView = LayoutInflater.from(context).inflate(R.layout.shop_today_special_item, null);
@@ -231,7 +229,7 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
 //public class ShopTodaySpecialAdapter extends BaseListAdapter<ShopTodayItem>
 //{
 //    private Context context;
-//    private WeakHashMap<Integer,View> map=new WeakHashMap<Integer, View>();
+//    private WeakHashMap<Integer,View> viewMaps=new WeakHashMap<Integer, View>();
 //
 //    public ShopTodaySpecialAdapter(Context context, List<ShopTodayItem> items) {
 //        super(context, items);
@@ -240,7 +238,7 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
 //    @Override
 //    public View bindView(int position, View convertView, ViewGroup parent)
 //    {
-//        convertView = map.get(position);
+//        convertView = viewMaps.get(position);
 //        if (convertView == null)
 //            convertView = mInflater.inflate(R.layout.shop_today_special_item, null);
 //        TypeFaceTextView itemName = ViewHolder.get(convertView, R.id.shopNameItem);
@@ -334,7 +332,7 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
 //            itemBuy.setText("抢光了");
 //            itemBuy.setClickable(false);
 //        }
-//        map.put(position, convertView);
+//        viewMaps.put(position, convertView);
 //        return convertView;
 //
 //    }

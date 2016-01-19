@@ -17,6 +17,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
@@ -77,7 +78,8 @@ import java.util.Map;
 /**
  */
 public class MainActivity extends BaseActivity implements DiyFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
-        MainHomeFragment.OnFragmentInteractionListener, MainCategoryFragment.OnFragmentInteractionListener, RegisterFragment.RegisterOrLoginListener, CountManage.onCountChangeListener, AccountManage.AccountListener {
+        MainHomeFragment.OnFragmentInteractionListener, MainCategoryFragment.OnFragmentInteractionListener, RegisterFragment.RegisterOrLoginListener, CountManage.onCountChangeListener, AccountManage.AccountListener
+{
 
     private FragmentManager manager;
     private Fragment utilityFragment;
@@ -105,7 +107,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     boolean isFromCamera = false;// 区分拍照旋转
     int degree = 0;
     public String filePath = "";
-    private int type =1; //1跳转我的账户2跳转购物车
+    private int type = 1; //1跳转我的账户2跳转购物车
 
     private long mTime;
     private Activity mContext;
@@ -120,8 +122,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     public static List<Province> provinceList = new ArrayList<Province>();
 
     public int num = 0;
-    public int cartCount=0;
-//    private boolean isFirstUnPayVisible=false;
+    public int cartCount = 0;
+
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -134,6 +136,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag))
             {
+                FetchCountData();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
             {
@@ -176,7 +179,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             switch (msg.what)
             {
                 case 0:
-                    if(type == 1)
+                    if (type == 1)
                     {
                         if (persoanlFragment == null)
                         {
@@ -187,8 +190,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                         }
                         selectFragment(currentFragment, persoanlFragment);
                         setButton(personalButton);
-                    }
-                    else
+                    } else
                     {
                         if (shopCartFragment == null)
                         {
@@ -364,10 +366,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     }
 
 
-
-
-
-
     public int getNum()
     {
         return num;
@@ -537,6 +535,25 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     }
 
 
+    /**
+     * 处理重复点击子 fragment时候出现触发底层 fragment 的问题
+     * @param ev
+     * @return
+     */
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev)
+    {
+        int num = manager.getBackStackEntryCount();
+        if (num < 1)
+        {
+            mChildContainer.setClickable(false);
+        } else
+        {
+            mChildContainer.setClickable(true);
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
     public void toggleTabContainer()
     {
         mTabContainer.setVisibility(mTabContainer.isShown() ? View.GONE : View.VISIBLE);
@@ -592,9 +609,9 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             JSONObject jsonObject = new JSONObject(json);
             if (jsonObject!=null)
             {
-                JSONObject object=jsonObject.optJSONObject("data");
-                if(object!=null)
-                serverName = object.optString("app_version");
+                JSONObject object = jsonObject.optJSONObject("data");
+                if (object != null)
+                    serverName = object.optString("app_version");
                 serverCode = object.optInt("code_version");
                 serverUrl = object.optString("package_url");
             }
@@ -737,11 +754,11 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     public void hideTip(int v)
     {
         iv_dot.setVisibility(v);
-//        isFirstUnPayVisible=false;
     }
 
     /**
      * 显示
+     *
      * @param ty
      */
     public void CartTip(int ty)
@@ -839,7 +856,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
      */
     public void FetchCountData()
     {
-        String url = ZhaiDou.CartGoodsCountUrl+id;
+        String url = ZhaiDou.CartGoodsCountUrl + id;
         ToolUtils.setLog("url:" + url);
         JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {

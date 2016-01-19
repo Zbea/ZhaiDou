@@ -710,7 +710,10 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     @Override
     public void onDestroy()
     {
-        getActivity().unregisterReceiver(broadcastReceiver);
+        mTimerView.stop();
+        requestQueue.stop();
+        if (broadcastReceiver != null)
+           mContext.unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 }
