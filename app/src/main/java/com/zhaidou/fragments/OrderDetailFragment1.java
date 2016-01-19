@@ -144,11 +144,18 @@ public class OrderDetailFragment1 extends BaseFragment {
         });
         mStoreAdapter.setOnInViewClickListener(R.id.bt_received, new BaseListAdapter.onInternalClickListener() {
             @Override
-            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+            public void OnClickListener(final View parentV, final View v, Integer position, Object values) {
                 final Store store = (Store) values;
                 if (ZhaiDou.STATUS_DEAL_SUCCESS == store.status) {
                     OrderAfterSaleFragment afterSaleFragment = OrderAfterSaleFragment.newInstance(store, "");
                     ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
+                    afterSaleFragment.setOnReturnSuccess(new OnReturnSuccess() {
+                        @Override
+                        public void onSuccess(Store st) {
+                            store.returnGoodsFlag=st.returnGoodsFlag;
+                            mStoreAdapter.notifyDataSetChanged();
+                        }
+                    });
                 } else if (ZhaiDou.STATUS__DELIVERYED == store.status) {
                     mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_confirm), new DialogUtils.PositiveListener() {
                         @Override

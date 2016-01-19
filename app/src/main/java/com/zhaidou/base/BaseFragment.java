@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.activities.ItemDetailActivity;
+import com.zhaidou.model.Store;
 import com.zhaidou.utils.NetStateUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.view.HeaderLayout;
@@ -68,6 +69,7 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     public String versionName;
 
     private onFragmentCloseListener onFragmentCloseListener;
+    protected OnReturnSuccess onReturnSuccess;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -319,5 +321,13 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
 
     public interface onFragmentCloseListener{
         public void onClose();
+    }
+
+    public void setOnReturnSuccess(OnReturnSuccess onReturnSuccess) {
+        this.onReturnSuccess = onReturnSuccess;
+    }
+
+    public interface OnReturnSuccess{
+        public void onSuccess(Store store);
     }
 }
