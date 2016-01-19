@@ -94,7 +94,8 @@
             android:background="@color/white"
             android:orientation="horizontal">
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
@@ -104,11 +105,16 @@
                     android:paddingLeft="20dp"
                     android:text="姓名："
                     android:textSize="15sp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
                     android:textColor="@color/text_main_color" />
 
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_addr_username"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:singleLine="true"
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
                     android:textColor="@color/text_normal_color" />
@@ -119,6 +125,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
                 android:orientation="horizontal">
 
                 <com.zhaidou.view.TypeFaceTextView

@@ -169,8 +169,6 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
         tv_commit.setOnClickListener(this);
         mTitleView = (TextView) view.findViewById(R.id.tv_title);
         mEditText = (EditText) view.findViewById(R.id.et_msg);
-        tv_return = (TextView) view.findViewById(R.id.tv_return);
-        tv_exchange = (TextView) view.findViewById(R.id.tv_exchange);
         mOldPrice = (TextView) view.findViewById(R.id.tv_outdated);
         mImgGrid = (GridView) view.findViewById(R.id.gv_img);
         mMenuContainer = (FrameLayout) view.findViewById(R.id.rl_header_menu);
@@ -183,10 +181,6 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
         mListView.setAdapter(afterSaleAdapter);
 //        FetchOrderDetail(mStore);
 
-        tv_exchange.setText("return_money".equalsIgnoreCase(mStatus) ? "退款" : "退货");
-        tv_exchange.setOnClickListener(this);
-        tv_return.setOnClickListener(this);
-
         iv_return_img = (ImageView) view.findViewById(R.id.iv_return_img);
         iv_return_img.setOnClickListener(this);
         menuFragment = PhotoMenuFragment.newInstance("", "");
@@ -195,13 +189,6 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
         imagePath.add("");
         imageAdapter = new ImageAdapter(getActivity(), imagePath);
         mImgGrid.setAdapter(imageAdapter);
-        if (("" + ZhaiDou.STATUS_PAYED).equalsIgnoreCase(mStatus)) {
-            mTitleView.setText(mContext.getResources().getString(R.string.order_return_money));
-            tv_exchange.setText("退款");
-        } else {
-            mTitleView.setText(mContext.getResources().getString(R.string.order_return_good));
-            tv_exchange.setText("退货");
-        }
 
         afterSaleAdapter.setOnInViewClickListener(R.id.cb_return, new BaseListAdapter.onInternalClickListener() {
             @Override
@@ -289,18 +276,6 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.tv_exchange:
-                if (lastSelected != null)
-                    lastSelected.setSelected(false);
-                tv_exchange.setSelected(true);
-                lastSelected = tv_exchange;
-                break;
-            case R.id.tv_return:
-                if (lastSelected != null)
-                    lastSelected.setSelected(false);
-                tv_return.setSelected(true);
-                lastSelected = tv_return;
-                break;
             case R.id.iv_return_img:
                 mMenuContainer.setVisibility(View.VISIBLE);
                 toggleMenu();

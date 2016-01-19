@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <RelativeLayout
         android:id="@+id/common_actionbar"
         android:layout_width="match_parent"
@@ -13,8 +14,8 @@
             android:id="@+id/ll_back"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:gravity="center_vertical"
             android:clickable="true"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <ImageView
@@ -44,10 +45,11 @@
             android:textColor="@color/white"
             android:textSize="18sp" />
     </RelativeLayout>
+
     <ScrollView
-        android:layout_below="@id/common_actionbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/common_actionbar"
         android:background="#f1f1f1"
         android:scrollbars="none">
 
@@ -78,10 +80,10 @@
 
             <com.zhaidou.view.ListViewForScrollView
                 android:id="@+id/lv_aftersale"
-                android:dividerHeight="0.5dp"
-                android:divider="@color/black"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:divider="@color/black"
+                android:dividerHeight="0.5dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -171,6 +173,7 @@
 
 
             </LinearLayout>
+
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -185,27 +188,27 @@
                 android:paddingLeft="15dp"
                 android:paddingTop="15dp">
 
-                <com.zhaidou.view.TypeFaceTextView
-                    android:id="@+id/tv_exchange"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp"
-                    android:background="@drawable/icon_pecification_selected"
-                    android:clickable="true"
-                    android:gravity="center"
-                    android:text="换货"
-                    android:textColor="#999999" />
+                <RelativeLayout
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/selector_return_bg">
 
-                <com.zhaidou.view.TypeFaceTextView
-                    android:id="@+id/tv_return"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/goods_buy_size_item_selector"
-                    android:clickable="true"
-                    android:gravity="center"
-                    android:text="退货"
-                    android:visibility="gone"
-                    android:textColor="#999999" />
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:clickable="true"
+                        android:text="退货"
+                        android:textColor="#999999" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        android:background="@drawable/icon_return_flag" />
+                </RelativeLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -235,8 +238,8 @@
                     android:layout_margin="15dp"
                     android:background="@drawable/shape_line_frame"
                     android:gravity="top"
-                    android:padding="5dp"
                     android:hint="请填写内容。。。"
+                    android:padding="5dp"
                     android:textColor="@color/gray_9"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -266,23 +269,25 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="15dp"
-                    android:visibility="gone"
-                    android:src="@drawable/icon_add" />
+                    android:src="@drawable/icon_add"
+                    android:visibility="gone" />
+
                 <GridView
                     android:id="@+id/gv_img"
-                    android:numColumns="auto_fit"
+                    android:layout_width="match_parent"
+                    android:layout_height="fill_parent"
                     android:layout_marginLeft="15dp"
                     android:columnWidth="80dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="fill_parent"/>
+                    android:numColumns="auto_fit" />
+
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/title_color"
-                    android:textSize="10sp"
-                    android:text="最多上传3张,每张不超过3m,支持jpg、png、bmp"
+                    android:layout_marginBottom="5dp"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginBottom="5dp"/>
+                    android:text="最多上传3张,每张不超过3m,支持jpg、png、bmp"
+                    android:textColor="@color/title_color"
+                    android:textSize="10sp" />
             </LinearLayout>
 
             <TextView
@@ -297,13 +302,14 @@
                 android:background="@drawable/btn_red_click_selector"
                 android:gravity="center"
                 android:text="提交"
-                android:textSize="16sp"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textSize="16sp" />
         </LinearLayout>
     </ScrollView>
+
     <FrameLayout
         android:id="@+id/rl_header_menu"
-        android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 </RelativeLayout>
