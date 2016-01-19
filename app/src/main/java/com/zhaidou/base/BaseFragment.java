@@ -59,8 +59,6 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
 
     protected int screenWidth;
     protected int screenHeight;
-    public static NetStateUtils netStateUtils;
-    public static boolean isNetState;
     public Context mContext;
     protected boolean isDialogFirstVisible=true;
 
@@ -96,7 +94,7 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         currentFragment=this;
         view.setOnTouchListener(this);
-//        initRegisterBroadcast();
+        view.setOnClickListener(null);
         mBackView=view.findViewById(R.id.ll_back);
         inputMethodManager=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (mBackView!=null)
@@ -119,20 +117,6 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
 
     public BaseFragment() {
 
-    }
-
-    private void initRegisterBroadcast()
-    {
-        netStateUtils=new NetStateUtils();
-        IntentFilter intentFilter=new IntentFilter();
-        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        getActivity().registerReceiver(netStateUtils,intentFilter);
-    }
-
-    public static Boolean getNetState()
-    {
-        isNetState=netStateUtils.isNetState;
-        return isNetState;
     }
 
     public int getScreenWidth()
@@ -167,7 +151,6 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
         mToast.show();
     }
 
-
     /** 打Log
      * ShowLog
      * @return void
@@ -179,80 +162,6 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
 
     public View findViewById(int paramInt) {
         return getView().findViewById(paramInt);
-    }
-
-
-    /**
-     * 只有title initTopBarLayoutByTitle
-     * @Title: initTopBarLayoutByTitle
-     * @throws
-     */
-//    public void initTopBarForOnlyTitle(String titleName) {
-//        mHeaderLayout = (HeaderLayout)findViewById(R.id.common_actionbar);
-//        mHeaderLayout.init(HeaderLayout.HeaderStyle.DEFAULT_TITLE);
-//        mHeaderLayout.setDefaultTitle(titleName);
-//    }
-
-    /**
-     * 初始化标题栏-带左右按钮
-     *
-     * @return void
-     * @throws
-     */
-//    public void initTopBarForBoth(String titleName,int leftDrawableId,int rightDrawableId,
-//                                  HeaderLayout.onLeftImageButtonClickListener leftListener,
-//                                  HeaderLayout.onRightImageButtonClickListener listener) {
-//        ShowLog("mHeaderLayout");
-//        mHeaderLayout = (HeaderLayout)findViewById(R.id.common_actionbar);
-//        ShowLog("mHeaderLayout");
-//        mHeaderLayout.init(HeaderLayout.HeaderStyle.TITLE_DOUBLE_IMAGEBUTTON);
-//        mHeaderLayout.setTitleAndLeftImageButton(titleName,
-//                leftDrawableId,
-//                leftListener);
-//        mHeaderLayout.setTitleAndRightImageButton(titleName, rightDrawableId,
-//                listener);
-//    }
-
-    /**
-     * 只有左边按钮和Title initTopBarLayout
-     *
-     * @throws
-     */
-//    public void initTopBarForLeft(String titleName) {
-//        mHeaderLayout = (HeaderLayout)findViewById(R.id.common_actionbar);
-//        mHeaderLayout.init(HeaderLayout.HeaderStyle.TITLE_LIFT_IMAGEBUTTON);
-//        mHeaderLayout.setTitleAndLeftImageButton(titleName,
-//                R.drawable.base_action_bar_back_bg_selector,
-//                new OnLeftButtonClickListener());
-//    }
-
-    /** 右边+title
-     * initTopBarForRight
-     * @return void
-     * @throws
-     */
-//    public void initTopBarForRight(String titleName,int rightDrawableId,
-//                                   HeaderLayout.onRightImageButtonClickListener listener) {
-//        mHeaderLayout = (HeaderLayout)findViewById(R.id.common_actionbar);
-//        mHeaderLayout.init(HeaderLayout.HeaderStyle.TITLE_RIGHT_IMAGEBUTTON);
-//        mHeaderLayout.setTitleAndRightImageButton(titleName, rightDrawableId,
-//                listener);
-//    }
-//    public void initTopBarForRight(String titleName, int rightDrawableId,String text,
-//                                   HeaderLayout.onRightImageButtonClickListener listener) {
-//        mHeaderLayout = (HeaderLayout)findViewById(R.id.common_actionbar);
-//        mHeaderLayout.init(HeaderLayout.HeaderStyle.TITLE_DOUBLE_IMAGEBUTTON);
-//        mHeaderLayout.setTitleAndRightButton(titleName, rightDrawableId,text,
-//                listener);
-//    }
-    // 左边按钮的点击事件
-    public class OnLeftButtonClickListener implements
-            HeaderLayout.onLeftImageButtonClickListener {
-
-        @Override
-        public void onClick(View view) {
-            getActivity().finish();
-        }
     }
 
     /**
@@ -301,7 +210,6 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
 
     @Override
     public void onDestroy() {
-//        getActivity().unregisterReceiver(netStateUtils);
         super.onDestroy();
     }
 

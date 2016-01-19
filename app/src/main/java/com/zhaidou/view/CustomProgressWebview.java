@@ -21,7 +21,7 @@ public class CustomProgressWebview extends WebView
 		super(context, attrs);
 
 		progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal);
-		progressBar.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 15, 0, 1));
+		progressBar.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 12, 0, 0));
 		progressBar.setMax(100);  
 		addView(progressBar);
 		setWebChromeClient(new WebChromeClient());
