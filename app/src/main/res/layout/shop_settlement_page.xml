@@ -64,8 +64,9 @@
 
                             <com.zhaidou.view.TypeFaceTextView
                                 android:id="@+id/jsAddressNameTv"
-                                android:layout_width="wrap_content"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="1"
                                 android:textColor="@color/white"
                                 android:text="收件人："
                                 android:textSize="14sp"

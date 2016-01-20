@@ -518,14 +518,7 @@ public class ShopCartFragment extends BaseFragment
 
 
             //判断商品是否下架或者卖光处理
-            if (cartGoodsItem.isOver.equals("true") | cartGoodsItem.isPublish.equals("true") | cartGoodsItem.isDate.equals("true"))
-            {
-                itemCheck.setVisibility(View.GONE);
-                cartNumView.setVisibility(View.GONE);
-                itemflags.setVisibility(View.VISIBLE);
-                cartNumLoseView.setVisibility(View.VISIBLE);
-                itemName.setTextColor(ColorStateList.valueOf(R.color.text_gary_color));
-            } else
+            if (!cartGoodsItem.isOver.equals("true")&&!cartGoodsItem.isPublish.equals("true")&&!cartGoodsItem.isDate.equals("true"))
             {
                 itemflags.setVisibility(View.GONE);
                 cartNumView.setVisibility(View.VISIBLE);
@@ -568,20 +561,27 @@ public class ShopCartFragment extends BaseFragment
                         setGoodsCheckChange();
                     }
                 });
-            }
-            boxs.add(itemCheck);
-            if (checkPoss.get(cartGoodsItem.sizeId) != null)
-            {
-                //判断商品是否下架或者卖光处理
-                if (cartGoodsItem.isOver.equals("true") && cartGoodsItem.isPublish.equals("true") && cartGoodsItem.isDate.equals("true"))
+                boxs.add(itemCheck);
+                if (checkPoss.get(cartGoodsItem.sizeId) != null)
                 {
+                    //判断商品是否下架或者卖光处理
+                    if (cartGoodsItem.isOver.equals("true") && cartGoodsItem.isPublish.equals("true") && cartGoodsItem.isDate.equals("true"))
+                    {
 
-                } else
-                {
-                    itemCheck.setChecked(checkPoss.get(cartGoodsItem.sizeId));
+                    } else
+                    {
+                        itemCheck.setChecked(checkPoss.get(cartGoodsItem.sizeId));
+                    }
+
+
                 }
-
-
+            } else
+            {
+                itemCheck.setVisibility(View.GONE);
+                cartNumView.setVisibility(View.GONE);
+                itemflags.setVisibility(View.VISIBLE);
+                cartNumLoseView.setVisibility(View.VISIBLE);
+                itemName.setTextColor(ColorStateList.valueOf(R.color.text_gary_color));
             }
 
             numLimit.setVisibility(cartGoodsItem.num > cartGoodsItem.count ? View.VISIBLE : View.GONE);
@@ -644,6 +644,10 @@ public class ShopCartFragment extends BaseFragment
                     {
                         FetchEditDate(itemNum, cartGoodsItem.num - 1, cartGoodsItem, 2);
                     }
+                    else
+                    {
+                        ToolUtils.setToast(mContext,"抱歉,当前数量不能再减");
+                    }
                 }
             });
             itemAddBtn.setOnClickListener(new View.OnClickListener()
@@ -656,6 +660,7 @@ public class ShopCartFragment extends BaseFragment
             });
             cartGoodsLine.addView(childeView);
         }
+        if(boxs.size()!=0)
         if (boxs.size() == checkPoss.size())
         {
             allCb.setChecked(true);

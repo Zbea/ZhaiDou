@@ -136,6 +136,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag))
             {
+                checkLogin();
                 FetchCountData();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
@@ -215,7 +216,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
                     break;
                 case 3:
-                    ((MainActivity) mContext).CartTip(cartCount);
+                    CartTip(cartCount);
                     break;
             }
         }

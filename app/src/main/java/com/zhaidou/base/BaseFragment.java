@@ -109,9 +109,6 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
                         currentFragment.getParentFragment().getChildFragmentManager().popBackStack();
                         return;
                     }
-                    if (getActivity() instanceof ItemDetailActivity){
-                        ((ItemDetailActivity)getActivity()).onBackClick(currentFragment);
-                    }
                     ((BaseActivity)getActivity()).popToStack(currentFragment);
                 }
             });

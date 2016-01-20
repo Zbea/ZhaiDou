@@ -47,13 +47,9 @@ public class WXPayEntryActivity extends FragmentActivity implements IWXAPIEventH
     @Override
     public void onResp(BaseResp resp)
     {
-        Log.d(TAG, "onPayFinish, errCode = " + resp.errCode + "----->" + resp.errStr + "-------------->" + resp.getType());
-
+        Log.i(TAG, "onPayFinish, errCode = " + resp.errCode + "----->" + resp.errStr + "-------------->" + resp.getType());
         if (resp.getType() == ConstantsAPI.COMMAND_PAY_BY_WX)
         {
-            System.out.println("WXPayEntryActivity.onResp----------------------->" + Thread.currentThread());
-//            			MainActivity.handler.sendEmptyMessage(resp.errCode);
-//            resp.errCode=-1;
             if (resp.errCode == -2)
             {
                 Toast.makeText(WXPayEntryActivity.this, "取消支付", Toast.LENGTH_SHORT).show();
@@ -63,8 +59,9 @@ public class WXPayEntryActivity extends FragmentActivity implements IWXAPIEventH
                 intent.putExtra("code", resp.errCode);
                 sendBroadcast(intent);
             }
-            finish();
             overridePendingTransition(R.anim.alpha_enter, R.anim.alpha_out);
+            finish();
+
         }
     }
 }

@@ -12,7 +12,6 @@ import android.widget.ImageButton;
 
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
-import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.MainPersonalFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.fragments.ShopPaymentFailFragment;
@@ -68,11 +67,6 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
         fragmentManager.popBackStack();
         fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
 
-        if (fragment != null && fragment instanceof LoginFragment) {
-            if ("MainActivity".equalsIgnoreCase(((Object)this).getClass().getSimpleName())) {
-                mChildContainer.setVisibility(View.GONE);
-            }
-        }
     }
 
     @Override

@@ -91,16 +91,9 @@ public class CustomBannerView extends FrameLayout
      */
     public void startPlay()
     {
-        new Handler().postDelayed(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-                scheduledExecutorService.scheduleAtFixedRate(new SlideShowTask(), 1, TIME_INTERVAL, TimeUnit.SECONDS);
-            }
-        },4000);
-
+        isAutoPlay=false;
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+        scheduledExecutorService.scheduleAtFixedRate(new SlideShowTask(), 5, TIME_INTERVAL, TimeUnit.SECONDS);
     }
 
     /**
@@ -110,6 +103,7 @@ public class CustomBannerView extends FrameLayout
     {
         if (scheduledExecutorService!=null)
         scheduledExecutorService.shutdown();
+        scheduledExecutorService=null;
     }
 
     /**
@@ -401,11 +395,15 @@ public class CustomBannerView extends FrameLayout
     public void setImages(List<SwitchImage> imgs)
     {
         this.imgs = imgs;
+        isAutoPlay=true;
         destoryBitmaps();
         stopPlay();
-        initView();
         currentPos=0;
-        startPlay();
+        if(imgs.size()>1)
+        {
+            startPlay();
+        }
+        initView();
     }
 
     /**

@@ -25,7 +25,6 @@ import android.widget.Toast;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseActivity;
-import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.model.Article;
 import com.zhaidou.model.User;
@@ -42,8 +41,7 @@ import cn.sharesdk.framework.Platform;
 import cn.sharesdk.framework.PlatformActionListener;
 
 public class ItemDetailActivity extends BaseActivity implements View.OnClickListener,
-        RegisterFragment.RegisterOrLoginListener,
-        LoginFragment.BackClickListener
+        RegisterFragment.RegisterOrLoginListener
 
 {
 
@@ -69,12 +67,9 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     private boolean isShowHeader;
     private RelativeLayout imageView;
 
-    //    private String from;
-    private LoginFragment loginFragment;
     private RegisterFragment registerFragment;
 
     private SharedPreferences mSharedPreferences;
-    //    private Dialog mDialog;
     private Context mContext;
 
     @Override
@@ -109,16 +104,9 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
             Toast.makeText(this, "抱歉，请检查网络", Toast.LENGTH_SHORT).show();
         }
 
-        loginFragment = LoginFragment.newInstance("", "");
-        loginFragment.setRegisterOrLoginListener(this);
-        loginFragment.setBackClickListener(this);
         tv_back.setOnClickListener(this);
         iv_share.setOnClickListener(this);
 
-
-        //String postId = getIntent().getStringExtra("id");
-
-        /* WebView Settings */
         webView = (CustomProgressWebview) findViewById(R.id.detailView);
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -134,7 +122,6 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                Log.i("shouldOverrideUrlLoading---------------->", url);
                 getDeviceId();
                 if ("mobile://login?false".equalsIgnoreCase(url)) {
                     Intent intent = new Intent(ItemDetailActivity.this, LoginActivity.class);
@@ -286,14 +273,6 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         });
     }
 
-    //    public void popToStack(Fragment fragment){
-//
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        Log.i("childFragmentManager--->", fragmentManager.getBackStackEntryCount()+"");
-//        fragmentManager.popBackStack();
-//        Log.i("childFragmentManager--->", fragmentManager.getBackStackEntryCount()+"");
-//    }
-//
     @Override
     public void onRegisterOrLoginSuccess(User user, Fragment fragment) {
 
@@ -305,20 +284,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         }
         super.onRegisterOrLoginSuccess(user, fragment);
     }
-//    private void saveUserToSP(User user){
-//        SharedPreferences.Editor editor = mSharedPreferences.edit();
-//        editor.putInt("userId",user.getId());
-//        editor.putString("email", user.getEmail());
-//        editor.putString("token",user.getAuthentication_token());
-//        editor.putString("avatar",user.getAvatar());
-//        editor.putString("nickName",user.getNickName());
-//        editor.commit();
-//    }
-//
-//    public void navigationToFragment(Fragment fragment){
-//        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container,fragment)
-//                .addToBackStack(null).commit();
-//    }
+
 
     public String getDeviceId() {
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
@@ -326,13 +292,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     }
 
     @Override
-    public void onBackClick(Fragment fragment) {
-        webView.reload();
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        CallbackContext.onActivityResult(requestCode, resultCode, data);
         switch (resultCode){
             case 2000:
                 token = mSharedPreferences.getString("token", null);

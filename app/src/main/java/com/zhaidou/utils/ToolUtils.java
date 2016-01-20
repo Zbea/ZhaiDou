@@ -7,12 +7,16 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
@@ -145,11 +149,33 @@ public class ToolUtils
                 //	.displayer(new RoundedBitmapDisplayer(20))//设置圆角半径
                 .showImageForEmptyUri(R.drawable.icon_loading_defalut)
                 .showImageOnFail(R.drawable.icon_loading_defalut)
-                .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
+                .resetViewBeforeLoading(false)//default 设置图片在加载前是否重置、复位
                 .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
                 .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .imageScaleType(ImageScaleType.EXACTLY)
+                .build();
+
+        ImageLoader.getInstance().displayImage(url, imageView,options);
+    }
+
+    /**
+     * 图片异步加载（缓存图片方法）切圆角
+     * @param url
+     * @param imageView
+     */
+    public static final void setImageCacheRoundUrl(String url,ImageView imageView ,int i,int resId)
+    {
+        DisplayImageOptions options=new DisplayImageOptions.Builder()
+                	.displayer(new RoundedBitmapDisplayer(i))//设置圆角半径
+                .showImageOnLoading(resId)
+                .showImageForEmptyUri(resId)
+                .showImageOnFail(resId)
+                .resetViewBeforeLoading(false)//default 设置图片在加载前是否重置、复位
+                .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
+                .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
                 .build();
 
         ImageLoader.getInstance().displayImage(url, imageView,options);
@@ -167,7 +193,7 @@ public class ToolUtils
                 .showImageOnLoading(resId)
                 .showImageForEmptyUri(resId)
                 .showImageOnFail(resId)
-                .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
+                .resetViewBeforeLoading(false)//default 设置图片在加载前是否重置、复位
                 .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
                 .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
                 .bitmapConfig(Bitmap.Config.RGB_565)
@@ -175,6 +201,50 @@ public class ToolUtils
                 .build();
 
         ImageLoader.getInstance().displayImage(url, imageView,options);
+    }
+
+    /**
+     * 设置图片不复位
+     * @param url
+     * @param imageView
+     * @param resId
+     */
+    public static final void setImageNoResetUrl(String url,final ImageView imageView,int resId)
+    {
+        DisplayImageOptions options=new DisplayImageOptions.Builder()
+                .showImageOnLoading(resId)
+                .showImageForEmptyUri(resId)
+                .showImageOnFail(resId)
+                .resetViewBeforeLoading(false)//default 设置图片在加载前是否重置、复位
+                .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
+                .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
+                .build();
+
+        ImageLoader.getInstance().loadImage(url, options, new SimpleImageLoadingListener()
+        {
+            @Override
+            public void onLoadingStarted(String s, View view)
+            {
+            }
+
+            @Override
+            public void onLoadingFailed(String s, View view, FailReason failReason)
+            {
+            }
+
+            @Override
+            public void onLoadingComplete(String s, View view, Bitmap bitmap)
+            {
+                imageView.setImageBitmap(bitmap);
+            }
+
+            @Override
+            public void onLoadingCancelled(String s, View view)
+            {
+            }
+        });
     }
 
     /**
@@ -187,7 +257,7 @@ public class ToolUtils
         DisplayImageOptions options=new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.drawable.icon_loading_osale)
                 .showImageOnFail(R.drawable.icon_loading_osale)
-                .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
+                .resetViewBeforeLoading(false)//default 设置图片在加载前是否重置、复位
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .imageScaleType(ImageScaleType.EXACTLY)
                 .build();
@@ -206,7 +276,7 @@ public class ToolUtils
                 .showImageOnLoading(resId)
                 .showImageForEmptyUri(resId)
                 .showImageOnFail(resId)
-                .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
+                .resetViewBeforeLoading(false)//default 设置图片在加载前是否重置、复位
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .imageScaleType(ImageScaleType.EXACTLY)
                 .build();
@@ -221,7 +291,7 @@ public class ToolUtils
     public static final void setImagePreventMemoryLeaksUrl(String url,ImageView imageView)
     {
         DisplayImageOptions options=new DisplayImageOptions.Builder()
-                .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
+                .resetViewBeforeLoading(false)//default 设置图片在加载前是否重置、复位
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
                 .build();

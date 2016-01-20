@@ -741,8 +741,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
             ll_sale_out.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / 2 - 1, screenWidth / 2 - 1));
             Product product = getList().get(position);
             tv_name.setText(product.getTitle());
-            ToolUtils.setLog("position:"+position);
-            ToolUtils.setImageCacheUrl(product.getImage(), image, R.drawable.icon_loading_defalut);
+            ToolUtils.setImageNoResetUrl(product.getImage(), image, R.drawable.icon_loading_defalut);
             tv_price.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
             tv_money.setText("￥" + ToolUtils.isIntPrice("" + product.getPrice()));
             tv_price.setText("￥" + ToolUtils.isIntPrice("" + product.getCost_price()));

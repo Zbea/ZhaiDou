@@ -61,12 +61,12 @@ public class ProductAdapter extends BaseListAdapter<Product>{
 
         if (mtb==1)
         {
-            ToolUtils.setImageCacheUrl(product.getImage(),image,R.drawable.icon_loading_defalut);
+            ToolUtils.setImageNoResetUrl(product.getImage(), image, R.drawable.icon_loading_defalut);
             iv_tb.setImageResource(R.drawable.icon_search_special);
         }
         else
         {
-            ToolUtils.setImageCacheUrl("http://"+product.getImage(),image,R.drawable.icon_loading_defalut);
+            ToolUtils.setImageNoResetUrl("http://"+product.getImage(),image,R.drawable.icon_loading_defalut);
             iv_tb.setImageResource(R.drawable.icon_search_taobao);
         }
 

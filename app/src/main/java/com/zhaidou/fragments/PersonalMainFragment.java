@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,6 +18,8 @@ import android.widget.FrameLayout;
 
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.activities.ItemDetailActivity;
+import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.model.User;
 
 public class PersonalMainFragment extends Fragment implements View.OnClickListener,RegisterFragment.RegisterOrLoginListener{
@@ -31,7 +34,6 @@ public class PersonalMainFragment extends Fragment implements View.OnClickListen
     private FrameLayout mContainer;
     private FrameLayout mChildContainer;
     private RegisterFragment mRegisterFragment;
-    private LoginFragment mLoginFragment;
     private SharedPreferences mSharedPreferences;
 
     private String token;
@@ -83,8 +85,9 @@ public class PersonalMainFragment extends Fragment implements View.OnClickListen
         id=mSharedPreferences.getInt("userId",-1);
 
         if (TextUtils.isEmpty(token)){
-            mLoginFragment=LoginFragment.newInstance("","");
-            addToStack(mLoginFragment);
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            intent.setFlags(2);
+            startActivityForResult(intent, 10000);
             mChildContainer.setVisibility(View.VISIBLE);
 
         }else {

@@ -27,11 +27,11 @@ import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
-import com.zhaidou.fragments.LoginFragment;
 import com.zhaidou.fragments.ProfileAddrFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.NetworkUtils;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomProgressWebview;
 
 import org.json.JSONObject;
@@ -42,8 +42,7 @@ import java.util.Map;
 
 
 public class HomeCompetitionActivity extends BaseActivity implements View.OnClickListener,
-        RegisterFragment.RegisterOrLoginListener,
-        LoginFragment.BackClickListener
+        RegisterFragment.RegisterOrLoginListener
 
 {
     private CustomProgressWebview webView;
@@ -58,7 +57,6 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
     private String mLocationStr;
 
     private boolean isProfileLoad=false;
-    private LoginFragment loginFragment;
     private SharedPreferences mSharedPreferences;
 
     @Override
@@ -79,10 +77,6 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
         if (!NetworkUtils.isNetworkAvailable(this)) {
             Toast.makeText(this, "抱歉，请检查网络", Toast.LENGTH_SHORT).show();
         }
-
-        loginFragment = LoginFragment.newInstance("", "");
-        loginFragment.setRegisterOrLoginListener(this);
-        loginFragment.setBackClickListener(this);
         tv_back.setOnClickListener(this);
 
         /* WebView Settings */
@@ -106,10 +100,8 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
                 }
                 getDeviceId();
                 if ("mobile://login?false".equalsIgnoreCase(url)) {
+                    ToolUtils.setLog("登录");
                     System.out.println("HomeCompetitionActivity.shouldOverrideUrlLoading------->\"mobile://login?false\".equalsIgnoreCase(url)");
-//                    getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, loginFragment)
-//                            .addToBackStack(null).commit();
-//                    mChildContainer.setVisibility(View.VISIBLE);
                     Intent intent = new Intent(HomeCompetitionActivity.this, LoginActivity.class);
                     intent.setFlags(2);
                     HomeCompetitionActivity.this.startActivityForResult(intent, 10000);
@@ -141,19 +133,12 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
                     }
                     return true;
 
-                } else if (url.contains("taobao")) {
-                    Intent intent = new Intent();
-                    intent.putExtra("url", url);
-                    intent.setClass(HomeCompetitionActivity.this, WebViewActivity.class);
-                    HomeCompetitionActivity.this.startActivity(intent);
-                    return true;
                 }
                 return true;
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                System.out.println("HomeCompetitionActivity.onPageFinished");
                 if (!TextUtils.isEmpty(token)) {
                     webView.loadUrl("javascript:ReceiveUserInfo(" + userId + ", '" + token + "'," + getDeviceId() + ",'" + nickName + "')");
                 } else {
@@ -284,7 +269,6 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                Log.i("volleyError---------->", volleyError.toString());
             }
         });
         ((ZDApplication)getApplication()).mRequestQueue.add(request);
@@ -296,17 +280,11 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
     }
 
     @Override
-    public void onBackClick(Fragment fragment) {
-        webView.reload();
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode) {
             case 2000:
                 token = mSharedPreferences.getString("token", null);
                 getUserData();
-                System.out.println("HomeCompetitionActivity.onActivityResult---------->" + token);
                 webView.reload();
                 break;
         }

@@ -125,21 +125,7 @@ public class ShopSpecialAdapter extends BaseAdapter
             viewHolder.isNewsView.setVisibility(View.GONE);
         }
 
-        DisplayImageOptions options=new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.drawable.icon_loading_item)
-                .showImageForEmptyUri(R.drawable.icon_loading_item)
-                .showImageOnFail(R.drawable.icon_loading_item)
-                .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
-                .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
-                .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
-                .bitmapConfig(Bitmap.Config.RGB_565)
-                .displayer(new RoundedBitmapDisplayer(8))
-                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
-                .build();
-
-        ImageLoader.getInstance().displayImage(shopSpecialItem.imageUrl, viewHolder.itemImage,options);
-
-//        ToolUtils.setImageCacheUrl(shopSpecialItem.imageUrl,viewHolder.itemImage,R.drawable.icon_loading_item);
+        ToolUtils.setImageCacheRoundUrl(shopSpecialItem.imageUrl, viewHolder.itemImage,8,R.drawable.icon_loading_item);
         return convertView;
     }
 }

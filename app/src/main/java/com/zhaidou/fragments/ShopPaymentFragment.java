@@ -91,7 +91,7 @@ public class ShopPaymentFragment extends BaseFragment
     private String token,userName;
     private int userId;
     private IWXAPI api;
-    private boolean isSuccess;
+    private boolean isSuccess,isUnClick;
     private double payMoney;//订单获取的金额
     private long payOrderId;
     private String payOrderCode;
@@ -180,6 +180,7 @@ public class ShopPaymentFragment extends BaseFragment
                     backDialog();
                     break;
                 case R.id.paymentBtn:
+                    if (!isUnClick)
                     if (isSuccess)
                     {
                         Toast.makeText(mContext, "您已经购买过了，请勿重新支付", Toast.LENGTH_LONG).show();
@@ -344,6 +345,7 @@ public class ShopPaymentFragment extends BaseFragment
      */
     private void stopView()
     {
+        isUnClick=true;
         initTime = 0;
         paymentView.setVisibility(View.GONE);
         loseView.setVisibility(View.VISIBLE);
