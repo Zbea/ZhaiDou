@@ -185,9 +185,12 @@ public class ShopPaymentFragment extends BaseFragment
                         Toast.makeText(mContext, "您已经购买过了，请勿重新支付", Toast.LENGTH_LONG).show();
                     } else
                     {
+                        if (initTime>0){
+
                         mDialog.show();
                         paymentBtn.setClickable(false);
                         payment();
+                        }
                     }
                     break;
             }
