@@ -89,7 +89,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_gravity="center_vertical"
-                android:clickable="true"
+                android:clickable="false"
                 android:src="@drawable/selector_address_icon" />
 
             <com.zhaidou.view.TypeFaceTextView
