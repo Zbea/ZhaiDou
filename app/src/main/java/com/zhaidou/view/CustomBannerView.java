@@ -86,6 +86,7 @@ public class CustomBannerView extends FrameLayout
         initView();
     }
 
+
     /**
      * 开始轮播图切换
      */
