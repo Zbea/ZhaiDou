@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.alipay.sdk.app.PayTask;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -37,6 +38,8 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.CountManage;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
+import com.zhaidou.model.Store;
+import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
@@ -48,6 +51,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -96,6 +100,7 @@ public class ShopPaymentFragment extends BaseFragment
     private long payOrderId;
     private String payOrderCode;
     public Dialog mDialog;
+    private DialogUtils mDialogUtils;
 
     private Handler mHandler = new Handler()
     {
@@ -255,6 +260,7 @@ public class ShopPaymentFragment extends BaseFragment
      */
     private void initView()
     {
+        mDialogUtils=new DialogUtils(mContext);
         api = WXAPIFactory.createWXAPI(mContext, null);
         api.registerApp("wxce03c66622e5b243");
         ToolUtils.setLog("api:"+api.registerApp("wxce03c66622e5b243"));
@@ -570,6 +576,33 @@ public class ShopPaymentFragment extends BaseFragment
         };
         mRequestQueue.add(request);
     }
+    private void FetchOrderDetail(String orderCode) {
+        mDialog = mDialogUtils.showLoadingDialog();
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("businessType", "01");
+        params.put("clientType", "ANDROID");
+        params.put("version", versionName);
+        params.put("clientVersion", versionCode);
+        params.put("userId", userId+"");//mUserId//29650+""
+        params.put("orderCode", orderCode);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, new ZhaiDou().URL_ORDER_DETAIL_LIST_URL, new JSONObject(params), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (mDialog != null)
+                    mDialog.dismiss();
+                JSONArray array = jsonObject.optJSONArray("data");
+                List<Store> stores = JSON.parseArray(array.toString(), Store.class);
+                Store store = stores.get(0);
+                initTime= store.orderRemainingTime;
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                mDialog.dismiss();
+            }
+        });
+        mRequestQueue.add(request);
+    }
 
 
     public void pay(final String url)
@@ -646,6 +679,7 @@ public class ShopPaymentFragment extends BaseFragment
     public void onResume()
     {
         super.onResume();
+        FetchOrderDetail(payOrderCode);
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.shop_payment_text));
     }
 

@@ -41,6 +41,7 @@ public class Store implements Serializable{
     public int orderType;
     public boolean isExpand;
     public int returnGoodsFlag;
+    public int orderRemainingTime;
 
     //退换货
     public String createTime;
