@@ -310,7 +310,7 @@ public class HomeWeixinListFragment extends BaseFragment
 
             title.setText(article.getTitle());
             articleViews.setVisibility(View.GONE);
-            ToolUtils.setImageCacheUrl(article.getImg_url(), cover);
+            ToolUtils.setImageCacheRoundUrl(article.getImg_url(), cover,8,R.drawable.icon_loading_item);
 
             if (article.getIs_new().equals("true"))
             {

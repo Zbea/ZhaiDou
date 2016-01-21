@@ -150,7 +150,7 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
         {
             viewHolder.itemSales.setText("0折");
         }
-
+//        ToolUtils.setImageUrl(todayShopItem.imageUrl,viewHolder.itemImage,R.drawable.icon_loading_defalut);
         ToolUtils.setImageNoResetUrl(todayShopItem.imageUrl,viewHolder.itemImage,R.drawable.icon_loading_defalut);
 
         viewHolder.itemBuy.setOnClickListener(new View.OnClickListener()
