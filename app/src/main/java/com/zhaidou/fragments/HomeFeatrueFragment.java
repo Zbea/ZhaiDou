@@ -654,7 +654,7 @@ public class HomeFeatrueFragment extends BaseFragment implements View.OnClickLis
             ll_sale_out.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / 2 - 1, screenWidth / 2 - 1));
             ShopTodayItem shopTodayItem = getList().get(position);
             tv_name.setText(shopTodayItem.title);
-            ToolUtils.setImageCacheUrl(shopTodayItem.imageUrl, image, R.drawable.icon_loading_defalut);
+            ToolUtils.setImageNoResetUrl(shopTodayItem.imageUrl, image, R.drawable.icon_loading_defalut);
             tv_price.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
             tv_price.setText("￥" + ToolUtils.isIntPrice("" + shopTodayItem.formerPrice));
             tv_count.setText("剩余 " + (100-shopTodayItem.percentum) + "%");

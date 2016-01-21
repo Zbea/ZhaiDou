@@ -146,7 +146,6 @@ public class ToolUtils
     public static final void setImageCacheUrl(String url,ImageView imageView)
     {
         DisplayImageOptions options=new DisplayImageOptions.Builder()
-                //	.displayer(new RoundedBitmapDisplayer(20))//设置圆角半径
                 .showImageForEmptyUri(R.drawable.icon_loading_defalut)
                 .showImageOnFail(R.drawable.icon_loading_defalut)
                 .resetViewBeforeLoading(false)//default 设置图片在加载前是否重置、复位

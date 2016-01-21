@@ -169,7 +169,7 @@ public class MainHomeFragment extends BaseFragment implements
             TextView codeName = (TextView) mView.findViewById(R.id.codeName);
             codeName.setText(codes.get(i).title);
             ImageView imageIv = (ImageView) mView.findViewById(R.id.codeImage);
-            ToolUtils.setImageUrl(codes.get(i).imageUrl, imageIv,R.drawable.icon_loading_circle);
+            ToolUtils.setImageCacheUrl(codes.get(i).imageUrl, imageIv,R.drawable.icon_loading_circle);
             mView.setOnClickListener(new View.OnClickListener()
             {
                 @Override
@@ -191,7 +191,7 @@ public class MainHomeFragment extends BaseFragment implements
             for (int i = 0; i < specials.size(); i++)
             {
                 specialBanner[i].setTag(specials.get(i));
-                ToolUtils.setImageUrl(specials.get(i).imageUrl, specialBanner[i],R.drawable.icon_loading_item);
+                ToolUtils.setImageCacheUrl(specials.get(i).imageUrl, specialBanner[i],R.drawable.icon_loading_item);
             }
         } else
         {
