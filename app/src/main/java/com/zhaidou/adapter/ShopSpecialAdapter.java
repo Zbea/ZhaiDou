@@ -11,12 +11,15 @@ import android.widget.RelativeLayout;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.zhaidou.R;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.RoundImageView;
 import com.zhaidou.view.TypeFaceTextView;
 
 import java.util.List;
@@ -124,8 +127,17 @@ public class ShopSpecialAdapter extends BaseAdapter
         {
             viewHolder.isNewsView.setVisibility(View.GONE);
         }
+//        ToolUtils.setImageNoResetUrl(shopSpecialItem.imageUrl, viewHolder.itemImage,R.drawable.icon_loading_item);
 
-        ToolUtils.setImageCacheRoundUrl(shopSpecialItem.imageUrl, viewHolder.itemImage,8,R.drawable.icon_loading_item);
+        DisplayImageOptions options=new DisplayImageOptions.Builder()
+                .showImageForEmptyUri(R.drawable.icon_loading_item)
+                .showImageOnFail(R.drawable.icon_loading_item)
+                .resetViewBeforeLoading(false)//default 设置图片在加载前是否重置、复位
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .imageScaleType(ImageScaleType.EXACTLY)
+                .displayer(new RoundedBitmapDisplayer(8))//设置圆角半径
+                .build();
+        ImageLoader.getInstance().displayImage(shopSpecialItem.imageUrl, viewHolder.itemImage,options);
         return convertView;
     }
 }
