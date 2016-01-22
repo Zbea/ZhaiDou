@@ -578,7 +578,7 @@ public class ShopPaymentFragment extends BaseFragment
     }
     private void FetchOrderDetail(String orderCode) {
         mDialog = mDialogUtils.showLoadingDialog();
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<String,String>();
         params.put("businessType", "01");
         params.put("clientType", "ANDROID");
         params.put("version", versionName);
