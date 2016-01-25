@@ -546,12 +546,14 @@ public class ShopPaymentFragment extends BaseFragment
                         else
                         {
                             paymentBtn.setClickable(true);
+                            mDialog.dismiss();
                             ToolUtils.setToast(mContext,R.string.loading_fail_txt);
                         }
                     }
                     else
                     {
                         paymentBtn.setClickable(true);
+                        mDialog.dismiss();
                         ToolUtils.setToast(mContext,R.string.loading_fail_txt);
                     }
                 }

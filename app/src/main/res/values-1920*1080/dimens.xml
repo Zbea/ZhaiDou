@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="header_height_dimen">50dp</dimen>
+    <dimen name="bottom_height_dimen">52dp</dimen>
     <dimen name="home_item_dimen">150dp</dimen>
     <dimen name="home_code_dimen">60dp</dimen>
     <dimen name="goods_height_dimen">240dp</dimen>

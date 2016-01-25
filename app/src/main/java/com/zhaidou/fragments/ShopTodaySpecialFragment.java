@@ -329,9 +329,7 @@ public class ShopTodaySpecialFragment extends BaseFragment
         myCartBtn = (ImageView) mView.findViewById(R.id.myCartBtn);
         myCartBtn.setOnClickListener(onClickListener);
 
-        mScrollView = (PullToRefreshScrollView) mView.findViewById(R.id.scrollView);
-        mScrollView.setOnRefreshListener(onRefreshListener);
-        mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+
 
         mListView = (ListViewForScrollView) mView.findViewById(R.id.shopListView);
         adapter = new ShopTodaySpecialAdapter(mContext, items);
@@ -351,6 +349,10 @@ public class ShopTodaySpecialFragment extends BaseFragment
                 }
             }
         });
+
+        mScrollView = (PullToRefreshScrollView) mView.findViewById(R.id.scrollView);
+        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+        mScrollView.setOnRefreshListener(onRefreshListener);
 
         mRequestQueue = Volley.newRequestQueue(mContext);
 
