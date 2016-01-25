@@ -25,6 +25,9 @@
 -optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
 -keepattributes InnerClasses,LineNumberTable
 
+-libraryjars libs/httpmime-4.1.jar
+
+
 -keep public class * extends android.app.Activity
 -keep public class * extends android.app.Application
 -keep public class * extends android.app.Service
@@ -37,6 +40,7 @@
 -keep class android.support.v4.** { *; }
 
 -keep class android.net.http.SslError
+-keep class org.apache.*
 -keep class android.webkit.**{*;}
 -keep class cn.sharesdk.**{*;}
 #-keep class com.sina.**{*;}
@@ -99,3 +103,22 @@ public static final int *;
 -keep class com.ta.** {*;}
 -dontwarn com.ta.**
 
+
+##腾讯统计#
+-keep class com.tencent.stat.**  {* ;}
+-keep class com.tencent.mid.**  {* ;}
+##极光
+-dontwarn cn.jpush.**
+-keepattributes  EnclosingMethod,Signature
+-keep class cn.jpush.** { *; }
+-keepclassmembers class ** {
+    public void onEvent*(**);
+}
+
+#========================gson================================
+-dontwarn com.google.**
+-keep class com.google.gson.** {*;}
+
+#========================protobuf================================
+#-dontwarn com.google.**
+-keep class com.google.protobuf.** {*;}
