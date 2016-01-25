@@ -25,9 +25,6 @@
 -optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
 -keepattributes InnerClasses,LineNumberTable
 
--libraryjars libs/httpmime-4.1.jar
-
-
 -keep public class * extends android.app.Activity
 -keep public class * extends android.app.Application
 -keep public class * extends android.app.Service
@@ -38,6 +35,7 @@
 -keep public class * extends android.preference.Preference
 -keep public class com.android.vending.licensing.ILicensingService
 -keep class android.support.v4.** { *; }
+-keep class com.zhaidou.base.** { *; }
 
 -keep class android.net.http.SslError
 -keep class org.apache.*
