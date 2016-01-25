@@ -9,6 +9,8 @@ public class City extends Address {
 
 
 
+
+
     private List<Area> areas;
 
     public List<Area> getAreas() {
