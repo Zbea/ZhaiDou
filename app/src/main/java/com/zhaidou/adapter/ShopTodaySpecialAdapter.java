@@ -1,7 +1,6 @@
 package com.zhaidou.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,11 +10,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.fragments.GoodsDetailsFragment;
@@ -25,7 +19,6 @@ import com.zhaidou.view.TypeFaceTextView;
 
 import java.text.DecimalFormat;
 import java.util.List;
-import java.util.WeakHashMap;
 
 /**
 * Created by roy on 15/7/23.
@@ -105,7 +98,7 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        ShopTodayItem todayShopItem=items.get(position);
+        final ShopTodayItem todayShopItem=items.get(position);
         viewHolder.itemFormerPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
 
         if (todayShopItem.totalCount!=0)
