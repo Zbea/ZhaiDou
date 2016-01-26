@@ -13,18 +13,19 @@
             >
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
                 android:layout_centerInParent="true"
+                android:paddingLeft="2dp"
+                android:scaleType="centerInside"
                 android:src="@drawable/dialog_logo_icon_small"/>
 
             <ImageView
                 android:id="@+id/pull_to_refresh_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:scaleType="centerInside"
-                android:layout_gravity="center"
-                android:layout_centerInParent="true"/>
+                android:layout_width="27dp"
+                android:layout_height="27dp"
+                android:layout_centerInParent="true"
+                />
 
             <ProgressBar
                 android:id="@+id/pull_to_refresh_progress"

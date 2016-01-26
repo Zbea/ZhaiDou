@@ -1,8 +1,6 @@
 package com.zhaidou.adapter;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +10,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.zhaidou.R;
-import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Article;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import java.util.List;
@@ -48,6 +46,7 @@ public class HomeListAdapter extends BaseAdapter
         TextView articleViews;
         ImageView cover;
         ImageView newView;
+        View lineTo;
     }
 
     @Override
@@ -71,76 +70,39 @@ public class HomeListAdapter extends BaseAdapter
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
-        View view = LayoutInflater.from(context).inflate(R.layout.home_item_list, null);
-        TextView title = (TextView) view.findViewById(R.id.title);
-        TextView articleViews = (TextView) view.findViewById(R.id.views);
-        ImageView cover = (ImageView) view.findViewById(R.id.cover);
-        cover.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth,screenWidth*316/722));
-        ImageView newView = (ImageView) view.findViewById(R.id.newsView);
-
+        if (convertView == null)
+        {
+            convertView = LayoutInflater.from(context).inflate(R.layout.home_item_list, null);
+            viewHolder = new ViewHolder();
+            viewHolder.title = (TextView) convertView.findViewById(R.id.title);
+            viewHolder.articleViews = (TextView) convertView.findViewById(R.id.views);
+            viewHolder.cover = (ImageView) convertView.findViewById(R.id.cover);
+            viewHolder.cover.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth,screenWidth*316/722));
+            viewHolder.newView = (ImageView) convertView.findViewById(R.id.newsView);
+//            viewHolder.lineTo = (View) convertView.findViewById(R.id.lineTo);
+            convertView.setTag(viewHolder);
+        }
+        else
+        {
+            viewHolder = (ViewHolder) convertView.getTag();
+        }
         Article article = items.get(position);
-
-        title.setText(article.getTitle());
-        articleViews.setText(article.getReviews() + "");
-        Log.i("article.getImg_url()----->",article.getImg_url());
-        ToolUtils.setImageCacheUrl(article.getImg_url(), cover);
-
-        SharedPreferences editor = context.getSharedPreferences(String.valueOf(article.getId()), 0);
+        viewHolder.title.setText(article.getTitle());
+        viewHolder.articleViews.setText(article.getReviews() + "");
+        ToolUtils.setImageCacheUrl(article.getImg_url(), viewHolder.cover,R.drawable.icon_loading_item);
         if (article.getIs_new().equals("true"))
         {
-            if (editor.getBoolean("is_new", false))
+            if (!(Boolean) SharedPreferencesUtil.getData(context, "is_new_" + article.getId(), true))
             {
-                newView.setVisibility(View.GONE);
+                viewHolder.newView.setVisibility(View.GONE);
             } else
             {
-                newView.setVisibility(View.VISIBLE);
+                viewHolder. newView.setVisibility(View.VISIBLE);
             }
         } else
         {
-            newView.setVisibility(View.GONE);
+            viewHolder.newView.setVisibility(View.GONE);
         }
-
-
-//
-//        if (convertView == null)
-//        {
-//            convertView = LayoutInflater.from(context).inflate(R.layout.home_item_list, null);
-//            viewHolder = new ViewHolder();
-//            viewHolder.title = (TextView) convertView.findViewById(R.id.title);
-//            viewHolder.articleViews = (TextView) convertView.findViewById(R.id.views);
-//            viewHolder.cover = (ImageView) convertView.findViewById(R.id.cover);
-//            convertView.setTag(viewHolder);
-//        }
-//        else
-//        {
-//            viewHolder = (ViewHolder) convertView.getTag();
-//        }
-//
-//
-//
-//        Article article = items.get(position);
-//
-//        viewHolder.title.setText(article.getTitle());
-//        viewHolder.articleViews.setText(article.getReviews() + "");
-//        viewHolder.newView = (ImageView) convertView.findViewById(R.id.newsView);
-//        ToolUtils.setImageUrl(article.getImg_url(), viewHolder.cover);
-//
-//        SharedPreferences editor=context.getSharedPreferences(String.valueOf(article.getId()),0);
-//        if (article.getIs_new().equals("true"))
-//        {
-//            if (editor.getBoolean("is_new",false))
-//            {
-//                viewHolder.newView.setVisibility(View.GONE);
-//            }
-//            else
-//            {
-//                viewHolder.newView.setVisibility(View.VISIBLE);
-//            }
-//        }
-//        else
-//        {
-//            viewHolder.newView.setVisibility(View.GONE);
-//        }
-        return view;
+        return convertView;
     }
 }

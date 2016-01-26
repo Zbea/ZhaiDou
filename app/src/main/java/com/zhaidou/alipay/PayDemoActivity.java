@@ -24,10 +24,10 @@ import com.android.volley.toolbox.Volley;
 import com.tencent.mm.sdk.modelpay.PayReq;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
-import com.zhaidou.MainActivity;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.model.CartItem;
+import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.view.TypeFaceTextView;
 
@@ -64,7 +64,7 @@ public class PayDemoActivity extends FragmentActivity {
     private LinearLayout loseView;
     private Button paymentBtn;
 
-    private ArrayList<CartItem> items;
+    private ArrayList<CartGoodsItem> items;
     private int num = 0;
     private double money = 0;
     private double moneyYF = 0;
@@ -462,4 +462,15 @@ public class PayDemoActivity extends FragmentActivity {
         return "sign_type=\"RSA\"";
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 }

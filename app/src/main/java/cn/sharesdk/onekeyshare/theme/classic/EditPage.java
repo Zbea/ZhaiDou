@@ -12,6 +12,7 @@ import static com.mob.tools.utils.BitmapHelper.blur;
 import static com.mob.tools.utils.BitmapHelper.captureView;
 import static com.mob.tools.utils.R.dipToPx;
 import static com.mob.tools.utils.R.getBitmapRes;
+import static com.mob.tools.utils.R.getColorRes;
 import static com.mob.tools.utils.R.getScreenWidth;
 import static com.mob.tools.utils.R.getStringRes;
 
@@ -57,6 +58,11 @@ import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.framework.TitleLayout;
 
 import com.mob.tools.utils.UIHandler;
+import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
+import com.zhaidou.view.TypeFaceEditText;
+import com.zhaidou.view.TypeFaceTextView;
+
 import cn.sharesdk.onekeyshare.EditPageFakeActivity;
 import cn.sharesdk.onekeyshare.PicViewer;
 import cn.sharesdk.onekeyshare.ShareCore;
@@ -75,7 +81,7 @@ public class EditPage extends EditPageFakeActivity implements OnClickListener, T
 	private LinearLayout llBody;
 	private RelativeLayout rlThumb;
 	// share content editor
-	private EditText etContent;
+	private TypeFaceEditText etContent;
 	// Words counter
 	private TextView tvCounter;
 	// the pin
@@ -92,6 +98,7 @@ public class EditPage extends EditPageFakeActivity implements OnClickListener, T
 	private Drawable background;
 
 	private Platform[] platformList;
+    private Typeface mTypeFace;
 
 	public void setActivity(Activity activity) {
 		super.setActivity(activity);
@@ -104,6 +111,7 @@ public class EditPage extends EditPageFakeActivity implements OnClickListener, T
 			win.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE
 					| WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 		}
+        mTypeFace=((ZDApplication)activity.getApplication()).getTypeFace();
 	}
 
 	public void onCreate() {
@@ -188,15 +196,20 @@ public class EditPage extends EditPageFakeActivity implements OnClickListener, T
 //		if (resId > 0) {
 //			llTitle.setBackgroundResource(resId);
 //		}
+        llTitle.setBackgroundColor(activity.getResources().getColor(R.color.actionbar_background_color));
+        llTitle.getBtnBack().setImageResource(R.drawable.icon_back_selector);
 		llTitle.getBtnBack().setOnClickListener(this);
 		int resId = getStringRes(activity, "multi_share");
 		if (resId > 0) {
 			llTitle.getTvTitle().setText(resId);
+            llTitle.getTvTitle().setTypeface(mTypeFace);
 		}
+
 		llTitle.getBtnRight().setVisibility(View.VISIBLE);
 		resId = getStringRes(activity, "share");
 		if (resId > 0) {
 			llTitle.getBtnRight().setText(resId);
+            llTitle.getBtnRight().setTypeface(mTypeFace);
 		}
 		llTitle.getBtnRight().setOnClickListener(this);
 		RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
@@ -254,7 +267,7 @@ public class EditPage extends EditPageFakeActivity implements OnClickListener, T
 		llMainBody.addView(llContent, lpContent);
 
 		// share content editor
-		etContent = new EditText(getContext());
+		etContent = new TypeFaceEditText(getContext());
 		etContent.setGravity(Gravity.LEFT | Gravity.TOP);
 		etContent.setBackgroundDrawable(null);
 		etContent.setText(String.valueOf(shareParamMap.get("text")));
@@ -377,7 +390,7 @@ public class EditPage extends EditPageFakeActivity implements OnClickListener, T
 		tvCounter.setText(String.valueOf(MAX_TEXT_COUNT));
 		tvCounter.setTextColor(0xffcfcfcf);
 		tvCounter.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-		tvCounter.setTypeface(Typeface.DEFAULT_BOLD);
+		tvCounter.setTypeface(mTypeFace);
 		LayoutParams lpCounter = new LayoutParams(
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		lpCounter.gravity = Gravity.CENTER_VERTICAL;
@@ -409,7 +422,7 @@ public class EditPage extends EditPageFakeActivity implements OnClickListener, T
 			}
 		});
 
-		TextView tvAt = new TextView(getContext());
+		TypeFaceTextView tvAt = new TypeFaceTextView(getContext());
 		int resId = getBitmapRes(activity, "btn_back_nor");
 		if (resId > 0) {
 			tvAt.setBackgroundResource(resId);
@@ -420,12 +433,11 @@ public class EditPage extends EditPageFakeActivity implements OnClickListener, T
 		tvAt.setText(getAtUserButtonText(platform));
 		int dp_2 = dipToPx(getContext(), 2);
 		tvAt.setPadding(0, 0, 0, dp_2);
-		tvAt.setTypeface(Typeface.DEFAULT_BOLD);
 		tvAt.setTextColor(0xff000000);
 		tvAt.setGravity(Gravity.CENTER);
 		llAt.addView(tvAt);
 
-		TextView tvName = new TextView(getContext());
+        TypeFaceTextView tvName = new TypeFaceTextView(getContext());
 		tvName.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
 		tvName.setTextColor(0xff000000);
 		resId = getStringRes(activity, "list_friends");
@@ -457,7 +469,7 @@ public class EditPage extends EditPageFakeActivity implements OnClickListener, T
 				LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 		llToolBar.setLayoutParams(lpTb);
 
-		TextView tvShareTo = new TextView(getContext());
+        TypeFaceTextView tvShareTo = new TypeFaceTextView(getContext());
 		int resId = getStringRes(activity, "share_to");
 		if (resId > 0) {
 			tvShareTo.setText(resId);

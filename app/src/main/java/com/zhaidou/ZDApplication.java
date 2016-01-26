@@ -5,14 +5,21 @@ import android.content.pm.PackageInfo;
 import android.graphics.Typeface;
 import android.os.Environment;
 
-import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
-import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+import com.nostra13.universalimageloader.cache.disc.impl.LimitedAgeDiscCache;
+import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.utils.StorageUtils;
+import com.zhaidou.utils.DeviceUtils;
 import com.zhaidou.utils.ToolUtils;
 
 import java.io.File;
+import java.util.Set;
+
+import cn.jpush.android.api.JPushInterface;
+import cn.jpush.android.api.TagAliasCallback;
 
 /**
  * Created by wangclark on 15/7/2.
@@ -22,13 +29,24 @@ public class ZDApplication extends Application{
     public static int localVersionCode;
     public static String localVersionName;
 
+    public static RequestQueue mRequestQueue;
+
     private Typeface mTypeFace;
     @Override
     public void onCreate() {
-
         super.onCreate();
-        initTypeFace();
+        JPushInterface.setDebugMode(true); 	// 设置开启日志,发布时请关闭日志
+        JPushInterface.init(this);     		// 初始化 JPush
 
+        JPushInterface.setAlias(getApplicationContext(), DeviceUtils.getImei(getApplicationContext()), new TagAliasCallback() {
+            @Override
+            public void gotResult(int i, String s, Set<String> strings) {
+                System.out.println("ZDApplication.gotResult------->" + s);
+            }
+        });
+
+//        CrashReport.initCrashReport(this, "900008762", false);
+        initTypeFace();
         try
         {
             PackageInfo packageInfo=getApplicationContext().getPackageManager().getPackageInfo(getPackageName(),0);
@@ -42,6 +60,7 @@ public class ZDApplication extends Application{
 
         creatFile();
         setImageLoad();
+        mRequestQueue=Volley.newRequestQueue(this);
     }
 
     /**
@@ -51,10 +70,12 @@ public class ZDApplication extends Application{
     {
         File cacheDir = StorageUtils.getOwnCacheDirectory(getApplicationContext(), "zhaidou/image_cache/");
         ImageLoaderConfiguration configuration = new  ImageLoaderConfiguration.Builder(this)
-                .threadPoolSize(5)//线程池加载的数量
+                .threadPoolSize(3)//线程池加载的数量
                 .diskCacheFileCount(50)//最大缓存数量
-                .diskCache(new UnlimitedDiscCache(cacheDir))//设置缓存路径
-                .memoryCache(new UsingFreqLimitedMemoryCache(2 * 1024 * 1024))
+                .diskCacheSize(50 * 1024 * 1024) // 50 Mb sd卡(本地)缓存的最大值
+                .diskCache(new LimitedAgeDiscCache(cacheDir,48*60*60*1000))//设置缓存路径
+//                .memoryCache(new UsingFreqLimitedMemoryCache(2* 1024 * 1024))
+                .memoryCache(new WeakMemoryCache())
                 .build();
         ImageLoader.getInstance().init(configuration);
     }
@@ -93,5 +114,13 @@ public class ZDApplication extends Application{
         return "ZDApplication{" +
                 "mTypeFace=" + mTypeFace +
                 '}';
+    }
+
+    @Override
+    public void onLowMemory() {
+        ImageLoader.getInstance().clearMemoryCache();
+        ImageLoader.getInstance().clearDiskCache();
+        System.gc();
+        super.onLowMemory();
     }
 }

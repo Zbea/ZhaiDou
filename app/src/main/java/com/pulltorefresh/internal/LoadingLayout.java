@@ -34,6 +34,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.pulltorefresh.ILoadingLayout;
@@ -84,7 +85,6 @@ public abstract class LoadingLayout extends FrameLayout implements ILoadingLayou
 		mHeaderProgress = (ProgressBar) mInnerLayout.findViewById(R.id.pull_to_refresh_progress);
 		mSubHeaderText = (TextView) mInnerLayout.findViewById(R.id.pull_to_refresh_sub_text);
 		mHeaderImage = (ImageView) mInnerLayout.findViewById(R.id.pull_to_refresh_image);
-
 		LayoutParams lp = (LayoutParams) mInnerLayout.getLayoutParams();
 
 		switch (mode) {
@@ -287,6 +287,7 @@ public abstract class LoadingLayout extends FrameLayout implements ILoadingLayou
 
 	public final void setLoadingDrawable(Drawable imageDrawable)
     {
+//        mHeaderImage.setBackgroundResource(R.drawable.dialog_loading_icon_small);
         mHeaderImage.setImageResource(R.drawable.dialog_loading_icon_small);
 		mUseIntrinsicAnimation = (imageDrawable instanceof AnimationDrawable);
 		onLoadingDrawableSet(imageDrawable);

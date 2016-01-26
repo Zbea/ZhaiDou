@@ -3,10 +3,8 @@ package com.zhaidou.sqlite;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
-import com.zhaidou.model.CartItem;
-import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.model.CartGoodsItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,15 +14,15 @@ import java.util.List;
  */
 public class CreatCartTools
 {
-    static List<CartItem> items=new ArrayList<CartItem>();
+    static List<CartGoodsItem> items=new ArrayList<CartGoodsItem>();
 
     /**
      * 全查
      */
-    public static List<CartItem> selectByAll(CreatCartDB cartDB,int userId)
+    public static List<CartGoodsItem> selectByAll(CreatCartDB cartDB,int userId)
     {
         items.removeAll(items);
-        List<CartItem> itemss=new ArrayList<CartItem>();
+        List<CartGoodsItem> itemss=new ArrayList<CartGoodsItem>();
         SQLiteDatabase sqLiteDatabase=cartDB.getReadableDatabase();
         sqLiteDatabase.beginTransaction();
         try
@@ -32,8 +30,8 @@ public class CreatCartTools
             Cursor cursor=sqLiteDatabase.rawQuery("select * from cartItem where userId="+userId,null);
             while (cursor.moveToNext())
             {
-                CartItem item = new CartItem();
-                item.userId = cursor.getInt(cursor.getColumnIndex("userId"));
+                CartGoodsItem item = new CartGoodsItem();
+                item.userId = cursor.getString(cursor.getColumnIndex("userId"));
                 item.id = cursor.getInt(cursor.getColumnIndex("baseId"));
                 item.name = cursor.getString(cursor.getColumnIndex("title"));
                 item.imageUrl = cursor.getString(cursor.getColumnIndex("img"));
@@ -43,7 +41,7 @@ public class CreatCartTools
                 item.saveTotalMoney = cursor.getDouble(cursor.getColumnIndex("saveTotalMoney"));
                 item.num = cursor.getInt(cursor.getColumnIndex("num"));
                 item.size = cursor.getString(cursor.getColumnIndex("size"));
-                item.sizeId = cursor.getInt(cursor.getColumnIndex("sizeId"));
+                item.sizeId = cursor.getString(cursor.getColumnIndex("sizeId"));
                 item.isPublish = cursor.getString(cursor.getColumnIndex("isPublish"));
                 item.isOver = cursor.getString(cursor.getColumnIndex("isOver"));
                 item.isOSale = cursor.getString(cursor.getColumnIndex("isOSale"));
@@ -75,7 +73,7 @@ public class CreatCartTools
     /**
      * 删除数据
      */
-    public static void deleteByData(CreatCartDB cartDB, CartItem item)
+    public static void deleteByData(CreatCartDB cartDB, CartGoodsItem item)
     {
         SQLiteDatabase sqLiteDatabase = cartDB.getReadableDatabase();
         sqLiteDatabase.beginTransaction();
@@ -98,7 +96,7 @@ public class CreatCartTools
     /**
      * 修改数量数据
      */
-    public static void editNumByData(CreatCartDB cartDB,CartItem itm)
+    public static void editNumByData(CreatCartDB cartDB,CartGoodsItem itm)
     {
         SQLiteDatabase sqLiteDatabase = cartDB.getReadableDatabase();
         sqLiteDatabase.beginTransaction();
@@ -124,7 +122,7 @@ public class CreatCartTools
     /**
      * 修改数据为已卖完
      */
-    public static void editIsOverByData(CreatCartDB cartDB,CartItem itm)
+    public static void editIsOverByData(CreatCartDB cartDB,CartGoodsItem itm)
     {
         SQLiteDatabase sqLiteDatabase = cartDB.getReadableDatabase();
         sqLiteDatabase.beginTransaction();
@@ -149,7 +147,7 @@ public class CreatCartTools
     /**
      * 修改数据为已下架
      */
-    public static void editIsLoseByData(CreatCartDB cartDB,CartItem itm)
+    public static void editIsLoseByData(CreatCartDB cartDB,CartGoodsItem itm)
     {
         SQLiteDatabase sqLiteDatabase = cartDB.getReadableDatabase();
         sqLiteDatabase.beginTransaction();
@@ -175,7 +173,7 @@ public class CreatCartTools
     /**
      * 加入数据
      */
-    public static void insertByData(CreatCartDB cartDB,List<CartItem> cartItems,CartItem itm)
+    public static void insertByData(CreatCartDB cartDB,List<CartGoodsItem> cartGoodsItems,CartGoodsItem itm)
     {
         SQLiteDatabase sqLiteDatabase=cartDB.getReadableDatabase();
         sqLiteDatabase.beginTransaction();
@@ -204,12 +202,12 @@ public class CreatCartTools
             }
             else
             {
-                for (int i = 0; i <cartItems.size() ; i++)
+                for (int i = 0; i < cartGoodsItems.size() ; i++)
                 {
-                    if (cartItems.get(i).sizeId==itm.sizeId)
+                    if (cartGoodsItems.get(i).sizeId==itm.sizeId)
                     {
                         ContentValues values = new ContentValues();
-                        values.put("num", cartItems.get(i).num+1);
+                        values.put("num", cartGoodsItems.get(i).num+1);
                         String whereClause = "sizeId=?";
                         String[] whereArgs = new String[] { String.valueOf(itm.sizeId) };
                         sqLiteDatabase.update(CreatCartDB.SqlName,values,whereClause,whereArgs);

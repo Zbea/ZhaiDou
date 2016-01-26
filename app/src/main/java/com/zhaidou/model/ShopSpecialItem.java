@@ -9,26 +9,26 @@ public class ShopSpecialItem implements Serializable
 {
     //id
     public int id;
+    public String goodsId;
     //名称
     public String title;
     public String sale;
-    public String time;
-    public String startTime;
-    public String endTime;
+    public long startTime;
+    public long endTime;
     //剩余时间
-    public String overTime;
+    public int overTime;
     public String imageUrl;
-
-    public ShopSpecialItem(int id, String title, String sale, String time, String startTime, String endTime, String overTime, String imageUrl)
+    public int isNew;
+    public ShopSpecialItem(String id, String title, String sale, long startTime, long endTime, int overTime, String imageUrl,int isNew)
     {
-        this.id = id;
+        goodsId= id;
         this.title = title;
         this.sale = sale;
-        this.time = time;
         this.startTime = startTime;
         this.endTime = endTime;
         this.overTime = overTime;
         this.imageUrl = imageUrl;
+        this.isNew = isNew;
     }
 
     public ShopSpecialItem()
@@ -42,7 +42,6 @@ public class ShopSpecialItem implements Serializable
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", sale='" + sale + '\'' +
-                ", time='" + time + '\'' +
                 ", startTime='" + startTime + '\'' +
                 ", endTime='" + endTime + '\'' +
                 ", overTime='" + overTime + '\'' +

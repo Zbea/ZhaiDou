@@ -37,6 +37,7 @@ public class User implements Serializable{
     private String mobile;
     private boolean verified;
     private String first_name;
+    private String phone;
 
 
     public User() {
@@ -296,6 +297,14 @@ public class User implements Serializable{
 
     public void setFirst_name(String first_name) {
         this.first_name = first_name;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public User(int id, String email, String create_at, String avatar, String nickName, String gender, String province, String city, int collocation_number) {

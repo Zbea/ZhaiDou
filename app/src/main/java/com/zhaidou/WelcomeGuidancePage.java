@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
 
+import com.zhaidou.utils.ToolUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,16 +41,20 @@ public class WelcomeGuidancePage extends Activity
     {
         mViewPager=(ViewPager)findViewById(R.id.welcomeView);
 
+        String imageUri = "drawable://" + R.drawable.icon_welcome_guidance1;
         ImageView img=new ImageView(this);
-        img.setImageResource(R.drawable.icon_welcome_guidance1);
+        ToolUtils.setImagePreventMemoryLeaksUrl(imageUri, img);
         images.add(img);
 
+        String imageUri1 = "drawable://" + R.drawable.icon_welcome_guidance2;
         ImageView img1=new ImageView(this);
-        img1.setImageResource(R.drawable.icon_welcome_guidance2);
+        ToolUtils.setImagePreventMemoryLeaksUrl(imageUri1, img1);
         images.add(img1);
 
+        String imageUri2 = "drawable://" + R.drawable.icon_welcome_guidance3;
         ImageView img2=new ImageView(this);
-        img2.setImageResource(R.drawable.icon_welcome_guidance3);
+        ToolUtils.setImagePreventMemoryLeaksUrl(imageUri2, img2);
+
         img2.setOnClickListener(new View.OnClickListener()
         {
             @Override

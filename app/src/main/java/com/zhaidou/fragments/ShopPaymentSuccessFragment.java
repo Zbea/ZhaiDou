@@ -1,33 +1,34 @@
 package com.zhaidou.fragments;
 
 
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
+import com.alibaba.fastjson.JSON;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.pulltorefresh.PullToRefreshBase;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.model.Order;
+import com.zhaidou.model.DeliveryAddress;
 import com.zhaidou.model.OrderItem;
-import com.zhaidou.model.Receiver;
+import com.zhaidou.model.Store;
+import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
@@ -35,42 +36,49 @@ import com.zhaidou.view.TypeFaceTextView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
 
 /**
  * Created by roy on 15/7/24.
  */
 public class ShopPaymentSuccessFragment extends BaseFragment {
-    private static final String ARG_ORDERID = "orderId";
+    private static final String ARG_ORDERCODE= "ordercode";
     private static final String INDEX = "index";
-    private static final String ARG_ORDER = "order";
+    private static final String ARG_AMOUNT = "amount";
 
-    private long mOrderId;
+    private String mOrderCode;
     private double mIndex;
+    private String mAmount;
     private View mView;
     private Context mContext;
-    private Order mOrder;
     private TypeFaceTextView backBtn, titleTv;
     private RequestQueue mRequestQueue;
     private String token;
-    private final int UPDATE_PAY_SUCCESS_PAG=1;
-    private final int UPDATE_PAY_FAIL_PAG=2;
-    private TextView tv_receiver,tv_mobile,tv_address,tv_amount,tv_mall,tv_order_detail;
+    private final int UPDATE_PAY_SUCCESS_PAG = 1;
+    private final int UPDATE_PAY_FAIL_PAG = 2;
+    private DialogUtils mDialogUtils;
+    private Dialog mDialog;
+    private String mUserId;
+    private TextView tv_receiver, tv_mobile, tv_address, tv_amount, tv_mall, tv_order_detail;
+    private List<OrderItem> orderItems = new ArrayList<OrderItem>();
+    private List<Store> mStoreList;
 
-    private Handler mHandler=new Handler(){
+    private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
+            switch (msg.what) {
                 case UPDATE_PAY_SUCCESS_PAG:
-                    Order order=(Order)msg.obj;
-                    tv_receiver.setText("收件人："+order.getReceiver().getName());
-                    tv_address.setText("地址："+order.getReceiver().getProvince()+","+ order.getReceiver().getCity()+","+ order.getReceiver().getArea()+","+order.getReceiver().getAddress());
-                    tv_mobile.setText("电话："+order.getReceiver().getPhone());
-                    Receiver receiver=order.getReceiver();
-                    tv_amount.setText("￥"+order.getAmount()+"");
-                    mOrder=order;
+                    if (mStoreList.size() > 0) {
+                        Store store = mStoreList.get(0);
+                        DeliveryAddress deliveryAddressPO = store.deliveryAddressPO;
+                        tv_receiver.setText("收件人：" + deliveryAddressPO.realName);
+                        tv_address.setText("地址：" +deliveryAddressPO.provinceName+","+deliveryAddressPO.cityName+","+deliveryAddressPO.regionName+","+deliveryAddressPO.address);
+                        tv_mobile.setText("电话：" + deliveryAddressPO.mobile);
+                        tv_amount.setText("￥" + mAmount);
+                    }
                     break;
                 case UPDATE_PAY_FAIL_PAG:
                     tv_order_detail.setClickable(false);
@@ -92,12 +100,14 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
                 case R.id.tv_mall:
                     ToolUtils.setLog("前往商城");
                     colseFragment(ShopPaymentSuccessFragment.this);
+                    ((MainActivity) mContext).allfragment();
+                    ((MainActivity) mContext).toHomeFragment();
                     break;
                 case R.id.tv_order_detail:
                     ToolUtils.setLog("前往订单");
-                    OrderDetailFragment orderDetailFragment=OrderDetailFragment.newInstance(mOrderId+"",0,mOrder,1);
-                    ((MainActivity)getActivity()).navigationToFragment(orderDetailFragment);
-                    orderDetailFragment.setOnColseSuccess(new OrderDetailFragment.OnColseSuccess()
+                    OrderDetailFragment1 orderDetailFragment1=OrderDetailFragment1.newInstance(mOrderCode,1);
+                    ((MainActivity)getActivity()).navigationToFragment(orderDetailFragment1);
+                    orderDetailFragment1.setOnColseSuccess(new OrderDetailFragment1.OnColseSuccess()
                     {
                         @Override
                         public void colsePage()
@@ -110,13 +120,12 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
         }
     };
 
-
-    public static ShopPaymentSuccessFragment newInstance(long orderId, double index,Order order) {
+    public static ShopPaymentSuccessFragment newInstance(String orderCode, double index, String amount) {
         ShopPaymentSuccessFragment fragment = new ShopPaymentSuccessFragment();
         Bundle args = new Bundle();
-        args.putLong(ARG_ORDERID, orderId);
+        args.putString(ARG_ORDERCODE, orderCode);
         args.putDouble(INDEX, index);
-        args.putSerializable(ARG_ORDER,order);
+        args.putString(ARG_AMOUNT, amount);
         fragment.setArguments(args);
         return fragment;
     }
@@ -128,9 +137,9 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mOrderId = getArguments().getLong(ARG_ORDERID);
+            mOrderCode = getArguments().getString(ARG_ORDERCODE);
             mIndex = getArguments().getDouble(INDEX);
-            mOrder=(Order)getArguments().getSerializable(ARG_ORDER);
+            mAmount=getArguments().getString(ARG_AMOUNT);
         }
     }
 
@@ -160,89 +169,70 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
         backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(R.string.shop_payment_success_text);
-        tv_receiver=(TextView)mView.findViewById(R.id.successAddressNameTv);
-        tv_mobile=(TextView)mView.findViewById(R.id.successAddressPhoneTv);
-        tv_address=(TextView)mView.findViewById(R.id.successAddressinfoTv);
-        tv_amount=(TextView)mView.findViewById(R.id.successTotalNum);
-        tv_mall=(TextView)mView.findViewById(R.id.tv_mall);
-        tv_order_detail=(TextView)mView.findViewById(R.id.tv_order_detail);
+        tv_receiver = (TextView) mView.findViewById(R.id.successAddressNameTv);
+        tv_mobile = (TextView) mView.findViewById(R.id.successAddressPhoneTv);
+        tv_address = (TextView) mView.findViewById(R.id.successAddressinfoTv);
+        tv_amount = (TextView) mView.findViewById(R.id.successTotalNum);
+        tv_mall = (TextView) mView.findViewById(R.id.tv_mall);
+        tv_order_detail = (TextView) mView.findViewById(R.id.tv_order_detail);
         tv_mall.setOnClickListener(onClickListener);
         tv_order_detail.setOnClickListener(onClickListener);
-        mRequestQueue= Volley.newRequestQueue(getActivity());
-        token=(String) SharedPreferencesUtil.getData(getActivity(),"token","");
-
-        FetchData(mOrderId);
+        mRequestQueue = Volley.newRequestQueue(getActivity());
+        mDialogUtils=new DialogUtils(mContext);
+        token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
+        mUserId = SharedPreferencesUtil.getData(mContext, "userId", -1) + "";
+        mStoreList = new ArrayList<Store>();
+        FetchOrderDetail(mOrderCode);
     }
 
-    private void FetchData(long orderId) {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.URL_ORDER_LIST + "/" + orderId, new Response.Listener<JSONObject>() {
+    private void FetchOrderDetail(String orderCode) {
+        mDialog = mDialogUtils.showLoadingDialog();
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("businessType", "01");
+        params.put("clientType", "ANDROID");
+        params.put("version", "1.0.1");
+        params.put("userId", mUserId);
+        params.put("orderCode", orderCode);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, new ZhaiDou().URL_ORDER_DETAIL_LIST_URL, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                if (jsonObject != null)
-                {
-                    JSONObject orderObj = jsonObject.optJSONObject("order");
-                    double amount = orderObj.optDouble("amount");
-                    int id = orderObj.optInt("id");
-                    String status = orderObj.optString("status");
-                    String created_at_for = orderObj.optString("created_at_for");
-                    String receiver_address = orderObj.optString("receiver_address");
-                    String created_at = orderObj.optString("created_at");
-                    String status_ch = orderObj.optString("status_ch");
-                    String number = orderObj.optString("number");
-                    String receiver_phone = orderObj.optString("receiver_phone");
-                    String deliver_number = orderObj.optString("deliver_number");
-                    String receiver_name = orderObj.optString("receiver_name");
-
-                    JSONObject receiverObj = orderObj.optJSONObject("receiver");
-                    int receiverId = receiverObj.optInt("id");
-                    String province=receiverObj.optString("parent_name");
-                    String city=receiverObj.optString("city_name");
-                    String area=receiverObj.optString("provider_name");
-                    String address = receiverObj.optString("address");
-                    String phone = receiverObj.optString("phone");
-                    String name = receiverObj.optString("name");
-                    Receiver receiver=new Receiver(receiverId,address,province,city,area,phone,name);
-                    Order order = new Order("", id, number, amount, status, status_ch, created_at_for, created_at, receiver, null, receiver_address, receiver_phone, deliver_number, receiver_name);
-                    Message message = new Message();
-                    message.obj = order;
-                    message.what = UPDATE_PAY_SUCCESS_PAG;
-                    mHandler.sendMessage(message);
-                }
-                else
-                {
-                    mHandler.sendEmptyMessage(UPDATE_PAY_FAIL_PAG);
-                }
+                if (mDialog != null)
+                    mDialog.dismiss();
+                JSONArray array = jsonObject.optJSONArray("data");
+                List<Store> stores = JSON.parseArray(array.toString(), Store.class);
+                mStoreList.addAll(stores);
+                mHandler.sendEmptyMessage(UPDATE_PAY_SUCCESS_PAG);
             }
         }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-                mHandler.sendEmptyMessage(UPDATE_PAY_FAIL_PAG);
+            public void onErrorResponse(VolleyError volleyError) {
+                mDialog.dismiss();
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 
-    private void colsePayment()
-    {
-        FragmentManager fragmentManager=getFragmentManager();
-        Fragment fragment=fragmentManager.findFragmentByTag((ShopPaymentFragment.class).getClass().getSimpleName());
-        if (fragment!=null)
+    private void colsePayment() {
+        FragmentManager fragmentManager = getFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentByTag((ShopPaymentFragment.class).getClass().getSimpleName());
+        if (fragment != null)
             fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
         fragmentManager.popBackStack();
     }
 
     @Override
-    public void onDestroyView()
-    {
+    public void onDestroyView() {
         super.onDestroyView();
+    }
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.shop_payment_success_text));
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.shop_payment_success_text));
     }
 
 }

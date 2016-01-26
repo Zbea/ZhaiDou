@@ -2,11 +2,12 @@ package com.zhaidou.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -15,6 +16,9 @@ import android.webkit.WebViewClient;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.view.CustomProgressWebview;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class WebViewActivity extends Activity implements View.OnClickListener{
 
@@ -32,7 +36,6 @@ public class WebViewActivity extends Activity implements View.OnClickListener{
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                Log.i("shouldOverrideUrlLoading----->", url);
                 if (url.startsWith("taobao://"))
                     return true;
                 view.loadUrl(url);
@@ -59,6 +62,17 @@ public class WebViewActivity extends Activity implements View.OnClickListener{
             }
         });
 
+        webView.setDownloadListener(new DownloadListener()
+        {
+            @Override
+            public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
+                // 监听下载功能，当用户点击下载链接的时候，直接调用系统的浏览器来下载
+                Uri uri = Uri.parse(url);
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+            }
+        });
+
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
@@ -70,22 +84,20 @@ public class WebViewActivity extends Activity implements View.OnClickListener{
 
         String url = getIntent().getStringExtra("url");
 
-        webView.loadUrl(url);
+        Map<String,String> headers=new HashMap<String, String>();
+        headers.put("ZhaidouVesion", getResources().getString(R.string.app_versionName));
+        webView.loadUrl(url,headers);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.web_view, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
@@ -106,12 +118,18 @@ public class WebViewActivity extends Activity implements View.OnClickListener{
                 break;
         }
     }
-    public void onResume() {
+
+    @Override
+    protected void onResume() {
         super.onResume();
+        MobclickAgent.onPageStart("WebViewActivity");
         MobclickAgent.onResume(this);
     }
-    public void onPause() {
+
+    @Override
+    protected void onPause() {
         super.onPause();
+        MobclickAgent.onPageEnd("WebViewActivity");
         MobclickAgent.onPause(this);
     }
 }

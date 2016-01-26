@@ -8,17 +8,10 @@
 
 package cn.sharesdk.onekeyshare.theme.classic;
 
-import static com.mob.tools.utils.R.getBitmapRes;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Handler.Callback;
 import android.os.Message;
@@ -31,16 +24,24 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import cn.sharesdk.framework.Platform;
-import cn.sharesdk.framework.ShareSDK;
+
 import com.mob.tools.gui.ViewPagerAdapter;
 import com.mob.tools.gui.ViewPagerClassic;
 import com.mob.tools.utils.UIHandler;
 import com.zhaidou.R;
 import com.zhaidou.view.TypeFaceTextView;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
+import cn.sharesdk.framework.Platform;
+import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.CustomerLogo;
+
+import static com.mob.tools.utils.R.getBitmapRes;
 
 /** platform logo list gridview */
 public class PlatformGridView extends LinearLayout implements
@@ -235,10 +236,11 @@ public class PlatformGridView extends LinearLayout implements
 			return;
 		}
 		lastClickTime = time;
-
-		ArrayList<Object> platforms = new ArrayList<Object>(1);
+        System.out.println("v = " + v);
+        ArrayList<Object> platforms = new ArrayList<Object>(1);
 		platforms.add(v.getTag());
-		parent.onPlatformIconClick(v, platforms);
+        System.out.println("v.getTag() = " + v.getTag());
+        parent.onPlatformIconClick(v, platforms);
 	}
 
 	// Disable the flashing effect when viewpages sliding to left/right edge
@@ -369,7 +371,7 @@ public class PlatformGridView extends LinearLayout implements
 
 		private void init() {
 			int dp_5 = com.mob.tools.utils.R.dipToPx(getContext(), 5);
-			setPadding(0, dp_5, 0, dp_5);
+//			setPadding(0, dp_5, 0, dp_5);
 			setOrientation(VERTICAL);
 
 			int size = beans == null ? 0 : beans.length;
@@ -384,7 +386,7 @@ public class PlatformGridView extends LinearLayout implements
 			for (int i = 0; i < lines; i++) {
 				LinearLayout llLine = new LinearLayout(getContext());
 				llLine.setLayoutParams(lp);
-				llLine.setPadding(dp_5, 0, dp_5, 0);
+//				llLine.setPadding(dp_5, 0, dp_5, 0);
 				addView(llLine);
 
 				if (i >= lineSize) {
@@ -422,37 +424,63 @@ public class PlatformGridView extends LinearLayout implements
 				listener = ocL;
 			}
 
-			LinearLayout ll = new LinearLayout(context);
-			ll.setOrientation(LinearLayout.VERTICAL);
+            LinearLayout layout =new LinearLayout(context);
+//            layout.setBackgroundColor(getColorRes(context,"holo_blue_bright"));
+            LinearLayout.LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            layout.setGravity(Gravity.CENTER);
+            layout.setOnClickListener(listener);
 
+			LinearLayout ll = new LinearLayout(context);
+            LayoutParams params1=new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params1.weight=1;
+            ll.setLayoutParams(params1);
+			ll.setOrientation(LinearLayout.VERTICAL);
 			ImageView iv = new ImageView(context);
 			int dp_5 = com.mob.tools.utils.R.dipToPx(context, 5);
-			iv.setPadding(dp_5, dp_5, dp_5, dp_5);
+			iv.setPadding(dp_5, 60, dp_5, dp_5);
 			iv.setScaleType(ScaleType.CENTER_INSIDE);
 			LayoutParams lpIv = new LayoutParams(
 					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-			lpIv.setMargins(dp_5, dp_5, dp_5, dp_5);
+//			lpIv.setMargins(dp_5, dp_5, dp_5, dp_5);
 			lpIv.gravity = Gravity.CENTER_HORIZONTAL;
 			iv.setLayoutParams(lpIv);
 			iv.setImageBitmap(logo);
 			ll.addView(iv);
 
             TypeFaceTextView tv = new TypeFaceTextView(context);
-			tv.setTextColor(context.getResources().getColor(R.color.title_color));//0x99999999
-			tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+			tv.setTextColor(context.getResources().getColor(R.color.gray_9));//0x99999999
+			tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
 			tv.setSingleLine();
 			tv.setIncludeFontPadding(false);
 			LayoutParams lpTv = new LayoutParams(
 					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 			lpTv.gravity = Gravity.CENTER_HORIZONTAL;
 			lpTv.weight = 1;
-			lpTv.setMargins(dp_5, 0, dp_5, dp_5);
+			lpTv.setMargins(dp_5, 30, dp_5, 56);
 			tv.setLayoutParams(lpTv);
 			tv.setText(label);
 			ll.addView(tv);
-			ll.setOnClickListener(listener);
+            //line
+            if (position<3){
 
-			return ll;
+            ImageView imageView=new ImageView(getContext());
+            imageView.setBackgroundDrawable(new ColorDrawable(0xf1f1f1f1));
+            LinearLayout.LayoutParams lpline = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, 1);
+            imageView.setLayoutParams(lpline);
+            ll.addView(imageView);
+            }
+            layout.addView(ll);
+            //line
+            ImageView imageView1=new ImageView(getContext());
+            imageView1.setBackgroundDrawable(new ColorDrawable(0xf1f1f1f1));
+            LinearLayout.LayoutParams lpline1 = new LinearLayout.LayoutParams(
+                    1, LinearLayout.LayoutParams.MATCH_PARENT);
+            lpline1.gravity=Gravity.RIGHT;
+            imageView1.setLayoutParams(lpline1);
+
+            layout.addView(imageView1);
+			return layout;
 		}
 
 		private Bitmap getIcon(Platform plat) {

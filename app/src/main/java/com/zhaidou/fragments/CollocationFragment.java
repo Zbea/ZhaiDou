@@ -4,7 +4,6 @@ package com.zhaidou.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -21,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -28,6 +28,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshGridView;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
@@ -35,7 +36,6 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Collocation;
-import com.zhaidou.utils.AsyncImageLoader1;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
 
@@ -163,7 +163,8 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
     }
 
     public void FetchCollocationData(int page){
-        mDialog= CustomLoadingDialog.setLoadingDialog(mActivity,"loading");
+        mDialog= CustomLoadingDialog.setLoadingDialog(mActivity,"loading",isDialogFirstVisible);
+        isDialogFirstVisible=false;
         int userId=mSharedPreferences.getInt("userId", -1);
         Log.i("FetchCollocationData------->",userId+"");
         //"http://www.zhaidou.com/api/v1/users/77069/bean_collocations?page="+page
@@ -179,7 +180,7 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
                 JSONArray collocationsArr=jsonObject.optJSONArray("bean_collocations");
                 JSONObject meta = jsonObject.optJSONObject("meta");
                 count=meta==null?0:meta.optInt("count");
-                Collocation collocation=null;
+                Collocation collocation= null;
                 if (collocationsArr!=null&&collocationsArr.length()>0)
                 {
                     for (int i=0;i<collocationsArr.length();i++){
@@ -213,7 +214,14 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
                 }
                 nullLine.setVisibility(View.VISIBLE);
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         mRequestQueue.add(request);
     }
 
@@ -270,5 +278,13 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
             mAdapter.notifyDataSetChanged();
         }
         FetchCollocationData(currentpage=1);
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_collocation));
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_collocation));
     }
 }

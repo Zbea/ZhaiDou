@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -24,10 +22,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -282,8 +280,8 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
             @Override
             public void onClick(View view)
             {
-                mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "删除中");
-                String url = ZhaiDou.ORDER_RECEIVER_URL + address.getId();
+                mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "删除中");
+                String url = ZhaiDou.AddressDeleteUrl +"?id="+ address.getId();
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, new Response.Listener<JSONObject>()
                 {
                     @Override
@@ -291,20 +289,32 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                     {
                         if (mDialog != null)
                             mDialog.dismiss();
-                        if (jsonObject != null)
+                        int code=jsonObject.optInt("status");
+                        if (code!=200)
                         {
-                            int status = jsonObject.optInt("status");
+                            ToolUtils.setToast(mContext,"抱歉，删除失败");
+                            return;
+                        }
+                        JSONObject dataObject=jsonObject.optJSONObject("data");
+                        if (dataObject != null)
+                        {
+                            int status = dataObject.optInt("status");
+                            String msg = dataObject.optString("message");
                             if (status == 201)
                             {
+                                ToolUtils.setToast(mContext, msg);
                                 addressList.remove(address);
                                 addressAdapter.notifyDataSetChanged();
                                 if (addressList.size() == 0)
                                 {
+                                    if(addressListener!=null)
                                     addressListener.onDeleteFinishAddress();
                                 }
-                            }
+                            }else {
+
                             String message = jsonObject.optString("message");
                             ShowToast(message);
+                            }
                         }
                     }
                 }, new Response.ErrorListener()
@@ -314,7 +324,7 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                     {
                         if (mDialog != null)
                             mDialog.dismiss();
-                        ShowToast("加载失败");
+                        ToolUtils.setToast(mContext,"抱歉，删除失败");
                     }
                 })
                 {
@@ -323,6 +333,7 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                     {
                         Map<String, String> headers = new HashMap<String, String>();
                         headers.put("SECAuthorization", token);
+                        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                         return headers;
                     }
                 };
@@ -350,14 +361,20 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
 
     private void FetchData()
     {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_RECEIVER_URL, new Response.Listener<JSONObject>()
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.AddressListUrl, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
             {
                 mDialog.dismiss();
-                JSONArray receiversArr = jsonObject.optJSONArray("receivers");
                 ToolUtils.setLog(jsonObject.toString());
+                int status=jsonObject.optInt("status");
+                if (status!=200)
+                {
+                    ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+                }
+                JSONObject dataObject=jsonObject.optJSONObject("data");
+                JSONArray receiversArr = dataObject.optJSONArray("receivers");
                 if (receiversArr != null && receiversArr.length() > 0)
                 {
                     for (int i = 0; i < receiversArr.length(); i++)
@@ -404,7 +421,7 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
             public void onErrorResponse(VolleyError volleyError)
             {
                 mDialog.dismiss();
-                Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
+                ToolUtils.setToast(mContext,R.string.loading_fail_txt);
             }
         })
         {
@@ -412,8 +429,8 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
             public Map<String, String> getHeaders() throws AuthFailureError
             {
                 Map<String, String> headers = new HashMap<String, String>();
-                if (!TextUtils.isEmpty(token))
-                    headers.put("SECAuthorization", token);
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                headers.put("SECAuthorization", token);
                 return headers;
             }
         };
@@ -480,5 +497,14 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
             }
         }
         super.onDestroyView();
+    }
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_address_manage));
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_address_manage));
     }
 }

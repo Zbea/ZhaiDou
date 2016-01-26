@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    android:versionCode="36"
+    android:versionCode="45"
     android:versionName="@string/app_versionName"
     package="com.zhaidou">
     <application
@@ -10,10 +10,8 @@
         android:name=".ZDApplication"
         android:label="@string/app_name"
         android:theme="@style/app_theme">
+
         <meta-data android:value="55c1c1e0e0f55a397c001975" android:name="UMENG_APPKEY"></meta-data>
-        <meta-data
-            android:name="UMENG_CHANNEL"
-            android:value="${UMENG_CHANNEL_VALUE}" />
 
         <activity
             android:name=".WelcomePage"
@@ -28,6 +26,7 @@
             </intent-filter>
         </activity>
         <activity
+
             android:name=".WelcomeGuidancePage"
             android:configChanges="orientation|keyboardHidden|"
             android:screenOrientation="portrait"
@@ -38,14 +37,9 @@
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/app_name"
-            android:windowSoftInputMode="stateHidden|adjustPan"
+            android:windowSoftInputMode="adjustPan|stateHidden"
             android:screenOrientation="portrait"
             android:theme="@style/StyledIndicators">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -53,12 +47,6 @@
 
                 <data android:scheme="wxce03c66622e5b243" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".activities.HomeActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:label="@string/title_activity_home"
-            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".activities.DiyActivity"
@@ -87,6 +75,12 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
+            android:name=".activities.ArticleWebViewActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:windowSoftInputMode="adjustPan|stateHidden"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
             android:name="com.mob.tools.MobUIShell"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
@@ -106,11 +100,6 @@
             android:label="@string/title_activity_web_view" >
         </activity>
         <activity
-            android:name=".activities.SearchActivity"
-            android:theme="@style/StyledIndicators"
-            android:label="@string/title_activity_search">
-        </activity>
-        <activity
             android:name=".activities.CategoryActivity"
             android:theme="@style/StyledIndicators"
             android:label="@string/title_activity_search">
@@ -125,21 +114,23 @@
             android:theme="@style/StyledIndicators"
             android:label="@string/title_activity_search">
         </activity>
+        <activity
+            android:name=".activities.AccountRegisterSetPwdActivity"
+            android:theme="@style/StyledIndicators">
+        </activity>
+        <activity
+            android:name=".activities.AccountSetPwdActivity"
+            android:theme="@style/StyledIndicators">
+        </activity>
+        <activity
+            android:name=".activities.AccountFindPwdActivity"
+            android:theme="@style/StyledIndicators">
+        </activity>
         <activity android:name=".alipay.PayDemoActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <data android:scheme="wxce03c66622e5b243"/>
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".activities.PayActivity"
-            android:theme="@style/StyledIndicators"
-            android:label="@string/title_activity_search">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="wxce03c66622e5b243" />
             </intent-filter>
         </activity>
         <activity android:name="com.alibaba.sdk.android.webview.BaseWebViewActivity"/>
@@ -177,6 +168,106 @@
             android:name=".wxapi.WXPayEntryActivity"
             android:exported="true"
             android:launchMode="singleTop"/>
+
+        <!-- Required SDK核心功能-->
+        <activity
+            android:name="cn.jpush.android.ui.PushActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="cn.jpush.android.ui.PushActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="com.zhaidou" />
+            </intent-filter>
+        </activity>
+        <!-- Required  SDK核心功能-->
+        <service
+            android:name="cn.jpush.android.service.DownloadService"
+            android:enabled="true"
+            android:exported="false" >
+        </service>
+
+
+        <!-- Required SDK 核心功能-->
+        <service
+            android:name="cn.jpush.android.service.PushService"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.REGISTER" />
+                <action android:name="cn.jpush.android.intent.REPORT" />
+                <action android:name="cn.jpush.android.intent.PushService" />
+                <action android:name="cn.jpush.android.intent.PUSH_TIME" />
+
+            </intent-filter>
+        </service>
+
+        <!-- since 1.8.0 option 可选项。用于同一设备中不同应用的JPush服务相互拉起的功能。 -->
+        <!-- 若不启用该功能可删除该组件，将不拉起其他应用也不能被其他应用拉起 -->
+        <service
+            android:name="cn.jpush.android.service.DaemonService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter >
+                <action android:name="cn.jpush.android.intent.DaemonService" />
+                <category android:name="com.zhaidou"/>
+            </intent-filter>
+        </service>
+
+
+        <!-- Required SDK核心功能-->
+        <receiver
+            android:name="cn.jpush.android.service.PushReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter android:priority="1000">
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY" />   <!--Required  显示通知栏 -->
+                <category android:name="com.zhaidou" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+            <!-- Optional -->
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+                <data android:scheme="package" />
+            </intent-filter>
+
+        </receiver>
+
+        <!-- Required SDK核心功能-->
+        <receiver android:name="cn.jpush.android.service.AlarmReceiver" />
+
+        <!-- User defined.  For test only  用户自定义的广播接收器-->
+        <receiver
+            android:name="com.zhaidou.push.PushReceiver"
+            android:enabled="true"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.REGISTRATION" /> <!--Required  用户注册SDK的intent-->
+                <action android:name="cn.jpush.android.intent.UNREGISTRATION" />
+                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" /> <!--Required  用户接收SDK消息的intent-->
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED" /> <!--Required  用户接收SDK通知栏信息的intent-->
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" /> <!--Required  用户打开自定义通知栏的intent-->
+                <action android:name="cn.jpush.android.intent.ACTION_RICHPUSH_CALLBACK" /> <!--Optional 用户接受Rich Push Javascript 回调函数的intent-->
+                <action android:name="cn.jpush.android.intent.CONNECTION" /><!-- 接收网络变化 连接/断开 since 1.6.3 -->
+                <category android:name="com.zhaidou" />
+            </intent-filter>
+        </receiver>
+
+
+        <!-- Required  . Enable it you can get statistics data with channel -->
+        <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
+        <meta-data android:name="JPUSH_APPKEY" android:value="d1dc54d7466632c895ec322f" /> <!--  </>值来自开发者平台取得的AppKey-->
+
+        <!-- 请将value改为MTA分配的appkey < -->
+        <meta-data android:name="TA_APPKEY" android:value="Aqc1104776552"/>
+        <!-- 请将value改为app发布对应的渠道,不同的发布渠道使用不同的名字 < -->
+        <meta-data android:name="InstallChannel" android:value="应用"/>
+        <!-- 注意:若填写的渠道为纯数字字符串类型,请不要超过int表示的范围! < -->
+
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -194,7 +285,15 @@
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
     <uses-permission android:name="android.permission.READ_SETTINGS"/>
     <uses-permission android:name="android.permission.READ_LOGS"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <!--<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>-->
     <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <!-- Required 自定义用来收发消息的相关权限 -->
+    <permission
+        android:name="com.zhaidou.permission.JPUSH_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <!-- Required  一些系统要求的权限，如访问网络等-->
+    <uses-permission android:name="com.zhaidou.permission.JPUSH_MESSAGE" />
 
 </manifest>

@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-
 android {
     compileSdkVersion 20
     buildToolsVersion '20.0.0'
@@ -8,25 +7,29 @@ android {
         applicationId "com.zhaidou"
         minSdkVersion 15
         targetSdkVersion 19
-
-        versionCode 36
-        versionName "2.2.1"
-
-        manifestPlaceholders = [ UMENG_CHANNEL_VALUE:"default_channel" ]
+        versionCode 45
+        versionName "3.0.0"
+        manifestPlaceholders = [UMENG_CHANNEL_VALUE: "default_channel"]
     }
+
     productFlavors {
-        default_channel{"default_channel"}
-        wandoujiaAD{"wandoujiaAD"}
-        wandoujia{"wandoujia"}
-        _360{"_360"}
-        yingyongbao{"yingyongbao"}
-        xiaomi{"xiaomi"}
-        baidu{"baidu"}
-        huawei{"huawei"}
-        jifeng{"jifeng"}
+        Androiddefault { "Androiddefault" }
+        AndroidUpdate { "AndroidUpdate" }
+        wandoujiaAD { "wandoujiaAD" }
+        AndroidWan { "AndroidWan" }
+        Android360 { "Android360" }
+        AndroidOqq { "AndroidOqq" }
+        Android360Xm { "Android360Xm" }
+        AndroidBaidu { "AndroidBaidu" }
+        AndroidOpp { "AndroidOpp" }
+        AndroidFm { "AndroidFm" }
+        AndroidAz { "AndroidAz" }
+        AndroidHW { "AndroidHW" }
+        AndroidOap { "AndroidOap" }
+        AndroidLenovo { "AndroidLenovo" }
     }
     productFlavors.all { flavor ->
-        flavor.manifestPlaceholders = [ UMENG_CHANNEL_VALUE:name ]
+        flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
     }
     buildTypes {
         release {
@@ -34,6 +37,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+
 }
 task copyNativeLibs(type: Copy) {
     from fileTree(dir: 'libs', include: 'armeabi/*.so') into 'build/lib'
@@ -61,6 +69,11 @@ dependencies {
     compile files('libs/libammsdk.jar')
     compile files('libs/alipaySDK-20150610.jar')
     compile files('libs/utdid4all-1.0.4.jar')
-//    compile files('libs/testinagent.jar')
-    compile 'com.umeng.analytics:analytics:latest.integration'
+    compile 'com.umeng.analytics:analytics:5.6.1'
+    compile files('libs/bugly_1.2.3.8__release.jar')
+    compile files('libs/jpush-sdk-release1.8.2.jar')
+    compile files('libs/mta-mid-sdk-2.20.jar')
+    compile files('libs/mta-stats-sdk-2.0.4.jar')
+    compile files('libs/fastjson-1.2.7.jar')
+    compile files('libs/httpmime-4.1.jar')
 }

@@ -22,7 +22,7 @@
             android:gravity="center"
             android:button="@null"
             android:textSize="16sp"
-            android:background="@drawable/goods_options_selector"
+            android:background="@drawable/options_goods_selector"
             android:id="@+id/infoRb"/>
 
         <com.zhaidou.view.TypeFaceRadioButton
@@ -30,7 +30,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="咨询与售后服务"
-            android:background="@drawable/goods_options_selector"
+            android:background="@drawable/options_goods_selector"
             android:textColor="@color/goods_options_text_color_selecter"
             android:gravity="center"
             android:button="@null"

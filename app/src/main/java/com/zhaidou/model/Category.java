@@ -11,6 +11,12 @@ public class Category implements Serializable{
     private String name;
     private String avatar;
     private String thumb;
+    public String categoryId;
+    public String categoryName;
+    public String categoryPicUrl;
+    public String categoryProductCount;
+    public String parentId;
+    public List<CategoryItem> children;
 
     private List<CategoryItem> categoryItems;
 
@@ -77,6 +83,12 @@ public class Category implements Serializable{
                 ", name='" + name + '\'' +
                 ", avatar='" + avatar + '\'' +
                 ", thumb='" + thumb + '\'' +
+                ", categoryId='" + categoryId + '\'' +
+                ", categoryName='" + categoryName + '\'' +
+                ", categoryPicUrl='" + categoryPicUrl + '\'' +
+                ", categoryProductCount='" + categoryProductCount + '\'' +
+                ", parentId='" + parentId + '\'' +
+                ", children=" + children +
                 ", categoryItems=" + categoryItems +
                 '}';
     }

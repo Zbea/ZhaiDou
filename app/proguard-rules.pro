@@ -35,8 +35,10 @@
 -keep public class * extends android.preference.Preference
 -keep public class com.android.vending.licensing.ILicensingService
 -keep class android.support.v4.** { *; }
+-keep class com.zhaidou.model.** { *; }
 
 -keep class android.net.http.SslError
+-keep class org.apache.*
 -keep class android.webkit.**{*;}
 -keep class cn.sharesdk.**{*;}
 #-keep class com.sina.**{*;}
@@ -46,6 +48,14 @@
 
 -keepclasseswithmembernames class * {
     native <methods>;
+}
+
+-keep public class * extends android.view.View {
+    public <init>(android.content.Context);
+    public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>(android.content.Context, android.util.AttributeSet, int);
+    public void set*(...);
+    public void get*(...);
 }
 
 -keepclasseswithmembers class * {
@@ -64,7 +74,9 @@
     public static **[] values();
     public static ** valueOf(java.lang.String);
 }
-
+-keepclassmembers class * implements android.os.Parcelable {
+    static android.os.Parcelable$Creator CREATOR;
+}
 -keep class **.R$* {
     *;
 }
@@ -78,9 +90,13 @@ public static final int *;
 -keepclassmembers class fqcn.of.javascript.interface.for.webview {
    public *;
 }
+
+-keep public class com.tencent.bugly.**{*;}
+
 -keepclassmembers class * {
    public <init>(org.json.JSONObject);
 }
+
 ##淘宝
 -keepattributes Signature
 -keep class sun.misc.Unsafe { *; }
@@ -95,3 +111,40 @@ public static final int *;
 -keep class com.ta.** {*;}
 -dontwarn com.ta.**
 
+
+##腾讯统计#
+-keep class com.tencent.stat.**  {* ;}
+-keep class com.tencent.mid.**  {* ;}
+##极光
+-dontwarn cn.jpush.**
+-keepattributes  EnclosingMethod,Signature
+-keep class cn.jpush.** { *; }
+-keepclassmembers class ** {
+    public void onEvent*(**);
+}
+
+#========================gson================================
+-dontwarn com.google.**
+-keep class com.google.gson.** {*;}
+
+#========================protobuf================================
+#-dontwarn com.google.**
+-keep class com.google.protobuf.** {*;}
+
+-dontwarn android.support.**
+-dontwarn com.alibaba.fastjson.**
+-keep class com.alibaba.fastjson.** { *; }
+
+#-keep public class * implements java.io.Serializable {
+#    public *;
+#}
+#-keepclassmembers class * implements java.io.Serializable {
+#    static final long serialVersionUID;
+#    private static final java.io.ObjectStreamField[] serialPersistentFields;
+#    private void writeObject(java.io.ObjectOutputStream);
+#    private void readObject(java.io.ObjectInputStream);
+#    java.lang.Object writeReplace();
+#    java.lang.Object readResolve();
+#}
+-libraryjars libs/fastjson-1.2.7.jar
+-keepattributes Signature

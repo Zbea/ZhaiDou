@@ -11,11 +11,11 @@
         <com.zhaidou.view.TypeFaceCheckTextView
             android:id="@+id/ct_text"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="@dimen/btn_height_dimen"
             android:gravity="center"
             android:text="@string/search_history_clear"
             android:background="@color/white"
-            android:textColor="@drawable/sort_selector"
+            android:textColor="@color/text_main_color"
             android:checkMark="@drawable/search_sort_selector"
             />
     </RelativeLayout>

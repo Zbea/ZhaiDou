@@ -18,7 +18,7 @@
         android:id="@+id/tv_key"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#666666"
+        android:textColor="@color/text_main_color"
         android:text="风格"/>
         <com.zhaidou.view.TypeFaceTextView
             android:layout_width="wrap_content"
@@ -33,5 +33,6 @@
         android:layout_width="wrap_content"
         android:textColor="#666666"
         android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
         android:text="基本款"/>
 </LinearLayout>

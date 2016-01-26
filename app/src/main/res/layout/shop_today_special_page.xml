@@ -11,18 +11,12 @@
         android:layout_height="wrap_content"
         layout="@layout/head_style_share_page"
         />
-
     <com.pulltorefresh.PullToRefreshScrollView
-        xmlns:ptr="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/sv_shop_today_special_scrollview"
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:scrollbars="none"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
         android:layout_height="match_parent"
         android:layout_below="@+id/headLine"
-        ptr:ptrHeaderTextColor="@color/gray_9">
-
+        android:scrollbars="none">
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="vertical"
@@ -35,10 +29,12 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="30dp"
                 android:paddingBottom="30dp"
-                android:paddingLeft="20dp"
+                android:paddingLeft="23dp"
                 android:paddingRight="20dp"
                 android:minHeight="@dimen/home_item_dimen"
                 android:textSize="14sp"
+                android:lineSpacingMultiplier="1.2"
+                android:textScaleX="1.0"
                 android:gravity="center_vertical"
                 android:layout_centerInParent="true"
                 android:textColor="#666666"
@@ -50,7 +46,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/green_color"
-                android:padding="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:gravity="center_vertical">
 
                 <LinearLayout
@@ -84,14 +83,17 @@
                         android:layout_height="15dp"
                         android:src="@drawable/icon_time_white"/>
 
-
-                    <com.zhaidou.view.TypeFaceTextView
+                    <com.zhaidou.view.TimerTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
-                        android:text=""
+                        android:text="计时中"
+                        android:singleLine="true"
+                        android:ellipsize="marquee"
+                        android:marqueeRepeatLimit="marquee_forever"
                         android:layout_marginLeft="5dp"
-                        android:id="@+id/shopTimeTv"/>
+                        android:id="@+id/shopTime1Tv"/>
+
                 </LinearLayout>
             </RelativeLayout>
 
@@ -106,7 +108,7 @@
                 android:dividerHeight="0dp"></com.zhaidou.view.ListViewForScrollView>
 
         </LinearLayout>
-    </com.pulltorefresh.PullToRefreshScrollView>
+</com.pulltorefresh.PullToRefreshScrollView>
 
     <RelativeLayout
         android:layout_width="50dp"
@@ -117,8 +119,8 @@
 
     <ImageView
         android:id="@+id/myCartBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
         android:clickable="true"
         android:layout_centerInParent="true"
         android:src="@drawable/shop_goods_my_cart_selector"/>
@@ -131,6 +133,7 @@
             android:layout_alignParentRight="true"
             android:text=""
             android:visibility="gone"
+            android:layout_margin="3dp"
             android:gravity="center"
             android:background="@drawable/shop_goods_my_cart_tips_red_bg"
             android:textSize="12sp"/>

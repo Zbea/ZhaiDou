@@ -6,23 +6,24 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
@@ -32,7 +33,9 @@ import com.zhaidou.model.Area;
 import com.zhaidou.model.City;
 import com.zhaidou.model.HttpPatch;
 import com.zhaidou.model.Province;
+import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.CustomEditText;
 import com.zhaidou.view.WheelViewContainer;
 
 import org.apache.http.HttpResponse;
@@ -49,7 +52,9 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AddrNewAddrFragment extends BaseFragment implements View.OnClickListener {
     private static final String ARG_ID="id";
@@ -73,7 +78,7 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
 
     private Dialog mDialog;
     private RequestQueue mRequestQueue;
-    private EditText et_name, et_mobile, et_address_detail;
+    private CustomEditText et_name, et_mobile, et_address_detail;
     private TextView et_location;
 
     private List<Province> provinceList = new ArrayList<Province>();
@@ -83,6 +88,9 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
     private AddrSaveSuccessListener addrSaveSuccessListener;
     private int UPDATE_ADDRESS_INFO=1;
     private int CREATE_NEW_ADDRESS=2;
+    private DialogUtils mDialogUtils;
+    private View mContainer;
+    private TextView mTitle;
 
     public static AddrNewAddrFragment newInstance(int id,String nickname, String mobile,String location,String address, int profileId, int status) {
         AddrNewAddrFragment fragment = new AddrNewAddrFragment();
@@ -119,14 +127,16 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_new_addr, container, false);
-        et_name = (EditText) view.findViewById(R.id.tv_addr_username);
-        et_address_detail = (EditText) view.findViewById(R.id.tv_addr_detail);
-        et_mobile = (EditText) view.findViewById(R.id.tv_addr_mobile);
+        et_name = (CustomEditText) view.findViewById(R.id.tv_addr_username);
+        et_address_detail = (CustomEditText) view.findViewById(R.id.tv_addr_detail);
+        et_mobile = (CustomEditText) view.findViewById(R.id.tv_addr_mobile);
         et_location = (TextView) view.findViewById(R.id.tv_addr_loc);
+        mTitle=(TextView)view.findViewById(R.id.title);
 
         et_name.setText(mNickName);
         et_mobile.setText(mMobile);
         et_location.setText(mLocation);
+        mTitle.setText(TextUtils.isEmpty(mNickName)?"新建地址":"编辑地址");
 
         if (mLocation!=null&&mLocation.length()>8)
         {
@@ -140,9 +150,11 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
 
         view.findViewById(R.id.tv_save).setOnClickListener(this);
         view.findViewById(R.id.ll_address).setOnClickListener(this);
+        mContainer=view.findViewById(R.id.container);
         mRequestQueue = Volley.newRequestQueue(getActivity(), new HttpClientStack(new DefaultHttpClient()));
         mSharedPreferences = getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         token = mSharedPreferences.getString("token", null);
+        mDialogUtils=new DialogUtils(getActivity());
 
         if (MainActivity.provinceList!=null&&MainActivity.provinceList.size()>1)
         {
@@ -152,6 +164,7 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
         else
         {
             ToolUtils.setLog("重新加载地址");
+            mContainer.setVisibility(View.GONE);
             FetchCityData();
         }
         return view;
@@ -167,24 +180,27 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
                 String location = et_location.getText().toString().trim();
                 String address = et_address_detail.getText().toString().trim();
                 if (TextUtils.isEmpty(name)) {
-                    Toast.makeText(getActivity(), "收货人信息不能为空", Toast.LENGTH_SHORT).show();
+                    et_name.setShakeAnimation();
                     return;
                 } else if (TextUtils.isEmpty(mobile)) {
+                    et_mobile.setShakeAnimation();
                     Toast.makeText(getActivity(), "联系方式不能为空", Toast.LENGTH_SHORT).show();
                     return;
                 } else if (TextUtils.isEmpty(address)) {
+                    et_address_detail.setShakeAnimation();
                     Toast.makeText(getActivity(), "详细地址不能为空", Toast.LENGTH_SHORT).show();
                     return;
                 } else if (TextUtils.isEmpty(location)) {
                     Toast.makeText(getActivity(), "省市区不能为空", Toast.LENGTH_SHORT).show();
                     return;
+                }else if (mobile.length()!=11){
+                    Toast.makeText(getActivity(), "手机号码格式错误", Toast.LENGTH_SHORT).show();
+                    return;
                 }
                 mNickName = name;
                 mMobile = mobile;
                 mAddress = address;
-//                mProviderId=selectedArea==null?mProviderId:selectedArea.getId();
-                ToolUtils.setLog("selectedArea.getId():"+selectedArea.getId());
-                ToolUtils.setLog("mProviderId:"+mProviderId);
+
                 new MyTask().execute();
                 break;
             case R.id.ll_address:
@@ -262,12 +278,17 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
                 mDialog.dismiss();
                 JSONObject json = new JSONObject(s);
                 ToolUtils.setLog("s:"+s);
-                String message=json.optString("message");
                 int status=json.optInt("status");
-                if (status==201)
+                if (status!=200)
                 {
-                    JSONObject receiver=json.optJSONObject("receiver");
-                    double price=json.optDouble("price");
+                    ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+                }
+                JSONObject dataObject=json.optJSONObject("data");
+                int code=dataObject.optInt("status");
+                if (code==201)
+                {
+                    JSONObject receiver=dataObject.optJSONObject("receiver");
+                    double price=dataObject.optDouble("price");
                     ToolUtils.setLog("yfPrice:"+price);
                     if (addrSaveSuccessListener!=null)
                     {
@@ -294,14 +315,15 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
             // 创建名/值组列表
             List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 
-            parameters.add(new BasicNameValuePair("receivers[name]", et_name.getText().toString().trim()));
-            parameters.add(new BasicNameValuePair("receivers[phone]", et_mobile.getText().toString().trim()));
-            parameters.add(new BasicNameValuePair("receivers[address]", et_address_detail.getText().toString().trim()));
-            parameters.add(new BasicNameValuePair("receivers[provider_id]", mProviderId+""));
+            parameters.add(new BasicNameValuePair("name", et_name.getText().toString().trim()));
+            parameters.add(new BasicNameValuePair("phone", et_mobile.getText().toString().trim()));
+            parameters.add(new BasicNameValuePair("address", et_address_detail.getText().toString().trim()));
+            parameters.add(new BasicNameValuePair("provider_id", mProviderId+""));
 
             if (mStatus==CREATE_NEW_ADDRESS){
                 // 实例化HTTP方法
-                HttpPost request = new HttpPost(ZhaiDou.ORDER_RECEIVER_URL);
+                HttpPost request = new HttpPost(ZhaiDou.AddressNewUrl);
+                request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 request.addHeader("SECAuthorization",token);
 
                 // 创建UrlEncodedFormEntity对象
@@ -311,9 +333,9 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
                 // 执行请求
                 response = client.execute(request);
             }else if (mStatus==UPDATE_ADDRESS_INFO){
-                Log.i("mStatus==UPDATE_ADDRESS_INFO------------>","mStatus==UPDATE_ADDRESS_INFO");
+                parameters.add(new BasicNameValuePair("id", mId+""));
                 // 实例化HTTP方法
-                HttpPatch request = new HttpPatch(ZhaiDou.ORDER_RECEIVER_URL+"/"+mId);
+                HttpPatch request = new HttpPatch(ZhaiDou.AddressEditUrl);
                 request.addHeader("SECAuthorization",token);
 
                 // 创建UrlEncodedFormEntity对象
@@ -348,10 +370,11 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
     }
 
     private void FetchCityData() {
+        mDialog=mDialogUtils.showLoadingDialog();
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_ADDRESS_URL, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("FetchCityData---->", jsonObject.toString());
+                mDialog.dismiss();
                 if (jsonObject != null) {
                     JSONArray providerArr = jsonObject.optJSONArray("providers");
                     for (int i = 0; i < providerArr.length(); i++) {
@@ -396,13 +419,23 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
                     }
 
                 }
+                mContainer.setVisibility(View.VISIBLE);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                ToolUtils.setToast(getActivity(),"抱歉,加载城市失败");
+                mDialog.dismiss();
+                ToolUtils.setToast(mContext,"抱歉,加载城市失败");
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> headers=new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
+        request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 1, 1.0f));
         mRequestQueue.add(request);
     }
 
@@ -412,5 +445,14 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
 
     public interface AddrSaveSuccessListener{
         public void onSaveListener(JSONObject receiver,int status,double yfPrice,String province,String city,String area);
+    }
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_address_create));
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_address_create));
     }
 }

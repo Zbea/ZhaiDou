@@ -20,8 +20,12 @@ import android.view.ViewGroup;
  import java.util.List;
 
 /**
-  * Created by wangclark on 15/7/30.
-  */
+ * User: Scoield(553899626@qq.com)
+ * Date: 2015-07-30
+ * Time: 15:59
+ * Description:省市区三级联动容器
+ * FIXME
+ */
  public class WheelViewContainer extends LinearLayout {
      private Context mContext;
      private WheelView provinceWheel;

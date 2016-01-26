@@ -1,34 +1,29 @@
 package com.zhaidou.dialog;
 
-        import java.io.File;
-        import java.io.FileOutputStream;
-        import java.io.IOException;
-        import java.io.InputStream;
-        import java.net.HttpURLConnection;
-        import java.net.MalformedURLException;
-        import java.net.URL;
-        import android.app.AlertDialog;
         import android.app.Dialog;
-        import android.app.AlertDialog.Builder;
-        import android.content.Context;
-        import android.content.Intent;
-        import android.net.Uri;
-        import android.os.Handler;
-        import android.os.Message;
-        import android.text.Html;
-        import android.view.LayoutInflater;
-        import android.view.View;
-        import android.view.Window;
-        import android.view.animation.Animation;
-        import android.view.animation.AnimationUtils;
-        import android.widget.LinearLayout;
-        import android.widget.ProgressBar;
-        import android.widget.RelativeLayout;
-        import android.widget.TextView;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
-        import com.zhaidou.R;
-        import com.zhaidou.ZhaiDou;
-        import com.zhaidou.view.CircleProgressBar;
+import com.zhaidou.R;
+import com.zhaidou.view.CircleProgressBar;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * Created by roy on 15/8/12.
@@ -54,6 +49,7 @@ public class CustomVersionUpdateDialog
     private int count = 0;
     private int length;
     private String serviceInfo;
+    private String serviceUrl;
     private LinearLayout managerLine;
     private RelativeLayout updateline;
 
@@ -93,10 +89,11 @@ public class CustomVersionUpdateDialog
         };
     };
 
-    public CustomVersionUpdateDialog(Context context, String info)
+    public CustomVersionUpdateDialog(Context context, String info,String url)
     {
         this.mContext = context;
         this.serviceInfo = info;
+        this.serviceUrl = url;
     }
 
     public void checkUpdateInfo()
@@ -110,6 +107,8 @@ public class CustomVersionUpdateDialog
         final LayoutInflater inflater = LayoutInflater.from(mContext);
         View view = inflater.inflate(R.layout.dialog_custom_update_manager, null);
         noticeDialog.setContentView(view);
+        noticeDialog.setCanceledOnTouchOutside(false);
+        noticeDialog.setCancelable(false);
         noticeDialog.show();
 
         managerLine=(LinearLayout)view.findViewById(R.id.updateManagerLine);
@@ -166,7 +165,7 @@ public class CustomVersionUpdateDialog
         {
             try
             {
-                URL url = new URL(ZhaiDou.apkUrl);
+                URL url = new URL(serviceUrl);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.connect();
                 length = conn.getContentLength();

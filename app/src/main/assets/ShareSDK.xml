@@ -56,14 +56,6 @@
         AppKey = "57e05d70da63"/> <!-- 修改成你在sharesdk后台注册的应用的appkey"-->
     
     <!-- ShareByAppClient标识是否使用微博客户端分享，默认是false -->
-    <SinaWeibo
-        Id="1"
-        SortId="1"
-        AppKey="1690353759"
-        AppSecret="41b0afe109069e4ff3a5010b83737370"
-        RedirectUrl="https://api.weibo.com/oauth2/default.html"
-        ShareByAppClient="true"
-        Enable="true" />
     
     <!-- 
     	Wechat微信和WechatMoments微信朋友圈的appid是一样的；
@@ -80,27 +72,41 @@
         AppSecret="64020361b8ec4c99936c0e3999a9f249"
 -->
     <Wechat
-        Id="2"
-        SortId="2"
+        Id="1"
+        SortId="1"
         AppId="wxce03c66622e5b243"
         AppSecret="e9786de56c52550904416a2a602c6c99"
         BypassApproval="false"
         Enable="true" />
 
     <WechatMoments
-        Id="3"
-        SortId="3"
+        Id="2"
+        SortId="2"
         AppId="wxce03c66622e5b243"
         AppSecret="e9786de56c52550904416a2a602c6c99"
         BypassApproval="false"
         Enable="true" />
-
+    <SinaWeibo
+        Id="3"
+        SortId="3"
+        AppKey="1690353759"
+        AppSecret="41b0afe109069e4ff3a5010b83737370"
+        RedirectUrl="https://api.weibo.com/oauth2/default.html"
+        ShareByAppClient="true"
+        Enable="true" />
 	<QQ
         Id="4"
         SortId="4"
         AppId="1104167339"
         AppKey="NfTZPZ54eke7urTcfb"
         ShareByAppClient="true"
+        Enable="true" />
+    <QZone
+        Id="5"
+        SortId="5"
+        AppId="1104167339"
+        AppKey="NfTZPZ54eke7urTcfb"
+        ShareByAppClient="false"
         Enable="true" />
 
 </DevInfor>

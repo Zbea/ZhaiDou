@@ -1,13 +1,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/page_bg"
     android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/common_actionbar"
         android:layout_width="match_parent"
         android:background="@color/actionbar_background_color"
-        android:layout_height="50dp">
+        android:layout_height="@dimen/header_height_dimen">
         <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/tv_title"
             android:textColor="@color/white"
@@ -15,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="全类别"/>
+            android:text="@string/title_all_category"/>
         <ImageView
             android:id="@+id/iv_search"
             android:layout_width="wrap_content"
@@ -30,7 +31,7 @@
         android:id="@+id/el_category"
         android:layout_width="match_parent"
         android:groupIndicator="@null"
-        android:background="#eeeeee"
+        android:background="@color/transparent"
         android:divider="#eeeeee"
         android:listSelector="@android:color/transparent"
         android:layout_height="wrap_content"

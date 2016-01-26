@@ -3,25 +3,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#f1f1f1">
+    android:background="@color/page_bg">
     <RelativeLayout
         android:id="@+id/common_actionbar"
         android:layout_width="match_parent"
         android:layout_alignParentTop="true"
         android:background="@color/actionbar_background_color"
-        android:layout_height="50dp">
+        android:layout_height="@dimen/header_height_dimen">
         <LinearLayout
             android:id="@+id/ll_back"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
+            android:clickable="true"
             android:orientation="horizontal">
             <ImageView
                 android:layout_marginLeft="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:src="@drawable/icon_back"/>
+                android:src="@drawable/icon_back_selector"/>
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -42,36 +43,39 @@
             android:layout_centerInParent="true"
             android:text="零元特卖"/>
     </RelativeLayout>
-<ScrollView
+ <com.pulltorefresh.PullToRefreshScrollView
+    android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:scrollbars="none"
     android:layout_below="@+id/common_actionbar"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-    <ImageView
-        android:id="@+id/iv_special_banner"
-        android:layout_width="match_parent"
-        android:scaleType="fitXY"
-        android:layout_height="165dp"/>
 
-    <LinearLayout
+        <LinearLayout
+            android:id="@+id/bannerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"></LinearLayout>
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="35dp"
+        android:background="@color/white"
         android:orientation="horizontal">
         <LinearLayout
-            android:background="@color/white"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
             android:gravity="center_vertical|left"
             android:layout_weight="1">
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_marginLeft="10dp"
-                android:src="@drawable/icon_notify"/>
+                android:src="@drawable/icon_inform_black"/>
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -80,25 +84,27 @@
                 android:text="限时特卖 疯狂抢购"/>
         </LinearLayout>
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_alignParentRight="true"
             android:gravity="right|center_vertical"
-            android:paddingRight="10dp"
-            android:background="@color/white">
+            android:paddingRight="10dp">
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:src="@drawable/time_icon"/>
-            <com.zhaidou.view.TypeFaceTextView
+            <com.zhaidou.view.TimerTextView
                 android:id="@+id/tv_count_time"
                 android:paddingLeft="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
                 android:text="计时中"
                 android:textColor="#666666"/>
         </LinearLayout>
-    </LinearLayout>
+    </RelativeLayout>
     <com.zhaidou.view.ChildGridView
         android:id="@+id/gv_sale"
         android:layout_width="match_parent"
@@ -111,7 +117,7 @@
         android:layout_marginBottom="10dp"
         android:listSelector="@android:color/transparent"/>
     </LinearLayout>
-</ScrollView>
+</com.pulltorefresh.PullToRefreshScrollView>
 
     <RelativeLayout
         android:layout_width="50dp"
@@ -122,8 +128,8 @@
 
         <ImageView
             android:id="@+id/myCartBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
             android:clickable="true"
             android:layout_centerInParent="true"
             android:src="@drawable/shop_goods_my_cart_selector"/>
@@ -135,8 +141,9 @@
             android:textColor="@color/white"
             android:layout_alignParentRight="true"
             android:text=""
-            android:visibility="gone"
+            android:layout_margin="3dp"
             android:gravity="center"
+            android:visibility="gone"
             android:background="@drawable/shop_goods_my_cart_tips_red_bg"
             android:textSize="12sp"/>
     </RelativeLayout>

@@ -23,7 +23,6 @@
                 android:id="@+id/tv_msg"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="是否确认取消收藏?"
                 android:layout_margin="18dp"
                 android:textColor="@color/text_gary_color"
                 android:gravity="center"

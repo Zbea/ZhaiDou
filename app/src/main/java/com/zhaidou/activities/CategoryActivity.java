@@ -1,44 +1,33 @@
 package com.zhaidou.activities;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.webkit.WebView;
 import android.widget.TextView;
 
-import com.mob.tools.gui.ViewPagerAdapter;
+
 import com.umeng.analytics.MobclickAgent;
 import com.viewpagerindicator.TabPageIndicator;
 import com.zhaidou.R;
-import com.zhaidou.ZhaiDou;
-import com.zhaidou.fragments.SingleFragment;
-import com.zhaidou.fragments.StrategyFragment1;
+import com.zhaidou.fragments.GoodsSingleListFragment;
+import com.zhaidou.fragments.SearchArticleListFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CategoryActivity extends FragmentActivity {
 
-    private WebView webView;
-
-    private long lastClickTime = 0L;
     private TextView mTextView;
     private TabPageIndicator mIndicator;
     private ViewPager mViewPager;
     private List<Fragment> mFragments;
-    private SingleFragment mSingleFragment;
-    private StrategyFragment1 mStrategyFragment;
+    private GoodsSingleListFragment mGoodsSingleListFragment;
+    private SearchArticleListFragment mStrategyFragment;
     private CategoryFragmentAdapter mFragmentAdapter;
 
     private int categoryId;
@@ -70,12 +59,11 @@ public class CategoryActivity extends FragmentActivity {
         mIndicator.setViewPager(mViewPager);
 
         if (mFragments.size()<2){
-            mSingleFragment=SingleFragment.newInstance(categoryId+"","category");
+            mGoodsSingleListFragment = GoodsSingleListFragment.newInstance(categoryId + "", "category",2);
 //            mStrategyFragment=StrategyFragment1.newInstance(categoryId+"","category");
-            mFragments.add(mSingleFragment);
+            mFragments.add(mGoodsSingleListFragment);
 //            mFragments.add(mStrategyFragment);
         }
-
 
         mFragmentAdapter.notifyDataSetChanged();
         mIndicator.notifyDataSetChanged();
@@ -103,13 +91,18 @@ public class CategoryActivity extends FragmentActivity {
             return "攻略";
         }
     }
-    public void onResume() {
+
+    @Override
+    protected void onResume() {
         super.onResume();
+        MobclickAgent.onPageStart("单品列表页");
         MobclickAgent.onResume(this);
     }
-    public void onPause() {
+
+    @Override
+    protected void onPause() {
         super.onPause();
+        MobclickAgent.onPageEnd("单品列表页");
         MobclickAgent.onPause(this);
     }
-
 }
