@@ -83,6 +83,12 @@ public class Category implements Serializable{
                 ", name='" + name + '\'' +
                 ", avatar='" + avatar + '\'' +
                 ", thumb='" + thumb + '\'' +
+                ", categoryId='" + categoryId + '\'' +
+                ", categoryName='" + categoryName + '\'' +
+                ", categoryPicUrl='" + categoryPicUrl + '\'' +
+                ", categoryProductCount='" + categoryProductCount + '\'' +
+                ", parentId='" + parentId + '\'' +
+                ", children=" + children +
                 ", categoryItems=" + categoryItems +
                 '}';
     }

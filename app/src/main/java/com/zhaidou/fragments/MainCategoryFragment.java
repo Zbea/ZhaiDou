@@ -178,8 +178,7 @@ public class MainCategoryFragment extends BaseFragment {
                 if (200 == status) {
                     JSONArray children = jsonObject.optJSONObject("data").optJSONArray("children");
                     List<Category> mCategoryList = JSON.parseArray(children.toString(), Category.class);
-                    categoryList.addAll(mCategoryList);
-                    mCategoryAdapter.notifyDataSetChanged();
+                    mCategoryAdapter.addAll(mCategoryList);
                 } else {
                     ShowToast(message);
                 }
@@ -244,15 +243,14 @@ public class MainCategoryFragment extends BaseFragment {
             if (convertView == null)
                 convertView = mInflater.inflate(R.layout.item_category_list, null);
             TextView tv_item = ViewHolder.get(convertView, R.id.categoryView);
-            System.out.println("position = [" + position + "], convertView = [" + convertView + "], parent = [" + parent + "]");
             Category category = getList().get(position);
             tv_item.setText(category.categoryName);
             tv_item.setTextColor(getResources().getColor(mCheckPosition == position ? R.color.green_color : R.color.text_main_color));
             convertView.setBackgroundResource(mCheckPosition == position ? R.drawable.icon_category_list_bg : R.color.base_bg);
             if (mCheckPosition == position) {
                 List<CategoryItem> children = category.children;
-                mCategoryItemAdapter.setList(children);
-                mCategoryItemAdapter.notifyDataSetChanged();
+                mCategoryItemAdapter.setList(children==null?new ArrayList<CategoryItem>():children);
+//                mCategoryItemAdapter.notifyDataSetChanged();
             }
 //            mCategoryView.put(position,convertView);
             return convertView;

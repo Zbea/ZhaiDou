@@ -7,7 +7,7 @@ android {
         applicationId "com.zhaidou"
         minSdkVersion 15
         targetSdkVersion 19
-        versionCode 44
+        versionCode 45
         versionName "3.0.0"
         manifestPlaceholders = [UMENG_CHANNEL_VALUE: "default_channel"]
     }
@@ -33,12 +33,8 @@ android {
     }
     buildTypes {
         release {
-//            runProguard true
-//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-        debug{
-//            runProguard true
-//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            runProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
     packagingOptions {
