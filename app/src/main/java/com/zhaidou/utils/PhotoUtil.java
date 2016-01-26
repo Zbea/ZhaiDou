@@ -13,6 +13,7 @@ import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
 import android.util.Base64;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,7 +26,6 @@ import java.io.IOException;
 public class PhotoUtil {
     /**
      * 回收垃圾 recycle
-     *
      * @throws
      */
     public static void recycle(Bitmap bitmap) {
@@ -157,11 +157,9 @@ public class PhotoUtil {
     }
 
     /**
-     *
      * 读取图片属性：旋转的角度
      *
-     * @param path
-     *            图片绝对路径
+     * @param path 图片绝对路径
      * @return degree旋转的角度
      */
 
@@ -209,10 +207,8 @@ public class PhotoUtil {
     /**
      * 将图片变为圆角
      *
-     * @param bitmap
-     *            原Bitmap图片
-     * @param pixels
-     *            图片圆角的弧度(单位:像素(px))
+     * @param bitmap 原Bitmap图片
+     * @param pixels 图片圆角的弧度(单位:像素(px))
      * @return 带有圆角的图片(Bitmap 类型)
      */
     public static Bitmap toRoundCorner(Bitmap bitmap, int pixels) {
@@ -240,8 +236,8 @@ public class PhotoUtil {
     /**
      * 将图片转化为圆形头像
      *
-     * @Title: toRoundBitmap
      * @throws
+     * @Title: toRoundBitmap
      */
     public static Bitmap toRoundBitmap(Bitmap bitmap) {
         int width = bitmap.getWidth();
@@ -304,27 +300,28 @@ public class PhotoUtil {
     }
 
     private static String filePath;
+
     /*
     *bitmap转base64
     * */
-    public static String bitmapToBase64(Bitmap bitmap){
-        String result="";
-        ByteArrayOutputStream bos=null;
+    public static String bitmapToBase64(Bitmap bitmap) {
+        String result = "";
+        ByteArrayOutputStream bos = null;
         try {
-            if(null!=bitmap){
-                bos=new ByteArrayOutputStream();
+            if (null != bitmap) {
+                bos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 90, bos);//将bitmap放入字节数组流中
 
                 bos.flush();//将bos流缓存在内存中的数据全部输出，清空缓存
                 bos.close();
 
-                byte []bitmapByte=bos.toByteArray();
-                result= Base64.encodeToString(bitmapByte, Base64.DEFAULT);
+                byte[] bitmapByte = bos.toByteArray();
+                result = Base64.encodeToString(bitmapByte, Base64.DEFAULT);
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }finally{
-            if(null!=null){
+        } finally {
+            if (null != null) {
                 try {
                     bos.close();
                 } catch (IOException e) {
@@ -333,6 +330,32 @@ public class PhotoUtil {
             }
         }
         return result;
+    }
+
+    public static byte[] Bitmap2Bytes(Bitmap bm) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        return baos.toByteArray();
+    }
+    public static File saveBitmapFile(Bitmap bitmap,String fileName){
+        File file=new File(fileName);//将要保存图片的路径
+        try {
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+            bos.flush();
+            bos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+
+    public static BitmapFactory.Options getBitmapOption(int inSampleSize){
+        System.gc();
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPurgeable = true;
+        options.inSampleSize = inSampleSize;
+        return options;
     }
 }
 

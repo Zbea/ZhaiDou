@@ -1,48 +1,12 @@
 package com.zhaidou;
 
-import com.alibaba.sdk.android.AlibabaSDK;
-import com.alibaba.sdk.android.callback.CallbackContext;
-import com.alibaba.sdk.android.callback.InitResultCallback;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpClientStack;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.activities.LoginActivity;
-import com.zhaidou.base.BaseActivity;
-import com.zhaidou.dialog.CustomVersionUpdateDialog;
-import com.zhaidou.fragments.CategoryFragment1;
-import com.zhaidou.fragments.DiyFragment;
-import com.zhaidou.fragments.ElementListFragment;
-import com.zhaidou.fragments.HomeFragment;
-import com.zhaidou.fragments.LoginFragment;
-import com.zhaidou.fragments.PersonalFragment;
-import com.zhaidou.fragments.RegisterFragment;
-import com.zhaidou.fragments.SettingFragment;
-import com.zhaidou.fragments.ShopPaymentFailFragment;
-import com.zhaidou.fragments.ShopPaymentFragment;
-import com.zhaidou.fragments.ShopPaymentSuccessFragment;
-import com.zhaidou.fragments.StrategyFragment;
-import com.zhaidou.fragments.WebViewFragment;
-import com.zhaidou.model.Area;
-import com.zhaidou.model.CartItem;
-import com.zhaidou.model.City;
-import com.zhaidou.model.Province;
-import com.zhaidou.model.User;
-import com.zhaidou.sqlite.CreatCartDB;
-import com.zhaidou.sqlite.CreatCartTools;
-import com.zhaidou.utils.NetService;
-import com.zhaidou.utils.SharedPreferencesUtil;
-import com.zhaidou.utils.ToolUtils;
-
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -53,46 +17,89 @@ import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.alibaba.sdk.android.AlibabaSDK;
+import com.alibaba.sdk.android.callback.CallbackContext;
+import com.alibaba.sdk.android.callback.InitResultCallback;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpClientStack;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.umeng.analytics.MobclickAgent;
+import com.zhaidou.activities.LoginActivity;
+import com.zhaidou.base.AccountManage;
+import com.zhaidou.base.BaseActivity;
+import com.zhaidou.base.CountManage;
+import com.zhaidou.dialog.CustomVersionUpdateDialog;
+import com.zhaidou.fragments.DiyFragment;
+import com.zhaidou.fragments.MainCategoryFragment;
+import com.zhaidou.fragments.MainHomeFragment;
+import com.zhaidou.fragments.MainPersonalFragment;
+import com.zhaidou.fragments.MainStrategyFragment;
+import com.zhaidou.fragments.OrderDetailFragment1;
+import com.zhaidou.fragments.RegisterFragment;
+import com.zhaidou.fragments.ShopCartFragment;
+import com.zhaidou.fragments.ShopPaymentFailFragment;
+import com.zhaidou.fragments.ShopPaymentFragment;
+import com.zhaidou.fragments.ShopPaymentSuccessFragment;
+import com.zhaidou.fragments.WebViewFragment;
+import com.zhaidou.model.Area;
+import com.zhaidou.model.City;
+import com.zhaidou.model.Province;
+import com.zhaidou.model.User;
+import com.zhaidou.model.ZhaiDouRequest;
+import com.zhaidou.utils.DeviceUtils;
+import com.zhaidou.utils.DialogUtils;
+import com.zhaidou.utils.NetService;
+import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  */
-public class MainActivity extends BaseActivity implements DiyFragment.OnFragmentInteractionListener,
-        StrategyFragment.OnFragmentInteractionListener,
-        ElementListFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
-        HomeFragment.OnFragmentInteractionListener, CategoryFragment1.OnFragmentInteractionListener,
-        RegisterFragment.RegisterOrLoginListener {
+public class MainActivity extends BaseActivity implements DiyFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
+        MainHomeFragment.OnFragmentInteractionListener, MainCategoryFragment.OnFragmentInteractionListener, RegisterFragment.RegisterOrLoginListener, CountManage.onCountChangeListener, AccountManage.AccountListener
+{
 
+    private FragmentManager manager;
     private Fragment utilityFragment;
     private Fragment beautyHomeFragment;
     private Fragment categoryFragment;
-    private Fragment diyFragment;
+    private ShopCartFragment shopCartFragment;
 
-    private ImageButton homeButton;
-    private ImageButton beautyButton;
-    private ImageButton categoryButton;
-    private ImageButton diyButton;
+    private TextView homeButton;
+    private TextView beautyButton;
+    private TextView categoryButton;
+    private TextView personalButton;
+    private TextView diyButton;
+    private TextView lastButton;
 
-    private ImageButton lastButton;
 
     private TextView titleView;
     private LinearLayout mTabContainer;
-    private LoginFragment mLoginFragment;
     private ImageView iv_dot;
+    public TextView cart_dot;
+    private LinearLayout viewLayout;
 
     private String token;
     private int id;
@@ -100,12 +107,13 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     boolean isFromCamera = false;// 区分拍照旋转
     int degree = 0;
     public String filePath = "";
+    private int type = 1; //1跳转我的账户2跳转购物车
 
     private long mTime;
     private Activity mContext;
-    private CreatCartDB creatCartDB;
     private String serverName;
     private String serverInfo;
+    private String serverUrl;
     private int serverCode;
     private RequestQueue mRequestQueue;
     private final int WX_PAY_SUCCESS = 0;
@@ -113,43 +121,50 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private final int WX_PAY_CANCEL = -2;
     public static List<Province> provinceList = new ArrayList<Province>();
 
-    public static int num = 0;
-    private List<CartItem> items = new ArrayList<CartItem>();
+    public int num = 0;
+    public int cartCount = 0;
 
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
+    {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent)
+        {
             String action = intent.getAction();
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag)) {
-                initCartTips();
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
+            {
             }
-            if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
-                initCartTips();
+            if (action.equals(ZhaiDou.IntentRefreshLoginTag))
+            {
+                checkLogin();
+                FetchCountData();
             }
-            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag)) {
-                initCartTips();
+            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
+            {
             }
-            if (action.equalsIgnoreCase(ZhaiDou.BROADCAST_WXAPI_FILTER)) {
-                System.out.println("MainActivity.onReceive");
+            if (action.equalsIgnoreCase(ZhaiDou.BROADCAST_WXAPI_FILTER))
+            {
                 List<Fragment> fragments = getSupportFragmentManager().getFragments();
                 int result = intent.getIntExtra("code", -2);
-                Log.i("result---------------->", result + "------" + fragments.size());
-                if (fragments.size() > 1) {
+                if (fragments.size() > 1)
+                {
                     Fragment fragment = fragments.get(fragments.size() - 1);
-                    Fragment shopPaymentFragment=getSupportFragmentManager().findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
-                    Fragment shopPaymentFailFragment=getSupportFragmentManager().findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
+                    Fragment shopPaymentFragment = getSupportFragmentManager().findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
+                    Fragment shopPaymentFailFragment = getSupportFragmentManager().findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
 
-                    System.out.println("MainActivity.fragment1----------------->"+shopPaymentFragment.toString()==null?"null":shopPaymentFragment.toString());
-                    if (shopPaymentFragment!=null){
-                        Log.i("fragshopPaymentFragment1-------->",shopPaymentFragment.toString());
+                    if (shopPaymentFragment != null)
+                    {
                         ((ShopPaymentFragment) shopPaymentFragment).setPayment();
                     }
-                    if (shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment) {
+                    if (shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment)
+                    {
                         ((ShopPaymentFailFragment) shopPaymentFailFragment).handleWXPayResult(result);
-                    }else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment) {
+                    } else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment)
+                    {
                         ((ShopPaymentFragment) shopPaymentFragment).setPayment();
                         ((ShopPaymentFragment) shopPaymentFragment).handleWXPayResult(result);
-                    }else {
+                    } else
+                    {
                         System.out.println("MainActivity.onReceive--------->null------------>");
                     }
                 }
@@ -157,70 +172,175 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         }
     };
 
-    private Handler mHandler = new Handler() {
+    private Handler mHandler = new Handler()
+    {
         @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
+        public void handleMessage(Message msg)
+        {
+            switch (msg.what)
+            {
                 case 0:
-                    User user = (User) msg.obj;
-                    if (persoanlFragment == null) {
-                        persoanlFragment = PersonalFragment.newInstance("", "");
-                    } else {
-                        persoanlFragment.refreshData(MainActivity.this);
+                    if (type == 1)
+                    {
+                        if (persoanlFragment == null)
+                        {
+                            persoanlFragment = MainPersonalFragment.newInstance("", "");
+                        } else
+                        {
+                            persoanlFragment.refreshData(MainActivity.this);
+                        }
+                        selectFragment(currentFragment, persoanlFragment);
+                        setButton(personalButton);
+                    } else
+                    {
+                        if (shopCartFragment == null)
+                        {
+                            shopCartFragment = ShopCartFragment.newInstance("", 1);
+                        } else
+                        {
+                            shopCartFragment.refreshData();
+                        }
+                        selectFragment(currentFragment, shopCartFragment);
+                        setButton(diyButton);
                     }
-                    selectFragment(currentFragment, persoanlFragment);
-                    setButton(personalButton);
+                    FetchUnPayData();
                     break;
 
                 case 1:
                     serverCode = parseJosn(msg.obj.toString());
-                    if (serverCode > ZDApplication.localVersionCode) {
-                        CustomVersionUpdateDialog customVersionUpdateDialog = new CustomVersionUpdateDialog(mContext, serverName);
+                    if (serverCode > ZDApplication.localVersionCode)
+                    {
+                        CustomVersionUpdateDialog customVersionUpdateDialog = new CustomVersionUpdateDialog(mContext, serverName, serverUrl);
                         customVersionUpdateDialog.checkUpdateInfo();
                     }
 
+                    break;
+                case 3:
+                    CartTip(cartCount);
                     break;
             }
         }
     };
 
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main_layout);
+        manager = getSupportFragmentManager();
         iv_dot = (ImageView) findViewById(R.id.iv_dot);
+        cart_dot = (TextView) findViewById(R.id.cartTipsTv);
+        CartTip(0);
+        viewLayout = (LinearLayout) findViewById(R.id.content);
         mContext = this;
+        init();
         initBroadcastReceiver();
 
         getVersionServer();
 
-
-        init();
+        initComponents();
+        commitActiveData();
         AlibabaSDK.asyncInit(this, new InitResultCallback() {
             @Override
             public void onSuccess() {
-                Log.i("onSuccess---->", "初始化成功");
             }
 
             @Override
             public void onFailure(int i, String s) {
-                Log.i("onFailure---->", "初始化异常--" + s);
             }
         });
+        CountManage.getInstance().setOnCountChangeListener(this);
+        AccountManage.getInstance().register(this);
+        FetchUnPayData();
+        if (checkLogin())
+        FetchCountData();
+    }
+    private void FetchUnPayData() {
+        String mUserId= SharedPreferencesUtil.getData(this, "userId", -1)+"";
+        Map<String, String> params = new HashMap();
+        params.put("userId",mUserId);
+        params.put("clientType", "ANDROID");
+        params.put("clientVersion", "45");
+        params.put("businessType", "01");
+        params.put("type", ZhaiDou.TYPE_ORDER_PREPAY);
+        params.put("pageNo","0");
+        params.put("pageSize", "0");
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST, new JSONObject(params), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                int status = jsonObject.optInt("status");
+                int totalCount = jsonObject.optInt("totalCount");
+                if (status==200){
+                    CountManage.getInstance().init(CountManage.TYPE.TAG_PREPAY,totalCount);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
 
-        initComponents();
+            }
+        });
+        mRequestQueue.add(request);
+    }
+
+    private void commitActiveData()
+    {
+        ApplicationInfo appInfo = null;
+        try
+        {
+            appInfo = this.getPackageManager()
+                    .getApplicationInfo(getPackageName(),
+                            PackageManager.GET_META_DATA);
+        } catch (PackageManager.NameNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        final String channel = appInfo.metaData.getString("UMENG_CHANNEL");
+        Log.d("appInfo---", " msg == " + channel);
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("device_token[device_token]", DeviceUtils.getImei(this));
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.URL_STATISTICS, map, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                System.out.println("ZDApplication.onResponse---->" + jsonObject.toString());
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> header = new HashMap<String, String>();
+                header.put("zd-client", channel);
+                header.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return header;
+            }
+        };
+        mRequestQueue.add(request);
     }
 
     /**
      * 获取版本信息
      */
-    private void getVersionServer() {
-        new Thread(new Runnable() {
+    private void getVersionServer()
+    {
+        new Thread(new Runnable()
+        {
             @Override
-            public void run() {
-                String url = ZhaiDou.apkUpdateUrl;
+            public void run()
+            {
+                String url = ZhaiDou.ApkUrl;
                 String result = NetService.getHttpService(url);
-                if (result != null) {
+                if (result != null)
+                {
                     mHandler.obtainMessage(1, result).sendToTarget();
                 }
             }
@@ -230,67 +350,51 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     /**
      * 注册广播
      */
-    private void initBroadcastReceiver() {
+    private void initBroadcastReceiver()
+    {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
         intentFilter.addAction(ZhaiDou.BROADCAST_WXAPI_FILTER);
         mContext.registerReceiver(broadcastReceiver, intentFilter);
     }
 
-    public void init() {
-        creatCartDB = new CreatCartDB(mContext);
-        initCartTips();
+    public void init()
+    {
         mRequestQueue = Volley.newRequestQueue(this, new HttpClientStack(new DefaultHttpClient()));
         FetchCityData();
     }
 
-    /**
-     * 红色标识提示显示数量
-     */
-    private void initCartTips() {
-        num = 0;
-        if (checkLogin()) {
-            getGoodsItems();
-            for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).isPublish.equals("false") && items.get(i).isOver.equals("false")) {
-                    num = num + items.get(i).num;
-                }
-            }
-        }
 
+    public int getNum()
+    {
+        return num;
     }
 
-    /**
-     * 获得当前userId的所有商品
-     */
-    private void getGoodsItems() {
-        items.removeAll(items);
-        //遍历获得这个当前uesrId的所有商品
-        items = CreatCartTools.selectByAll(creatCartDB, id);
-
-    }
-
-    public void initComponents() {
+    public void initComponents()
+    {
 
         mTabContainer = (LinearLayout) findViewById(R.id.tab_container);
         mChildContainer = (FrameLayout) findViewById(R.id.fl_child_container);
-        homeButton = (ImageButton) findViewById(R.id.tab_home);
+        homeButton = (TextView) findViewById(R.id.tab_home);
 
         lastButton = homeButton;
 
-        if (utilityFragment == null) {
-            utilityFragment = HomeFragment.newInstance(ZhaiDou.HOME_PAGE_URL, ZhaiDou.ListType.HOME.toString());
+        if (utilityFragment == null)
+        {
+            utilityFragment = MainHomeFragment.newInstance(ZhaiDou.HOME_PAGE_URL, ZhaiDou.ListType.HOME.toString());
         }
 
         currentFragment = utilityFragment;
         setButton(lastButton);
         setDefaultFragment(utilityFragment);
 
-        homeButton.setOnClickListener(new View.OnClickListener() {
+        homeButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
 
 //                titleView.setText("每日精选功能美物");
 
@@ -299,15 +403,16 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         });
 
-        beautyButton = (ImageButton) findViewById(R.id.tab_beauty);
-        beautyButton.setOnClickListener(new View.OnClickListener() {
+        beautyButton = (TextView) findViewById(R.id.tab_beauty);
+        beautyButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
 
-//                titleView.setText("专业家居美化方案");
-
-                if (beautyHomeFragment == null) {
-                    beautyHomeFragment = new StrategyFragment();
+                if (beautyHomeFragment == null)
+                {
+                    beautyHomeFragment = new MainStrategyFragment();
                 }
 
                 selectFragment(currentFragment, beautyHomeFragment);
@@ -315,47 +420,59 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         });
 
-        categoryButton = (ImageButton) findViewById(R.id.tab_category);
-        categoryButton.setOnClickListener(new View.OnClickListener() {
+        categoryButton = (TextView) findViewById(R.id.tab_category);
+        categoryButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
 //                titleView.setText("全类别");
+                gotoCategory();
 
-                if (categoryFragment == null) {
-                    categoryFragment = CategoryFragment1.newInstance("", "");
-                }
-
-
-                selectFragment(currentFragment, categoryFragment);
-                setButton(view);
             }
         });
 
-        diyButton = (ImageButton) findViewById(R.id.tab_diy);
-        diyButton.setOnClickListener(new View.OnClickListener() {
+        diyButton = (TextView) findViewById(R.id.tab_diy);
+        diyButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
-                if (diyFragment == null) {
-                    diyFragment = DiyFragment.newInstance("haha", "haha");
-                }
-
-                selectFragment(currentFragment, diyFragment);
-
-                setButton(view);
-            }
-        });
-
-        personalButton = (ImageButton) findViewById(R.id.tab_personal);
-        personalButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!checkLogin()) {
+            public void onClick(View view)
+            {
+                type = 2;
+                if (!checkLogin())
+                {
                     Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                     intent.setFlags(2);
                     MainActivity.this.startActivityForResult(intent, 10000);
-                } else {
-                    if (persoanlFragment == null) {
-                        persoanlFragment = PersonalFragment.newInstance("", "");
+                } else
+                {
+                    if (shopCartFragment == null)
+                    {
+                        shopCartFragment = ShopCartFragment.newInstance("haha", 1);
+                    }
+                    selectFragment(currentFragment, shopCartFragment);
+                    setButton(view);
+                }
+            }
+        });
+
+        personalButton = (TextView)findViewById(R.id.tab_personal);
+        personalButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                type = 1;
+                if (!checkLogin())
+                {
+                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    intent.setFlags(2);
+                    MainActivity.this.startActivityForResult(intent, 10000);
+                } else
+                {
+                    if (persoanlFragment == null)
+                    {
+                        persoanlFragment = MainPersonalFragment.newInstance("", "");
                     }
                     selectFragment(currentFragment, persoanlFragment);
                     setButton(view);
@@ -366,8 +483,9 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     }
 
-    public void setButton(View view) {
-        ImageButton button = (ImageButton) view;
+    public void setButton(View view)
+    {
+        TextView button = (TextView) view;
 
         lastButton.setSelected(false);
 
@@ -377,52 +495,90 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     }
 
-    public void setDefaultFragment(Fragment defaultFragment) {
+    /**
+     * 跳转分类
+     */
+    public void gotoCategory()
+    {
+        if (categoryFragment == null)
+        {
+            categoryFragment = MainCategoryFragment.newInstance("", "");
+        }
+        selectFragment(currentFragment, categoryFragment);
+        setButton(categoryButton);
+
+    }
+
+    public void setDefaultFragment(Fragment defaultFragment)
+    {
         getSupportFragmentManager().beginTransaction().add(R.id.content, defaultFragment).commit();
     }
 
-    public void selectFragment(Fragment from, Fragment to) {
-        if (currentFragment != to) {
+    public void selectFragment(Fragment from, Fragment to)
+    {
+        if (currentFragment != to)
+        {
             currentFragment = to;
-            FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
-            if (!to.isAdded()) {
+            if (!to.isAdded())
+            {
                 transaction.hide(from).add(R.id.content, to).commit();
-            } else {
+            } else
+            {
                 transaction.hide(from).show(to).commit();
             }
         }
     }
 
-    public void onFragmentInteraction(Uri uri) {
+    public void onFragmentInteraction(Uri uri)
+    {
 
     }
 
 
-    public void toggleTabContainer() {
+    /**
+     * 处理重复点击子 fragment时候出现触发底层 fragment 的问题
+     * @param ev
+     * @return
+     */
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev)
+    {
+        int num = manager.getBackStackEntryCount();
+        if (num < 1)
+        {
+            mChildContainer.setClickable(false);
+        } else
+        {
+            mChildContainer.setClickable(true);
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
+    public void toggleTabContainer()
+    {
         mTabContainer.setVisibility(mTabContainer.isShown() ? View.GONE : View.VISIBLE);
     }
 
-    public void toggleTabContainer(int visible) {
+    public void toggleTabContainer(int visible)
+    {
         mTabContainer.setVisibility(visible);
     }
 
-    public boolean checkLogin() {
+    public boolean checkLogin()
+    {
         token = (String) SharedPreferencesUtil.getData(this, "token", "");
         id = (Integer) SharedPreferencesUtil.getData(this, "userId", -1);
         boolean isLogin = !TextUtils.isEmpty(token) && id > -1;
         return isLogin;
     }
 
-
-    public interface PhotoSelectListener {
-        public void onPhotoSelect();
-    }
-
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
         CallbackContext.onActivityResult(requestCode, resultCode, data);
-        switch (resultCode) {
+        switch (resultCode)
+        {
             case 2000:
                 int id = data.getIntExtra("id", -1);
                 String email = data.getStringExtra("email");
@@ -447,113 +603,190 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
      * @param json
      * @return
      */
-    private int parseJosn(String json) {
-        try {
+    private int parseJosn(String json)
+    {
+        try
+        {
             JSONObject jsonObject = new JSONObject(json);
-            serverName = jsonObject.optString("name");
-            serverCode = jsonObject.optInt("code");
-            serverInfo = jsonObject.optString("info");
-            ToolUtils.setLog(serverName);
-            ToolUtils.setLog("" + serverCode);
-            ToolUtils.setLog(serverInfo);
-        } catch (Exception e) {
+            if (jsonObject!=null)
+            {
+                JSONObject object = jsonObject.optJSONObject("data");
+                if (object != null)
+                    serverName = object.optString("app_version");
+                serverCode = object.optInt("code_version");
+                serverUrl = object.optString("package_url");
+            }
+        } catch (Exception e)
+        {
             e.printStackTrace();
         }
         return serverCode;
     }
 
+
     @Override
-    protected void onDestroy() {
+    protected void onDestroy()
+    {
         unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 
-    public void logout(Fragment fragment) {
+    public void logout(Fragment fragment)
+    {
         popToStack(fragment);
-        if (utilityFragment == null) {
-            utilityFragment = HomeFragment.newInstance(ZhaiDou.HOME_PAGE_URL, ZhaiDou.ListType.HOME.toString());
+        if (utilityFragment == null)
+        {
+            utilityFragment = MainHomeFragment.newInstance(ZhaiDou.HOME_PAGE_URL, ZhaiDou.ListType.HOME.toString());
         }
         selectFragment(currentFragment, utilityFragment);
         setButton(homeButton);
     }
 
-
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        System.out.println("MainActivity.onKeyDown");
-        FragmentManager manager = getSupportFragmentManager();
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
         int num = manager.getBackStackEntryCount();
-        if (num == 0) {
-            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                if ((System.currentTimeMillis() - mTime) > 2000) {
+        List<Fragment> fragments = manager.getFragments();
+        if (num == 0)
+        {
+            if (keyCode == KeyEvent.KEYCODE_BACK)
+            {
+                if ((System.currentTimeMillis() - mTime) > 2000)
+                {
                     Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
                     mTime = System.currentTimeMillis();
-                } else {
+                } else
+                {
                     finish();
                 }
                 return true;
             }
-        } else {
-            System.out.println("keyCode = [" + keyCode + "], event = [" + event + "]");
-            List<Fragment> fragments = manager.getFragments();
-            if (fragments.size() > 0) {
-                Fragment fragment = fragments.get(fragments.size() - 1);
-                Fragment shopPaymentSuccessFragmen=getSupportFragmentManager().findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
-                Fragment shopPaymentFailFragment=getSupportFragmentManager().findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
+        } else
+        {
+            if (fragments.size() > 0&&keyCode == KeyEvent.KEYCODE_BACK)
+            {
+                Fragment orderDetailFragment = manager.findFragmentByTag(OrderDetailFragment1.class.getSimpleName());
+                Fragment shopPaymentSuccessFragmen = manager.findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
+                Fragment shopPaymentFailFragment = manager.findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
+                Fragment shopPaymentFragment = manager.findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
 
-                if ((shopPaymentSuccessFragmen != null && shopPaymentSuccessFragmen instanceof ShopPaymentSuccessFragment )) {
+                if ((orderDetailFragment != null && orderDetailFragment instanceof OrderDetailFragment1))
+                {
+                    //orderDetailFragment
+                    ToolUtils.setLog("关闭orderDetailFragment");
+                    popToStack(orderDetailFragment);
+                    return true;
+                }
+                else if ((shopPaymentSuccessFragmen != null && shopPaymentSuccessFragmen instanceof ShopPaymentSuccessFragment))
+                {
+                    //ShopPaymentSuccessFragment关闭
+                    ToolUtils.setLog("关闭shopPaymentSuccessFragmen");
                     popToStack(shopPaymentSuccessFragmen);
                     return true;
-                }else if (shopPaymentFailFragment!=null&& shopPaymentFailFragment instanceof ShopPaymentFailFragment){
+                }
+                 else if ((shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment))
+                {
+                    ToolUtils.setLog("关闭shopPaymentFailFragment");
+                    //ShopPaymentSuccessFragment关闭
                     popToStack(shopPaymentFailFragment);
                     return true;
                 }
+                else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment)
+                {
+                    ToolUtils.setLog("关闭shopPaymentFragment");
+                    //ShopPaymentFragment返回弹出提示
+                    BackPaymentDialog(shopPaymentFragment);
+                    return true;
+                }
             }
-
         }
         return super.onKeyDown(keyCode, event);
     }
 
-    public void toHomeFragment() {
-        selectFragment(currentFragment, utilityFragment);
-        setButton(homeButton);
+    /**
+     * 收银台返回弹窗处理
+     *
+     * @param shopPaymentFragment
+     */
+    private void BackPaymentDialog(final Fragment shopPaymentFragment)
+    {
+        DialogUtils mDialogUtils = new DialogUtils(this);
+        mDialogUtils.showDialog("确认要放弃支付?", new DialogUtils.PositiveListener()
+        {
+            @Override
+            public void onPositive()
+            {
+                popToStack(shopPaymentFragment);
+            }
+        }, null);
+    }
+
+    public void toHomeFragment()
+    {
+        if (currentFragment instanceof MainHomeFragment)
+        {
+            FragmentTransaction transaction = manager.beginTransaction();
+            transaction.show(currentFragment).commit();
+        } else
+        {
+            if (utilityFragment != null)
+                selectFragment(currentFragment, utilityFragment);
+            setButton(homeButton);
+        }
     }
 
     /**
      * 清除除开首页的全部fragment
      */
-    private void allfragment()
+    public void allfragment()
     {
-        FragmentManager manager=getSupportFragmentManager();
         List<Fragment> fragments = manager.getFragments();
-        for (Fragment fragment:fragments)
+        for (Fragment fragment : fragments)
         {
-            if (fragment instanceof HomeFragment ||fragment instanceof PersonalFragment||fragment instanceof CategoryFragment1||fragment instanceof StrategyFragment)
+            if (fragment instanceof MainHomeFragment || fragment instanceof MainPersonalFragment || fragment instanceof MainStrategyFragment || fragment instanceof MainCategoryFragment || fragment instanceof ShopCartFragment)
             {
-                break;
+            } else
+            {
+                popToStack(fragment);
             }
-            manager.popBackStack();
-            manager.beginTransaction().remove(fragment).commit();
         }
     }
 
-    public void replaceFragment(Fragment fragment) {
-        SettingFragment settingFragment = SettingFragment.newInstance("", "");
-        getSupportFragmentManager().beginTransaction().replace(R.id.fl_child_container, settingFragment).addToBackStack(null).show(settingFragment).commit();
-        mChildContainer.setVisibility(View.VISIBLE);
-    }
-
-    public void hideTip(int v) {
+    public void hideTip(int v)
+    {
         iv_dot.setVisibility(v);
     }
 
-    private void FetchCityData() {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_ADDRESS_URL, new Response.Listener<JSONObject>() {
+    /**
+     * 显示
+     *
+     * @param ty
+     */
+    public void CartTip(int ty)
+    {
+        if (ty==0)
+        {
+            cart_dot.setVisibility(View.GONE);
+        }
+        else
+        {
+            cart_dot.setText(""+ty);
+            cart_dot.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void FetchCityData()
+    {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_ADDRESS_URL, new Response.Listener<JSONObject>()
+        {
             @Override
-            public void onResponse(JSONObject jsonObject) {
-                if (jsonObject != null) {
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (jsonObject != null)
+                {
                     JSONArray providerArr = jsonObject.optJSONArray("providers");
-                    for (int i = 0; i < providerArr.length(); i++) {
+                    for (int i = 0; i < providerArr.length(); i++)
+                    {
                         JSONObject provinceObj = providerArr.optJSONObject(i);
                         int provinceId = provinceObj.optInt("id");
                         String provinceName = provinceObj.optString("name");
@@ -562,8 +795,10 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                         province.setName(provinceName);
                         List<City> cityList = new ArrayList<City>();
                         JSONArray cityArr = provinceObj.optJSONArray("cities");
-                        if (cityArr != null && cityArr.length() > 0) {
-                            for (int k = 0; k < cityArr.length(); k++) {
+                        if (cityArr != null && cityArr.length() > 0)
+                        {
+                            for (int k = 0; k < cityArr.length(); k++)
+                            {
                                 JSONObject cityObj = cityArr.optJSONObject(k);
                                 int cityId = cityObj.optInt("id");
                                 String cityName = cityObj.optString("name");
@@ -572,8 +807,10 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                                 city.setId(cityId);
                                 city.setName(cityName);
                                 List<Area> areaList = new ArrayList<Area>();
-                                if (areaArr != null && areaArr.length() > 0) {
-                                    for (int j = 0; j < areaArr.length(); j++) {
+                                if (areaArr != null && areaArr.length() > 0)
+                                {
+                                    for (int j = 0; j < areaArr.length(); j++)
+                                    {
                                         JSONObject areaObj = areaArr.optJSONObject(j);
                                         int areaId = areaObj.optInt("id");
                                         String areaName = areaObj.optString("name");
@@ -596,19 +833,92 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
                 }
             }
-        }, new Response.ErrorListener() {
+        }, new Response.ErrorListener()
+        {
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
+            public void onErrorResponse(VolleyError volleyError)
+            {
             }
-        });
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         mRequestQueue.add(request);
     }
-    public void onResume() {
+
+    /**
+     * 请求购物车列表数据
+     */
+    public void FetchCountData()
+    {
+        String url = ZhaiDou.CartGoodsCountUrl + id;
+        ToolUtils.setLog("url:" + url);
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (jsonObject != null)
+                {
+                    JSONObject object = jsonObject.optJSONObject("data");
+                    cartCount = object.optInt("totalQuantity");
+                    mHandler.sendEmptyMessage(3);
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("SECAuthorization", token);
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
+    }
+
+    @Override
+    protected void onResume()
+    {
         super.onResume();
         MobclickAgent.onResume(this);
     }
-    public void onPause() {
+
+    @Override
+    protected void onPause()
+    {
         super.onPause();
         MobclickAgent.onPause(this);
+    }
+
+    int currentPrePayCount = 0;
+
+    @Override
+    public void onCount(int count) {
+//        if (count>0&&count > currentPrePayCount)
+//        if (iv_dot.isShown())
+//            return;
+//        if (!isFirstUnPayVisible)
+        iv_dot.setVisibility(count>0&&count > currentPrePayCount?View.VISIBLE:View.GONE);
+        currentPrePayCount=count;
+    }
+
+    @Override
+    public void onLogOut() {
+        iv_dot.setVisibility(View.GONE);
     }
 }

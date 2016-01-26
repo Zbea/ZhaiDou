@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -25,6 +26,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
@@ -33,6 +35,7 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Address;
+import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
@@ -46,6 +49,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -53,7 +57,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AddrManageFragment extends BaseFragment implements View.OnClickListener {
+public class AddrManageFragment extends BaseFragment implements View.OnClickListener
+{
     private static final String ARG_NickName = "param1";
     private static final String ARG_MOBILE = "param2";
     private static final String ARG_ADDRESS = "param3";
@@ -75,29 +80,32 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     private SharedPreferences mSharedPreferences;
 
     private AddressListener addressListener;
+    private DialogUtils mDialogUtil;
 
     private Dialog mDialog;
+    boolean isDialogFirstVisible = true;
     private RequestQueue mRequestQueue;
     private ListView mListview;
     private AddressAdapter addressAdapter;
     private List<Address> addressList = new ArrayList<Address>();
     private final int UPDATE_ADDRESS_LIST = 0;
 
-    private int UPDATE_ADDRESS_INFO=1;
-    private int CREATE_NEW_ADDRESS=2;
-    private int STATUS_FROM_ORDER=3;
-    private int STATUS_FROM_PERSONAL=4;
+    private int UPDATE_ADDRESS_INFO = 1;
+    private int CREATE_NEW_ADDRESS = 2;
+    private int STATUS_FROM_ORDER = 3;
+    private int STATUS_FROM_PERSONAL = 4;
     private int mCheckedPosition = 0;
     private View rootView;
     private LinearLayout loadingView;
 
-    private Handler handler = new Handler() {
+    private Handler handler = new Handler()
+    {
         @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
+        public void handleMessage(Message msg)
+        {
+            switch (msg.what)
+            {
                 case UPDATE_ADDRESS_LIST:
-                    if (mDialog!=null)
-                    mDialog.dismiss();
                     loadingView.setVisibility(View.GONE);
                     addressAdapter.notifyDataSetChanged();
                     break;
@@ -105,7 +113,8 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
         }
     };
 
-    public static AddrManageFragment newInstance(String nickname, String mobile, String address, String profileId, int status) {
+    public static AddrManageFragment newInstance(String nickname, String mobile, String address, String profileId, int status)
+    {
         AddrManageFragment fragment = new AddrManageFragment();
         Bundle args = new Bundle();
         args.putString(ARG_NickName, nickname);
@@ -117,13 +126,16 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
         return fragment;
     }
 
-    public AddrManageFragment() {
+    public AddrManageFragment()
+    {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        if (getArguments() != null)
+        {
             mNickName = getArguments().getString(ARG_NickName);
             mMobile = getArguments().getString(ARG_MOBILE);
             mAddress = getArguments().getString(ARG_ADDRESS);
@@ -134,138 +146,162 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        if (null != rootView) {
+                             Bundle savedInstanceState)
+    {
+        if (null != rootView)
+        {
             ViewGroup parent = (ViewGroup) rootView.getParent();
-            if (null != parent) {
+            if (null != parent)
+            {
                 parent.removeView(rootView);
             }
-        } else {
+        } else
+        {
             rootView = inflater.inflate(R.layout.fragment_addr_manage, container, false);
             initView(rootView);
         }
         return rootView;
     }
 
-    private void initView(View view) {
+    private void initView(View view)
+    {
 
-        mDialog=CustomLoadingDialog.setLoadingDialog(getActivity(),"loading");
-        loadingView=(LinearLayout)view.findViewById(R.id.loadingView);
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading", true);
+        isDialogFirstVisible = false;
+        mDialogUtil = new DialogUtils(mContext);
+        loadingView = (LinearLayout) view.findViewById(R.id.loadingView);
         mListview = (ListView) view.findViewById(R.id.lv_addresses);
         addressAdapter = new AddressAdapter(getActivity(), addressList);
         mListview.setAdapter(addressAdapter);
         view.findViewById(R.id.bt_new_address).setOnClickListener(this);
         mRequestQueue = Volley.newRequestQueue(getActivity());
-        token = (String) SharedPreferencesUtil.getData(getActivity(),"token","");
+        token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         FetchData();
-        addressAdapter.setOnInViewClickListener(R.id.ll_defalue, new BaseListAdapter.onInternalClickListener() {
+        addressAdapter.setOnInViewClickListener(R.id.ll_defalue, new BaseListAdapter.onInternalClickListener()
+        {
             @Override
-            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+            public void OnClickListener(View parentV, View v, Integer position, Object values)
+            {
 
                 mCheckedPosition = position;
                 addressAdapter.notifyDataSetChanged();
-                if (mStatus==STATUS_FROM_ORDER)
+                if (mStatus == STATUS_FROM_ORDER)
                 {
                     ((MainActivity) getActivity()).popToStack(AddrManageFragment.this);
                 }
             }
         });
-        addressAdapter.setOnInViewClickListener(R.id.tv_delete, new BaseListAdapter.onInternalClickListener() {
+        addressAdapter.setOnInViewClickListener(R.id.tv_delete, new BaseListAdapter.onInternalClickListener()
+        {
             @Override
-            public void OnClickListener(View parentV, View v, final Integer position, Object values) {
+            public void OnClickListener(View parentV, View v, final Integer position, Object values)
+            {
                 final Address address = (Address) values;
                 final int id = address.getId();
-                final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
 
-                View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
-                TextView textView = (TextView) view.findViewById(R.id.tv_msg);
-                textView.setText("是否删除地址?");
-                TextView cancelTv = (TextView) view.findViewById(R.id.cancelTv);
-                cancelTv.setOnClickListener(new View.OnClickListener() {
+                mDialogUtil.showDialog("是否删除地址?", new DialogUtils.PositiveListener()
+                {
                     @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                    }
-                });
-
-                TextView okTv = (TextView) view.findViewById(R.id.okTv);
-                okTv.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
+                    public void onPositive()
+                    {
                         mDialog.show();
-                        String url =ZhaiDou.ORDER_RECEIVER_URL + id;
-                        JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, new Response.Listener<JSONObject>() {
+                        String url = ZhaiDou.AddressDeleteUrl + "?id=" + address.getId();
+                        JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, new Response.Listener<JSONObject>()
+                        {
                             @Override
-                            public void onResponse(JSONObject jsonObject) {
-                                if (mDialog!=null)
+                            public void onResponse(JSONObject jsonObject)
+                            {
+                                if (mDialog != null)
                                     mDialog.dismiss();
-                                if (jsonObject!=null){
-                                    int status=jsonObject.optInt("status");
-                                    if (status==201){
+                                int code = jsonObject.optInt("status");
+                                if (code != 200)
+                                {
+                                    ToolUtils.setToast(mContext, "抱歉，删除失败");
+                                    return;
+                                }
+                                JSONObject dataObject = jsonObject.optJSONObject("data");
+                                if (dataObject != null)
+                                {
+                                    int status = dataObject.optInt("status");
+                                    String msg = dataObject.optString("message");
+                                    if (status == 201)
+                                    {
+                                        ToolUtils.setToast(mContext, msg);
                                         addressList.remove(address);
                                         addressAdapter.notifyDataSetChanged();
+                                        if (addressList.size() == 0)
+                                        {
+                                            if (addressListener!=null)
+                                            addressListener.onDeleteFinishAddress();
+                                        }
+                                    }else {
+
+                                    String message = jsonObject.optString("message");
+                                    ToolUtils.setToast(mContext, message);
                                     }
-                                    String message=jsonObject.optString("message");
-                                    ShowToast(message);
                                 }
                             }
-                        }, new Response.ErrorListener() {
+                        }, new Response.ErrorListener()
+                        {
                             @Override
-                            public void onErrorResponse(VolleyError volleyError) {
-                                if (mDialog!=null)
+                            public void onErrorResponse(VolleyError volleyError)
+                            {
+                                if (mDialog != null)
                                     mDialog.dismiss();
-                                ShowToast("网络异常");
+                                ToolUtils.setToast(mContext, "抱歉，删除失败");
                             }
-                        }) {
+                        })
+                        {
                             @Override
-                            public Map<String, String> getHeaders() throws AuthFailureError {
+                            public Map<String, String> getHeaders() throws AuthFailureError
+                            {
                                 Map<String, String> headers = new HashMap<String, String>();
-                                headers.put("SECAuthorization",token);
+                                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                                headers.put("SECAuthorization", token);
                                 return headers;
                             }
                         };
                         mRequestQueue.add(request);
                     }
-                });
-                dialog.setCanceledOnTouchOutside(true);
-                dialog.setCancelable(true);
-                dialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                dialog.show();
-
+                }, null);
             }
         });
-        addressAdapter.setOnInViewClickListener(R.id.tv_edit, new BaseListAdapter.onInternalClickListener() {
+        addressAdapter.setOnInViewClickListener(R.id.tv_edit, new BaseListAdapter.onInternalClickListener()
+        {
             @Override
-            public void OnClickListener(View parentV, View v, final Integer position, Object values) {
-                Address address=(Address)values;
-                int id=address.getId();
-                String name=address.getName();
-                String phone=address.getPhone();
-                String addr=address.getAddress();
-                String location=address.getProvince()+"-"+address.getCity()+"-"+address.getArea();
-                int provider_id=address.getProvider_id();
+            public void OnClickListener(View parentV, View v, final Integer position, Object values)
+            {
+                Address address = (Address) values;
+                int id = address.getId();
+                String name = address.getName();
+                String phone = address.getPhone();
+                String addr = address.getAddress();
+                String location = address.getProvince() + "-" + address.getCity() + "-" + address.getArea();
+                int provider_id = address.getProvider_id();
                 final AddrNewAddrFragment newAddrFragment = AddrNewAddrFragment.newInstance(id, name, phone, location, addr, provider_id, UPDATE_ADDRESS_INFO);
-                ((MainActivity)getActivity()).navigationToFragment(newAddrFragment);
+                ((MainActivity) getActivity()).navigationToFragment(newAddrFragment);
 
-                newAddrFragment.setAddrSaveSuccessListener(new AddrNewAddrFragment.AddrSaveSuccessListener() {
+                newAddrFragment.setAddrSaveSuccessListener(new AddrNewAddrFragment.AddrSaveSuccessListener()
+                {
                     @Override
-                    public void onSaveListener(JSONObject receiverObj, int status,double yfprice, String province, String city, String area) {
-                        if (status==UPDATE_ADDRESS_INFO){
+                    public void onSaveListener(JSONObject receiverObj, int status, double yfprice, String province, String city, String area)
+                    {
+                        if (status == UPDATE_ADDRESS_INFO)
+                        {
                             int id = receiverObj.optInt("id");
                             String phone = receiverObj.optString("phone");
                             String addr = receiverObj.optString("address");
-                            int provider_id=receiverObj.optInt("provider_id");
+                            int provider_id = receiverObj.optInt("provider_id");
                             int user_id = receiverObj.optInt("user_id");
                             String name = receiverObj.optString("name");
-                            boolean is_default=receiverObj.optBoolean("is_default");
-                            Address address1=new Address(id,name,is_default,phone,user_id,addr,provider_id,yfprice);
+                            boolean is_default = receiverObj.optBoolean("is_default");
+                            Address address1 = new Address(id, name, is_default, phone, user_id, addr, provider_id, yfprice);
                             address1.setProvince(province);
                             address1.setCity(city);
                             address1.setArea(area);
                             addressAdapter.remove(position);
-                            addressAdapter.add(address1,position);
-                            ((MainActivity)getActivity()).popToStack(newAddrFragment);
+                            addressAdapter.add(address1, position);
+                            ((MainActivity) getActivity()).popToStack(newAddrFragment);
                         }
                     }
                 });
@@ -274,20 +310,25 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     }
 
     @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
+    public void onClick(View view)
+    {
+        switch (view.getId())
+        {
             case R.id.tv_save:
                 hideInputMethod();
                 String name = et_name.getText().toString();
                 String mobile = et_mobile.getText().toString();
                 String address = et_addr.getText().toString();
-                if (TextUtils.isEmpty(name)) {
+                if (TextUtils.isEmpty(name))
+                {
                     Toast.makeText(getActivity(), "收货人信息不能为空", Toast.LENGTH_SHORT).show();
                     return;
-                } else if (TextUtils.isEmpty(mobile)) {
+                } else if (TextUtils.isEmpty(mobile))
+                {
                     Toast.makeText(getActivity(), "联系方式不能为空", Toast.LENGTH_SHORT).show();
                     return;
-                } else if (TextUtils.isEmpty(address)) {
+                } else if (TextUtils.isEmpty(address))
+                {
                     Toast.makeText(getActivity(), "收货地址不能为空", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -309,10 +350,13 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             case R.id.bt_new_address:
                 final AddrNewAddrFragment newAddrFragment = AddrNewAddrFragment.newInstance(0, "", "", "", "", 0, CREATE_NEW_ADDRESS);
                 ((MainActivity) getActivity()).navigationToFragment(newAddrFragment);
-                newAddrFragment.setAddrSaveSuccessListener(new AddrNewAddrFragment.AddrSaveSuccessListener() {
+                newAddrFragment.setAddrSaveSuccessListener(new AddrNewAddrFragment.AddrSaveSuccessListener()
+                {
                     @Override
-                    public void onSaveListener(JSONObject receiverObj,int status,double yfprice, String province, String city, String area) {
-                        if (receiverObj != null&&CREATE_NEW_ADDRESS==status) {
+                    public void onSaveListener(JSONObject receiverObj, int status, double yfprice, String province, String city, String area)
+                    {
+                        if (receiverObj != null && CREATE_NEW_ADDRESS == status)
+                        {
                             int id = receiverObj.optInt("id");
                             int user_id = receiverObj.optInt("user_id");
                             String name = receiverObj.optString("name");
@@ -320,7 +364,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                             int provider_id = receiverObj.optInt("provider_id");
                             String address = receiverObj.optString("address");
                             boolean is_default = receiverObj.optBoolean("is_default");
-                            Address addr = new Address(id, name, is_default, phone, user_id, address, provider_id,yfprice);
+                            Address addr = new Address(id, name, is_default, phone, user_id, address, provider_id, yfprice);
                             addr.setProvince(province);
                             addr.setCity(city);
                             addr.setArea(area);
@@ -337,47 +381,57 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     }
 
 
-    private class MyTask extends AsyncTask<String, Void, String> {
+    private class MyTask extends AsyncTask<String, Void, String>
+    {
 
         @Override
-        protected void onPreExecute() {
+        protected void onPreExecute()
+        {
             mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
         }
 
         @Override
-        protected String doInBackground(String... strings) {
+        protected String doInBackground(String... strings)
+        {
 
             String s = null;
-            try {
+            try
+            {
                 s = executeHttpPost(strings[0], strings[1], strings[2], strings[3]);
-            } catch (Exception e) {
+            } catch (Exception e)
+            {
 
             }
             return s;
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            try {
+        protected void onPostExecute(String s)
+        {
+            try
+            {
                 mDialog.dismiss();
                 JSONObject json = new JSONObject(s);
                 JSONObject profile = json.optJSONObject("profile");
                 String mobile = profile.optString("mobile");
                 String address = profile.optString("address2");
 //                addressListener.onAddressDataChange(mNickName, mMobile, address);
-            } catch (Exception e) {
+            } catch (Exception e)
+            {
 
             }
         }
     }
 
-    public String executeHttpPost(String name, String mobile, String addr, String id) throws Exception {
+    public String executeHttpPost(String name, String mobile, String addr, String id) throws Exception
+    {
         Log.i("name--->", name == null ? "" : name);
         Log.i("mobile--->", mobile == null ? "" : mobile);
         Log.i("addr--->", addr == null ? "" : addr);
         Log.i("id--->", id == null ? "" : id);
         BufferedReader in = null;
-        try {
+        try
+        {
             // 定义HttpClient
             HttpClient client = new DefaultHttpClient();
 
@@ -385,6 +439,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             // 实例化HTTP方法
             HttpPost request = new HttpPost(ZhaiDou.USER_EDIT_PROFILE_URL + id);
             request.addHeader("SECAuthorization", token);
+            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
 
 
             // 创建名/值组列表
@@ -409,39 +464,57 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
             StringBuffer sb = new StringBuffer("");
             String line = "";
             String NL = System.getProperty("line.separator");
-            while ((line = in.readLine()) != null) {
+            while ((line = in.readLine()) != null)
+            {
                 sb.append(line + NL);
             }
             in.close();
             String result = sb.toString();
             return result;
 
-        } finally {
-            if (in != null) {
-                try {
+        } finally
+        {
+            if (in != null)
+            {
+                try
+                {
                     in.close();
-                } catch (Exception e) {
+                } catch (Exception e)
+                {
                     e.printStackTrace();
                 }
             }
         }
     }
 
-    public void setAddressListener(AddressListener addressListener) {
+    public void setAddressListener(AddressListener addressListener)
+    {
         this.addressListener = addressListener;
     }
 
-    public interface AddressListener {
+    public interface AddressListener
+    {
         public void onDefalueAddressChange(Address address);
+
         public void onDeleteFinishAddress();
     }
-    private void FetchData() {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_RECEIVER_URL, new Response.Listener<JSONObject>() {
+
+    private void FetchData()
+    {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.AddressListUrl, new Response.Listener<JSONObject>()
+        {
             @Override
-            public void onResponse(JSONObject jsonObject) {
+            public void onResponse(JSONObject jsonObject)
+            {
                 mDialog.dismiss();
-                JSONArray receiversArr = jsonObject.optJSONArray("receivers");
                 ToolUtils.setLog(jsonObject.toString());
+                int status = jsonObject.optInt("status");
+                if (status != 200)
+                {
+                    ToolUtils.setToast(mContext, R.string.loading_fail_txt);
+                }
+                JSONObject dataObject = jsonObject.optJSONObject("data");
+                JSONArray receiversArr = dataObject.optJSONArray("receivers");
                 if (receiversArr != null && receiversArr.length() > 0)
                 {
                     for (int i = 0; i < receiversArr.length(); i++)
@@ -452,14 +525,16 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                         String addr = receiverObj.optString("address");
                         String name = receiverObj.optString("name");
                         int id = receiverObj.optInt("id");
-                        int provider_id=receiverObj.optInt("provider_id");
-                        String province=receiverObj.optString("parent_name");
-                        String city=receiverObj.optString("city_name");
-                        String area=receiverObj.optString("provider_name");
-                        boolean is_default=receiverObj.optBoolean("is_default");
-                        double price=receiverObj.optDouble("price");
+                        int provider_id = receiverObj.optInt("provider_id");
+                        String province = receiverObj.optString("parent_name");
+                        String city = receiverObj.optString("city_name");
+                        String area = receiverObj.optString("provider_name");
+                        boolean is_default = receiverObj.optBoolean("is_default");
+                        double price = receiverObj.optDouble("price");
                         if (is_default)
-                            mCheckedPosition=i;
+                        {
+                            mCheckedPosition = i;
+                        }
                         Address address = new Address();
                         address.setAddress(addr);
                         address.setName(name);
@@ -475,113 +550,156 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                         addressList.add(address);
                     }
                     handler.sendEmptyMessage(UPDATE_ADDRESS_LIST);
-                }else {
+                } else
+                {
                     loadingView.setVisibility(View.GONE);
                 }
             }
-        }, new Response.ErrorListener() {
+        }, new Response.ErrorListener()
+        {
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
+            public void onErrorResponse(VolleyError volleyError)
+            {
                 mDialog.dismiss();
-                Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
+                ToolUtils.setToast(mContext, R.string.loading_fail_txt);
             }
-        }) {
+        })
+        {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
                 Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 if (!TextUtils.isEmpty(token))
-                    headers.put("SECAuthorization",token);
+                    headers.put("SECAuthorization", token);
                 return headers;
             }
         };
         mRequestQueue.add(request);
     }
 
-    public class AddressAdapter extends BaseListAdapter<Address> {
-        public AddressAdapter(Context context, List<Address> list) {
+    public class AddressAdapter extends BaseListAdapter<Address>
+    {
+        public AddressAdapter(Context context, List<Address> list)
+        {
             super(context, list);
         }
+
         @Override
-        public View bindView(int position, View convertView, ViewGroup parent) {
+        public View bindView(int position, View convertView, ViewGroup parent)
+        {
             if (convertView == null)
                 convertView = mInflater.inflate(R.layout.item_addresses_list, null);
             TextView tv_name = ViewHolder.get(convertView, R.id.tv_addr_username);
             TextView tv_mobile = ViewHolder.get(convertView, R.id.tv_addr_mobile);
             TextView tv_addr = ViewHolder.get(convertView, R.id.tv_addr);
             TextView tv_defalue = ViewHolder.get(convertView, R.id.tv_defalue_addr);
-            TextView tv_defalue_hint=ViewHolder.get(convertView,R.id.tv_defalue_hint);
-            ImageView mDefalueIcon=ViewHolder.get(convertView,R.id.iv_addr_defalue);
-            View view=ViewHolder.get(convertView,R.id.lineBg);
-            if (position==0)
+            TextView tv_defalue_hint = ViewHolder.get(convertView, R.id.tv_defalue_hint);
+            ImageView mDefalueIcon = ViewHolder.get(convertView, R.id.iv_addr_defalue);
+            View view = ViewHolder.get(convertView, R.id.lineBg);
+            if (position == 0)
             {
                 view.setVisibility(View.GONE);
-            }
-            else
+            } else
             {
                 view.setVisibility(View.VISIBLE);
             }
             Address address = getList().get(position);
-            tv_name.setText("收件人："+address.getName());
-            tv_mobile.setText("电话："+address.getPhone());
-            if (address.getProvince()==null)
+            tv_name.setText("收件人：" + address.getName());
+            tv_mobile.setText("电话：" + address.getPhone());
+            if (address.getProvince() == null)
             {
-                tv_addr.setText("地址："+address.getAddress());
-            }
-            else
+                tv_addr.setText("地址：" + address.getAddress());
+            } else
             {
-                tv_addr.setText("地址："+address.getProvince()+address.getCity()+address.getArea()+address.getAddress());
+                tv_addr.setText("地址：" + address.getProvince() + address.getCity() + address.getArea() + address.getAddress());
             }
-            if (mStatus==STATUS_FROM_ORDER){
+            if (mStatus == STATUS_FROM_ORDER)
+            {
                 tv_defalue_hint.setVisibility(View.GONE);
                 if (address.isIs_default())
-                   tv_defalue_hint.setVisibility(View.VISIBLE);
+                    tv_defalue_hint.setVisibility(View.VISIBLE);
                 tv_defalue.setText("选择地址");
             }
-            mDefalueIcon.setImageResource(mCheckedPosition==position?R.drawable.icon_address_checked:R.drawable.icon_address_normal);
+            mDefalueIcon.setImageResource(mCheckedPosition == position ? R.drawable.icon_address_checked : R.drawable.icon_address_normal);
             return convertView;
         }
     }
 
     @Override
-    public void onDestroyView() {
+    public void onDestroyView()
+    {
         super.onDestroyView();
-        if (addressAdapter.getCount()>mCheckedPosition)
+        if (addressAdapter.getCount() > mCheckedPosition)
         {
-            Address address=addressAdapter.getItem(mCheckedPosition);
-            JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST,ZhaiDou.ORDER_RECEIVER_URL+"/"+address.getId()+"/set_default",new Response.Listener<JSONObject>() {
+            Address address = addressAdapter.getItem(mCheckedPosition);
+            JSONObject jsonObject = new JSONObject();
+            try
+            {
+                jsonObject.put("id", address.getId());
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.AddressIsDefultUrl, jsonObject, new Response.Listener<JSONObject>()
+            {
                 @Override
-                public void onResponse(JSONObject jsonObject) {
-                    if (jsonObject!=null){
-                        JSONObject receiver=jsonObject.optJSONObject("receiver");
-                        int id=receiver.optInt("id");
-                        String phone=receiver.optString("phone");
-                        String updated_at=receiver.optString("updated_at");
-                        String addr=receiver.optString("address");
-                        int provider_id=receiver.optInt("provider_id");
-                        String name=receiver.optString("name");
-                        String created_at=receiver.optString("created_at");
-                        boolean is_default=receiver.optBoolean("is_default");
-                        int user_id=receiver.optInt("user_id");
-                        int price=receiver.optInt("price");
-                        Address address1=new Address(id,name,is_default,phone,user_id,addr,provider_id,price);
+                public void onResponse(JSONObject jsonObject)
+                {
+                    if (jsonObject != null)
+                    {
+                        JSONObject dataObject = jsonObject.optJSONObject("data");
+                        if (dataObject == null)
+                        {
+                            return;
+                        }
+                        JSONObject receiver = dataObject.optJSONObject("receiver");
+                        int id = receiver.optInt("id");
+                        String phone = receiver.optString("phone");
+                        String updated_at = receiver.optString("updated_at");
+                        String addr = receiver.optString("address");
+                        int provider_id = receiver.optInt("provider_id");
+                        String name = receiver.optString("name");
+                        String created_at = receiver.optString("created_at");
+                        boolean is_default = receiver.optBoolean("is_default");
+                        int user_id = receiver.optInt("user_id");
+                        int price = receiver.optInt("price");
+                        Address address1 = new Address(id, name, is_default, phone, user_id, addr, provider_id, price);
                         address1.setUpdated_at(updated_at);
                         address1.setCreated_at(created_at);
                     }
                 }
-            },new Response.ErrorListener() {
+            }, new Response.ErrorListener()
+            {
                 @Override
-                public void onErrorResponse(VolleyError volleyError) {
+                public void onErrorResponse(VolleyError volleyError)
+                {
 
                 }
-            }){
+            })
+            {
                 @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    Map<String,String> headers=new HashMap<String, String>();
-                    headers.put("SECAuthorization",token);
+                public Map<String, String> getHeaders() throws AuthFailureError
+                {
+                    Map<String, String> headers = new HashMap<String, String>();
+                    headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                    headers.put("SECAuthorization", token);
                     return headers;
                 }
             };
             mRequestQueue.add(request);
         }
+    }
+
+    public void onResume()
+    {
+        super.onResume();
+        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_address_manage));
+    }
+
+    public void onPause()
+    {
+        super.onPause();
+        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_address_manage));
     }
 }

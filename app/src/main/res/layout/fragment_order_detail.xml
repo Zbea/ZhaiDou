@@ -4,10 +4,11 @@
     android:layout_height="match_parent"
     android:background="#f1f1f1">
 
+
     <RelativeLayout
         android:id="@+id/common_actionbar"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/header_height_dimen"
         android:layout_alignParentTop="true"
         android:background="@color/actionbar_background_color">
 
@@ -16,6 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
+            android:clickable="true"
             android:orientation="horizontal">
 
             <ImageView
@@ -23,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="10dp"
-                android:src="@drawable/icon_back" />
+                android:src="@drawable/icon_back_selector" />
 
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
@@ -41,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="订单详情"
+            android:text="@string/title_order_detail"
             android:textColor="@color/white"
             android:textSize="18sp" />
     </RelativeLayout>
@@ -106,7 +108,7 @@
                         android:id="@+id/tv_order_number"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/text_gary_color" />
+                        android:textColor="@color/text_normal_color" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -127,7 +129,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingTop="5dp"
-                        android:textColor="@color/text_gary_color" />
+                        android:textColor="@color/text_normal_color" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -148,7 +150,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingTop="5dp"
-                        android:textColor="@color/text_gary_color" />
+                        android:textColor="@color/text_normal_color" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -161,7 +163,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="1dp"
                     android:background="@color/white"
                     android:orientation="vertical">
 
@@ -189,6 +191,7 @@
                     android:scrollbars="none" />
 
                 <LinearLayout
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="38dp"
                     android:orientation="horizontal"
@@ -220,6 +223,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -248,6 +252,7 @@
                 android:orientation="horizontal"
                 android:paddingBottom="10dp"
                 android:paddingLeft="15dp"
+                android:visibility="gone"
                 android:paddingTop="10dp">
 
                 <LinearLayout
@@ -274,7 +279,7 @@
                             android:id="@+id/tv_receiver_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/text_gary_color" />
+                            android:textColor="@color/text_normal_color" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -296,14 +301,13 @@
                             android:id="@+id/tv_receiver_phone"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/text_gary_color" />
+                            android:textColor="@color/text_normal_color" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
-                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <com.zhaidou.view.TypeFaceTextView
@@ -318,7 +322,7 @@
                             android:id="@+id/tv_receiver_address"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/text_gary_color" />
+                            android:textColor="@color/text_normal_color" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -364,16 +368,15 @@
             </RelativeLayout>
 
             <View
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"></View>
-
-        </LinearLayout>
-    </ScrollView>
 
     <FrameLayout
         android:id="@+id/fl_bottom"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
         android:layout_alignParentBottom="true"
         android:background="#ffffff">
 
@@ -384,12 +387,14 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="right|center_vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             android:orientation="horizontal">
 
             <com.zhaidou.view.TypeFaceTextView
-                android:id="@+id/tv_cancel_order"
+                android:id="@+id/tv_service"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="15dp"
@@ -398,7 +403,7 @@
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
                 android:paddingTop="6dp"
-                android:text="取消订单"
+                android:text="售后客服"
                 android:textColor="@color/white" />
 
             <com.zhaidou.view.TypeFaceTextView
@@ -410,11 +415,15 @@
                 android:paddingBottom="6dp"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
+                android:visibility="gone"
                 android:paddingTop="6dp"
                 android:text="支付15:00"
                 android:textColor="@color/white" />
         </LinearLayout>
     </FrameLayout>
+        </LinearLayout>
+    </ScrollView>
+
 
     <include
         layout="@layout/content_null_layout"

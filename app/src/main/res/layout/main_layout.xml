@@ -5,26 +5,37 @@
     android:orientation="vertical"
     tools:context=".MyActivity">
 
+    <View
+        android:id="@+id/aa"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_above="@+id/tab_container"
+        android:background="#e9e9e9"></View>
     <LinearLayout
         android:id="@+id/tab_container"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/bottom_height_dimen"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:paddingTop="3.5dp"
-        android:background="@drawable/tab_background">
+        android:background="@color/white">
 
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1">
-            <ImageButton
+            <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/tab_home"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:background="@drawable/gl_icon"
                 android:contentDescription="@string/app_name"
+                android:drawablePadding="4dp"
+                android:text="首页"
+                android:textSize="10sp"
+                android:drawableTop="@drawable/gl_icon"
+                android:gravity="center_horizontal"
+                android:textColor="@color/main_options_text_color_selecter"
                 />
         </RelativeLayout>
 
@@ -33,13 +44,18 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
-            <ImageButton
+            <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/tab_category"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:background="@drawable/category_icon"
                 android:contentDescription="@string/app_name"
+                android:drawablePadding="4dp"
+                android:text="分类"
+                android:textSize="10sp"
+                android:drawableTop="@drawable/category_icon"
+                android:gravity="center_horizontal"
+                android:textColor="@color/main_options_text_color_selecter"
                 />
         </RelativeLayout>
         <RelativeLayout
@@ -47,13 +63,18 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
-            <ImageButton
+            <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/tab_beauty"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/home_icon"
                 android:layout_centerInParent="true"
                 android:contentDescription="@string/app_name"
+                android:drawablePadding="4dp"
+                android:text="美丽家"
+                android:textSize="10sp"
+                android:drawableTop="@drawable/home_icon"
+                android:gravity="center_horizontal"
+                android:textColor="@color/main_options_text_color_selecter"
                 />
         </RelativeLayout>
         <RelativeLayout
@@ -61,33 +82,54 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
-            <ImageButton
+            <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/tab_diy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:background="@drawable/diy_icon"
                 android:contentDescription="@string/app_name"
+                android:drawablePadding="4dp"
+                android:text="  购物车"
+                android:textSize="10sp"
+                android:drawableTop="@drawable/cart_icon"
+                android:gravity="center_horizontal"
+                android:textColor="@color/main_options_text_color_selecter"
                 />
+            <TextView
+                android:id="@+id/cartTipsTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="13dp"
+                android:text=""
+                android:gravity="center"
+                android:background="@drawable/shop_goods_my_cart_tips_red_bg"
+                android:textSize="12sp"/>
         </RelativeLayout>
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1">
 
-            <ImageButton
+            <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/tab_personal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:background="@drawable/personal_icon"
                 android:contentDescription="@string/app_name"
+                android:drawablePadding="4dp"
+                android:text="我"
+                android:textSize="10sp"
+                android:drawableTop="@drawable/personal_icon"
+                android:gravity="center_horizontal"
+                android:textColor="@color/main_options_text_color_selecter"
                 />
             <ImageView
                 android:id="@+id/iv_dot"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="20dp"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="2dp"
                 android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -99,7 +141,7 @@
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/tab_container"
+        android:layout_above="@id/aa"
         android:orientation="horizontal">
     </LinearLayout>
     <FrameLayout

@@ -23,7 +23,7 @@
             style="@style/CustomCheckboxTheme"/>
         <ImageView
             android:id="@+id/iv_order_img"
-            android:layout_width="85dp"
+            android:layout_width="80dp"
             android:layout_height="80dp"
             android:src="@drawable/icon_loading_defalut" />
 
@@ -57,25 +57,26 @@
                     android:paddingRight="5dp"
                     android:textColor="@color/text_main_color"
                     android:textSize="15sp" />
-                <com.zhaidou.view.TypeFaceTextView
+                <TextView
                     android:id="@+id/orderItemCurrentPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
                     android:layout_gravity="right|center"
                     android:text="￥123.5"
+                    android:layout_marginTop="3dp"
                     android:layout_alignParentRight="true"
                     android:textColor="@color/red"
-                    android:textSize="14sp" />
+                    android:textSize="16sp" />
 
             </LinearLayout>
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/rl_name"
                 android:orientation="horizontal">
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
                     <com.zhaidou.view.TypeFaceTextView
@@ -84,6 +85,7 @@
                         android:layout_marginRight="5dp"
                         android:layout_marginTop="5dp"
                         android:text="规格:"
+                        android:visibility="gone"
                         android:textColor="@color/text_gary_color"
                         android:textSize="13sp" />
 
@@ -91,13 +93,15 @@
                         android:id="@+id/tv_specification"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/tv_name"
+                        android:paddingRight="5dp"
                         android:layout_marginTop="5dp"
+                        android:ellipsize="end"
+                        android:singleLine="true"
                         android:text="L"
                         android:textColor="@color/text_gary_color"
                         android:textSize="13sp" />
                 </LinearLayout>
-                <com.zhaidou.view.TypeFaceTextView
+                <TextView
                     android:id="@+id/orderItemFormalPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -105,9 +109,9 @@
                     android:text="￥123.5"
                     android:textColor="@color/text_gary_color"
                     android:layout_alignParentRight="true"
-                    android:textSize="12sp" />
+                    android:textSize="13sp" />
 
-            </RelativeLayout>
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"

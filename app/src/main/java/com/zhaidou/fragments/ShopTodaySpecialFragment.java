@@ -7,21 +7,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -29,6 +27,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
@@ -36,89 +35,100 @@ import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.adapter.ShopTodaySpecialAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.model.CountTime;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.ShopTodayItem;
+import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ListViewForScrollView;
+import com.zhaidou.view.TimerTextView;
 import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import cn.sharesdk.framework.ShareSDK;
-import cn.sharesdk.onekeyshare.OnekeyShare;
+import cn.sharesdk.framework.Platform;
+import cn.sharesdk.framework.PlatformActionListener;
 
 
 /**
  * Created by roy on 15/7/23.
  */
-public class ShopTodaySpecialFragment extends BaseFragment {
+public class ShopTodaySpecialFragment extends BaseFragment
+{
     private static final String PAGE = "page";
     private static final String INDEX = "index";
-    private static final String IMAGEURL="image";
+    private static final String IMAGEURL = "image";
 
-    private String shareUrl=ZhaiDou.shopSpecialListShareUrl;
-    private String mPage;
+    private String shareUrl = ZhaiDou.shopSpecialListShareUrl;
+    private String mString;
     private String mImageUrl;
-    private int mIndex;
+    private String mIndex;
     private View mView;
     private Context mContext;
     private Dialog mDialog;
-    private int id;
     private String mTitle;
     private String introduce;//引文介绍
-    private final int UPDATE_COUNT_DOWN_TIME=1;
-    private final int UPDATE_UI_TIMER_FINISH=2;
-    private final int UPDATE_TIMER_START=3;
+    private final int UPDATE_CONTENT = 0;
+    private final int UPDATE_TIMER_START_AND_DETAIL_DATA = 1;
+    private final int UPDATE_CARTCAR_DATA = 2;
 
-    private MyTimer mTimer;
+    private int page = 1;
+    private int pageSize;
+    private int pageCount;
+    private PullToRefreshScrollView mScrollView;
+
+    private long initTime;
+    private long systemTime;
+    private boolean isFrist;
 
     private RequestQueue mRequestQueue;
 
     private ImageView shareBtn;
-    private TypeFaceTextView backBtn,titleTv,introduceTv,timeTv;
-    private PullToRefreshScrollView mScrollView;
+    private TypeFaceTextView backBtn, titleTv, introduceTv;
     private ListViewForScrollView mListView;
-    private LinearLayout loadingView,nullNetView,nullView;
-    private TextView  reloadBtn,reloadNetBtn;
+    private LinearLayout loadingView, nullNetView, nullView;
+    private TextView reloadBtn, reloadNetBtn;
+    private TimerTextView timeTvs;
 
     private TextView myCartTips;
     private ImageView myCartBtn;
-    private long time;
-    private long currentTime;
 
-    private List<ShopTodayItem> items=new ArrayList<ShopTodayItem>();
+    private List<ShopTodayItem> items = new ArrayList<ShopTodayItem>();
     private ShopTodaySpecialAdapter adapter;
     private ShopSpecialItem shopSpecialItem;
+    private int cartCount;//购物车商品数量
+    private int userId;
+    private String token;
+    private boolean isChlick;//防止重复点击
 
-    private BroadcastReceiver broadcastReceiver=new BroadcastReceiver()
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            String action=intent.getAction();
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
+            String action = intent.getAction();
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
             {
-
-                initCartTips();
+                FetchCountData();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshAddCartTag))
+            {
+                FetchCountData();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag))
             {
                 checkLogin();
-                initCartTips();
+                FetchCountData();
             }
             if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
             {
-                checkLogin();
                 initCartTips();
             }
         }
@@ -127,90 +137,72 @@ public class ShopTodaySpecialFragment extends BaseFragment {
 
     private Handler handler = new Handler()
     {
-        public void handleMessage(Message msg)
+        public void handleMessage(final Message msg)
         {
             switch (msg.what)
             {
-                case 4:
-                    adapter.notifyDataSetChanged();
-                    if (mDialog!=null)
-                        mDialog.dismiss();
-                    loadingView.setVisibility(View.GONE);
+                case UPDATE_CONTENT:
                     introduceTv.setText(introduce);
-                    break;
-                case UPDATE_TIMER_START:
-                    String date = (String)msg.obj;
-                    ToolUtils.setLog(date);
-//                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-                    try{
-                        long millionSeconds = sdf.parse(date).getTime();//毫秒
-                        long temp = millionSeconds-System.currentTimeMillis();
-                        mTimer=new MyTimer(temp,1000);
-                        mTimer.start();
-                    }catch (Exception e){
-                        Log.i("Exception e",e.getMessage());
+                    titleTv.setText(shopSpecialItem.title);
+                    if (shopSpecialItem != null)
+                        initTime = shopSpecialItem.endTime - System.currentTimeMillis();
+                    if (initTime > 0)
+                    {
+                        timeTvs.setTimes(initTime);
+                        if (!timeTvs.isRun())
+                        {
+                            timeTvs.start();
+                        }
+                    } else
+                    {
+                        timeTvs.setText("已结束");
                     }
                     break;
-                case UPDATE_COUNT_DOWN_TIME:
-                    CountTime time = (CountTime)msg.obj;
-                    String timerFormat = mContext.getResources().getString(R.string.timer);
-                    String hourStr=String.format("%02d", time.getHour());
-                    String minStr=String.format("%02d", time.getMinute());
-                    String secondStr=String.format("%02d", time.getSecond());
-                    String timer = String.format(timerFormat,time.getDay(),hourStr,minStr,secondStr);
-                    timeTv.setText(timer);
+                case UPDATE_TIMER_START_AND_DETAIL_DATA:
+                    loadingView.setVisibility(View.GONE);
+                    adapter.notifyDataSetChanged();
+                    if (pageCount > pageSize * page)
+                    {
+                        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+                    } else
+                    {
+                        mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+                    }
                     break;
-                case UPDATE_UI_TIMER_FINISH:
-                    timeTv.setText("已结束");
+                case UPDATE_CARTCAR_DATA:
+                    initCartTips();
+                    if ((((MainActivity) mContext).cart_dot).getVisibility() == View.GONE)
+                    {
+                        ((MainActivity) mContext).CartTip(cartCount);
+                    }
                     break;
             }
         }
     };
 
-    /**
-     * 下拉刷新
-     */
-    private PullToRefreshBase.OnRefreshListener2 refreshListener=new PullToRefreshBase.OnRefreshListener2()
+    private PullToRefreshBase.OnRefreshListener2 onRefreshListener = new PullToRefreshBase.OnRefreshListener2()
     {
         @Override
         public void onPullDownToRefresh(PullToRefreshBase refreshView)
         {
-            mScrollView.onRefreshComplete();
-
-            items.removeAll(items);
-            if (mTimer!=null)
-            {
-                mTimer.cancel();
-                mTimer=null;
-            }
-            FetchData(id);
-            adapter.notifyDataSetChanged();
-            loadingView.setVisibility(View.GONE);
+            items.clear();
+            page = 1;
+            FetchData();
+            FetchCountData();
         }
+
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView)
         {
-        }
-    };
-
-    /**
-     * adapter短点击事件
-     */
-    private AdapterView.OnItemClickListener onItemClickListener=new AdapterView.OnItemClickListener()
-    {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
-        {
-            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(i).title, items.get(i).id);
-            ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
+            page++;
+            FetchData();
         }
     };
 
     /**
      * 点击事件
      */
-    private View.OnClickListener onClickListener=new View.OnClickListener()
+    private View.OnClickListener onClickListener = new View.OnClickListener()
     {
         @Override
         public void onClick(View view)
@@ -218,15 +210,14 @@ public class ShopTodaySpecialFragment extends BaseFragment {
             switch (view.getId())
             {
                 case R.id.back_btn:
-                    ((MainActivity)getActivity()).popToStack(ShopTodaySpecialFragment.this);
+                    ((MainActivity) getActivity()).popToStack(ShopTodaySpecialFragment.this);
                     break;
                 case R.id.myCartBtn:
                     if (checkLogin())
                     {
                         ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
                         ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
-                    }
-                    else
+                    } else
                     {
                         Intent intent = new Intent(getActivity(), LoginActivity.class);
                         intent.setFlags(1);
@@ -247,39 +238,44 @@ public class ShopTodaySpecialFragment extends BaseFragment {
     };
 
 
-    public static ShopTodaySpecialFragment newInstance(String page, int index,String imageUrl) {
+    public static ShopTodaySpecialFragment newInstance(String page, String index, String imageUrl)
+    {
         ShopTodaySpecialFragment fragment = new ShopTodaySpecialFragment();
         Bundle args = new Bundle();
         args.putString(PAGE, page);
-        args.putInt(INDEX, index);
-        args.putString(IMAGEURL,imageUrl);
+        args.putString(INDEX, index);
+        args.putString(IMAGEURL, imageUrl);
         fragment.setArguments(args);
         return fragment;
     }
-    public ShopTodaySpecialFragment() {
+
+    public ShopTodaySpecialFragment()
+    {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mPage = getArguments().getString(PAGE);
-            mIndex = getArguments().getInt(INDEX);
-            mImageUrl=getArguments().getString(IMAGEURL);
-            id=mIndex;
-            mTitle=mPage;
+        if (getArguments() != null)
+        {
+            mString = getArguments().getString(PAGE);
+            mIndex = getArguments().getString(INDEX);
+            mImageUrl = getArguments().getString(IMAGEURL);
+            mTitle = mString;
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-        mContext=getActivity();
-        initBroadcastReceiver();
-        if(mView==null)
+                             Bundle savedInstanceState)
+    {
+        ToolUtils.setLog("111111");
+        if (mView == null)
         {
-            mView=inflater.inflate(R.layout.shop_today_special_page, container, false);
+            mView = inflater.inflate(R.layout.shop_today_special_page, container, false);
+            mContext = getActivity();
+            initBroadcastReceiver();
             initView();
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
@@ -296,78 +292,69 @@ public class ShopTodaySpecialFragment extends BaseFragment {
      */
     private void initBroadcastReceiver()
     {
-        IntentFilter intentFilter=new IntentFilter();
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshAddCartTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
-        mContext.registerReceiver(broadcastReceiver,intentFilter);
+        mContext.registerReceiver(broadcastReceiver, intentFilter);
     }
 
-    /**
-     * 初始化数据
-     */
-    private void initData()
-    {
-        mDialog= CustomLoadingDialog.setLoadingDialog(mContext, "loading");
-        if (NetworkUtils.isNetworkAvailable(mContext))
-        {
-            FetchData(id);
-        }
-        else
-        {
-            if (mDialog!=null)
-                mDialog.dismiss();
-            nullView.setVisibility(View.GONE);
-            nullNetView.setVisibility(View.VISIBLE);
-        }
-    }
 
     /**
      * 初始化数据
      */
     private void initView()
     {
-        shareUrl=shareUrl+mIndex;
+        ToolUtils.setLog("22222");
+        shareUrl = shareUrl + mIndex;
 
         loadingView = (LinearLayout) mView.findViewById(R.id.loadingView);
-        nullNetView= (LinearLayout) mView.findViewById(R.id.nullNetline);
-        nullView= (LinearLayout) mView.findViewById(R.id.nullline);
+        nullNetView = (LinearLayout) mView.findViewById(R.id.nullNetline);
+        nullView = (LinearLayout) mView.findViewById(R.id.nullline);
         reloadBtn = (TextView) mView.findViewById(R.id.nullReload);
         reloadBtn.setOnClickListener(onClickListener);
         reloadNetBtn = (TextView) mView.findViewById(R.id.netReload);
         reloadNetBtn.setOnClickListener(onClickListener);
 
-        shareBtn=(ImageView)mView.findViewById(R.id.share_iv);
+        shareBtn = (ImageView) mView.findViewById(R.id.share_iv);
         shareBtn.setOnClickListener(onClickListener);
 
-        backBtn=(TypeFaceTextView)mView.findViewById(R.id.back_btn);
+        backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(onClickListener);
-        titleTv=(TypeFaceTextView)mView.findViewById(R.id.title_tv);
-        titleTv.setText(mTitle);
-
-        mScrollView = (PullToRefreshScrollView)mView.findViewById(R.id.sv_shop_today_special_scrollview);
-        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
-        timeTv=(TypeFaceTextView)mView.findViewById(R.id.shopTimeTv);
-
-        mScrollView = (PullToRefreshScrollView)mView.findViewById(R.id.sv_shop_today_special_scrollview);
-        mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
-        mScrollView.setOnRefreshListener(refreshListener);
-
-        mListView=(ListViewForScrollView)mView.findViewById(R.id.shopListView);
-        adapter=new ShopTodaySpecialAdapter(mContext,items);
-        mListView.setAdapter(adapter);
-        mListView.setOnItemClickListener(onItemClickListener);
-
-        introduceTv=(TypeFaceTextView)mView.findViewById(R.id.adText);
-
-        myCartTips=(TextView)mView.findViewById(R.id.myCartTipsTv);
-        myCartBtn=(ImageView)mView.findViewById(R.id.myCartBtn);
+        titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
+        timeTvs = (TimerTextView) mView.findViewById(R.id.shopTime1Tv);
+        introduceTv = (TypeFaceTextView) mView.findViewById(R.id.adText);
+        myCartTips = (TextView) mView.findViewById(R.id.myCartTipsTv);
+        myCartBtn = (ImageView) mView.findViewById(R.id.myCartBtn);
         myCartBtn.setOnClickListener(onClickListener);
 
-        mRequestQueue= Volley.newRequestQueue(mContext);
 
-        initCartTips();
 
+        mListView = (ListViewForScrollView) mView.findViewById(R.id.shopListView);
+        adapter = new ShopTodaySpecialAdapter(mContext, items);
+        mListView.setAdapter(adapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                if (!isChlick)
+                {
+                    isChlick = true;
+                    mDialog.show();
+                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).title, items.get(position).goodsId);
+                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
+                    mDialog.dismiss();
+                }
+            }
+        });
+
+        mScrollView = (PullToRefreshScrollView) mView.findViewById(R.id.scrollView);
+        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+        mScrollView.setOnRefreshListener(onRefreshListener);
+
+        mRequestQueue = Volley.newRequestQueue(mContext);
 
         initData();
 
@@ -376,10 +363,33 @@ public class ShopTodaySpecialFragment extends BaseFragment {
 
     public boolean checkLogin()
     {
-        String token=(String) SharedPreferencesUtil.getData(getActivity(), "token", "");
-        int id=(Integer)SharedPreferencesUtil.getData(getActivity(),"userId",-1);
-        boolean isLogin=!TextUtils.isEmpty(token)&&id>-1;
+        token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
+        userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
+        boolean isLogin = !TextUtils.isEmpty(token) && userId > -1;
         return isLogin;
+    }
+
+    /**
+     * 初始化数据
+     */
+    private void initData()
+    {
+        if (NetworkUtils.isNetworkAvailable(mContext))
+        {
+            mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading", isDialogFirstVisible);
+            isDialogFirstVisible = false;
+            FetchData();
+            if (checkLogin())
+            {
+                FetchCountData();
+            }
+        } else
+        {
+            if (mDialog != null)
+                mDialog.dismiss();
+            nullView.setVisibility(View.GONE);
+            nullNetView.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -387,102 +397,126 @@ public class ShopTodaySpecialFragment extends BaseFragment {
      */
     private void initCartTips()
     {
-        if (MainActivity.num>0)
+        if (checkLogin())
         {
-            myCartTips.setVisibility(View.VISIBLE);
-            myCartTips.setText(""+MainActivity.num);
-        }
-        else
+            if (cartCount > 0)
+            {
+                myCartTips.setVisibility(View.VISIBLE);
+                myCartTips.setText("" + cartCount);
+            } else
+            {
+                myCartTips.setVisibility(View.GONE);
+            }
+        } else
         {
+            cartCount = 0;
             myCartTips.setVisibility(View.GONE);
         }
     }
+
 
     /**
      * 分享
      */
     private void share()
     {
-        ShareSDK.initSDK(mContext);
-        OnekeyShare oks = new OnekeyShare();
-        //关闭sso授权
-        oks.disableSSOWhenAuthorize();
-        // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
-        oks.setTitle(mTitle);
-        // titleUrl是标题的网络链接，仅在人人网和QQ空间使用
-        oks.setTitleUrl(shareUrl);
-        // text是分享文本，所有平台都需要这个字段
-        oks.setText(mTitle+"   "+shareUrl);
-        // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
-        oks.setImageUrl(mImageUrl);//确保SDcard下面存在此张图片
-        // url仅在微信（包括好友和朋友圈）中使用
-        oks.setUrl(shareUrl);
-        // comment是我对这条分享的评论，仅在人人网和QQ空间使用
-//            oks.setComment("我是测试评论文本");
-        // site是分享此内容的网站名称，仅在QQ空间使用
-        oks.setSite(getString(R.string.app_name));
-        // siteUrl是分享此内容的网站地址，仅在QQ空间使用
-        oks.setSiteUrl(shareUrl);
+        DialogUtils mDialogUtils = new DialogUtils(mContext);
+        mDialogUtils.showShareDialog(mTitle, mTitle + "  " + shareUrl, mImageUrl, shareUrl, new PlatformActionListener()
+        {
+            @Override
+            public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap)
+            {
+                Toast.makeText(mContext, mContext.getString(R.string.share_completed), Toast.LENGTH_SHORT).show();
+            }
 
-        oks.show(mContext);
+            @Override
+            public void onError(Platform platform, int i, Throwable throwable)
+            {
+                Toast.makeText(mContext, mContext.getString(R.string.share_error), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancel(Platform platform, int i)
+            {
+                Toast.makeText(mContext, mContext.getString(R.string.share_cancel), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**
      * 加载列表数据
      */
-    private void FetchData(int id)
+    private void FetchData()
     {
-        final String url;
-        url = ZhaiDou.shopSpecialTadayUrl+id;
+        String url = ZhaiDou.HomeGoodsListUrl + mIndex + "&pageNo=" + page + "&typeEnum=" + 1;
         ToolUtils.setLog(url);
         JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
             {
-                if (response==null)
-                {
+                if (mDialog != null)
                     mDialog.dismiss();
-                    nullView.setVisibility(View.VISIBLE);
-                    nullNetView.setVisibility(View.GONE);
+                mScrollView.onRefreshComplete();
+                if (response == null)
+                {
+                    if (page == 1)
+                    {
+                        nullView.setVisibility(View.VISIBLE);
+                        nullNetView.setVisibility(View.GONE);
+                    } else
+                    {
+                        ToolUtils.setToast(mContext, R.string.loading_fail_txt);
+                    }
                     return;
                 }
-                String result=response.toString();
                 JSONObject obj;
-                try
+                JSONObject jsonObject1 = response.optJSONObject("data");
+                if (jsonObject1 != null)
                 {
-                    JSONObject jsonObject=new JSONObject(result);
-                    JSONObject josnObject1=jsonObject.optJSONObject("sale");
-                    int id=josnObject1.optInt("id");
-                    String title=josnObject1.optString("title");
-                    String time=josnObject1.optString("day");
-                    String startTime=josnObject1.optString("start_time");
-                    String endTime=josnObject1.optString("end_time");
-                    String overTime=josnObject1.optString("over_day");
-                    introduce=josnObject1.optString("quotation");
-                    shopSpecialItem=new ShopSpecialItem(id,title,null,time,startTime,endTime,overTime,null);
-                    handler.obtainMessage(UPDATE_TIMER_START,endTime).sendToTarget();//开始倒计时
-
-                    JSONArray jsonArray=josnObject1.optJSONArray("merchandises");
-                    for (int i = 0; i <jsonArray.length() ; i++)
+                    JSONObject jsonObject = jsonObject1.optJSONObject("activityPO");
+                    String id = jsonObject.optString("activityCode");
+                    String title = jsonObject.optString("activityName");
+                    long startTime = jsonObject.optLong("startTime");
+                    long endTime = jsonObject.optLong("endTime");
+                    ToolUtils.setLog("" + endTime);
+                    int overTime = Integer.parseInt((String.valueOf((endTime - startTime) / (24 * 60 * 60 * 1000))));
+                    introduce = jsonObject.optString("description");
+                    int isNew = jsonObject.optInt("newFlag");
+                    shopSpecialItem = new ShopSpecialItem(id, title, null, startTime, endTime, overTime, null, isNew);
+                    handler.sendEmptyMessage(UPDATE_CONTENT);
+                    JSONObject jsonObject2 = jsonObject1.optJSONObject("pagePO");
+                    if (jsonObject2 != null)
                     {
-                        obj=jsonArray.optJSONObject(i);
-                        int Baseid=obj.optInt("id");
-                        String Listtitle=obj.optString("title");
-                        String designer=obj.optString("designer");
-                        double price=obj.optDouble("price");
-                        double cost_price=obj.optDouble("cost_price");
-                        String imageUrl=obj.optString("img");
-                        int num=obj.optInt("total_count");
-                        ShopTodayItem shopTodayItem=new ShopTodayItem(Baseid,Listtitle,designer,imageUrl,price,cost_price,num);
-                        items.add(shopTodayItem);
+                        JSONArray jsonArray = jsonObject2.optJSONArray("items");
+                        pageCount = jsonObject2.optInt("totalCount");
+                        pageSize = jsonObject2.optInt("pageSize");
+                        if (jsonArray != null)
+
+                            for (int i = 0; i < jsonArray.length(); i++)
+                            {
+                                obj = jsonArray.optJSONObject(i);
+                                String Baseid = obj.optString("productId");
+                                String Listtitle = obj.optString("productName");
+                                double price = obj.optDouble("price");
+                                double cost_price = obj.optDouble("marketPrice");
+                                String imageUrl = obj.optString("productPicUrl");
+                                String comment = obj.optString("comment") == "null" ? "" : obj.optString("comment");
+                                JSONObject jsonObject3 = obj.optJSONObject("expandedResponse");
+
+                                int num = jsonObject3.optInt("stock");
+                                int totalCount = 100;
+                                int percentum = obj.optInt("progressPercentage");
+                                ShopTodayItem shopTodayItem = new ShopTodayItem(Baseid, Listtitle, imageUrl, price, cost_price, num, totalCount);
+                                shopTodayItem.percentum = percentum;
+                                shopTodayItem.comment = comment;
+                                items.add(shopTodayItem);
+                            }
                     }
-                } catch (JSONException e)
-                {
-                    e.printStackTrace();
+
                 }
                 Message message = new Message();
-                message.what = 4;
+                message.what = UPDATE_TIMER_START_AND_DETAIL_DATA;
                 handler.sendMessage(message);
             }
         }, new Response.ErrorListener()
@@ -490,74 +524,106 @@ public class ShopTodaySpecialFragment extends BaseFragment {
             @Override
             public void onErrorResponse(VolleyError error)
             {
-                if (mDialog!=null)
+
+                if (mDialog != null)
                     mDialog.dismiss();
-                nullView.setVisibility(View.VISIBLE);
-                nullNetView.setVisibility(View.GONE);
                 mScrollView.onRefreshComplete();
+                if (page > 1)
+                {
+                    page--;
+                    ToolUtils.setToast(mContext, R.string.loading_fail_txt);
+                } else
+                {
+                    nullView.setVisibility(View.VISIBLE);
+                    nullNetView.setVisibility(View.GONE);
+                }
             }
-        });
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         mRequestQueue.add(jr);
     }
 
     /**
-     * 倒计时
+     * 请求购物车列表数据
      */
-    private class MyTimer extends CountDownTimer
+    public void FetchCountData()
     {
-        private MyTimer(long millisInFuture, long countDownInterval) {
-            super(millisInFuture, countDownInterval);
-        }
-        @Override
-        public void onTick(long l) {
-            time=l;
-            long day=24*3600*1000;
-            long hour=3600*1000;
-            long minute=60*1000;
-            //两个日期想减得到天数
-            long dayCount= l/day;
-            long hourCount= (l-(dayCount*day))/hour;
-            long minCount=(l-(dayCount*day)-(hour*hourCount))/minute;
-            long secondCount=(l-(dayCount*day)-(hour*hourCount)-(minCount*minute))/1000;
-            CountTime time = new CountTime(dayCount,hourCount,minCount,secondCount);
-
-            handler.obtainMessage(UPDATE_COUNT_DOWN_TIME,time).sendToTarget();//刷新倒计时
-        }
-        @Override
-        public void onFinish() {
-            handler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
-        }
+        String url = ZhaiDou.CartGoodsCountUrl + userId;
+        ToolUtils.setLog("url:" + url);
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (jsonObject != null)
+                {
+                    JSONObject object = jsonObject.optJSONObject("data");
+                    cartCount = object.optInt("totalQuantity");
+                    handler.sendEmptyMessage(UPDATE_CARTCAR_DATA);
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("SECAuthorization", token);
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
     }
+
 
     @Override
     public void onResume()
     {
-        long temp=System.currentTimeMillis()-currentTime;
-        if (mTimer!=null)
+        if (isFrist)
         {
-            mTimer.cancel();
-            mTimer = null;
+            long temp = Math.abs(systemTime - System.currentTimeMillis());
+            initTime = timeTvs.getTimes() - temp;
+            timeTvs.setTimes(initTime);
         }
-        mTimer=new MyTimer(time-temp,1000);
-        mTimer.start();
         super.onResume();
+        MobclickAgent.onPageStart(mTitle);
     }
 
     @Override
     public void onPause()
     {
-        currentTime=System.currentTimeMillis();
+        isChlick = false;
+        systemTime = System.currentTimeMillis();
+        isFrist = true;
         super.onPause();
+        MobclickAgent.onPageEnd(mTitle);
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroy()
+    {
         if (broadcastReceiver != null)
             mContext.unregisterReceiver(broadcastReceiver);
-        if (mTimer != null) {
-            mTimer.cancel();
-            mTimer=null;
-        }
+        timeTvs.stop();
+        mRequestQueue.stop();
         super.onDestroy();
     }
+
 }

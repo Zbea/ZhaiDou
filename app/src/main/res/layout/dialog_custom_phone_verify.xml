@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/custom_loading_dialog_bg"
+        android:orientation="vertical"
+        android:paddingBottom="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right">
+
+            <ImageView
+                android:id="@+id/iv_close"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:src="@drawable/cancel"
+                android:visibility="visible" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:orientation="vertical">
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="小主,您的帐号还没有进行手机验证,"
+                android:textColor="@color/text_main_color"
+                android:textSize="14sp" />
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="为保证小主的交易安全,请先进行手机验证哦~"
+                android:textColor="@color/text_main_color"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/login_height_dimen"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/icon_login_phone" />
+
+                <com.zhaidou.view.CustomEditText
+                    android:id="@+id/tv_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/icon_edit_bg"
+                    android:drawablePadding="10dp"
+                    android:drawableRight="@drawable/cancel"
+                    android:gravity="center_vertical"
+                    android:hint="输入手机号"
+                    android:inputType="phone"
+                    android:maxLength="11"
+                    android:paddingRight="10dp"
+                    android:singleLine="true"
+                    android:textColor="@color/text_main_color"
+                    android:textColorHint="@color/edit_hint_gray"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/login_height_dimen"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/icon_login_code" />
+
+                <com.zhaidou.view.CustomEditText
+                    android:id="@+id/tv_code"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/icon_edit_bg"
+                    android:drawablePadding="10dp"
+                    android:drawableRight="@drawable/cancel"
+                    android:gravity="center_vertical"
+                    android:hint="短信验证码"
+                    android:inputType="textEmailAddress"
+                    android:paddingRight="10dp"
+                    android:singleLine="true"
+                    android:textColor="@color/text_main_color"
+                    android:textColorHint="@color/edit_hint_gray"
+                    android:textSize="13sp" />
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/bt_getCode"
+                    android:layout_width="85dp"
+                    android:layout_height="28dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/btn_green_click_bg"
+                    android:clickable="true"
+                    android:gravity="center"
+                    android:text="获取验证码"
+                    android:textColor="@color/white"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/bt_ok"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/btn_height_dimen"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/btn_green_click_bg"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="提交验证"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -33,5 +33,6 @@
         android:layout_height="match_parent"
         android:id="@+id/listview"
         android:scrollbars="none"
+        android:divider="@null"
         android:listSelector="@android:color/transparent"/>
 </LinearLayout>

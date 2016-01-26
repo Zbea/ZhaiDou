@@ -28,49 +28,25 @@
             android:orientation="vertical"
             android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/shopBanner"
+            <LinearLayout
+                android:id="@+id/bannerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:scaleType="fitXY"
-                android:src="@drawable/shop_special_banner"/>
+                android:orientation="vertical">
 
-            <RelativeLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:orientation="vertical"
-                >
-
-                <android.support.v4.view.ViewPager
-                    android:id="@+id/home_adv_pager"
-                    android:layout_width="fill_parent"
-                    android:layout_height="152dp">
-                </android.support.v4.view.ViewPager>
-
-                <LinearLayout
-                    android:id="@+id/home_viewGroup"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginBottom="15dp"
-                    android:layout_centerHorizontal="true"
-                    android:orientation="horizontal">
-                </LinearLayout>
-            </RelativeLayout>
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:background="@drawable/content_part_bg">
+                android:background="@color/white">
                 <TextView
                     android:layout_width="8dp"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginBottom="2dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginBottom="3dp"
                     android:background="@color/red"/>
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
@@ -79,8 +55,12 @@
                 android:layout_marginRight="@dimen/default_margin"
                 android:textSize="15sp"
                 android:textColor="@color/text_main_color"
-                android:text="新特卖,每日上新"/>
+                android:text="新特卖•每日上新"/>
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/click_gray"></View>
 
             <com.zhaidou.view.ListViewForScrollView
                 android:id="@+id/shopListView"
@@ -104,8 +84,8 @@
 
         <ImageView
             android:id="@+id/myCartBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
             android:clickable="true"
             android:layout_centerInParent="true"
             android:src="@drawable/shop_goods_my_cart_selector"/>
@@ -119,6 +99,7 @@
             android:text=""
             android:gravity="center"
             android:visibility="gone"
+            android:layout_margin="3dp"
             android:background="@drawable/shop_goods_my_cart_tips_red_bg"
             android:textSize="12sp"/>
     </RelativeLayout>

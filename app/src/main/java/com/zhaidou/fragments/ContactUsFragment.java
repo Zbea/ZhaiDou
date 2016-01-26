@@ -10,9 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
-
 
 public class ContactUsFragment extends BaseFragment {
     private static final String ARG_PARAM1 = "param1";
@@ -56,6 +56,13 @@ public class ContactUsFragment extends BaseFragment {
         });
         return view;
     }
-
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_contact_us));
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_contact_us));
+    }
 
 }

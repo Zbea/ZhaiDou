@@ -9,35 +9,40 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.base.CountManage;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.dialog.CustomToastDialog;
 import com.zhaidou.model.Address;
-import com.zhaidou.model.CartItem;
-import com.zhaidou.sqlite.CreatCartDB;
-import com.zhaidou.sqlite.CreatCartTools;
+import com.zhaidou.model.CartArrayItem;
+import com.zhaidou.model.CartGoodsItem;
+import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.CustomEditText;
 import com.zhaidou.view.TypeFaceEditText;
 import com.zhaidou.view.TypeFaceTextView;
 
@@ -59,6 +64,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 /**
@@ -75,36 +82,59 @@ public class ShopOrderOkFragment extends BaseFragment
     private Context mContext;
     private Dialog mDialog;
     private String bzInfo_Str;
+    private String phone_Str;
+    private String code_Str;
 
     private TypeFaceTextView backBtn, titleTv;
     private Button okBtn;
     private LinearLayout orderAddressInfoLine, orderAddressNullLine, orderAddressEditLine;
-    private LinearLayout orderGoodsListLine;
+    private LinearLayout orderGoodsListLine, orderVerifyLine;
     private TypeFaceEditText bzInfo;
-    private TypeFaceTextView moneyTv, moneyYfTv, moneyTotalTv, moneyNumTv;
-    private TextView addressNameTv, addressPhoneTv, addressinfoTv;
-    private ArrayList<CartItem> items;
-    private List<CartItem> erroritems = new ArrayList<CartItem>();
+    private TextView moneyTv, moneyYfTv, moneyTotalTv;
+    private TextView addressNameTv, addressPhoneTv, addressinfoTv, noFreeTv;
+    private List<CartGoodsItem> items=new ArrayList<CartGoodsItem>();
     private List<Address> addressList = new ArrayList<Address>();
-    private String Str_token;
 
     private int num = 0;
     private double money = 0;
     private double moneyYF = 0;
     private double totalMoney = 0;
 
+    private ScrollView mScrollView;
+    private LinearLayout verifyView;
+    private CustomEditText mCodeView, mPhoneView;
+    private TextView mGetCode;
+
+    private LinearLayout loadingView, nullNetView, nullView;
+    private TextView reloadBtn, reloadNetBtn;
+
+    private int initTime = 0;
+    private Timer mTimer;
+
     private RequestQueue mRequestQueue;
     private int STATUS_FROM_ORDER = 3;
     private final int UPDATE_DEFALUE_ADDRESS_INFO = 0;
+    private final int UPDATE_ADDRESS_LOADING_FAIL = 2;
+    private final int UPDATE_ISBUYOSALE =1;
+    private final int UPDATE_LOADING_FAIL= 3;
+    private final int UPDATE_COMMIT_SUCCESS= 4;
+    private final int UPDATE_COMMIT_FAIL= 5;
+    private final int UPDATE_VERFIY = 6;
+    private final int UPDATE_VERFIY_SUCCESSS = 7;
+    private final int UPDATE_GETSMS_SUCCESSS = 8;
+
     private boolean isOSaleBuy;//是否已经购买过零元特卖
     private boolean isOSale;//是否含有零元特卖
     private boolean isljOsale;//是否是来自立即购买的零元特卖
+    private boolean isNoFree;//是否不免邮，当只有一个商品且为零元特卖时为真
+    private boolean isVerify;//帐号是否需要验证
 
     private Address address;
-    private CreatCartDB creatCartDB;
     private String token;
     private int userId;
-    private int flags = 0;//1代表立即购买
+    private int flags = 2;//1代表立即购买
+    private ArrayList<CartArrayItem> cartArrayItems=new ArrayList<CartArrayItem>();
+    private List<CartArrayItem> orderArrayItems=new ArrayList<CartArrayItem>();
 
     private Handler handler = new Handler()
     {
@@ -115,119 +145,102 @@ public class ShopOrderOkFragment extends BaseFragment
             {
                 case UPDATE_DEFALUE_ADDRESS_INFO:
                     mDialog.dismiss();
-
+                    loadingView.setVisibility(View.GONE);
                     orderAddressInfoLine.setVisibility(View.VISIBLE);
                     orderAddressEditLine.setVisibility(View.VISIBLE);
                     orderAddressNullLine.setVisibility(View.GONE);
 
                     address = addressList.get(0);
-                    setYFMoney(address);
-                    addressPhoneTv.setText("收件人：" + address.getPhone());
-                    addressNameTv.setText("电话：" + address.getName());
+                    setYFMoney(address.getPrice());
+                    addressPhoneTv.setText("电话：" + address.getPhone());
+                    addressNameTv.setText("收件人：" + address.getName());
                     addressinfoTv.setText(address.getProvince() + address.getCity() + address.getArea() + address.getAddress());
                     break;
-                case 2:
-                    mDialog.dismiss();
+                case UPDATE_ISBUYOSALE:
+                    if (isOSaleBuy)
+                    {
+                        mDialog.dismiss();
+                        CustomToastDialog.setToastDialog(mContext, "您今天已经购买过零元特卖商品，请勿重复购买");
+                    }
+                    else
+                    {
+                        commit();
+                    }
+                    break;
+                case UPDATE_ADDRESS_LOADING_FAIL:
+                    if (mDialog != null)
+                        mDialog.dismiss();
+                    loadingView.setVisibility(View.GONE);
                     orderAddressInfoLine.setVisibility(View.GONE);
                     orderAddressEditLine.setVisibility(View.GONE);
                     orderAddressNullLine.setVisibility(View.VISIBLE);
                     break;
-                case 3:
+                case UPDATE_LOADING_FAIL:
                     mDialog.dismiss();
-                    Toast.makeText(mContext, "抱歉,提交订单失败", Toast.LENGTH_LONG).show();
+                    CustomToastDialog.setToastDialog(mContext,"抱歉,提交订单失败");
                     break;
-                case 4:
+                case UPDATE_COMMIT_SUCCESS:
                     mDialog.dismiss();
-
-                    if(flags!=1)
-                    {
-                        for (int i = 0; i < items.size(); i++)
-                        {
-                            CreatCartTools.deleteByData(creatCartDB, items.get(i));
-                        }
-                    }
-
-//                    if (isljOsale)//清除购物车中的零元特卖
-//                    {
-//                        List<CartItem> itemsAll = CreatCartTools.selectByAll(creatCartDB, userId);
-//                        for (int i = 0; i < itemsAll.size(); i++)
-//                        {
-//                            if (itemsAll.get(i).isOSale.equals("true"))
-//                            {
-//                                CreatCartTools.deleteByData(creatCartDB, itemsAll.get(i));
-//                            }
-//                        }
-//                    }
-
                     if (isljOsale)
                     {
-                        //发送刷新商品详情广播
-                        Intent intent1 = new Intent(ZhaiDou.IntentRefreshGoodsDetailsTag);
-                        mContext.sendBroadcast(intent1);
+                        //发送刷新商品详情零元特卖购买广播
+                        Intent intent= new Intent(ZhaiDou.IntentRefreshOGoodsDetailsTag);
+                        mContext.sendBroadcast(intent);
                     }
-
+                    else
+                    {
+                        //发送刷新商品详情普通特卖该规格购买广播
+                        Intent intent= new Intent(ZhaiDou.IntentRefreshGoodsDetailsTag);
+                        mContext.sendBroadcast(intent);
+                    }
                     //发送刷新购物车广播
-                    Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsCheckTag);
+                    Intent intent = new Intent(ZhaiDou.IntentRefreshCartPaySuccessTag);
                     mContext.sendBroadcast(intent);
                     //发送刷新购物车数量广播
-                    Intent intent1 = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
+                    Intent intent1 = new Intent(ZhaiDou.IntentRefreshCartGoodsCheckTag);
                     mContext.sendBroadcast(intent1);
                     //关闭本页面
                     ((MainActivity) getActivity()).popToStack(ShopOrderOkFragment.this);
 
                     String result = (String) msg.obj;
+                    ToolUtils.setLog(result);
+                    CountManage.getInstance().add(CountManage.TYPE.TAG_PREPAY);
                     try
                     {
                         JSONObject jsonObject = new JSONObject(result);
-                        JSONObject orderObj = jsonObject.optJSONObject("order");
-                        int orderId = orderObj.optInt("id");
-                        double amount = orderObj.optDouble("amount");
-                        double fare = moneyYF;
-                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId, amount, fare, 15 * 60, null, 1);
+                        JSONObject orderObj = jsonObject.optJSONObject("data");
+                        int orderId = orderObj.optInt("orderId");
+                        String orderCode = orderObj.optString("orderCode");
+                        double amount = orderObj.optDouble("orderTotalAmount");
+                        long time = orderObj.optLong("orderRemainingTime");
+                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId,orderCode ,amount,time, null);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
-//                        Intent intent1=new Intent(getActivity(), PayDemoActivity.class);
-//                        intent1.putExtra("id",orderId);
-//                        intent1.putExtra("amount",amount);
-//                        startAnimActivity(intent1);
                     } catch (Exception e)
                     {
 
                     }
                     break;
-                case 5:
-                    if (isOSaleBuy)
+                case UPDATE_COMMIT_FAIL:
+                    mDialog.dismiss();
+                    CustomToastDialog.setToastDialog(mContext, msg.obj.toString());
+                    break;
+                case UPDATE_VERFIY:
+                    if (isVerify)
                     {
-                        mDialog.dismiss();
-                        CustomToastDialog.setToastDialog(mContext, "抱歉,您已经购买过零元特卖商品,今天已经不能购买");
+                        verifyView.setVisibility(View.VISIBLE);
                     } else
                     {
-                        commit();
+                        verifyView.setVisibility(View.GONE);
                     }
+                    FetchAddressData();
                     break;
-                case 6:
-                    mDialog.dismiss();
-                    String json =msg.obj.toString();
-                    String json1=json.substring(2);
-                    CustomToastDialog.setToastDialog(mContext, json1.substring(0,json1.length()-2));
+                case UPDATE_VERFIY_SUCCESSS:
+                    isVerify=false;
+                    verifyView.setVisibility(View.GONE);
+                    judageCommit();
                     break;
-                case 7:
-                    mDialog.dismiss();
-                    String goodsbuy = msg.obj.toString();
-                    ToolUtils.setToast(mContext, goodsbuy);
-                    break;
-                case 8:
-                    mDialog.dismiss();
-                    String publish = msg.obj.toString();
-                    String[] publishStr = new String[]{};
-                    publishStr = publish.split(",");
-
-                    for (int i = 0; i < items.size(); i++)
-                    {
-                        if (items.get(i).sizeId == Integer.valueOf(publishStr[1]))
-                        {
-                            CustomToastDialog.setToastDialog(mContext, items.get(i).name +  "的活动已经下架");
-                        }
-                    }
+                case UPDATE_GETSMS_SUCCESSS:
+                    codeTimer();
                     break;
             }
         }
@@ -268,28 +281,34 @@ public class ShopOrderOkFragment extends BaseFragment
                     break;
 
                 case R.id.jsOkBtn:
-                    if (address != null)
+                    //当需要验证手机号码时候，需要先判断
+                    if (isVerify)
                     {
-                        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "提交中");
-                        for (int i = 0; i < items.size(); i++)
+                        if (TextUtils.isEmpty(phone_Str))
                         {
-                            if (items.get(i).isOSale.equals("true"))
-                            {
-                                isOSale = true;
-                            }
+                            mScrollView.fullScroll(ScrollView.FOCUS_DOWN);//滑动到最底部
+                            mPhoneView.setShakeAnimation();
+                            return;
                         }
-                        if (isOSale)
+                        if (TextUtils.isEmpty(code_Str))
                         {
-                            FetchOSaleData(5);//判断零元特卖是否已经当天购买过
+                            mScrollView.fullScroll(ScrollView.FOCUS_DOWN);//滑动到最底部
+                            mCodeView.setShakeAnimation();
+                            return;
+                        }
+                        if (ToolUtils.isPhoneOk(phone_Str))
+                        {
+                            mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "提交中");
+                            FetchBlindPhoneData();
                         } else
                         {
-                            commit();
+                            ToolUtils.setToast(mContext, R.string.phone_lose_txt);
                         }
                     } else
                     {
-                        ToolUtils.setToast(mContext, "抱歉,您未填写收货地址");
+                        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "提交中");
+                        judageCommit();
                     }
-
                     break;
                 case R.id.jsEditAddressBtn:
                     AddrSelectFragment addrManageFragment = AddrSelectFragment.newInstance("", STATUS_FROM_ORDER, address);
@@ -301,9 +320,9 @@ public class ShopOrderOkFragment extends BaseFragment
                         {
                             ToolUtils.setLog(maddress.toString());
                             address = maddress;
-                            setYFMoney(address);
-                            addressPhoneTv.setText("收件人：" + address.getPhone());
-                            addressNameTv.setText("电话：" + address.getName());
+                            setYFMoney(address.getPrice());
+                            addressPhoneTv.setText("电话：" + address.getPhone());
+                            addressNameTv.setText("收件人：" + address.getName());
                             addressinfoTv.setText(address.getProvince() + address.getCity() + address.getArea() + address.getAddress());
                         }
 
@@ -337,17 +356,41 @@ public class ShopOrderOkFragment extends BaseFragment
                             addr.setCity(city);
                             addr.setArea(area);
                             address = addr;
-                            setYFMoney(addr);
+                            setYFMoney(addr.getPrice());
                             orderAddressInfoLine.setVisibility(View.VISIBLE);
                             orderAddressNullLine.setVisibility(View.GONE);
                             orderAddressEditLine.setVisibility(View.VISIBLE);
-                            addressPhoneTv.setText("收件人：" + addr.getPhone());
-                            addressNameTv.setText("电话：" + addr.getName());
+                            addressPhoneTv.setText("电话：" + addr.getPhone());
+                            addressNameTv.setText("收件人：" + addr.getName());
                             addressinfoTv.setText(address.getProvince() + address.getCity() + address.getArea() + addr.getAddress());
                             ((MainActivity) getActivity()).popToStack(newAddrFragment);
                         }
                     });
                     break;
+                case R.id.bt_getCode:
+                    if (TextUtils.isEmpty(phone_Str))
+                    {
+                        mScrollView.fullScroll(ScrollView.FOCUS_DOWN);//滑动到最底部
+                        mPhoneView.setShakeAnimation();
+                        return;
+                    }
+                    if (ToolUtils.isPhoneOk(phone_Str))
+                    {
+                        mDialog.show();
+                        FetchSMSData();
+                    }
+                    else
+                    {
+                        ToolUtils.setToast(mContext, R.string.phone_lose_txt);
+                    }
+                    break;
+                case R.id.nullReload:
+                    initData();
+                    break;
+                case R.id.netReload:
+                    initData();
+                    break;
+
             }
         }
     };
@@ -376,7 +419,7 @@ public class ShopOrderOkFragment extends BaseFragment
             mPage = getArguments().getString(PAGE);
             mIndex = getArguments().getInt(INDEX);
             flags = getArguments().getInt("flags");
-            items = (ArrayList<CartItem>) getArguments().getSerializable("goodsList");
+            cartArrayItems = (ArrayList<CartArrayItem>) getArguments().getSerializable("goodsList");
         }
     }
 
@@ -404,7 +447,22 @@ public class ShopOrderOkFragment extends BaseFragment
      */
     private void initView()
     {
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+        ToolUtils.setLog("flags"+flags);
+        if (flags!=1)
+        {
+            Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
+            mContext.sendBroadcast(intent);
+        }
+
+        loadingView = (LinearLayout) mView.findViewById(R.id.loadingView);
+        nullNetView = (LinearLayout) mView.findViewById(R.id.nullNetline);
+        nullView = (LinearLayout) mView.findViewById(R.id.nullline);
+
+        reloadBtn = (TextView) mView.findViewById(R.id.nullReload);
+        reloadBtn.setOnClickListener(onClickListener);
+
+        reloadNetBtn = (TextView) mView.findViewById(R.id.netReload);
+        reloadNetBtn.setOnClickListener(onClickListener);
 
         mRequestQueue = Volley.newRequestQueue(getActivity());
         backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
@@ -412,22 +470,36 @@ public class ShopOrderOkFragment extends BaseFragment
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(R.string.shop_order_ok_text);
 
+        noFreeTv = (TextView) mView.findViewById(R.id.jsNofree);
+
         okBtn = (Button) mView.findViewById(R.id.jsOkBtn);
         okBtn.setOnClickListener(onClickListener);
+
+        items.clear();
+        for (int i = 0; i <cartArrayItems.size() ; i++)
+        {
+            items.addAll(cartArrayItems.get(i).goodsItems);
+        }
+        orderArrayItems.addAll(cartArrayItems);
 
         if (flags == 1)
         {
             if (items.get(0).isOSale.equals("true"))
             {
-
-                isljOsale=true;
+                isljOsale = true;
             }
-
         }
-        moneyTv = (TypeFaceTextView) mView.findViewById(R.id.jsPriceTotalTv);
-        moneyYfTv = (TypeFaceTextView) mView.findViewById(R.id.jsPriceYfTv);
-        moneyTotalTv = (TypeFaceTextView) mView.findViewById(R.id.jsTotalMoney);
-        moneyNumTv = (TypeFaceTextView) mView.findViewById(R.id.jsTotalNum);
+
+        if (items.size() == 1)
+        {
+            if (items.get(0).isOSale.equals("true"))
+            {
+                isNoFree = true;
+            }
+        }
+        moneyTv = (TextView) mView.findViewById(R.id.jsPriceTotalTv);
+        moneyYfTv = (TextView) mView.findViewById(R.id.jsPriceYfTv);
+        moneyTotalTv = (TextView) mView.findViewById(R.id.jsTotalMoney);
 
         addressinfoTv = (TextView) mView.findViewById(R.id.jsAddressinfoTv);
         addressNameTv = (TextView) mView.findViewById(R.id.jsAddressNameTv);
@@ -444,35 +516,97 @@ public class ShopOrderOkFragment extends BaseFragment
 
         orderGoodsListLine = (LinearLayout) mView.findViewById(R.id.orderGoodsList);
 
+        verifyView = (LinearLayout) mView.findViewById(R.id.jsVerifyView);
+        mCodeView = (CustomEditText) mView.findViewById(R.id.tv_code);
+        mCodeView.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after)
+            {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count)
+            {
+            }
+            @Override
+            public void afterTextChanged(Editable s)
+            {
+                code_Str=s.toString();
+            }
+        });
+        mPhoneView = (CustomEditText) mView.findViewById(R.id.tv_phone);
+        mPhoneView.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after)
+            {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count)
+            {
+            }
+            @Override
+            public void afterTextChanged(Editable s)
+            {
+                phone_Str=s.toString();
+            }
+        });
+        mGetCode = (TextView) mView.findViewById(R.id.bt_getCode);
+        mGetCode.setOnClickListener(onClickListener);
+
+        mScrollView = (ScrollView) mView.findViewById(R.id.scrollView);
+
         token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
 
-        creatCartDB = new CreatCartDB(mContext);
-
+        initDataView();
         initData();
+    }
 
-        FetchAddressData();
+    private void initData()
+    {
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "");
+        if (NetworkUtils.isNetworkAvailable(mContext))
+        {
+            FetchVerifyData();
+        } else
+        {
+            if (mDialog != null)
+                mDialog.dismiss();
+            nullView.setVisibility(View.GONE);
+            nullNetView.setVisibility(View.VISIBLE);
+        }
+
     }
 
     /**
      * 设置运费
      */
-    private void setYFMoney(Address area)
+    private void setYFMoney(double mm)
     {
-        moneyYF = area.getPrice();
-        moneyYfTv.setText("￥" + moneyYF);
+        if (isNoFree)
+        {
+            moneyYF = mm;
+            moneyYfTv.setText("￥" + ToolUtils.isIntPrice("" + moneyYF));
+            noFreeTv.setVisibility(View.GONE);
+        } else
+        {
+            moneyYF = 0;
+            moneyYfTv.setText("￥" + 0);
+            noFreeTv.setVisibility(View.VISIBLE);
+        }
 
-        ToolUtils.setLog("运费：" + area.getPrice());
+        ToolUtils.setLog("运费：" + moneyYF);
 
         DecimalFormat df = new DecimalFormat("###.00");
         totalMoney = Double.parseDouble(df.format(money + moneyYF));
-        moneyTotalTv.setText("￥" + totalMoney);
+        moneyTotalTv.setText("￥" + ToolUtils.isIntPrice("" + totalMoney));
     }
 
     /**
      * 设置商品信息
      */
-    private void initData()
+    private void initDataView()
     {
         if (items.size() > 0)
         {
@@ -481,17 +615,16 @@ public class ShopOrderOkFragment extends BaseFragment
 
         for (int i = 0; i < items.size(); i++)
         {
-            CartItem cartItem = items.get(i);
-            num = num + cartItem.num;
-            money = money + cartItem.num * cartItem.currentPrice;
+            CartGoodsItem cartGoodsItem = items.get(i);
+            num = num + cartGoodsItem.num;
+            money = money + cartGoodsItem.num * cartGoodsItem.currentPrice;
         }
-        moneyNumTv.setText("" + num);
 
         DecimalFormat df = new DecimalFormat("###.00");
         money = Double.parseDouble(df.format(money));
         totalMoney = Double.parseDouble(df.format(money + 0));
-        moneyTv.setText("￥" + money);
-        moneyTotalTv.setText("￥" + totalMoney);
+        moneyTv.setText("￥" + ToolUtils.isIntPrice("" + money));
+        moneyTotalTv.setText("￥" + ToolUtils.isIntPrice("" + totalMoney));
         moneyYfTv.setText("￥" + 0);
 
     }
@@ -530,18 +663,87 @@ public class ShopOrderOkFragment extends BaseFragment
                 itemLine.setVisibility(View.GONE);
             }
 
-            final CartItem cartItem = items.get(position);
+            final CartGoodsItem cartGoodsItem = items.get(position);
 
-            itemName.setText(cartItem.name);
-            itemSize.setText(cartItem.size);
-            itemCurrentPrice.setText("￥ " + cartItem.currentPrice);
+            itemName.setText(cartGoodsItem.name);
+            itemSize.setText(cartGoodsItem.size);
+            itemCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + cartGoodsItem.currentPrice));
             itemFormalPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
-            itemFormalPrice.setText("￥ " + cartItem.formalPrice);
-            itemNum.setText("" + cartItem.num);
-            ToolUtils.setImageCacheUrl(cartItem.imageUrl, itemImage);
+            itemFormalPrice.setText("￥" + ToolUtils.isIntPrice("" + cartGoodsItem.formalPrice));
+            itemNum.setText("" + cartGoodsItem.num);
+            ToolUtils.setImageCacheUrl(cartGoodsItem.imageUrl, itemImage);
 
             orderGoodsListLine.addView(childeView);
         }
+    }
+
+    /**
+     * 验证码倒计时事件处理
+     */
+    private void codeTimer()
+    {
+        initTime = ZhaiDou.VERFIRY_TIME;
+        mGetCode.setBackgroundResource(R.drawable.btn_no_click_selector);
+        mGetCode.setText("重新获取(" + initTime + ")");
+        mGetCode.setClickable(false);
+        mTimer = new Timer();
+        mTimer.schedule(new MyTimer(), 1000, 1000);
+    }
+
+    /**
+     * 倒计时
+     */
+    class MyTimer extends TimerTask
+    {
+        @Override
+        public void run()
+        {
+            runOnUiThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    initTime = initTime - 1;
+                    mGetCode.setText("重新获取(" + initTime + ")");
+                    if (initTime <= 0)
+                    {
+                        mTimer.cancel();
+                        mGetCode.setText("获取验证码");
+                        mGetCode.setBackgroundResource(R.drawable.btn_green_click_bg);
+                        mGetCode.setClickable(true);
+                    }
+                }
+            });
+        }
+    }
+
+    /**
+     * 提交前判断地址等信息
+     */
+    private void judageCommit()
+    {
+        if (address != null)
+        {
+            for (int i = 0; i < items.size(); i++)
+            {
+                if (items.get(i).isOSale.equals("true"))
+                {
+                    isOSale = true;
+                }
+            }
+            if (isOSale)
+            {
+                FetchOSaleData();//判断零元特卖是否已经当天购买过
+            } else
+            {
+                commit();
+            }
+        } else
+        {
+            mDialog.dismiss();
+            CustomToastDialog.setToastDialog(mContext, "抱歉,您未填写收货地址");
+        }
+
     }
 
     /**
@@ -555,49 +757,25 @@ public class ShopOrderOkFragment extends BaseFragment
             public void run()
             {
                 String result = FetchRequset();
-                Log.i("commit----------->",result);
-                if (result != null&&result.length()>10)
+                if (result != null && result.length() > 0)
                 {
                     try
                     {
+                        mDialog.dismiss();
                         JSONObject jsonObject = new JSONObject(result);
                         ToolUtils.setLog(jsonObject.toString());
                         int status = jsonObject.optInt("status");
-                        if (status == 201)
+                        if (status == 200)
                         {
-                            JSONObject orderObj = jsonObject.optJSONObject("order");
-                            int id = orderObj.optInt("id");
-                            String number = orderObj.optString("number");
-                            double amount = orderObj.optDouble("amount");
-                            int count = orderObj.optInt("count");
-
-                            Message message = new Message();
-                            message.what = 4;
-                            message.obj = result;
-                            handler.sendMessage(message);
-                        }
-                        else if (status == 400)
-                        {
-                            String errorArr = jsonObject.optJSONObject("message").optString("order_items.merchandise_id");
-                            if (errorArr.length() > 3)
-                            {
-                                Message message = new Message();
-                                message.what = 6;
-                                message.obj = errorArr;
-                                handler.sendMessage(message);
-                            }
-                        }
-                        else if (status == 401)
+                            handler.obtainMessage(UPDATE_COMMIT_SUCCESS,result).sendToTarget();
+                        } else if (status == 500)
                         {
                             String errorArr = jsonObject.optString("message");
-                            Message message = new Message();
-                            message.what = 7;
-                            message.obj = errorArr;
-                            handler.sendMessage(message);
+                            handler.obtainMessage(UPDATE_COMMIT_FAIL,errorArr).sendToTarget();
                         }
                         else
                         {
-                            handler.sendEmptyMessage(3);
+                            handler.sendEmptyMessage(UPDATE_LOADING_FAIL);
                         }
 
                     } catch (Exception e)
@@ -606,13 +784,17 @@ public class ShopOrderOkFragment extends BaseFragment
 
                 } else
                 {
-                    handler.sendEmptyMessage(3);
+                    handler.sendEmptyMessage(UPDATE_LOADING_FAIL);
                 }
             }
         }).start();
 
     }
 
+    /**
+     * 请求订单
+     * @return
+     */
     private String FetchRequset()
     {
         String result = null;
@@ -621,24 +803,48 @@ public class ShopOrderOkFragment extends BaseFragment
         {
             // 定义HttpClient
             HttpClient client = new DefaultHttpClient();
-
             // 实例化HTTP方法
-            HttpPost request = new HttpPost(ZhaiDou.orderCommitUrl);
+            HttpPost request = new HttpPost(ZhaiDou.CommitOrdersUrl);
             request.addHeader("SECAuthorization", token);
-
+            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
             // 创建名/值组列表
             List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("sale_order[receiver_id]", "" + address.getId()));
+            params.add(new BasicNameValuePair("businessType", "01"));
+            params.add(new BasicNameValuePair("userId", userId+""));
+            params.add(new BasicNameValuePair("orderPayAmount", money+""));
+            params.add(new BasicNameValuePair("userAddressId", address.getId()+""));
+            params.add(new BasicNameValuePair("token", token));
+            params.add(new BasicNameValuePair("version", mContext.getResources().getString(R.string.app_versionName).substring(1)));
+            params.add(new BasicNameValuePair("clientType", "ANDROID"));
+            params.add(new BasicNameValuePair("clientVersion", (ZDApplication.localVersionCode+3)+""));
+            params.add(new BasicNameValuePair("remark", bzInfo.getText().toString()));
 
-            params.add(new BasicNameValuePair("sale_order[node]", bzInfo_Str));
-            for (int i = 0; i < items.size(); i++)
+            JSONArray storeArray=new JSONArray();
+            ToolUtils.setLog("orderArrayItems.size()1+"+orderArrayItems.size());
+            for (int i = 0; i < orderArrayItems.size(); i++)
             {
-                params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][merchandise_id]]", items.get(i).id + ""));
-                params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][specification_id]]", items.get(i).sizeId + ""));
-                params.add(new BasicNameValuePair("sale_order[order_items_attributes[" + i + "][count]]", items.get(i).num + ""));
+                CartArrayItem cartArrays=orderArrayItems.get(i);
+                JSONObject storeObject=new JSONObject();
+                storeObject.put("storeId",cartArrays.storeId);
+                storeObject.put("storeDeliveryId",2);
+                storeObject.put("storeDeliveryFee",moneyYF);
+                storeObject.put("messageToStore",bzInfo_Str);
+                JSONArray goodsArray=new JSONArray();
+
+                for (int j = 0; j <cartArrays.goodsItems.size(); j++)
+                {
+                    CartGoodsItem cartGoodsItem=cartArrays.goodsItems.get(j);
+                    JSONObject goodsObject=new JSONObject();
+                    goodsObject.put("productSKUCode",cartGoodsItem.sizeId);
+                    goodsObject.put("quantity",cartGoodsItem.num);
+                    goodsObject.put("price",cartGoodsItem.currentPrice);
+                    goodsObject.put("points",0);
+                    goodsArray.put(goodsObject);
+                }
+                storeObject.put("orderItemList",goodsArray);
+                storeArray.put(storeObject);
             }
-
-
+            params.add(new BasicNameValuePair("storeOrderItemPOList", storeArray.toString()));
             // 创建UrlEncodedFormEntity对象
             UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
                     params, HTTP.UTF_8);
@@ -683,15 +889,22 @@ public class ShopOrderOkFragment extends BaseFragment
      */
     private void FetchAddressData()
     {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_RECEIVER_URL, new Response.Listener<JSONObject>()
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.AddressListUrl, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
             {
+                mDialog.dismiss();
                 ToolUtils.setLog(jsonObject.toString());
-                if (jsonObject != null)
+                int status=jsonObject.optInt("status");
+                if (status!=200)
                 {
-                    JSONArray receivers = jsonObject.optJSONArray("receivers");
+                    ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+                }
+                JSONObject dataObject=jsonObject.optJSONObject("data");
+                if (dataObject != null)
+                {
+                    JSONArray receivers = dataObject.optJSONArray("receivers");
                     if (receivers != null && receivers.length() > 0)
                     {
                         for (int i = 0; i < receivers.length(); i++)
@@ -720,52 +933,8 @@ public class ShopOrderOkFragment extends BaseFragment
                         handler.sendMessage(message);
                     } else
                     {
-                        handler.sendEmptyMessage(2);
+                        handler.sendEmptyMessage(UPDATE_ADDRESS_LOADING_FAIL);
                     }
-                }
-            }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-                mDialog.dismiss();
-                ShowToast("加载失败");
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
-    }
-
-    /**
-     * 零元特卖是否购买请求
-     */
-    public void FetchOSaleData(final int i)
-    {
-        String url = ZhaiDou.orderCheckOSaleUrl;
-        Log.i("url---------------------->", url);
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
-        {
-            @Override
-            public void onResponse(JSONObject jsonObject)
-            {
-
-                if (jsonObject != null)
-                {
-                    isOSaleBuy = jsonObject.optBoolean("flag");
-                    Log.i("isOSaleBuy---------------------->", "" + isOSaleBuy);
-                }
-                if (i == 5)
-                {
-                    handler.sendEmptyMessage(5);
                 }
             }
         }, new Response.ErrorListener()
@@ -775,7 +944,8 @@ public class ShopOrderOkFragment extends BaseFragment
             {
                 if (mDialog != null)
                     mDialog.dismiss();
-                Toast.makeText(getActivity(), "抱歉,请求失败", Toast.LENGTH_SHORT).show();
+                nullNetView.setVisibility(View.GONE);
+                nullView.setVisibility(View.VISIBLE);
             }
         })
         {
@@ -784,9 +954,256 @@ public class ShopOrderOkFragment extends BaseFragment
             {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("SECAuthorization", token);
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }
         };
         mRequestQueue.add(request);
+    }
+
+    /*
+     * 判断是否已经验证手机号码
+     */
+    public void FetchVerifyData()
+    {
+        String url = ZhaiDou.OrderAccountOrPhone;
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,url, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                ToolUtils.setLog(jsonObject.toString());
+                if (jsonObject != null)
+                {
+                    if(jsonObject.optInt("status")==200)
+                    {
+                        JSONObject object=jsonObject.optJSONObject("data");
+                        if (object!=null)
+                        {
+                            if (object.optInt("status")==400)
+                            {
+                                isVerify =true;
+                            }
+                        }
+                    }
+                    handler.sendEmptyMessage(UPDATE_VERFIY);
+                } else
+                {
+                    if (mDialog != null)
+                        mDialog.dismiss();
+                    nullNetView.setVisibility(View.GONE);
+                    nullView.setVisibility(View.VISIBLE);
+                }
+
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+                nullNetView.setVisibility(View.GONE);
+                nullView.setVisibility(View.VISIBLE);
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                headers.put("SECAuthorization", token);
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
+    }
+
+    /*
+  * 获取短信
+  */
+    public void FetchSMSData()
+    {
+        String url = ZhaiDou.OrderGetSMS+phone_Str;
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+                if (jsonObject != null)
+                {
+                    int flag=jsonObject.optInt("status");
+                    String msg=jsonObject.optString("message");
+                    if (flag==200)
+                    {
+                        JSONObject object=jsonObject.optJSONObject("data");
+                        if (object!=null)
+                        {
+                            if (object.optInt("status")!=201)
+                            {
+                                ToolUtils.setToastLong(mContext,object.optString("message"));
+                            }
+                            else
+                            {
+                                handler.sendEmptyMessage(UPDATE_GETSMS_SUCCESSS);
+                            }
+                        }
+                        else
+                        {
+                            handler.sendEmptyMessage(UPDATE_GETSMS_SUCCESSS);
+                        }
+
+                    }
+                } else
+                {
+                    ToolUtils.setToastLong(mContext,R.string.loading_fail_txt);
+                }
+
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+                ToolUtils.setToastLong(mContext,R.string.loading_fail_txt);
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                headers.put("SECAuthorization", token);
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
+    }
+
+    /*
+     * 获取短信
+     */
+    public void FetchBlindPhoneData()
+    {
+        String url = ZhaiDou.OrderBlindPhone;
+        Map<String,String> maps=new HashMap<String, String>();
+        maps.put("phone", phone_Str);
+        maps.put("vcode", code_Str);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,url,new JSONObject(maps), new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+                if (jsonObject != null)
+                {
+                    int flag=jsonObject.optInt("status");
+                    String msg=jsonObject.optString("message");
+                    JSONObject object=jsonObject.optJSONObject("data");
+                    if (object!=null)
+                    {
+                        if (object.optInt("status")!=201)
+                        {
+                            ToolUtils.setToastLong(mContext,object.optString("message"));
+                        }
+                        else
+                        {
+                            handler.sendEmptyMessage(UPDATE_VERFIY_SUCCESSS);
+                        }
+                    }
+                    else
+                    {
+                        handler.sendEmptyMessage(UPDATE_VERFIY_SUCCESSS);
+                    }
+                } else
+                {
+                    ToolUtils.setToastLong(mContext,R.string.loading_fail_txt);
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+                ToolUtils.setToastLong(mContext,R.string.loading_fail_txt);
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                headers.put("SECAuthorization", token);
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
+    }
+
+
+    /**
+     * 零元特卖是否购买请求
+     */
+    public void FetchOSaleData()
+    {
+        String url = ZhaiDou.IsBuyOSaleUrl+userId;
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (jsonObject != null)
+                {
+                    isOSaleBuy = jsonObject.optInt("ifBuy")==1?false:true;
+                    if (jsonObject.optInt("status")==500)
+                    {
+                        isOSaleBuy=false;
+                    }
+                    handler.sendEmptyMessage(UPDATE_ISBUYOSALE);
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+                ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("SECAuthorization", token);
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
+    }
+
+    public void onResume()
+    {
+        super.onResume();
+        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.shop_order_ok_text));
+    }
+
+    public void onPause()
+    {
+        super.onPause();
+        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.shop_order_ok_text));
     }
 }

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/item_click_selector"
-    android:orientation="vertical">
+              android:id="@+id/shop_today_item"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@drawable/item_click_selector"
+              android:orientation="vertical">
 
 
     <LinearLayout
@@ -13,7 +14,7 @@
         android:layout_margin="@dimen/default_margin">
 
         <RelativeLayout
-            android:layout_width="@dimen/image_width_dimen"
+            android:layout_width="@dimen/image_height_dimen"
             android:layout_height="@dimen/image_height_dimen">
 
             <ImageView
@@ -25,13 +26,13 @@
 
             <ImageView
                 android:id="@+id/shopGoodsImageNo"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone"
-                android:src="@drawable/icon_loading_defalut_no"/>
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:scaleType="centerInside"
+                android:layout_centerInParent="true"
+                android:src="@drawable/icon_sale_out"/>
 
-            </RelativeLayout>
-
+        </RelativeLayout>
 
 
         <LinearLayout
@@ -39,88 +40,56 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingLeft="10dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp">
+            android:paddingTop="3dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.00001"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
 
-                <com.zhaidou.view.TypeFaceTextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textColor="@color/text_main_color"
-                    android:singleLine="true"
-                    android:ellipsize="marquee"
-                    android:marqueeRepeatLimit="marquee_forever"
-                    android:textSize="15sp"
-                    android:gravity="left"
-                    android:layout_marginRight="10dp"
-                    android:text="我的标题"
-                    android:id="@+id/shopNameItem"/>
-
-                <com.zhaidou.view.TypeFaceTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.00001"
-                    android:textColor="@color/white"
-                    android:textSize="12sp"
-                    android:text="3折"
-                    android:paddingLeft="7dp"
-                    android:paddingRight="7dp"
-                    android:paddingTop="2dp"
-                    android:paddingBottom="2dp"
-                    android:background="@drawable/btn_green_click_bg"
-                    android:id="@+id/shopSaleTv"/>
-
-                </LinearLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginTop="5dp">
+>
 
-                <LinearLayout
-                    android:layout_width="80dp"
-                    android:layout_height="17dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:scaleType="centerInside"
-                        android:layout_marginTop="1dp"
-                        android:src="@drawable/shop_special_subclass_dester_icon"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="豆豆点评:"
-                    android:layout_marginLeft="4dp"
-                    android:textColor="@color/green_color"/>
-                </LinearLayout>
                 <com.zhaidou.view.TypeFaceTextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="40dp"
                     android:layout_height="wrap_content"
-                    android:maxLines="3"
+                    android:layout_weight="0.00001"
+                    android:textColor="@color/white"
                     android:textSize="12sp"
-                    android:layout_marginTop="4dp"
-                    android:gravity="center_vertical"
+                    android:gravity="center"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp"
+                    android:background="@drawable/btn_green_click_bg"
+                    android:id="@+id/shopSaleTv"/>
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_main_color"
                     android:ellipsize="end"
-                    android:textColor="@color/text_gary_color"
-                    android:text=""
-                    android:id="@+id/shopIntroduceItem"/>
+                    android:maxLines="2"
+                    android:textSize="14sp"
+                    android:gravity="left"
+                    android:lineSpacingExtra="2.5dp"
+                    android:layout_marginTop="1dp"
+                    android:text="我的标题"
+                    android:id="@+id/shopNameItem"/>
+
+
 
 
 
             </RelativeLayout>
 
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:maxLines="2"
+                android:textSize="12sp"
+                android:layout_marginTop="12dp"
+                android:gravity="top"
+                android:ellipsize="end"
+                android:textColor="@color/text_gary_color"
+                android:id="@+id/shopIntroduceItem"/>
 
 
             <LinearLayout
@@ -131,20 +100,22 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.00001"
                 android:gravity="center_vertical">
-                <com.zhaidou.view.TypeFaceTextView
+
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.0001"
-                    android:textSize="14sp"
-                    android:textColor="@color/sale_color"
+                    android:textSize="16sp"
+                    android:textColor="@color/red"
                     android:text="$ 1396"
                     android:id="@+id/shopCurrentPrice"/>
-                <com.zhaidou.view.TypeFaceTextView
+
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textSize="12sp"
-                    android:layout_marginTop="2dp"
+                    android:textSize="13sp"
+                    android:layout_marginTop="2.5dp"
                     android:layout_marginLeft="5dp"
                     android:singleLine="true"
                     android:ellipsize="marquee"
@@ -157,7 +128,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="马上抢"
-                    android:clickable="true"
                     android:textSize="14sp"
                     android:layout_weight="0.0001"
                     android:textColor="@color/white"
@@ -168,6 +138,36 @@
                     android:paddingBottom="4dp"
                     android:id="@+id/buyGoodsBtn"/>
             </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:visibility="gone"
+                android:orientation="horizontal">
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/shopBuyCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_gary_color"
+                    android:textSize="12sp"
+                    android:layout_weight="1"
+                    android:text="已抢购38%"/>
+
+                <ProgressBar
+                    android:id="@+id/shopProgressBarGreen"
+                    android:layout_width="100dp"
+                    android:layout_height="6dp"
+                    style="@style/ProgressBar_green"/>
+                <ProgressBar
+                    android:id="@+id/shopProgressBarRed"
+                    android:layout_width="100dp"
+                    android:layout_height="6dp"
+                    android:visibility="gone"
+                    style="@style/ProgressBar_red"/>
+
+                </LinearLayout>
 
         </LinearLayout>
 

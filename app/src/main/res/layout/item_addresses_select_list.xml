@@ -25,7 +25,6 @@
             android:layout_width="22dp"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:clickable="true"
             android:layout_marginLeft="10dp"
             android:layout_centerVertical="true"
             android:src="@drawable/selector_address_icon" />
@@ -89,7 +88,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="8dp"
                 android:text="dssddsdsdsds"
-                android:textColor="@color/text_gary_color" />
+                android:textColor="@color/text_normal_color" />
 
         </LinearLayout>
 
@@ -110,7 +109,7 @@
         <LinearLayout
             android:id="@+id/tv_delete"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginTop="2dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
@@ -128,7 +127,7 @@
             android:text="删除"
             android:textSize="14sp"
             android:layout_marginLeft="5dp"
-            android:textColor="@color/text_gary_color" />
+            android:textColor="@color/text_normal_color" />
 
         </LinearLayout>
 
@@ -136,7 +135,7 @@
         <LinearLayout
             android:id="@+id/tv_edit"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:clickable="true"
             android:layout_marginTop="2dp"
             android:layout_centerVertical="true"
@@ -154,7 +153,7 @@
                 android:text="编辑"
                 android:textSize="14sp"
                 android:layout_marginLeft="5dp"
-                android:textColor="@color/text_gary_color" />
+                android:textColor="@color/text_normal_color" />
 
         </LinearLayout>
 
@@ -162,5 +161,6 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:visibility="gone"
         android:background="#EEEEEE"></View>
 </LinearLayout>

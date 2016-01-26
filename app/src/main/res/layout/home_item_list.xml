@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rl_fragment_strategy"
     android:layout_width="match_parent"
     android:layout_height="@dimen/home_item_dimen"
@@ -7,8 +7,18 @@
     android:clipToPadding="true"
     android:paddingLeft="7dp"
     android:paddingRight="7dp"
-    android:paddingTop="7dp"
+    android:orientation="vertical"
+    android:background="@color/white"
     >
+    <View
+        android:id="@+id/lineTo"
+        android:layout_width="match_parent"
+        android:layout_height="7dp"
+        android:background="@color/white"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/cover"
@@ -36,12 +46,12 @@
             android:paddingBottom="6dp"
             android:textColor="@android:color/white" />
     </LinearLayout>
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="66dp"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_gravity="right"
+        android:gravity="center_vertical"
         android:layout_marginRight="10dp"
         android:background="@drawable/views2"
         android:layout_marginTop="10dp"
@@ -57,18 +67,15 @@
             android:src="@drawable/icon_eye"/>
         <TextView
             android:id="@+id/views"
-            android:layout_toRightOf="@id/icon_eye"
-            android:layout_centerVertical="true"
             android:text="123"
-            android:singleLine="true"
-            android:ellipsize="end"
             android:layout_marginRight="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center"
+            android:visibility="visible"
             android:textColor="@color/dark_color_for_text"
             android:textSize="11dp" />
-    </RelativeLayout>
+    </LinearLayout>
 
     <ImageView
         android:layout_width="@dimen/home_tips_dimen"
@@ -76,6 +83,6 @@
         android:id="@+id/newsView"
         android:visibility="gone"
         android:src="@drawable/home_info_news_icon"/>
+    </RelativeLayout>
 
-
-</RelativeLayout>
+</LinearLayout>

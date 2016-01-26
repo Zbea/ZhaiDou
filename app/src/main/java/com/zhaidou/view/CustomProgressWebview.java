@@ -3,12 +3,10 @@ package com.zhaidou.view;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.Log;
+import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
-
-import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 
 /**
@@ -23,7 +21,7 @@ public class CustomProgressWebview extends WebView
 		super(context, attrs);
 
 		progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal);
-		progressBar.setLayoutParams(new LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT, 5, 0, 0));
+		progressBar.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 12, 0, 0));
 		progressBar.setMax(100);  
 		addView(progressBar);
 		setWebChromeClient(new WebChromeClient());

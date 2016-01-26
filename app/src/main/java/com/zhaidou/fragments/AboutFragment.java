@@ -5,19 +5,17 @@ import android.app.Dialog;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.dialog.CustomLoadingDialog;
 
 
 public class AboutFragment extends BaseFragment implements View.OnClickListener{
@@ -86,11 +84,19 @@ public class AboutFragment extends BaseFragment implements View.OnClickListener{
             PackageManager manager = getActivity().getPackageManager();
             PackageInfo info = manager.getPackageInfo(getActivity().getPackageName(), 0);
             String version = info.versionName;
-            return String.format(getResources().getString(R.string.app_version),version);
+            return String.format(getResources().getString(R.string.app_versionName),version);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_about)); //统计页面
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_about));
+    }
 }

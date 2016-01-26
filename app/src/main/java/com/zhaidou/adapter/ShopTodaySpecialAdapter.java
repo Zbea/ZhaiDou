@@ -1,13 +1,14 @@
 package com.zhaidou.adapter;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
@@ -20,11 +21,10 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 /**
- * Created by roy on 15/7/23.
- */
+* Created by roy on 15/7/23.
+*/
 public class ShopTodaySpecialAdapter extends BaseAdapter
 {
-
     private List<ShopTodayItem> items;
     private ViewHolder viewHolder;
     private Context context;
@@ -43,13 +43,16 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
 
     class ViewHolder
     {
-        TypeFaceTextView itemIntorduce;
         TypeFaceTextView itemName;
+        TypeFaceTextView itemIntorduce;
         ImageView itemImage,itemNull;
         TypeFaceTextView itemBuy;
-        TypeFaceTextView itemCurrentPrice;
-        TypeFaceTextView itemFormerPrice;
+        TextView itemCurrentPrice;
+        TextView itemFormerPrice;
         TypeFaceTextView itemSales;
+        TextView buyCount;
+        ProgressBar buyProgressBarGreen;
+        ProgressBar buyProgressBarRed;
     }
 
     @Override
@@ -80,11 +83,14 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
             viewHolder.itemName = (TypeFaceTextView) convertView.findViewById(R.id.shopNameItem);
             viewHolder.itemSales= (TypeFaceTextView) convertView.findViewById(R.id.shopSaleTv);
             viewHolder.itemIntorduce = (TypeFaceTextView) convertView.findViewById(R.id.shopIntroduceItem);
-            viewHolder.itemCurrentPrice = (TypeFaceTextView) convertView.findViewById(R.id.shopCurrentPrice);
-            viewHolder.itemFormerPrice = (TypeFaceTextView) convertView.findViewById(R.id.shopFormerPrice);
+            viewHolder.itemCurrentPrice = (TextView) convertView.findViewById(R.id.shopCurrentPrice);
+            viewHolder.itemFormerPrice = (TextView) convertView.findViewById(R.id.shopFormerPrice);
             viewHolder.itemBuy = (TypeFaceTextView) convertView.findViewById(R.id.buyGoodsBtn);
             viewHolder.itemImage = (ImageView) convertView.findViewById(R.id.shopGoodsImage);
             viewHolder.itemNull= (ImageView) convertView.findViewById(R.id.shopGoodsImageNo);
+            viewHolder.buyCount= (TextView) convertView.findViewById(R.id.shopBuyCount);
+            viewHolder.buyProgressBarGreen= (ProgressBar) convertView.findViewById(R.id.shopProgressBarGreen);
+            viewHolder.buyProgressBarRed= (ProgressBar) convertView.findViewById(R.id.shopProgressBarRed);
             convertView.setTag(viewHolder);
         }
         else
@@ -92,14 +98,32 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        ShopTodayItem todayShopItem=items.get(position);
+        final ShopTodayItem todayShopItem=items.get(position);
         viewHolder.itemFormerPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
 
-        viewHolder.itemName.setText(todayShopItem.title);
-        viewHolder.itemIntorduce.setText("                        "+todayShopItem.designer);
-        viewHolder.itemCurrentPrice.setText("￥ "+todayShopItem.currentPrice);
+        if (todayShopItem.totalCount!=0)
+        {
+            viewHolder.buyCount.setText("已抢购"+todayShopItem.percentum+"%");
+            if(todayShopItem.percentum>=80)
+            {
+                viewHolder.buyProgressBarRed.setMax(todayShopItem.totalCount*10);
+                viewHolder.buyProgressBarRed.setProgress(todayShopItem.percentum*todayShopItem.totalCount/10);
+                viewHolder.buyProgressBarRed.setVisibility(View.VISIBLE);
+                viewHolder.buyProgressBarGreen.setVisibility(View.GONE);
+            }
+            else
+            {
+                viewHolder.buyProgressBarGreen.setMax(todayShopItem.totalCount*10);
+                viewHolder.buyProgressBarGreen.setProgress(todayShopItem.percentum*todayShopItem.totalCount/10);
+                viewHolder.buyProgressBarGreen.setVisibility(View.VISIBLE);
+                viewHolder.buyProgressBarRed.setVisibility(View.GONE);
+            }
+        }
+        viewHolder.itemName.setText("            "+todayShopItem.title);
+        viewHolder.itemCurrentPrice.setText("￥"+ToolUtils.isIntPrice(""+todayShopItem.currentPrice));
         viewHolder.itemFormerPrice.getPaint().setAntiAlias(true);//去锯齿
-        viewHolder.itemFormerPrice.setText("￥ "+todayShopItem.formerPrice);
+        viewHolder.itemFormerPrice.setText("￥"+ToolUtils.isIntPrice(""+todayShopItem.formerPrice));
+        viewHolder.itemIntorduce.setText(todayShopItem.comment);
         if(todayShopItem.formerPrice!=0)
         {
             DecimalFormat df = new DecimalFormat("##.0");
@@ -117,16 +141,17 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
         }
         else
         {
-            viewHolder.itemSales.setVisibility(View.GONE);
+            viewHolder.itemSales.setText("0折");
         }
-        ToolUtils.setImageCacheUrl(todayShopItem.imageUrl,viewHolder.itemImage);
+//        ToolUtils.setImageUrl(todayShopItem.imageUrl,viewHolder.itemImage,R.drawable.icon_loading_defalut);
+        ToolUtils.setImageNoResetUrl(todayShopItem.imageUrl,viewHolder.itemImage,R.drawable.icon_loading_defalut);
 
         viewHolder.itemBuy.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
-                GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).title, items.get(position).id);
+                GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).title, items.get(position).goodsId);
                 ((MainActivity) context).navigationToFragment(goodsDetailsFragment);
             }
         });

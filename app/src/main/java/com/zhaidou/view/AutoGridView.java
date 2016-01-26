@@ -120,7 +120,6 @@ public class AutoGridView extends LinearLayout implements View.OnClickListener{
                 }else {
                     mTextWidth=length+dp_10+dp_10+dp_10+mTextWidth;
                 }
-                Log.i("i--------------->",i+"--length---"+(length+dp_10+dp_10)+"----mTextWidth--->"+mTextWidth+"---dp55--->"+dp_55);
                 if (mTextWidth>=getMeasuredWidth()-dp_10*2){
                     mTextWidth=0;
                     --i;

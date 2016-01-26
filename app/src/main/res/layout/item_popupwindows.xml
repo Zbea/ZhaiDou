@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/parent"
-    android:orientation="vertical"
-    android:background="@android:color/transparent" >
+    android:background="@android:color/transparent"
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/ll_popup"
@@ -12,55 +12,76 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:background="#ffffff"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
-        <com.zhaidou.view.TypeFaceTextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:paddingLeft="10dp"
-            android:text="攻略分类"
-            android:textSize="16sp"
-            android:textColor="#999999"/>
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:layout_weight="1"
+                android:paddingLeft="5dp"
+                android:text="攻略分类"
+                android:textColor="@color/text_main_color"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/categoryRefresh"
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:layout_weight="0.0001"
+                android:clickable="true"
+                android:src="@drawable/icon_home_cateory_refresh" />
+
+        </LinearLayout>
+
         <TextView
-            android:layout_marginRight="20dp"
-            android:layout_marginLeft="20dp"
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:background="#D2D2D2" />
 
         <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/tv_category_all"
             android:layout_width="68dp"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/category_item_selector"
+            android:clickable="true"
+            android:gravity="center"
+            android:minWidth="65dp"
+            android:visibility="gone"
             android:paddingBottom="5dp"
             android:paddingTop="5dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="30dp"
-            android:minWidth="65dp"
-            android:gravity="center"
-            android:textColor="@drawable/text_color_selector"
             android:text="全部"
-            android:clickable="true"
-            android:textSize="13sp"
-            android:background="@drawable/category_item_selector"/>
+            android:textColor="@drawable/text_color_selector"
+            android:textSize="13sp" />
 
         <GridView
             android:id="@+id/gv_category"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:listSelector="@android:color/transparent"
-            android:layout_marginBottom="50dp"
+            android:layout_marginBottom="40dp"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
+            android:layout_marginTop="10dp"
             android:horizontalSpacing="5dp"
-            android:verticalSpacing="10dp"
-            android:numColumns="3"/>
-        </LinearLayout>
+            android:listSelector="@android:color/transparent"
+            android:numColumns="3"
+            android:verticalSpacing="10dp" />
+    </LinearLayout>
+
     <RelativeLayout
+        android:id="@+id/ll_category_close"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:id="@+id/ll_category_close"/>
+        android:layout_weight="1" />
 </LinearLayout>

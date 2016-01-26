@@ -5,16 +5,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -22,15 +20,17 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -43,59 +43,68 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.adapter.GoodsImageAdapter;
-import com.zhaidou.adapter.SpecificationAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
+import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.dialog.CustomToastDialog;
-import com.zhaidou.model.CartItem;
-import com.zhaidou.model.CountTime;
+import com.zhaidou.model.CartArrayItem;
+import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.GoodDetail;
 import com.zhaidou.model.GoodInfo;
 import com.zhaidou.model.Specification;
-import com.zhaidou.sqlite.CreatCartDB;
-import com.zhaidou.sqlite.CreatCartTools;
-import com.zhaidou.utils.CollectionUtils;
+import com.zhaidou.utils.DeviceUtils;
+import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
-import com.zhaidou.view.ChildGridView;
+import com.zhaidou.view.CustomProgressWebview;
+import com.zhaidou.view.FlowLayout;
+import com.zhaidou.view.LargeImgView;
+import com.zhaidou.view.TimerTextView;
 import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.sharesdk.framework.ShareSDK;
-import cn.sharesdk.onekeyshare.OnekeyShare;
+import cn.sharesdk.framework.Platform;
+import cn.sharesdk.framework.PlatformActionListener;
 
-public class GoodsDetailsFragment extends BaseFragment {
+public class GoodsDetailsFragment extends BaseFragment
+{
     private static final String PAGE = "page";
     private static final String INDEX = "index";
+    private static final String ISSHOWTIMER = "timer";
+    private static final String CANSHARE = "canShare";
 
     private String mPage;
-    private int mIndex;
+    private String mIndex;
     private View mView;
     private int flags;//1代表零元特卖；2代表已下架商品
     private Context mContext;
-    private int count = 0;
     private ImageView shareBtn;
     private String shareUrl = ZhaiDou.goodsDetailsShareUrl;
     private TextView backBtn, titleTv, mCartCount;
     private ImageView[] dots;
     private List<View> adPics = new ArrayList<View>();
     private ViewPager viewPager;
+    private RelativeLayout relativeLayout;
     private LinearLayout viewGroupe;//指示器容器
     private LinearLayout ljBtn;
     private LinearLayout addCartBtn;
@@ -103,99 +112,136 @@ public class GoodsDetailsFragment extends BaseFragment {
     private View myCartBtn;
 
     private Dialog mDialog;
-    private GridView mGridView;
+    private DialogUtils mDialogUtil;
     private RequestQueue mRequestQueue;
-    private ViewPager mViewPager;
-    private List<Fragment> fragments = new ArrayList<Fragment>();
-    private GoodsDetailsChildFragment goodsDetailsChildFragment;
-    private SaleServiceFragment saleServiceFragment;
-    private GoodsChildFragmentAdapter goodsChildFragmentAdapter;
 
     private ArrayList<GoodInfo> goodInfos = new ArrayList<GoodInfo>();
-    private int mSpecificationSelectPosition = -1;
-
-    private TextView tv_comment, mCurrentPrice, mOldPrice, mDiscount, mTitle;
-
+    private TextView tv_comment, mCurrentPrice, mOldPrice, mDiscount, mTitle, tv_baoyou;
 
     private final int UPDATE_GOOD_DETAIL = 0;
-    private final int UPDATE_COUNT_DOWN_TIME = 1;
-    private final int UPDATE_UI_TIMER_FINISH = 2;
-    private final int UPDATE_TIMER_START = 3;
-    private final int UPDATE_LJBUY_ISOSALEBUY = 5;//零元特卖立即购买时候判断是否已经购买郭
-    private CreatCartDB creatCartDB;
+    private final int UPDATE_CARTCAR_DATA = 1;
+    private final int UPDATE_ISOSALEBUY = 2;//判断进来时候零元特卖是否已经购买了，购买了才让按钮不能点击
+    private final int UPDATE_LJBUY_ISOSALEBUY = 3;//零元特卖立即购买时候判断是否已经购买郭
+    private final int UPDATE_LOGIN_ISOSALEBUY = 4;//判断进来时候零元特卖是否已经购买了，购买了才让按钮不能点击
+    private final int UPDATE_ADD_CART = 5;//加入购物车
+    private final int UPDATE_ISADD_CART = 6;//零元特卖是否已经加入购物车了
+    private final int UPDATE_OSALE_DELETE = 7;//删除购物车里面的零元特卖
 
-    private final int UPDATE_ISOSALEBUY = 6;//判断进来时候零元特卖是否已经购买了，购买了才让按钮不能点击
-    private List<CartItem> items = new ArrayList<CartItem>();
-
-    private int num;
     private ScrollView scrollView;
     private ImageView topBtn;
-    private LinearLayout iconView, iconOSaleView;
-
+    private LinearLayout iconView, iconOSaleView, commentView;
+    private TextView imageNull;
+    private TimerTextView mTimerView;
     private LinearLayout loadingView, nullNetView, nullView;
     private TextView reloadBtn, reloadNetBtn;
+    private TextView sizeNameParentTv, sizeNameSubclassTv;
+    private LinearLayout sizeParentLine, sizeSubjectLine;
+    private String sizeNameParent, sizeNameSubclass;
+    private FlowLayout flowLayoutParent, flowLayoutSubclass;
+    private boolean isSizeParent;//父是否存在
+    private boolean isSizeSubclass;//子是否存在
+    private List<TextView> textSingleTvs = new ArrayList<TextView>();//一维点击 TextView 集合
+    private List<TextView> textParentTvs = new ArrayList<TextView>();//二维父点击 TextView 集合
+    private List<TextView> textSubclassTvs = new ArrayList<TextView>();//二维子点击 TextView 集合
+    private int sigleClickPosition = -1;
+    private int doubleClickParentPos = 0;
+    private boolean isClick;//规格是否可以点击
+    private Specification mSpecificationParent;//选中规格第一个
+    private Specification mSpecificationSubclass;//选中型号第二个
 
     private GoodDetail detail;
-    private SpecificationAdapter specificationAdapter;
     private GoodsImageAdapter imageAdapter;
-    private Specification mSpecification;//选中规格
-    private List<Specification> specificationList;
     private ImageView mTipView;
     private ImageView goodsImage;
     private FrameLayout animation_viewGroup;
     private RadioGroup radioGroup;
+    private ListView mListView;
+    private GoodInfoAdapter mAdapter;
+    private LinearLayout mImageContainer;
+    private LinearLayout goodsImagesView;
+    private LinearLayout goodsInfoView;
+    private CustomProgressWebview webView;
     //动画时间
     private int AnimationDuration = 1000;
     //正在执行的动画数量
     private int number = 0;
     //是否完成清理
     private boolean isClean = false;
-    private MyTimer mTimer;
-    private TextView mTimerView;
+    private boolean isPublish;
+    private boolean canShare;
+    private boolean isOSaleBuy;//是否购买过零元特卖
+    private boolean isOSaleAdd;//是否添加过零元特卖
+    private boolean isOver = true;//是否卖光
+    private boolean isAddOrBuy = true;//是添加还是立即购买
+    private boolean isFristSubclass = true;//二维第一次但是展示加入
 
-    private boolean isOSaleBuy;
-    private boolean isClick;
-    private int mClick = -1;
-
+    private long initTime;
+    private long systemTime;
+    private boolean isFrist;
     private int userId;
     private String token;
-    private long temptime;
-    private long currentTime;
+    long mTime = 0;
+    private int cartCount;//购物车商品数量
+    private ArrayList<CartArrayItem> arrayItems = new ArrayList<CartArrayItem>();
+    private List<Specification> specificationList = new ArrayList<Specification>();//父集合
+    private List<Specification> subclassSizes = new ArrayList<Specification>();//子规格集合
+    private CartArrayItem cartArrayItem = new CartArrayItem();
+    private CartGoodsItem cartGoodsItem = new CartGoodsItem();
+    private String sku;
 
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
+    {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent)
+        {
             String action = intent.getAction();
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag)) {
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
+            {
+                FetchCountData();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshLoginTag))
+            {
+                FetchCountData();
+            }
+            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
+            {
                 initCartTips();
             }
-            if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
-                checkLogin();
-                initCartTips();
+            if (action.equals(ZhaiDou.IntentRefreshOGoodsDetailsTag))
+            {
+                isOSaleBuy = true;
+                setAddOrBuyShow("您今天已经购买过零元特卖商品", false);
+                setRefreshSpecification();
             }
-            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag)) {
-                checkLogin();
-                initCartTips();
+            if (action.equals(ZhaiDou.IntentRefreshGoodsDetailsTag))
+            {
+                if (isTwoSize())
+                {
+                    mSpecificationSubclass.num = mSpecificationSubclass.num - 1;
+                } else
+                {
+                    mSpecificationParent.num = mSpecificationParent.num - 1;
+                }
+                setRefreshSpecification();
             }
-            if (action.equals(ZhaiDou.IntentRefreshGoodsDetailsTag)) {
-                setAddOrBuyShow("不能重复购买");
-                FetchOSaleData(UPDATE_ISOSALEBUY);
-            }
-
         }
     };
 
-    private Handler myHandler = new Handler() {
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
+    private Handler myHandler = new Handler()
+    {
+        public void handleMessage(Message msg)
+        {
+            switch (msg.what)
+            {
                 case 0:
                     //用来清除动画后留下的垃圾
-                    try {
+                    try
+                    {
                         animation_viewGroup.removeAllViews();
-                    } catch (Exception e) {
+                    } catch (Exception e)
+                    {
 
                     }
-
                     isClean = false;
 
                     break;
@@ -205,158 +251,167 @@ public class GoodsDetailsFragment extends BaseFragment {
         }
     };
 
-    private Handler handler = new Handler() {
+    private Handler handler = new Handler()
+    {
         @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
+        public void handleMessage(Message msg)
+        {
+            switch (msg.what)
+            {
                 case UPDATE_GOOD_DETAIL:
-                    if (detail != null)
-                        ljBtn.setVisibility(View.VISIBLE);
-                    addCartBtn.setVisibility(View.VISIBLE);
-                    loadingView.setVisibility(View.GONE);
-
+                    if (detail == null)
+                    {
+                        return;
+                    }
+                    setNextEventView();
+                    if (flags == 1)//如果是零元特卖商品UI显示处理
+                    {
+                        iconView.setVisibility(View.GONE);
+                        iconOSaleView.setVisibility(View.VISIBLE);
+                        commentView.setVisibility(View.GONE);
+                        tv_baoyou.setVisibility(View.GONE);
+                        canShare=false;
+                    } else
+                    {
+                        iconView.setVisibility(View.VISIBLE);
+                        iconOSaleView.setVisibility(View.GONE);
+                        commentView.setVisibility(View.VISIBLE);
+                        tv_baoyou.setVisibility(View.VISIBLE);
+                    }
+                    shareBtn.setVisibility(canShare ? View.VISIBLE : View.GONE);
                     detail = (GoodDetail) msg.obj;
                     setChildFargment(detail, goodInfos);
-
-                    mCurrentPrice.setText("￥" + detail.getPrice() + "");
-                    mOldPrice.setText("￥" + detail.getCost_price() + "");
-                    tv_comment.setText(detail.getDesigner());
-                    mTitle.setText(detail.getTitle());
-                    setDiscount(detail.getPrice(), detail.getCost_price());
-
-                    if (detail.getSpecifications() != null)
-                        specificationAdapter.addAll(detail.getSpecifications());
-
-                    boolean isOver = true;
-
-                    for (int i = 0; i < detail.getSpecifications().size(); i++) {
-                        if (detail.getSpecifications().get(i).num > 0) {
-                            isOver = false;
-                            break;
-                        }
+                    mCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + detail.price + ""));
+                    mOldPrice.setText("￥" + ToolUtils.isIntPrice("" + detail.cost_price + ""));
+                    tv_comment.setText(detail.designer);
+                    mTitle.setText(detail.title);
+                    setDiscount(detail.price, detail.cost_price);
+                    ToolUtils.setImageCacheUrl(detail.imageUrl, goodsImage, R.drawable.icon_loading_goods_details);
+                    if (detail.specifications != null)
+                    {
+                        setSizeView();
                     }
-                    if (isOver) {
-                        if (flags == 2) {
-                            setAddOrBuyShow("此商品已下架");
-                        } else {
-                            setAddOrBuyShow("已卖光");
-                        }
-
+                    if (isPublish)
+                    {
+                        setAddOrBuyShow("此商品已下架", false);
                     }
-
-                    initData(detail.getImgs());
-
-                    if (detail.getImgs().size() < 1 && detail.getSpecifications().size() < 1 && detail.getEnd_time() == null) {
-                        setAddOrBuyShow("此商品已下架");
+                    if (isOver)
+                    {
+                        setAddOrBuyShow("已卖光", false);
                     }
-
-                    String end_date = detail.getEnd_time();
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-
-                    try {
-                        long millionSeconds = sdf.parse(end_date).getTime();//毫秒
-                        long temp = millionSeconds - System.currentTimeMillis();
-                        ToolUtils.setLog("temp:" + temp);
-                        if (temp <= 0) {
+                    try
+                    {
+                        initTime = detail.end_time - System.currentTimeMillis();
+                        if (initTime <= 0)
+                        {
                             mTimerView.setText("已结束");
-                            setAddOrBuyShow("活动已结束");
+                        } else
+                        {
+                            mTimerView.setTimes(initTime);
+                            mTimerView.start();
                         }
-                        mTimer = new MyTimer(temp, 1000);
-                        mTimer.start();
-                    } catch (Exception e) {
+                    } catch (Exception e)
+                    {
                         Log.i("Exception e", e.getMessage());
                     }
+                    goodsImage.setFocusable(true);
+                    goodsImage.setFocusableInTouchMode(true);
+                    goodsImage.requestFocus();
+                    goodsImage.requestFocusFromTouch();
                     break;
-                case UPDATE_COUNT_DOWN_TIME:
-                    CountTime time = (CountTime) msg.obj;
-                    String timerFormat = mContext.getResources().getString(R.string.timer);
-                    String hourStr = String.format("%02d", time.getHour());
-                    String minStr = String.format("%02d", time.getMinute());
-                    String secondStr = String.format("%02d", time.getSecond());
-                    String timer = String.format(timerFormat, time.getDay(), hourStr, minStr, secondStr);
-                    mTimerView.setText(timer);
+                case UPDATE_CARTCAR_DATA://更新购物车数量
+                    initCartTips();
                     break;
-                case UPDATE_UI_TIMER_FINISH:
-                    ToolUtils.setLog("temp:" + 1);
-                    mTimerView.setText("已结束");
-                    setAddOrBuyShow("活动已结束");
-                    break;
-                case 5:
-                    if (mDialog != null)
-                        mDialog.dismiss();
-                    if (isOSaleBuy) {
-                        setAddOrBuyShow("不能重复购买");
-                    } else {
-                        for (int i = 0; i < items.size(); i++) {
-                            if (items.get(i).isOSale.equals("true")) {
-                                ljBuyOkDialog(items.get(i));
-                                return;
-                            }
-                        }
-                        buyGoods();
+                case UPDATE_LJBUY_ISOSALEBUY://零元特卖
+                    if (isOSaleBuy)
+                    {
+                        if (mDialog != null)
+                            mDialog.dismiss();
+                        setAddOrBuyShow("您今天已经购买过零元特卖商品", false);
+                    } else
+                    {
+                        FetchOSaleAddData();
                     }
                     break;
                 case UPDATE_ISOSALEBUY:
                     if (mDialog != null)
                         mDialog.dismiss();
-                    if (isOSaleBuy) {
-                        setAddOrBuyShow("不能重复购买");
+                    loadingView.setVisibility(View.GONE);
+                    if (isOSaleBuy)
+                    {
+                        setAddOrBuyShow("您今天已经购买过零元特卖商品", false);
                     }
                     break;
+
+                case UPDATE_ADD_CART://添加商品成功
+                    cartCount = cartCount + 1;
+                    Intent intent = new Intent(ZhaiDou.IntentRefreshAddCartTag);
+                    mContext.sendBroadcast(intent);
+                    int[] location = new int[2];
+                    mTipView.getLocationInWindow(location);
+                    Drawable drawable = mTipView.getDrawable();
+                    doAnim(drawable, location);
+                    break;
+                case UPDATE_ISADD_CART://校正是否零元特卖已经加入购物车
+                    mDialog.dismiss();
+                    if (isOSaleAdd)//如果已经存在零元特卖
+                    {
+                        String delStr = isAddOrBuy == true ? "购物车已有一件零元特卖商品继续添加则会删除该商品，是否继续?" : "购物车已有一件零元特卖商品继续购买则会删除该商品，是否继续?";
+                        mDialogUtil.showDialog(delStr, new DialogUtils.PositiveListener()
+                        {
+                            @Override
+                            public void onPositive()
+                            {
+                                mDialog.show();
+                                FetchGoodsDeleteData();
+                            }
+                        }, null);
+                    } else
+                    {
+                        if (isAddOrBuy)//如果是添加
+                        {
+                            FetchAddCartData();
+                        } else
+                        {
+                            CommitLjBuy();
+                        }
+                    }
+                    break;
+                case UPDATE_OSALE_DELETE://删除成功后
+                    cartCount = cartCount - 1;
+                    Intent delete = new Intent(ZhaiDou.IntentRefreshAddCartTag);
+                    mContext.sendBroadcast(delete);
+                    if (isAddOrBuy)//如果已经存在零元特卖
+                    {
+                        FetchAddCartData();
+                    } else
+                    {
+                        mDialog.dismiss();
+                        CommitLjBuy();
+                    }
+                    break;
+
             }
-        }
-    };
-
-    private ViewPager.OnPageChangeListener onPageChangeListener = new ViewPager.OnPageChangeListener() {
-        @Override
-        public void onPageScrolled(int i, float v, int i2) {
-        }
-
-        @Override
-        public void onPageSelected(int i) {
-            setImageBackground(i % adPics.size());
-        }
-
-        @Override
-        public void onPageScrollStateChanged(int i) {
-
-        }
-    };
-
-    /**
-     * 商品信息和售后选择
-     */
-    private ViewPager.OnPageChangeListener onPageChange = new ViewPager.OnPageChangeListener() {
-        @Override
-        public void onPageScrolled(int i, float v, int i2) {
-        }
-
-        @Override
-        public void onPageSelected(int i) {
-            if (i == 0) {
-                radioGroup.check(R.id.infoRb);
-            }
-            if (i == 1) {
-                radioGroup.check(R.id.afterSaleRb);
-            }
-        }
-
-        @Override
-        public void onPageScrollStateChanged(int i) {
         }
     };
 
     /**
      * radiobutton选择改变事件
      */
-    private RadioGroup.OnCheckedChangeListener onCheckedChangeListener = new RadioGroup.OnCheckedChangeListener() {
+    private RadioGroup.OnCheckedChangeListener onCheckedChangeListener = new RadioGroup.OnCheckedChangeListener()
+    {
         @Override
-        public void onCheckedChanged(RadioGroup radioGroup, int i) {
-            if (i == R.id.infoRb) {
-                mViewPager.setCurrentItem(0);
+        public void onCheckedChanged(RadioGroup radioGroup, int i)
+        {
+            if (i == R.id.infoRb)
+            {
+                goodsImagesView.setVisibility(View.VISIBLE);
+                goodsInfoView.setVisibility(View.GONE);
             }
-            if (i == R.id.afterSaleRb) {
-                mViewPager.setCurrentItem(1);
+            if (i == R.id.afterSaleRb)
+            {
+                goodsImagesView.setVisibility(View.GONE);
+                goodsInfoView.setVisibility(View.VISIBLE);
             }
         }
     };
@@ -364,50 +419,42 @@ public class GoodsDetailsFragment extends BaseFragment {
     /**
      * 点击事件
      */
-    private View.OnClickListener onClickListener = new View.OnClickListener() {
+    private View.OnClickListener onClickListener = new View.OnClickListener()
+    {
         @Override
-        public void onClick(View view) {
-            switch (view.getId()) {
+        public void onClick(View view)
+        {
+            switch (view.getId())
+            {
                 case R.id.back_btn:
                     ((MainActivity) getActivity()).popToStack(GoodsDetailsFragment.this);
                     break;
                 case R.id.goodsMyCartBtn:
-                    if (checkLogin()) {
+                    if (checkLogin())
+                    {
                         ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
                         ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
-                    } else {
+                    } else
+                    {
                         Intent intent = new Intent(getActivity(), LoginActivity.class);
-                        intent.setFlags(1);
-                        getActivity().startActivity(intent);
+                        intent.setFlags(3);
+                        startActivityForResult(intent, 5001);
                     }
                     break;
                 case R.id.goodsLjBuyBtn:
-                    if (checkLogin()) {
-                        if (detail != null)
-                            if (mSpecification != null) {
-                                if (flags == 1)//判断零元特卖是否已经购买郭
-                                {
-                                    mDialog.show();
-                                    FetchOSaleData(UPDATE_LJBUY_ISOSALEBUY);
-                                } else {
-                                    buyGoods();
-                                }
-
-                            } else {
-                                scrollView.scrollTo(0, 600);
-                                Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
-                            }
-                    } else {
-                        Intent intent = new Intent(getActivity(), LoginActivity.class);
-                        intent.setFlags(1);
-                        getActivity().startActivity(intent);
-                    }
+                    isAddOrBuy = false;
+                    PrepareAddOrBuy();
                     break;
                 case R.id.goodsAddBuyBtn:
-                    addGoods();
+                    if ((System.currentTimeMillis() - mTime) > 1000)
+                    {
+                        mTime = System.currentTimeMillis();
+                        isAddOrBuy = true;
+                        PrepareAddOrBuy();
+                    }
                     break;
                 case R.id.goodsTop:
-                    scrollView.scrollTo(0, 0);
+                    scrollView.fullScroll(ScrollView.FOCUS_UP);
                     topBtn.setVisibility(View.GONE);
                     break;
                 case R.id.share_iv:
@@ -423,58 +470,63 @@ public class GoodsDetailsFragment extends BaseFragment {
         }
     };
 
-    public static GoodsDetailsFragment newInstance(String page, int index) {
+    public static GoodsDetailsFragment newInstance(String page, String index)
+    {
         GoodsDetailsFragment fragment = new GoodsDetailsFragment();
         Bundle args = new Bundle();
         args.putString(PAGE, page);
-        args.putInt(INDEX, index);
+        args.putString(INDEX, index);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public GoodsDetailsFragment() {
+    public GoodsDetailsFragment()
+    {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        if (getArguments() != null)
+        {
             mPage = getArguments().getString(PAGE);
-            mIndex = getArguments().getInt(INDEX);
+            mIndex = getArguments().getString(INDEX);
             flags = getArguments().getInt("flags");
+            isPublish = (flags == 3 ? true : false);
+            canShare = getArguments().getBoolean(CANSHARE, true);
         }
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        System.out.println("GoodsDetailsFragment.onCreateView");
+                             Bundle savedInstanceState)
+    {
 
         mContext = getActivity();
 
-        if (mView == null) {
+        if (mView == null)
+        {
             mView = inflater.inflate(R.layout.goods_details_page, container, false);
             initView();
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
         ViewGroup parent = (ViewGroup) mView.getParent();
-        if (parent != null) {
+        if (parent != null)
+        {
             parent.removeView(mView);
         }
         return mView;
     }
 
-
-    private void initView() {
+    private void initView()
+    {
         shareUrl = shareUrl + mIndex;
-
-
+        mDialogUtil = new DialogUtils(mContext);
         shareBtn = (ImageView) mView.findViewById(R.id.share_iv);
         shareBtn.setOnClickListener(onClickListener);
-//        if (flags==1)//零元特卖不能分享
-//        {
-//            shareBtn.setVisibility(View.GONE);
-//        }
+        shareBtn.setVisibility(canShare ? View.VISIBLE : View.GONE);
 
         loadingView = (LinearLayout) mView.findViewById(R.id.loadingView);
         nullNetView = (LinearLayout) mView.findViewById(R.id.nullNetline);
@@ -491,10 +543,16 @@ public class GoodsDetailsFragment extends BaseFragment {
         backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
-        titleTv.setText("商品详情");
+        titleTv.setText(mContext.getResources().getString(R.string.title_goods_detail));
+
+        sizeParentLine = (LinearLayout) mView.findViewById(R.id.sizeLine);
+        sizeSubjectLine = (LinearLayout) mView.findViewById(R.id.attributeNameLine);
+        sizeNameParentTv = (TextView) mView.findViewById(R.id.attributeName1);
+        sizeNameSubclassTv = (TextView) mView.findViewById(R.id.attributeName2);
+        flowLayoutParent = (FlowLayout) mView.findViewById(R.id.flowLayout);
+        flowLayoutSubclass = (FlowLayout) mView.findViewById(R.id.flowLayout1);
 
         viewGroupe = (LinearLayout) mView.findViewById(R.id.goods_viewGroup);
-        mGridView = (ChildGridView) mView.findViewById(R.id.gv_specification);
 
         myCartBtn = (View) mView.findViewById(R.id.goodsMyCartBtn);
         myCartBtn.setOnClickListener(onClickListener);
@@ -506,26 +564,24 @@ public class GoodsDetailsFragment extends BaseFragment {
         publishBtn = (TextView) mView.findViewById(R.id.goodsPublish);
 
         goodsImage = (ImageView) mView.findViewById(R.id.goodsImageView);
-        goodsImage.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 630 / 720));
+        goodsImage.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth));
 
-        RelativeLayout relativeLayout = (RelativeLayout) mView.findViewById(R.id.imageRl);
-        relativeLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 630 / 720));
+        relativeLayout = (RelativeLayout) mView.findViewById(R.id.imageRl);
+        relativeLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth));
 
         iconView = (LinearLayout) mView.findViewById(R.id.iconView);
         iconOSaleView = (LinearLayout) mView.findViewById(R.id.iconOSaleView);
-        if (flags == 1) {
-            iconView.setVisibility(View.GONE);
-            iconOSaleView.setVisibility(View.VISIBLE);
-        } else {
-            iconView.setVisibility(View.VISIBLE);
-            iconOSaleView.setVisibility(View.GONE);
-        }
+        commentView = (LinearLayout) mView.findViewById(R.id.commentView);
 
-        if (flags == 2) {
-            setAddOrBuyShow("此商品已下架");
+        mView.findViewById(R.id.timeLine).setVisibility(View.GONE);
+
+        if (isPublish)
+        {
+            setAddOrBuyShow("此商品已下架", false);
         }
 
         tv_comment = (TextView) mView.findViewById(R.id.tv_comment);
+        tv_baoyou = (TextView) mView.findViewById(R.id.tv_baoyou);
         mCurrentPrice = (TextView) mView.findViewById(R.id.goodsCurrentPrice);
         mOldPrice = (TextView) mView.findViewById(R.id.goodsFormerPrice);
         mOldPrice.getPaint().setAntiAlias(true);
@@ -535,99 +591,152 @@ public class GoodsDetailsFragment extends BaseFragment {
         mTipView = (ImageView) mView.findViewById(R.id.myCartTipsTv);
         mDiscount = (TextView) mView.findViewById(R.id.tv_discount);
         mTitle = (TextView) mView.findViewById(R.id.tv_title);
-        mTimerView = (TextView) mView.findViewById(R.id.tv_count_time);
+        mTimerView = (TimerTextView) mView.findViewById(R.id.tv_count_time);
         animation_viewGroup = createAnimLayout();
         mRequestQueue = Volley.newRequestQueue(getActivity());
 
+        topBtn = (ImageView) mView.findViewById(R.id.goodsTop);
+        topBtn.setOnClickListener(onClickListener);
+
         scrollView = (ScrollView) mView.findViewById(R.id.sv_goods_detail);
-        scrollView.setOnTouchListener(new View.OnTouchListener() {
+        scrollView.setOnTouchListener(new View.OnTouchListener()
+        {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+            public boolean onTouch(View view, MotionEvent motionEvent)
+            {
+                scrollView.getParent().requestDisallowInterceptTouchEvent(true);
+                if (motionEvent.getAction() == MotionEvent.ACTION_MOVE)
+                {
                     int scrollY = view.getScrollY();
-                    if (scrollY != 0) {
+                    if (scrollY > goodsImage.getHeight())
+                    {
                         topBtn.setVisibility(View.VISIBLE);
-                    } else {
+                    }
+                    if (scrollY < 700)
+                    {
                         topBtn.setVisibility(View.GONE);
                     }
                 }
                 return false;
             }
         });
-        topBtn = (ImageView) mView.findViewById(R.id.goodsTop);
-        topBtn.setOnClickListener(onClickListener);
-
-        mViewPager = (ViewPager) mView.findViewById(R.id.vp_goods_detail);
 
         radioGroup = (RadioGroup) mView.findViewById(R.id.goodsRG);
         radioGroup.setOnCheckedChangeListener(onCheckedChangeListener);
 
-        specificationAdapter = new SpecificationAdapter(getActivity(), new ArrayList<Specification>(), mSpecificationSelectPosition);
-        mGridView.setAdapter(specificationAdapter);
+        goodsImagesView = (LinearLayout) mView.findViewById(R.id.goodInfoView);
+        webView = (CustomProgressWebview) mView.findViewById(R.id.goodsWebView);
+        goodsInfoView = (LinearLayout) mView.findViewById(R.id.goodInfo1View);
 
-        specificationAdapter.setOnInViewClickListener(R.id.sizeTitleTv, new BaseListAdapter.onInternalClickListener() {
+        mListView = (ListView) mView.findViewById(R.id.lv_good_info);
+        mImageContainer = (LinearLayout) mView.findViewById(R.id.ll_img_container);
+        imageNull = (TextView) mView.findViewById(R.id.img_null);
+        imageNull.setVisibility(View.GONE);
+
+        mView.findViewById(R.id.rl_qq_contact).setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void OnClickListener(View parentV, View v, Integer position, Object values) {
-
-                if (((Specification) values).num > 0) {
-                    if (mClick == position) {
-                        if (isClick == false) {
-                            mClick = position;
-                            specificationAdapter.setCheckPosition(mSpecificationSelectPosition = position);
-                            specificationAdapter.notifyDataSetChanged();
-                            sizeEvent(position);
-                            isClick = true;
-
-                        } else {
-                            mClick = -1;
-                            isClick = false;
-                            specificationAdapter.setCheckPosition(mSpecificationSelectPosition = -1);
-                            specificationAdapter.notifyDataSetChanged();
-                            mSpecification = null;
-
-                            mCurrentPrice.setText("￥" + detail.getPrice() + "");
-                            mOldPrice.setText("￥" + detail.getCost_price() + "");
-                            setDiscount(detail.getPrice(), detail.getCost_price());
-                        }
-                    } else {
-                        mClick = position;
-                        specificationAdapter.setCheckPosition(mSpecificationSelectPosition = position);
-                        specificationAdapter.notifyDataSetChanged();
-                        sizeEvent(position);
-                        isClick = true;
-                    }
-
-
+            public void onClick(View view)
+            {
+                if (DeviceUtils.isApkInstalled(getActivity(), "com.tencent.mobileqq"))
+                {
+                    String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_Number);
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                } else
+                {
+                    ShowToast("没有安装QQ客户端哦");
                 }
             }
         });
-
-        creatCartDB = new CreatCartDB(mContext);
-        initCartTips();
 
         initData();
 
     }
 
     /**
+     * 注册广播
+     */
+    private void initBroadcastReceiver()
+    {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshGoodsDetailsTag);
+        intentFilter.addAction(ZhaiDou.IntentRefreshOGoodsDetailsTag);
+
+        mContext.registerReceiver(broadcastReceiver, intentFilter);
+    }
+
+    /**
+     * 登录回调重写
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (resultCode == 5001)
+        {
+            checkLogin();
+            FetchCountData();
+            if (flags == 1)
+            {
+                if (mDialog != null)
+                    mDialog.show();
+                FetchOSaleData(UPDATE_LOGIN_ISOSALEBUY);
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    /**
      * 数据加载
      */
-    private void initData() {
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
-        if (NetworkUtils.isNetworkAvailable(mContext)) {
-            FetchDetailData(mIndex);
-            if (checkLogin()) {
-                if (flags == 1) {
-                    FetchOSaleData(UPDATE_ISOSALEBUY);
-                }
+    private void initData()
+    {
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "");
+        if (NetworkUtils.isNetworkAvailable(mContext))
+        {
+            FetchDetailData();
+            if (checkLogin())
+            {
+                FetchCountData();
             }
-        } else {
+        } else
+        {
             if (mDialog != null)
                 mDialog.dismiss();
             nullView.setVisibility(View.GONE);
             nullNetView.setVisibility(View.VISIBLE);
         }
+    }
 
+    /**
+     * 商品信息请求完了，请求商品是否购买过零元特卖商品
+     */
+    private void setNextEventView()
+    {
+        if (checkLogin())
+        {
+            if (flags == 1)
+            {
+                //请求账户是否已经购买过零元特卖商品
+                FetchOSaleData(UPDATE_ISOSALEBUY);
+            } else
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+                loadingView.setVisibility(View.GONE);
+            }
+        } else
+        {
+            if (mDialog != null)
+                mDialog.dismiss();
+            loadingView.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -635,30 +744,425 @@ public class GoodsDetailsFragment extends BaseFragment {
      *
      * @param msg
      */
-    private void setAddOrBuyShow(String msg) {
-        publishBtn.setVisibility(View.VISIBLE);
-        publishBtn.setText(msg);
-        ljBtn.setVisibility(View.GONE);
-        addCartBtn.setVisibility(View.GONE);
+    private void setAddOrBuyShow(String msg, boolean isShow)
+    {
+        if (isShow)
+        {
+            publishBtn.setVisibility(View.GONE);
+            ljBtn.setVisibility(View.VISIBLE);
+            addCartBtn.setVisibility(View.VISIBLE);
+        } else
+        {
+            publishBtn.setVisibility(View.VISIBLE);
+            publishBtn.setText(msg);
+            ljBtn.setVisibility(View.GONE);
+            addCartBtn.setVisibility(View.GONE);
+        }
     }
 
-    public boolean checkLogin() {
+    /**
+     * 设置规格 view
+     */
+    private void setSizeView()
+    {
+        sizeNameParentTv.setText(sizeNameParent);
+        sizeNameSubclassTv.setText(sizeNameSubclass);
+        if (isTwoSize())
+        {
+            //关联
+            for (int i = 0; i < specificationList.size(); i++)
+            {
+                for (int j = 0; j < subclassSizes.size(); j++)
+                {
+                    if (specificationList.get(i).title.equals(subclassSizes.get(j).title))
+                    {
+                        specificationList.get(i).sizess.add(subclassSizes.get(j));
+                    }
+                }
+            }
+            sizeParentLine.setVisibility(View.VISIBLE);
+            sizeSubjectLine.setVisibility(View.VISIBLE);
+            addSizeParentView();
+            return;
+        } else if (isSizeParent && !isSizeSubclass)
+        {
+            sizeParentLine.setVisibility(View.GONE);
+            sizeSubjectLine.setVisibility(View.VISIBLE);
+            addSizeSingleView();
+        } else if (!isSizeParent && isSizeSubclass)
+        {
+            sizeParentLine.setVisibility(View.VISIBLE);
+            sizeSubjectLine.setVisibility(View.GONE);
+            addSizeSingleView();
+        } else
+        {
+            sizeParentLine.setVisibility(View.GONE);
+            sizeSubjectLine.setVisibility(View.GONE);
+        }
+
+    }
+
+    /**
+     * 添加规格布局
+     */
+    private void addSizeParentView()
+    {
+        ToolUtils.setLog("父规格");
+        flowLayoutParent.removeAllViews();
+        MarginLayoutParams lp = new MarginLayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        lp.leftMargin = 10;
+        lp.rightMargin = 5;
+        lp.topMargin = 10;
+        lp.bottomMargin = 5;
+        for (int i = 0; i < specificationList.size(); i++)
+        {
+            final int position = i;
+            View view = LayoutInflater.from(mContext).inflate(R.layout.goods_details_size_item, null);
+            final TextView textView = (TextView) view.findViewById(R.id.sizeTitleTv);
+            textView.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+
+                    if (doubleClickParentPos == position)//用来判断是否是否是点击的同一个按钮
+                    {
+                        if (isClick)
+                        {
+                            doubleClickParentPos = position;
+                            for (int j = 0; j < textParentTvs.size(); j++)
+                            {
+                                textParentTvs.get(j).setSelected(false);
+                            }
+                            textView.setSelected(true);
+                            mSpecificationParent = specificationList.get(position);
+                            addSizeSubclassView(mSpecificationParent.sizess);
+                        } else
+                        {
+                            doubleClickParentPos = -1;
+                            textView.setSelected(false);
+                            mSpecificationParent = null;
+                            addSizeSubclassView(specificationList.get(0).sizess);
+                        }
+                    } else
+                    {
+                        doubleClickParentPos = position;
+                        for (int j = 0; j < textParentTvs.size(); j++)
+                        {
+                            textParentTvs.get(j).setSelected(false);
+                        }
+                        textView.setSelected(true);
+                        mSpecificationParent = specificationList.get(position);
+                        addSizeSubclassView(mSpecificationParent.sizess);
+                    }
+                }
+            });
+            Specification specification = specificationList.get(i);
+            textView.setText(specification.title);
+            if (0 == position)
+            {
+                textView.setSelected(true);
+                mSpecificationParent = specificationList.get(i);
+            }
+            textParentTvs.add(textView);
+            flowLayoutParent.addView(view, lp);
+        }
+        addSizeSubclassView(specificationList.get(0).sizess);
+    }
+
+    /**
+     * 添加规格布局（如果是一维的）
+     */
+    private void addSizeSingleView()
+    {
+        ToolUtils.setLog("一位规格");
+        if (isSizeSubclass)
+        {
+            flowLayoutParent.removeAllViews();
+        }
+        if (isSizeParent)
+        {
+            flowLayoutSubclass.removeAllViews();
+        }
+        MarginLayoutParams lp = new MarginLayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        lp.leftMargin = 10;
+        lp.rightMargin = 5;
+        lp.topMargin = 10;
+        lp.bottomMargin = 5;
+        for (int i = 0; i < specificationList.size(); i++)
+        {
+            final int position = i;
+            final Specification specification = specificationList.get(i);
+            ToolUtils.setLog(specification.title);
+            View view = LayoutInflater.from(mContext).inflate(R.layout.goods_details_size_item, null);
+            final TextView textView = (TextView) view.findViewById(R.id.sizeTitleTv);
+            textView.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+
+                    if (sigleClickPosition == position)//用来判断是否是否是点击的同一个按钮
+                    {
+                        if (isClick)
+                        {
+                            sigleClickPosition = position;
+                            for (int j = 0; j < textSingleTvs.size(); j++)
+                            {
+                                textSingleTvs.get(j).setSelected(false);
+                            }
+                            textView.setSelected(true);
+                            sizeEvent(specification);
+                        } else
+                        {
+                            sigleClickPosition = -1;
+                            textView.setSelected(false);
+                            mSpecificationParent = null;
+                            mCurrentPrice.setText("￥" + ToolUtils.isIntPrice(detail.price + ""));
+                            mOldPrice.setText("￥" + ToolUtils.isIntPrice(detail.cost_price + ""));
+                            setDiscount(detail.price, detail.cost_price);
+                            if (isPublish)
+                            {
+                                setAddOrBuyShow("此商品已下架", false);
+                            }
+                        }
+                    } else
+                    {
+                        sigleClickPosition = position;
+                        for (int j = 0; j < textSingleTvs.size(); j++)
+                        {
+                            textSingleTvs.get(j).setSelected(false);
+                        }
+                        textView.setSelected(true);
+                        sizeEvent(specification);
+                    }
+                }
+            });
+            textView.setText(specification.title);
+            if (specification.num < 1)
+            {
+                textView.setBackgroundResource(R.drawable.goods_no_click_selector);
+                textView.setTextColor(Color.parseColor("#999999"));
+                textView.setClickable(false);
+            } else
+            {
+                if (specificationList.size()==1)
+                {
+                    sigleClickPosition = position;
+                    textView.setSelected(true);
+                    sizeEvent(specification);
+                }
+//                if (sigleClickPosition == position)
+//                {
+//                    textView.setSelected(true);
+//                } else
+//                {
+//                    textView.setSelected(false);
+//                }
+                textSingleTvs.add(textView);
+            }
+            if (isSizeSubclass)
+            {
+                flowLayoutParent.addView(view, lp);
+            }
+            if (isSizeParent)
+            {
+                flowLayoutSubclass.addView(view, lp);
+            }
+        }
+    }
+
+
+    /**
+     * 添加子规格布局
+     */
+    private void addSizeSubclassView(List<Specification> sizes)
+    {
+        ToolUtils.setLog("子规格");
+        mSpecificationSubclass=null;
+        flowLayoutSubclass.removeAllViews();
+        MarginLayoutParams lp = new MarginLayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        lp.leftMargin = 10;
+        lp.rightMargin = 5;
+        lp.topMargin = 10;
+        lp.bottomMargin = 5;
+        for (int i = 0; i < sizes.size(); i++)
+        {
+            final int position = i;
+            final Specification specification = sizes.get(i);
+            View view = LayoutInflater.from(mContext).inflate(R.layout.goods_details_size_item, null);
+            final TextView textView = (TextView) view.findViewById(R.id.sizeTitleTv);
+            textView.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+
+                    if (sigleClickPosition == position)//用来判断是否是否是点击的同一个按钮
+                    {
+                        if (isClick)
+                        {
+                            if (mSpecificationParent == null)
+                            {
+                                ToolUtils.setToast(mContext, "抱歉，请先选择" + sizeNameParent);
+                                return;
+                            }
+                            sigleClickPosition = position;
+                            for (int j = 0; j < textSubclassTvs.size(); j++)
+                            {
+                                textSubclassTvs.get(j).setSelected(false);
+                            }
+                            textView.setSelected(true);
+                            sizeEvent(specification);
+                        } else
+                        {
+                            sigleClickPosition = -1;
+                            textView.setSelected(false);
+                            mSpecificationSubclass = null;
+                            mCurrentPrice.setText("￥" + ToolUtils.isIntPrice(detail.price + ""));
+                            mOldPrice.setText("￥" + ToolUtils.isIntPrice(detail.cost_price + ""));
+                            setDiscount(detail.price, detail.cost_price);
+                            if (isPublish)
+                            {
+                                setAddOrBuyShow("此商品已下架", false);
+                            }
+
+                        }
+                    } else
+                    {
+                        if (mSpecificationParent == null)
+                        {
+                            ToolUtils.setToast(mContext, "抱歉，请先选择" + sizeNameParent);
+                            return;
+                        }
+                        sigleClickPosition = position;
+                        for (int j = 0; j < textSubclassTvs.size(); j++)
+                        {
+                            textSubclassTvs.get(j).setSelected(false);
+                        }
+                        textView.setSelected(true);
+                        sizeEvent(specification);
+                    }
+                }
+            });
+            textView.setText(specification.title1);
+            if (specification.num < 1)
+            {
+                textView.setBackgroundResource(R.drawable.goods_no_click_selector);
+                textView.setTextColor(Color.parseColor("#999999"));
+                textView.setClickable(false);
+            } else
+            {
+                textView.setSelected(false);
+                if( isFristSubclass)
+                {
+                    isFristSubclass=false;
+                    if (specificationList.size()==1)
+                        if (specificationList.get(0).sizess.size()==1)
+                        {
+                            sigleClickPosition=0;
+                            textView.setSelected(true);
+                            sizeEvent(specification);
+                        }
+                }
+                textSubclassTvs.add(textView);
+            }
+            flowLayoutSubclass.addView(view, lp);
+        }
+    }
+
+    /**
+     * 刷新规格数据(0零元特卖1普通特卖购买成功后2立即购买请求是否已经购买)刷新规格数量
+     */
+    private void setRefreshSpecification()
+    {
+        for (int i = 0; i < specificationList.size(); i++)
+        {
+            if (flags == 1)//零元特卖
+            {
+                //判断是否为二维
+                if (isTwoSize())
+                {
+                    for (int j = 0; j < specificationList.get(i).sizess.size(); j++)
+                    {
+                        specificationList.get(i).sizess.get(j).isBuy = true;
+                    }
+                } else
+                {
+                    specificationList.get(i).isBuy = true;
+                }
+            } else
+            {
+                //判断是否为二维
+                if (isTwoSize())
+                {
+                    if (mSpecificationSubclass!=null)
+                    {
+                        for (int j = 0; j < specificationList.get(i).sizess.size(); j++)
+                        {
+                            if (specificationList.get(i).sizess.get(j).sizeId.equals(mSpecificationSubclass.sizeId))
+                            {
+                                specificationList.get(i).sizess.get(j).num = mSpecificationSubclass.num;
+                            }
+                        }
+                        if (mSpecificationSubclass.num < 1)
+                        {
+                            mSpecificationSubclass = null;
+                            addSizeParentView();
+                        }
+                    }
+                } else
+                {
+                    if (specificationList.get(i).sizeId.equals(mSpecificationParent.sizeId))
+                    {
+                        specificationList.get(i).num = mSpecificationParent.num;
+                    }
+                    if (mSpecificationParent.num < 1)
+                    {
+                        mSpecificationParent = null;
+                        addSizeSingleView();
+                    }
+                }
+            }
+        }
+
+    }
+
+
+    public boolean checkLogin()
+    {
         token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
         boolean isLogin = !TextUtils.isEmpty(token) && userId > -1;
-        ToolUtils.setLog("" + isLogin);
         return isLogin;
     }
 
     /**
      * 选择规格事件处理
      */
-    private void sizeEvent(int position) {
-        if (detail != null & specificationList.size() > 0) {
-            mSpecification = specificationList.get(position);
-            mCurrentPrice.setText("￥" + mSpecification.price);
-            mOldPrice.setText("￥" + mSpecification.oldPrice);
-            setDiscount(mSpecification.price, mSpecification.oldPrice);
+    private void sizeEvent(Specification spe)
+    {
+        if (isTwoSize())
+        {
+            mSpecificationSubclass = spe;
+        } else
+        {
+            mSpecificationParent = spe;
+        }
+        setAddOrBuyShow("", true);
+        mCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + spe.price));
+        mOldPrice.setText("￥" + ToolUtils.isIntPrice("" + spe.oldPrice));
+        setDiscount(spe.price, spe.oldPrice);
+        if (isOSaleBuy)
+        {
+            setAddOrBuyShow("您今天已经购买过零元特卖商品", false);
+        }
+        if (isPublish)
+        {
+            setAddOrBuyShow("此商品已下架", false);
         }
     }
 
@@ -668,22 +1172,28 @@ public class GoodsDetailsFragment extends BaseFragment {
      * @param current
      * @param old
      */
-    private void setDiscount(double current, double old) {
+    private void setDiscount(double current, double old)
+    {
         mDiscount.setVisibility(View.VISIBLE);
-        if (current != 0 & old != 0) {
+        if (current != 0 & old != 0)
+        {
             DecimalFormat df = new DecimalFormat("##.0");
             String zk = df.format(current / old * 10);
-            if (zk.contains(".0")) {
+            if (zk.contains(".0"))
+            {
                 int sales = (int) Double.parseDouble(zk);
                 mDiscount.setText(sales + "折");
-            } else {
+            } else
+            {
                 Double sales = Double.parseDouble(zk);
                 mDiscount.setText(sales + "折");
             }
-        } else {
+        } else
+        {
             mDiscount.setVisibility(View.GONE);
         }
     }
+
 
     /**
      * 加载子fargment信息
@@ -691,425 +1201,547 @@ public class GoodsDetailsFragment extends BaseFragment {
      * @param detail
      * @param goodInfos
      */
-    private void setChildFargment(GoodDetail detail, ArrayList<GoodInfo> goodInfos) {
-        fragments.removeAll(fragments);
-        goodsDetailsChildFragment = GoodsDetailsChildFragment.newInstance(detail, goodInfos);
-        saleServiceFragment = SaleServiceFragment.newInstance("", "");
-        fragments.add(goodsDetailsChildFragment);
-        fragments.add(saleServiceFragment);
-        goodsChildFragmentAdapter = new GoodsChildFragmentAdapter(getChildFragmentManager());
-        mViewPager.setOnPageChangeListener(onPageChange);
-        mViewPager.setAdapter(goodsChildFragmentAdapter);
-        mViewPager.setCurrentItem(0);
+    private void setChildFargment(GoodDetail detail, ArrayList<GoodInfo> goodInfos)
+    {
+        mAdapter = new GoodInfoAdapter(mContext, goodInfos);
+        mListView.setAdapter(mAdapter);
+//        webView.loadData(detail.webUrl, "text/html; charset=UTF-8", "UTF-8");
 
+        mImageContainer.removeAllViews();
+
+        DisplayImageOptions options=new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.icon_loading_osale)
+                .showImageForEmptyUri(R.drawable.icon_loading_osale)
+                .showImageOnFail(R.drawable.icon_loading_osale)
+                .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
+                .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
+                .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
+                .build();
+
+        if (detail.imgs != null&&detail.imgs.size()>0)
+        {
+            for (int i = 0; i < detail.imgs.size(); i++)
+            {
+                LargeImgView imageView = new LargeImgView(mContext);
+                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                ImageLoader.getInstance().displayImage(detail.imgs.get(i), imageView, options,new ImageLoadingListener()
+                {
+                    @Override
+                    public void onLoadingStarted(String s, View view)
+                    {
+                    }
+
+                    @Override
+                    public void onLoadingFailed(String s, View view, FailReason failReason)
+                    {
+                    }
+
+                    @Override
+                    public void onLoadingComplete(String s, View view, Bitmap bitmap)
+                    {
+                        if (bitmap != null)
+                        {
+                            LargeImgView imageView1 = (LargeImgView) view;
+                            imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+                            if (bitmap.getHeight() < 4000)
+                            {
+                                imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
+                                imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, bitmap.getHeight() * screenWidth / bitmap.getWidth()));
+                                imageView1.setImageBitmap(bitmap);
+                            } else
+                            {
+                                imageView1.setImageBitmapLarge(bitmap);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onLoadingCancelled(String s, View view)
+                    {
+
+                    }
+                });
+                mImageContainer.addView(imageView);
+            }
+        } else
+        {
+            imageNull.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
      * 分享
      */
-    private void share() {
-        ShareSDK.initSDK(mContext);
-        OnekeyShare oks = new OnekeyShare();
-        //关闭sso授权
-        oks.disableSSOWhenAuthorize();
-        // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
-        oks.setTitle(mPage);
-        // titleUrl是标题的网络链接，仅在人人网和QQ空间使用
-        oks.setTitleUrl(shareUrl);
-        // text是分享文本，所有平台都需要这个字段
-        oks.setText(mPage + "   " + shareUrl);
-        // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
-        if (detail != null) {
-            oks.setImageUrl(detail.getImgs().get(0));//确保SDcard下面存在此张图片
-        }
-        // url仅在微信（包括好友和朋友圈）中使用
-        oks.setUrl(shareUrl);
-        // comment是我对这条分享的评论，仅在人人网和QQ空间使用
-//            oks.setComment("我是测试评论文本");
-        // site是分享此内容的网站名称，仅在QQ空间使用
-        oks.setSite(getString(R.string.app_name));
-        // siteUrl是分享此内容的网站地址，仅在QQ空间使用
-        oks.setSiteUrl(shareUrl);
+    private void share()
+    {
+        DialogUtils mDialogUtils = new DialogUtils(mContext);
+        mDialogUtils.showShareDialog(mPage, mPage + "  " + shareUrl, detail.imageUrl, shareUrl, new PlatformActionListener()
+        {
+            @Override
+            public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap)
+            {
+                Toast.makeText(mContext, mContext.getString(R.string.share_completed), Toast.LENGTH_SHORT).show();
+            }
 
-        oks.show(mContext);
+            @Override
+            public void onError(Platform platform, int i, Throwable throwable)
+            {
+                Toast.makeText(mContext, mContext.getString(R.string.share_error), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancel(Platform platform, int i)
+            {
+                Toast.makeText(mContext, mContext.getString(R.string.share_cancel), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    /**
-     * 注册广播
-     */
-    private void initBroadcastReceiver() {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshGoodsDetailsTag);
-        mContext.registerReceiver(broadcastReceiver, intentFilter);
-    }
 
     /**
      * 红色标识提示显示数量
      */
-    private void initCartTips() {
-        if (checkLogin()) {
-            num = 0;
-            getGoodsItems();
-            for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).isPublish.equals("false") && items.get(i).isOver.equals("false")) {
-                    num = num + items.get(i).num;
-                }
-            }
-            if (num > 0) {
+    private void initCartTips()
+    {
+        if (checkLogin())
+        {
+            if (cartCount > 0)
+            {
                 mCartCount.setVisibility(View.VISIBLE);
-                mCartCount.setText("" + num);
-            } else {
+                mCartCount.setText("" + cartCount);
+            } else
+            {
                 mCartCount.setVisibility(View.GONE);
             }
-        } else {
+        } else
+        {
             mCartCount.setVisibility(View.GONE);
-        }
-    }
-
-    /**
-     * 获得当前userId的所有商品
-     */
-    private void getGoodsItems() {
-        items = CreatCartTools.selectByAll(creatCartDB, userId);
-    }
-
-    /**
-     * 立即购买
-     */
-    private void buyGoods() {
-        CartItem cartItem = new CartItem();
-        cartItem.userId = userId;
-        cartItem.id = detail.getId();
-        cartItem.name = detail.getTitle();
-        cartItem.creatTime = System.currentTimeMillis();
-        if (detail.getImgs() != null)
-            cartItem.imageUrl = detail.getImgs().get(0);
-        cartItem.currentPrice = mSpecification.price;//规格的价格
-        cartItem.formalPrice = mSpecification.oldPrice;
-        DecimalFormat df = new DecimalFormat("##.0");
-        double saveMoney = Double.parseDouble(df.format(mSpecification.oldPrice - mSpecification.price));
-        cartItem.saveMoney = saveMoney;
-        cartItem.saveTotalMoney = saveMoney;
-        cartItem.totalMoney = detail.getPrice();
-        cartItem.num = 1;
-        cartItem.size = mSpecification.getTitle();
-        cartItem.sizeId = mSpecification.getId();
-        cartItem.isPublish = "false";
-        if (flags == 1) {
-            cartItem.isOSale = "true";
-        } else {
-            cartItem.isOSale = "false";
-        }
-
-
-        ArrayList<CartItem> itemsCheck = new ArrayList<CartItem>();
-        itemsCheck.add(cartItem);
-
-        ShopOrderOkFragment shopOrderOkFragment = ShopOrderOkFragment.newInstance("", 0);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("flags", 1);
-        bundle.putSerializable("goodsList", itemsCheck);
-        shopOrderOkFragment.setArguments(bundle);
-        ((MainActivity) getActivity()).navigationToFragment(shopOrderOkFragment);
-
-    }
-
-    /**
-     * 添加商品
-     */
-    private void addGoods() {
-        if (checkLogin()) {
-            if (flags == 1) {
-                if (mSpecification != null) {
-                    if (isOSaleBuy) {
-                        Toast.makeText(mContext, "抱歉,您已经购买了零元特卖商品,今天不能再添加了", Toast.LENGTH_LONG).show();
-                        return;
-                    } else {
-                        for (int i = 0; i < items.size(); i++) {
-                            if (items.get(i).isOSale.equals("true")) {
-                                addCartOkDialog(items.get(i));
-                                return;
-                            }
-                        }
-                        addCartGoods();
-                    }
-                } else {
-                    scrollView.scrollTo(0, 600);
-                    Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                addCartGoods();
-            }
-
-        } else {
-            Intent intent = new Intent(getActivity(), LoginActivity.class);
-            intent.setFlags(1);
-            getActivity().startActivity(intent);
-        }
-
-    }
-
-    /**
-     * 判断商品是否库存不走
-     *
-     * @return true 库存足
-     */
-    private boolean isOver() {
-        items = CreatCartTools.selectByAll(creatCartDB, userId);
-
-        for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).sizeId == mSpecification.getId()) {
-                if (mSpecification.num >= items.get(i).num + 1) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private void addCartGoods() {
-        if (detail != null) {
-            if (mSpecification != null) {
-                if (isOver()) {
-                    int[] location = new int[2];
-                    mTipView.getLocationInWindow(location);
-                    Drawable drawable = mTipView.getDrawable();
-                    doAnim(drawable, location);
-
-                    getGoodsItems();
-
-                    CartItem cartItem = new CartItem();
-                    cartItem.userId = userId;
-                    cartItem.id = detail.getId();
-                    cartItem.name = detail.getTitle();
-                    cartItem.creatTime = System.currentTimeMillis();
-                    if (detail.getImgs() != null) {
-                        cartItem.imageUrl = detail.getImgs().get(0);
-                    }
-                    cartItem.currentPrice = mSpecification.price;//规格的价格
-                    cartItem.formalPrice = mSpecification.oldPrice;
-                    DecimalFormat df = new DecimalFormat("###.00");
-                    double saveMoney = Double.parseDouble(df.format(mSpecification.oldPrice - mSpecification.price));
-                    cartItem.saveMoney = saveMoney;
-                    cartItem.saveTotalMoney = saveMoney;
-                    cartItem.totalMoney = detail.getPrice();
-                    cartItem.num = 1;
-                    cartItem.size = mSpecification.getTitle();
-                    cartItem.sizeId = mSpecification.getId();
-                    cartItem.isPublish = "false";
-                    cartItem.isOver = "false";
-                    if (flags == 1)//是否零元特卖
-                    {
-                        cartItem.isOSale = "true";
-                    } else {
-                        cartItem.isOSale = "false";
-                    }
-                    CreatCartTools.insertByData(creatCartDB, items, cartItem);
-
-                    Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
-                    mContext.sendBroadcast(intent);
-                } else {
-                    CustomToastDialog.setToastDialog(mContext, "抱歉,商品数量不足,请勿继续添加");
-                }
-
-            } else {
-                scrollView.scrollTo(0, 600);
-                Toast.makeText(mContext, "抱歉,先选择规格", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    /**
-     * 初始化数据
-     */
-    private void initData(List<String> urls) {
-        viewGroupe.removeAllViews();
-        if (CollectionUtils.isNotNull(urls)) {
-            ToolUtils.setImageCacheUrl(urls.get(0), goodsImage);
-            if (urls.size() > 4) {
-                List<String> urlss = new ArrayList<String>();
-                urlss.addAll(urls);
-                urls.removeAll(urls);
-                urls.add(urlss.get(0));
-                urls.add(urlss.get(1));
-                urls.add(urlss.get(2));
-                urls.add(urlss.get(3));
-            }
-
-            for (String url : urls) {
-                ImageView imageView = new ImageView(mContext);
-                imageView.setImageResource(R.drawable.icon_loading_defalut);
-                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                imageView.setBackgroundColor(Color.parseColor("#ffffff"));
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                imageView.setLayoutParams(params);
-                ToolUtils.setImageCacheUrl(url, imageView);
-                adPics.add(imageView);
-            }
-            dots = new ImageView[adPics.size()];
-
-            for (int i = 0; i < adPics.size(); i++) {
-                ImageView dot_iv = new ImageView(mContext);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                params.bottomMargin = 10;
-                if (i == 0) {
-                    params.leftMargin = 0;
-                } else {
-                    params.leftMargin = 20;
-                }
-
-                dot_iv.setLayoutParams(params);
-                dots[i] = dot_iv;
-                viewGroupe.addView(dot_iv);
-                if (i == 0) {
-                    dots[i].setBackgroundResource(R.drawable.home_tips_foucs_icon);
-                } else {
-                    dots[i].setBackgroundResource(R.drawable.home_tips_icon);
-                }
-            }
-            viewPager = (ViewPager) mView.findViewById(R.id.goods_adv_pager);
-            viewPager.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 630 / 720));
-            imageAdapter = new GoodsImageAdapter(mContext, adPics);
-            viewPager.setAdapter(imageAdapter);
-            viewPager.setOnPageChangeListener(onPageChangeListener);
-            viewPager.setCurrentItem(0);
         }
     }
 
     /**
      * 设置指示器
      */
-    private void setImageBackground(int position) {
-        for (int i = 0; i < dots.length; i++) {
-            if (i == position) {
+    private void setImageBackground(int position)
+    {
+        for (int i = 0; i < dots.length; i++)
+        {
+            if (i == position)
+            {
                 dots[i].setBackgroundResource(R.drawable.home_tips_foucs_icon);
-            } else {
+            } else
+            {
                 dots[i].setBackgroundResource(R.drawable.home_tips_icon);
             }
         }
     }
 
-    public void FetchDetailData(int id) {
-        String url = ZhaiDou.goodsDetailsUrlUrl + id;
-        Log.i("url---------------------->", url);
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
+    /**
+     * 是否是二维规格
+     *
+     * @return
+     */
+    private boolean isTwoSize()
+    {
+        if (isSizeParent == false && isSizeSubclass == false)
+        {
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    /**
+     * 添加或者购买前准备
+     */
+    private void PrepareAddOrBuy()
+    {
+        if (checkLogin())
+        {
+            if (detail != null)
+                if (isTwoSize())//如果是二维
+                {
+                    if (mSpecificationParent == null)
+                    {
+                        scrollView.scrollTo(0, 450);
+                        ToolUtils.setToast(mContext, "抱歉，请先选择" + sizeNameParent);
+                        return;
+                    }
+                    if (mSpecificationSubclass != null)
+                    {
+                        if (isAddOrBuy)
+                        {
+                            AddCart();
+                        } else//立即购买
+                        {
+                            if (flags == 1)//判断零元特卖是否已经购买过
+                            {
+                                mDialog.show();
+                                FetchOSaleAddData();
+                            } else
+                            {
+                                CommitLjBuy();
+                            }
+                        }
+                    } else
+                    {
+                        scrollView.scrollTo(0, 700);
+                        Toast.makeText(mContext, "抱歉,先选择" + sizeNameSubclass, Toast.LENGTH_SHORT).show();
+                    }
+                } else
+                {
+                    if (mSpecificationParent != null)
+                    {
+                        if (isAddOrBuy)
+                        {
+                            AddCart();
+                        } else//立即购买
+                        {
+                            if (flags == 1)//判断零元特卖是否已经添加过
+                            {
+                                mDialog.show();
+                                FetchOSaleAddData();
+                            } else
+                            {
+                                CommitLjBuy();
+                            }
+                        }
+                    } else
+                    {
+                        scrollView.scrollTo(0, 450);
+                        Toast.makeText(mContext, "抱歉,先选择" + sizeNameParent, Toast.LENGTH_SHORT).show();
+                    }
+                }
+        } else
+        {
+            Intent intent = new Intent(mContext, LoginActivity.class);
+            intent.setFlags(3);
+            startActivityForResult(intent, 5001);
+        }
+    }
+
+    /**
+     * 加入购物车
+     */
+    private void AddCart()
+    {
+        mDialog.show();
+        if (flags == 1)
+        {
+            FetchOSaleAddData();
+        } else
+        {
+            FetchAddCartData();
+        }
+    }
+
+    /**
+     * 立即购买
+     */
+    private void CommitLjBuy()
+    {
+        arrayItems.clear();
+        cartGoodsItem.num = 1;
+        cartGoodsItem.name = detail.title;
+        if (isTwoSize())
+        {
+            cartGoodsItem.size = mSpecificationSubclass.title + mSpecificationSubclass.title1;
+            cartGoodsItem.sizeId = mSpecificationSubclass.sizeId;
+            cartGoodsItem.currentPrice = mSpecificationSubclass.price;
+            cartGoodsItem.formalPrice = mSpecificationSubclass.oldPrice;
+
+            cartArrayItem.storeMoney = mSpecificationSubclass.price;
+        } else
+        {
+            cartGoodsItem.size = mSpecificationParent.title;
+            cartGoodsItem.sizeId = mSpecificationParent.sizeId;
+            cartGoodsItem.currentPrice = mSpecificationParent.price;
+            cartGoodsItem.formalPrice = mSpecificationParent.oldPrice;
+
+            cartArrayItem.storeMoney = mSpecificationParent.price;
+        }
+        cartGoodsItem.imageUrl = detail.imageUrl;
+        if (flags == 1)
+        {
+            cartGoodsItem.isOSale = "true";
+        } else
+        {
+            cartGoodsItem.isOSale = "false";
+        }
+        List<CartGoodsItem> goodsItems = new ArrayList<CartGoodsItem>();
+        goodsItems.clear();
+        goodsItems.add(cartGoodsItem);
+        cartArrayItem.storeCount = 1;
+        cartArrayItem.goodsItems = goodsItems;
+        arrayItems.add(cartArrayItem);
+
+        ShopOrderOkFragment shopOrderOkFragment = ShopOrderOkFragment.newInstance("", 0);
+        Bundle bundle = new Bundle();
+        bundle.putInt("flags", 1);
+        bundle.putSerializable("goodsList", arrayItems);
+        shopOrderOkFragment.setArguments(bundle);
+        ((MainActivity) getActivity()).navigationToFragment(shopOrderOkFragment);
+
+    }
+
+
+    public void FetchDetailData()
+    {
+        subclassSizes.clear();
+        String url = ZhaiDou.HomeGoodsDetailsUrl + mIndex;
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
             @Override
-            public void onResponse(JSONObject jsonObject) {
-
-                if (mDialog != null)
-                    mDialog.dismiss();
-
-                if (jsonObject != null) {
-                    JSONObject merchandise = jsonObject.optJSONObject("merchandise");
-                    int id = merchandise.optInt("id");
-                    String title = merchandise.optString("title");
-                    String designer = merchandise.optString("designer");
-                    int total_count = merchandise.optInt("total_count");
-                    double price = merchandise.optDouble("price");
-                    double cost_price = merchandise.optDouble("cost_price");
-                    int discount = merchandise.optInt("discount");
-                    String end_time = merchandise.optString("end_time");
-                    detail = new GoodDetail(id, title, designer, total_count, price, cost_price, discount);
-                    detail.setEnd_time(end_time);
-
-                    JSONArray imgsArray = merchandise.optJSONArray("imgs");
-                    if (imgsArray != null && imgsArray.length() > 0) {
-                        ArrayList<String> imgsList = new ArrayList<String>();
-                        for (int i = 0; i < imgsArray.length(); i++) {
-                            JSONObject imgObj = imgsArray.optJSONObject(i);
-                            String url = imgObj.optString("url");
-                            imgsList.add(url);
-                        }
-                        detail.setImgs(imgsList);
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (jsonObject != null)
+                {
+                    long endTime = jsonObject.optLong("timestamp");
+                    JSONObject dataObject = jsonObject.optJSONObject("data");
+                    if (dataObject == null)
+                    {
+                        if (mDialog != null)
+                            mDialog.dismiss();
+                        nullView.setVisibility(View.VISIBLE);
+                        nullNetView.setVisibility(View.GONE);
+                        return;
                     }
+                    String goodsId = dataObject.optString("productId");
+                    String goodsName = dataObject.optString("productName");
+                    sizeNameParent = dataObject.optString("attributeName1");
+                    sizeNameSubclass = dataObject.optString("attributeName2");
+                    flags = dataObject.optString("businessType").equals("01") ? 0 : 1;
+                    isPublish = dataObject.optInt("isProductShelves") == 0 ? true : false;
 
-                    JSONArray specifications = merchandise.optJSONArray("specifications");
-                    if (specifications != null && specifications.length() > 0) {
-                        specificationList = new ArrayList<Specification>();
-                        for (int i = 0; i < specifications.length(); i++) {
-                            JSONObject specificationObj = specifications.optJSONObject(i);
-                            int specificationId = specificationObj.optInt("id");
-                            String specificationTitle = specificationObj.optString("title");
-                            int num = specificationObj.optInt("count");
-                            double sizePrice = specificationObj.optDouble("price");
-                            double sizeOldPrice = specificationObj.optDouble("cost_price");
+                    JSONObject expandObject = dataObject.optJSONObject("expandedResponse");
+                    String designer = expandObject.optString("productDescription");//豆豆点评
+                    String storeId = expandObject.optString("storeId");//店铺 ID
+                    String storeName = expandObject.optString("storeName");// 店铺名称
+                    String brandId = expandObject.optString("brandId");//店铺商标ID
+                    String brandName = expandObject.optString("brandName");// 店铺商标名称
+                    String builtPlaceId = expandObject.optString("builtPlaceId");//商品所在产地标识
+                    String builtPlaceName = expandObject.optString("builtPlaceName");//商品所在产地名称
+                    int praiseCount = expandObject.optInt("praiseCount");//点赞数
+                    int collectCount = expandObject.optInt("collectCount");//收藏数
+                    int commentCount = expandObject.optInt("commentCount");//评论数
+                    int saleCount = expandObject.optInt("saleCount");//销量
+                    int orderCount = expandObject.optInt("orderCount");//收藏数
+                    int viewCount = expandObject.optInt("viewCount");//浏览数
+                    String score = expandObject.optString("score");//商品评分
+                    String discount = expandObject.optString("discount");
+                    int totalCount = expandObject.optInt("productStock");
+                    double price = expandObject.optDouble("salePrice");
+                    double markerPrice = expandObject.optDouble("markerPrice");
+                    String imageUrl = expandObject.optString("imageUrl") + ".jpg";
+                    int userMaxNum = expandObject.optInt("userMaxNum");// 一定时间内特卖限购数量
+                    int zeroMaxCount = expandObject.optInt("zeroMaxCount");//0元每天购限购数量
+                    int userMaxType = expandObject.optInt("userMaxType");//特卖限购时间  单位小时
+                    String integrityDesc = expandObject.optString("integrityDesc");//图文详情
 
-                            Specification specification = new Specification(specificationId, specificationTitle, num, sizePrice, sizeOldPrice);
-                            specificationList.add(specification);
-                        }
-                        detail.setSpecifications(specificationList);
-                    }
-
-                    JSONArray descriptions = merchandise.optJSONArray("descriptions");
-                    if (descriptions != null && descriptions.length() > 0) {
-                        for (int i = 0; i < descriptions.length(); i++) {
+                    JSONArray descriptions = expandObject.optJSONArray("attributeList");
+                    if (descriptions != null && descriptions.length() > 0)
+                    {
+                        for (int i = 0; i < descriptions.length(); i++)
+                        {
                             JSONObject description = descriptions.optJSONObject(i);
                             int descriptionsId = description.optInt("id");
-                            String descriptionsTitle = description.optString("title");
-                            String value = description.optString("value");
+                            String descriptionsTitle = description.optString("attributeName");
+                            String value = description.optString("attributeValue");
                             GoodInfo goodInfo = new GoodInfo(descriptionsId, descriptionsTitle, value);
                             goodInfos.add(goodInfo);
                         }
-                        detail.setGoodsInfo(goodInfos);
-                    }
 
-                    Message message = new Message();
-                    message.what = UPDATE_GOOD_DETAIL;
-                    message.obj = detail;
-                    handler.sendMessage(message);
-                } else {
+                    }
+                    JSONArray imgArrays = expandObject.optJSONArray("productInfoImages");
+                    ArrayList<String> imgsList = new ArrayList<String>();
+                    if (imgArrays != null && imgArrays.length() > 0 && !imgArrays.equals(""))
+                    {
+                        for (int i = 0; i < imgArrays.length(); i++)
+                        {
+                            String url=imgArrays.optString(i);
+                            ToolUtils.setLog(url);
+//                            JSONObject imgObj = imgArrays.optJSONObject(i);
+//                            String url = imgObj.optString("imageUrl") + imgObj.optString("imageFileType");
+                            imgsList.add(url);
+                        }
+                    }
+                    JSONArray specifications = dataObject.optJSONArray("productSKUArray");
+                    if (specifications != null && specifications.length() > 0 && !specifications.equals(""))
+                    {
+                        specificationList = new ArrayList<Specification>();
+                        for (int i = 0; i < specifications.length(); i++)
+                        {
+                            JSONObject specificationObj = specifications.optJSONObject(i);
+                            int isMajor = specificationObj.optInt("isMajor");
+                            String specificationId = specificationObj.optString("productSKUId");
+                            String specificationTitle = specificationObj.optString("attributeValue1");
+                            String specificationTitle1 = specificationObj.optString("attributeValue2");
+                            if (isMajor == 1)
+                            {
+                                if (specificationTitle.equals("F"))
+                                {
+                                    isSizeParent = true;
+                                }
+                                if (specificationTitle1.equals("F"))
+                                {
+                                    isSizeSubclass = true;
+                                }
+                            }
+                            JSONArray imageArray = specificationObj.optJSONArray("productSKUImagArray");
+                            List<String> sizeImages=new ArrayList<String>();
+                            if (imageArray != null && imageArray.length() > 0)
+                            {
+                                for (int j = 0; j < imageArray.length(); j++)
+                                {
+                                    JSONObject imageObj = imageArray.optJSONObject(i);
+                                    if (imageObj != null)
+                                    {
+                                        String url = imageObj.optString("imageArray") + imageObj.optString("imageFileType");
+                                        sizeImages.add(url);
+                                    }
+                                }
+                            }
+                            int num = specificationObj.optInt("stock");
+                            if (num > 0)
+                            {
+                                isOver = false;
+                            }
+                            double sizePrice = specificationObj.optDouble("price");
+                            double sizeOldPrice = specificationObj.optDouble("marketPrice");
+                            double returnPrice = specificationObj.optDouble("returnAmount");//返现金额
+
+                            if (isTwoSize())
+                            {
+                                //子集规格集合
+                                Specification specificationSubclassItem = new Specification();
+                                specificationSubclassItem.sizeId = specificationId;
+                                specificationSubclassItem.title = specificationTitle;
+                                specificationSubclassItem.title1 = specificationTitle1;
+                                specificationSubclassItem.price = sizePrice;
+                                specificationSubclassItem.oldPrice = sizeOldPrice;
+                                specificationSubclassItem.num = num;
+                                specificationSubclassItem.images.addAll(sizeImages);
+                                subclassSizes.add(specificationSubclassItem);
+
+                                Specification specification = new Specification();
+                                specification.title = specificationTitle;
+                                for (int j = 0; j < specificationList.size(); j++)
+                                {
+                                    if (specificationList.get(j).title.equals(specificationTitle))
+                                    {
+                                        specificationList.remove(j);
+                                    }
+                                }
+                                specificationList.add(specification);
+                            } else
+                            {
+                                Specification specification = new Specification();
+                                specification.sizeId = specificationId;
+                                if (isSizeParent)
+                                {
+                                    specification.title = specificationTitle1;
+                                }
+                                if (isSizeSubclass)
+                                {
+                                    specification.title = specificationTitle;
+                                }
+                                specification.price = sizePrice;
+                                specification.oldPrice = sizeOldPrice;
+                                specification.num = num;
+                                specification.images.addAll(sizeImages);
+                                specificationList.add(specification);
+                            }
+
+                        }
+                    }
+                    cartArrayItem.storeId = storeId;
+                    cartArrayItem.storeName = storeName;
+
+                    detail = new GoodDetail();
+                    detail.goodsId = goodsId;
+                    detail.title = goodsName;
+                    detail.designer = designer;
+                    detail.discount = discount;
+                    detail.end_time = endTime;
+                    detail.total_count = totalCount;
+                    detail.price = price;
+                    detail.cost_price = markerPrice;
+                    detail.imageUrl = imageUrl;
+                    detail.imgs = imgsList;
+                    detail.specifications = specificationList;
+                    detail.goodsInfo = goodInfos;
+                    detail.webUrl = integrityDesc;
+
+                    handler.obtainMessage(UPDATE_GOOD_DETAIL, detail).sendToTarget();
+
+                } else
+                {
+                    if (mDialog != null)
+                        mDialog.dismiss();
                     nullView.setVisibility(View.VISIBLE);
                     nullNetView.setVisibility(View.GONE);
                 }
             }
-        }, new Response.ErrorListener() {
+        }, new Response.ErrorListener()
+        {
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
+            public void onErrorResponse(VolleyError volleyError)
+            {
                 if (mDialog != null)
                     mDialog.dismiss();
                 nullView.setVisibility(View.VISIBLE);
                 nullNetView.setVisibility(View.GONE);
             }
-        });
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
         mRequestQueue.add(request);
     }
 
     /**
-     * 零元特卖是否购买请求
+     * 请求购物车列表数据
      */
-    public void FetchOSaleData(final int i) {
-        String url = ZhaiDou.orderCheckOSaleUrl;
-        Log.i("url---------------------->", url);
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
+    public void FetchCountData()
+    {
+        String url = ZhaiDou.CartGoodsCountUrl + userId;
+        ToolUtils.setLog("url:" + url);
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
             @Override
-            public void onResponse(JSONObject jsonObject) {
-
-                if (jsonObject != null) {
-                    isOSaleBuy = jsonObject.optBoolean("flag");
-                    Log.i("isOSaleBuy---------------------->", "" + isOSaleBuy);
-                }
-                if (i == UPDATE_LJBUY_ISOSALEBUY) {
-                    handler.sendEmptyMessage(UPDATE_LJBUY_ISOSALEBUY);
-                } else if (i == UPDATE_ISOSALEBUY) {
-                    handler.sendEmptyMessage(UPDATE_ISOSALEBUY);
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (jsonObject != null)
+                {
+                    JSONObject object = jsonObject.optJSONObject("data");
+                    cartCount = object.optInt("totalQuantity");
+                    handler.sendEmptyMessage(UPDATE_CARTCAR_DATA);
                 }
             }
-        }, new Response.ErrorListener() {
+        }, new Response.ErrorListener()
+        {
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
+            public void onErrorResponse(VolleyError volleyError)
+            {
                 if (mDialog != null)
                     mDialog.dismiss();
-                Toast.makeText(mContext, "抱歉,请求失败", Toast.LENGTH_SHORT).show();
             }
-        }) {
+        })
+        {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
                 Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 headers.put("SECAuthorization", token);
                 return headers;
             }
@@ -1118,95 +1750,237 @@ public class GoodsDetailsFragment extends BaseFragment {
     }
 
     /**
-     * 立即购买清除掉购物车中的零元特卖
-     *
-     * @param cartItem
+     * 加入购物车接口请求
      */
-    private void ljBuyOkDialog(final CartItem cartItem) {
-        final Dialog dialog = new Dialog(mContext, R.style.custom_dialog);
-        View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_collect_hint, null);
-        TextView tvMsg = (TextView) view.findViewById(R.id.tv_msg);
-        tvMsg.setText("购物车已经有一件零元特卖商品,继续购买将删除掉该商品，是否删除？");
-        TextView okTv = (TextView) view.findViewById(R.id.okTv);
-        okTv.setOnClickListener(new View.OnClickListener() {
+    public void FetchAddCartData()
+    {
+        String url="";
+        if (isTwoSize())
+        {
+            url = ZhaiDou.GoodsDetailsAddUrl + userId + "&productSKUId=" + mSpecificationSubclass.sizeId;
+        } else
+        {
+            url = ZhaiDou.GoodsDetailsAddUrl + userId + "&productSKUId=" + mSpecificationParent.sizeId;
+        }
+        ToolUtils.setLog(url);
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
             @Override
-            public void onClick(View view) {
-                CreatCartTools.deleteByData(creatCartDB, cartItem);
-                Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
-                mContext.sendBroadcast(intent);
-                dialog.dismiss();
-                buyGoods();
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+                if (jsonObject != null)
+                {
+                    int status = jsonObject.optInt("status");
+                    String message = jsonObject.optString("message");
+                    if (status == 200)
+                    {
+                        handler.sendEmptyMessage(UPDATE_ADD_CART);
+                    } else
+                    {
+                        ToolUtils.setToast(mContext, message);
+                    }
+                }
             }
-        });
-        TextView cancelTv = (TextView) view.findViewById(R.id.cancelTv);
-        cancelTv.setOnClickListener(new View.OnClickListener() {
+        }, new Response.ErrorListener()
+        {
             @Override
-            public void onClick(View view) {
-                dialog.dismiss();
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+                ToolUtils.setToastLong(mContext, R.string.loading_fail_txt);
             }
-        });
-
-        dialog.setCanceledOnTouchOutside(true);
-        dialog.setCancelable(true);
-        dialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        dialog.show();
-
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                headers.put("SECAuthorization", token);
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
     }
 
     /**
-     * 加入购物车清除掉购物车中的零元特卖
-     *
-     * @param cartItem
+     * 零元特卖是否购买请求
      */
-    private void addCartOkDialog(final CartItem cartItem) {
-        final Dialog dialog = new Dialog(mContext, R.style.custom_dialog);
-        View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_collect_hint, null);
-        TextView tvMsg = (TextView) view.findViewById(R.id.tv_msg);
-        tvMsg.setText("购物车已经有一件零元特卖商品,继续添加将删除掉该商品，是否删除？");
-        TextView okTv = (TextView) view.findViewById(R.id.okTv);
-        okTv.setOnClickListener(new View.OnClickListener() {
+    public void FetchOSaleData(final int i)
+    {
+        String url = ZhaiDou.IsBuyOSaleUrl + userId;
+        ToolUtils.setLog(url);
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
             @Override
-            public void onClick(View view) {
-                CreatCartTools.deleteByData(creatCartDB, cartItem);
-                Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
-                mContext.sendBroadcast(intent);
-                dialog.dismiss();
-                addCartGoods();
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (jsonObject != null)
+                {
+                    isOSaleBuy = jsonObject.optInt("ifBuy") == 1 ? false : true;
+                }
+                if (i == UPDATE_LJBUY_ISOSALEBUY)
+                {
+                    handler.sendEmptyMessage(UPDATE_LJBUY_ISOSALEBUY);
+                } else if (i == UPDATE_ISOSALEBUY)
+                {
+                    handler.sendEmptyMessage(UPDATE_ISOSALEBUY);
+                } else if (i == UPDATE_LOGIN_ISOSALEBUY)
+                {
+                    handler.sendEmptyMessage(UPDATE_ISOSALEBUY);
+                }
             }
-        });
-        TextView cancelTv = (TextView) view.findViewById(R.id.cancelTv);
-        cancelTv.setOnClickListener(new View.OnClickListener() {
+        }, new Response.ErrorListener()
+        {
             @Override
-            public void onClick(View view) {
-                dialog.dismiss();
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+                if (i == UPDATE_ISOSALEBUY)
+                {
+                    loadingView.setVisibility(View.GONE);
+                } else
+                {
+                    ToolUtils.setToastLong(mContext, R.string.loading_fail_txt);
+                }
             }
-        });
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                headers.put("SECAuthorization", token);
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
+    }
 
-        dialog.setCanceledOnTouchOutside(true);
-        dialog.setCancelable(true);
-        dialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        dialog.show();
+    /**
+     * 零元特卖是否已经加入购物车了
+     */
+    public void FetchOSaleAddData()
+    {
+        String url = ZhaiDou.IsAddOSaleUrl + userId;
+        ToolUtils.setLog(url);
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                mDialog.dismiss();
+                int status=jsonObject.optInt("status");
+                if (status!=500)
+                {
+                    if (jsonObject != null)
+                    {
+                        sku = jsonObject.optString("productSKUId");
+                        isOSaleAdd = sku.length()> 0 ? true : false;
+                    }
+                    handler.sendEmptyMessage(UPDATE_ISADD_CART);
+                }
+                else
+                {
+                    ToolUtils.setToastLong(mContext, R.string.loading_fail_txt);
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+                ToolUtils.setToastLong(mContext, R.string.loading_fail_txt);
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                headers.put("SECAuthorization", token);
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
+    }
 
+    /**
+     * 删除商品数据
+     */
+    public void FetchGoodsDeleteData()
+    {
+        String url = ZhaiDou.CartGoodsDeleteUrl + userId + "&productSKUId=" + "[" + sku + "]";
+        ToolUtils.setLog("url:" + url);
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                if (jsonObject != null)
+                {
+                    int status = jsonObject.optInt("status");
+                    if (status == 200)
+                    {
+                        handler.sendEmptyMessage(UPDATE_OSALE_DELETE);
+                    }
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("SECAuthorization", token);
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
     }
 
 
-    private void doAnim(Drawable drawable, int[] start_location) {
-        if (!isClean) {
+    private void doAnim(Drawable drawable, int[] start_location)
+    {
+        if (!isClean)
+        {
             setAnim(drawable, start_location);
-        } else {
-            try {
+        } else
+        {
+            try
+            {
                 animation_viewGroup.removeAllViews();
                 isClean = false;
                 setAnim(drawable, start_location);
-            } catch (Exception e) {
+            } catch (Exception e)
+            {
                 e.printStackTrace();
-            } finally {
+            } finally
+            {
                 isClean = true;
             }
         }
     }
 
-    private void setAnim(Drawable drawable, int[] start_location) {
+    private void setAnim(Drawable drawable, int[] start_location)
+    {
         Animation mScaleAnimation = new ScaleAnimation(1.5f, 0.0f, 1.5f, 0.0f, Animation.RELATIVE_TO_SELF, 0.1f, Animation.RELATIVE_TO_SELF, 0.1f);
         mScaleAnimation.setDuration(AnimationDuration);
         mScaleAnimation.setFillAfter(true);
@@ -1233,35 +2007,39 @@ public class GoodsDetailsFragment extends BaseFragment {
         mAnimationSet.addAnimation(mScaleAnimation);
         mAnimationSet.addAnimation(mTranslateAnimation);
 
-        mAnimationSet.setAnimationListener(new Animation.AnimationListener() {
+        mAnimationSet.setAnimationListener(new Animation.AnimationListener()
+        {
 
             @Override
-            public void onAnimationStart(Animation animation) {
+            public void onAnimationStart(Animation animation)
+            {
                 number++;
             }
 
             @Override
-            public void onAnimationEnd(Animation animation) {
+            public void onAnimationEnd(Animation animation)
+            {
                 number--;
-                if (number == 0) {
+                if (number == 0)
+                {
                     isClean = true;
                     myHandler.sendEmptyMessage(0);
                 }
                 mTipView.setVisibility(View.GONE);
-//                mCartCount.setText("" + num);
-//                mCartCount.setVisibility(count==0?View.GONE:View.VISIBLE);
                 initCartTips();
             }
 
             @Override
-            public void onAnimationRepeat(Animation animation) {
+            public void onAnimationRepeat(Animation animation)
+            {
             }
         });
         view.startAnimation(mAnimationSet);
 
     }
 
-    private View addViewToAnimLayout(ViewGroup vg, View view, int[] location) {
+    private View addViewToAnimLayout(ViewGroup vg, View view, int[] location)
+    {
         int x = location[0];
         int y = location[1];
         vg.addView(view);
@@ -1275,12 +2053,14 @@ public class GoodsDetailsFragment extends BaseFragment {
         return view;
     }
 
-    private int dip2px(Context context, float dpValue) {
+    private int dip2px(Context context, float dpValue)
+    {
         float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
     }
 
-    private FrameLayout createAnimLayout() {
+    private FrameLayout createAnimLayout()
+    {
         ViewGroup rootView = (ViewGroup) getActivity().getWindow().getDecorView();
         FrameLayout animLayout = new FrameLayout(getActivity());
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
@@ -1291,84 +2071,73 @@ public class GoodsDetailsFragment extends BaseFragment {
 
     }
 
-    private class MyTimer extends CountDownTimer {
-        private MyTimer(long millisInFuture, long countDownInterval) {
-            super(millisInFuture, countDownInterval);
-        }
-
-        @Override
-        public void onTick(long l) {
-            temptime = l;
-            long day = 24 * 3600 * 1000;
-            long hour = 3600 * 1000;
-            long minute = 60 * 1000;
-            //两个日期想减得到天数
-            long dayCount = l / day;
-            long hourCount = (l - (dayCount * day)) / hour;
-            long minCount = (l - (dayCount * day) - (hour * hourCount)) / minute;
-            long secondCount = (l - (dayCount * day) - (hour * hourCount) - (minCount * minute)) / 1000;
-            CountTime time = new CountTime(dayCount, hourCount, minCount, secondCount);
-            Message message = new Message();
-            message.what = UPDATE_COUNT_DOWN_TIME;
-            message.obj = time;
-            handler.sendMessage(message);
-        }
-
-        @Override
-        public void onFinish() {
-            handler.sendEmptyMessage(UPDATE_UI_TIMER_FINISH);
-        }
-    }
-
 
     @Override
-    public void onDestroyView() {
-        if (mTimer != null) {
-            mTimer.cancel();
-            mTimer = null;
-        }
+    public void onDestroyView()
+    {
         super.onDestroyView();
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroy()
+    {
+        mTimerView.stop();
         mContext.unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 
     @Override
-    public void onResume() {
-        long temp1 = System.currentTimeMillis() - currentTime;
-        if (temptime - temp1 > 0) {
-            if (mTimer != null) {
-                mTimer.cancel();
-                mTimer = null;
-            }
-            mTimer = new MyTimer(temptime - temp1, 1000);
-            mTimer.start();
+    public void onResume()
+    {
+        if (isFrist)
+        {
+            long temp = Math.abs(systemTime - System.currentTimeMillis());
+            initTime = mTimerView.getTimes() - temp;
+            mTimerView.setTimes(initTime);
         }
         super.onResume();
+        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_goods_detail));
     }
 
     @Override
-    public void onPause() {
-        currentTime = System.currentTimeMillis();
+    public void onPause()
+    {
+        systemTime = System.currentTimeMillis();
+        isFrist = true;
         super.onPause();
+        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_goods_detail));
     }
 
-    private class GoodsChildFragmentAdapter extends FragmentPagerAdapter {
-        private GoodsChildFragmentAdapter(FragmentManager fm) {
-            super(fm);
+    @Override
+    public void onHiddenChanged(boolean hidden)
+    {
+        super.onHiddenChanged(hidden);
+    }
+
+    /**
+     * 规格适配器
+     */
+    public class GoodInfoAdapter extends BaseListAdapter<GoodInfo>
+    {
+        public GoodInfoAdapter(Context context, List<GoodInfo> list)
+        {
+            super(context, list);
         }
 
         @Override
-        public int getCount() {
-            return fragments.size();
-        }
-
-        @Override
-        public Fragment getItem(int i) {
-            return fragments.get(i);
+        public View bindView(int position, View convertView, ViewGroup parent)
+        {
+            if (convertView == null)
+                convertView = mInflater.inflate(R.layout.item_goods_info, null);
+            TextView tv_key = ViewHolder.get(convertView, R.id.tv_key);
+            tv_key.setMaxWidth(screenWidth / 2 - 20);
+            TextView tv_value = ViewHolder.get(convertView, R.id.tv_value);
+            GoodInfo goodInfo = getList().get(position);
+            tv_key.setText(goodInfo.getTitle());
+            tv_value.setText(goodInfo.getValue());
+            return convertView;
         }
     }
+
+
 }

@@ -1,7 +1,5 @@
 package com.zhaidou.fragments;
 
-
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -9,27 +7,27 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.AccountManage;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.base.CountManage;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
-import com.zhaidou.model.User;
+import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -37,11 +35,14 @@ import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONObject;
 
-public class SettingFragment extends BaseFragment implements View.OnClickListener,ProfileFragment.ProfileListener{
+import java.util.HashMap;
+import java.util.Map;
+
+public class SettingFragment extends BaseFragment implements View.OnClickListener{
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private static final int CLEAR_USER_DATA=0;
+    private static final int CLEAR_USER_DATA = 0;
 
     private String mParam1;
     private String mParam2;
@@ -50,36 +51,36 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
 
     SharedPreferences mSharedPreferences;
     RequestQueue requestQueue;
-    private ProfileListener profileListener;
+    private DialogUtils mDialogUtil;
     private Dialog mDialog;
     private boolean isNetState;
     private Context mContext;
     private String serverName;
     private String serverInfo;
+    private String serverUrl;
     private int serverCode;
 
-    private Handler mHandler=new Handler(){
+    private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
+            switch (msg.what) {
                 case CLEAR_USER_DATA:
                     SharedPreferencesUtil.clearUser(getActivity());
-
-                    Intent intent=new Intent(ZhaiDou.IntentRefreshLoginExitTag);
-                    getActivity().sendBroadcast(intent);
-
-                    ((MainActivity)getActivity()).logout(SettingFragment.this);
+                    CountManage.getInstance().clearCache();
+                    AccountManage.getInstance().notifyLogOut();
+                    Intent intent = new Intent(ZhaiDou.IntentRefreshLoginExitTag);
+                    mContext.sendBroadcast(intent);
+                    ((MainActivity) mContext).logout(SettingFragment.this);
+                    ((MainActivity) mContext).CartTip(0);
                     break;
                 case 1:
                     serverCode = parseJosn(msg.obj.toString());
                     ToolUtils.setLog(" ZDApplication.localVersionCode:" + ZDApplication.localVersionCode);
                     if (serverCode > ZDApplication.localVersionCode) {
-                        CustomVersionUpdateDialog customVersionUpdateDialog = new CustomVersionUpdateDialog(mContext, serverName);
+                        CustomVersionUpdateDialog customVersionUpdateDialog = new CustomVersionUpdateDialog(mContext, serverName, serverUrl);
                         customVersionUpdateDialog.checkUpdateInfo();
-                    }
-                    else
-                    {
-                        ToolUtils.setToast(mContext,"当前版本为最新版本");
+                    } else {
+                        ToolUtils.setToast(mContext, "当前版本为最新版本");
                     }
                     break;
             }
@@ -94,8 +95,8 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         fragment.setArguments(args);
         return fragment;
     }
+
     public SettingFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -110,75 +111,81 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view=inflater.inflate(R.layout.fragment_setting, container, false);
+        View view = inflater.inflate(R.layout.fragment_setting, container, false);
 
-        mContext=getActivity();
-
-        LinearLayout versionBtn=(LinearLayout)view.findViewById(R.id.ll_version);
+        mContext = getActivity();
+        mDialogUtil = new DialogUtils(mContext);
+        LinearLayout versionBtn = (LinearLayout) view.findViewById(R.id.ll_version);
         versionBtn.setOnClickListener(this);
 
         view.findViewById(R.id.rl_back).setOnClickListener(this);
+        view.findViewById(R.id.ll_recommend).setOnClickListener(this);
         view.findViewById(R.id.ll_profile).setOnClickListener(this);
+        view.findViewById(R.id.ll_psw_change).setOnClickListener(this);
         view.findViewById(R.id.ll_competition).setOnClickListener(this);
         view.findViewById(R.id.ll_bbs_question).setOnClickListener(this);
         view.findViewById(R.id.ll_collocation).setOnClickListener(this);
         view.findViewById(R.id.ll_add_v).setOnClickListener(this);
         view.findViewById(R.id.ll_version).setOnClickListener(this);
         view.findViewById(R.id.ll_award_history).setOnClickListener(this);
-        view.findViewById(R.id.ll_score).setOnClickListener(this);
         view.findViewById(R.id.ll_about).setOnClickListener(this);
         view.findViewById(R.id.bt_logout).setOnClickListener(this);
-        mSharedPreferences=getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
+        mSharedPreferences = getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         requestQueue = Volley.newRequestQueue(getActivity());
         return view;
     }
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.rl_back:
-                ((MainActivity)getActivity()).popToStack(SettingFragment.this);
+                ((MainActivity) getActivity()).popToStack(SettingFragment.this);
                 break;
             case R.id.ll_profile:
-                mProfileFragment=ProfileFragment.newInstance("","");
-                mProfileFragment.setProfileListener(this);
-                ((MainActivity)getActivity()).navigationToFragment(mProfileFragment);
+                mProfileFragment = ProfileFragment.newInstance("", "");
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(mProfileFragment);
+                break;
+            case R.id.ll_psw_change:
+                ModifyPswFragment modifyPswFragment = new ModifyPswFragment();
+                ((MainActivity) getActivity()).navigationToFragment(modifyPswFragment);
                 break;
             case R.id.ll_competition:
-                WebViewFragment webViewFragment=WebViewFragment.newInstance("http://www.zhaidou.com/competitions/current?zdclient=ios",true);
-                ((MainActivity)getActivity()).navigationToFragment(webViewFragment);
+                WebViewFragment webViewFragment = WebViewFragment.newInstance("http://www.zhaidou.com/competitions/current?zdclient=ios", true);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(webViewFragment);
                 break;
             case R.id.ll_bbs_question:
                 break;
             case R.id.ll_collocation:
-                ImageBgFragment fragment= ImageBgFragment.newInstance("豆搭教程");
-                ((MainActivity)getActivity()).navigationToFragment(fragment);
+                ImageBgFragment fragment = ImageBgFragment.newInstance("豆搭教程");
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(fragment);
+                break;
+            case R.id.ll_recommend:
+                SettingRecommendFragment settingRecommendFragment = SettingRecommendFragment.newInstance("", "");
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(settingRecommendFragment);
                 break;
             case R.id.ll_add_v:
-                ImageBgFragment addVFragment= ImageBgFragment.newInstance("如何加V");
-                ((MainActivity)getActivity()).navigationToFragment(addVFragment);
+                ImageBgFragment addVFragment = ImageBgFragment.newInstance("如何加V");
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(addVFragment);
                 break;
             case R.id.ll_award_history:
                 break;
-            case R.id.ll_score:
-                break;
             case R.id.ll_about:
-                AboutFragment aboutFragment = AboutFragment.newInstance("","");
-                ((MainActivity)getActivity()).navigationToFragment(aboutFragment);
+                AboutFragment aboutFragment = AboutFragment.newInstance("", "");
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(aboutFragment);
                 break;
             case R.id.bt_logout:
-                mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"注销中");
-                logout();
+                mDialogUtil.showDialog("确定退出登录？", new DialogUtils.PositiveListener() {
+                    @Override
+                    public void onPositive() {
+                        logout();
+                    }
+                }, null);
                 break;
             case R.id.ll_version:
-                if (NetworkUtils.isNetworkAvailable(mContext))
-                {
+                if (NetworkUtils.isNetworkAvailable(mContext)) {
                     getVersionServer();
-                }
-                else
-                {
-                    ToolUtils.setToast(mContext,"抱歉,网络连接失败");
+                } else {
+                    ToolUtils.setToast(mContext, "抱歉,网络连接失败");
                 }
                 break;
             default:
@@ -193,7 +200,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String url = ZhaiDou.apkUpdateUrl;
+                String url = ZhaiDou.ApkUrl;
                 String result = NetService.getHttpService(url);
                 if (result != null) {
                     mHandler.obtainMessage(1, result).sendToTarget();
@@ -211,48 +218,61 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     private int parseJosn(String json) {
         try {
             JSONObject jsonObject = new JSONObject(json);
-            serverName = jsonObject.optString("name");
-            serverCode = jsonObject.optInt("code");
-            serverInfo = jsonObject.optString("info");
-            ToolUtils.setLog(serverName);
-            ToolUtils.setLog("" + serverCode);
+            if (jsonObject != null) {
+                JSONObject object = jsonObject.optJSONObject("data");
+                if (object != null)
+                    serverName = object.optString("app_version");
+                serverCode = object.optInt("code_version");
+                serverUrl = object.optString("package_url");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return serverCode;
     }
 
-    public void logout(){
-
-        JsonObjectRequest request=new JsonObjectRequest(ZhaiDou.USER_LOGOUT_URL
-         ,new Response.Listener<JSONObject>() {
+    public void logout() {
+        final String token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_LOGOUT_URL + "?token=" + token
+                , new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                if (mDialog!=null) mDialog.dismiss();
-
-                mHandler.sendEmptyMessage(CLEAR_USER_DATA);
+                if (mDialog != null) mDialog.dismiss();
+                int status = jsonObject.optInt("status");
+                String message = jsonObject.optString("message");
+                if (status == 200) {
+                    String msg = jsonObject.optJSONObject("data").optString("message");
+                    ShowToast(msg);
+                    mHandler.sendEmptyMessage(CLEAR_USER_DATA);
+                } else {
+                    ShowToast(message);
+                }
             }
-        },new Response.ErrorListener() {
+        }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
+                ShowToast("网络异常");
             }
-        });
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                headers.put("token", token);
+                return headers;
+            }
+        };
         requestQueue.add(request);
     }
 
-    @Override
-    public void onProfileChange(User user) {
-        profileListener.onProfileChange(user);
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_setting));
     }
 
-    public void setProfileListener(ProfileListener profileListener) {
-        this.profileListener = profileListener;
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_setting));
     }
-
-    public interface ProfileListener{
-        public void onProfileChange(User user);
-    }
-
 
 }

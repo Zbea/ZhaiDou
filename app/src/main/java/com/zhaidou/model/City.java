@@ -8,6 +8,9 @@ import java.util.List;
 public class City extends Address {
 
 
+
+
+
     private List<Area> areas;
 
     public List<Area> getAreas() {
@@ -17,4 +20,6 @@ public class City extends Address {
     public void setAreas(List<Area> areas) {
         this.areas = areas;
     }
+
+
 }

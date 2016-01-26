@@ -4,72 +4,66 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.User;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.CustomEditText;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * Created by wangclark on 15/7/16.
  */
-public class RegisterActivity extends FragmentActivity implements View.OnClickListener{
-    private EditText mEmailView,mNickView,mPswView,mConfirmPsw;
-    private TextView mLogin;
+public class RegisterActivity extends FragmentActivity implements View.OnClickListener {
+    private CustomEditText mEmailView;
+    private TextView headTitle;
+    private LinearLayout mLogin;
     private TextView mRegister;
     private RequestQueue mRequestQueue;
     SharedPreferences mSharedPreferences;
     private Dialog mDialog;
-    private Handler handler=new Handler(){
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
+            switch (msg.what) {
                 case 0:
-                    User user =(User)msg.obj;
+                    User user = (User) msg.obj;
                     SharedPreferencesUtil.saveUser(getApplicationContext(), user);
-                    Log.i("handleMessage---------->",user.toString());
-                    Intent intent=new Intent();
-                    intent.putExtra("id",user.getId());
-                    intent.putExtra("email",user.getEmail());
-                    intent.putExtra("token",user.getAuthentication_token());
-                    intent.putExtra("nick",user.getNickName());
+                    Intent intent = new Intent();
+                    intent.putExtra("id", user.getId());
+                    intent.putExtra("email", user.getEmail());
+                    intent.putExtra("token", user.getAuthentication_token());
+                    intent.putExtra("nick", user.getNickName());
+                    intent.putExtra("phone",user.getPhone());
                     setResult(2000, intent);
-                    finish();//此处一定要调用finish()方法
+                    finish();
                     break;
             }
         }
@@ -80,186 +74,161 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.fragment_register);
-        mEmailView=(EditText)findViewById(R.id.tv_email);
-        mNickView=(EditText)findViewById(R.id.tv_nick);
-        mPswView=(EditText)findViewById(R.id.tv_password);
-        mConfirmPsw=(EditText)findViewById(R.id.tv_password_confirm);
-        mLogin=(TextView)findViewById(R.id.tv_login);
-        mRegister=(TextView)findViewById(R.id.bt_register);
 
-        mSharedPreferences=getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
+        headTitle = (TextView) findViewById(R.id.title_tv);
+        headTitle.setText(R.string.title_register);
 
-        mRequestQueue= Volley.newRequestQueue(this);
+        mEmailView = (CustomEditText) findViewById(R.id.tv_email);
+        mLogin = (LinearLayout) findViewById(R.id.tv_login);
+        mRegister = (TextView) findViewById(R.id.bt_register);
+
+        mSharedPreferences = getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
+
+        mRequestQueue = Volley.newRequestQueue(this);
         mRegister.setOnClickListener(this);
         mLogin.setOnClickListener(this);
-        findViewById(R.id.ll_back).setOnClickListener(this);
+        findViewById(R.id.back_btn).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.bt_register:
                 String email = mEmailView.getText().toString();
-                String password =mPswView.getText().toString();
-                String psw_confirm=mConfirmPsw.getText().toString();
-                String nick =mNickView.getText().toString();
-                if (TextUtils.isEmpty(email)){
-                    Toast.makeText(this, "邮箱不能为空哦！", Toast.LENGTH_SHORT).show();
-                    return;
-                }else if (TextUtils.isEmpty(nick)){
-                    Toast.makeText(this,"昵称不能为空哦！",Toast.LENGTH_SHORT).show();
-                    return;
-                }else if (TextUtils.isEmpty(password)){
-                    Toast.makeText(this,"密码不能为空哦！",Toast.LENGTH_SHORT).show();
-                    return;
-                }else if (!password.equals(psw_confirm)){
-                    Toast.makeText(this,"两次密码不一致哦！",Toast.LENGTH_SHORT).show();
+                System.out.println("RegisterActivity.onClick-------->" + email);
+                if (TextUtils.isEmpty(email)) {
+                    mEmailView.setShakeAnimation();
                     return;
                 }
-                doRegister();
+                if (ToolUtils.isPhoneOk(email) && email.length() > 0) {
+//                    Intent intent = new Intent(this, AccountRegisterSetPwdActivity.class);
+//                    intent.putExtra("phone",email);
+//                    startActivity(intent);
+//                    doRegister();
+                    checkPhoneIsExist(email);
+                } else {
+                    mEmailView.setShakeAnimation();
+                    ToolUtils.setToast(this, "抱歉,无效手机号码");
+                }
                 break;
             case R.id.tv_login:
-//                ((BaseActivity)getActivity()).popToStack(this);
+                finish();
                 break;
-            case R.id.ll_back:
-//                ((BaseActivity)getActivity()).popToStack(this);
+            case R.id.back_btn:
                 finish();
                 break;
             default:
                 break;
         }
     }
-    private void doRegister(){
-        Log.i("doRegister------->", "doRegister");
 
-        new MyTask().execute();
-    }
-
-
-    private class MyTask extends AsyncTask<Void,Void,String> {
-        @Override
-        protected void onPreExecute() {
-            mDialog= CustomLoadingDialog.setLoadingDialog(RegisterActivity.this, "注册中");
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(Void... voids) {
-            String str=null;
-            try {
-                String email = mEmailView.getText().toString();
-                String password =mPswView.getText().toString();
-                String psw_confirm=mConfirmPsw.getText().toString();
-                String nick =mNickView.getText().toString();
-
-                Map<String, String> valueParams = new HashMap<String,String>();
-                valueParams.put("user[email]", email);
-                valueParams.put("user[password]", password);
-                valueParams.put("user[password_confirmations]",psw_confirm);
-                valueParams.put("user[nick_name]", nick);
-                str = executeHttpPost(email,password,psw_confirm,nick);
-            }catch (Exception e){
+    private void checkPhoneIsExist(final String phone) {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("phone", phone);
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_REGISTER_CHECK_PHONE_URL,params,new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                System.out.println("RegisterActivity.onResponse------->" + jsonObject.toString());
+                JSONObject dataObj = jsonObject.optJSONObject("data");
+                int status = dataObj.optInt("status");
+                String message = dataObj.optString("message");
+                if (400 == status) {
+                    Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Intent intent = new Intent(RegisterActivity.this, AccountRegisterSetPwdActivity.class);
+                intent.putExtra("phone", phone);
+                startActivityForResult(intent, 200);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
 
             }
-            return str;
-        }
+        });
+        ((ZDApplication) getApplication()).mRequestQueue.add(request);
+    }
 
-        @Override
-        protected void onPostExecute(String s) {
-            if (mDialog!=null)
-                mDialog.dismiss();
-            try {
-                JSONObject json = new JSONObject(s);
-                Object obj = json.opt("message");
-                if (obj!=null){
-                    JSONArray errMsg =  json.optJSONArray("message");
-                    Toast.makeText(RegisterActivity.this,errMsg.optString(0),Toast.LENGTH_LONG).show();
+    private void doRegister() {
+
+        mDialog = CustomLoadingDialog.setLoadingDialog(RegisterActivity.this, "注册中");
+        String email = mEmailView.getText().toString();
+        Map<String, String> valueParams = new HashMap<String, String>();
+        valueParams.put("user[email]", email);
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_REGISTER_URL, valueParams, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (mDialog != null)
+                    mDialog.dismiss();
+                Object obj = jsonObject.opt("message");
+                if (obj != null) {
+                    JSONArray errMsg = jsonObject.optJSONArray("message");
+                    Toast.makeText(RegisterActivity.this, errMsg.optString(0), Toast.LENGTH_LONG).show();
                     return;
                 }
 
-                Log.i("before--->","before");
-                JSONObject userObj = json.optJSONObject("user");
-                Log.i("userObj--->","userObj");
+                JSONObject userObj = jsonObject.optJSONObject("user");
                 int id = userObj.optInt("id");
-                Log.i("id--->","id");
                 String email = userObj.optString("email");
-                Log.i("email--->","email");
                 String token = userObj.optString("authentication_token");
-                Log.i("token--->","token");
-                String state =userObj.optString("state");
-                Log.i("state--->","state");
+                String state = userObj.optString("state");
                 String avatar = userObj.optJSONObject("avatar").optJSONObject("mobile_icon").optString("url");
-                Log.i("avatar--->","avatar");
-                String nickname=userObj.optString("nick_name");
-                Log.i("nickname--->","nickname");
-                User user=new User(id,email,token,nickname,avatar);
-                Log.i("user------------>",user.toString());
-                Log.i("onRegisterOrLoginSuccess---->","onRegisterOrLoginSuccess");
-                Message message=new Message();
-                message.what=0;
-                message.obj=user;
+                String nickname = userObj.optString("nick_name");
+                User user = new User(id, email, token, nickname, avatar);
+                Message message = new Message();
+                message.what = 0;
+                message.obj = user;
                 handler.sendMessage(message);
-            }catch (Exception e){
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
 
             }
-
-        }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", getApplicationContext().getResources().getString(R.string.app_versionName));
+                return super.getHeaders();
+            }
+        };
+        mRequestQueue.add(request);
     }
 
-    public String executeHttpPost(String email,String psw,String psw2,String nick) throws Exception {
-        BufferedReader in = null;
-        try {
-            // 定义HttpClient
-            HttpClient client = new DefaultHttpClient();
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (resultCode){
 
-
-            // 实例化HTTP方法
-            HttpPost request = new HttpPost(ZhaiDou.USER_REGISTER_URL);
-
-            // 创建名/值组列表
-            List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-
-
-            parameters.add(new BasicNameValuePair("user[email]",email));
-            parameters.add(new BasicNameValuePair("user[password]",psw));
-            parameters.add(new BasicNameValuePair("user[password_confirmations]",psw2));
-            parameters.add(new BasicNameValuePair("user[nick_name]",nick));
-
-            // 创建UrlEncodedFormEntity对象
-            UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
-                    parameters, HTTP.UTF_8);
-            request.setEntity(formEntiry);
-            // 执行请求
-            HttpResponse response = client.execute(request);
-
-            in = new BufferedReader(new InputStreamReader(response.getEntity()
-                    .getContent()));
-            StringBuffer sb = new StringBuffer("");
-            String line = "";
-            String NL = System.getProperty("line.separator");
-            while ((line = in.readLine()) != null) {
-                sb.append(line + NL);
-            }
-            in.close();
-            String result = sb.toString();
-            return result;
-
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
+            case 2000:
+                if (data != null) {
+                    int id = data.getIntExtra("id", -1);
+                    String email = data.getStringExtra("email");
+                    String token = data.getStringExtra("token");
+                    String nick = data.getStringExtra("nick");
+                    String phone = data.getStringExtra("phone");
+                    User user = new User(id, email, token, nick, null);
+                    Message message = new Message();
+                    message.what = 0;
+                    message.obj = user;
+                    handler.sendMessage(message);
                 }
-            }
+                break;
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
-    public void onResume() {
+
+    @Override
+    protected void onResume() {
         super.onResume();
+        MobclickAgent.onPageStart(getResources().getString(R.string.title_register));
         MobclickAgent.onResume(this);
     }
-    public void onPause() {
+
+    @Override
+    protected void onPause() {
         super.onPause();
+        MobclickAgent.onPageEnd(getResources().getString(R.string.title_register));
         MobclickAgent.onPause(this);
     }
 }

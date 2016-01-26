@@ -8,12 +8,6 @@
 
 package cn.sharesdk.onekeyshare.theme.classic;
 
-import static com.mob.tools.utils.R.getColorRes;
-import static com.mob.tools.utils.R.getStringRes;
-import static com.mob.tools.utils.R.getBitmapRes;
-
-import java.util.ArrayList;
-
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.util.TypedValue;
@@ -26,12 +20,16 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 
+import java.util.ArrayList;
+
 import cn.sharesdk.onekeyshare.PlatformListFakeActivity;
+
+import static com.mob.tools.utils.R.getBitmapRes;
+import static com.mob.tools.utils.R.getColorRes;
+import static com.mob.tools.utils.R.getStringRes;
 
 public class PlatformListPage extends PlatformListFakeActivity implements View.OnClickListener {
 	// page container
@@ -88,15 +86,16 @@ public class PlatformListPage extends PlatformListFakeActivity implements View.O
 		flPage.addView(llPage);
 
         //title
-        TextView textView =new TextView(getContext());
-        LinearLayout.LayoutParams tvlp = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,dp_10*4);
-        tvlp.setMargins(dp_10*4,0,0,0);
-        textView.setLayoutParams(tvlp);
-        textView.setText("分享到");
-        textView.setTextColor(getColorRes(getContext(),"gray_9"));
-        textView.setGravity(Gravity.BOTTOM);
-        llPage.addView(textView);
+//        TextView textView =new TextView(getContext());
+//        LinearLayout.LayoutParams tvlp = new LinearLayout.LayoutParams(
+//                LinearLayout.LayoutParams.MATCH_PARENT,dp_10*4);
+//        tvlp.setMargins(dp_10*4,0,0,0);
+//        textView.setLayoutParams(tvlp);
+//        textView.setText("分享到");
+//        textView.setTextColor(getColorRes(getContext(), "gray_9"));
+//        textView.setGravity(Gravity.BOTTOM);
+//        textView.setVisibility(View.GONE);
+//        llPage.addView(textView);
 
 		// gridview
 		grid = new PlatformGridView(getContext());
@@ -104,40 +103,40 @@ public class PlatformListPage extends PlatformListFakeActivity implements View.O
 		LinearLayout.LayoutParams lpWg = new LinearLayout.LayoutParams(
 				LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		grid.setLayoutParams(lpWg);
-        lpWg.setMargins(0, dp_10, 0, dp_10);
+        lpWg.setMargins(0, 0, 0, 0);
 		llPage.addView(grid);
 
         //line
         ImageView imageView=new ImageView(getContext());
-        imageView.setBackgroundDrawable(new ColorDrawable(0xe7e7e7e7));
+        imageView.setBackgroundDrawable(new ColorDrawable(0xf1f1f1f1));
         LinearLayout.LayoutParams lpline = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, com.mob.tools.utils.R.dipToPx(getContext(),1));
+                LinearLayout.LayoutParams.MATCH_PARENT, 1);
         imageView.setLayoutParams(lpline);
         llPage.addView(imageView);
 
 		// cancel button
 		btnCancel = new Button(getContext());
-		btnCancel.setTextColor(0xffffffff);
-		btnCancel.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+		btnCancel.setTextColor(getColorRes(getContext(),"text_main_color"));
+		btnCancel.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
         btnCancel.setTypeface(((ZDApplication)getContext().getApplicationContext()).getTypeFace());
 //        btnCancel.setGravity(Gravity.CENTER);
 		int resId = getStringRes(getContext(), "cancel");
 		if (resId > 0) {
 			btnCancel.setText(resId);
 		}
-		btnCancel.setPadding(0,com.mob.tools.utils.R.dipToPx(getContext(), 5), 0, com.mob.tools.utils.R.dipToPx(getContext(), 5));
+		btnCancel.setPadding(0,com.mob.tools.utils.R.dipToPx(getContext(), 4), 0, com.mob.tools.utils.R.dipToPx(getContext(), 4));
 
 		resId = getBitmapRes(getContext(), "classic_platform_corners_bg");
-		if(resId > 0){
-			btnCancel.setBackgroundResource(resId);
-		}else {
+//		if(resId > 0){
+//			btnCancel.setBackgroundResource(resId);
+//		}else {
 		    btnCancel.setBackgroundDrawable(new ColorDrawable(0xffffffff));
-		}
+//		}
 
 		LinearLayout.LayoutParams lpBtn = new LinearLayout.LayoutParams(
-				LinearLayout.LayoutParams.MATCH_PARENT, com.mob.tools.utils.R.dipToPx(getContext(), 40));
+				LinearLayout.LayoutParams.MATCH_PARENT, 88);
 //		int dp_10 = com.mob.tools.utils.R.dipToPx(getContext(), 10);
-		lpBtn.setMargins(dp_10*3, dp_10, dp_10*3, dp_10);
+//		lpBtn.setMargins(dp_10*3, dp_10, dp_10*3, dp_10);
 		btnCancel.setLayoutParams(lpBtn);
 		llPage.addView(btnCancel);
 	}
@@ -204,6 +203,7 @@ public class PlatformListPage extends PlatformListFakeActivity implements View.O
 	}
 
 	public void onPlatformIconClick(View v, ArrayList<Object> platforms) {
-		onShareButtonClick(v, platforms);
+        System.out.println("v = [" + v + "], platforms = [" + platforms + "]");
+        onShareButtonClick(v, platforms);
 	}
 }
