@@ -3,7 +3,6 @@ package com.zhaidou.fragments;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,8 +30,6 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.activities.HomeCompetitionActivity;
-import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.adapter.ShopSpecialAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
@@ -82,13 +79,11 @@ public class MainHomeFragment extends BaseFragment implements
     private List<SwitchImage> banners = new ArrayList<SwitchImage>();
     private List<SwitchImage> codes = new ArrayList<SwitchImage>();
     private List<SwitchImage> specials = new ArrayList<SwitchImage>();
-    private List<SwitchImage> switchImages = new ArrayList<SwitchImage>();
     private LinearLayout loadingView, nullNetView, nullView;
     private TextView reloadBtn, reloadNetBtn;
     private CustomBannerView customBannerView;
-    private LinearLayout linearLayout, codeView;
+    private LinearLayout linearLayout, codeView,moduleView;
     private PullToRefreshScrollView mScrollView;
-    private ImageView[] specialBanner = new ImageView[3];
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
 
     private Handler handler = new Handler()
@@ -114,7 +109,7 @@ public class MainHomeFragment extends BaseFragment implements
             {
                 setAdView();
                 setCodeView();
-                setSpecialView();
+                setModuleView();
             }
         }
     };
@@ -175,21 +170,73 @@ public class MainHomeFragment extends BaseFragment implements
         }
     }
 
-    private void setSpecialView()
+    private void setModuleView()
     {
-        if (specials.size() > 0)
+        moduleView.removeAllViews();
+        for (int i = 0; i < specials.size(); i++)
         {
-            mSpecialLayout.setVisibility(View.VISIBLE);
-            for (int i = 0; i < specials.size(); i++)
+            final int pos = i;
+            final View mView = LayoutInflater.from(mContext).inflate(R.layout.item_home_module, null);
+            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+                    screenWidth,screenWidth*1260/1194);
+            mView.setLayoutParams(param);
+            ImageView imageIv1 = (ImageView) mView.findViewById(R.id.moduleIv1);
+            ToolUtils.setImageCacheUrl(specials.get(i).imageUrl, imageIv1,R.drawable.icon_loading_circle);
+            imageIv1.setOnClickListener(new View.OnClickListener()
             {
-                specialBanner[i].setTag(specials.get(i));
-                ToolUtils.setImageCacheUrl(specials.get(i).imageUrl, specialBanner[i],R.drawable.icon_loading_item);
-            }
-        } else
-        {
-            mSpecialLayout.setVisibility(View.GONE);
+                @Override
+                public void onClick(View v)
+                {
+                    SwitchImage item = specials.get(pos);
+                    ToolUtils.setBannerGoto(item, mContext);
+                }
+            });
+            ImageView imageIv2 = (ImageView) mView.findViewById(R.id.moduleIv2);
+            ToolUtils.setImageCacheUrl(specials.get(i).imageUrl, imageIv2,R.drawable.icon_loading_circle);
+            imageIv2.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    SwitchImage item = specials.get(pos);
+                    ToolUtils.setBannerGoto(item, mContext);
+                }
+            });
+            ImageView imageIv3 = (ImageView) mView.findViewById(R.id.moduleIv3);
+            ToolUtils.setImageCacheUrl(specials.get(i).imageUrl, imageIv3,R.drawable.icon_loading_circle);
+            imageIv3.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    SwitchImage item = specials.get(pos);
+                    ToolUtils.setBannerGoto(item, mContext);
+                }
+            });
+            ImageView imageIv4 = (ImageView) mView.findViewById(R.id.moduleIv4);
+            ToolUtils.setImageCacheUrl(specials.get(i).imageUrl, imageIv4,R.drawable.icon_loading_circle);
+            imageIv4.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    SwitchImage item = specials.get(pos);
+                    ToolUtils.setBannerGoto(item, mContext);
+                }
+            });
+            ImageView imageIv5 = (ImageView) mView.findViewById(R.id.moduleIv5);
+            ToolUtils.setImageCacheUrl(specials.get(i).imageUrl, imageIv5,R.drawable.icon_loading_circle);
+            imageIv5.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    SwitchImage item = specials.get(pos);
+                    ToolUtils.setBannerGoto(item, mContext);
+                }
+            });
+            moduleView.addView(mView);
         }
-
     }
 
     private OnFragmentInteractionListener mListener;
@@ -254,22 +301,12 @@ public class MainHomeFragment extends BaseFragment implements
         adapterList = new ShopSpecialAdapter(mContext, items, screenWidth);
         listView.setAdapter(adapterList);
 
-        specialBanner[0] = (ImageView) view.findViewById(R.id.image1);
-        specialBanner[1] = (ImageView) view.findViewById(R.id.image2);
-        specialBanner[2] = (ImageView) view.findViewById(R.id.image3);
-        specialBanner[0].setOnClickListener(this);
-        specialBanner[1].setOnClickListener(this);
-        specialBanner[2].setOnClickListener(this);
-
         mScrollView = (PullToRefreshScrollView) view.findViewById(R.id.sv_home_scrollview);
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         mScrollView.setOnRefreshListener(this);
 
         codeView = (LinearLayout) view.findViewById(R.id.homeCodeView);
-        view.findViewById(R.id.ll_lottery).setOnClickListener(this);
-        view.findViewById(R.id.ll_special_shop).setOnClickListener(this);
-        view.findViewById(R.id.ll_sale).setOnClickListener(this);
-        view.findViewById(R.id.ll_forward).setOnClickListener(this);
+        moduleView= (LinearLayout) view.findViewById(R.id.moduleView);
 
         mSearchView = (ImageView) view.findViewById(R.id.iv_search);
         mSearchView.setOnClickListener(this);
@@ -337,31 +374,6 @@ public class MainHomeFragment extends BaseFragment implements
 //                ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
                 ((MainActivity) getActivity()).gotoCategory();
                 break;
-            case R.id.ll_lottery:
-                Intent detailIntent = new Intent(getActivity(), HomeCompetitionActivity.class);
-                detailIntent.putExtra("url", ZhaiDou.PRIZE_SCRAPING_URL);
-                detailIntent.putExtra("from", "lottery");
-                detailIntent.putExtra("title", "天天刮奖");
-                getActivity().startActivity(detailIntent);
-                break;
-
-            case R.id.ll_special_shop:
-                HomeStrategyFragment shopSpecialFragment = HomeStrategyFragment.newInstance("", 0);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopSpecialFragment);
-                break;
-
-            case R.id.ll_sale:
-                SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment);
-                break;
-            case R.id.ll_forward:
-                Intent intent1 = new Intent();
-                intent1.putExtra("url", ZhaiDou.FORWARD_URL);
-                intent1.putExtra("from", "beauty");
-                intent1.putExtra("title", "转发有喜");
-                intent1.setClass(getActivity(), ItemDetailActivity.class);
-                getActivity().startActivity(intent1);
-                break;
             case R.id.nullReload:
                 mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
                 initDate();
@@ -370,12 +382,6 @@ public class MainHomeFragment extends BaseFragment implements
                 mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
                 initDate();
                 break;
-        }
-        int viewId = view.getId();
-        if (viewId == R.id.image1 || viewId == R.id.image2 || viewId == R.id.image3)
-        {
-            SwitchImage item = (SwitchImage) view.getTag();
-            ToolUtils.setBannerGoto(item,mContext);
         }
     }
 
