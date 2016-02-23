@@ -83,15 +83,15 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     private FragmentManager manager;
     private Fragment utilityFragment;
-    private Fragment beautyHomeFragment;
+    private Fragment magicHomeFragment;
     private Fragment categoryFragment;
     private ShopCartFragment shopCartFragment;
 
     private TextView homeButton;
-    private TextView beautyButton;
+    private TextView magicButton;
     private TextView categoryButton;
     private TextView personalButton;
-    private TextView diyButton;
+    private TextView cartButton;
     private TextView lastButton;
 
 
@@ -123,6 +123,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     public int num = 0;
     public int cartCount = 0;
+    private boolean isClickMagic=false;//判断魔法软装是否可以再次点击
 
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
@@ -201,7 +202,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                             shopCartFragment.refreshData();
                         }
                         selectFragment(currentFragment, shopCartFragment);
-                        setButton(diyButton);
+                        setButton(cartButton);
                     }
                     FetchUnPayData();
                     break;
@@ -366,12 +367,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         FetchCityData();
     }
 
-
-    public int getNum()
-    {
-        return num;
-    }
-
     public void initComponents()
     {
 
@@ -403,20 +398,27 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         });
 
-        beautyButton = (TextView) findViewById(R.id.tab_beauty);
-        beautyButton.setOnClickListener(new View.OnClickListener()
+        magicButton = (TextView) findViewById(R.id.tab_beauty);
+        magicButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
-
-                if (beautyHomeFragment == null)
+                if (isClickMagic)
                 {
-                    beautyHomeFragment = new MainStrategyFragment();
+                    DiyFragment diyFragment = DiyFragment.newInstance("" ,"");
+                    navigationToFragment(diyFragment);
+                }
+                else
+                {
+                    if (magicHomeFragment == null)
+                    {
+                        magicHomeFragment = new MainStrategyFragment();
+                    }
+                    selectFragment(currentFragment, magicHomeFragment);
+                    setButton(view);
                 }
 
-                selectFragment(currentFragment, beautyHomeFragment);
-                setButton(view);
             }
         });
 
@@ -432,8 +434,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         });
 
-        diyButton = (TextView) findViewById(R.id.tab_diy);
-        diyButton.setOnClickListener(new View.OnClickListener()
+        cartButton = (TextView) findViewById(R.id.tab_diy);
+        cartButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
@@ -485,6 +487,14 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     public void setButton(View view)
     {
+        if (currentFragment!=magicHomeFragment)
+        {
+            isClickMagic=false;
+        }
+        else
+        {
+            isClickMagic=true;
+        }
         TextView button = (TextView) view;
 
         lastButton.setSelected(false);

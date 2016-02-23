@@ -178,7 +178,7 @@ public class MainHomeFragment extends BaseFragment implements
             final int pos = i;
             final View mView = LayoutInflater.from(mContext).inflate(R.layout.item_home_module, null);
             LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
-                    screenWidth,screenWidth*1260/1194);
+                    screenWidth,screenWidth*(1260+32)/1194);
             mView.setLayoutParams(param);
             ImageView imageIv1 = (ImageView) mView.findViewById(R.id.moduleIv1);
             ToolUtils.setImageCacheUrl(specials.get(i).imageUrl, imageIv1,R.drawable.icon_loading_circle);

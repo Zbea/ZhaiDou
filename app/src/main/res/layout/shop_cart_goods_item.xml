@@ -254,13 +254,11 @@
 
             <ImageView
                 android:id="@+id/cartItemDelBtn"
-                android:layout_width="35dp"
-                android:layout_height="26dp"
-                android:layout_marginTop="20dp"
-                android:paddingLeft="20dp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
+                android:layout_width="40dp"
+                android:layout_height="46dp"
+                android:layout_marginTop="10dp"
                 android:clickable="true"
+                android:scaleType="center"
                 android:src="@drawable/delete"/>
 
             </LinearLayout>

@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,10 +23,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
-import android.view.animation.RotateAnimation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.ScaleAnimation;
-import android.view.animation.TranslateAnimation;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -153,7 +150,6 @@ public class GoodsDetailsFragment extends BaseFragment
     private GoodsImageAdapter imageAdapter;
     private ImageView mTipView;
     private ImageView goodsImage;
-    private FrameLayout animation_viewGroup;
     private RadioGroup radioGroup;
     private ListView mListView;
     private GoodInfoAdapter mAdapter;
@@ -161,12 +157,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private LinearLayout goodsImagesView;
     private LinearLayout goodsInfoView;
     private CustomProgressWebview webView;
-    //动画时间
-    private int AnimationDuration = 1000;
-    //正在执行的动画数量
-    private int number = 0;
-    //是否完成清理
-    private boolean isClean = false;
+
     private boolean isPublish;
     private boolean canShare;
     private boolean isOSaleBuy;//是否购买过零元特卖
@@ -223,30 +214,6 @@ public class GoodsDetailsFragment extends BaseFragment
                     mSpecificationParent.num = mSpecificationParent.num - 1;
                 }
                 setRefreshSpecification();
-            }
-        }
-    };
-
-    private Handler myHandler = new Handler()
-    {
-        public void handleMessage(Message msg)
-        {
-            switch (msg.what)
-            {
-                case 0:
-                    //用来清除动画后留下的垃圾
-                    try
-                    {
-                        animation_viewGroup.removeAllViews();
-                    } catch (Exception e)
-                    {
-
-                    }
-                    isClean = false;
-
-                    break;
-                default:
-                    break;
             }
         }
     };
@@ -347,10 +314,40 @@ public class GoodsDetailsFragment extends BaseFragment
                     cartCount = cartCount + 1;
                     Intent intent = new Intent(ZhaiDou.IntentRefreshAddCartTag);
                     mContext.sendBroadcast(intent);
-                    int[] location = new int[2];
-                    mTipView.getLocationInWindow(location);
-                    Drawable drawable = mTipView.getDrawable();
-                    doAnim(drawable, location);
+
+                    mTipView.setVisibility(View.VISIBLE);
+
+                    AnimationSet animationSet= new AnimationSet(true);
+                    animationSet.setDuration(1000);
+
+                    ScaleAnimation scaleAnimation = new ScaleAnimation(3f, 1f,3f, 1f,
+                            Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+
+                    Animation animation= AnimationUtils.loadAnimation(mContext,R.anim.add_cart_anim);
+                    animation.setFillAfter(true);
+                    animationSet.addAnimation(scaleAnimation);
+                    animationSet.addAnimation(animation);
+
+                    mTipView.startAnimation(animationSet);
+                    animationSet.setAnimationListener(new Animation.AnimationListener()
+                    {
+                        @Override
+                        public void onAnimationStart(Animation animation)
+                        {
+                        }
+                        @Override
+                        public void onAnimationEnd(Animation animation)
+                        {
+                            mTipView.setVisibility(View.GONE);
+                            mTipView.clearAnimation();
+                            initCartTips();
+                        }
+                        @Override
+                        public void onAnimationRepeat(Animation animation)
+                        {
+                        }
+                    });
+
                     break;
                 case UPDATE_ISADD_CART://校正是否零元特卖已经加入购物车
                     mDialog.dismiss();
@@ -592,7 +589,6 @@ public class GoodsDetailsFragment extends BaseFragment
         mDiscount = (TextView) mView.findViewById(R.id.tv_discount);
         mTitle = (TextView) mView.findViewById(R.id.tv_title);
         mTimerView = (TimerTextView) mView.findViewById(R.id.tv_count_time);
-        animation_viewGroup = createAnimLayout();
         mRequestQueue = Volley.newRequestQueue(getActivity());
 
         topBtn = (ImageView) mView.findViewById(R.id.goodsTop);
@@ -1562,9 +1558,6 @@ public class GoodsDetailsFragment extends BaseFragment
                         for (int i = 0; i < imgArrays.length(); i++)
                         {
                             String url=imgArrays.optString(i);
-                            ToolUtils.setLog(url);
-//                            JSONObject imgObj = imgArrays.optJSONObject(i);
-//                            String url = imgObj.optString("imageUrl") + imgObj.optString("imageFileType");
                             imgsList.add(url);
                         }
                     }
@@ -1954,121 +1947,6 @@ public class GoodsDetailsFragment extends BaseFragment
             }
         };
         mRequestQueue.add(request);
-    }
-
-
-    private void doAnim(Drawable drawable, int[] start_location)
-    {
-        if (!isClean)
-        {
-            setAnim(drawable, start_location);
-        } else
-        {
-            try
-            {
-                animation_viewGroup.removeAllViews();
-                isClean = false;
-                setAnim(drawable, start_location);
-            } catch (Exception e)
-            {
-                e.printStackTrace();
-            } finally
-            {
-                isClean = true;
-            }
-        }
-    }
-
-    private void setAnim(Drawable drawable, int[] start_location)
-    {
-        Animation mScaleAnimation = new ScaleAnimation(1.5f, 0.0f, 1.5f, 0.0f, Animation.RELATIVE_TO_SELF, 0.1f, Animation.RELATIVE_TO_SELF, 0.1f);
-        mScaleAnimation.setDuration(AnimationDuration);
-        mScaleAnimation.setFillAfter(true);
-
-
-        final ImageView iview = new ImageView(getActivity());
-        iview.setImageDrawable(drawable);
-        final View view = addViewToAnimLayout(animation_viewGroup, iview, start_location);
-        view.setAlpha(0.6f);
-
-        int[] end_location = new int[2];
-        myCartBtn.getLocationInWindow(end_location);
-        int endX = -start_location[0] + dip2px(getActivity(), 30);
-        int endY = end_location[1] - start_location[1];
-
-        Animation mTranslateAnimation = new TranslateAnimation(0, endX, 0, endY);
-        Animation mRotateAnimation = new RotateAnimation(0, 180, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        mRotateAnimation.setDuration(AnimationDuration);
-        mTranslateAnimation.setDuration(AnimationDuration);
-        AnimationSet mAnimationSet = new AnimationSet(true);
-
-        mAnimationSet.setFillAfter(true);
-//        mAnimationSet.addAnimation(mRotateAnimation);
-        mAnimationSet.addAnimation(mScaleAnimation);
-        mAnimationSet.addAnimation(mTranslateAnimation);
-
-        mAnimationSet.setAnimationListener(new Animation.AnimationListener()
-        {
-
-            @Override
-            public void onAnimationStart(Animation animation)
-            {
-                number++;
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation)
-            {
-                number--;
-                if (number == 0)
-                {
-                    isClean = true;
-                    myHandler.sendEmptyMessage(0);
-                }
-                mTipView.setVisibility(View.GONE);
-                initCartTips();
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation)
-            {
-            }
-        });
-        view.startAnimation(mAnimationSet);
-
-    }
-
-    private View addViewToAnimLayout(ViewGroup vg, View view, int[] location)
-    {
-        int x = location[0];
-        int y = location[1];
-        vg.addView(view);
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
-                dip2px(getActivity(), 90), dip2px(getActivity(), 90));
-        lp.leftMargin = x;
-        lp.topMargin = y;
-        view.setPadding(5, 5, 5, 5);
-        view.setLayoutParams(lp);
-
-        return view;
-    }
-
-    private int dip2px(Context context, float dpValue)
-    {
-        float scale = context.getResources().getDisplayMetrics().density;
-        return (int) (dpValue * scale + 0.5f);
-    }
-
-    private FrameLayout createAnimLayout()
-    {
-        ViewGroup rootView = (ViewGroup) getActivity().getWindow().getDecorView();
-        FrameLayout animLayout = new FrameLayout(getActivity());
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-        animLayout.setLayoutParams(lp);
-        animLayout.setBackgroundColor(Color.parseColor("#00000000"));
-        rootView.addView(animLayout);
-        return animLayout;
-
     }
 
 
