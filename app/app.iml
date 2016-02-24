@@ -84,6 +84,7 @@
     <orderEntry type="jdk" jdkName="Android API 20 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="alisdk-ut-2" level="project" />
+    <orderEntry type="library" exported="" name="hyphenatechat_3.0.0" level="project" />
     <orderEntry type="library" exported="" name="alipaySDK-20150610" level="project" />
     <orderEntry type="library" exported="" name="mta-mid-sdk-2.20" level="project" />
     <orderEntry type="library" exported="" name="ShareSDK-Wechat-2.6.0" level="project" />
@@ -109,8 +110,8 @@
     <orderEntry type="library" exported="" name="ShareSDK-Wechat-Core-2.6.0" level="project" />
     <orderEntry type="library" exported="" name="session-sdk-0.9.3_06011037" level="project" />
     <orderEntry type="library" exported="" name="rpc-sdk-0.9.3_06101606" level="project" />
-    <orderEntry type="library" exported="" name="MobTools" level="project" />
     <orderEntry type="library" exported="" name="libammsdk" level="project" />
+    <orderEntry type="library" exported="" name="MobTools" level="project" />
     <orderEntry type="library" exported="" name="mta-stats-sdk-2.0.4" level="project" />
     <orderEntry type="library" exported="" name="testinagent" level="project" />
     <orderEntry type="library" exported="" name="alisdk-system-6" level="project" />
