@@ -225,7 +225,7 @@ public class SearchArticleListFragment extends BaseFragment implements PullToRef
         public View bindView(int position, View convertView, ViewGroup parent) {
             convertView = mHashMap.get(position);
             if (convertView==null)
-                convertView=mInflater.inflate(R.layout.home_item_list,null);
+                convertView=mInflater.inflate(R.layout.item_strategy_list,null);
 
             TextView title = ViewHolder.get(convertView, R.id.title);
             TextView articleViews = ViewHolder.get(convertView,R.id.views);

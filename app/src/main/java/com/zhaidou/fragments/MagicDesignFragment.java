@@ -1,51 +1,24 @@
 package com.zhaidou.fragments;
 
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
-import com.zhaidou.ZhaiDou;
-import com.zhaidou.activities.WebViewActivity;
-import com.zhaidou.adapter.RecommendAdapter;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.model.RecommendItem;
-import com.zhaidou.utils.DeviceUtils;
-import com.zhaidou.utils.ToolUtils;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by roy on 15/11/11.
  */
-public class StrategyDesignFragment extends BaseFragment {
+public class MagicDesignFragment extends BaseFragment {
     private static final String DATA = "page";
     private static final String INDEX = "index";
 
@@ -56,6 +29,7 @@ public class StrategyDesignFragment extends BaseFragment {
     private Context mContext;
     private TextView backBtn;
     private RelativeLayout designBtn;
+    private ImageView caseBtn;
 
 
 
@@ -69,24 +43,21 @@ public class StrategyDesignFragment extends BaseFragment {
             switch (v.getId())
             {
                 case R.id.back_btn:
-                    ((MainActivity) getActivity()).popToStack(StrategyDesignFragment.this);
+                    ((MainActivity) getActivity()).popToStack(MagicDesignFragment.this);
                     break;
                 case R.id.design_rl:
-//                    if (DeviceUtils.isApkInstalled(getActivity(), "com.tencent.mobileqq")){
-//                        String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_design);
-//                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-//                    }else {
-//                        ShowToast("没有安装QQ客户端哦");
-//                    }
                     GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("宅豆软装设计方案", "191100570001");
                     ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
+                    break;
+                case R.id.caseBtn:
+
                     break;
             }
         }
     };
 
-    public static StrategyDesignFragment newInstance(String page, String index) {
-        StrategyDesignFragment fragment = new StrategyDesignFragment();
+    public static MagicDesignFragment newInstance(String page, String index) {
+        MagicDesignFragment fragment = new MagicDesignFragment();
         Bundle args = new Bundle();
         args.putSerializable(DATA, page);
         args.putSerializable(INDEX, index);
@@ -94,7 +65,7 @@ public class StrategyDesignFragment extends BaseFragment {
         return fragment;
     }
 
-    public StrategyDesignFragment() {
+    public MagicDesignFragment() {
     }
 
     @Override
@@ -111,7 +82,7 @@ public class StrategyDesignFragment extends BaseFragment {
                              Bundle savedInstanceState) {
 
         if (mView == null) {
-            mView = inflater.inflate(R.layout.strategy_design_page, container, false);
+            mView = inflater.inflate(R.layout.fragment_magic_design_page, container, false);
             mContext = getActivity();
             initView();
         }
@@ -134,6 +105,9 @@ public class StrategyDesignFragment extends BaseFragment {
 
         designBtn = (RelativeLayout) mView.findViewById(R.id.design_rl);
         designBtn.setOnClickListener(onClickListener);
+
+        caseBtn= (ImageView) mView.findViewById(R.id.caseBtn);
+        caseBtn.setOnClickListener(onClickListener);
     }
 
 

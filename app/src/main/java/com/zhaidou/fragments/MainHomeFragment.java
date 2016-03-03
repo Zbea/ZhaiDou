@@ -82,7 +82,7 @@ public class MainHomeFragment extends BaseFragment implements
     private LinearLayout loadingView, nullNetView, nullView;
     private TextView reloadBtn, reloadNetBtn;
     private CustomBannerView customBannerView;
-    private LinearLayout linearLayout, codeView,moduleView;
+    private LinearLayout linearLayout, codeView, moduleView;
     private PullToRefreshScrollView mScrollView;
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
 
@@ -156,7 +156,7 @@ public class MainHomeFragment extends BaseFragment implements
             TextView codeName = (TextView) mView.findViewById(R.id.codeName);
             codeName.setText(codes.get(i).title);
             ImageView imageIv = (ImageView) mView.findViewById(R.id.codeImage);
-            ToolUtils.setImageCacheUrl(codes.get(i).imageUrl, imageIv,R.drawable.icon_loading_circle);
+            ToolUtils.setImageCacheUrl(codes.get(i).imageUrl, imageIv, R.drawable.icon_loading_circle);
             mView.setOnClickListener(new View.OnClickListener()
             {
                 @Override
@@ -173,15 +173,20 @@ public class MainHomeFragment extends BaseFragment implements
     private void setModuleView()
     {
         moduleView.removeAllViews();
-        for (int i = 0; i < specials.size(); i++)
+        if (specials.size() <= 0)
         {
-            final int pos = i;
+            return;
+        }
+        int num = specials.size() % 5 > 0 ? specials.size() / 5 + 1 : specials.size()/ 5;
+        for (int i = 0; i < num; i++)
+        {
+            final int pos = i * 5;
             final View mView = LayoutInflater.from(mContext).inflate(R.layout.item_home_module, null);
             LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
-                    screenWidth,screenWidth*(1260+32)/1194);
+                    screenWidth, screenWidth * (1260 + 32) / 1194);
             mView.setLayoutParams(param);
             ImageView imageIv1 = (ImageView) mView.findViewById(R.id.moduleIv1);
-            ToolUtils.setImageCacheUrl(specials.get(i).imageUrl, imageIv1,R.drawable.icon_loading_circle);
+            ToolUtils.setImageCacheUrl(specials.get(pos).imageUrl, imageIv1, R.drawable.icon_loading_home_topic_big);
             imageIv1.setOnClickListener(new View.OnClickListener()
             {
                 @Override
@@ -192,46 +197,46 @@ public class MainHomeFragment extends BaseFragment implements
                 }
             });
             ImageView imageIv2 = (ImageView) mView.findViewById(R.id.moduleIv2);
-            ToolUtils.setImageCacheUrl(specials.get(i).imageUrl, imageIv2,R.drawable.icon_loading_circle);
+            ToolUtils.setImageCacheUrl(specials.get(pos + 1).imageUrl, imageIv2, R.drawable.icon_loading_home_topic_small);
             imageIv2.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
                 {
-                    SwitchImage item = specials.get(pos);
+                    SwitchImage item = specials.get(pos + 1);
                     ToolUtils.setBannerGoto(item, mContext);
                 }
             });
             ImageView imageIv3 = (ImageView) mView.findViewById(R.id.moduleIv3);
-            ToolUtils.setImageCacheUrl(specials.get(i).imageUrl, imageIv3,R.drawable.icon_loading_circle);
+            ToolUtils.setImageCacheUrl(specials.get(pos + 2).imageUrl, imageIv3, R.drawable.icon_loading_home_topic_small);
             imageIv3.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
                 {
-                    SwitchImage item = specials.get(pos);
+                    SwitchImage item = specials.get(pos + 2);
                     ToolUtils.setBannerGoto(item, mContext);
                 }
             });
             ImageView imageIv4 = (ImageView) mView.findViewById(R.id.moduleIv4);
-            ToolUtils.setImageCacheUrl(specials.get(i).imageUrl, imageIv4,R.drawable.icon_loading_circle);
+            ToolUtils.setImageCacheUrl(specials.get(pos + 3).imageUrl, imageIv4, R.drawable.icon_loading_home_topic_small);
             imageIv4.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
                 {
-                    SwitchImage item = specials.get(pos);
+                    SwitchImage item = specials.get(pos + 3);
                     ToolUtils.setBannerGoto(item, mContext);
                 }
             });
             ImageView imageIv5 = (ImageView) mView.findViewById(R.id.moduleIv5);
-            ToolUtils.setImageCacheUrl(specials.get(i).imageUrl, imageIv5,R.drawable.icon_loading_circle);
+            ToolUtils.setImageCacheUrl(specials.get(pos + 4).imageUrl, imageIv5, R.drawable.icon_loading_home_topic_small);
             imageIv5.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
                 {
-                    SwitchImage item = specials.get(pos);
+                    SwitchImage item = specials.get(pos + 4);
                     ToolUtils.setBannerGoto(item, mContext);
                 }
             });
@@ -270,7 +275,7 @@ public class MainHomeFragment extends BaseFragment implements
     {
         if (view == null)
         {
-            view = inflater.inflate(R.layout.fragment_home, container, false);
+            view = inflater.inflate(R.layout.fragment_main_home, container, false);
             mContext = getActivity();
             initView();
 
@@ -306,7 +311,7 @@ public class MainHomeFragment extends BaseFragment implements
         mScrollView.setOnRefreshListener(this);
 
         codeView = (LinearLayout) view.findViewById(R.id.homeCodeView);
-        moduleView= (LinearLayout) view.findViewById(R.id.moduleView);
+        moduleView = (LinearLayout) view.findViewById(R.id.moduleView);
 
         mSearchView = (ImageView) view.findViewById(R.id.iv_search);
         mSearchView.setOnClickListener(this);
@@ -402,7 +407,7 @@ public class MainHomeFragment extends BaseFragment implements
                     if (mDialog != null)
                         mDialog.dismiss();
                     mScrollView.onRefreshComplete();
-                    if (currentPage==1)
+                    if (currentPage == 1)
                     {
                         nullView.setVisibility(View.VISIBLE);
                         nullNetView.setVisibility(View.GONE);
@@ -410,8 +415,8 @@ public class MainHomeFragment extends BaseFragment implements
                     return;
                 }
                 ToolUtils.setLog(response.toString());
-                int  code = response.optInt("code");
-                if(code==500)
+                int code = response.optInt("code");
+                if (code == 500)
                 {
                     if (mDialog != null)
                         mDialog.dismiss();
@@ -424,7 +429,7 @@ public class MainHomeFragment extends BaseFragment implements
                 JSONObject jsonObject = response.optJSONObject("data");
                 pageCount = jsonObject.optInt("totalCount");
                 pageSize = jsonObject.optInt("pageSize");
-                if (jsonObject!=null)
+                if (jsonObject != null)
                 {
                     JSONArray jsonArray = jsonObject.optJSONArray("themeList");
 
@@ -513,7 +518,7 @@ public class MainHomeFragment extends BaseFragment implements
                                     String typeValue = obj.optString("code");
                                     String imageUrl = obj.optString("pictureUrl");
                                     String title = obj.optString("name");
-                                    if (type==1)
+                                    if (type == 1)
                                     {
                                         typeValue = obj.optString("url");
                                     }
@@ -534,7 +539,7 @@ public class MainHomeFragment extends BaseFragment implements
                                     }
                                     if (flags.equals("03"))
                                     {
-                                        ToolUtils.setLog("switchImage:"+switchImage.type);
+                                        ToolUtils.setLog("switchImage:" + switchImage.type);
                                         codes.add(switchImage);
                                     }
                                 }

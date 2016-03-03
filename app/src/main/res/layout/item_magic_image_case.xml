@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/spaceView"
+        android:layout_width="match_parent"
+        android:layout_height="7dp"
+        ></View>
+
+    <RelativeLayout
+        android:id="@+id/bottomRl"
+        android:layout_width="match_parent"
+        android:layout_height="160dp">
+
+        <ImageView
+            android:id="@+id/imageIv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/icon_loading_item"/>
+
+        <LinearLayout
+            android:id="@+id/floatLine"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:padding="10dp"
+            android:orientation="vertical"
+            android:background="@drawable/main_magic_image_shape">
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/titleTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:text="够我是"/>
+
+            <View
+                android:layout_width="50dp"
+                android:layout_height="1dp"
+                android:layout_margin="10dp"
+                android:background="@color/white"
+                ></View>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/englishTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:text="够我是"/>
+
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+
+</LinearLayout>

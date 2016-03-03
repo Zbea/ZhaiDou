@@ -27,6 +27,7 @@
         android:src="@drawable/icon_loading_item"/>
 
         <LinearLayout
+            android:id="@+id/moduleLine1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="8dp"
@@ -53,6 +54,7 @@
             </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/moduleLine2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="8dp"

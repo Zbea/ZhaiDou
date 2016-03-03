@@ -17,6 +17,11 @@
     <string name="title_activity_item_detail"></string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_web_view">关闭</string>
+
+    <string name="title_main_magic_classic_case">免费经典方案</string>
+    <string name="title_main_magic_image_case">免费软装图例</string>
+    <string name="title_main_magic_choose_consult">免费选款咨询</string>
+    <string name="title_main_magic_online_design">在线设计服务</string>
     
     <string name="home_shop_special_text">特卖商城</string>
     <string name="shop_taday_special_text">今日特卖</string>

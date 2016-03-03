@@ -145,7 +145,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (view == null) {
-            view = inflater.inflate(R.layout.main_personal, container, false);
+            view = inflater.inflate(R.layout.fragment_main_personal, container, false);
 
             mPrePayView = (ImageView) view.findViewById(R.id.tv_pre_pay);
             mPreReceivedView = (ImageView) view.findViewById(R.id.tv_pre_received);

@@ -6,8 +6,8 @@ package com.zhaidou;
 public class ZhaiDou {
 
     public static String HOME_PAGE_URL = "http://buy.zhaidou.com/?json=get_category_posts&slug=%E5%AE%B6%E9%A5%B0%E4%BC%98%E9%80%89&status=publish";
-//    public static String HOME_BASE_URL = "http://tportal-web.zhaidou.com/";
-    public static String HOME_BASE_URL = "http://portal-web.zhaidou.com/";
+    public static String HOME_BASE_URL = "http://tportal-web.zhaidou.com/";
+//    public static String HOME_BASE_URL = "http://portal-web.zhaidou.com/";
     public static String HOME_BASE="http://www.zhaidou.com/";
 
     //美丽家
@@ -22,6 +22,18 @@ public class ZhaiDou {
     public static String HomeShopListUrl=HOME_BASE_URL+"index/getSpecialSaleList.action?pageSize=10&pageNo=";
     //首页特卖商品列表
     public static String HomeGoodsListUrl=HOME_BASE_URL+"index/getActivityProductList.action?activityCode=";
+
+    //免费经典方案
+    public static String MagicClassicCaseUrl=HOME_BASE_URL+"decorate/getFreeClassicsCases.action?pageNo=1&pageSize=20";
+    //免费经典方案详情
+    public static String MagicClassicCaseDetailsUrl=HOME_BASE_URL+"decorate/getFreeClassicsCaseDetail.action?pageNo=1&caseId=";
+    //图列风格
+    public static String MagicImageCaseUrl=HOME_BASE_URL+"decorate/getSoftDecorateStyles.action";
+    //图列颜色分类
+    public static String MagicImageClassUrl=HOME_BASE_URL+"decorate/getSoftDecorateCases.action?styleId=";
+    //图列套图
+    public static String MagicCImageDetailsUrl=HOME_BASE_URL+"decorate/getSoftDecorateImages.action?caseId=";
+
     //特卖列表share
     public static String shopSpecialListShareUrl="http://m.zhaidou.com/mall_list.html?id=";
     //商品加入购物车

@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,20 +32,14 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ArticleWebViewActivity;
-import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.model.SwitchImage;
-import com.zhaidou.utils.HtmlFetcher;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ListViewForScrollView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.net.URL;
-import java.net.URLDecoder;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.WeakHashMap;
@@ -63,7 +56,6 @@ public class MainStrategyFragment extends BaseFragment
     private Dialog loading;
     private ListViewForScrollView listView;
     private PullToRefreshScrollView mScrollView;
-    private String targetUrl="http://buy.zhaidou.com/?zdclient=ios&tag=006&count=10&json=1&page={0}";
     private int currentPage=1;
     private int pageTotal=0;
     private List<JSONObject> listItem=new ArrayList<JSONObject>();
@@ -176,7 +168,7 @@ public class MainStrategyFragment extends BaseFragment
             @Override
             public void onClick(View v)
             {
-                StrategyDesignFragment orderDetailFragment = StrategyDesignFragment.newInstance("" ,"");
+                MagicDesignFragment orderDetailFragment = MagicDesignFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
             }
         });
@@ -278,7 +270,7 @@ public class MainStrategyFragment extends BaseFragment
             view = mHashMap.get(position);
             if (view == null)
             {
-                view = inflater.inflate(R.layout.home_item_list, null);
+                view = inflater.inflate(R.layout.item_strategy_list, null);
             }
 
             TextView title = (TextView) view.findViewById(R.id.title);
