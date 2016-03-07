@@ -423,7 +423,7 @@ public class MagicImageDetailsFragment extends BaseFragment
             Article item = mItems.get(position);
             if (item != null)
             {
-                ToolUtils.setImageCacheUrl(item.getImg_url(), view, R.drawable.icon_loading_goods_details);
+                ToolUtils.setImageCacheUrl(item.getImg_url(), view);
                 if (!this.imageViews.contains(view))
                 {
                     imageViews.add(view);

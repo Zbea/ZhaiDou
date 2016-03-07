@@ -1698,7 +1698,7 @@ public class GoodsDetailsFragment extends BaseFragment
 
                                 Specification specification = new Specification();
                                 specification.title = specificationTitle;
-                                specification.sizess = subclassSizes;
+//                                specification.sizess = subclassSizes;
                                 for (int j = 0; j < specificationList.size(); j++)
                                 {
                                     if (specificationList.get(j).title.equals(specificationTitle))

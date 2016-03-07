@@ -128,48 +128,78 @@ public class MagicImageCalssFragment extends BaseFragment
             });
             TextView title = (TextView) convertView.findViewById(R.id.titleTv);
             ImageView cover = (ImageView) convertView.findViewById(R.id.imageIv);
-            title.setText(article.name);
-            DisplayImageOptions options = new DisplayImageOptions.Builder()
-                    .showImageOnLoading(R.drawable.icon_loading_item)
-                    .showImageForEmptyUri(R.drawable.icon_loading_item)
-                    .showImageOnFail(R.drawable.icon_loading_item)
-                    .resetViewBeforeLoading(false)//default 设置图片在加载前是否重置、复位
-                    .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
-                    .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
-                    .bitmapConfig(Bitmap.Config.RGB_565)
-                    .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
-                    .build();
-
-            ImageLoader.getInstance().displayImage(article.imageUrl, cover, options, new ImageLoadingListener()
+            cover.setScaleType(ImageView.ScaleType.FIT_XY);
+            LinearLayout.LayoutParams layoutParams;
+            if (article.imageHeight!=0&&article.imageWidth!=0)
             {
-                @Override
-                public void onLoadingStarted(String s, View view)
-                {
-                }
-
-                @Override
-                public void onLoadingFailed(String s, View view, FailReason failReason)
-                {
-                }
-                @Override
-                public void onLoadingComplete(String s, View view, Bitmap bitmap)
-                {
-                    ImageView imageView = (ImageView) view;//
-                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (bitmap.getHeight() * imageView.getWidth()) / bitmap.getWidth());
-                    if (i > 1)
-                    {
-                        layoutParams.topMargin = 25;
-                    }
-                    imageView.setLayoutParams(layoutParams);
-                    imageView.setImageBitmap(bitmap);
-                }
-
-                @Override
-                public void onLoadingCancelled(String s, View view)
-                {
-                }
-            });
+                layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ((screenWidth-75)/2)*article.imageHeight/article.imageWidth);
+            }
+            else
+            {
+                layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 200);
+            }
+            if (i > 1)
+            {
+                layoutParams.topMargin = 25;
+            }
+            cover.setLayoutParams(layoutParams);
+            title.setText(article.name);
+            ToolUtils.setImageCacheRoundUrl(article.imageUrl, cover,13,R.drawable.icon_loading_defalut);
+//            DisplayImageOptions options = new DisplayImageOptions.Builder()
+//                    .showImageOnLoading(R.drawable.icon_loading_item)
+//                    .showImageForEmptyUri(R.drawable.icon_loading_item)
+//                    .showImageOnFail(R.drawable.icon_loading_item)
+//                    .resetViewBeforeLoading(false)//default 设置图片在加载前是否重置、复位
+//                    .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
+//                    .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
+//                    .bitmapConfig(Bitmap.Config.RGB_565)
+//                    .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
+//                    .build();
+//
+//            ImageLoader.getInstance().displayImage(article.imageUrl, cover, options, new ImageLoadingListener()
+//            {
+//                @Override
+//                public void onLoadingStarted(String s, View view)
+//                {
+//                }
+//
+//                @Override
+//                public void onLoadingFailed(String s, View view, FailReason failReason)
+//                {
+//                }
+//                @Override
+//                public void onLoadingComplete(String s, View view, Bitmap bitmap)
+//                {
+//                    ImageView imageView = (ImageView) view;//
+//                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+//                    if (bitmap!=null)
+//                    {
+//                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (bitmap.getHeight() * imageView.getWidth()) / bitmap.getWidth());
+//                        if (i > 1)
+//                        {
+//                            layoutParams.topMargin = 25;
+//                        }
+//                        imageView.setLayoutParams(layoutParams);
+//                        imageView.setImageBitmap(bitmap);
+//                    }
+//                    else
+//                    {
+//                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 200);
+//                        if (i > 1)
+//                        {
+//                            layoutParams.topMargin = 25;
+//                        }
+//                        imageView.setLayoutParams(layoutParams);
+//                        imageView.setImageResource(R.drawable.icon_loading_defalut);
+//                    }
+//
+//                }
+//
+//                @Override
+//                public void onLoadingCancelled(String s, View view)
+//                {
+//                }
+//            });
             mHashMap.put(i,convertView);
         }
         if (j == 0)
@@ -305,12 +335,16 @@ public class MagicImageCalssFragment extends BaseFragment
                                 String img_url = article.optString("mainPic");
                                 String enName = article.optString("style");
                                 String date = article.optString("createTime").split(" ")[0];
+                                int imageWidth = article.optInt("imageWidth");
+                                int imageHeight = article.optInt("imageHeight");
                                 ImageItem item = new ImageItem();
                                 item.name=title;
                                 item.id=id;
                                 item.englishName=enName;
                                 item.time=date;
                                 item.imageUrl=img_url;
+                                item.imageWidth=imageWidth;
+                                item.imageHeight=imageHeight;
                                 imageItems.add(item);
                             }
                             handler.sendEmptyMessage(UPDATE_HOMELIST);

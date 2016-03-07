@@ -13,5 +13,8 @@ public class ImageItem implements Serializable
     public String englishName;
     public String imageUrl;
     public String time;
+    public int imageWidth;
+    public int imageHeight;
+
 
 }

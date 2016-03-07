@@ -5,14 +5,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.zhaidou.view.CustomCircleView
+    <ImageView
         android:id="@+id/imageIv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scaleType="fitXY"
         android:src="@drawable/icon_loading_item"
-        custom:type="round"
-        custom:radiuss="5dp"
         />
 
     <com.zhaidou.view.TypeFaceTextView

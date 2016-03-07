@@ -185,12 +185,12 @@ public class MagicClassicCaseFragment extends BaseFragment
         views.clear();
         for (int i = 0; i < articleList.size(); i++)
         {
-            final int position=i;
+            final int position = i;
             View contentView = LayoutInflater.from(mContext).inflate(R.layout.item_magic_classic_case, null);
 
             ImageView imageView = (ImageView) contentView.findViewById(R.id.imageIv);
             LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, (screenWidth-75) * 3 / 4);
+                    LinearLayout.LayoutParams.MATCH_PARENT, (screenWidth - 75) * 3 / 4);
             imageView.setLayoutParams(param);
             TextView titleTv = (TextView) contentView.findViewById(R.id.titleTv);
             TextView infoTv = (TextView) contentView.findViewById(R.id.infoTv);
@@ -200,7 +200,7 @@ public class MagicClassicCaseFragment extends BaseFragment
                 @Override
                 public void onClick(View v)
                 {
-                    HomeDesignCaseFragment homeDesignCaseFragment = HomeDesignCaseFragment.newInstance(articleList.get(position).getTitle(), articleList.get(position).getId()+"");
+                    HomeDesignCaseFragment homeDesignCaseFragment = HomeDesignCaseFragment.newInstance(articleList.get(position).getTitle(), articleList.get(position).getId() + "");
                     ((MainActivity) getActivity()).navigationToFragmentWithAnim(homeDesignCaseFragment);
                 }
             });
@@ -265,25 +265,29 @@ public class MagicClassicCaseFragment extends BaseFragment
                     ToolUtils.setLog(response.toString());
                     int code = response.optInt("code");
                     JSONObject dataObject = response.optJSONObject("data");
-                        pageSize = dataObject.optInt("pageSize");
-                        pageCount = dataObject.optInt("totalCount");
-                        JSONArray articles = dataObject.optJSONArray("freeClassicsCasePOs");
-                        if (articles != null)
+                    if (dataObject == null)
+                    {
+                        return;
+                    }
+                    pageSize = dataObject.optInt("pageSize");
+                    pageCount = dataObject.optInt("totalCount");
+                    JSONArray articles = dataObject.optJSONArray("freeClassicsCasePOs");
+                    if (articles != null)
+                    {
+                        for (int i = 0; i < articles.length(); i++)
                         {
-                            for (int i = 0; i < articles.length(); i++)
-                            {
-                                JSONObject article = articles.optJSONObject(i);
-                                int id = article.optInt("id");
-                                String title = article.optString("caseName");
-                                String img_url = article.optString("mainPic");
-                                String info = article.optString("caseDesc");
-                                String date = article.optString("updateTime").split(" ")[0];
-                                Article item = new Article(id, title, img_url, info, 0);
-                                item.setDate(date);
-                                articleList.add(item);
-                            }
-                            handler.sendEmptyMessage(UPDATE_HOMELIST);
+                            JSONObject article = articles.optJSONObject(i);
+                            int id = article.optInt("id");
+                            String title = article.optString("caseName");
+                            String img_url = article.optString("mainPic");
+                            String info = article.optString("caseDesc");
+                            String date = article.optString("updateTime").split(" ")[0];
+                            Article item = new Article(id, title, img_url, info, 0);
+                            item.setDate(date);
+                            articleList.add(item);
                         }
+                        handler.sendEmptyMessage(UPDATE_HOMELIST);
+                    }
                 }
             }
         }, new Response.ErrorListener()
