@@ -39,7 +39,6 @@ import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomCircleView;
 import com.zhaidou.view.TypeFaceTextView;
-import com.zhaidou.view.flow.StaggeredGridView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -65,7 +64,6 @@ public class MagicImageCalssFragment extends BaseFragment
     private TypeFaceTextView titleTv;
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private PullToRefreshScrollView scrollView;
-    private StaggeredGridView listView;
     private LinearLayout fallLine1, fallLine2;
     private int currentPage = 1;
     private int pageSize;
@@ -145,61 +143,6 @@ public class MagicImageCalssFragment extends BaseFragment
             cover.setLayoutParams(layoutParams);
             title.setText(article.name);
             ToolUtils.setImageCacheRoundUrl(article.imageUrl, cover,13,R.drawable.icon_loading_defalut);
-//            DisplayImageOptions options = new DisplayImageOptions.Builder()
-//                    .showImageOnLoading(R.drawable.icon_loading_item)
-//                    .showImageForEmptyUri(R.drawable.icon_loading_item)
-//                    .showImageOnFail(R.drawable.icon_loading_item)
-//                    .resetViewBeforeLoading(false)//default 设置图片在加载前是否重置、复位
-//                    .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
-//                    .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
-//                    .bitmapConfig(Bitmap.Config.RGB_565)
-//                    .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
-//                    .build();
-//
-//            ImageLoader.getInstance().displayImage(article.imageUrl, cover, options, new ImageLoadingListener()
-//            {
-//                @Override
-//                public void onLoadingStarted(String s, View view)
-//                {
-//                }
-//
-//                @Override
-//                public void onLoadingFailed(String s, View view, FailReason failReason)
-//                {
-//                }
-//                @Override
-//                public void onLoadingComplete(String s, View view, Bitmap bitmap)
-//                {
-//                    ImageView imageView = (ImageView) view;//
-//                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-//                    if (bitmap!=null)
-//                    {
-//                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (bitmap.getHeight() * imageView.getWidth()) / bitmap.getWidth());
-//                        if (i > 1)
-//                        {
-//                            layoutParams.topMargin = 25;
-//                        }
-//                        imageView.setLayoutParams(layoutParams);
-//                        imageView.setImageBitmap(bitmap);
-//                    }
-//                    else
-//                    {
-//                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 200);
-//                        if (i > 1)
-//                        {
-//                            layoutParams.topMargin = 25;
-//                        }
-//                        imageView.setLayoutParams(layoutParams);
-//                        imageView.setImageResource(R.drawable.icon_loading_defalut);
-//                    }
-//
-//                }
-//
-//                @Override
-//                public void onLoadingCancelled(String s, View view)
-//                {
-//                }
-//            });
             mHashMap.put(i,convertView);
         }
         if (j == 0)

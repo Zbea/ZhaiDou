@@ -50,7 +50,8 @@ public class MagicDesignFragment extends BaseFragment {
                     ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
                     break;
                 case R.id.caseBtn:
-
+                    MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "");
+                    ((MainActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
                     break;
             }
         }

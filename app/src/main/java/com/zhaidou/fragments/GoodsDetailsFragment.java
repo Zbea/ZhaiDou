@@ -180,6 +180,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private List<ImageView> dots = new ArrayList<ImageView>();
     private ImageAdapter imageAdapter;
     private String sku;
+    List<ImageView> imageViews = new ArrayList<ImageView>();
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -580,8 +581,6 @@ public class GoodsDetailsFragment extends BaseFragment
         publishBtn = (TextView) mView.findViewById(R.id.goodsPublish);
         viewPager = (ViewPager) mView.findViewById(R.id.goods_adv_pager);
         viewPager.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        imageAdapter = new ImageAdapter();
-        viewPager.setAdapter(imageAdapter);
         viewPager.setOnPageChangeListener(onPageChangeListener);
         viewGroupe = (LinearLayout) mView.findViewById(R.id.goods_viewGroup);
 
@@ -1180,9 +1179,8 @@ public class GoodsDetailsFragment extends BaseFragment
         {
             images.addAll(imageInits);
         }
-        ToolUtils.setLog("guige:" + spe.images.size());
-        ToolUtils.setLog("guige1:" + images.get(0));
-        imageAdapter.refreshAdapter();
+        setImageViews();
+        imageAdapter.notifyDataSetChanged();
 
         if (isOSaleBuy)
         {
@@ -1199,8 +1197,10 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     private void setImagesReset()
     {
-        images=imageInits;
-        imageAdapter.refreshAdapter();
+        images.clear();
+        images.addAll(imageInits);
+        setImageViews();
+        imageAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -1243,7 +1243,8 @@ public class GoodsDetailsFragment extends BaseFragment
         mAdapter = new GoodInfoAdapter(mContext, goodInfos);
         mListView.setAdapter(mAdapter);
 //        webView.loadData(detail.webUrl, "text/html; charset=UTF-8", "UTF-8");
-        imageAdapter.refreshAdapter();
+        setImageViews();
+        imageAdapter.notifyDataSetChanged();
 
         mImageContainer.removeAllViews();
 
@@ -1357,6 +1358,28 @@ public class GoodsDetailsFragment extends BaseFragment
         {
             mCartCount.setVisibility(View.GONE);
         }
+    }
+
+    /**
+     * 设置顶部滑动图片更新
+     */
+    public void setImageViews()
+    {
+        imageViews.clear();
+        for (int i = 0; i < images.size(); i++)
+        {
+            ImageView imageView = new ImageView(mContext);
+            LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+            layoutParams.height = screenWidth;
+            layoutParams.width = screenWidth;
+            imageView.setLayoutParams(layoutParams);
+            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+            ToolUtils.setImageUrl(images.get(i), imageView, R.drawable.icon_loading_goods_details);
+            imageViews.add(imageView);
+        }
+        setInitImageBackground();
+        imageAdapter = new ImageAdapter();
+        viewPager.setAdapter(imageAdapter);
     }
 
     /**
@@ -2094,27 +2117,9 @@ public class GoodsDetailsFragment extends BaseFragment
         }
     }
 
+
     public class ImageAdapter extends PagerAdapter
     {
-        List<ImageView> imageViews = new ArrayList<ImageView>();
-
-        public void refreshAdapter()
-        {
-            for (int i = 0; i < images.size(); i++)
-            {
-                ImageView imageView = new ImageView(mContext);
-                LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-                layoutParams.height = screenWidth;
-                layoutParams.width = screenWidth;
-                imageView.setLayoutParams(layoutParams);
-                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                ToolUtils.setImageCacheUrl(images.get(i), imageView, R.drawable.icon_loading_goods_details);
-                imageViews.add(imageView);
-            }
-            setInitImageBackground();
-            notifyDataSetChanged();
-        }
-
         @Override
         public int getCount()
         {

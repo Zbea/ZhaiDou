@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:layout_alignParentBottom="true"
-            android:background="@drawable/btn_green_click_bg">
+            android:background="@color/green_color">
 
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
