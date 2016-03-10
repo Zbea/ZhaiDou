@@ -58,16 +58,18 @@
                 android:text="      天然环保彩色椅啊斯哈哈哈哈啊哈哈哈哈啊哈哈啊哈哈啊哈哈啊哈啊哈安徽啊哈和"/>
             </RelativeLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="7dp">
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_marginRight="10dp"
             android:gravity="center_vertical">
             <TextView
                 android:paddingLeft="5dp"
@@ -76,6 +78,7 @@
                 android:text="￥0"
                 android:textSize="16sp"
                 android:id="@+id/tv_money"
+                android:singleLine="true"
                 android:layout_height="wrap_content" />
             <FrameLayout
                 android:layout_marginLeft="5dp"
@@ -106,7 +109,7 @@
             android:layout_marginRight="10dp"
             android:background="@drawable/btn_green_click_bg"
             android:id="@+id/shopSaleTv"/>
-    </RelativeLayout>
+    </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

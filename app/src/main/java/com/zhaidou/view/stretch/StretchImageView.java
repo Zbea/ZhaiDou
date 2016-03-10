@@ -2,10 +2,15 @@ package com.zhaidou.view.stretch;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Handler;
+import android.support.annotation.DrawableRes;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.widget.ImageView;
@@ -51,6 +56,11 @@ public class StretchImageView extends ImageView {
 
 	static final float SCALE_RATE = 1.25F;
 
+
+    private static final Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
+    private static final int COLORDRAWABLE_DIMENSION = 2;
+
+
 	public StretchImageView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init();
@@ -72,6 +82,69 @@ public class StretchImageView extends ImageView {
 			d.setDither(true);
 		}
 	}
+
+    @Override
+    public void setImageDrawable(Drawable drawable) {
+        super.setImageDrawable(drawable);
+        image = getBitmapFromDrawable(drawable);
+        setImageHeight(image.getHeight());
+        setImageWidth(image.getWidth());
+        Drawable d = getDrawable();
+        if (d != null) {
+            d.setDither(true);
+        }
+    }
+
+    @Override
+    public void setImageResource(@DrawableRes int resId) {
+        super.setImageResource(resId);
+        image = getBitmapFromDrawable(getDrawable());
+        setImageHeight(image.getHeight());
+        setImageWidth(image.getWidth());
+        Drawable d = getDrawable();
+        if (d != null) {
+            d.setDither(true);
+        }
+    }
+
+    @Override
+    public void setImageURI(Uri uri) {
+        super.setImageURI(uri);
+        image = getBitmapFromDrawable(getDrawable());
+        setImageHeight(image.getHeight());
+        setImageWidth(image.getWidth());
+        Drawable d = getDrawable();
+        if (d != null) {
+            d.setDither(true);
+        }
+    }
+
+    private Bitmap getBitmapFromDrawable(Drawable drawable) {
+        if (drawable == null) {
+            return null;
+        }
+
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+
+        try {
+            Bitmap bitmap;
+
+            if (drawable instanceof ColorDrawable) {
+                bitmap = Bitmap.createBitmap(COLORDRAWABLE_DIMENSION, COLORDRAWABLE_DIMENSION, BITMAP_CONFIG);
+            } else {
+                bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), BITMAP_CONFIG);
+            }
+
+            Canvas canvas = new Canvas(bitmap);
+            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawable.draw(canvas);
+            return bitmap;
+        } catch (OutOfMemoryError e) {
+            return null;
+        }
+    }
 
 	// Center as much as possible in one or both axis. Centering is
 	// defined as follows: if the image is scaled down below the

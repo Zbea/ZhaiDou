@@ -13,7 +13,6 @@ import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,17 +39,13 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.adapter.SearchAdapter;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.model.Product;
-import com.zhaidou.utils.HtmlFetcher;
 import com.zhaidou.utils.SharedPreferencesUtil;
-import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.AutoGridView;
 import com.zhaidou.view.CustomEditText;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -466,6 +461,7 @@ public class SearchFragment extends BaseFragment
                 if (json != null)
                 {
                     JSONArray array = json.optJSONArray("data");
+                    if(array!=null)
                     for (int i = 0; i < array.length(); i++)
                     {
                         mHotList.add(array.optString(i));

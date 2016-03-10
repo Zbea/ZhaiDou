@@ -418,12 +418,13 @@ public class MagicImageDetailsFragment extends BaseFragment
         public View getView(int position, View convertView, ViewGroup parent)
         {
             StretchImageView view = new StretchImageView(context);
-            view.setLayoutParams(new Gallery.LayoutParams(Gallery.LayoutParams.MATCH_PARENT,
-                    Gallery.LayoutParams.MATCH_PARENT));
+            Gallery.LayoutParams layoutParams=new Gallery.LayoutParams(Gallery.LayoutParams.MATCH_PARENT,
+                    Gallery.LayoutParams.MATCH_PARENT);
+            view.setLayoutParams(layoutParams);
             Article item = mItems.get(position);
             if (item != null)
             {
-                ToolUtils.setImageCacheUrl(item.getImg_url(), view);
+                ToolUtils.setImageCacheUrl(item.getImg_url(), view,R.drawable.icon_loading_defalut);
                 if (!this.imageViews.contains(view))
                 {
                     imageViews.add(view);

@@ -148,8 +148,8 @@ public class ToolUtils
     public static final void setImageCacheUrl(String url,ImageView imageView)
     {
         DisplayImageOptions options=new DisplayImageOptions.Builder()
-                .showImageForEmptyUri(R.drawable.icon_loading_defalut)
-                .showImageOnFail(R.drawable.icon_loading_defalut)
+//                .showImageForEmptyUri(R.drawable.icon_loading_defalut)
+//                .showImageOnFail(R.drawable.icon_loading_defalut)
                 .resetViewBeforeLoading(false)//default 设置图片在加载前是否重置、复位
                 .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
                 .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中

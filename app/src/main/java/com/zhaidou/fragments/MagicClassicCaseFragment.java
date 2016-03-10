@@ -280,7 +280,7 @@ public class MagicClassicCaseFragment extends BaseFragment
                             int id = article.optInt("id");
                             String title = article.optString("caseName");
                             String img_url = article.optString("mainPic");
-                            String info = article.optString("caseDesc");
+                            String info = article.optString("mainDesc");
                             String date = article.optString("updateTime").split(" ")[0];
                             Article item = new Article(id, title, img_url, info, 0);
                             item.setDate(date);

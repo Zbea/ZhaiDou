@@ -1171,16 +1171,13 @@ public class GoodsDetailsFragment extends BaseFragment
         setDiscount(spe.price, spe.oldPrice);
 
         //设置选择规格顶部图片变化
-        images.clear();
         if (spe.images != null && spe.images.size() > 0)
         {
+            if (images!=spe.images)
+            images.clear();
             images.addAll(spe.images);
-        } else
-        {
-            images.addAll(imageInits);
+            setImageViews();
         }
-        setImageViews();
-        imageAdapter.notifyDataSetChanged();
 
         if (isOSaleBuy)
         {
@@ -1192,16 +1189,6 @@ public class GoodsDetailsFragment extends BaseFragment
         }
     }
 
-    /**
-     * 顶部图片复位到初始状态
-     */
-    private void setImagesReset()
-    {
-        images.clear();
-        images.addAll(imageInits);
-        setImageViews();
-        imageAdapter.notifyDataSetChanged();
-    }
 
     /**
      * 折扣处理事件
@@ -1361,6 +1348,18 @@ public class GoodsDetailsFragment extends BaseFragment
     }
 
     /**
+     * 顶部图片复位到初始状态
+     */
+    private void setImagesReset()
+    {
+        if (images!=imageInits)
+            images.clear();
+        images.addAll(imageInits);
+        setImageViews();
+        imageAdapter.notifyDataSetChanged();
+    }
+
+    /**
      * 设置顶部滑动图片更新
      */
     public void setImageViews()
@@ -1374,7 +1373,7 @@ public class GoodsDetailsFragment extends BaseFragment
             layoutParams.width = screenWidth;
             imageView.setLayoutParams(layoutParams);
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-            ToolUtils.setImageUrl(images.get(i), imageView, R.drawable.icon_loading_goods_details);
+            ToolUtils.setImageCacheUrl(images.get(i), imageView, R.drawable.icon_loading_goods_details);
             imageViews.add(imageView);
         }
         setInitImageBackground();

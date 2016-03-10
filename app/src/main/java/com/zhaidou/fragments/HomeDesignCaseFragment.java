@@ -114,7 +114,7 @@ public class HomeDesignCaseFragment extends BaseFragment
                 );
                 webview.loadData(introduce, "text/html; charset=UTF-8", "UTF-8");
 
-                if (pageCount > items.size())
+                if (pageCount > pageSize*page)
                 {
                     mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
                 } else
@@ -146,7 +146,7 @@ public class HomeDesignCaseFragment extends BaseFragment
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView)
         {
-            page++;
+            page=page+1;
             FetchData();
         }
     };

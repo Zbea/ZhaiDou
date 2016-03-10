@@ -138,7 +138,7 @@ public class HomeFeatrueFragment extends BaseFragment {
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            titleTv.setText(shopSpecialItem.title);
+
             switch (msg.what) {
                 case UPDATE_ADAPTER:
                     setAddImage();
@@ -150,6 +150,7 @@ public class HomeFeatrueFragment extends BaseFragment {
                     {
                         mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                     }
+                    titleTv.setText(shopSpecialItem.title);
                     productAdapter.notifyDataSetChanged();
                     loadingView.setVisibility(View.GONE);
                     mScrollView.setVisibility(View.VISIBLE);
@@ -174,6 +175,7 @@ public class HomeFeatrueFragment extends BaseFragment {
                     {
                         mScrollView1.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                     }
+                    titleTv.setText(shopSpecialItem.title);
                     introduceTv.setText(introduce);
                     loadingView.setVisibility(View.GONE);
                     mScrollView.setVisibility(View.GONE);
@@ -239,7 +241,7 @@ public class HomeFeatrueFragment extends BaseFragment {
                     {
                         mScrollView2.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                     }
-
+                    titleTv.setText(shopSpecialItem.title);
                     loadingView.setVisibility(View.GONE);
                     mScrollView.setVisibility(View.GONE);
                     mScrollView1.setVisibility(View.GONE);
