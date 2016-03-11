@@ -6,8 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.umeng.analytics.MobclickAgent;
@@ -27,9 +26,8 @@ public class MagicDesignFragment extends BaseFragment {
     private String mPage;
     private String mIndex;
     private Context mContext;
-    private TextView backBtn;
-    private RelativeLayout designBtn;
-    private ImageView caseBtn;
+    private TextView backBtn,caseBtn;
+    private LinearLayout designBtn,qqBtn;
 
 
 
@@ -45,9 +43,12 @@ public class MagicDesignFragment extends BaseFragment {
                 case R.id.back_btn:
                     ((MainActivity) getActivity()).popToStack(MagicDesignFragment.this);
                     break;
-                case R.id.design_rl:
+                case R.id.case_rl:
                     GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("宅豆软装设计方案", "191100570001");
                     ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
+                    break;
+                case R.id.design_rl:
+
                     break;
                 case R.id.caseBtn:
                     MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "");
@@ -104,10 +105,13 @@ public class MagicDesignFragment extends BaseFragment {
         backBtn = (TextView) mView.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(onClickListener);
 
-        designBtn = (RelativeLayout) mView.findViewById(R.id.design_rl);
+        qqBtn = (LinearLayout) mView.findViewById(R.id.design_rl);
+        qqBtn.setOnClickListener(onClickListener);
+
+        designBtn = (LinearLayout) mView.findViewById(R.id.case_rl);
         designBtn.setOnClickListener(onClickListener);
 
-        caseBtn= (ImageView) mView.findViewById(R.id.caseBtn);
+        caseBtn= (TextView) mView.findViewById(R.id.caseBtn);
         caseBtn.setOnClickListener(onClickListener);
     }
 

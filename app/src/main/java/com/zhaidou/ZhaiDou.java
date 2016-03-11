@@ -17,7 +17,7 @@ public class ZhaiDou {
     //首页banner
     public static String HomeBannerUrl=HOME_BASE_URL+"index/getBoardContent.action?boardCodes=";
     //首页微信文章列表
-    public static String HomeWeixinListUrl=HOME_BASE_URL+"zd/getArticles.action?type=W&pageSize=10&pageNo=";
+    public static String HomeWeixinListUrl=HOME_BASE_URL+"zd/getArticles.action?pageSize=10&pageNo=";
     //首页特卖列表
     public static String HomeShopListUrl=HOME_BASE_URL+"index/getSpecialSaleList.action?pageSize=10&pageNo=";
     //首页特卖商品列表
