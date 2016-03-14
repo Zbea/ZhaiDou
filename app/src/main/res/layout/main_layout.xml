@@ -130,9 +130,18 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="2dp"
-                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:src="@drawable/icon_dot"/>
+            <ImageView
+                android:id="@+id/iv_msg"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="2dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:src="@drawable/icon_dot"/>
         </RelativeLayout>
 

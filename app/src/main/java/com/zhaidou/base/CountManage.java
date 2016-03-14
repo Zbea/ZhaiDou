@@ -64,7 +64,7 @@ public class CountManage {
     }
 
     public enum TYPE {
-        TAG_PREPAY, TAG_OTHER
+        TAG_PREPAY,TAG_EASE,TAG_OTHER
     }
 
     public void setOnCountChangeListener(CountManage.onCountChangeListener onCountChangeListener) {
