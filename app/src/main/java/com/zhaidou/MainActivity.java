@@ -38,11 +38,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.easemob.chat.EMChatManager;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.base.AccountManage;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.CountManage;
+import com.zhaidou.base.EaseManage;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.fragments.DiyFragment;
 import com.zhaidou.fragments.MainCategoryFragment;
@@ -80,8 +82,7 @@ import java.util.Map;
 /**
  */
 public class MainActivity extends BaseActivity implements DiyFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
-        MainHomeFragment.OnFragmentInteractionListener, MainCategoryFragment.OnFragmentInteractionListener, RegisterFragment.RegisterOrLoginListener, CountManage.onCountChangeListener, AccountManage.AccountListener
-{
+        MainHomeFragment.OnFragmentInteractionListener, MainCategoryFragment.OnFragmentInteractionListener, RegisterFragment.RegisterOrLoginListener, CountManage.onCountChangeListener, AccountManage.AccountListener, EaseManage.onMessageChange {
 
     private FragmentManager manager;
     private Fragment utilityFragment;
@@ -99,7 +100,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     private TextView titleView;
     private LinearLayout mTabContainer;
-    private ImageView iv_dot;
+    private ImageView iv_dot,mMsgView;
     public TextView cart_dot;
     private LinearLayout viewLayout;
 
@@ -181,6 +182,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         @Override
         public void handleMessage(Message msg)
         {
+            System.out.println("MainActivity.handleMessage-->"+msg.what);
             switch (msg.what)
             {
                 case 0:
@@ -222,6 +224,11 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 case 3:
                     CartTip(cartCount);
                     break;
+                case 1000:
+                    Integer unreadMsgCount= (Integer) msg.obj;
+                    System.out.println("MainActivity.handleMessage----"+unreadMsgCount);
+                    mMsgView.setVisibility(unreadMsgCount>0?View.VISIBLE:View.GONE);
+                    break;
             }
         }
     };
@@ -233,6 +240,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         setContentView(R.layout.main_layout);
         manager = getSupportFragmentManager();
         iv_dot = (ImageView) findViewById(R.id.iv_dot);
+        mMsgView= (ImageView) findViewById(R.id.iv_msg);
         cart_dot = (TextView) findViewById(R.id.cartTipsTv);
         CartTip(0);
         viewLayout = (LinearLayout) findViewById(R.id.content);
@@ -259,10 +267,14 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         });
         CountManage.getInstance().setOnCountChangeListener(this);
         AccountManage.getInstance().register(this);
+        EaseManage.getInstance().setOnMessageChange(this);
         FetchUnPayData();
-        if (checkLogin())
-        FetchCountData();
+        if (checkLogin()){
+            FetchCountData();
+            onMessage(EMChatManager.getInstance().getUnreadMsgsCount());
+        }
     }
+
     private void FetchUnPayData() {
         String mUserId= SharedPreferencesUtil.getData(this, "userId", -1)+"";
         Map<String, String> params = new HashMap();
@@ -466,7 +478,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             public void onClick(View view)
             {
                 type = 1;
-                if (!checkLogin())
+                if (!checkLogin()||!EMChatManager.getInstance().isConnected())
                 {
                     Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                     intent.setFlags(2);
@@ -912,16 +924,22 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     @Override
     public void onCount(int count) {
-//        if (count>0&&count > currentPrePayCount)
-//        if (iv_dot.isShown())
-//            return;
-//        if (!isFirstUnPayVisible)
-        iv_dot.setVisibility(count>0&&count > currentPrePayCount?View.VISIBLE:View.GONE);
+        iv_dot.setVisibility((count>0&&count > currentPrePayCount)?View.VISIBLE:View.GONE);
         currentPrePayCount=count;
     }
 
     @Override
     public void onLogOut() {
         iv_dot.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onMessage(int unreadMsgCount) {
+        System.out.println("unreadMsgCount = " + unreadMsgCount+"---------");
+        Message message=new Message();
+        message.what=1000;
+        message.obj=unreadMsgCount;
+        mHandler.sendMessage(message);
+//        mMsgView.setVisibility(unreadMsgCount>0?View.VISIBLE:View.GONE);
     }
 }

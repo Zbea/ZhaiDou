@@ -95,9 +95,9 @@
                         android:id="@+id/tv_desc"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/white"
-                        android:maxLines="2"
                         android:ellipsize="end"
+                        android:maxLines="2"
+                        android:textColor="@color/white"
                         android:textSize="@dimen/account_text_info_txt" />
 
                 </LinearLayout>
@@ -106,10 +106,10 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="39dp"
-                android:visibility="gone"
                 android:layout_alignParentBottom="true"
                 android:background="@drawable/bg_personal_tab"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:id="@+id/ll_collect"
@@ -168,9 +168,9 @@
             android:id="@+id/all_order"
             android:layout_width="match_parent"
             android:layout_height="@dimen/list_height_dimen"
+            android:layout_marginTop="-39dp"
             android:background="@color/white"
-            android:gravity="center_vertical"
-            android:layout_marginTop="-39dp">
+            android:gravity="center_vertical">
 
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
@@ -285,11 +285,12 @@
             android:layout_height="1dp"
             android:background="@color/line_bottom"
             android:visibility="gone" />
+
         <RelativeLayout
             android:id="@+id/rl_addr_manage"
             android:layout_width="match_parent"
-            android:layout_marginTop="@dimen/default_margin"
             android:layout_height="@dimen/list_height_dimen"
+            android:layout_marginTop="@dimen/default_margin"
             android:background="@drawable/item_click_selector"
             android:gravity="center_vertical">
 
@@ -310,6 +311,7 @@
                 android:paddingRight="15dp"
                 android:src="@drawable/icon_arrow_right" />
         </RelativeLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -381,13 +383,68 @@
             android:visibility="gone" />
 
 
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/default_margin"
             android:background="@color/white"
             android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/rl_msg"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/list_height_dimen"
+                android:background="@drawable/item_click_selector"
+                android:gravity="center_vertical">
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/icon_msg"
+                    android:drawablePadding="10dp"
+                    android:gravity="center_vertical"
+                    android:layout_centerVertical="true"
+                    android:paddingLeft="15dp"
+                    android:text="我的消息"
+                    android:textColor="@color/text_main_color" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:id="@+id/unreadMsg"
+                        android:layout_width="wrap_content"
+                        android:minWidth="17dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/msg_selector"
+                        android:layout_marginRight="10dp"
+                        android:textColor="@color/white"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:textSize="12sp"
+                        android:paddingLeft="3dp"
+                        android:paddingRight="3dp"
+                        android:text="99+" />
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:paddingRight="15dp"
+                        android:src="@drawable/icon_arrow_right" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="40dp"
+                android:background="@color/line_color"></View>
 
             <RelativeLayout
                 android:id="@+id/rl_service"
@@ -399,10 +456,10 @@
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/icon_service"
                     android:drawablePadding="10dp"
                     android:gravity="center_vertical"
                     android:paddingLeft="15dp"
-                    android:drawableLeft="@drawable/icon_service"
                     android:text="在线客服"
                     android:textColor="@color/text_main_color" />
 

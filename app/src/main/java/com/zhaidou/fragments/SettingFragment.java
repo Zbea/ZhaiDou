@@ -18,6 +18,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.easemob.chat.EMChatManager;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
@@ -70,7 +71,8 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                     AccountManage.getInstance().notifyLogOut();
                     Intent intent = new Intent(ZhaiDou.IntentRefreshLoginExitTag);
                     mContext.sendBroadcast(intent);
-                    ((MainActivity) mContext).logout(SettingFragment.this);
+                    EMChatManager.getInstance().logout(true);
+                            ((MainActivity) mContext).logout(SettingFragment.this);
                     ((MainActivity) mContext).CartTip(0);
                     break;
                 case 1:

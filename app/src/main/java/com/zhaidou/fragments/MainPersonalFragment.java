@@ -2,7 +2,6 @@ package com.zhaidou.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -22,19 +21,23 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.easemob.chat.EMChatManager;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.ConversationListActivity;
 import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.base.AccountManage;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.CountManage;
+import com.zhaidou.base.EaseManage;
 import com.zhaidou.base.ProfileManage;
+import com.zhaidou.easeui.helpdesk.Constant;
+import com.zhaidou.easeui.helpdesk.ui.ChatActivity;
 import com.zhaidou.model.User;
-import com.zhaidou.utils.DeviceUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
@@ -43,7 +46,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainPersonalFragment extends BaseFragment implements View.OnClickListener, CountManage.onCountChangeListener, ProfileManage.OnProfileChange, AccountManage.AccountListener {
+public class MainPersonalFragment extends BaseFragment implements View.OnClickListener, CountManage.onCountChangeListener, ProfileManage.OnProfileChange, AccountManage.AccountListener, EaseManage.onMessageChange {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_CONTEXT = "context";
@@ -60,6 +63,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     private final int UPDATE_UNPAY_COUNT = 5;
     private final int UPDATE_UNPAY_COUNT_REFRESH = 6;
     private final int UPDATE_CARTCAR_DATA = 7;
+    private final int UPDATE_UNREAD_MSG=8;
 
     private ProfileFragment mProfileFragment;
     private ImageView iv_header, mPrePayView, mPreReceivedView, mReturnView;
@@ -72,19 +76,23 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     private int count = 0;
     private int collectNum = 0;
 
+    private TextView unReadMsgView;
+    private User mUser;
+
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case UPDATE_USER_INFO:
-                    User user = (User) msg.obj;
-                    ToolUtils.setImageCacheUrl("http://" + user.getAvatar(), iv_header, R.drawable.icon_header_default);
-                    if (!TextUtils.isEmpty(user.getNickName()))
-                        tv_nickname.setText(user.getNickName());
+//                    User user = (User) msg.obj;
+                    ToolUtils.setImageCacheUrl("http://" + mUser.getAvatar(), iv_header, R.drawable.icon_header_default);
+                    if (!TextUtils.isEmpty(mUser.getNickName()))
+                        tv_nickname.setText(mUser.getNickName());
+                    SharedPreferencesUtil.saveData(mContext, "avatar", "http://" + mUser.getAvatar());
                     break;
                 case UPDATE_USER_DESCRIPTION:
-                    User u = (User) msg.obj;
-                    tv_desc.setText("null".equalsIgnoreCase(u.getDescription()) || u.getDescription() == null ? "" : u.getDescription());
+//                    User u = (User) msg.obj;
+                    tv_desc.setText("null".equalsIgnoreCase(mUser.getDescription()) || mUser.getDescription() == null ? "" : mUser.getDescription());
                     break;
                 case UPDATE_USER_COLLECT_COUNT:
                     collectNum = msg.arg1;
@@ -112,6 +120,9 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                     int num = msg.arg2;
                     mCartCount.setVisibility(num > 0 ? View.VISIBLE : View.GONE);
                     mCartCount.setText("" + num);
+                    break;
+                case UPDATE_UNREAD_MSG:
+                    setUnreadMsg();
                     break;
             }
         }
@@ -161,6 +172,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             tv_collocation = (TextView) view.findViewById(R.id.tv_collocation);
             tv_unpay_count = (TextView) view.findViewById(R.id.tv_unpay_count);
             mCartCount = (TextView) view.findViewById(R.id.tv_cart_count);
+            unReadMsgView = (TextView) view.findViewById(R.id.unreadMsg);
 
             view.findViewById(R.id.accountInfoBtn).setOnClickListener(this);
             mPrePayView.setOnClickListener(this);
@@ -175,6 +187,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             view.findViewById(R.id.rl_addr_manage).setOnClickListener(this);
             view.findViewById(R.id.ll_collect).setOnClickListener(this);
             view.findViewById(R.id.ll_collocation).setOnClickListener(this);
+            view.findViewById(R.id.rl_msg).setOnClickListener(this);
             view.findViewById(R.id.rl_service).setOnClickListener(this);
 
             mRequestQueue = Volley.newRequestQueue(getActivity());
@@ -186,9 +199,12 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             int value = CountManage.getInstance().value(CountManage.TYPE.TAG_PREPAY);
             tv_unpay_count.setText(value + "");
             tv_unpay_count.setVisibility(value == 0 ? View.GONE : View.VISIBLE);
+            setUnreadMsg();
             CountManage.getInstance().setOnCountChangeListener(this);
             AccountManage.getInstance().register(this);
             ProfileManage.getInstance().register(this);
+            EaseManage.getInstance().setOnMessageChange(this);
+            mUser=new User();
 
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
@@ -198,6 +214,13 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
         }
         return view;
     }
+
+    private void setUnreadMsg() {
+        int unreadMsgsCount = EMChatManager.getInstance().getUnreadMsgsCount();
+        unReadMsgView.setVisibility(unreadMsgsCount > 0 ? View.VISIBLE : View.GONE);
+        unReadMsgView.setText(unreadMsgsCount > 99 ? "99+" : unreadMsgsCount + "");
+    }
+
 
     @Override
     public void onClick(View view) {
@@ -215,7 +238,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(collocationFragment);
                 break;
             case R.id.tv_pre_pay:
-                ((MainActivity)getActivity()).hideTip(View.GONE);
+                ((MainActivity) getActivity()).hideTip(View.GONE);
                 OrderAllOrdersFragment unPayFragment = OrderAllOrdersFragment.newInstance(ZhaiDou.TYPE_ORDER_PREPAY, "");
                 ((BaseActivity) getActivity()).navigationToFragment(unPayFragment);
                 break;
@@ -261,13 +284,23 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                     }
                 });
                 break;
+            case R.id.rl_msg:
+                Intent intent1 = new Intent(getActivity(), ConversationListActivity.class);
+                intent1.putExtra("userId", "service");
+                startActivity(intent1);
+                break;
             case R.id.rl_service:
-                if (DeviceUtils.isApkInstalled(getActivity(), "com.tencent.mobileqq")) {
-                    String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_Number);
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                } else {
-                    ShowToast("没有安装QQ客户端哦");
-                }
+//                if (DeviceUtils.isApkInstalled(getActivity(), "com.tencent.mobileqq")) {
+//                    String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_Number);
+//                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+//                } else {
+//                    ShowToast("没有安装QQ客户端哦");
+//                }
+                Intent intent2 = new Intent(getActivity(), ChatActivity.class);
+                intent2.putExtra(Constant.EXTRA_USER_ID, "service");
+                intent2.putExtra("queueName", "service");
+                intent2.putExtra("user",mUser);
+                startActivity(intent2);
                 break;
         }
     }
@@ -287,15 +320,15 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                     String nick_name = userObj.optString("nick_name");
                     String province = userObj.optString("province");
                     String city = userObj.optString("city");
-                    User user = new User();
-                    user.setAvatar(avatar);
-                    user.setNickName(nick_name);
-                    user.setProvince(province);
-                    user.setCity(city);
+//                    User user = new User();
+                    mUser.setAvatar(avatar);
+                    mUser.setNickName(nick_name);
+                    mUser.setProvince(province);
+                    mUser.setCity(city);
                     Message message = new Message();
-                    message.what = UPDATE_USER_INFO;
-                    message.obj = user;
-                    mHandler.sendMessage(message);
+//                    message.what = UPDATE_USER_INFO;
+//                    message.obj = user;
+                    mHandler.sendEmptyMessage(UPDATE_USER_INFO);
                 } else {
                     ShowToast(msg);
                 }
@@ -330,11 +363,15 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                         String mobile = userObj.optString("mobile");
                         String description = userObj.optString("description");
                         boolean verified = userObj.optBoolean("verified");
-                        User user = new User(null, null, nick_name, verified, mobile, description);
+//                        User user = new User(null, null, nick_name, verified, mobile, description);
+                        mUser.setNickName(nick_name);
+                        mUser.setMobile(mobile);
+                        mUser.setDescription(description);
+                        mUser.setVerified(verified);
                         Message message = new Message();
                         message.what = UPDATE_USER_DESCRIPTION;
-                        message.obj = user;
-                        mHandler.sendMessage(message);
+//                        message.obj = user;
+                        mHandler.sendEmptyMessage(UPDATE_USER_DESCRIPTION);
                     }
 
                 } else {
@@ -356,6 +393,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
         };
         ((ZDApplication) getActivity().getApplication()).mRequestQueue.add(request);
     }
+
     public void refreshData(Activity activity) {
         userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
@@ -376,11 +414,16 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             getUserDetail();
             getUserInfo();
         }
+        setUnreadMsg();
         super.onHiddenChanged(hidden);
     }
 
     public void onResume() {
         super.onResume();
+        System.out.println("MainPersonalFragment.onResume");
+        setUnreadMsg();
+//        if (!tv_unpay_count.isShown()&&EMClient.getInstance().chatManager().getUnreadMsgsCount()==0)
+//            ((MainActivity)getActivity()).hideTip(View.GONE);
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_personal));
     }
 
@@ -391,14 +434,17 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
 
     @Override
     public void onCount(int count) {
+        System.out.println("MainPersonalFragment.onCount");
         int value = CountManage.getInstance().value(CountManage.TYPE.TAG_PREPAY);
         tv_unpay_count.setText(value + "");
         tv_unpay_count.setVisibility(value == 0 ? View.GONE : View.VISIBLE);
+        if (tv_unpay_count.isShown() || EMChatManager.getInstance().getUnreadMsgsCount() > 0)
+            ((MainActivity) getActivity()).hideTip(View.VISIBLE);
+
     }
 
     @Override
     public void onProfileChange(ProfileManage.TAG tag, String message) {
-        System.out.println("MainPersonalFragment.onProfileChange---->"+tag+"---------"+message);
         switch (tag) {
             case HEADER:
                 ToolUtils.setImageCacheUrl(message, iv_header, R.drawable.icon_header_default);
@@ -408,7 +454,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                     tv_nickname.setText(message);
                 break;
             case DESC:
-                tv_desc.setText("null".equalsIgnoreCase(message) || message== null ? "" : message);
+                tv_desc.setText("null".equalsIgnoreCase(message) || message == null ? "" : message);
                 break;
         }
     }
@@ -419,5 +465,10 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
         tv_nickname.setText("");
         tv_desc.setText("");
         iv_header.setBackgroundResource(R.drawable.icon_header_default);
+    }
+
+    @Override
+    public void onMessage(int unreadMsgCount) {
+        mHandler.sendEmptyMessage(UPDATE_UNREAD_MSG);
     }
 }

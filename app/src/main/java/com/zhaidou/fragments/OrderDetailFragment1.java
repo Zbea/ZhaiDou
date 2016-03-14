@@ -316,6 +316,7 @@ public class OrderDetailFragment1 extends BaseFragment {
                 btn2.setText("查看物流");
                 btn1.setBackgroundResource(R.drawable.btn_green_click_bg);
                 btn2.setBackgroundResource(R.drawable.btn_green_click_bg);
+                btn1.setVisibility(store.isFinishAfterTime==1?View.GONE:View.VISIBLE);
                 if (store.returnGoodsFlag == 1)
                     mBottomLayout.setVisibility(View.GONE);
             } else if (ZhaiDou.STATUS_UNDELIVERY == store.status || ZhaiDou.STATUS_PICKINGUP == store.status || ZhaiDou.STATUS_UNPAY == store.status||ZhaiDou.STATUS_ORDER_APPLY_CANCEL==store.status) {/**待发货,已拣货,待支付,退款申请*/

@@ -156,14 +156,12 @@
 
     <string name="header_hint_refresh_normal">Pull to refresh</string>
     <string name="header_hint_refresh_ready">Release to refresh</string>
-    <string name="header_hint_refresh_loading">Refreshing&#8230;</string>
+    <string name="header_hint_refresh_loading">Refreshing…</string>
     <string name="header_hint_refresh_time">Time：</string>
     <string name="footer_hint_load_normal">Load more</string>
     <string name="footer_hint_load_ready">Release to load more</string>
 
-
-    
-    <!--dialog标题-->
+    <!-- dialog标题 -->
     <string name="dialog_hint_collect">是否确认取消收藏?</string>
     <string name="dialog_hint_delete">是否确认删除?</string>
     
@@ -180,8 +178,31 @@
     <string name="collect_fail">收藏失败</string>
     <string name="collect_cancel">取消收藏</string>
 
-    <!--分享回调-->
+    <!-- 分享回调 -->
     <string name="share_success">分享成功</string>
     <string name="share_error">分享失败</string>
     <string name="share_cancel">分享取消</string>
+    <string name="title_activity_conversation_list">ConversationListActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="attach_short_cut_message">Messages</string>
+    
+    
+    <!--常用语-->
+    <array name="designerWord">
+        <item>软装设计是如何收费的?</item>
+        <item>软装设计的流程是怎样的？</item>
+        <item>你们推荐的商品是自营的吗？质量有保障吗？</item>
+        <item>DIY搭配工具里的单品可以购买吗？</item>
+         <item>硬装已做好，但不是很满意，想通过软装改善一下！</item>
+        <item>多久能给我方案呢？</item>
+    </array>
+    <array name="serviceWord">
+        <item>你们多久可以发货？</item>
+        <item>你们发的是什么快递？</item>
+        <item>下单后多久可以到货？</item>
+        <item>0元的怎么要运费，可以包邮吗？</item>
+        <item>商品质量有保障吗？</item>
+        <item>品牌的是正品吗？</item>
+    </array>
+
 </resources>

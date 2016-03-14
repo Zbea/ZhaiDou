@@ -29,15 +29,19 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.easemob.EMCallBack;
+import com.easemob.chat.EMChatManager;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.easeui.helpdesk.EaseHelper;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
+import com.zhaidou.utils.MD5Util;
 import com.zhaidou.utils.NativeHttpUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -46,6 +50,7 @@ import com.zhaidou.view.CustomEditText;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -139,7 +144,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         flags = getIntent().getFlags();
 
         strEmail = getEmail();
-        inputMethodManager=(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         headTitle = (TextView) findViewById(R.id.title_tv);
         headTitle.setText(R.string.title_login);
 
@@ -211,8 +216,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 final ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_URL, params, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
-                        if (mDialog != null)
-                            mDialog.dismiss();
+//                        if (mDialog != null)
+//                            mDialog.dismiss();
                         if (jsonObject != null) {
                             JSONObject dataObj = jsonObject.optJSONObject("data");
                             String message = jsonObject.optString("message");
@@ -226,7 +231,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                                     String email = userObj.optString("email");
                                     String nick = userObj.optString("nick_name");
                                     User user = new User(id, email, token, nick, null);
-                                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+                                    loginToEaseServer(user);
+//                                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
                                 }
                             } else {
                                 String msg = dataObj.optString("message");
@@ -524,7 +530,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     if (status == 200) {
                         JSONObject dataObj = jsonObject.optJSONObject("data");
                         JSONArray errMsg = jsonObject.optJSONArray("message");
-                        if (errMsg!=null){
+                        if (errMsg != null) {
                             Toast.makeText(LoginActivity.this, errMsg.optString(0), Toast.LENGTH_LONG).show();
                             return;
                         }
@@ -536,7 +542,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 //                    String avatar = userJson.optJSONObject("avatar").optString("url","");
                         String nick = userJson.optString("nick_name");
                         User user = new User(id, email, token, nick, "");
-                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+                        loginToEaseServer(user);
+//                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
                     } else {
                         Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                     }
@@ -620,11 +627,79 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     }
 
     @Override
-    public void finish()
-    {
+    public void finish() {
         super.finish();
-
         if (inputMethodManager.isActive())
-            inputMethodManager.hideSoftInputFromWindow(getWindow().peekDecorView().getApplicationWindowToken(),0);
+            inputMethodManager.hideSoftInputFromWindow(getWindow().peekDecorView().getApplicationWindowToken(), 0);
+    }
+
+    private void loginToEaseServer(final User user){
+        System.out.println("LoginActivity.loginToEaseServer------>"+"zhaidou"+user.getId());
+        System.out.println("LoginActivity.loginToEaseServer--"+MD5Util.MD5Encode("zhaidou87846Yage2016!").toUpperCase());
+        EMChatManager.getInstance().login("zhaidou"+user.getId(),MD5Util.MD5Encode("zhaidou"+user.getId()+"Yage2016!").toUpperCase(), new EMCallBack() {
+            @Override
+            public void onSuccess() {
+                if (mDialog != null)
+                    mDialog.dismiss();
+                // 登陆成功，保存用户名
+                EaseHelper.getInstance().setCurrentUserName(user.getNickName());
+                // 注册群组和联系人监听
+//                DemoHelper.getInstance().registerGroupAndContactListener();
+
+                // ** 第一次登录或者之前logout后再登录，加载所有本地群和回话
+                // ** manually load all local groups and
+//                EMClient.getInstance().groupManager().loadAllGroups();
+                EMChatManager.getInstance().loadAllConversations();
+
+//                更新当前用户的nickname 此方法的作用是在ios离线推送时能够显示用户nick
+                boolean updatenick = EMChatManager.getInstance().updateCurrentUserNick(
+                        user.getNickName());
+                if (!updatenick) {
+                    Log.e("LoginActivity", "update current user nick fail");
+                }
+                //异步获取当前用户的昵称和头像(从自己服务器获取，demo使用的一个第三方服务)
+//                DemoHelper.getInstance().getUserProfileManager().asyncGetCurrentUserInfo();
+
+//                if (!LoginActivity.this.isFinishing() && pd.isShowing()) {
+//                    pd.dismiss();
+//                }
+                mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+            }
+
+            @Override
+            public void onProgress(int progress, String status) {
+            }
+
+            @Override
+            public void onError(final int code, final String message) {
+                System.out.println("LoginActivity.onError--->"+code+"----"+message);
+//                Toast.makeText(LoginActivity.this,"登录聊天服务器失败",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    public String string2MD5(String inStr){
+        MessageDigest md5 = null;
+        try{
+            md5 = MessageDigest.getInstance("MD5");
+        }catch (Exception e){
+            System.out.println(e.toString());
+            e.printStackTrace();
+            return "";
+        }
+        char[] charArray = inStr.toCharArray();
+        byte[] byteArray = new byte[charArray.length];
+
+        for (int i = 0; i < charArray.length; i++)
+            byteArray[i] = (byte) charArray[i];
+        byte[] md5Bytes = md5.digest(byteArray);
+        StringBuffer hexValue = new StringBuffer();
+        for (int i = 0; i < md5Bytes.length; i++){
+            int val = ((int) md5Bytes[i]) & 0xff;
+            if (val < 16)
+                hexValue.append("0");
+            hexValue.append(Integer.toHexString(val));
+        }
+        return hexValue.toString();
+
     }
 }

@@ -85,6 +85,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="alisdk-ut-2" level="project" />
     <orderEntry type="library" exported="" name="hyphenatechat_3.0.0" level="project" />
+    <orderEntry type="library" exported="" name="MiPush_SDK_Client_2_2_21" level="project" />
     <orderEntry type="library" exported="" name="alipaySDK-20150610" level="project" />
     <orderEntry type="library" exported="" name="mta-mid-sdk-2.20" level="project" />
     <orderEntry type="library" exported="" name="ShareSDK-Wechat-2.6.0" level="project" />
@@ -118,6 +119,7 @@
     <orderEntry type="library" exported="" name="rpc-core-1.0_06101606" level="project" />
     <orderEntry type="library" exported="" name="UTMini-4.3.8" level="project" />
     <orderEntry type="library" exported="" name="httpmime-4.1" level="project" />
+    <orderEntry type="module" module-name="easeui" exported="" />
   </component>
 </module>
 

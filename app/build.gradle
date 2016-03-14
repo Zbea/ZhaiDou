@@ -41,7 +41,6 @@ android {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
     }
-
 }
 task copyNativeLibs(type: Copy) {
     from fileTree(dir: 'libs', include: 'armeabi/*.so') into 'build/lib'
@@ -76,5 +75,6 @@ dependencies {
     compile files('libs/mta-stats-sdk-2.0.4.jar')
     compile files('libs/fastjson-1.2.7.jar')
     compile files('libs/httpmime-4.1.jar')
-    compile files('libs/hyphenatechat_3.0.0.jar')
+    compile project(':easeui')
+    compile files('libs/MiPush_SDK_Client_2_2_21.jar')
 }

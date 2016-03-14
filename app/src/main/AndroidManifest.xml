@@ -140,6 +140,9 @@
             android:theme="@style/tae_sdk_login_qr_activity_style"/>
 
         <activity
+            android:name="com.alibaba.sdk.android.login.ui.QrLoginActivity"
+            android:theme="@style/tae_sdk_login_qr_activity_style" />
+        <activity
             android:name="cn.sharesdk.demo.wxapi.WXEntryActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -147,11 +150,10 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".wxapi.WXEntryActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
-            android:screenOrientation="portrait" />
-
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
             android:name="com.alipay.sdk.app.H5PayActivity"
             android:configChanges="orientation|keyboardHidden|navigation"
@@ -177,6 +179,7 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="cn.jpush.android.ui.PushActivity" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="com.zhaidou" />
             </intent-filter>
@@ -270,15 +273,161 @@
         <!-- 注意:若填写的渠道为纯数字字符串类型,请不要超过int表示的范围! < -->
 
 
+
+        <!-- 开机自启动服务 -->
+        <receiver android:name="com.easemob.chat.StartServiceReceiver" >
+            <intent-filter android:priority="1000" >
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </receiver>
+
+        <!-- gcm start -->
+        <receiver
+            android:name="com.easemob.chat.EMGCMBroadcastReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <!-- 这里需要修改category 的android:name="你的包名" -->
+                <category android:name="com.easemob.helpdeskdemo" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name="com.easemob.chat.EMGCMListenerService"
+            android:exported="false" >
+        </service>
+        <!-- 这里需要android:name="你的包名.receiver.GCMPushBroadCast" -->
+        <receiver
+            android:name="com.easemob.helpdeskdemo.receiver.GCMPushBroadCast"
+            android:exported="false">
+            <intent-filter >
+                <action android:name="com.easemob.sdk.push"/>
+                <!-- 这里需要修改category 的android:name="你的包名" -->
+                <category android:name="com.easemob.helpdeskdemo"/>
+            </intent-filter>
+        </receiver>
+        <!-- gcm end -->
+
+        <!-- mi push -->
+        <!--<service-->
+            <!--android:name="com.xiaomi.mipush.sdk.PushMessageHandler"-->
+            <!--android:enabled="true"-->
+            <!--android:exported="true" />-->
+        <!--<service-->
+            <!--android:name="com.xiaomi.mipush.sdk.MessageHandleService"-->
+            <!--android:enabled="true" />-->
+
+        <!--<receiver-->
+            <!--android:name="com.hyphenate.chat.EMMipushReceiver"-->
+            <!--android:exported="true" >-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.xiaomi.mipush.RECEIVE_MESSAGE" />-->
+            <!--</intent-filter>-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.xiaomi.mipush.MESSAGE_ARRIVED" />-->
+            <!--</intent-filter>-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.xiaomi.mipush.ERROR" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
+        <!-- mi push end -->
+
+
+
         <!-- 设置环信应用的appkey -->
-        <meta-data android:name="EASEMOB_APPKEY"  android:value="zhaidou#zhaidou" />
-        <!-- 声明sdk所需的service SDK核心功能-->
-        <service android:name="com.hyphenate.chat.EMChatService" />
+        <meta-data
+            android:name="EASEMOB_APPKEY"
+            android:value="zhaidou#zhaidou" />
+        <!-- 声明sdk所需的service -->
+        <service android:name="com.easemob.chat.EMChatService"
+            android:exported="true"
+            />
+        <!-- 声明sdk所需的receiver -->
+        <receiver android:name="com.easemob.chat.EMMonitorReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
+                <data android:scheme="package"/>
+            </intent-filter>
+            <!-- 可选filter -->
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".activities.ConversationListActivity"
+            android:label="@string/title_activity_conversation_list" >
+        </activity>
+        <activity android:name=".easeui.helpdesk.ui.ShortCutMsgActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".easeui.helpdesk.ui.ContextMenuActivity"
+            android:screenOrientation="portrait"/>
 
 
+
+        <!--&lt;!&ndash; xiaomi push start，不需要删除即可&ndash;&gt;-->
+        <!--<service-->
+            <!--android:name="com.xiaomi.mipush.sdk.PushMessageHandler"-->
+            <!--android:enabled="true"-->
+            <!--android:exported="true" />-->
+        <!--<service android:enabled="true"-->
+            <!--android:name="com.xiaomi.mipush.sdk.MessageHandleService" />-->
+
+        <!--<receiver-->
+            <!--android:name="com.easemob.chat.EMMipushReceiver"-->
+            <!--android:exported="true" >-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.xiaomi.mipush.RECEIVE_MESSAGE" />-->
+            <!--</intent-filter>-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.xiaomi.mipush.MESSAGE_ARRIVED" />-->
+            <!--</intent-filter>-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.xiaomi.mipush.ERROR" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
+        <!--&lt;!&ndash; xiaomi push end &ndash;&gt;-->
+        <service
+            android:name="com.xiaomi.mipush.sdk.PushMessageHandler"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name="com.xiaomi.mipush.sdk.MessageHandleService"
+            android:enabled="true" />
+
+        <receiver
+            android:name="com.easemob.chat.EMMipushReceiver"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="com.xiaomi.mipush.RECEIVE_MESSAGE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.xiaomi.mipush.MESSAGE_ARRIVED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.xiaomi.mipush.ERROR" />
+            </intent-filter>
+        </receiver>
     </application>
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <!-- <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" /> -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -295,24 +444,17 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <!--<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>-->
     <uses-permission android:name="android.permission.CALL_PHONE"/>
-
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <!--<uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />-->
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.GET_TASKS" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-
     <!-- Required 自定义用来收发消息的相关权限 -->
     <permission
         android:name="com.zhaidou.permission.JPUSH_MESSAGE"
         android:protectionLevel="signature" />
-    <!-- Required  一些系统要求的权限，如访问网络等-->
+
+    <!-- Required  一些系统要求的权限，如访问网络等 -->
     <uses-permission android:name="com.zhaidou.permission.JPUSH_MESSAGE" />
+    <permission
+        android:name="com.zhaidou.permission.MIPUSH_RECEIVE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.zhaidou.permission.MIPUSH_RECEIVE" />
 
 </manifest>
