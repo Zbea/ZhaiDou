@@ -140,9 +140,6 @@
             android:theme="@style/tae_sdk_login_qr_activity_style"/>
 
         <activity
-            android:name="com.alibaba.sdk.android.login.ui.QrLoginActivity"
-            android:theme="@style/tae_sdk_login_qr_activity_style" />
-        <activity
             android:name="cn.sharesdk.demo.wxapi.WXEntryActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:configChanges="keyboardHidden|orientation|screenSize"
