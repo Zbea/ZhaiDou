@@ -72,7 +72,7 @@ public class HomeListAdapter extends BaseAdapter
     {
         if (convertView == null)
         {
-            convertView = LayoutInflater.from(context).inflate(R.layout.home_item_list, null);
+            convertView = LayoutInflater.from(context).inflate(R.layout.item_strategy_list, null);
             viewHolder = new ViewHolder();
             viewHolder.title = (TextView) convertView.findViewById(R.id.title);
             viewHolder.articleViews = (TextView) convertView.findViewById(R.id.views);

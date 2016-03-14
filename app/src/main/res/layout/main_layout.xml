@@ -17,12 +17,12 @@
         android:layout_height="@dimen/bottom_height_dimen"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
-        android:paddingTop="3.5dp"
         android:background="@color/white">
 
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginTop="3.5dp"
             android:layout_weight="1">
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/tab_home"
@@ -33,13 +33,14 @@
                 android:drawablePadding="4dp"
                 android:text="首页"
                 android:textSize="10sp"
-                android:drawableTop="@drawable/gl_icon"
+                android:drawableTop="@drawable/main_home_selector"
                 android:gravity="center_horizontal"
                 android:textColor="@color/main_options_text_color_selecter"
                 />
         </RelativeLayout>
 
         <RelativeLayout
+            android:layout_marginTop="3.5dp"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1">
@@ -53,7 +54,7 @@
                 android:drawablePadding="4dp"
                 android:text="分类"
                 android:textSize="10sp"
-                android:drawableTop="@drawable/category_icon"
+                android:drawableTop="@drawable/main_category_selector"
                 android:gravity="center_horizontal"
                 android:textColor="@color/main_options_text_color_selecter"
                 />
@@ -61,7 +62,18 @@
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginTop="3.5dp"
             android:layout_weight="1">
+
+            <!--<com.zhaidou.view.TypeFaceTextView-->
+                <!--android:id="@+id/tab_beauty"-->
+                <!--android:layout_width="40dp"-->
+                <!--android:layout_height="40dp"-->
+                <!--android:layout_centerInParent="true"-->
+                <!--android:contentDescription="@string/app_name"-->
+                <!--android:visibility="gone"-->
+                <!--android:background="@drawable/main_magic_selector"-->
+                <!--/>-->
 
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/tab_beauty"
@@ -70,14 +82,16 @@
                 android:layout_centerInParent="true"
                 android:contentDescription="@string/app_name"
                 android:drawablePadding="4dp"
-                android:text="美丽家"
+                android:text="软装魔法"
                 android:textSize="10sp"
-                android:drawableTop="@drawable/home_icon"
+                android:drawableTop="@drawable/main_magic_selector"
                 android:gravity="center_horizontal"
                 android:textColor="@color/main_options_text_color_selecter"
                 />
+
         </RelativeLayout>
         <RelativeLayout
+            android:layout_marginTop="3.5dp"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1">
@@ -91,7 +105,7 @@
                 android:drawablePadding="4dp"
                 android:text="  购物车"
                 android:textSize="10sp"
-                android:drawableTop="@drawable/cart_icon"
+                android:drawableTop="@drawable/main_cart_selector"
                 android:gravity="center_horizontal"
                 android:textColor="@color/main_options_text_color_selecter"
                 />
@@ -108,6 +122,7 @@
                 android:textSize="12sp"/>
         </RelativeLayout>
         <RelativeLayout
+            android:layout_marginTop="3.5dp"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1">
@@ -121,7 +136,7 @@
                 android:drawablePadding="4dp"
                 android:text="我"
                 android:textSize="10sp"
-                android:drawableTop="@drawable/personal_icon"
+                android:drawableTop="@drawable/main_personal_selector"
                 android:gravity="center_horizontal"
                 android:textColor="@color/main_options_text_color_selecter"
                 />

@@ -7,12 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
-import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
-import android.graphics.drawable.shapes.Shape;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.PagerAdapter;
@@ -34,9 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.Inflater;
 
 /**
  * Created by roy on 15/10/14.
@@ -74,6 +67,8 @@ public class CustomBannerView extends FrameLayout
     public CustomBannerView(Context context, List<SwitchImage> imgs,boolean isPaly)
     {
         super(context);
+        setNorBitmap();
+        setSelectBitmap();
         this.imgs = imgs;
         mContext = context;
         if (isPaly)//设置是否自动开始
@@ -130,7 +125,6 @@ public class CustomBannerView extends FrameLayout
 
     private void initView()
     {
-
         if (imgs.size()==0)
         {
             nullLine=new LinearLayout(mContext);
@@ -177,11 +171,11 @@ public class CustomBannerView extends FrameLayout
             dots.add(dot_iv);
             if (i == 0)
             {
-                dots.get(i).setBackgroundResource(R.drawable.home_tips_foucs_icon);
+                dots.get(i).setImageBitmap(selectBitmap);
             } else
 
             {
-                dots.get(i).setBackgroundResource(R.drawable.home_tips_icon);
+                dots.get(i).setImageBitmap(norBitmap);
             }
             dotsLine.addView(dot_iv);
         }
@@ -208,13 +202,13 @@ public class CustomBannerView extends FrameLayout
     {
         Paint paint=new Paint();
         paint.setAntiAlias(true);
-        paint.setColor(Color.GREEN);
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        norBitmap=Bitmap.createBitmap(18,18, Bitmap.Config.RGB_565);
+        paint.setColor(Color.parseColor("#f1f1f1"));
+        norBitmap=Bitmap.createBitmap(18,18, Bitmap.Config.ARGB_8888);
         Canvas canvas=new Canvas(norBitmap);
-        canvas.drawColor(Color.TRANSPARENT);
         canvas.drawCircle(9, 9, 9, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(norBitmap,0,0,paint);
+
 
     }
 
@@ -222,12 +216,12 @@ public class CustomBannerView extends FrameLayout
     {
         Paint paint=new Paint();
         paint.setAntiAlias(true);
-        paint.setColor(Color.RED);
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        selectBitmap=Bitmap.createBitmap(18,18, Bitmap.Config.RGB_565);
+        paint.setColor(Color.WHITE);
+        selectBitmap=Bitmap.createBitmap(18,18, Bitmap.Config.ARGB_8888);
         Canvas canvas=new Canvas(selectBitmap);
-        canvas.drawColor(Color.WHITE);
         canvas.drawCircle(9, 9, 9, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(selectBitmap,0,0,paint);
     }
 
     /**
@@ -323,10 +317,10 @@ public class CustomBannerView extends FrameLayout
             {
                 if (j == i % banners.size())
                 {
-                    dots.get(i % banners.size()).setBackgroundResource(R.drawable.home_tips_foucs_icon);
+                    dots.get(i % banners.size()).setImageBitmap(selectBitmap);
                 } else
                 {
-                    dots.get(j).setBackgroundResource(R.drawable.home_tips_icon);
+                    dots.get(j).setImageBitmap(norBitmap);
                 }
             }
         }
@@ -353,8 +347,6 @@ public class CustomBannerView extends FrameLayout
 
     /**
      * 销毁ImageView资源，回收内存
-     *
-     * @author caizhiming
      */
     public void destoryBitmaps()
     {

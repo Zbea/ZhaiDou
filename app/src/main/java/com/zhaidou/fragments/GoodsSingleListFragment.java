@@ -3,13 +3,10 @@ package com.zhaidou.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Paint;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,7 +17,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -34,36 +30,24 @@ import com.pulltorefresh.PullToRefreshGridView;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.activities.WebViewActivity;
-import com.zhaidou.adapter.ProductAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Product;
-import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 public class GoodsSingleListFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<GridView>
 {
@@ -733,12 +717,13 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                 convertView = mInflater.inflate(R.layout.item_fragment_sale, null);
             TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
             ImageView image = ViewHolder.get(convertView, R.id.iv_single_item);
-            image.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / 2 - 1, screenWidth / 2 - 1));
+            image.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth-30 / 2, (screenWidth-30)/ 2 - 1));
             TextView tv_money = ViewHolder.get(convertView, R.id.tv_money);
             TextView tv_price = ViewHolder.get(convertView, R.id.tv_price);
             TextView tv_count = ViewHolder.get(convertView, R.id.tv_count);
             ImageView ll_sale_out = ViewHolder.get(convertView, R.id.ll_sale_out);
-            ll_sale_out.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / 2 - 1, screenWidth / 2 - 1));
+            ll_sale_out.setLayoutParams(new RelativeLayout.LayoutParams((screenWidth-30)/ 2, (screenWidth-30)/ 2));
+            TextView shopSaleTv = ViewHolder.get(convertView, R.id.shopSaleTv);
             Product product = getList().get(position);
             tv_name.setText(product.getTitle());
             ToolUtils.setImageNoResetUrl(product.getImage(), image, R.drawable.icon_loading_defalut);
@@ -747,6 +732,17 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
             tv_price.setText("￥" + ToolUtils.isIntPrice("" + product.getCost_price()));
 
             ll_sale_out.setVisibility(product.getRemaining() == 0 ? View.VISIBLE : View.GONE);
+
+            DecimalFormat df = new DecimalFormat("##.0");
+            String zk = df.format(product.getPrice() / product.getCost_price() * 10);
+            if (zk.contains(".0")) {
+                int sales = (int) Double.parseDouble(zk);
+                shopSaleTv.setText(sales + "折");
+            } else {
+                Double sales = Double.parseDouble(zk);
+                shopSaleTv.setText(sales + "折");
+            }
+            shopSaleTv.setVisibility(View.VISIBLE);
             mHashMap.put(position, convertView);
             return convertView;
         }

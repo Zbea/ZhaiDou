@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:paddingLeft="15dp"
+              android:paddingRight="15dp"
+              android:paddingTop="15dp"
+              android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/imageIv"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/icon_loading_goods_details"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="-3dp"
+        android:background="@drawable/main_magic_image_class_shape"
+        android:padding="20dp"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:id="@+id/titleTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textSize="18sp"
+            android:text="黑白北欧"
+            />
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/infoTv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:textSize="16sp"
+            android:layout_marginTop="15dp"
+            android:maxLines="5"
+            android:textColor="@color/text_normal_color"
+            android:text="黑白北欧"
+            />
+
+        <LinearLayout
+            android:layout_marginTop="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <LinearLayout
+                android:id="@+id/detailsTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:paddingRight="15dp"
+                android:gravity="center"
+                android:background="@drawable/magic_classic_btn_selector"
+                android:orientation="horizontal">
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:text="查看详情"
+                    />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="14dp"
+                    android:layout_marginLeft="5dp"
+                    android:src="@drawable/icon_arrow_right_white"
+                    />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

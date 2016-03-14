@@ -10,13 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        ></LinearLayout>
-
     <ScrollView
         android:id="@+id/sv_goods_detail"
         android:layout_width="fill_parent"
@@ -33,37 +26,25 @@
             <RelativeLayout
                 android:id="@+id/imageRl"
                 android:layout_width="match_parent"
-                android:layout_height="20dp"
+                android:layout_height="wrap_content"
                 android:background="@color/white">
 
-                <ImageView
-                    android:id="@+id/goodsImageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="140dp"
-                    android:layout_centerInParent="true"
-                    android:background="@color/white"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/icon_loading_goods_details"/>
-
-                <com.zhaidou.view.CustomViewPager
+                <android.support.v4.view.ViewPager
                     android:id="@+id/goods_adv_pager"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:background="@color/white"
-                    android:visibility="gone"
                     />
 
                 <LinearLayout
                     android:id="@+id/goods_viewGroup"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_above="@+id/timeLine"
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
                     android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginBottom="22dp"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center"
                     android:orientation="horizontal"
-                    android:visibility="gone"
                     ></LinearLayout>
 
                 <LinearLayout
@@ -579,7 +560,8 @@
         android:id="@+id/myCartTipsTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_margin="50dp"
+        android:layout_alignParentTop="true"
         android:src="@drawable/icon_cart_tip"
         android:visibility="gone"/>
 

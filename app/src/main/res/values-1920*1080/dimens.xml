@@ -10,6 +10,8 @@
     <dimen name="share_dimen">100px</dimen>
     <dimen name="goods_bottom_height_dimen">58dp</dimen>
     <dimen name="payment_success_height_dimen">640dp</dimen>
+    <!--软装魔法按钮高度-->
+    <dimen name="magic_btn_dimen">145dp</dimen>
     <!--购物车按钮高度-->
     <dimen name="home_tips_dimen">50dp</dimen>
     <!--list高度-->

@@ -15,6 +15,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -48,6 +49,7 @@ import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.fragments.DiyFragment;
 import com.zhaidou.fragments.MainCategoryFragment;
 import com.zhaidou.fragments.MainHomeFragment;
+import com.zhaidou.fragments.MainMagicFragment;
 import com.zhaidou.fragments.MainPersonalFragment;
 import com.zhaidou.fragments.MainStrategyFragment;
 import com.zhaidou.fragments.OrderDetailFragment1;
@@ -84,16 +86,18 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     private FragmentManager manager;
     private Fragment utilityFragment;
-    private Fragment beautyHomeFragment;
+    private Fragment magicHomeFragment;
     private Fragment categoryFragment;
     private ShopCartFragment shopCartFragment;
 
     private TextView homeButton;
-    private TextView beautyButton;
+    private TextView magicButton;
     private TextView categoryButton;
     private TextView personalButton;
-    private TextView diyButton;
+    private TextView cartButton;
     private TextView lastButton;
+
+
 
 
     private TextView titleView;
@@ -124,6 +128,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     public int num = 0;
     public int cartCount = 0;
+    public static int screenWidth;
+    public static int screenHeight;
 
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
@@ -203,7 +209,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                             shopCartFragment.refreshData();
                         }
                         selectFragment(currentFragment, shopCartFragment);
-                        setButton(diyButton);
+                        setButton(cartButton);
                     }
                     FetchUnPayData();
                     break;
@@ -241,6 +247,10 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         CartTip(0);
         viewLayout = (LinearLayout) findViewById(R.id.content);
         mContext = this;
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        screenWidth=dm.widthPixels;
+        screenHeight=dm.heightPixels;
         init();
         initBroadcastReceiver();
 
@@ -378,12 +388,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         FetchCityData();
     }
 
-
-    public int getNum()
-    {
-        return num;
-    }
-
     public void initComponents()
     {
 
@@ -415,20 +419,21 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         });
 
-        beautyButton = (TextView) findViewById(R.id.tab_beauty);
-        beautyButton.setOnClickListener(new View.OnClickListener()
+        magicButton = (TextView) findViewById(R.id.tab_beauty);
+        magicButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
 
-                if (beautyHomeFragment == null)
-                {
-                    beautyHomeFragment = new MainStrategyFragment();
-                }
+                    if (magicHomeFragment == null)
+                    {
+                        magicHomeFragment = new MainMagicFragment();
+                    }
+                    selectFragment(currentFragment, magicHomeFragment);
+                    setButton(view);
 
-                selectFragment(currentFragment, beautyHomeFragment);
-                setButton(view);
+
             }
         });
 
@@ -444,8 +449,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         });
 
-        diyButton = (TextView) findViewById(R.id.tab_diy);
-        diyButton.setOnClickListener(new View.OnClickListener()
+        cartButton = (TextView) findViewById(R.id.tab_diy);
+        cartButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)

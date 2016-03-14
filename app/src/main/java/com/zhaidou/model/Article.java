@@ -12,6 +12,17 @@ public class Article implements Serializable
     private String img_url;
     private String is_new;
     private int reviews;
+    private String date;
+
+    public String getDate()
+    {
+        return date;
+    }
+
+    public void setDate(String date)
+    {
+        this.date = date;
+    }
 
     public int getId() {
         return id;

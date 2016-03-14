@@ -11,10 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -24,12 +22,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
-import com.pulltorefresh.PullToRefreshListView;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ArticleWebViewActivity;
-import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -240,7 +236,9 @@ public class HomeWeixinListFragment extends BaseFragment
                                 String title = article.optString("title");
                                 String img_url = article.optString("imgUrl");
                                 String articleUrl = article.optString("articleUrl");
+                                String date = article.optString("gmtCreated").split(" ")[0];
                                 Article item = new Article(id, title, img_url, articleUrl, 0);
+                                item.setDate(date);
                                 articleList.add(item);
                             }
                             handler.sendEmptyMessage(UPDATE_HOMELIST);
@@ -297,34 +295,30 @@ public class HomeWeixinListFragment extends BaseFragment
         {
             convertView = mHashMap.get(position);
 
-            if (convertView == null)
-                convertView = mInflater.inflate(R.layout.home_item_list, null);
 
+            if (convertView == null)
+                convertView = mInflater.inflate(R.layout.item_home_design_case_list, null);
             TextView title = ViewHolder.get(convertView, R.id.title);
-            LinearLayout articleViews = ViewHolder.get(convertView, R.id.relativeLayout);
+            TextView views = ViewHolder.get(convertView, R.id.views);
             ImageView cover = ViewHolder.get(convertView, R.id.cover);
-            cover.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth,screenWidth*316/722));
-            ImageView newView = ViewHolder.get(convertView, R.id.newsView);
+            ImageView icon = ViewHolder.get(convertView, R.id.icon);
+            View space = ViewHolder.get(convertView, R.id.spaceView);
+            cover.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 316 / 722));
+
+            if (position==0)
+            {
+                space.setVisibility(View.GONE);
+            }
+            else
+            {
+                space.setVisibility(View.VISIBLE);
+            }
 
             Article article = getList().get(position);
-
             title.setText(article.getTitle());
-            articleViews.setVisibility(View.GONE);
-            ToolUtils.setImageCacheRoundUrl(article.getImg_url(), cover,8,R.drawable.icon_loading_item);
-
-            if (article.getIs_new().equals("true"))
-            {
-                if (!(Boolean) SharedPreferencesUtil.getData(mContext, "WeixinList_" + article.getId(), true))
-                {
-                    newView.setVisibility(View.GONE);
-                } else
-                {
-                    newView.setVisibility(View.VISIBLE);
-                }
-            } else
-            {
-                newView.setVisibility(View.GONE);
-            }
+            views.setText(article.getDate());
+            icon.setImageResource(R.drawable.icon_weixin_time);
+            ToolUtils.setImageCacheUrl(article.getImg_url(), cover, R.drawable.icon_loading_item);
 
             mHashMap.put(position, convertView);
             return convertView;
