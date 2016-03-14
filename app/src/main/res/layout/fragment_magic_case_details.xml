@@ -78,11 +78,12 @@
         <com.zhaidou.view.ChildGridView
             android:id="@+id/homeItemList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:divider="@null"
             android:layout_margin="10dp"
             android:horizontalSpacing="10dp"
             android:verticalSpacing="10dp"
+            android:minHeight="100dp"
             android:numColumns="2"
             android:listSelector="@android:color/transparent"
             android:scrollbars="none"

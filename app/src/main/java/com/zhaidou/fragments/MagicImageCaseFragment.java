@@ -277,6 +277,7 @@ public class MagicImageCaseFragment extends BaseFragment
             TextView title = ViewHolder.get(convertView, R.id.titleTv);
             TextView english = ViewHolder.get(convertView, R.id.englishTv);
             ImageView cover = ViewHolder.get(convertView, R.id.imageIv);
+            cover.setScaleType(ImageView.ScaleType.FIT_XY);
             View space = ViewHolder.get(convertView, R.id.spaceView);
             LinearLayout bottom = ViewHolder.get(convertView, R.id.floatLine);
             cover.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 316 / 722));

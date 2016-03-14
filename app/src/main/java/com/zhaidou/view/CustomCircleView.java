@@ -37,6 +37,8 @@ public class CustomCircleView extends ImageView
     private static final Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
     private static final int COLORDRAWABLE_DIMENSION = 2;
 
+    private ScaleType mScaleType;
+
     public CustomCircleView(Context context)
     {
         this(context, null);
@@ -50,6 +52,8 @@ public class CustomCircleView extends ImageView
     public CustomCircleView(Context context, AttributeSet attrs, int defStyle)
     {
         super(context, attrs, defStyle);
+
+        setScaleType(ScaleType.FIT_XY);
 
         TypedArray array=context.obtainStyledAttributes(attrs, R.styleable.CustomCircleView,defStyle,0);
         mRadius=array.getDimensionPixelOffset(R.styleable.CustomCircleView_radiuss, 0);
@@ -99,7 +103,6 @@ public class CustomCircleView extends ImageView
         {
             return;
         }
-
         borderPaint.setColor(borderColor);
         borderPaint.setAntiAlias(true);
         borderPaint.setStrokeWidth(borderWidth);
@@ -177,6 +180,47 @@ public class CustomCircleView extends ImageView
 
         return bitmap;
     }
+
+
+    @Override
+    public void setScaleType(ScaleType scaleType)
+    {
+        if (mScaleType != scaleType)
+        {
+            mScaleType = scaleType;
+            setScaleType(mScaleType);
+            switch (scaleType)
+            {
+                case CENTER:
+                    super.setScaleType(ScaleType.CENTER);
+                case CENTER_CROP:
+                    super.setScaleType(ScaleType.CENTER_CROP);
+                case CENTER_INSIDE:
+                    super.setScaleType(ScaleType.CENTER_INSIDE);
+                case FIT_CENTER:
+                    super.setScaleType(ScaleType.FIT_CENTER);
+                case FIT_START:
+                    super.setScaleType(ScaleType.FIT_START);
+                case FIT_END:
+                    super.setScaleType(ScaleType.FIT_END);
+                case FIT_XY:
+                    super.setScaleType(ScaleType.FIT_XY);
+                    break;
+                default:
+                    super.setScaleType(scaleType);
+
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public ScaleType getScaleType()
+    {
+        return mScaleType;
+    }
+
+
 
 
     @Override

@@ -960,6 +960,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 }
             });
             textView.setText(specification.title);
+            ToolUtils.setLog("specification.num:"+specification.num);
             if (specification.num < 1)
             {
                 textView.setBackgroundResource(R.drawable.goods_no_click_selector);
@@ -1670,7 +1671,6 @@ public class GoodsDetailsFragment extends BaseFragment
                         {
                             JSONObject specificationObj = specifications.optJSONObject(i);
                             int isMajor = specificationObj.optInt("isMajor");
-                            String specificationId = specificationObj.optString("productSKUId");
                             String specificationTitle = specificationObj.optString("attributeValue1");
                             String specificationTitle1 = specificationObj.optString("attributeValue2");
                             if (isMajor == 1)
@@ -1684,6 +1684,14 @@ public class GoodsDetailsFragment extends BaseFragment
                                     isSizeSubclass = true;
                                 }
                             }
+                        }
+                        for (int i = 0; i < specifications.length(); i++)
+                        {
+                            JSONObject specificationObj = specifications.optJSONObject(i);
+                            String specificationId = specificationObj.optString("productSKUId");
+                            String specificationTitle = specificationObj.optString("attributeValue1");
+                            String specificationTitle1 = specificationObj.optString("attributeValue2");
+
                             JSONArray imageArray = specificationObj.optJSONArray("productSKUImagArray");
                             ArrayList<String> sizeImages = new ArrayList<String>();
                             if (imageArray != null && imageArray.length() > 0)
@@ -1692,7 +1700,6 @@ public class GoodsDetailsFragment extends BaseFragment
                                 {
                                     JSONObject imageObj = imageArray.optJSONObject(j);
                                     String url = imageObj.optString("imageUrl") + imageObj.optString("imageFileType");
-                                    ToolUtils.setLog("url:"+url);
                                     sizeImages.add(url);
                                 }
                             }
@@ -1700,6 +1707,10 @@ public class GoodsDetailsFragment extends BaseFragment
                             if (num > 0)
                             {
                                 isOver = false;
+                            }
+                            else
+                            {
+                                isOver=true;
                             }
                             double sizePrice = specificationObj.optDouble("price");
                             double sizeOldPrice = specificationObj.optDouble("marketPrice");
@@ -1745,11 +1756,12 @@ public class GoodsDetailsFragment extends BaseFragment
                                 specification.oldPrice = sizeOldPrice;
                                 specification.num = num;
                                 specification.images = sizeImages;
+
+
                                 specificationList.add(specification);
                             }
                         }
                     }
-
                     cartArrayItem.storeId = storeId;
                     cartArrayItem.storeName = storeName;
 
