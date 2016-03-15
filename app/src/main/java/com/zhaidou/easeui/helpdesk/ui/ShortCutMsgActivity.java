@@ -25,7 +25,7 @@ public class ShortCutMsgActivity extends BaseActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.em_activity_shortcut);
         initView();
-        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        mAdapter = new ArrayAdapter<String>(this, R.layout.textview);
         String extra = getIntent().getStringExtra(Constant.EXTRA_USER_ID);
         String[] array = getResources().getStringArray(extra.equalsIgnoreCase("service") ? R.array.serviceWord : R.array.designerWord);
 

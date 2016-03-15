@@ -355,6 +355,8 @@
             </intent-filter>
         </receiver>
 
+        <activity android:name=".easeui.helpdesk.ui.ChatActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activities.ConversationListActivity"
             android:label="@string/title_activity_conversation_list" >

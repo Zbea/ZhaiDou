@@ -13,6 +13,7 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.utils.EaseUtils;
 
 /**
  * Created by roy on 15/11/11.
@@ -48,7 +49,7 @@ public class MagicDesignFragment extends BaseFragment {
                     ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
                     break;
                 case R.id.design_rl:
-
+                    EaseUtils.startDesignerActivity(mContext);
                     break;
                 case R.id.caseBtn:
                     MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "");

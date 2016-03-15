@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EFEFF4"
+    android:background="@color/page_bg"
     android:orientation="vertical">
     <RelativeLayout
         android:id="@+id/rl_back"
@@ -47,6 +47,7 @@
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:cacheColorHint="@android:color/transparent" />
+        android:cacheColorHint="@android:color/transparent"
+        android:background="@color/page_bg"/>
 
 </LinearLayout>

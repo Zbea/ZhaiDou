@@ -506,6 +506,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
     }
 
     public void onBackPressed() {
+        System.out.println("EaseChatFragment.onBackPressed");
         if (inputMenu.onBackPressed()) {
             getActivity().finish();
             if (chatType == EaseConstant.CHATTYPE_CHATROOM) {

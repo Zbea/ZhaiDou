@@ -2,7 +2,6 @@ package com.zhaidou.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.zhaidou.model.User;
 
@@ -67,6 +66,21 @@ public class SharedPreferencesUtil {
         editor.putString("avatar",user.getAvatar());
         editor.putString("nickName",user.getNickName());
         editor.commit();
+    }
+    public static User getUser(Context context){
+        SharedPreferences mSharedPreferences = context.getSharedPreferences
+                (SPName, Context.MODE_PRIVATE);
+        int userId = (Integer)SharedPreferencesUtil.getData(context, "userId", -1);
+        String email = (String) SharedPreferencesUtil.getData(context, "email", "");
+        String token = (String) SharedPreferencesUtil.getData(context, "token", "");
+        String avatar = (String) SharedPreferencesUtil.getData(context, "avatar", "");
+        String nickName = (String) SharedPreferencesUtil.getData(context, "nickName", "");
+        String mobile = (String) SharedPreferencesUtil.getData(context, "mobile", "");
+        String description = (String) SharedPreferencesUtil.getData(context, "description", "");
+        User user=new User(userId,email,token,nickName,avatar);
+        user.setMobile(mobile);
+        user.setDescription(description);
+        return user;
     }
 
     public static void clearUser(Context context){

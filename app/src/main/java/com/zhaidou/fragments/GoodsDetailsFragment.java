@@ -62,6 +62,7 @@ import com.zhaidou.model.GoodInfo;
 import com.zhaidou.model.Specification;
 import com.zhaidou.utils.DeviceUtils;
 import com.zhaidou.utils.DialogUtils;
+import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -656,14 +657,15 @@ public class GoodsDetailsFragment extends BaseFragment
             public void onClick(View view)
             {
 
-                if (DeviceUtils.isApkInstalled(getActivity(), "com.tencent.mobileqq"))
-                {
-                    String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_Number);
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                } else
-                {
-                    ShowToast("没有安装QQ客户端哦");
-                }
+//                if (DeviceUtils.isApkInstalled(getActivity(), "com.tencent.mobileqq"))
+//                {
+//                    String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_Number);
+//                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+//                } else
+//                {
+//                    ShowToast("没有安装QQ客户端哦");
+//                }
+                EaseUtils.startKeFuActivity(mContext);
             }
         });
 

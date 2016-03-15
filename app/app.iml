@@ -84,7 +84,6 @@
     <orderEntry type="jdk" jdkName="Android API 20 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="alisdk-ut-2" level="project" />
-    <orderEntry type="library" exported="" name="hyphenatechat_3.0.0" level="project" />
     <orderEntry type="library" exported="" name="MiPush_SDK_Client_2_2_21" level="project" />
     <orderEntry type="library" exported="" name="alipaySDK-20150610" level="project" />
     <orderEntry type="library" exported="" name="mta-mid-sdk-2.20" level="project" />
