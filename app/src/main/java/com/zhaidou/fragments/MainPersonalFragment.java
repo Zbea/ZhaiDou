@@ -92,6 +92,8 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                     break;
                 case UPDATE_USER_DESCRIPTION:
 //                    User u = (User) msg.obj;
+                    SharedPreferencesUtil.saveData(mContext,"mobile",mUser.getMobile());
+                    SharedPreferencesUtil.saveData(mContext,"description",mUser.getDescription());
                     tv_desc.setText("null".equalsIgnoreCase(mUser.getDescription()) || mUser.getDescription() == null ? "" : mUser.getDescription());
                     break;
                 case UPDATE_USER_COLLECT_COUNT:

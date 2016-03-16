@@ -11,6 +11,7 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.utils.EaseUtils;
 
 
 /**
@@ -38,6 +39,7 @@ public class MainMagicFragment extends BaseFragment
                     ((MainActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
                     break;
                 case R.id.magicConsultLine:
+                    EaseUtils.startDesignerActivity(mContext);
                     break;
                 case R.id.magicImageLine:
                     MagicImageCaseFragment magicImageCaseFragment = MagicImageCaseFragment.newInstance("", "");
