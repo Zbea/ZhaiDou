@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="160dp">
 
-        <ImageView
+        <com.zhaidou.view.RoundImageView
             android:id="@+id/imageIv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -38,6 +38,7 @@ import com.zhaidou.model.ImageItem;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomCircleView;
+import com.zhaidou.view.RoundImageView;
 import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
@@ -125,7 +126,7 @@ public class MagicImageCalssFragment extends BaseFragment
                 }
             });
             TextView title = (TextView) convertView.findViewById(R.id.titleTv);
-            ImageView cover = (ImageView) convertView.findViewById(R.id.imageIv);
+            RoundImageView cover = (RoundImageView) convertView.findViewById(R.id.imageIv);
             cover.setScaleType(ImageView.ScaleType.FIT_XY);
             LinearLayout.LayoutParams layoutParams;
             if (article.imageHeight!=0&&article.imageWidth!=0)
@@ -142,7 +143,8 @@ public class MagicImageCalssFragment extends BaseFragment
             }
             cover.setLayoutParams(layoutParams);
             title.setText(article.name);
-            ToolUtils.setImageCacheRoundUrl(article.imageUrl, cover,13,R.drawable.icon_loading_defalut);
+            ToolUtils.setImageCacheUrl(article.imageUrl, cover, R.drawable.icon_loading_defalut);
+            cover.setRadius(13);
             mHashMap.put(i,convertView);
         }
         if (j == 0)

@@ -51,7 +51,6 @@ import com.zhaidou.fragments.MainCategoryFragment;
 import com.zhaidou.fragments.MainHomeFragment;
 import com.zhaidou.fragments.MainMagicFragment;
 import com.zhaidou.fragments.MainPersonalFragment;
-import com.zhaidou.fragments.MainStrategyFragment;
 import com.zhaidou.fragments.OrderDetailFragment1;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.fragments.ShopCartFragment;
@@ -760,7 +759,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         List<Fragment> fragments = manager.getFragments();
         for (Fragment fragment : fragments)
         {
-            if (fragment instanceof MainHomeFragment || fragment instanceof MainPersonalFragment || fragment instanceof MainStrategyFragment || fragment instanceof MainCategoryFragment || fragment instanceof ShopCartFragment)
+            if (fragment instanceof MainHomeFragment || fragment instanceof MainPersonalFragment || fragment instanceof MainMagicFragment || fragment instanceof MainCategoryFragment || fragment instanceof ShopCartFragment)
             {
             } else
             {

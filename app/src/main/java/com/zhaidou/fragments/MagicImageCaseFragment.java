@@ -34,6 +34,7 @@ import com.zhaidou.model.ImageItem;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ListViewForScrollView;
+import com.zhaidou.view.RoundImageView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -276,7 +277,7 @@ public class MagicImageCaseFragment extends BaseFragment
                 convertView = mInflater.inflate(R.layout.item_magic_image_case, null);
             TextView title = ViewHolder.get(convertView, R.id.titleTv);
             TextView english = ViewHolder.get(convertView, R.id.englishTv);
-            ImageView cover = ViewHolder.get(convertView, R.id.imageIv);
+            RoundImageView cover = ViewHolder.get(convertView, R.id.imageIv);
             cover.setScaleType(ImageView.ScaleType.FIT_XY);
             View space = ViewHolder.get(convertView, R.id.spaceView);
             LinearLayout bottom = ViewHolder.get(convertView, R.id.floatLine);
@@ -294,7 +295,8 @@ public class MagicImageCaseFragment extends BaseFragment
             ImageItem imageItem = getList().get(position);
             title.setText(imageItem.name);
             english.setText(imageItem.englishName);
-            ToolUtils.setImageCacheRoundUrl(imageItem.imageUrl, cover, 13,R.drawable.icon_loading_item);
+            ToolUtils.setImageCacheUrl(imageItem.imageUrl, cover,R.drawable.icon_loading_item);
+            cover.setRadius(13);
 
             mHashMap.put(position, convertView);
             return convertView;

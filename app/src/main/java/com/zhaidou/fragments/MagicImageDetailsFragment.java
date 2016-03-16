@@ -210,8 +210,6 @@ public class MagicImageDetailsFragment extends BaseFragment
                     disappearView();
                 } else
                 {
-                    StretchImageView imageView = (StretchImageView) view;
-                    imageView.zoomTo(imageView.getMiniZoom());//图片复原
                     showView();
                 }
             }
