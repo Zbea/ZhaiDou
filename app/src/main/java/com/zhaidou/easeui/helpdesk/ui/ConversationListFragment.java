@@ -13,6 +13,8 @@ import com.easemob.easeui.ui.EaseConversationListFragment;
 import com.easemob.util.NetUtils;
 import com.zhaidou.R;
 import com.zhaidou.easeui.helpdesk.Constant;
+import com.zhaidou.model.User;
+import com.zhaidou.utils.SharedPreferencesUtil;
 
 
 public class ConversationListFragment extends EaseConversationListFragment {
@@ -45,6 +47,8 @@ public class ConversationListFragment extends EaseConversationListFragment {
                 else {
                     // 进入聊天页面
                     Intent intent = new Intent(getActivity(), ChatActivity.class);
+                    User user = SharedPreferencesUtil.getUser(getActivity());
+                    intent.putExtra("user",user);
                     if(conversation.isGroup()){
                         if(conversation.getType() == EMConversation.EMConversationType.ChatRoom){
                             // it's group chat

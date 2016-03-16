@@ -53,7 +53,7 @@ public class ChatActivity extends BaseActivity {
         intent.putExtra("description", mUser.getDescription());
         intent.putExtra("email", mUser.getEmail());
         chatFragment.setArguments(intent.getExtras());// 传入参数
-        getSupportFragmentManager().beginTransaction().add(R.id.container, chatFragment).addToBackStack(chatFragment.getClass().getSimpleName()).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.container, chatFragment).addToBackStack("ChatFragment").commit();
         findViewById(R.id.ll_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
