@@ -89,6 +89,14 @@
             android:scrollbars="none"
             ></com.zhaidou.view.ChildGridView>
 
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/nullGoods"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:gravity="center"
+            android:textColor="@color/text_gary_color"
+            android:text="暂无推荐单品"/>
+
 
         <LinearLayout
             android:layout_width="match_parent"

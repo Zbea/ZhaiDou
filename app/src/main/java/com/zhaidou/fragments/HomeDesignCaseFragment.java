@@ -84,6 +84,7 @@ public class HomeDesignCaseFragment extends BaseFragment
     private String title;
     private String introduce;//引文介绍
     private List<ShopTodayItem> items = new ArrayList<ShopTodayItem>();
+    private TextView nullGoods;
 
 
     private Handler handler = new Handler()
@@ -124,8 +125,7 @@ public class HomeDesignCaseFragment extends BaseFragment
                 titleTv.setText(title);
                 loadingView.setVisibility(View.GONE);
                 contactQQ.setVisibility(View.VISIBLE);
-
-
+                nullGoods.setVisibility(items.size()>0?View.GONE:View.VISIBLE);
                 articleShoppingAdapter.notifyDataSetChanged();
                 mScrollView.onRefreshComplete();
             }
@@ -255,6 +255,8 @@ public class HomeDesignCaseFragment extends BaseFragment
                 enterGoods(position);
             }
         });
+
+        nullGoods= (TextView) view.findViewById(R.id.nullGoods);
 
         contactQQ = (RelativeLayout) view.findViewById(R.id.rl_qq_contact);
         contactQQ.setOnClickListener(onClickListener);
