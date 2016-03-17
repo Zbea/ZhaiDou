@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.RatingBar.OnRatingBarChangeListener;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.easemob.EMCallBack;
@@ -33,6 +34,7 @@ import com.easemob.chat.EMMessage.Type;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.exceptions.EaseMobException;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.easeui.helpdesk.Constant;
 
 import org.json.JSONException;
@@ -42,6 +44,7 @@ import org.json.JSONObject;
 public class SatisfactionActivity extends BaseActivity {
 
 	private String msgId = "";
+    private String from="";
 	private RatingBar ratingBar = null;
 	private Button btnSubmit = null;
 	private EditText etContent = null;
@@ -53,7 +56,9 @@ public class SatisfactionActivity extends BaseActivity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.em_activity_satisfaction);
 		msgId = getIntent().getStringExtra("msgId");
-		initView();
+        from=getIntent().getStringExtra("from");
+        System.out.println("SatisfactionActivity.onCreate-------->"+msgId);
+        initView();
 	}
 
 	private void initView() {
@@ -70,6 +75,14 @@ public class SatisfactionActivity extends BaseActivity {
 				}
 			}
 		});
+        ((TextView)findViewById(R.id.service)).setText("service".equalsIgnoreCase(from)?"客服":"设计师");
+        findViewById(R.id.ll_back).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        btnSubmit.setTypeface(((ZDApplication)getApplicationContext()).getTypeFace());
 	}
 
 	class MyClickListener implements View.OnClickListener {

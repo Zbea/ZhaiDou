@@ -56,8 +56,10 @@ public class ChatRowEvaluation extends EaseChatRow {
 					
 					@Override
 					public void onClick(View v) {
-						((Activity)context).startActivityForResult(new Intent(context, SatisfactionActivity.class)
-								.putExtra("msgId", message.getMsgId()), ChatFragment.REQUEST_CODE_EVAL);
+                        System.out.println("ChatRowEvaluation.onClick------->"+message.toString());
+                        System.out.println("ChatRowEvaluation.onClick--------->"+message.getFrom());
+                        ((Activity)context).startActivityForResult(new Intent(context, SatisfactionActivity.class)
+                                .putExtra("msgId", message.getMsgId()).putExtra("from",message.getFrom()), ChatFragment.REQUEST_CODE_EVAL);
 					}
 				});
 				
