@@ -225,6 +225,7 @@ public class EaseHelper {
                     intent.putExtra(EaseConstant.EXTRA_USER_ID, message.getFrom());
                     intent.putExtra(EaseConstant.EXTRA_CHAT_TYPE, Constant.CHATTYPE_SINGLE);
                     intent.putExtra(EaseConstant.EXTRA_SHOW_USERNICK, true);
+                    intent.putExtra("user",SharedPreferencesUtil.getUser(appContext));
                 }
                 return intent;
             }
