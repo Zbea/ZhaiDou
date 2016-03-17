@@ -365,6 +365,8 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".easeui.helpdesk.ui.ContextMenuActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".easeui.helpdesk.ui.SatisfactionActivity"
+            android:screenOrientation="portrait"/>
 
 
 
