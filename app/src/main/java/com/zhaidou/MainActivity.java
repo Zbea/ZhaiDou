@@ -320,7 +320,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         Log.d("appInfo---", " msg == " + channel);
         Map<String, String> map = new HashMap<String, String>();
         map.put("device_token[device_token]", DeviceUtils.getImei(this));
-        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.URL_STATISTICS, map, new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(MainActivity.this,Request.Method.POST, ZhaiDou.URL_STATISTICS, map, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)

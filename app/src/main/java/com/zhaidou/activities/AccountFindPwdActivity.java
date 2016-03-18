@@ -245,7 +245,7 @@ public class AccountFindPwdActivity extends FragmentActivity {
         String code = mCodeView.getText().toString();
         Map<String, String> valueParams = new HashMap<String, String>();
         valueParams.put("user[email]", code);
-        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_REGISTER_URL, valueParams, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(AccountFindPwdActivity.this,Request.Method.POST, ZhaiDou.USER_REGISTER_URL, valueParams, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null)

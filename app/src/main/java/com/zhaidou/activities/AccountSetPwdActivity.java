@@ -106,7 +106,7 @@ public class AccountSetPwdActivity extends FragmentActivity {
         valueParams.put("password", password);
         valueParams.put("md5str", md5str);
 
-        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_RESET_PSW_URL, valueParams, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(AccountSetPwdActivity.this,Request.Method.POST, ZhaiDou.USER_RESET_PSW_URL, valueParams, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null)

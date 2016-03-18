@@ -585,7 +585,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         userParams.put("avatar", "data:image/png;base64," + base64);
         JSONObject jsonObject = new JSONObject(userParams);
         params.put("user", jsonObject.toString());
-        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_UPDATE_AVATAR_URL, params, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, ZhaiDou.USER_UPDATE_AVATAR_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
