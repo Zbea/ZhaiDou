@@ -190,7 +190,7 @@ public class ProfileEditFragment extends BaseFragment implements View.OnClickLis
         Map<String, String> params = new HashMap<String, String>();
         params.put("id", id);
         params.put("profile", new JSONObject(map).toString());
-        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_EDIT_PROFILE_URL, params, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, ZhaiDou.USER_EDIT_PROFILE_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 mDialog.dismiss();

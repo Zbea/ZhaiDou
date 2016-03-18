@@ -125,7 +125,7 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
     private void checkPhoneIsExist(final String phone) {
         Map<String, String> params = new HashMap<String, String>();
         params.put("phone", phone);
-        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_REGISTER_CHECK_PHONE_URL,params,new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(RegisterActivity.this,Request.Method.POST, ZhaiDou.USER_REGISTER_CHECK_PHONE_URL,params,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 System.out.println("RegisterActivity.onResponse------->" + jsonObject.toString());
@@ -155,7 +155,7 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
         String email = mEmailView.getText().toString();
         Map<String, String> valueParams = new HashMap<String, String>();
         valueParams.put("user[email]", email);
-        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_REGISTER_URL, valueParams, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(RegisterActivity.this,Request.Method.POST, ZhaiDou.USER_REGISTER_URL, valueParams, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null)

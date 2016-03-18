@@ -213,7 +213,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 params.put("password", password);
 
                 mDialog = CustomLoadingDialog.setLoadingDialog(LoginActivity.this, "登陆中");
-                final ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_URL, params, new Response.Listener<JSONObject>() {
+                final ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,Request.Method.POST, ZhaiDou.USER_LOGIN_URL, params, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
 //                        if (mDialog != null)
@@ -304,7 +304,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         params.put("provider", tag);
         params.put("nick_name", nick);
 
-        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_THIRD_VERIFY_URL, params, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,Request.Method.POST, ZhaiDou.USER_LOGIN_THIRD_VERIFY_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("jsonObject--->", jsonObject.toString());
@@ -351,7 +351,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         Map<String, String> params = new HashMap<String, String>();
         params.put("phone", phone);
         params.put("vcode", verifyCode);
-        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_BINE_PHONE_URL, params, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,Request.Method.POST, ZhaiDou.USER_LOGIN_BINE_PHONE_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 JSONObject dataObj = jsonObject.optJSONObject("data");
@@ -521,7 +521,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     }
 
     private void thirdPartyRegisterTask(Map<String, String> params) {
-        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_REGISTER_URL, params, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,Request.Method.POST, ZhaiDou.USER_REGISTER_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (jsonObject != null) {
