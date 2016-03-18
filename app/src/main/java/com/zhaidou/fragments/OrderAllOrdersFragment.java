@@ -490,6 +490,8 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         ll_btn.setVisibility(View.GONE);
                         btn2.setBackgroundResource(R.drawable.btn_no_click_selector);
                     }
+                    if (order.orderRemainingTime<=0)
+                        tv_order_status.setText("超时过期");
                     hasUnPayOrder = true;
                     break;
                 case ZhaiDou.STATUS_DELIVERY:

@@ -14,10 +14,12 @@
 
 package com.easemob.easeui.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import com.easemob.easeui.controller.EaseUI;
 
@@ -43,16 +45,21 @@ public class EaseBaseActivity extends FragmentActivity {
         super.onResume();
         // onresume时，取消notification显示
         EaseUI.getInstance().getNotifier().reset();
-        
+
+
     }
 
 
     /**
      * 返回
-     * 
+     *
      * @param view
      */
     public void back(View view) {
         finish();
+        InputMethodManager  inputMethodManager=(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (inputMethodManager.isActive())
+            inputMethodManager.hideSoftInputFromWindow(getWindow().peekDecorView().getApplicationWindowToken(),0);
     }
+
 }

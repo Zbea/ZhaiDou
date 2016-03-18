@@ -1,8 +1,10 @@
 package com.zhaidou.easeui.helpdesk.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import com.easemob.chat.EMChatManager;
@@ -57,6 +59,9 @@ public class ChatActivity extends BaseActivity {
         findViewById(R.id.ll_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager inputMethodManager=(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (inputMethodManager.isActive())
+                    inputMethodManager.hideSoftInputFromWindow(getWindow().peekDecorView().getApplicationWindowToken(),0);
                 finish();
             }
         });

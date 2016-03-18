@@ -22,12 +22,10 @@ import com.alibaba.sdk.android.callback.CallbackContext;
 import com.alibaba.sdk.android.login.LoginService;
 import com.alibaba.sdk.android.login.callback.LoginCallback;
 import com.alibaba.sdk.android.session.model.Session;
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
@@ -216,8 +214,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 final ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,Request.Method.POST, ZhaiDou.USER_LOGIN_URL, params, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
-//                        if (mDialog != null)
-//                            mDialog.dismiss();
                         if (jsonObject != null) {
                             JSONObject dataObj = jsonObject.optJSONObject("data");
                             String message = jsonObject.optString("message");
@@ -235,6 +231,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 //                                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
                                 }
                             } else {
+                                if (mDialog != null)
+                                    mDialog.dismiss();
                                 String msg = dataObj.optString("message");
                                 Toast.makeText(LoginActivity.this, TextUtils.isEmpty(msg) ? message : msg, Toast.LENGTH_SHORT).show();
                             }
@@ -378,15 +376,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             public void onErrorResponse(VolleyError volleyError) {
 
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                System.out.println("LoginActivity.getHeaders------------>" + token);
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
+        });
         ((ZDApplication) getApplication()).mRequestQueue.add(request);
     }
 
@@ -428,7 +418,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
      * @param mDialog
      */
     private void getVerifyCode(String phone, final Dialog mDialog) {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + "?phone=" + phone + "&flag=1", new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + "?phone=" + phone + "&flag=1", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 JSONObject dataObj = jsonObject.optJSONObject("data");
