@@ -733,16 +733,23 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
 
             ll_sale_out.setVisibility(product.getRemaining() == 0 ? View.VISIBLE : View.GONE);
 
-            DecimalFormat df = new DecimalFormat("##.0");
-            String zk = df.format(product.getPrice() / product.getCost_price() * 10);
-            if (zk.contains(".0")) {
-                int sales = (int) Double.parseDouble(zk);
-                shopSaleTv.setText(sales + "折");
-            } else {
-                Double sales = Double.parseDouble(zk);
-                shopSaleTv.setText(sales + "折");
+            if (product.getPrice()==0||product.getCost_price()==0)
+            {
+                shopSaleTv.setVisibility(View.GONE);
             }
-            shopSaleTv.setVisibility(View.VISIBLE);
+            else
+            {
+                DecimalFormat df = new DecimalFormat("##.0");
+                String zk = df.format(product.getPrice() / product.getCost_price() * 10);
+                if (zk.contains(".0")) {
+                    int sales = (int) Double.parseDouble(zk);
+                    shopSaleTv.setText(sales + "折");
+                } else {
+                    Double sales = Double.parseDouble(zk);
+                    shopSaleTv.setText(sales + "折");
+                }
+                shopSaleTv.setVisibility(View.VISIBLE);
+            }
             mHashMap.put(position, convertView);
             return convertView;
         }

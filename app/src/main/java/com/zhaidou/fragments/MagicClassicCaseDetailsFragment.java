@@ -342,8 +342,9 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
                                     String Baseid = obj.optString("productId");
                                     String code = obj.optString("productCode");
                                     String Listtitle = obj.optString("productName");
-                                    double price = obj.optDouble("tshPrice");
-                                    double cost_price = obj.optDouble("marketPrice");
+                                    DecimalFormat df = new DecimalFormat("#.00");
+                                    double price =Double.parseDouble(df.format(obj.optDouble("tshPrice"))) ;
+                                    double cost_price =Double.parseDouble(df.format(obj.optDouble("marketPrice")));
                                     String imageUrl = obj.optString("mainPic");
                                     int num = obj.optInt("totalStock");
                                     ShopTodayItem shopTodayItem = new ShopTodayItem(code, Listtitle, imageUrl, price, cost_price, num, 0);
