@@ -200,8 +200,8 @@ public class MagicClassicCaseFragment extends BaseFragment
                 @Override
                 public void onClick(View v)
                 {
-                    HomeDesignCaseFragment homeDesignCaseFragment = HomeDesignCaseFragment.newInstance(articleList.get(position).getTitle(), articleList.get(position).getId() + "");
-                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(homeDesignCaseFragment);
+                    MagicClassicCaseDetailsFragment magicClassicCaseDetailsFragment = MagicClassicCaseDetailsFragment.newInstance(articleList.get(position).getTitle(), articleList.get(position).getId() + "");
+                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(magicClassicCaseDetailsFragment);
                 }
             });
 

@@ -89,8 +89,6 @@ public class ZhaiDou {
     public static String INDEX_CATEGORY_FILTER=HOME_BASE_URL+"article/api/article_categories";
     //拼贴大赛
     public static String COMPETITION_URL="http://www.zhaidou.com/competitions/current?zdclient=ios";
-    //天天刮奖
-    public static String PRIZE_SCRAPING_URL=HOME_BASE_URL+"lotteries";
     //首页分类文章
     public static String HOME_CATEGORY_URL="http://www.zhaidou.com/article/api/articles?page=";
     //文章页面

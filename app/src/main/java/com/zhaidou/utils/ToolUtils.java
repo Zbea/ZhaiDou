@@ -25,7 +25,7 @@ import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.fragments.GoodsDetailsFragment;
 import com.zhaidou.fragments.HomeArticleListFragment;
-import com.zhaidou.fragments.HomeDesignCaseFragment;
+import com.zhaidou.fragments.HomeBeautifulFragment;
 import com.zhaidou.fragments.HomeFeatrueFragment;
 import com.zhaidou.fragments.HomeWeixinListFragment;
 import com.zhaidou.fragments.MagicDesignFragment;
@@ -417,7 +417,7 @@ public class ToolUtils
         }
         else if(item.type==8)
         {
-            HomeDesignCaseFragment goodsDetailsFragment = HomeDesignCaseFragment.newInstance(item.title, 0+"");
+            HomeBeautifulFragment goodsDetailsFragment = HomeBeautifulFragment.newInstance(item.title, 0+"");
             ((MainActivity) mContext).navigationToFragment(goodsDetailsFragment);
         }
         else if(item.type==9)
