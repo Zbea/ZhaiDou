@@ -45,6 +45,7 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.ShopTodayItem;
+import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -286,8 +287,9 @@ public class HomeFeatrueFragment extends BaseFragment {
                     initData();
                     break;
                 case R.id.rl_qq_contact:
-                    MagicDesignFragment magicDesignFragment = MagicDesignFragment.newInstance("", "");
-                    ((MainActivity) mContext).navigationToFragmentWithAnim(magicDesignFragment);
+//                    MagicDesignFragment magicDesignFragment = MagicDesignFragment.newInstance("", "");
+//                    ((MainActivity) mContext).navigationToFragmentWithAnim(magicDesignFragment);
+                    EaseUtils.startDesignerActivity(mContext);
                     break;
                 case R.id.ll_back:
                     ((MainActivity) getActivity()).popToStack(HomeFeatrueFragment.this);

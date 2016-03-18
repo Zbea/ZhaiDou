@@ -32,6 +32,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
+import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
@@ -189,8 +190,9 @@ public class MagicImageDetailsFragment extends BaseFragment
             @Override
             public void onClick(View v)
             {
-                MagicDesignFragment magicDesignFragment = MagicDesignFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragment(magicDesignFragment);
+//                MagicDesignFragment magicDesignFragment = MagicDesignFragment.newInstance("", "");
+//                ((MainActivity) getActivity()).navigationToFragment(magicDesignFragment);
+                EaseUtils.startDesignerActivity(mContext);
             }
         });
 
