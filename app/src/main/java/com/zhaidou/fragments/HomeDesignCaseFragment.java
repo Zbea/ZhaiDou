@@ -94,8 +94,8 @@ public class HomeDesignCaseFragment extends BaseFragment
             if (msg.what == 1)
             {
                 ToolUtils.setImageCacheUrl(imageUrl, imageIv, R.drawable.icon_loading_defalut);
-//                webview.loadData(introduce, "text/html; charset=UTF-8", "UTF-8");
-                webview.loadUrl("file:///android_asset/test.html");
+                webview.loadData(introduce, "text/html; charset=UTF-8", "UTF-8");
+//                webview.loadUrl("file:///android_asset/test.html");
                 webview.setWebViewClient(new WebViewClient()
                 {
                     @Override

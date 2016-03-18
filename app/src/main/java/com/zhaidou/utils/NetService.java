@@ -1,7 +1,9 @@
 package com.zhaidou.utils;
 
-import java.io.IOException;
-import java.io.InputStream;
+import android.content.Context;
+import android.util.Log;
+
+import com.zhaidou.R;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -11,9 +13,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
-import android.util.Log;
-
-import com.zhaidou.R;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class NetService
 {
@@ -25,12 +26,12 @@ public class NetService
 	 * @param url
 	 * @return
 	 */
-	public static String getHttpService(String url)
+	public static String getHttpService(String url,Context mContext)
 	{
 		try
 		{
 			HttpGet httpGet=new HttpGet(url);
-            httpGet.addHeader("ZhaidouVesion", "V2.4.0");
+            httpGet.addHeader("ZhaidouVesion",  mContext.getResources().getString(R.string.app_versionName));
 			HttpClient httpClient=new DefaultHttpClient();
 			HttpResponse httpResponse=httpClient.execute(httpGet);
 			if (httpResponse.getStatusLine().getStatusCode()==HttpStatus.SC_OK)

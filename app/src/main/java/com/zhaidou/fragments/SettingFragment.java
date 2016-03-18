@@ -203,7 +203,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
             @Override
             public void run() {
                 String url = ZhaiDou.ApkUrl;
-                String result = NetService.getHttpService(url);
+                String result = NetService.getHttpService(url,mContext);
                 if (result != null) {
                     mHandler.obtainMessage(1, result).sendToTarget();
                 }
