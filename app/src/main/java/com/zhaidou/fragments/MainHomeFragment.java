@@ -397,7 +397,8 @@ public class MainHomeFragment extends BaseFragment implements
     {
         final String url = ZhaiDou.HomeShopListUrl + page + "&typeEnum=1";
         ToolUtils.setLog(url);
-        JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+
+        JsonObjectRequest jr = new JsonObjectRequest(url ,new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -427,10 +428,10 @@ public class MainHomeFragment extends BaseFragment implements
                     return;
                 }
                 JSONObject jsonObject = response.optJSONObject("data");
-                pageCount = jsonObject.optInt("totalCount");
-                pageSize = jsonObject.optInt("pageSize");
                 if (jsonObject != null)
                 {
+                    pageCount = jsonObject.optInt("totalCount");
+                    pageSize = jsonObject.optInt("pageSize");
                     JSONArray jsonArray = jsonObject.optJSONArray("themeList");
 
                     if (jsonArray != null)
@@ -494,6 +495,9 @@ public class MainHomeFragment extends BaseFragment implements
 
     private void FetchSpecialData()
     {
+        final Map<String, String> headers = new HashMap<String, String>();
+        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeBannerUrl + "01,02,03", new Response.Listener<JSONObject>()
         {
             @Override
@@ -554,7 +558,14 @@ public class MainHomeFragment extends BaseFragment implements
             public void onErrorResponse(VolleyError volleyError)
             {
             }
-        });
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                return headers;
+            }
+        };
         mRequestQueue.add(request);
     }
 
