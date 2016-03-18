@@ -370,7 +370,7 @@
 
 
 
-        <!--<!-- xiaomi push start，不需要删除即可-->-->
+        <!--<! xiaomi push start，不需要删除即可-->-->
         <!--<service-->
             <!--android:name="com.xiaomi.mipush.sdk.PushMessageHandler"-->
             <!--android:enabled="true"-->
@@ -391,7 +391,7 @@
                 <!--<action android:name="com.xiaomi.mipush.ERROR" />-->
             <!--</intent-filter>-->
         <!--</receiver>-->
-        <!--<!-- xiaomi push end -->-->
+        <!--<!xiaomi push end -->-->
         <service
             android:name="com.xiaomi.mipush.sdk.PushMessageHandler"
             android:enabled="true"
