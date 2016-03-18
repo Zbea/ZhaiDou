@@ -205,7 +205,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 //                    ToolUtils.setToast(getApplicationContext(), "抱歉,您输入的密码过短");
 //                    mPswView.setShakeAnimation();
 //                }
-
                 saveEmail();
                 final Map<String, String> params = new HashMap<String, String>();
                 params.put("email", strEmail);
