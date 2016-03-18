@@ -33,6 +33,7 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
 import com.zhaidou.model.Order1;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -315,7 +316,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
         params.put("clientVersion","45");
         params.put("businessType","01");
         params.put("type", ZhaiDou.TYPE_ORDER_PRERECEIVE);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,ZhaiDou.URL_ORDER_LIST ,new JSONObject(params), new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST,ZhaiDou.URL_ORDER_LIST ,params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null)
@@ -370,15 +371,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
                     mDialog.dismiss();
                 Toast.makeText(getActivity(), "加载失败", Toast.LENGTH_SHORT).show();
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 

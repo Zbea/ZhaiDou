@@ -21,7 +21,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpClientStack;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
@@ -33,6 +32,7 @@ import com.zhaidou.model.Area;
 import com.zhaidou.model.City;
 import com.zhaidou.model.HttpPatch;
 import com.zhaidou.model.Province;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomEditText;
@@ -371,7 +371,7 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
 
     private void FetchCityData() {
         mDialog=mDialogUtils.showLoadingDialog();
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_ADDRESS_URL, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,ZhaiDou.ORDER_ADDRESS_URL, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 mDialog.dismiss();

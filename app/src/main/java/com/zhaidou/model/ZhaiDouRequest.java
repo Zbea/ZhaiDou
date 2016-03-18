@@ -9,6 +9,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.zhaidou.R;
+import com.zhaidou.utils.SharedPreferencesUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,9 +29,16 @@ public class ZhaiDouRequest extends Request<JSONObject> {
 
     private final Response.Listener<JSONObject> mListener;
     private Map<String,String> params;
-    private Map<String,String> mHeaders;
+    protected Map<String,String> mHeaders;
     protected Context mContext;
 
+    public ZhaiDouRequest(Context context, String url, Response.Listener<JSONObject> listener,
+                          Response.ErrorListener errorListener) {
+        super(Method.GET, url, errorListener);
+        mListener = listener;
+        mContext=context;
+        initHeader();
+    }
     public ZhaiDouRequest(Context context,int method, String url, Response.Listener<JSONObject> listener,
                       Response.ErrorListener errorListener) {
         super(method, url, errorListener);
@@ -75,6 +83,7 @@ public class ZhaiDouRequest extends Request<JSONObject> {
 
     private void initHeader(){
         mHeaders=new HashMap<String, String>();
+        mHeaders.put("SECAuthorization", (String) SharedPreferencesUtil.getData(mContext,"token",""));
         mHeaders.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
     }
 

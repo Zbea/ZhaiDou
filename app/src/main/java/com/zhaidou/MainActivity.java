@@ -479,7 +479,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             public void onClick(View view)
             {
                 type = 1;
-                if (!checkLogin()||!EMChatManager.getInstance().isConnected())
+                if (!checkLogin())//||!EMChatManager.getInstance().isConnected()
                 {
                     Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                     intent.setFlags(2);

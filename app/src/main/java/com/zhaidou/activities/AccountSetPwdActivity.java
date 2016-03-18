@@ -11,7 +11,6 @@ import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -133,14 +132,7 @@ public class AccountSetPwdActivity extends FragmentActivity {
             public void onErrorResponse(VolleyError volleyError) {
 
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
+        });
         ((ZDApplication) getApplication()).mRequestQueue.add(request);
     }
 

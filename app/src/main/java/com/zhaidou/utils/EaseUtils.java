@@ -5,6 +5,8 @@ package com.zhaidou.utils;/**
 import android.content.Context;
 import android.content.Intent;
 
+import com.easemob.chat.EMChatManager;
+import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.easeui.helpdesk.Constant;
 import com.zhaidou.easeui.helpdesk.ui.ChatActivity;
 import com.zhaidou.model.User;
@@ -19,6 +21,11 @@ import com.zhaidou.model.User;
 public class EaseUtils {
 
     public static void startKeFuActivity(Context context){
+        if (!EMChatManager.getInstance().isConnected()){
+            Intent intent=new Intent(context,LoginActivity.class);
+            context.startActivity(intent);
+            return;
+        }
         User user = SharedPreferencesUtil.getUser(context);
         Intent intent2 = new Intent(context, ChatActivity.class);
         intent2.putExtra(Constant.EXTRA_USER_ID, "service");
@@ -28,6 +35,11 @@ public class EaseUtils {
     }
 
     public static void startDesignerActivity(Context context){
+        if (!EMChatManager.getInstance().isConnected()){
+            Intent intent=new Intent(context,LoginActivity.class);
+            context.startActivity(intent);
+            return;
+        }
         User user = SharedPreferencesUtil.getUser(context);
         Intent intent2 = new Intent(context, ChatActivity.class);
         intent2.putExtra(Constant.EXTRA_USER_ID, "designer");
@@ -35,4 +47,5 @@ public class EaseUtils {
         intent2.putExtra("user",user);
         context.startActivity(intent2);
     }
+
 }
