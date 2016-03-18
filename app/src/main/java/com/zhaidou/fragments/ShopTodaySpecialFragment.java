@@ -385,6 +385,7 @@ public class ShopTodaySpecialFragment extends BaseFragment
             if (checkLogin())
             {
                 FetchCountData();
+
             }
         } else
         {
