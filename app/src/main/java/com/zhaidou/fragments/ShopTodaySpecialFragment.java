@@ -188,7 +188,10 @@ public class ShopTodaySpecialFragment extends BaseFragment
             items.clear();
             page = 1;
             FetchData();
-            FetchCountData();
+            if (checkLogin())
+            {
+                FetchCountData();
+            }
         }
 
         @Override
@@ -382,6 +385,7 @@ public class ShopTodaySpecialFragment extends BaseFragment
             if (checkLogin())
             {
                 FetchCountData();
+
             }
         } else
         {

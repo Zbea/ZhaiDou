@@ -185,7 +185,10 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             banners.clear();
             getBannerData();
             FetchData();
-            FetchCountData();
+            if (checkLogin())
+            {
+                FetchCountData();
+            }
         }
 
         @Override

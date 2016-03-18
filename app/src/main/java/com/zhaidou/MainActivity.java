@@ -359,7 +359,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             public void run()
             {
                 String url = ZhaiDou.ApkUrl;
-                String result = NetService.getHttpService(url);
+                String result = NetService.getHttpService(url,getApplicationContext());
                 if (result != null)
                 {
                     mHandler.obtainMessage(1, result).sendToTarget();

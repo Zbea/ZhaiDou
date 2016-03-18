@@ -66,6 +66,7 @@ public class ZhaiDouRequest extends Request<JSONObject> {
         }
     }
 
+
     @Override
     public Map<String, String> getParams() {
         return this.params;

@@ -195,13 +195,13 @@ public class MagicClassicCaseFragment extends BaseFragment
             TextView titleTv = (TextView) contentView.findViewById(R.id.titleTv);
             TextView infoTv = (TextView) contentView.findViewById(R.id.infoTv);
             LinearLayout detailsTv = (LinearLayout) contentView.findViewById(R.id.detailsTv);
-            detailsTv.setOnClickListener(new View.OnClickListener()
+            contentView.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
                 {
-                    HomeDesignCaseFragment homeDesignCaseFragment = HomeDesignCaseFragment.newInstance(articleList.get(position).getTitle(), articleList.get(position).getId() + "");
-                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(homeDesignCaseFragment);
+                    MagicClassicCaseDetailsFragment magicClassicCaseDetailsFragment = MagicClassicCaseDetailsFragment.newInstance(articleList.get(position).getTitle(), articleList.get(position).getId() + "");
+                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(magicClassicCaseDetailsFragment);
                 }
             });
 

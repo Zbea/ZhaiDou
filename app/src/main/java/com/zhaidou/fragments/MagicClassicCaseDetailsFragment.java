@@ -53,7 +53,7 @@ import java.util.WeakHashMap;
 /**
  * 文章商品
  */
-public class HomeDesignCaseFragment extends BaseFragment
+public class MagicClassicCaseDetailsFragment extends BaseFragment
 {
     private static final String ARG_PARAM = "param";
     private static final String ARG_STRING = "string";
@@ -94,8 +94,8 @@ public class HomeDesignCaseFragment extends BaseFragment
             if (msg.what == 1)
             {
                 ToolUtils.setImageCacheUrl(imageUrl, imageIv, R.drawable.icon_loading_defalut);
-//                webview.loadData(introduce, "text/html; charset=UTF-8", "UTF-8");
-                webview.loadUrl("file:///android_asset/test.html");
+                webview.loadData(introduce, "text/html; charset=UTF-8", "UTF-8");
+//                webview.loadUrl("file:///android_asset/test.html");
                 webview.setWebViewClient(new WebViewClient()
                 {
                     @Override
@@ -151,9 +151,9 @@ public class HomeDesignCaseFragment extends BaseFragment
         }
     };
 
-    public static HomeDesignCaseFragment newInstance(String param, String string)
+    public static MagicClassicCaseDetailsFragment newInstance(String param, String string)
     {
-        HomeDesignCaseFragment fragment = new HomeDesignCaseFragment();
+        MagicClassicCaseDetailsFragment fragment = new MagicClassicCaseDetailsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM, param);
         args.putString(ARG_STRING, string);
@@ -161,7 +161,7 @@ public class HomeDesignCaseFragment extends BaseFragment
         return fragment;
     }
 
-    public HomeDesignCaseFragment()
+    public MagicClassicCaseDetailsFragment()
     {
     }
 
@@ -183,7 +183,7 @@ public class HomeDesignCaseFragment extends BaseFragment
                     ((MainActivity) mContext).navigationToFragmentWithAnim(magicDesignFragment);
                     break;
                 case R.id.back_btn:
-                    ((MainActivity) getActivity()).popToStack(HomeDesignCaseFragment.this);
+                    ((MainActivity) getActivity()).popToStack(MagicClassicCaseDetailsFragment.this);
                     break;
             }
         }
