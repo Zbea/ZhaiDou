@@ -600,12 +600,14 @@ public class ShopTodaySpecialFragment extends BaseFragment
     @Override
     public void onResume()
     {
+        System.out.println("ShopTodaySpecialFragment.onResume");
         if (isFrist)
         {
             long temp = Math.abs(systemTime - System.currentTimeMillis());
             initTime = timeTvs.getTimes() - temp;
             timeTvs.setTimes(initTime);
         }
+        hideInputMethod();
         super.onResume();
         MobclickAgent.onPageStart(mTitle);
     }
@@ -623,6 +625,8 @@ public class ShopTodaySpecialFragment extends BaseFragment
     @Override
     public void onDestroy()
     {
+        System.out.println("ShopTodaySpecialFragment.onDestroy");
+        hideInputMethod();
         if (broadcastReceiver != null)
             mContext.unregisterReceiver(broadcastReceiver);
         timeTvs.stop();

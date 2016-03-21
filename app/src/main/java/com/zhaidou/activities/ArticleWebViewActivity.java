@@ -2,34 +2,22 @@
 package com.zhaidou.activities;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.telephony.TelephonyManager;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseActivity;
-import com.zhaidou.model.Article;
-import com.zhaidou.model.User;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
-import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomProgressWebview;
 
 import java.io.IOException;
@@ -202,6 +190,7 @@ public class ArticleWebViewActivity extends BaseActivity implements View.OnClick
         super.onResume();
         MobclickAgent.onPageStart("ArticleWebViewActivity");
         MobclickAgent.onResume(this);
+        System.out.println("ArticleWebViewActivity.onResume");
     }
 
     @Override

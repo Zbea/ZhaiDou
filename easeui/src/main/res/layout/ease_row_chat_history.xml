@@ -14,11 +14,12 @@
         android:layout_alignParentLeft="true" >
 
       <com.easemob.easeui.widget.EaseImageView
+          easeui:ease_shape_type="round"
             android:id="@+id/avatar"
             android:layout_width="42dp"
             android:layout_height="42dp"
             android:layout_centerVertical="true"
-            android:src="@drawable/ease_default_avatar"/>
+            android:src="@drawable/icon_header_default"/>
 
         <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/unread_msg_number"

@@ -245,6 +245,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
                 finish();
                 break;
             case R.id.iv_share:
+                System.out.println("ItemDetailActivity.onClick");
                 doShare();
                 break;
         }
@@ -252,6 +253,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
     private void doShare() {
         DialogUtils mDialogUtils=new DialogUtils(this);
+        System.out.println("ItemDetailActivity.doShare-->"+title+"---"+url+"----"+coverUrl);
         mDialogUtils.showShareDialog(title,title+"  "+url,coverUrl,url,new PlatformActionListener() {
             @Override
             public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
@@ -261,7 +263,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
             @Override
             public void onError(Platform platform, int i, Throwable throwable) {
-                System.out.println("ItemDetailActivity.onError");
+                System.out.println("ItemDetailActivity.onError"+"--------"+i+"------"+throwable.getMessage());
                 Toast.makeText(ItemDetailActivity.this,mContext.getString(R.string.share_error),Toast.LENGTH_SHORT).show();
             }
 
@@ -308,6 +310,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         super.onResume();
         MobclickAgent.onPageStart("ItemDetailActivity");
         MobclickAgent.onResume(this);
+        System.out.println("ItemDetailActivity.onResume");
     }
 
     @Override

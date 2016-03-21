@@ -189,6 +189,7 @@ public class OrderDetailFragment1 extends BaseFragment {
             }
         });
         mStoreList.setAdapter(mStoreAdapter);
+        mStoreAdapter.notifyDataSetChanged();
         CheckNetWork();
     }
 
@@ -210,7 +211,7 @@ public class OrderDetailFragment1 extends BaseFragment {
         params.put("clientVersion", versionCode);
         params.put("userId", mUserId);//mUserId//29650+""
         params.put("orderCode", orderCode);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, new ZhaiDou().URL_ORDER_DETAIL_LIST_URL, new JSONObject(params), new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_DETAIL_LIST_URL, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null)

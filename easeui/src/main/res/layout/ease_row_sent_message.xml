@@ -19,8 +19,7 @@
         android:layout_marginTop="@dimen/margin_chat_activity" >
 
         <com.easemob.easeui.widget.EaseImageView
-            app:ease_shape_type="rectangle"
-            app:ease_radius="5dp"
+            app:ease_shape_type="round"
             android:id="@+id/iv_userhead"
             android:layout_width="@dimen/size_avatar"
             android:layout_height="@dimen/size_avatar"

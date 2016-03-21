@@ -48,4 +48,8 @@ public class WXEntryActivity extends WechatHandlerActivity {
 		}
 	}
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 }

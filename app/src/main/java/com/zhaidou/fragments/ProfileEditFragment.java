@@ -188,6 +188,7 @@ public class ProfileEditFragment extends BaseFragment implements View.OnClickLis
     private void UpdateUserInfo(String type,HashMap<String,String> map, String id) {
         mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
         Map<String, String> params = new HashMap<String, String>();
+        params.put("_method","PUT");
         params.put("id", id);
         params.put("profile", new JSONObject(map).toString());
         ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, ZhaiDou.USER_EDIT_PROFILE_URL, params, new Response.Listener<JSONObject>() {
