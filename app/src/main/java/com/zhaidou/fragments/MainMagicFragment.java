@@ -22,7 +22,7 @@ public class MainMagicFragment extends BaseFragment
     private View mView;
     private LinearLayout magicClassicLine,magicConsultLine,magicImageLine,magicDesignLine;
     private ImageView diyBtn;
-
+    private long formerTime;
 
     /**
      * 点击事件
@@ -35,23 +35,38 @@ public class MainMagicFragment extends BaseFragment
             switch (v.getId())
             {
                 case R.id.magicClassicLine:
-                    MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "");
-                    ((MainActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
+                    if (isTimeInterval())
+                    {
+                        MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "");
+                        ((MainActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
+                    }
                     break;
                 case R.id.magicConsultLine:
-                    EaseUtils.startDesignerActivity(mContext);
+                    if (isTimeInterval())
+                    {
+                        EaseUtils.startDesignerActivity(mContext);
+                    }
                     break;
                 case R.id.magicImageLine:
-                    MagicImageCaseFragment magicImageCaseFragment = MagicImageCaseFragment.newInstance("", "");
-                    ((MainActivity) getActivity()).navigationToFragment(magicImageCaseFragment);
+                    if (isTimeInterval())
+                    {
+                        MagicImageCaseFragment magicImageCaseFragment = MagicImageCaseFragment.newInstance("", "");
+                        ((MainActivity) getActivity()).navigationToFragment(magicImageCaseFragment);
+                    }
                     break;
                 case R.id.magicDesignLine:
-                    MagicDesignFragment orderDetailFragment = MagicDesignFragment.newInstance("", "");
-                    ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
+                    if (isTimeInterval())
+                    {
+                        MagicDesignFragment orderDetailFragment = MagicDesignFragment.newInstance("", "");
+                        ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
+                    }
                     break;
                 case R.id.magicDiyBtn:
-                    DiyFragment diyFragment = DiyFragment.newInstance("" ,"");
-                    ((MainActivity) getActivity()).navigationToFragment(diyFragment);
+                    if (isTimeInterval())
+                    {
+                        DiyFragment diyFragment = DiyFragment.newInstance("" ,"");
+                        ((MainActivity) getActivity()).navigationToFragment(diyFragment);
+                    }
                     break;
             }
         }
@@ -107,7 +122,24 @@ public class MainMagicFragment extends BaseFragment
 
     }
 
+    /**
+     * 设置时间间隔,防止重复点击
+     */
+    private boolean isTimeInterval()
+    {
+        long currentTime=System.currentTimeMillis();
 
+        if ((currentTime- formerTime)>1500)
+        {
+            formerTime =currentTime;
+            return true;
+        }
+        else
+        {
+            formerTime =currentTime;
+            return false;
+        }
+    }
 
     public void onResume()
     {

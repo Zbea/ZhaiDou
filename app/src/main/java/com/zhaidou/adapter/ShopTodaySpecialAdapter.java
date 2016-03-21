@@ -16,7 +16,9 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.fragments.GoodsDetailsFragment;
 import com.zhaidou.model.ShopTodayItem;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
@@ -163,17 +165,16 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
 
         ImageAware imageAware = new ImageViewAware(viewHolder.itemImage, false);
         ImageLoader.getInstance().displayImage(todayShopItem.imageUrl, imageAware,options);
-//        ToolUtils.setImageNoResetUrl(todayShopItem.imageUrl,viewHolder.itemImage,R.drawable.icon_loading_defalut);
 
-//        viewHolder.itemBuy.setOnClickListener(new View.OnClickListener()
-//        {
-//            @Override
-//            public void onClick(View view)
-//            {
-//                GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).title, items.get(position).goodsId);
-//                ((MainActivity) context).navigationToFragment(goodsDetailsFragment);
-//            }
-//        });
+        viewHolder.itemBuy.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).title, items.get(position).goodsId);
+                ((MainActivity) context).navigationToFragment(goodsDetailsFragment);
+            }
+        });
 
         if (todayShopItem.num>0)
         {

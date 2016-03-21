@@ -9,8 +9,6 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -95,26 +93,27 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
             if (msg.what == 1)
             {
                 ToolUtils.setImageCacheUrl(imageUrl, imageIv, R.drawable.icon_loading_defalut);
+                ToolUtils.setLog(introduce);
                 webview.loadData(introduce, "text/html; charset=UTF-8", "UTF-8");
-//                webview.loadUrl("file:///android_asset/test.html");
-                webview.setWebViewClient(new WebViewClient()
-                {
-                    @Override
-                    public void onPageFinished(WebView view, String url)
-                     {
-                        view.loadUrl("javascript:!function(){" +
-
-                                "s=document.createElement('style');s.innerHTML="
-
-                                + "\"@font-face{font-family:FZLTXHK;src:url('**injection**/FZLTXHK.TTF');}*{font-family:FZLTXHK !important;}\";"
-
-                                + "document.getElementsByTagName('head')[0].appendChild(s);" +
-
-                                "document.getElementsByTagName('body')[0].style.fontFamily = \"FZLTXHK\";}()");
-                        super.onPageFinished(view, url);
-                    }
-                }
-                );
+                webview.getSettings().setJavaScriptEnabled(true);
+//                webview.setWebViewClient(new WebViewClient()
+//                {
+//                    @Override
+//                    public void onPageFinished(WebView view, String url)
+//                     {
+//                        view.loadUrl("javascript:!function(){" +
+//
+//                                "s=document.createElement('style');s.innerHTML="
+//
+//                                + "\"@font-face{font-family:FZLTXHK;src:url('**injection**/FZLTXHK.TTF');}*{font-family:FZLTXHK !important;}\";"
+//
+//                                + "document.getElementsByTagName('head')[0].appendChild(s);" +
+//
+//                                "document.getElementsByTagName('body')[0].style.fontFamily = \"FZLTXHK\";}()");
+//                        super.onPageFinished(view, url);
+//                    }
+//                }
+//                );
 
                 if (pageCount > pageSize*page)
                 {

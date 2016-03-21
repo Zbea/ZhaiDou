@@ -85,6 +85,7 @@ public class MainHomeFragment extends BaseFragment implements
     private LinearLayout linearLayout, codeView, moduleView;
     private PullToRefreshScrollView mScrollView;
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
+    private long formerTime;
 
     private Handler handler = new Handler()
     {
@@ -162,11 +163,33 @@ public class MainHomeFragment extends BaseFragment implements
                 @Override
                 public void onClick(View v)
                 {
-                    SwitchImage item = codes.get(pos);
-                    ToolUtils.setBannerGoto(item, mContext);
+                    if (isTimeInterval())
+                    {
+                        SwitchImage item = codes.get(pos);
+                        ToolUtils.setBannerGoto(item, mContext);
+                    }
                 }
             });
             codeView.addView(mView);
+        }
+    }
+
+    /**
+     * 设置时间间隔,防止重复点击
+     */
+    private boolean isTimeInterval()
+    {
+        long currentTime=System.currentTimeMillis();
+
+        if ((currentTime- formerTime)>1500)
+        {
+            formerTime =currentTime;
+            return true;
+        }
+        else
+        {
+            formerTime =currentTime;
+            return false;
         }
     }
 
@@ -192,8 +215,11 @@ public class MainHomeFragment extends BaseFragment implements
                 @Override
                 public void onClick(View v)
                 {
-                    SwitchImage item = specials.get(pos);
-                    ToolUtils.setBannerGoto(item, mContext);
+                    if (isTimeInterval())
+                    {
+                        SwitchImage item = specials.get(pos);
+                        ToolUtils.setBannerGoto(item, mContext);
+                    }
                 }
             });
             ImageView imageIv2 = (ImageView) mView.findViewById(R.id.moduleIv2);
@@ -203,8 +229,11 @@ public class MainHomeFragment extends BaseFragment implements
                 @Override
                 public void onClick(View v)
                 {
-                    SwitchImage item = specials.get(pos + 1);
-                    ToolUtils.setBannerGoto(item, mContext);
+                    if (isTimeInterval())
+                    {
+                        SwitchImage item = specials.get(pos + 1);
+                        ToolUtils.setBannerGoto(item, mContext);
+                    }
                 }
             });
             ImageView imageIv3 = (ImageView) mView.findViewById(R.id.moduleIv3);
@@ -214,8 +243,11 @@ public class MainHomeFragment extends BaseFragment implements
                 @Override
                 public void onClick(View v)
                 {
-                    SwitchImage item = specials.get(pos + 2);
-                    ToolUtils.setBannerGoto(item, mContext);
+                    if (isTimeInterval())
+                    {
+                        SwitchImage item = specials.get(pos + 2);
+                        ToolUtils.setBannerGoto(item, mContext);
+                    }
                 }
             });
             ImageView imageIv4 = (ImageView) mView.findViewById(R.id.moduleIv4);
@@ -225,8 +257,11 @@ public class MainHomeFragment extends BaseFragment implements
                 @Override
                 public void onClick(View v)
                 {
-                    SwitchImage item = specials.get(pos + 3);
-                    ToolUtils.setBannerGoto(item, mContext);
+                    if (isTimeInterval())
+                    {
+                        SwitchImage item = specials.get(pos + 3);
+                        ToolUtils.setBannerGoto(item, mContext);
+                    }
                 }
             });
             ImageView imageIv5 = (ImageView) mView.findViewById(R.id.moduleIv5);
@@ -236,8 +271,11 @@ public class MainHomeFragment extends BaseFragment implements
                 @Override
                 public void onClick(View v)
                 {
-                    SwitchImage item = specials.get(pos + 4);
-                    ToolUtils.setBannerGoto(item, mContext);
+                    if (isTimeInterval())
+                    {
+                        SwitchImage item = specials.get(pos + 4);
+                        ToolUtils.setBannerGoto(item, mContext);
+                    }
                 }
             });
             moduleView.addView(mView);

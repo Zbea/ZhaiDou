@@ -72,7 +72,7 @@ public class HomeFeatrueFragment extends BaseFragment {
     private String mTitle;
     private int type=1;//如果type=1则为特卖列表 type=2则为专题页,type=3文章倒流
 
-    private GridView mGridView,mGridView2;
+    private GridView singleGridView, articleGridView;
     private TypeFaceTextView introduceTv;
 
     private Map<Integer, View> mHashMap = new HashMap<Integer, View>();
@@ -82,10 +82,10 @@ public class HomeFeatrueFragment extends BaseFragment {
 
     private LinearLayout loadingView, nullNetView, nullView,nullDataView;
     private TextView reloadBtn, reloadNetBtn;
-    private final int UPDATE_ADAPTER = 0;
-    private final int UPDATE_FEATURE_LIST = 1;
-    private final int UPDATE_Article_SHOPPING = 2;//文章商城
-    private final int UPDATE_CARTCAR_DATA = 3;
+    private final int UPDATE_SINGLE_LIST = 0;
+    private final int UPDATE_DOUBLE_LIST = 1;
+    private final int UPDATE_ARTICLE_SHOPPING = 2;//文章商城
+    private final int UPDATE_CART_DATA = 3;
     private Dialog mDialog;
     private Context mContext;
     private View rootView;
@@ -95,7 +95,8 @@ public class HomeFeatrueFragment extends BaseFragment {
     private LargeImgView bannerLine,infoImage;
     private ImageView myCartBtn,imageIv;
     private RelativeLayout contactQQ,cartView;
-    private PullToRefreshScrollView mScrollView,mScrollView1,mScrollView2;
+    private PullToRefreshScrollView mScrollView;
+    private LinearLayout singleLine,doubleLine,articleLine;
     private ListViewForScrollView mListView;
     private ShopTodaySpecialAdapter shopTodaySpecialAdapter;
     private ProductAdapter productAdapter;
@@ -141,7 +142,25 @@ public class HomeFeatrueFragment extends BaseFragment {
         public void handleMessage(Message msg) {
 
             switch (msg.what) {
-                case UPDATE_ADAPTER:
+                case UPDATE_SINGLE_LIST:
+                    shopTodaySpecialAdapter.notifyDataSetChanged();
+                    mScrollView.onRefreshComplete();
+                    if (pageCount > pageSize * page)
+                    {
+                        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+                    } else
+                    {
+                        mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+                    }
+                    titleTv.setText(shopSpecialItem.title);
+                    introduceTv.setText(introduce);
+                    loadingView.setVisibility(View.GONE);
+                    doubleLine.setVisibility(View.GONE);
+                    singleLine.setVisibility(View.VISIBLE);
+                    articleLine.setVisibility(View.GONE);
+                    contactQQ.setVisibility(View.GONE);
+                    break;
+                case UPDATE_DOUBLE_LIST:
                     setAddImage();
                     mScrollView.onRefreshComplete();
                     if (pageCount > pageSize * page)
@@ -154,37 +173,12 @@ public class HomeFeatrueFragment extends BaseFragment {
                     titleTv.setText(shopSpecialItem.title);
                     productAdapter.notifyDataSetChanged();
                     loadingView.setVisibility(View.GONE);
-                    mScrollView.setVisibility(View.VISIBLE);
-                    mScrollView1.setVisibility(View.GONE);
-                    mScrollView2.setVisibility(View.GONE);
+                    doubleLine.setVisibility(View.VISIBLE);
+                    singleLine.setVisibility(View.GONE);
+                    articleLine.setVisibility(View.GONE);
                     contactQQ.setVisibility(View.GONE);
                     break;
-                case UPDATE_CARTCAR_DATA:
-                    initCartTips();
-                    if ((((MainActivity)mContext).cart_dot).getVisibility()==View.GONE)
-                    {
-                        ((MainActivity)mContext).CartTip(cartCount);
-                    }
-                    break;
-                case UPDATE_FEATURE_LIST:
-                    shopTodaySpecialAdapter.notifyDataSetChanged();
-                    mScrollView1.onRefreshComplete();
-                    if (pageCount > pageSize * page)
-                    {
-                        mScrollView1.setMode(PullToRefreshBase.Mode.BOTH);
-                    } else
-                    {
-                        mScrollView1.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
-                    }
-                    titleTv.setText(shopSpecialItem.title);
-                    introduceTv.setText(introduce);
-                    loadingView.setVisibility(View.GONE);
-                    mScrollView.setVisibility(View.GONE);
-                    mScrollView1.setVisibility(View.VISIBLE);
-                    mScrollView2.setVisibility(View.GONE);
-                    contactQQ.setVisibility(View.GONE);
-                    break;
-                case UPDATE_Article_SHOPPING:
+                case UPDATE_ARTICLE_SHOPPING:
 
                     ToolUtils.setImageCacheUrl(imageUrl,imageIv,R.drawable.icon_loading_item);
                     infoTv.setText(introduce);
@@ -234,21 +228,29 @@ public class HomeFeatrueFragment extends BaseFragment {
                     });
 
                     articleShoppingpAdapter.notifyDataSetChanged();
-                    mScrollView2.onRefreshComplete();
+                    mScrollView.onRefreshComplete();
                     if (pageCount > pageSize * page)
                     {
-                        mScrollView2.setMode(PullToRefreshBase.Mode.BOTH);
+                        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
                     } else
                     {
-                        mScrollView2.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+                        mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                     }
                     titleTv.setText(shopSpecialItem.title);
                     loadingView.setVisibility(View.GONE);
-                    mScrollView.setVisibility(View.GONE);
-                    mScrollView1.setVisibility(View.GONE);
-                    mScrollView2.setVisibility(View.VISIBLE);
+                    singleLine.setVisibility(View.GONE);
+                    doubleLine.setVisibility(View.GONE);
+                    articleLine.setVisibility(View.VISIBLE);
                     contactQQ.setVisibility(View.VISIBLE);
                     cartView.setVisibility(View.GONE);
+                    break;
+
+                case UPDATE_CART_DATA:
+                    initCartTips();
+                    if ((((MainActivity)mContext).cart_dot).getVisibility()==View.GONE)
+                    {
+                        ((MainActivity)mContext).CartTip(cartCount);
+                    }
                     break;
             }
         }
@@ -345,22 +347,6 @@ public class HomeFeatrueFragment extends BaseFragment {
             rootView.findViewById(R.id.ll_back).setOnClickListener(onClickListener);
             titleTv=(TextView) rootView.findViewById(R.id.tv_title);
 
-            bannerLine = (LargeImgView) rootView.findViewById(R.id.bannersView);
-            bannerLine.setDrawingCacheEnabled(true);
-            mScrollView = (PullToRefreshScrollView)rootView.findViewById(R.id.scrollView);
-            mScrollView.setOnRefreshListener(onRefreshListener);
-            mGridView = (GridView) rootView.findViewById(R.id.gv_sale);
-            mGridView.setEmptyView(mEmptyView);
-            productAdapter = new ProductAdapter(getActivity(), items);
-            mGridView.setAdapter(productAdapter);
-            productAdapter.setOnInViewClickListener(R.id.ll_single_layout, new BaseListAdapter.onInternalClickListener()
-            {
-                @Override
-                public void OnClickListener(View parentV, View v, Integer position, Object values)
-                {
-                    enterGoods(position);
-                }
-            });
 
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
             nullNetView = (LinearLayout) rootView.findViewById(R.id.nullNetline);
@@ -371,9 +357,26 @@ public class HomeFeatrueFragment extends BaseFragment {
             reloadNetBtn = (TextView) rootView.findViewById(R.id.netReload);
             reloadNetBtn.setOnClickListener(onClickListener);
 
+            bannerLine = (LargeImgView) rootView.findViewById(R.id.bannersView);
+            bannerLine.setDrawingCacheEnabled(true);
+            mScrollView = (PullToRefreshScrollView)rootView.findViewById(R.id.scrollView);
+            mScrollView.setOnRefreshListener(onRefreshListener);
+            singleLine=(LinearLayout) rootView.findViewById(R.id.singleLine);
+            singleGridView = (GridView) rootView.findViewById(R.id.gv_sale);
+            singleGridView.setEmptyView(mEmptyView);
+            productAdapter = new ProductAdapter(getActivity(), items);
+            singleGridView.setAdapter(productAdapter);
+            productAdapter.setOnInViewClickListener(R.id.ll_single_layout, new BaseListAdapter.onInternalClickListener()
+            {
+                @Override
+                public void OnClickListener(View parentV, View v, Integer position, Object values)
+                {
+                    enterGoods(position);
+                }
+            });
+
             introduceTv = (TypeFaceTextView) rootView.findViewById(R.id.adText);
-            mScrollView1 = (PullToRefreshScrollView) rootView.findViewById(R.id.scrollView1);
-            mScrollView1.setOnRefreshListener(onRefreshListener);
+            doubleLine=(LinearLayout) rootView.findViewById(R.id.doubleLine);
             mListView = (ListViewForScrollView) rootView.findViewById(R.id.shopListView);
             shopTodaySpecialAdapter = new ShopTodaySpecialAdapter(mContext, items);
             mListView.setAdapter(shopTodaySpecialAdapter);
@@ -390,13 +393,12 @@ public class HomeFeatrueFragment extends BaseFragment {
             imageIv.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 316 / 722));
             infoTv=(TextView)rootView.findViewById(R.id.infoTv);
             infoImage=(LargeImgView)rootView.findViewById(R.id.infoImage);
-            mScrollView2 = (PullToRefreshScrollView)rootView.findViewById(R.id.scrollView2);
-            mScrollView2.setOnRefreshListener(onRefreshListener);
-            mGridView2 = (GridView) rootView.findViewById(R.id.magicItemList);
-            mGridView2.setEmptyView(mEmptyView);
+            articleLine=(LinearLayout) rootView.findViewById(R.id.articleLine);
+            articleGridView = (GridView) rootView.findViewById(R.id.magicItemList);
+            articleGridView.setEmptyView(mEmptyView);
             articleShoppingpAdapter= new ArticleShoppingAdapter(getActivity(), items);
-            mGridView2.setAdapter(articleShoppingpAdapter);
-            mGridView2.setOnItemClickListener(new AdapterView.OnItemClickListener()
+            articleGridView.setAdapter(articleShoppingpAdapter);
+            articleGridView.setOnItemClickListener(new AdapterView.OnItemClickListener()
             {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id)
@@ -564,7 +566,6 @@ public class HomeFeatrueFragment extends BaseFragment {
                         if (mDialog != null)
                             mDialog.dismiss();
                         mScrollView.onRefreshComplete();
-                        mScrollView1.onRefreshComplete();
                         if (response == null)
                         {
                             if (page==1)
@@ -628,15 +629,15 @@ public class HomeFeatrueFragment extends BaseFragment {
                             }
                             if (type==1)
                             {
-                                mHandler.sendEmptyMessage(UPDATE_FEATURE_LIST);
+                                mHandler.sendEmptyMessage(UPDATE_SINGLE_LIST);
                             }
                             else if (type==2)
                             {
-                                mHandler.sendEmptyMessage(UPDATE_ADAPTER);
+                                mHandler.sendEmptyMessage(UPDATE_DOUBLE_LIST);
                             }
                             else
                             {
-                                mHandler.sendEmptyMessage(UPDATE_Article_SHOPPING);
+                                mHandler.sendEmptyMessage(UPDATE_ARTICLE_SHOPPING);
                             }
                         }
                         else
@@ -674,7 +675,6 @@ public class HomeFeatrueFragment extends BaseFragment {
             public void onErrorResponse(VolleyError volleyError) {
                 mDialog.dismiss();
                 mScrollView.onRefreshComplete();
-                mScrollView1.onRefreshComplete();
                 if (page==1)
                 {
                     nullNetView.setVisibility(View.GONE);
@@ -715,7 +715,7 @@ public class HomeFeatrueFragment extends BaseFragment {
                 {
                     JSONObject object = jsonObject.optJSONObject("data");
                     cartCount = object.optInt("totalQuantity");
-                    mHandler.sendEmptyMessage(UPDATE_CARTCAR_DATA);
+                    mHandler.sendEmptyMessage(UPDATE_CART_DATA);
                 }
             }
         }, new Response.ErrorListener()

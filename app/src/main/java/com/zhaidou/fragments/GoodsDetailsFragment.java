@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -60,7 +59,6 @@ import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.GoodDetail;
 import com.zhaidou.model.GoodInfo;
 import com.zhaidou.model.Specification;
-import com.zhaidou.utils.DeviceUtils;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NetworkUtils;
@@ -181,7 +179,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private List<ImageView> dots = new ArrayList<ImageView>();
     private ImageAdapter imageAdapter;
     private String sku;
-    List<ImageView> imageViews = new ArrayList<ImageView>();
+    private List<ImageView> mImageViews = new ArrayList<ImageView>();
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -1234,7 +1232,6 @@ public class GoodsDetailsFragment extends BaseFragment
         mListView.setAdapter(mAdapter);
 //        webView.loadData(detail.webUrl, "text/html; charset=UTF-8", "UTF-8");
         setImageViews();
-        imageAdapter.notifyDataSetChanged();
 
         mImageContainer.removeAllViews();
 
@@ -1359,7 +1356,6 @@ public class GoodsDetailsFragment extends BaseFragment
             images.clear();
         images.addAll(imageInits);
         setImageViews();
-        imageAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -1367,7 +1363,7 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     public void setImageViews()
     {
-        imageViews.clear();
+        mImageViews.clear();
         for (int i = 0; i < images.size(); i++)
         {
             ImageView imageView = new ImageView(mContext);
@@ -1377,11 +1373,13 @@ public class GoodsDetailsFragment extends BaseFragment
             imageView.setLayoutParams(layoutParams);
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
             ToolUtils.setImageCacheUrl(images.get(i), imageView, R.drawable.icon_loading_goods_details);
-            imageViews.add(imageView);
+            mImageViews.add(imageView);
         }
         setInitImageBackground();
         imageAdapter = new ImageAdapter();
         viewPager.setAdapter(imageAdapter);
+        viewPager.setOnPageChangeListener(onPageChangeListener);
+        imageAdapter.initImags(mImageViews);
     }
 
     /**
@@ -1428,7 +1426,7 @@ public class GoodsDetailsFragment extends BaseFragment
         {
             if (i == position)
             {
-                dots.get(i).setBackgroundResource(R.drawable.home_tips_foucs_icon);
+                dots.get(position).setBackgroundResource(R.drawable.home_tips_foucs_icon);
             } else
             {
                 dots.get(i).setBackgroundResource(R.drawable.home_tips_icon);
@@ -1552,6 +1550,14 @@ public class GoodsDetailsFragment extends BaseFragment
             cartGoodsItem.formalPrice = mSpecificationSubclass.oldPrice;
 
             cartArrayItem.storeMoney = mSpecificationSubclass.price;
+            if (mSpecificationSubclass.images!=null)
+            {
+                cartGoodsItem.imageUrl = mSpecificationSubclass.images.get(0);
+            }
+            else
+            {
+                cartGoodsItem.imageUrl = detail.imageUrl;
+            }
         } else
         {
             cartGoodsItem.size = mSpecificationParent.title;
@@ -1560,8 +1566,17 @@ public class GoodsDetailsFragment extends BaseFragment
             cartGoodsItem.formalPrice = mSpecificationParent.oldPrice;
 
             cartArrayItem.storeMoney = mSpecificationParent.price;
+            if (mSpecificationParent.images!=null)
+            {
+                cartGoodsItem.imageUrl = mSpecificationParent.images.get(0);
+            }
+            else
+            {
+                cartGoodsItem.imageUrl = detail.imageUrl;
+            }
         }
-        cartGoodsItem.imageUrl = detail.imageUrl;
+
+
         if (flags == 1)
         {
             cartGoodsItem.isOSale = "true";
@@ -1709,10 +1724,6 @@ public class GoodsDetailsFragment extends BaseFragment
                             if (num > 0)
                             {
                                 isOver = false;
-                            }
-                            else
-                            {
-                                isOver=true;
                             }
                             double sizePrice = specificationObj.optDouble("price");
                             double sizeOldPrice = specificationObj.optDouble("marketPrice");
@@ -2133,10 +2144,18 @@ public class GoodsDetailsFragment extends BaseFragment
 
     public class ImageAdapter extends PagerAdapter
     {
+       List<ImageView> imageViews=new ArrayList<ImageView>();
+
+        public void initImags(List<ImageView> imageViewss)
+        {
+            imageViews.addAll(imageViewss);
+            notifyDataSetChanged();
+        }
+
         @Override
         public int getCount()
         {
-            return images.size();
+            return imageViews.size();
         }
 
         @Override
@@ -2157,6 +2176,12 @@ public class GoodsDetailsFragment extends BaseFragment
             container.addView(imageViews.get(position));
             return imageViews.get(position);
         }
+
+//        @Override
+//        public int getItemPosition(Object object)
+//        {
+//            return null!=imageViews&&imageViews.size()==0?POSITION_NONE:super.getItemPosition(object);
+//        }
     }
 
 
