@@ -910,6 +910,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     @Override
     protected void onResume()
     {
+
         super.onResume();
         MobclickAgent.onResume(this);
     }

@@ -19,13 +19,13 @@
         android:layout_marginTop="@dimen/margin_chat_activity" >
 
         <com.easemob.easeui.widget.EaseImageView
-            app:ease_radius="20dp"
             android:id="@+id/iv_userhead"
             android:layout_width="@dimen/size_avatar"
             android:layout_height="@dimen/size_avatar"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="@dimen/margin_chat_activity"/>
+            android:layout_marginLeft="@dimen/margin_chat_activity"
+            app:ease_shape_type="round"/>
 
         <RelativeLayout
             android:id="@+id/bubble"

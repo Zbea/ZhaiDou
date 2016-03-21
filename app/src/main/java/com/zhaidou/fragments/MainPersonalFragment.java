@@ -1,6 +1,7 @@
 package com.zhaidou.fragments;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +11,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -427,6 +429,10 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
 //        if (!tv_unpay_count.isShown()&&EMClient.getInstance().chatManager().getUnreadMsgsCount()==0)
 //            ((MainActivity)getActivity()).hideTip(View.GONE);
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_personal));
+        InputMethodManager inputMethodManager=(InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+        System.out.println("inputMethodManager.isActive() = " + inputMethodManager.isActive());
+        if (inputMethodManager.isActive())
+            inputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().peekDecorView().getApplicationWindowToken(),0);
     }
 
     public void onPause() {

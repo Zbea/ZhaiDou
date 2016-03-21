@@ -2091,6 +2091,7 @@ public class GoodsDetailsFragment extends BaseFragment
     @Override
     public void onResume()
     {
+        System.out.println("GoodsDetailsFragment.onResume");
         if (isFrist)
         {
             long temp = Math.abs(systemTime - System.currentTimeMillis());
@@ -2183,6 +2184,5 @@ public class GoodsDetailsFragment extends BaseFragment
 //            return null!=imageViews&&imageViews.size()==0?POSITION_NONE:super.getItemPosition(object);
 //        }
     }
-
 
 }
