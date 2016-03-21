@@ -194,11 +194,11 @@ public class ToolUtils
                 .showImageOnLoading(resId)
                 .showImageForEmptyUri(resId)
                 .showImageOnFail(resId)
-                .resetViewBeforeLoading(false)//default 设置图片在加载前是否重置、复位
                 .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
                 .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .imageScaleType(ImageScaleType.EXACTLY)
+                .delayBeforeLoading(100)//载入图片前稍做延时可以提高整体滑动的流畅度
                 .build();
 
         ImageLoader.getInstance().displayImage(url, imageView,options);

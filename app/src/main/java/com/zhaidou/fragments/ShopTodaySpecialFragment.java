@@ -106,7 +106,6 @@ public class ShopTodaySpecialFragment extends BaseFragment
     private int cartCount;//购物车商品数量
     private int userId;
     private String token;
-    private boolean isChlick;//防止重复点击
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -168,6 +167,7 @@ public class ShopTodaySpecialFragment extends BaseFragment
                     {
                         mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                     }
+                    mScrollView.onRefreshComplete();
                     break;
                 case UPDATE_CARTCAR_DATA:
                     initCartTips();
@@ -309,9 +309,7 @@ public class ShopTodaySpecialFragment extends BaseFragment
      */
     private void initView()
     {
-        ToolUtils.setLog("22222");
         shareUrl = shareUrl + mIndex;
-
         loadingView = (LinearLayout) mView.findViewById(R.id.loadingView);
         nullNetView = (LinearLayout) mView.findViewById(R.id.nullNetline);
         nullView = (LinearLayout) mView.findViewById(R.id.nullline);
@@ -333,7 +331,9 @@ public class ShopTodaySpecialFragment extends BaseFragment
         myCartBtn.setOnClickListener(onClickListener);
 
 
-
+        mScrollView = (PullToRefreshScrollView) mView.findViewById(R.id.scrollView);
+        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+        mScrollView.setOnRefreshListener(onRefreshListener);
         mListView = (ListViewForScrollView) mView.findViewById(R.id.shopListView);
         adapter = new ShopTodaySpecialAdapter(mContext, items);
         mListView.setAdapter(adapter);
@@ -342,20 +342,14 @@ public class ShopTodaySpecialFragment extends BaseFragment
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                if (!isChlick)
-                {
-                    isChlick = true;
                     mDialog.show();
                     GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).title, items.get(position).goodsId);
                     ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
                     mDialog.dismiss();
-                }
             }
         });
 
-        mScrollView = (PullToRefreshScrollView) mView.findViewById(R.id.scrollView);
-        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
-        mScrollView.setOnRefreshListener(onRefreshListener);
+
 
         mRequestQueue = Volley.newRequestQueue(mContext);
 
@@ -615,7 +609,6 @@ public class ShopTodaySpecialFragment extends BaseFragment
     @Override
     public void onPause()
     {
-        isChlick = false;
         systemTime = System.currentTimeMillis();
         isFrist = true;
         super.onPause();
@@ -633,5 +626,111 @@ public class ShopTodaySpecialFragment extends BaseFragment
         mRequestQueue.stop();
         super.onDestroy();
     }
+
+//    public class ShopTodaySpecialAdapter extends BaseListAdapter<ShopTodayItem>
+//    {
+//        private List<ShopTodayItem> items;
+//        private Context context;
+//        private Map<Integer, View> mHashMap = new HashMap<Integer, View>();
+//
+//        public ShopTodaySpecialAdapter(Context context, List<ShopTodayItem> items)
+//        {
+//            super(context, items);
+//            this.context = context;
+//            this.items = items;
+//        }
+//        @Override
+//        public View bindView(final int position, View convertView, ViewGroup parent) {
+//            convertView = mHashMap.get(position);
+//            if (convertView == null)
+//                convertView = LayoutInflater.from(context).inflate(R.layout.shop_today_special_item, null);
+//            TextView itemName = com.zhaidou.base.ViewHolder.get(convertView, R.id.shopNameItem);
+//            TextView itemSales = com.zhaidou.base.ViewHolder.get(convertView, R.id.shopSaleTv);
+//            TextView itemIntorduce = com.zhaidou.base.ViewHolder.get(convertView, R.id.shopIntroduceItem);
+//            TextView itemCurrentPrice = com.zhaidou.base.ViewHolder.get(convertView, R.id.shopCurrentPrice);
+//            TextView itemFormerPrice = com.zhaidou.base.ViewHolder.get(convertView, R.id.shopFormerPrice);
+//            TextView itemBuy = com.zhaidou.base.ViewHolder.get(convertView, R.id.buyGoodsBtn);
+//            ImageView itemImage = com.zhaidou.base.ViewHolder.get(convertView, R.id.shopGoodsImage);
+//            ImageView itemNull = com.zhaidou.base.ViewHolder.get(convertView, R.id.shopGoodsImageNo);
+//            TextView buyCount = com.zhaidou.base.ViewHolder.get(convertView, R.id.shopBuyCount);
+//            ProgressBar buyProgressBarGreen = com.zhaidou.base.ViewHolder.get(convertView, R.id.shopProgressBarGreen);
+//            ProgressBar buyProgressBarRed = com.zhaidou.base.ViewHolder.get(convertView, R.id.shopProgressBarRed);
+//
+//            final ShopTodayItem todayShopItem=items.get(position);
+//            itemFormerPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+//
+//            if (todayShopItem.totalCount!=0)
+//            {
+//                buyCount.setText("已抢购"+todayShopItem.percentum+"%");
+//                if(todayShopItem.percentum>=80)
+//                {
+//                    buyProgressBarRed.setMax(todayShopItem.totalCount*10);
+//                    buyProgressBarRed.setProgress(todayShopItem.percentum*todayShopItem.totalCount/10);
+//                    buyProgressBarRed.setVisibility(View.VISIBLE);
+//                    buyProgressBarGreen.setVisibility(View.GONE);
+//                }
+//                else
+//                {
+//                    buyProgressBarGreen.setMax(todayShopItem.totalCount*10);
+//                    buyProgressBarGreen.setProgress(todayShopItem.percentum*todayShopItem.totalCount/10);
+//                    buyProgressBarGreen.setVisibility(View.VISIBLE);
+//                    buyProgressBarRed.setVisibility(View.GONE);
+//                }
+//            }
+//            itemName.setText("            "+todayShopItem.title);
+//            itemCurrentPrice.setText("￥"+ToolUtils.isIntPrice(""+todayShopItem.currentPrice));
+//            itemFormerPrice.getPaint().setAntiAlias(true);//去锯齿
+//            itemFormerPrice.setText("￥"+ToolUtils.isIntPrice(""+todayShopItem.formerPrice));
+//            itemIntorduce.setText(todayShopItem.comment);
+//            if(todayShopItem.formerPrice!=0)
+//            {
+//                DecimalFormat df = new DecimalFormat("##.0");
+//                String zk=df.format(todayShopItem.currentPrice/todayShopItem.formerPrice*10);
+//                if (zk.contains(".0"))
+//                {
+//                    int sales=(int)Double.parseDouble(zk);
+//                    itemSales.setText(sales+"折");
+//                }
+//                else
+//                {
+//                    Double sales=Double.parseDouble(zk);
+//                    itemSales.setText(sales+"折");
+//                }
+//            }
+//            else
+//            {
+//                itemSales.setText("0折");
+//            }
+//            ToolUtils.setImageUrl(todayShopItem.imageUrl,itemImage,R.drawable.icon_loading_defalut);
+////        ToolUtils.setImageNoResetUrl(todayShopItem.imageUrl,viewHolder.itemImage,R.drawable.icon_loading_defalut);
+//
+//            itemBuy.setOnClickListener(new View.OnClickListener()
+//            {
+//                @Override
+//                public void onClick(View view)
+//                {
+//                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).title, items.get(position).goodsId);
+//                    ((MainActivity) context).navigationToFragment(goodsDetailsFragment);
+//                }
+//            });
+//
+//            if (todayShopItem.num>0)
+//            {
+//                itemNull.setVisibility(View.GONE);
+//                itemBuy.setBackgroundResource(R.drawable.btn_red_click_selector);
+//                itemBuy.setText("马上抢");
+//                itemBuy.setClickable(true);
+//            }
+//            else
+//            {
+//                itemNull.setVisibility(View.VISIBLE);
+//                itemBuy.setBackgroundResource(R.drawable.btn_no_click_selector);
+//                itemBuy.setText("抢光了");
+//                itemBuy.setClickable(false);
+//            }
+//            mHashMap.put(position, convertView);
+//            return convertView;
+//        }
+//    }
 
 }

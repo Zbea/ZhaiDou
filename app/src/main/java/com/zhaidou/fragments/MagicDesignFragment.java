@@ -45,7 +45,7 @@ public class MagicDesignFragment extends BaseFragment {
                     ((MainActivity) getActivity()).popToStack(MagicDesignFragment.this);
                     break;
                 case R.id.case_rl:
-                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("宅豆软装设计方案", "191100570001");
+                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("宅豆软装设计方案", "191105000227");
                     ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
                     break;
                 case R.id.design_rl:
