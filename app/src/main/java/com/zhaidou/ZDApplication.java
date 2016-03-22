@@ -12,7 +12,7 @@ import com.easemob.easeui.controller.EaseUI;
 import com.easemob.easeui.model.EaseNotifier;
 import com.easemob.easeui.utils.EaseCommonUtils;
 import com.nostra13.universalimageloader.cache.disc.impl.LimitedAgeDiscCache;
-import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
+import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.utils.StorageUtils;
@@ -79,8 +79,8 @@ public class ZDApplication extends EaseApplication {
                 .diskCacheFileCount(50)//最大缓存数量
                 .diskCacheSize(50 * 1024 * 1024) // 50 Mb sd卡(本地)缓存的最大值
                 .diskCache(new LimitedAgeDiscCache(cacheDir, 48 * 60 * 60 * 1000))//设置缓存路径
-                .memoryCache(new LruMemoryCache(5 * 1024 * 1024)) //建议内存设在5-10M,可以有比较好的表现
-                .memoryCacheSize(5 * 1024 * 1024)
+//                .memoryCache(new UsingFreqLimitedMemoryCache(2* 1024 * 1024))
+                .memoryCache(new WeakMemoryCache())
                 .build();
         ImageLoader.getInstance().init(configuration);
     }
