@@ -16,19 +16,20 @@
       <com.easemob.easeui.widget.EaseImageView
           easeui:ease_shape_type="round"
             android:id="@+id/avatar"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_centerVertical="true"
             android:src="@drawable/icon_header_default"/>
 
         <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/unread_msg_number"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
             android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"
             android:background="@drawable/ease_unread_count_bg"
             android:gravity="center"
-            android:text="7"
             android:textColor="@android:color/white"
             android:textSize="12sp" />
     </RelativeLayout>
@@ -38,6 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
+        android:paddingLeft="5dp"
         android:layout_toRightOf="@id/avatar_container"
         android:textColor="@color/list_itease_primary_color"
         android:textSize="13sp" />
@@ -75,6 +77,7 @@
         android:paddingRight="7dp"
         android:paddingTop="7dp"
         android:paddingBottom="7dp"
+        android:paddingLeft="5dp"
         android:textColor="@color/list_itease_secondary_color"
         android:textSize="13sp" />
 

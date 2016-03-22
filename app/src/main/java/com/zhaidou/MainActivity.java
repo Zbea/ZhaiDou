@@ -47,6 +47,7 @@ import com.zhaidou.base.CountManage;
 import com.zhaidou.base.EaseManage;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.fragments.DiyFragment;
+import com.zhaidou.fragments.GoodsDetailsFragment;
 import com.zhaidou.fragments.MainCategoryFragment;
 import com.zhaidou.fragments.MainHomeFragment;
 import com.zhaidou.fragments.MainMagicFragment;
@@ -685,7 +686,10 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 Fragment shopPaymentSuccessFragmen = manager.findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
                 Fragment shopPaymentFailFragment = manager.findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
                 Fragment shopPaymentFragment = manager.findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
-
+                if (fragments.get(fragments.size()-1) instanceof GoodsDetailsFragment){
+                    manager.popBackStack();
+                    return true;
+                }
                 if ((orderDetailFragment != null && orderDetailFragment instanceof OrderDetailFragment1))
                 {
                     //orderDetailFragment

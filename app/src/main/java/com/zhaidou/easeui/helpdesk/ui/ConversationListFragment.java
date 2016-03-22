@@ -12,12 +12,13 @@ import com.easemob.chat.EMConversation;
 import com.easemob.easeui.ui.EaseConversationListFragment;
 import com.easemob.util.NetUtils;
 import com.zhaidou.R;
+import com.zhaidou.base.EaseManage;
 import com.zhaidou.easeui.helpdesk.Constant;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.SharedPreferencesUtil;
 
 
-public class ConversationListFragment extends EaseConversationListFragment {
+public class ConversationListFragment extends EaseConversationListFragment implements EaseManage.onMessageChange {
 
     private TextView errorText;
 
@@ -27,6 +28,7 @@ public class ConversationListFragment extends EaseConversationListFragment {
 //        View errorView =View.inflate(getActivity(), R.layout.em_chat_neterror_item, null);
 //        errorItemContainer.addView(errorView);
 //        errorText = (TextView) errorView.findViewById(R.id.tv_connect_errormsg);
+        EaseManage.getInstance().setOnMessageChange(this);
     }
     
     @Override
@@ -75,8 +77,14 @@ public class ConversationListFragment extends EaseConversationListFragment {
 //          errorText.setText(R.string.the_current_network);
         }
     }
-    
-    
+
+    @Override
+    public void onMessage(int unreadMsgCount) {
+        System.out.println("ConversationListFragment.onMessage");
+        refresh();
+    }
+
+
 //    @Override
 //    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 //        getActivity().getMenuInflater().inflate(R.menu.em_delete_message, menu);

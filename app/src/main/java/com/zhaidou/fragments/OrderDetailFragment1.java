@@ -328,7 +328,7 @@ public class OrderDetailFragment1 extends BaseFragment {
                 btn1.setText("确认收货");
                 btn2.setBackgroundResource(R.drawable.btn_green_click_bg);
                 btn1.setBackgroundResource(R.drawable.btn_red_click_selector);
-            } else if (ZhaiDou.STATUS_ORDER_CANCEL == store.status) {//已取消
+            } else if (ZhaiDou.STATUS_ORDER_CANCEL == store.status||ZhaiDou.STATUS_RETURN_MONEY_SUCCESS==store.status) {//已取消//退款完成
                 mBottomLayout.setVisibility(View.GONE);
             }
 
