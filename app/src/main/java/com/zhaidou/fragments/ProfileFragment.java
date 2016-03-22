@@ -446,7 +446,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
     public void getUserInfo() {
 
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL + "?id=" + id, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,ZhaiDou.USER_SIMPLE_PROFILE_URL + "?id=" + id, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
@@ -613,14 +613,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             public void onErrorResponse(VolleyError volleyError) {
 
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 

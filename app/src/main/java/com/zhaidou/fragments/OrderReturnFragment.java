@@ -19,7 +19,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshListView;
@@ -32,6 +31,7 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Store;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -152,7 +152,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
                 mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_delete), new DialogUtils.PositiveListener() {
                     @Override
                     public void onPositive() {
-                        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_DELETE, new JSONObject(params), new Response.Listener<JSONObject>() {
+                        ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, ZhaiDou.URL_ORDER_DELETE, params, new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject jsonObject) {
                                 int status = jsonObject.optInt("status");
@@ -256,7 +256,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
         params.put("clientType", "ANDROID");
         params.put("clientVersion", "45");
         params.put("businessType", "01");
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_RETURN_LIST, new JSONObject(params), new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, ZhaiDou.URL_ORDER_RETURN_LIST, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null)

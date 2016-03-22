@@ -86,14 +86,12 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case UPDATE_USER_INFO:
-//                    User user = (User) msg.obj;
                     ToolUtils.setImageCacheUrl("http://" + mUser.getAvatar(), iv_header, R.drawable.icon_header_default);
                     if (!TextUtils.isEmpty(mUser.getNickName()))
                         tv_nickname.setText(mUser.getNickName());
                     SharedPreferencesUtil.saveData(mContext, "avatar", "http://" + mUser.getAvatar());
                     break;
                 case UPDATE_USER_DESCRIPTION:
-//                    User u = (User) msg.obj;
                     SharedPreferencesUtil.saveData(mContext,"mobile",mUser.getMobile());
                     SharedPreferencesUtil.saveData(mContext,"description",mUser.getDescription());
                     tv_desc.setText("null".equalsIgnoreCase(mUser.getDescription()) || mUser.getDescription() == null ? "" : mUser.getDescription());
@@ -294,12 +292,6 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 startActivity(intent1);
                 break;
             case R.id.rl_service:
-//                if (DeviceUtils.isApkInstalled(getActivity(), "com.tencent.mobileqq")) {
-//                    String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_Number);
-//                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-//                } else {
-//                    ShowToast("没有安装QQ客户端哦");
-//                }
                 Intent intent2 = new Intent(getActivity(), ChatActivity.class);
                 intent2.putExtra(Constant.EXTRA_USER_ID, "service");
                 intent2.putExtra("queueName", "service");
@@ -426,8 +418,6 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
         super.onResume();
         System.out.println("MainPersonalFragment.onResume");
         setUnreadMsg();
-//        if (!tv_unpay_count.isShown()&&EMClient.getInstance().chatManager().getUnreadMsgsCount()==0)
-//            ((MainActivity)getActivity()).hideTip(View.GONE);
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_personal));
         InputMethodManager inputMethodManager=(InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
         System.out.println("inputMethodManager.isActive() = " + inputMethodManager.isActive());

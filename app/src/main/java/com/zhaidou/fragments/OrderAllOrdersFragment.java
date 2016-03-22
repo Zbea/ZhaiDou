@@ -18,12 +18,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshListView;
@@ -38,6 +36,7 @@ import com.zhaidou.base.CountManage;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Order1;
 import com.zhaidou.model.Store;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -200,7 +199,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                                 params.put("userId", mUserId);
                                 params.put("clientVersion", "45");
                                 params.put("orderCode", order.orderCode);
-                                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_APPLY_CANCEL, new JSONObject(params), new Response.Listener<JSONObject>() {
+                                ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, ZhaiDou.URL_ORDER_APPLY_CANCEL,params, new Response.Listener<JSONObject>() {
                                     @Override
                                     public void onResponse(JSONObject jsonObject) {
                                         int status = jsonObject.optInt("status");
@@ -226,7 +225,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_cancel_ok), new DialogUtils.PositiveListener() {
                             @Override
                             public void onPositive() {
-                                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_CANCEL, new JSONObject(params), new Response.Listener<JSONObject>() {
+                                ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, ZhaiDou.URL_ORDER_CANCEL,params, new Response.Listener<JSONObject>() {
                                     @Override
                                     public void onResponse(JSONObject jsonObject) {
                                         int status = jsonObject.optInt("status");
@@ -272,7 +271,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                                 params.put("userId", mUserId);
                                 params.put("clientVersion", "45");
                                 params.put("orderCode", order.orderCode);
-                                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_CONFIRM, new JSONObject(params), new Response.Listener<JSONObject>() {
+                                ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, ZhaiDou.URL_ORDER_CONFIRM,params, new Response.Listener<JSONObject>() {
                                     @Override
                                     public void onResponse(JSONObject jsonObject) {
                                         int status = jsonObject.optInt("status");
@@ -304,7 +303,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_delete), new DialogUtils.PositiveListener() {
                         @Override
                         public void onPositive() {
-                            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_DELETE, new JSONObject(params), new Response.Listener<JSONObject>() {
+                            ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, ZhaiDou.URL_ORDER_DELETE,params, new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject jsonObject) {
                                     int status = jsonObject.optInt("status");
@@ -361,7 +360,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         params.put("type",type);
         params.put("pageNo", page + "");
         params.put("pageSize", "10");// ZhaiDou.URL_ORDER_LIST,
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST, new JSONObject(params), new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, ZhaiDou.URL_ORDER_LIST, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null) mDialog.dismiss();
@@ -409,15 +408,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                 }
                 Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 

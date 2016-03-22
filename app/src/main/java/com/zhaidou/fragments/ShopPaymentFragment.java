@@ -39,6 +39,7 @@ import com.zhaidou.base.CountManage;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
 import com.zhaidou.model.Store;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -588,7 +589,7 @@ public class ShopPaymentFragment extends BaseFragment
         params.put("clientVersion", versionCode);
         params.put("userId", userId+"");//mUserId//29650+""
         params.put("orderCode", orderCode);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, new ZhaiDou().URL_ORDER_DETAIL_LIST_URL, new JSONObject(params), new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, ZhaiDou.URL_ORDER_DETAIL_LIST_URL,params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null)

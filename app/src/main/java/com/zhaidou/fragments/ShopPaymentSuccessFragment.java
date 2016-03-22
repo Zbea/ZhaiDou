@@ -18,7 +18,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
@@ -28,6 +27,7 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.DeliveryAddress;
 import com.zhaidou.model.OrderItem;
 import com.zhaidou.model.Store;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -193,7 +193,7 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
         params.put("version", "1.0.1");
         params.put("userId", mUserId);
         params.put("orderCode", orderCode);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, new ZhaiDou().URL_ORDER_DETAIL_LIST_URL, new JSONObject(params), new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, new ZhaiDou().URL_ORDER_DETAIL_LIST_URL,params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null)

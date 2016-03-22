@@ -228,7 +228,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     break;
                 case 1000:
                     Integer unreadMsgCount= (Integer) msg.obj;
-                    System.out.println("MainActivity.handleMessage----"+unreadMsgCount);
                     mMsgView.setVisibility(unreadMsgCount>0?View.VISIBLE:View.GONE);
                     break;
             }
@@ -270,14 +269,15 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         CountManage.getInstance().setOnCountChangeListener(this);
         AccountManage.getInstance().register(this);
         EaseManage.getInstance().setOnMessageChange(this);
-        FetchUnPayData();
         if (checkLogin()){
+            FetchUnPayData();
             FetchCountData();
             onMessage(EMChatManager.getInstance().getUnreadMsgsCount());
         }
     }
 
     private void FetchUnPayData() {
+        System.out.println("MainActivity.FetchUnPayData");
         String mUserId= SharedPreferencesUtil.getData(this, "userId", -1)+"";
         Map<String, String> params = new HashMap();
         params.put("userId",mUserId);
@@ -287,7 +287,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         params.put("type", ZhaiDou.TYPE_ORDER_PREPAY);
         params.put("pageNo","0");
         params.put("pageSize", "0");
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST, new JSONObject(params), new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(MainActivity.this,Request.Method.POST, ZhaiDou.URL_ORDER_LIST, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
@@ -295,14 +295,15 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 if (status==200){
                     CountManage.getInstance().init(CountManage.TYPE.TAG_PREPAY,totalCount);
                 }
+                System.out.println("MainActivity.FetchUnPayData-------->"+totalCount);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
+                System.out.println("MainActivity.onErrorResponse------>"+volleyError.getMessage());
             }
         });
-        mRequestQueue.add(request);
+        ((ZDApplication)getApplicationContext()).mRequestQueue.add(request);
     }
 
     private void commitActiveData()
@@ -645,6 +646,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     protected void onDestroy()
     {
         unregisterReceiver(broadcastReceiver);
+        ((ZDApplication)getApplicationContext()).mRequestQueue.cancelAll(null);
         super.onDestroy();
     }
 

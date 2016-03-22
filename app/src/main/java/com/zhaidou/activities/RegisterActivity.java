@@ -15,7 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -25,14 +24,12 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.User;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomEditText;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -101,10 +98,6 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
                     return;
                 }
                 if (ToolUtils.isPhoneOk(email) && email.length() > 0) {
-//                    Intent intent = new Intent(this, AccountRegisterSetPwdActivity.class);
-//                    intent.putExtra("phone",email);
-//                    startActivity(intent);
-//                    doRegister();
                     checkPhoneIsExist(email);
                 } else {
                     mEmailView.setShakeAnimation();
@@ -148,54 +141,6 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
         });
         ((ZDApplication) getApplication()).mRequestQueue.add(request);
     }
-
-    private void doRegister() {
-
-        mDialog = CustomLoadingDialog.setLoadingDialog(RegisterActivity.this, "注册中");
-        String email = mEmailView.getText().toString();
-        Map<String, String> valueParams = new HashMap<String, String>();
-        valueParams.put("user[email]", email);
-        ZhaiDouRequest request = new ZhaiDouRequest(RegisterActivity.this,Request.Method.POST, ZhaiDou.USER_REGISTER_URL, valueParams, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject jsonObject) {
-                if (mDialog != null)
-                    mDialog.dismiss();
-                Object obj = jsonObject.opt("message");
-                if (obj != null) {
-                    JSONArray errMsg = jsonObject.optJSONArray("message");
-                    Toast.makeText(RegisterActivity.this, errMsg.optString(0), Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                JSONObject userObj = jsonObject.optJSONObject("user");
-                int id = userObj.optInt("id");
-                String email = userObj.optString("email");
-                String token = userObj.optString("authentication_token");
-                String state = userObj.optString("state");
-                String avatar = userObj.optJSONObject("avatar").optJSONObject("mobile_icon").optString("url");
-                String nickname = userObj.optString("nick_name");
-                User user = new User(id, email, token, nickname, avatar);
-                Message message = new Message();
-                message.what = 0;
-                message.obj = user;
-                handler.sendMessage(message);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", getApplicationContext().getResources().getString(R.string.app_versionName));
-                return super.getHeaders();
-            }
-        };
-        mRequestQueue.add(request);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode){

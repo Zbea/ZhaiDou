@@ -19,7 +19,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -218,14 +217,7 @@ public class ProfileEditFragment extends BaseFragment implements View.OnClickLis
             public void onErrorResponse(VolleyError volleyError) {
 
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 

@@ -67,8 +67,6 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     private boolean isShowHeader;
     private RelativeLayout imageView;
 
-    private RegisterFragment registerFragment;
-
     private SharedPreferences mSharedPreferences;
     private Context mContext;
 
