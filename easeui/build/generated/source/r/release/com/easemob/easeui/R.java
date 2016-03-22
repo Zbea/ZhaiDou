@@ -507,8 +507,9 @@ containing a value of this type.
         public static int ee_8=0x7f0200a6;
         public static int ee_9=0x7f0200a7;
         public static int ic_launcher=0x7f0200a8;
-        public static int voice_from_icon=0x7f0200a9;
-        public static int voice_to_icon=0x7f0200aa;
+        public static int icon_header_default=0x7f0200a9;
+        public static int voice_from_icon=0x7f0200aa;
+        public static int voice_to_icon=0x7f0200ab;
     }
     public static final class id {
         public static int alert_message=0x7f06000d;

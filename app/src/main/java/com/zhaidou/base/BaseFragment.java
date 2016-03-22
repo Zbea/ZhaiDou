@@ -234,6 +234,8 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
 
     @Override
     public void onResume() {
+        System.out.println("BaseFragment.onResume------------->"+this.toString());
+        ((BaseActivity)getActivity()).hideInputMethod();
         super.onResume();
     }
 

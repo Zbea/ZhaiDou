@@ -31,6 +31,7 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.ProfileManage;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.ZhaiDouRequest;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONObject;
@@ -177,14 +178,16 @@ public class ProfileEditFragment extends BaseFragment implements View.OnClickLis
                         return;
                     }
                     hideInputMethod();
-                    mParams.put("nick_name",tv_edit_msg.getText().toString().trim());
-                    UpdateUserInfo("nick_name",mParams, mProfileId);
+                    mParams.put("nick_name", tv_edit_msg.getText().toString().trim());
+                    UpdateUserInfo("nick_name", mParams,mProfileId);
                 }
                 break;
         }
     }
 
     private void UpdateUserInfo(String type,HashMap<String,String> map, String id) {
+        Object userId = SharedPreferencesUtil.getData(mContext, "userId", -1);
+        System.out.println("id = " + id+"----------------"+userId);
         mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
         Map<String, String> params = new HashMap<String, String>();
         params.put("_method","PUT");

@@ -267,7 +267,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 HashMap<String,String> params =new HashMap<String, String>();
                 params.put("nick_name",tv_nick.getText().toString().trim());
                 params.put("mobile",tv_mobile.getText().toString().trim());
-                ProfileEditFragment profileFragment = ProfileEditFragment.newInstance(NICK,params, id + "", "个人昵称");
+                ProfileEditFragment profileFragment = ProfileEditFragment.newInstance(NICK,params, profileId + "", "个人昵称");
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container, profileFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
                 break;
@@ -403,6 +403,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     String description = userObj.optString("description");
                     description = description.equals("null") ? "" : description;
                     profileId = userObj.optString("id");
+                    System.out.println("getUserData----------profileId = " + profileId);
                     boolean verified = userObj.optBoolean("verified");
                     String first_name = userObj.optString("first_name");
                     String address2 = userObj.optString("address2");
