@@ -419,7 +419,7 @@ public class ShopTodaySpecialFragment extends BaseFragment
     private void share()
     {
         DialogUtils mDialogUtils = new DialogUtils(mContext);
-        mDialogUtils.showShareDialog(mTitle, mTitle + "  " + shareUrl, mImageUrl, shareUrl, new PlatformActionListener()
+        mDialogUtils.showShareDialog(mTitle, mTitle + "  " + shareUrl,items.size()>0?items.get(0).imageUrl:mImageUrl, shareUrl, new PlatformActionListener()
         {
             @Override
             public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap)

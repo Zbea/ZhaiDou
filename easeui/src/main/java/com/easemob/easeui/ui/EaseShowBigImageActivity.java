@@ -13,10 +13,6 @@
  */
 package com.easemob.easeui.ui;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
@@ -38,6 +34,10 @@ import com.easemob.easeui.widget.photoview.EasePhotoView;
 import com.easemob.util.EMLog;
 import com.easemob.util.ImageUtils;
 import com.easemob.util.PathUtil;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 下载显示大图
@@ -61,7 +61,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 
 		image = (EasePhotoView) findViewById(R.id.image);
 		loadLocalPb = (ProgressBar) findViewById(R.id.pb_load_local);
-		default_res = getIntent().getIntExtra("default_image", R.drawable.ease_default_avatar);
+		default_res = getIntent().getIntExtra("default_image", R.drawable.icon_header_default);
 		Uri uri = getIntent().getParcelableExtra("uri");
 		String remotepath = getIntent().getExtras().getString("remotepath");
 		String secret = getIntent().getExtras().getString("secret");

@@ -933,6 +933,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     @Override
     public void onLogOut() {
         iv_dot.setVisibility(View.GONE);
+        mMsgView.setVisibility(View.GONE);
     }
 
     @Override

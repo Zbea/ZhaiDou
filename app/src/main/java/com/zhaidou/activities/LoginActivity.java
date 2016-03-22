@@ -565,10 +565,11 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 }
             }, true);
         } else {
-            Message message = new Message();
-            message.obj = user;
-            message.what = 0;
-            mHandler.sendMessage(message);
+            loginToEaseServer(user);
+//            Message message = new Message();
+//            message.obj = user;
+//            message.what = 0;
+//            mHandler.sendMessage(message);
         }
     }
 
@@ -653,7 +654,11 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 //                if (!LoginActivity.this.isFinishing() && pd.isShowing()) {
 //                    pd.dismiss();
 //                }
-                mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+//                mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+                Message message = new Message();
+                message.obj = user;
+                message.what = 0;
+                mHandler.sendMessage(message);
             }
 
             @Override

@@ -2,6 +2,8 @@ package com.zhaidou.utils;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -17,13 +19,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.view.CustomEditText;
 
+import java.io.File;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -335,7 +341,16 @@ public class DialogUtils {
                         mDialog.dismiss();
                         cn.sharesdk.sina.weibo.SinaWeibo.ShareParams sp = new cn.sharesdk.sina.weibo.SinaWeibo.ShareParams();
                         sp.setText(content);
-                        sp.setImageUrl(imageUrl);
+                        Collection<String> keys = ImageLoader.getInstance().getMemoryCache().keys();
+                        Iterator<String> iterator = keys.iterator();
+                        while (iterator.hasNext()){
+                            String next = iterator.next();
+                            if (next.contains(imageUrl)){
+                                Bitmap bitmap = ImageLoader.getInstance().getMemoryCache().get(next);
+                                File sina = PhotoUtil.saveBitmapFile(bitmap, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)+"/sina.jpg");
+                                sp.setImagePath(sina.getAbsolutePath());
+                            }
+                        }
                         Platform weibo = ShareSDK.getPlatform(SinaWeibo.NAME);
                         weibo.setPlatformActionListener(platformActionListener);
                         weibo.share(sp);
