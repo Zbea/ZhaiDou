@@ -521,6 +521,9 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     Toast.makeText(getActivity(), "取消选择", Toast.LENGTH_SHORT).show();
                     return;
                 } else {
+                    Bundle extras = data.getExtras();
+                    boolean is_pressed_cancel = extras.getBoolean("is_pressed_cancel", false);
+                    if (!is_pressed_cancel)
                     saveCropAvator(data);
                 }
                 // 初始化文件路径
@@ -591,8 +594,9 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     user.setAvatar(avatar);
                     user.setEmail(email);
                     user.setNickName(tv_nick.getText().toString());
-                    Message message = new Message();
-                    message.what = UPDATE_USER_INFO;
+                    Message message = mHandler.obtainMessage(UPDATE_USER_INFO);
+//                    Message message = new Message();
+//                    message.what = UPDATE_USER_INFO;
                     message.obj = user;
                     mHandler.sendMessage(message);
                     ProfileManage.getInstance().notify(HEADER, "http://" + avatar);

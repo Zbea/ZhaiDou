@@ -399,7 +399,6 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
 
     @Override
     public void onHiddenChanged(boolean hidden) {
-        System.out.println("MainPersonalFragment.onHiddenChanged");
         userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         if (!hidden && userId != -1) {
@@ -412,7 +411,6 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
 
     public void onResume() {
         super.onResume();
-        System.out.println("MainPersonalFragment.onResume");
         setUnreadMsg();
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_personal));
         InputMethodManager inputMethodManager=(InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
