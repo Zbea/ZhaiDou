@@ -37,9 +37,8 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.CountManage;
 import com.zhaidou.base.EaseManage;
 import com.zhaidou.base.ProfileManage;
-import com.zhaidou.easeui.helpdesk.Constant;
-import com.zhaidou.easeui.helpdesk.ui.ChatActivity;
 import com.zhaidou.model.User;
+import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
@@ -292,11 +291,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 startActivity(intent1);
                 break;
             case R.id.rl_service:
-                Intent intent2 = new Intent(getActivity(), ChatActivity.class);
-                intent2.putExtra(Constant.EXTRA_USER_ID, "service");
-                intent2.putExtra("queueName", "service");
-                intent2.putExtra("user",mUser);
-                startActivity(intent2);
+                EaseUtils.startKeFuActivity(mContext);
                 break;
         }
     }
@@ -404,6 +399,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
 
     @Override
     public void onHiddenChanged(boolean hidden) {
+        System.out.println("MainPersonalFragment.onHiddenChanged");
         userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         if (!hidden && userId != -1) {
@@ -420,7 +416,6 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
         setUnreadMsg();
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_personal));
         InputMethodManager inputMethodManager=(InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-        System.out.println("inputMethodManager.isActive() = " + inputMethodManager.isActive());
         if (inputMethodManager.isActive())
             inputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().peekDecorView().getApplicationWindowToken(),0);
     }
@@ -432,7 +427,6 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
 
     @Override
     public void onCount(int count) {
-        System.out.println("MainPersonalFragment.onCount");
         int value = CountManage.getInstance().value(CountManage.TYPE.TAG_PREPAY);
         tv_unpay_count.setText(value + "");
         tv_unpay_count.setVisibility(value == 0 ? View.GONE : View.VISIBLE);

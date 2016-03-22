@@ -259,7 +259,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
     
     
     protected void onConversationInit(){
-        System.out.println("EaseChatFragment.onConversationInit--------->"+toChatUsername);
         // 获取当前conversation对象
         conversation = EMChatManager.getInstance().getConversation(toChatUsername);
         // 把此会话的未读数置为0
@@ -505,7 +504,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMEventListene
     }
 
     public void onBackPressed() {
-        System.out.println("EaseChatFragment.onBackPressed");
         if (inputMenu.onBackPressed()) {
             getActivity().finish();
             if (chatType == EaseConstant.CHATTYPE_CHATROOM) {

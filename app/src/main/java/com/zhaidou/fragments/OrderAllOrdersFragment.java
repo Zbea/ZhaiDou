@@ -264,7 +264,6 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_confirm), new DialogUtils.PositiveListener() {
                             @Override
                             public void onPositive() {
-                                System.out.println("OrderAllOrdersFragment.onPositive");
                                 Map<String, String> params = new HashMap<String, String>();
                                 params.put("businessType", "01");
                                 params.put("clientType", "ANDROID");
@@ -549,7 +548,6 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
     @Override
     public void onDestroyView() {
-        System.out.println("OrderAllOrdersFragment.onDestroyView");
         if (timer != null) {
             timer.cancel();
             timer = null;

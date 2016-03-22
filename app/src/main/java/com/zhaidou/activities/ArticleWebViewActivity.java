@@ -167,19 +167,16 @@ public class ArticleWebViewActivity extends BaseActivity implements View.OnClick
         mDialogUtils.showShareDialog(title,title+"  "+url,imageUrl,url,new PlatformActionListener() {
             @Override
             public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
-                System.out.println("ItemDetailActivity.onComplete");
                 Toast.makeText(ArticleWebViewActivity.this,mContext.getString(R.string.share_completed),Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(Platform platform, int i, Throwable throwable) {
-                System.out.println("ItemDetailActivity.onError");
                 Toast.makeText(ArticleWebViewActivity.this,mContext.getString(R.string.share_error),Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCancel(Platform platform, int i) {
-                System.out.println("ItemDetailActivity.onCancel");
                 Toast.makeText(ArticleWebViewActivity.this,mContext.getString(R.string.share_cancel),Toast.LENGTH_SHORT).show();
             }
         });
@@ -190,7 +187,6 @@ public class ArticleWebViewActivity extends BaseActivity implements View.OnClick
         super.onResume();
         MobclickAgent.onPageStart("ArticleWebViewActivity");
         MobclickAgent.onResume(this);
-        System.out.println("ArticleWebViewActivity.onResume");
     }
 
     @Override

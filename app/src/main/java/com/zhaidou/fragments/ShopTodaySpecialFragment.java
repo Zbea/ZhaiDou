@@ -594,7 +594,6 @@ public class ShopTodaySpecialFragment extends BaseFragment
     @Override
     public void onResume()
     {
-        System.out.println("ShopTodaySpecialFragment.onResume");
         if (isFrist)
         {
             long temp = Math.abs(systemTime - System.currentTimeMillis());
@@ -618,7 +617,6 @@ public class ShopTodaySpecialFragment extends BaseFragment
     @Override
     public void onDestroy()
     {
-        System.out.println("ShopTodaySpecialFragment.onDestroy");
         hideInputMethod();
         if (broadcastReceiver != null)
             mContext.unregisterReceiver(broadcastReceiver);

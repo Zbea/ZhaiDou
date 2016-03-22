@@ -88,9 +88,6 @@ public class LargeImgView extends ImageView {
         minScale = screenW/(float)bm.getWidth();
 //        minScale=0.96f;
 //        minScaleH=sc
-        System.out.println("LargeImgView.setImageBitmap1---->"+minScale);
-        System.out.println("LargeImgView.setImageBitmap1---->"+screenW);
-        System.out.println("LargeImgView.setImageBitmap1---->"+bm.getWidth());
         startAnimation(AnimationUtils.loadAnimation(cxt, android.R.anim.fade_in));
         new Thread(new Runnable() {
             @Override

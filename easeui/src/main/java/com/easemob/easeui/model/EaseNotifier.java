@@ -147,8 +147,6 @@ public class EaseNotifier {
             return;
         }
         EaseSettingsProvider settingsProvider = EaseUI.getInstance().getSettingsProvider();
-        System.out.println("settingsProvider = " + settingsProvider);
-        System.out.println("settingsProvider.isMsgNotifyAllowed(null) = " + settingsProvider.isMsgNotifyAllowed(null));
         if(!settingsProvider.isMsgNotifyAllowed(null)){
             return;
         }

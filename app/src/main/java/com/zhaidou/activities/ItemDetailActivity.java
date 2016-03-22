@@ -243,7 +243,6 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
                 finish();
                 break;
             case R.id.iv_share:
-                System.out.println("ItemDetailActivity.onClick");
                 doShare();
                 break;
         }
@@ -251,23 +250,19 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
     private void doShare() {
         DialogUtils mDialogUtils=new DialogUtils(this);
-        System.out.println("ItemDetailActivity.doShare-->"+title+"---"+url+"----"+coverUrl);
         mDialogUtils.showShareDialog(title,title+"  "+url,coverUrl,url,new PlatformActionListener() {
             @Override
             public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
-                System.out.println("ItemDetailActivity.onComplete");
                 Toast.makeText(ItemDetailActivity.this,mContext.getString(R.string.share_completed),Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(Platform platform, int i, Throwable throwable) {
-                System.out.println("ItemDetailActivity.onError"+"--------"+i+"------"+throwable.getMessage());
                 Toast.makeText(ItemDetailActivity.this,mContext.getString(R.string.share_error),Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCancel(Platform platform, int i) {
-                System.out.println("ItemDetailActivity.onCancel");
                 Toast.makeText(ItemDetailActivity.this,mContext.getString(R.string.share_cancel),Toast.LENGTH_SHORT).show();
             }
         });
@@ -296,7 +291,6 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         switch (resultCode){
             case 2000:
                 token = mSharedPreferences.getString("token", null);
-                System.out.println("HomeCompetitionActivity.onActivityResult---------->"+token);
                 webView.reload();
                 break;
         }
@@ -308,7 +302,6 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         super.onResume();
         MobclickAgent.onPageStart("ItemDetailActivity");
         MobclickAgent.onResume(this);
-        System.out.println("ItemDetailActivity.onResume");
     }
 
     @Override

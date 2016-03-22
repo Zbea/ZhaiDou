@@ -172,7 +172,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                         ((ShopPaymentFragment) shopPaymentFragment).handleWXPayResult(result);
                     } else
                     {
-                        System.out.println("MainActivity.onReceive--------->null------------>");
                     }
                 }
             }
@@ -184,7 +183,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         @Override
         public void handleMessage(Message msg)
         {
-            System.out.println("MainActivity.handleMessage-->"+msg.what);
             switch (msg.what)
             {
                 case 0:
@@ -277,7 +275,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     }
 
     private void FetchUnPayData() {
-        System.out.println("MainActivity.FetchUnPayData");
         String mUserId= SharedPreferencesUtil.getData(this, "userId", -1)+"";
         Map<String, String> params = new HashMap();
         params.put("userId",mUserId);
@@ -295,12 +292,10 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 if (status==200){
                     CountManage.getInstance().init(CountManage.TYPE.TAG_PREPAY,totalCount);
                 }
-                System.out.println("MainActivity.FetchUnPayData-------->"+totalCount);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                System.out.println("MainActivity.onErrorResponse------>"+volleyError.getMessage());
             }
         });
         ((ZDApplication)getApplicationContext()).mRequestQueue.add(request);
@@ -327,7 +322,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             @Override
             public void onResponse(JSONObject jsonObject)
             {
-                System.out.println("ZDApplication.onResponse---->" + jsonObject.toString());
             }
         }, new Response.ErrorListener()
         {
@@ -944,7 +938,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     @Override
     public void onMessage(int unreadMsgCount) {
-        System.out.println("unreadMsgCount = " + unreadMsgCount+"---------");
         Message message=new Message();
         message.what=1000;
         message.obj=unreadMsgCount;

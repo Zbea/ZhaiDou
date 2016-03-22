@@ -639,7 +639,6 @@ public class ShopPaymentFragment extends BaseFragment
     {
         paymentBtn.setClickable(true);
         Log.i("----->", "paymentBtn");
-        System.out.println("handleWXPayResult------------>" + result);
         switch (result)
         {
             case 800://商户订单号重复或生成错误

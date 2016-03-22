@@ -5,8 +5,8 @@ package com.zhaidou.utils;/**
 import android.content.Context;
 import android.content.Intent;
 
-import com.easemob.chat.EMChatManager;
 import com.zhaidou.activities.LoginActivity;
+import com.zhaidou.base.AccountManage;
 import com.zhaidou.easeui.helpdesk.Constant;
 import com.zhaidou.easeui.helpdesk.ui.ChatActivity;
 import com.zhaidou.model.User;
@@ -21,7 +21,7 @@ import com.zhaidou.model.User;
 public class EaseUtils {
 
     public static void startKeFuActivity(Context context){
-        if (!EMChatManager.getInstance().isConnected()){
+        if (AccountManage.getInstance().isConflict()){
             Intent intent=new Intent(context,LoginActivity.class);
             context.startActivity(intent);
             return;
@@ -35,7 +35,7 @@ public class EaseUtils {
     }
 
     public static void startDesignerActivity(Context context){
-        if (!EMChatManager.getInstance().isConnected()){
+        if (AccountManage.getInstance().isConflict()){
             Intent intent=new Intent(context,LoginActivity.class);
             context.startActivity(intent);
             return;

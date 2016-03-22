@@ -92,7 +92,6 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
         switch (view.getId()) {
             case R.id.bt_register:
                 String email = mEmailView.getText().toString();
-                System.out.println("RegisterActivity.onClick-------->" + email);
                 if (TextUtils.isEmpty(email)) {
                     mEmailView.setShakeAnimation();
                     return;
@@ -121,7 +120,6 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
         ZhaiDouRequest request = new ZhaiDouRequest(RegisterActivity.this,Request.Method.POST, ZhaiDou.USER_REGISTER_CHECK_PHONE_URL,params,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                System.out.println("RegisterActivity.onResponse------->" + jsonObject.toString());
                 JSONObject dataObj = jsonObject.optJSONObject("data");
                 int status = dataObj.optInt("status");
                 String message = dataObj.optString("message");

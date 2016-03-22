@@ -197,10 +197,8 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
         }
     }
     protected void hideInputMethod(){
-        System.out.println("BaseFragment.hideInputMethod");
         if (inputMethodManager==null)
             inputMethodManager=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        System.out.println("inputMethodManager.isActive() = " + inputMethodManager.isActive());
         if (inputMethodManager.isActive())
             inputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().peekDecorView().getApplicationWindowToken(),0);
     }

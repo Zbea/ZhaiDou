@@ -302,7 +302,6 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
                     mDialog.dismiss();
                 JSONArray dataArray = jsonObject.optJSONArray("data");
                 mOrderList.addAll(JSON.parseArray(dataArray.toString(), Order1.class));
-                System.out.println("OrderUnPayFragment.onResponse---->" + mOrderList.size());
                 if (mOrderList.size() > 0) {
                     handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
                 } else {

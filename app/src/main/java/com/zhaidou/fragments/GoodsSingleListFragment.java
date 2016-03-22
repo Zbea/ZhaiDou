@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -535,7 +534,6 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
 
     public void FetchData(String msg, int sort, int page)
     {
-        System.out.println("msg = [" + msg + "], sort = [" + sort + "], page = [" + page + "]");
         mParam1 = msg;
         this.sort = sort;
         currentpage = page;
@@ -602,7 +600,6 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                             JSONObject picObj = object.optJSONObject("picture");
                             JSONObject thumbObj = picObj.optJSONObject("thumb");
                             image = thumbObj.optString("url");
-                            Log.i("image", image);
                         }
 
                         Product product = new Product(id, title, price, url, bean_like_count, null, image);

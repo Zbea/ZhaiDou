@@ -92,9 +92,7 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                System.out.println("view = [" + view + "], url = [" + url + "]-------------->token-------->" + token);
                 if ("mobile://login?false".equalsIgnoreCase(url) && !TextUtils.isEmpty(token)) {
-                    System.out.println("HomeCompetitionActivity.shouldOverrideUrlLoading---->\"mobile://login?false\".equalsIgnoreCase(url)&&!TextUtils.isEmpty(token)");
                     return true;
                 }
                 getDeviceId();
@@ -108,7 +106,6 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
                     }
                     return true;
                 } else if ("mobile://address".equalsIgnoreCase(url)) {
-                    System.out.println("HomeCompetitionActivity.shouldOverrideUrlLoading----------->\"mobile://address\".equalsIgnoreCase(url)----->" + isProfileLoad);
                     if (isProfileLoad) {
                         String address = TextUtils.isEmpty(user.getAddress2()) || "null".equalsIgnoreCase(user.getAddress2()) ? "" : user.getAddress2();
                         String locationStr = TextUtils.isEmpty(mLocationStr) ? user.getProvince() + "-" + user.getCity() + "-" + user.getProvider() : mLocationStr;
@@ -119,7 +116,6 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
                             @Override
                             public void onAddressDataChange(String name, String mobile, String locationStr, String address) {
                                 mLocationStr = locationStr;
-                                System.out.println("name = [" + name + "], mobile = [" + mobile + "], address = [" + address + "]");
                                 user.setFirst_name(name);
                                 user.setMobile(mobile);
                                 user.setAddress2(address);

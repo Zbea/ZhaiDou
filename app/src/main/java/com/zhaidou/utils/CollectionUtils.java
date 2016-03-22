@@ -1,15 +1,11 @@
 package com.zhaidou.utils;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 public class CollectionUtils {
@@ -31,7 +27,6 @@ public class CollectionUtils {
 		Iterator<String> iterator = set.iterator();
         while (iterator.hasNext()){
             String next = iterator.next();
-            Log.i("iterator.hasNext()-------->",next);
             if (!TextUtils.isEmpty(next))
                 list.add(next);
         }

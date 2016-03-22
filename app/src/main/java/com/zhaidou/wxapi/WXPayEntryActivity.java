@@ -26,7 +26,6 @@ public class WXPayEntryActivity extends FragmentActivity implements IWXAPIEventH
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        System.out.println("WXPayEntryActivity.onCreate---------------->" + Thread.currentThread() + "");
         api = WXAPIFactory.createWXAPI(this, Constants.APP_ID);
         api.handleIntent(getIntent(), this);
     }

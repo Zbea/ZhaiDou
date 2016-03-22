@@ -118,7 +118,6 @@ public abstract class EaseChatRow extends LinearLayout {
         //设置头像和nick
         EaseUI.EaseUserInfoProvider easeUserInfoProvider = EaseUI.getInstance().getEaseUserInfoProvider();
         if(easeUserInfoProvider != null){
-            System.out.println("easeUserInfoProvider = " + easeUserInfoProvider);
             easeUserInfoProvider.setNickAndAvatar(context, message, userAvatarView, usernickView);
         }else{
             if(message.direct == Direct.SEND){
@@ -126,7 +125,6 @@ public abstract class EaseChatRow extends LinearLayout {
                 //发送方不显示nick
 //            UserUtils.setUserNick(EMChatManager.getInstance().getCurrentUser(), usernickView);
             }else{
-                System.out.println("EaseChatRow.setUpBaseView------>");
                 EaseUserUtils.setUserAvatar(context, message.getFrom(), userAvatarView);
                 EaseUserUtils.setUserNick(message.getFrom(), usernickView);
             }

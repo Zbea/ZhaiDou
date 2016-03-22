@@ -141,7 +141,6 @@ public class AccountRegisterSetPwdActivity extends FragmentActivity {
         ZhaiDouRequest request = new ZhaiDouRequest(AccountRegisterSetPwdActivity.this,ZhaiDou.USER_REGISTER_VERIFY_CODE_URL+"?phone="+phone+"&flag=1",new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                System.out.println("AccountRegisterSetPwdActivity.onResponse---------->"+jsonObject.toString());
                 JSONObject dataObj = jsonObject.optJSONObject("data");
                 String message=dataObj.optString("message");
                 int status= dataObj.optInt("status");

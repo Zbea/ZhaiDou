@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +32,7 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Article;
 import com.zhaidou.utils.ToolUtils;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -152,7 +152,6 @@ public class SearchArticleListFragment extends BaseFragment implements PullToRef
 
     public void FetchData(String msg,int sort,int page){
         mParam1=msg;
-        Log.i("sort------------------>",sort+"");
         this.sort=sort;
         currentpage=page;
         if (page==1) articleList.clear();
@@ -175,7 +174,6 @@ public class SearchArticleListFragment extends BaseFragment implements PullToRef
 
             @Override
             public void onResponse(JSONObject json) {
-                Log.i("FetchData--------------->",json.toString());
                 listView.onRefreshComplete();
                 JSONArray articles = json.optJSONArray("articles");
                 if (articles!=null&&articles.length()>0)
@@ -283,14 +281,12 @@ public class SearchArticleListFragment extends BaseFragment implements PullToRef
         String label = DateUtils.formatDateTime(getActivity(), System.currentTimeMillis(),
                 DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
         refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
-        Log.i("onPullDownToRefresh--->","onPullDownToRefresh");
         FetchData(mParam1,sort,currentpage=1);
         listView.setMode(PullToRefreshBase.Mode.BOTH);
     }
 
     @Override
     public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
-        Log.i("onPullUpToRefresh---->","onPullUpToRefresh");
         listView.onRefreshComplete();
         FetchData(mParam1,sort,++currentpage);
         if (count!=-1&&strategyAdapter.getCount()==count){

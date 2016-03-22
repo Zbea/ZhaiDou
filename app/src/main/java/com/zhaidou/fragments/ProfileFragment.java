@@ -14,7 +14,6 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -299,7 +298,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                         user.setAddress2(address);
                         ll_addr_info.setVisibility(TextUtils.isEmpty(address) ? View.GONE : View.VISIBLE);
                         tv_addr_null.setVisibility(TextUtils.isEmpty(address) ? View.VISIBLE : View.GONE);
-                        System.out.println("name = [" + name + "], mobile = [" + mobile + "], address = [" + address + "]");
                         tv_addr_username.setText(name);
                         tv_addr_mobile.setText(mobile);
                         tv_addr.setText(address);
@@ -469,7 +467,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                Log.i("volleyError---------->", volleyError.toString());
             }
         });
         mRequestQueue.add(request);
@@ -499,7 +496,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 }
                 break;
             case MENU_PHOTO_SELECTED:// 本地修改头像
-                Log.i("requestCode", "本地修改头像");
                 Uri uri = null;
                 if (data == null) {
                     return;
@@ -521,7 +517,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 break;
             case 2:// 裁剪头像返回
                 // TODO sent to crop
-                Log.i("裁剪头像返回----->", "裁剪头像返回");
                 if (data == null) {
                     Toast.makeText(getActivity(), "取消选择", Toast.LENGTH_SHORT).show();
                     return;
@@ -564,14 +559,11 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
      * @param data
      */
     private void saveCropAvator(Intent data) {
-        Log.i("saveCropAvator--------->", "saveCropAvator");
         Bundle extras = data.getExtras();
         if (extras != null) {
             Bitmap bitmap = extras.getParcelable("data");
-            Log.i("life", "avatar - bitmap = " + bitmap);
 
             String base64str = PhotoUtil.bitmapToBase64(bitmap);
-            Log.i("base64str0---------->", base64str);
             UpLoadTask(base64str);
         }
     }
@@ -654,7 +646,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             try {
                 result = NativeHttpUtil.post(ZhaiDou.USER_EDIT_PROFILE_URL + profileId, token, map);
             } catch (Exception e) {
-                Log.e("Exception-------->", e.getMessage());
             }
 
             return result;
