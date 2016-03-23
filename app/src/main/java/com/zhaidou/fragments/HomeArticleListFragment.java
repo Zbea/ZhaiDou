@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -184,7 +183,6 @@ public class HomeArticleListFragment extends BaseFragment {
         JsonObjectRequest jr = new JsonObjectRequest(url,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                Log.i("FetchData--->data---->",response.toString());
                 if (page==1)
                     articleList.clear();
                 scrollView.onRefreshComplete();
@@ -206,7 +204,6 @@ public class HomeArticleListFragment extends BaseFragment {
                     Article item =new Article(id,title,img_url,is_new,reviews);
                     articleList.add(item);
                 }
-                Log.i("articleList----------------->",articleList.size()+"");
 
                 Message message = new Message();
                 message.what=UPDATE_HOMELIST;

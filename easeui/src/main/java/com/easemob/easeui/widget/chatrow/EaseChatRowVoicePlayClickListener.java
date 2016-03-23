@@ -13,8 +13,6 @@
  */
 package com.easemob.easeui.widget.chatrow;
 
-import java.io.File;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
@@ -33,6 +31,8 @@ import com.easemob.chat.VoiceMessageBody;
 import com.easemob.easeui.R;
 import com.easemob.easeui.controller.EaseUI;
 import com.easemob.util.EMLog;
+
+import java.io.File;
 
 /**
  * 语音row播放点击事件监听
@@ -140,7 +140,6 @@ public class EaseChatRowVoicePlayClickListener implements View.OnClickListener {
 			}
 
 		} catch (Exception e) {
-		    System.out.println();
 		}
 	}
 

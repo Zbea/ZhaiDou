@@ -33,6 +33,7 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.AccountManage;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.easeui.helpdesk.EaseHelper;
 import com.zhaidou.fragments.RegisterFragment;
@@ -95,6 +96,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     if (mDialog != null) {
                         mDialog.dismiss();
                     }
+                    AccountManage.getInstance().setConflict(false);
                     User u = (User) msg.obj;//id,email,token,nick,null
                     SharedPreferencesUtil.saveUser(getApplicationContext(), u);
                     ToolUtils.setLog("要刷新登录了");
@@ -625,8 +627,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     }
 
     private void loginToEaseServer(final User user){
-        System.out.println("LoginActivity.loginToEaseServer------>"+"zhaidou"+user.getId());
-        System.out.println("LoginActivity.loginToEaseServer--"+MD5Util.MD5Encode("zhaidou87846Yage2016!").toUpperCase());
         EMChatManager.getInstance().login("zhaidou"+user.getId(),MD5Util.MD5Encode("zhaidou"+user.getId()+"Yage2016!").toUpperCase(), new EMCallBack() {
             @Override
             public void onSuccess() {
@@ -667,7 +667,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 
             @Override
             public void onError(final int code, final String message) {
-                System.out.println("LoginActivity.onError--->"+code+"----"+message);
 //                Toast.makeText(LoginActivity.this,"登录聊天服务器失败",Toast.LENGTH_SHORT).show();
             }
         });

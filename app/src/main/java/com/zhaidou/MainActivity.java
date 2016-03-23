@@ -47,6 +47,7 @@ import com.zhaidou.base.CountManage;
 import com.zhaidou.base.EaseManage;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.fragments.DiyFragment;
+import com.zhaidou.fragments.GoodsDetailsFragment;
 import com.zhaidou.fragments.MainCategoryFragment;
 import com.zhaidou.fragments.MainHomeFragment;
 import com.zhaidou.fragments.MainMagicFragment;
@@ -171,7 +172,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                         ((ShopPaymentFragment) shopPaymentFragment).handleWXPayResult(result);
                     } else
                     {
-                        System.out.println("MainActivity.onReceive--------->null------------>");
                     }
                 }
             }
@@ -183,7 +183,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         @Override
         public void handleMessage(Message msg)
         {
-            System.out.println("MainActivity.handleMessage-->"+msg.what);
             switch (msg.what)
             {
                 case 0:
@@ -227,7 +226,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     break;
                 case 1000:
                     Integer unreadMsgCount= (Integer) msg.obj;
-                    System.out.println("MainActivity.handleMessage----"+unreadMsgCount);
                     mMsgView.setVisibility(unreadMsgCount>0?View.VISIBLE:View.GONE);
                     break;
             }
@@ -269,8 +267,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         CountManage.getInstance().setOnCountChangeListener(this);
         AccountManage.getInstance().register(this);
         EaseManage.getInstance().setOnMessageChange(this);
-        FetchUnPayData();
         if (checkLogin()){
+            FetchUnPayData();
             FetchCountData();
             onMessage(EMChatManager.getInstance().getUnreadMsgsCount());
         }
@@ -286,7 +284,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         params.put("type", ZhaiDou.TYPE_ORDER_PREPAY);
         params.put("pageNo","0");
         params.put("pageSize", "0");
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST, new JSONObject(params), new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(MainActivity.this,Request.Method.POST, ZhaiDou.URL_ORDER_LIST, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
@@ -298,10 +296,9 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
             }
         });
-        mRequestQueue.add(request);
+        ((ZDApplication)getApplicationContext()).mRequestQueue.add(request);
     }
 
     private void commitActiveData()
@@ -325,7 +322,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             @Override
             public void onResponse(JSONObject jsonObject)
             {
-                System.out.println("ZDApplication.onResponse---->" + jsonObject.toString());
             }
         }, new Response.ErrorListener()
         {
@@ -644,6 +640,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     protected void onDestroy()
     {
         unregisterReceiver(broadcastReceiver);
+        ((ZDApplication)getApplicationContext()).mRequestQueue.cancelAll(null);
         super.onDestroy();
     }
 
@@ -685,7 +682,10 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 Fragment shopPaymentSuccessFragmen = manager.findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
                 Fragment shopPaymentFailFragment = manager.findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
                 Fragment shopPaymentFragment = manager.findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
-
+                if (fragments.get(fragments.size()-1) instanceof GoodsDetailsFragment){
+                    manager.popBackStack();
+                    return true;
+                }
                 if ((orderDetailFragment != null && orderDetailFragment instanceof OrderDetailFragment1))
                 {
                     //orderDetailFragment
@@ -938,7 +938,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     @Override
     public void onMessage(int unreadMsgCount) {
-        System.out.println("unreadMsgCount = " + unreadMsgCount+"---------");
         Message message=new Message();
         message.what=1000;
         message.obj=unreadMsgCount;

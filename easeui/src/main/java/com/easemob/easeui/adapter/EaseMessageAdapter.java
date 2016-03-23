@@ -231,23 +231,23 @@ public class EaseMessageAdapter extends BaseAdapter{
                 chatRow = new EaseChatRowBigExpression(context, message, position, this);
                 System.out.println("1");
             }else{
-                chatRow = new EaseChatRowText(context, message, position, this);System.out.println("2");
+                chatRow = new EaseChatRowText(context, message, position, this);
             }
             break;
         case LOCATION:
-            chatRow = new EaseChatRowLocation(context, message, position, this);System.out.println("3");
+            chatRow = new EaseChatRowLocation(context, message, position, this);
             break;
         case FILE:
-            chatRow = new EaseChatRowFile(context, message, position, this);System.out.println("4");
+            chatRow = new EaseChatRowFile(context, message, position, this);
             break;
         case IMAGE:
-            chatRow = new EaseChatRowImage(context, message, position, this);System.out.println("5");
+            chatRow = new EaseChatRowImage(context, message, position, this);
             break;
         case VOICE:
-            chatRow = new EaseChatRowVoice(context, message, position, this);System.out.println("6");
+            chatRow = new EaseChatRowVoice(context, message, position, this);
             break;
         case VIDEO:
-            chatRow = new EaseChatRowVideo(context, message, position, this);System.out.println("7");
+            chatRow = new EaseChatRowVideo(context, message, position, this);
             break;
         default:
             break;

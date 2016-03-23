@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceResponse;
@@ -21,7 +20,6 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
@@ -30,8 +28,8 @@ import com.zhaidou.base.BaseActivity;
 import com.zhaidou.fragments.ProfileAddrFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.model.User;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.NetworkUtils;
-import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomProgressWebview;
 
 import org.json.JSONObject;
@@ -94,9 +92,7 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                System.out.println("view = [" + view + "], url = [" + url + "]-------------->token-------->" + token);
                 if ("mobile://login?false".equalsIgnoreCase(url) && !TextUtils.isEmpty(token)) {
-                    System.out.println("HomeCompetitionActivity.shouldOverrideUrlLoading---->\"mobile://login?false\".equalsIgnoreCase(url)&&!TextUtils.isEmpty(token)");
                     return true;
                 }
                 getDeviceId();
@@ -110,7 +106,6 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
                     }
                     return true;
                 } else if ("mobile://address".equalsIgnoreCase(url)) {
-                    System.out.println("HomeCompetitionActivity.shouldOverrideUrlLoading----------->\"mobile://address\".equalsIgnoreCase(url)----->" + isProfileLoad);
                     if (isProfileLoad) {
                         String address = TextUtils.isEmpty(user.getAddress2()) || "null".equalsIgnoreCase(user.getAddress2()) ? "" : user.getAddress2();
                         String locationStr = TextUtils.isEmpty(mLocationStr) ? user.getProvince() + "-" + user.getCity() + "-" + user.getProvider() : mLocationStr;
@@ -121,7 +116,6 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
                             @Override
                             public void onAddressDataChange(String name, String mobile, String locationStr, String address) {
                                 mLocationStr = locationStr;
-                                System.out.println("name = [" + name + "], mobile = [" + mobile + "], address = [" + address + "]");
                                 user.setFirst_name(name);
                                 user.setMobile(mobile);
                                 user.setAddress2(address);
@@ -231,7 +225,7 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
         userId = mSharedPreferences.getInt("userId", -1);
         token = mSharedPreferences.getString("token", null);
         nickName = mSharedPreferences.getString("nickName", "");
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_DETAIL_PROFILE_URL + "?id=" + userId, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(HomeCompetitionActivity.this,ZhaiDou.USER_DETAIL_PROFILE_URL + "?id=" + userId, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");

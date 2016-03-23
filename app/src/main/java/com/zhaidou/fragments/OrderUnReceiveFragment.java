@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,13 +71,6 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case STATUS_UNRECEIVE_LIST:
-//                    if (mOrderList != null && mOrderList.size() > 0) {
-//                        loadingView.setVisibility(View.GONE);
-//                        unReceiveAdapter.notifyDataSetChanged();
-//                    } else {
-//                        mListView.setVisibility(View.GONE);
-//                        loadingView.setVisibility(View.VISIBLE);
-//                    }
                     loadingView.setVisibility(View.GONE);
                     mListView.setVisibility(View.VISIBLE);
                     unReceiveAdapter.notifyDataSetChanged();
@@ -126,7 +118,6 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
 
     private void initView(View view) {
         mContext = getActivity();
-//        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
         mOrderList = new ArrayList<Order1>();
         loadingView = (LinearLayout) view.findViewById(R.id.loadingView);
         mEmptyView = rootView.findViewById(R.id.nullline);
@@ -274,18 +265,6 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
         unReceiveAdapter.setOnInViewClickListener(R.id.ll_unreceive, new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
-//                final Order order = (Order) values;
-//                OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.getOrderId() + "", order.getOver_at(), order,2);
-//                ((MainActivity) getActivity()).navigationToFragmentWithAnim(orderDetailFragment);
-//                orderDetailFragment.setOrderListener(new OrderDetailFragment.OrderListener() {
-//                    @Override
-//                    public void onOrderStatusChange(Order o) {
-//                        if ("5".equalsIgnoreCase(o.getStatus())) {
-//                            orders.remove(order);
-//                            handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
-//                        }
-//                    }
-//                });
                 Order1 order =(Order1)values;
                 OrderDetailFragment1 orderDetailFragment = OrderDetailFragment1.newInstance(order.orderCode , 2);
                 ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
@@ -321,41 +300,8 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null)
                     mDialog.dismiss();
-                Log.i("FetchReceiveData----------->", jsonObject.toString());
-//                if (jsonObject != null) {
-//                    JSONArray orderArr = jsonObject.optJSONArray("orders");
-//                    if (orderArr != null && orderArr.length() > 0) {
-//                        orders.clear();
-//                        for (int i = 0; i < orderArr.length(); i++) {
-//                            JSONObject orderObj = orderArr.optJSONObject(i);
-//                            int id = orderObj.optInt("id");
-//                            String number = orderObj.optString("number");
-//                            String logNum = orderObj.optString("deliver_number");
-//                            double amount = orderObj.optDouble("amount");
-//                            String status = orderObj.optString("status");
-//                            String status_ch = orderObj.optString("status_ch");
-//                            String created_at = orderObj.optString("created_at");
-//                            String created_at_for = orderObj.optString("created_at_for");
-//                            String img = orderObj.optString("merch_img");
-//                            long over_at = orderObj.optLong("over_at");
-//                            boolean is_zero=orderObj.optBoolean("is_zero");
-//                            Order order = new Order(id, number, amount, status, status_ch, created_at_for, created_at, "", 0);
-//                            order.logisticsNum=logNum;
-//                            order.setImg(img);
-//                            order.setOver_at(over_at);
-//                            order.setZero(is_zero);
-//                            orders.add(order);
-//                        }
-//                        handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
-//                    } else {
-//                        mListView.setVisibility(View.GONE);
-//                        mEmptyView.setVisibility(View.VISIBLE);
-//                        loadingView.setVisibility(View.VISIBLE);
-//                    }
-//                }
                 JSONArray dataArray = jsonObject.optJSONArray("data");
                 mOrderList.addAll(JSON.parseArray(dataArray.toString(), Order1.class));
-                System.out.println("OrderUnPayFragment.onResponse---->" + mOrderList.size());
                 if (mOrderList.size() > 0) {
                     handler.sendEmptyMessage(STATUS_UNRECEIVE_LIST);
                 } else {

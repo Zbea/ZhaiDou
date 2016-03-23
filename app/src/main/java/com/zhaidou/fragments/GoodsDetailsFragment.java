@@ -14,7 +14,6 @@ import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -281,7 +280,6 @@ public class GoodsDetailsFragment extends BaseFragment
                         }
                     } catch (Exception e)
                     {
-                        Log.i("Exception e", e.getMessage());
                     }
                     viewPager.setFocusable(true);
                     viewPager.setFocusableInTouchMode(true);

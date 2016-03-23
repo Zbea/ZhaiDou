@@ -18,7 +18,6 @@ import android.widget.FrameLayout;
 
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
-import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.model.User;
 
@@ -169,7 +168,6 @@ public class PersonalMainFragment extends Fragment implements View.OnClickListen
 
     public void addToStack(Fragment fragment){
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        System.out.println("fragment.getTag()------->" + fragment.getTag());
         transaction.addToBackStack(null);
         transaction.commit();
         mChildContainer.setVisibility(View.VISIBLE);
@@ -177,11 +175,8 @@ public class PersonalMainFragment extends Fragment implements View.OnClickListen
     }
     public void popToStack(){
 
-        Log.i("popToStack---->","popToStack");
         FragmentManager childFragmentManager = getChildFragmentManager();
-        Log.i("childFragmentManager--->", childFragmentManager.getBackStackEntryCount()+"");
         childFragmentManager.popBackStack();
-        Log.i("childFragmentManager--->", childFragmentManager.getBackStackEntryCount()+"");
     }
     public void toggleTabContainer(){
         ((MainActivity)getActivity()).toggleTabContainer();

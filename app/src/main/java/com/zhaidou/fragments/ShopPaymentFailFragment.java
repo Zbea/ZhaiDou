@@ -468,7 +468,6 @@ public class ShopPaymentFailFragment extends BaseFragment {
     public void handleWXPayResult(int result) {
         switch (result) {
             case 800://商户订单号重复或生成错误
-                Log.i("----->", "商户订单号重复或生成错误");
                 break;
             case 0://支付成功
                 Log.i("----->", "支付成功");

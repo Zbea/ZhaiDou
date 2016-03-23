@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -166,13 +165,11 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
         mDialog= CustomLoadingDialog.setLoadingDialog(mActivity,"loading",isDialogFirstVisible);
         isDialogFirstVisible=false;
         int userId=mSharedPreferences.getInt("userId", -1);
-        Log.i("FetchCollocationData------->",userId+"");
         //"http://www.zhaidou.com/api/v1/users/77069/bean_collocations?page="+page
         JsonObjectRequest request =new JsonObjectRequest(ZhaiDou.USER_COLLOCATION_ITEM_URL+userId+"/bean_collocations?page="+page
             ,new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("FetchCollocationData----->",jsonObject.toString());
                 if (mDialog!=null)
                 {
                     mDialog.dismiss();

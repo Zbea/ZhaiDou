@@ -189,6 +189,8 @@ public class ZhaiDou {
     public final static int STATUS__DELIVERYED=40;
     /**交易成功*/
     public final static int STATUS_DEAL_SUCCESS=50;
+    /**退款完成*/
+    public final static int STATUS_RETURN_MONEY_SUCCESS=60;
     /**申请取消*/
     public final static int STATUS_ORDER_APPLY_CANCEL=-10;
     /**已取消*/
@@ -213,8 +215,6 @@ public class ZhaiDou {
     public final static int STATUS_UNPAY_CANCEL=9;
     /**交易关闭*/
     public final static int STATUS_DEAL_CLOSE=100;
-    /**退款成功*/
-    public final static int STATUS_RETURN_MONEY_SUCCESS=11;
 
     /** 订单类型 0：全部 1待付款  2待发货  3待收货 4交易完成 5已取消  */
     public final static String TYPE_ORDER_ALL="0";

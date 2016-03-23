@@ -34,6 +34,7 @@ import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.EMLog;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.base.AccountManage;
 import com.zhaidou.base.EaseManage;
 import com.zhaidou.easeui.helpdesk.domain.EmojiconExampleGroupData;
 import com.zhaidou.easeui.helpdesk.ui.ChatActivity;
@@ -285,10 +286,10 @@ public class EaseHelper {
      * 账号在别的设备登录
      */
     protected void onConnectionConflict(){
-        Intent intent = new Intent(appContext, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(Constant.ACCOUNT_CONFLICT, true);
-        appContext.startActivity(intent);
+//        Intent intent = new Intent(appContext, MainActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        intent.putExtra(Constant.ACCOUNT_CONFLICT, true);
+        AccountManage.getInstance().setConflict(true);
     }
     
     /**

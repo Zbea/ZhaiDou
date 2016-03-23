@@ -216,7 +216,6 @@ public class DialogUtils {
             @Override
             public void dismiss() {
                 super.dismiss();
-                System.out.println("DialogUtils.dismiss");
                 if (mTimer != null) {
                     mTimer.cancel();
                     mTimer = null;
@@ -341,14 +340,16 @@ public class DialogUtils {
                         mDialog.dismiss();
                         cn.sharesdk.sina.weibo.SinaWeibo.ShareParams sp = new cn.sharesdk.sina.weibo.SinaWeibo.ShareParams();
                         sp.setText(content);
-                        Collection<String> keys = ImageLoader.getInstance().getMemoryCache().keys();
-                        Iterator<String> iterator = keys.iterator();
-                        while (iterator.hasNext()){
-                            String next = iterator.next();
-                            if (next.contains(imageUrl)){
-                                Bitmap bitmap = ImageLoader.getInstance().getMemoryCache().get(next);
-                                File sina = PhotoUtil.saveBitmapFile(bitmap, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)+"/sina.jpg");
-                                sp.setImagePath(sina.getAbsolutePath());
+                        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                            Collection<String> keys = ImageLoader.getInstance().getMemoryCache().keys();
+                            Iterator<String> iterator = keys.iterator();
+                            while (iterator.hasNext()) {
+                                String next = iterator.next();
+                                if (next.contains(imageUrl)) {
+                                    Bitmap bitmap = ImageLoader.getInstance().getMemoryCache().get(next);
+                                    File sina = PhotoUtil.saveBitmapFile(bitmap, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + "/sina.jpg");
+                                    sp.setImagePath(sina.getAbsolutePath());
+                                }
                             }
                         }
                         Platform weibo = ShareSDK.getPlatform(SinaWeibo.NAME);

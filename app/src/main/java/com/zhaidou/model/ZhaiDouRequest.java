@@ -74,6 +74,8 @@ public class ZhaiDouRequest extends Request<JSONObject> {
 
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
+        if (mHeaders==null)
+            initHeader();
         return mHeaders;
     }
 

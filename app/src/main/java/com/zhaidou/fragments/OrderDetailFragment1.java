@@ -18,7 +18,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
@@ -32,6 +31,7 @@ import com.zhaidou.model.Order;
 import com.zhaidou.model.Order1;
 import com.zhaidou.model.OrderItem1;
 import com.zhaidou.model.Store;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -167,7 +167,7 @@ public class OrderDetailFragment1 extends BaseFragment {
                             params.put("version", versionName);
                             params.put("clientVersion", versionCode);
                             params.put("orderCode", store.orderCode);
-                            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_CONFIRM, new JSONObject(params), new Response.Listener<JSONObject>() {
+                            ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, ZhaiDou.URL_ORDER_CONFIRM, params, new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject jsonObject) {
                                     int status = jsonObject.optInt("status");
@@ -211,7 +211,7 @@ public class OrderDetailFragment1 extends BaseFragment {
         params.put("clientVersion", versionCode);
         params.put("userId", mUserId);//mUserId//29650+""
         params.put("orderCode", orderCode);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_DETAIL_LIST_URL, new JSONObject(params), new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, ZhaiDou.URL_ORDER_DETAIL_LIST_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null)
@@ -328,7 +328,7 @@ public class OrderDetailFragment1 extends BaseFragment {
                 btn1.setText("确认收货");
                 btn2.setBackgroundResource(R.drawable.btn_green_click_bg);
                 btn1.setBackgroundResource(R.drawable.btn_red_click_selector);
-            } else if (ZhaiDou.STATUS_ORDER_CANCEL == store.status) {//已取消
+            } else if (ZhaiDou.STATUS_ORDER_CANCEL == store.status||ZhaiDou.STATUS_RETURN_MONEY_SUCCESS==store.status) {//已取消//退款完成
                 mBottomLayout.setVisibility(View.GONE);
             }
 
@@ -356,17 +356,6 @@ public class OrderDetailFragment1 extends BaseFragment {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
                     OrderItem1 item = (OrderItem1) values;
-//                    if (flags != 1) {
-//                        GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(item.productName, item.productId + "");
-//                        Bundle bundle = new Bundle();
-//                        if (item.productType == 2) {
-//                            bundle.putInt("flags", 1);
-//                        }
-//                        bundle.putInt("index", item.productId);
-//                        bundle.putString("page", item.productName);
-//                        goodsDetailsFragment.setArguments(bundle);
-//                        ((MainActivity) getActivity()).navigationToFragment(goodsDetailsFragment);
-//                    }
                     GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(item.productName, item.productCode+"");
                     ((BaseActivity) mContext).navigationToFragment(goodsDetailsFragment);
                 }
