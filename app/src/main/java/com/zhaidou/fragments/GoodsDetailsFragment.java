@@ -140,7 +140,9 @@ public class GoodsDetailsFragment extends BaseFragment
     private List<TextView> textSubclassTvs = new ArrayList<TextView>();//二维子点击 TextView 集合
     private int sigleClickPosition = -1;
     private int doubleClickParentPos = 0;
-    private boolean isClick;//规格是否可以点击
+    private boolean isClickParent;//规格是否可以点击
+    private boolean isClickSingle;//规格是否可以点击
+    private boolean isClickSubclass;//规格是否可以点击
     private Specification mSpecificationParent;//选中规格第一个
     private Specification mSpecificationSubclass;//选中型号第二个
 
@@ -821,75 +823,6 @@ public class GoodsDetailsFragment extends BaseFragment
     }
 
     /**
-     * 添加规格布局
-     */
-    private void addSizeParentView()
-    {
-        ToolUtils.setLog("父规格");
-        flowLayoutParent.removeAllViews();
-        MarginLayoutParams lp = new MarginLayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        lp.leftMargin = 10;
-        lp.rightMargin = 5;
-        lp.topMargin = 10;
-        lp.bottomMargin = 5;
-        for (int i = 0; i < specificationList.size(); i++)
-        {
-            final int position = i;
-            View view = LayoutInflater.from(mContext).inflate(R.layout.goods_details_size_item, null);
-            final TextView textView = (TextView) view.findViewById(R.id.sizeTitleTv);
-            textView.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-
-                    if (doubleClickParentPos == position)//用来判断是否是否是点击的同一个按钮
-                    {
-                        if (isClick)
-                        {
-                            doubleClickParentPos = position;
-                            for (int j = 0; j < textParentTvs.size(); j++)
-                            {
-                                textParentTvs.get(j).setSelected(false);
-                            }
-                            textView.setSelected(true);
-                            mSpecificationParent = specificationList.get(position);
-                            addSizeSubclassView(mSpecificationParent.sizess);
-                        } else
-                        {
-                            doubleClickParentPos = -1;
-                            textView.setSelected(false);
-                            mSpecificationParent = null;
-                            addSizeSubclassView(specificationList.get(0).sizess);
-                        }
-                    } else
-                    {
-                        doubleClickParentPos = position;
-                        for (int j = 0; j < textParentTvs.size(); j++)
-                        {
-                            textParentTvs.get(j).setSelected(false);
-                        }
-                        textView.setSelected(true);
-                        mSpecificationParent = specificationList.get(position);
-                        addSizeSubclassView(mSpecificationParent.sizess);
-                    }
-                }
-            });
-            Specification specification = specificationList.get(i);
-            textView.setText(specification.title);
-            if (0 == position)
-            {
-                textView.setSelected(true);
-                mSpecificationParent = specificationList.get(i);
-            }
-            textParentTvs.add(textView);
-            flowLayoutParent.addView(view, lp);
-        }
-        addSizeSubclassView(specificationList.get(0).sizess);
-    }
-
-    /**
      * 添加规格布局（如果是一维的）
      */
     private void addSizeSingleView()
@@ -924,7 +857,7 @@ public class GoodsDetailsFragment extends BaseFragment
 
                     if (sigleClickPosition == position)//用来判断是否是否是点击的同一个按钮
                     {
-                        if (isClick)
+                        if (isClickSingle)
                         {
                             sigleClickPosition = position;
                             for (int j = 0; j < textSingleTvs.size(); j++)
@@ -938,14 +871,7 @@ public class GoodsDetailsFragment extends BaseFragment
                             sigleClickPosition = -1;
                             textView.setSelected(false);
                             mSpecificationParent = null;
-                            setImagesReset();
-                            mCurrentPrice.setText("￥" + ToolUtils.isIntPrice(detail.price + ""));
-                            mOldPrice.setText("￥" + ToolUtils.isIntPrice(detail.cost_price + ""));
-                            setDiscount(detail.price, detail.cost_price);
-                            if (isPublish)
-                            {
-                                setAddOrBuyShow("此商品已下架", false);
-                            }
+                            setResetSize();
                         }
                     } else
                     {
@@ -987,6 +913,76 @@ public class GoodsDetailsFragment extends BaseFragment
         }
     }
 
+    /**
+     * 添加规格布局
+     */
+    private void addSizeParentView()
+    {
+        ToolUtils.setLog("父规格");
+        flowLayoutParent.removeAllViews();
+        MarginLayoutParams lp = new MarginLayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        lp.leftMargin = 10;
+        lp.rightMargin = 5;
+        lp.topMargin = 10;
+        lp.bottomMargin = 5;
+        for (int i = 0; i < specificationList.size(); i++)
+        {
+            final int position = i;
+            View view = LayoutInflater.from(mContext).inflate(R.layout.goods_details_size_item, null);
+            final TextView textView = (TextView) view.findViewById(R.id.sizeTitleTv);
+            textView.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+
+                    if (doubleClickParentPos == position)//用来判断是否是否是点击的同一个按钮
+                    {
+                        if (isClickParent)
+                        {
+                            doubleClickParentPos = position;
+                            for (int j = 0; j < textParentTvs.size(); j++)
+                            {
+                                textParentTvs.get(j).setSelected(false);
+                            }
+                            textView.setSelected(true);
+                            mSpecificationParent = specificationList.get(position);
+                            addSizeSubclassView(mSpecificationParent.sizess);
+                        } else
+                        {
+                            doubleClickParentPos = -1;
+                            textView.setSelected(false);
+                            mSpecificationParent = null;
+                            addSizeSubclassView(specificationList.get(0).sizess);
+                            setResetSize();
+                        }
+                    } else
+                    {
+                        doubleClickParentPos = position;
+                        for (int j = 0; j < textParentTvs.size(); j++)
+                        {
+                            textParentTvs.get(j).setSelected(false);
+                        }
+                        textView.setSelected(true);
+                        mSpecificationParent = specificationList.get(position);
+                        addSizeSubclassView(mSpecificationParent.sizess);
+                    }
+                }
+            });
+            Specification specification = specificationList.get(i);
+            textView.setText(specification.title);
+            if (0 == position)
+            {
+                textView.setSelected(true);
+                mSpecificationParent = specificationList.get(i);
+            }
+            textParentTvs.add(textView);
+            flowLayoutParent.addView(view, lp);
+        }
+        addSizeSubclassView(specificationList.get(0).sizess);
+    }
+
 
     /**
      * 添加子规格布局
@@ -994,6 +990,8 @@ public class GoodsDetailsFragment extends BaseFragment
     private void addSizeSubclassView(List<Specification> sizes)
     {
         ToolUtils.setLog("子规格");
+        isClickSubclass=false;
+        sigleClickPosition=-1;
         mSpecificationSubclass = null;
         flowLayoutSubclass.removeAllViews();
         MarginLayoutParams lp = new MarginLayoutParams(
@@ -1013,40 +1011,19 @@ public class GoodsDetailsFragment extends BaseFragment
                 @Override
                 public void onClick(View v)
                 {
-
                     if (sigleClickPosition == position)//用来判断是否是否是点击的同一个按钮
                     {
-                        if (isClick)
+                        if (isClickSubclass)
                         {
-                            if (mSpecificationParent == null)
-                            {
-                                ToolUtils.setToast(mContext, "抱歉，请先选择" + sizeNameParent);
-                                return;
-                            }
-                            sigleClickPosition = position;
-                            for (int j = 0; j < textSubclassTvs.size(); j++)
-                            {
-                                textSubclassTvs.get(j).setSelected(false);
-                            }
-                            textView.setSelected(true);
-                            sizeEvent(specification);
-                        } else
-                        {
+                            isClickSubclass=false;
                             sigleClickPosition = -1;
                             textView.setSelected(false);
                             mSpecificationSubclass = null;
-                            setImagesReset();
-                            mCurrentPrice.setText("￥" + ToolUtils.isIntPrice(detail.price + ""));
-                            mOldPrice.setText("￥" + ToolUtils.isIntPrice(detail.cost_price + ""));
-                            setDiscount(detail.price, detail.cost_price);
-                            if (isPublish)
-                            {
-                                setAddOrBuyShow("此商品已下架", false);
-                            }
-
+                            setResetSize();
                         }
                     } else
                     {
+                        isClickSubclass=true;
                         if (mSpecificationParent == null)
                         {
                             ToolUtils.setToast(mContext, "抱歉，请先选择" + sizeNameParent);
@@ -1077,6 +1054,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     if (specificationList.size() == 1)
                         if (specificationList.get(0).sizess.size() == 1)
                         {
+                            isClickSubclass=true;
                             sigleClickPosition = 0;
                             textView.setSelected(true);
                             sizeEvent(specification);
@@ -1085,6 +1063,21 @@ public class GoodsDetailsFragment extends BaseFragment
                 textSubclassTvs.add(textView);
             }
             flowLayoutSubclass.addView(view, lp);
+        }
+    }
+
+    /**
+     * 复原初始规格
+     */
+    private void setResetSize()
+    {
+        setImagesReset();
+        mCurrentPrice.setText("￥" + ToolUtils.isIntPrice(detail.price + ""));
+        mOldPrice.setText("￥" + ToolUtils.isIntPrice(detail.cost_price + ""));
+        setDiscount(detail.price, detail.cost_price);
+        if (isPublish)
+        {
+            setAddOrBuyShow("此商品已下架", false);
         }
     }
 
@@ -1257,7 +1250,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     @Override
                     public void onLoadingStarted(String s, View view)
                     {
-                    }
+                    } 
 
                     @Override
                     public void onLoadingFailed(String s, View view, FailReason failReason)
@@ -1303,7 +1296,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private void share()
     {
         DialogUtils mDialogUtils = new DialogUtils(mContext);
-        mDialogUtils.showShareDialog(mPage, mPage + "  " + shareUrl, detail.imageUrl, shareUrl, new PlatformActionListener()
+        mDialogUtils.showShareDialog(mPage, mPage + "  " + shareUrl, detail!=null?detail.imageUrl:null, shareUrl, new PlatformActionListener()
         {
             @Override
             public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap)
@@ -1327,6 +1320,7 @@ public class GoodsDetailsFragment extends BaseFragment
 
 
     /**
+     *
      * 红色标识提示显示数量
      */
     private void initCartTips()
