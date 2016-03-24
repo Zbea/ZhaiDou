@@ -40,7 +40,8 @@
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan|stateHidden"
             android:screenOrientation="portrait"
-            android:theme="@style/StyledIndicators">
+            android:theme="@style/StyledIndicators"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 

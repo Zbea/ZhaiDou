@@ -1,6 +1,7 @@
 package com.zhaidou.fragments;
 
 import android.app.Dialog;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -73,6 +74,8 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                     mContext.sendBroadcast(intent);
                     EaseHelper.getInstance().logout(true,null);
                             ((MainActivity) mContext).logout(SettingFragment.this);
+                    NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+                    notificationManager.cancel(0525);
                     ((MainActivity) mContext).CartTip(0);
                     break;
                 case 1:

@@ -910,7 +910,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     @Override
     protected void onResume()
     {
-
+        System.out.println("MainActivity.onResume");
+        mMsgView.setVisibility(EMChatManager.getInstance().getUnreadMsgsCount()>0?View.VISIBLE:View.GONE);
         super.onResume();
         MobclickAgent.onResume(this);
     }
@@ -938,10 +939,10 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     @Override
     public void onMessage(int unreadMsgCount) {
+        int unreadCount = EMChatManager.getInstance().getUnreadMsgsCount();
         Message message=new Message();
         message.what=1000;
         message.obj=unreadMsgCount;
         mHandler.sendMessage(message);
-//        mMsgView.setVisibility(unreadMsgCount>0?View.VISIBLE:View.GONE);
     }
 }

@@ -78,6 +78,7 @@ public class DialogUtils {
             }
         }
     };
+    private Dialog mDialog;
 
     public DialogUtils(Context mContext) {
         this.mContext = mContext;
@@ -287,7 +288,7 @@ public class DialogUtils {
                 R.drawable.skyblue_logo_qq_checked, R.drawable.skyblue_logo_qzone_checked, R.drawable.skyblue_logo_sinaweibo_checked};
         ShareAdapter shareAdapter = new ShareAdapter(mContext, titleList, drawableId);
         mGridView.setAdapter(shareAdapter);
-        final Dialog mDialog = new Dialog(mContext, R.style.custom_dialog);
+        mDialog = new Dialog(mContext, R.style.custom_dialog);
         mDialog.setCanceledOnTouchOutside(true);
         mDialog.setCancelable(true);
         mDialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -313,7 +314,7 @@ public class DialogUtils {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        mDialog.dismiss();
+//                        mDialog.dismiss();
                         Wechat.ShareParams weChatSP = new Wechat.ShareParams();
                         weChatSP.setTitle(title);
                         weChatSP.setText(content);
@@ -322,10 +323,11 @@ public class DialogUtils {
                         weChatSP.setShareType(Platform.SHARE_WEBPAGE);
                         Platform wechat = ShareSDK.getPlatform(Wechat.NAME);
                         wechat.setPlatformActionListener(platformActionListener);
+                        wechat.removeAccount(true);
                         wechat.share(weChatSP);
                         break;
                     case 1:
-                        mDialog.dismiss();
+//                        mDialog.dismiss();
                         WechatMoments.ShareParams WMSP = new WechatMoments.ShareParams();
                         WMSP.setShareType(Platform.SHARE_WEBPAGE);
                         WMSP.setTitle(title);
@@ -334,6 +336,7 @@ public class DialogUtils {
                         WMSP.setUrl(url);
                         Platform wm = ShareSDK.getPlatform(WechatMoments.NAME);
                         wm.setPlatformActionListener(platformActionListener);
+                        wm.removeAccount(true);
                         wm.share(WMSP);
                         break;
                     case 2:
@@ -353,6 +356,7 @@ public class DialogUtils {
                             }
                         }
                         Platform weibo = ShareSDK.getPlatform(SinaWeibo.NAME);
+                        weibo.removeAccount(true);
                         weibo.setPlatformActionListener(platformActionListener);
                         weibo.share(sp);
                         break;
@@ -364,6 +368,7 @@ public class DialogUtils {
                         QQSp.setText(content);
                         QQSp.setImageUrl(imageUrl);
                         Platform qq = ShareSDK.getPlatform(QQ.NAME);
+                        qq.removeAccount(true);
                         qq.setPlatformActionListener(platformActionListener);
                         qq.share(QQSp);
                         break;
@@ -377,6 +382,7 @@ public class DialogUtils {
                         QZoneSP.setSite(mContext.getString(R.string.app_name));
                         QZoneSP.setSiteUrl(url);
                         Platform qzone = ShareSDK.getPlatform(QZone.NAME);
+                        qzone.removeAccount(true);
                         qzone.setPlatformActionListener(platformActionListener); // 设置分享事件回调
                         qzone.share(QZoneSP);
                         break;
@@ -386,6 +392,12 @@ public class DialogUtils {
                 }
             }
         });
+    }
+
+    public void dismiss(){
+        System.out.println("mDialog = " + mDialog);
+        if (mDialog!=null)
+            mDialog.dismiss();
     }
 
     public class ShareAdapter extends BaseListAdapter<String> {

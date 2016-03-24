@@ -428,8 +428,8 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
         int value = CountManage.getInstance().value(CountManage.TYPE.TAG_PREPAY);
         tv_unpay_count.setText(value + "");
         tv_unpay_count.setVisibility(value == 0 ? View.GONE : View.VISIBLE);
-        if (tv_unpay_count.isShown() || EMChatManager.getInstance().getUnreadMsgsCount() > 0)
-            ((MainActivity) getActivity()).hideTip(View.VISIBLE);
+//        if (tv_unpay_count.isShown() || EMChatManager.getInstance().getUnreadMsgsCount() > 0)
+//            ((MainActivity) getActivity()).hideTip(View.VISIBLE);
 
     }
 

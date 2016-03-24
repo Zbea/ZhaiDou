@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -69,6 +71,20 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
 
     private SharedPreferences mSharedPreferences;
     private Context mContext;
+    private DialogUtils mDialogUtils;
+    private final int UPDATE_SHARE_TOAST=3;
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case UPDATE_SHARE_TOAST:
+                    mDialogUtils.dismiss();
+                    String result = (String) msg.obj;
+                    Toast.makeText(mContext,result,Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -226,6 +242,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
             mHeaderText.setText(title);
             imageView.setVisibility(View.VISIBLE);
         }
+        mDialogUtils = new DialogUtils(this);
 
     }
 
@@ -249,21 +266,23 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     }
 
     private void doShare() {
-        DialogUtils mDialogUtils=new DialogUtils(this);
-        mDialogUtils.showShareDialog(title,title+"  "+url,coverUrl,url,new PlatformActionListener() {
+        mDialogUtils.showShareDialog(title, title + "  " + url, coverUrl, url, new PlatformActionListener() {
             @Override
             public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
-                Toast.makeText(ItemDetailActivity.this,mContext.getString(R.string.share_completed),Toast.LENGTH_SHORT).show();
+                Message message = mHandler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_completed));
+                mHandler.sendMessage(message);
             }
 
             @Override
             public void onError(Platform platform, int i, Throwable throwable) {
-                Toast.makeText(ItemDetailActivity.this,mContext.getString(R.string.share_error),Toast.LENGTH_SHORT).show();
+                Message message = mHandler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_error));
+                mHandler.sendMessage(message);
             }
 
             @Override
             public void onCancel(Platform platform, int i) {
-                Toast.makeText(ItemDetailActivity.this,mContext.getString(R.string.share_cancel),Toast.LENGTH_SHORT).show();
+                Message message = mHandler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_cancel));
+                mHandler.sendMessage(message);
             }
         });
     }
@@ -302,6 +321,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         super.onResume();
         MobclickAgent.onPageStart("ItemDetailActivity");
         MobclickAgent.onResume(this);
+        mDialogUtils.dismiss();
     }
 
     @Override

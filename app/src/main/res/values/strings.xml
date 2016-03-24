@@ -184,8 +184,6 @@
     <string name="share_cancel">分享取消</string>
     <string name="title_activity_conversation_list">ConversationListActivity</string>
     <string name="hello_world">Hello world!</string>
-    <string name="attach_short_cut_message">Messages</string>
-    
     
     <!--常用语-->
     <array name="designerWord">

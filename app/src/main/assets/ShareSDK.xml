@@ -92,7 +92,7 @@
         AppKey="1690353759"
         AppSecret="41b0afe109069e4ff3a5010b83737370"
         RedirectUrl="https://api.weibo.com/oauth2/default.html"
-        ShareByAppClient="true"
+        ShareByAppClient="false"
         Enable="true" />
 	<QQ
         Id="4"

@@ -78,6 +78,7 @@ public class ShopTodaySpecialFragment extends BaseFragment
     private final int UPDATE_CONTENT = 0;
     private final int UPDATE_TIMER_START_AND_DETAIL_DATA = 1;
     private final int UPDATE_CARTCAR_DATA = 2;
+    private final int UPDATE_SHARE_TOAST=3;
 
     private int page = 1;
     private int pageSize;
@@ -176,6 +177,11 @@ public class ShopTodaySpecialFragment extends BaseFragment
                         ((MainActivity) mContext).CartTip(cartCount);
                     }
                     break;
+                case UPDATE_SHARE_TOAST:
+                    mDialogUtils.dismiss();
+                    String result = (String) msg.obj;
+                    Toast.makeText(mContext,result,Toast.LENGTH_SHORT).show();
+                    break;
             }
         }
     };
@@ -239,6 +245,7 @@ public class ShopTodaySpecialFragment extends BaseFragment
             }
         }
     };
+    private DialogUtils mDialogUtils;
 
 
     public static ShopTodaySpecialFragment newInstance(String page, String index, String imageUrl)
@@ -352,6 +359,7 @@ public class ShopTodaySpecialFragment extends BaseFragment
 
 
         mRequestQueue = Volley.newRequestQueue(mContext);
+        mDialogUtils = new DialogUtils(mContext);
 
         initData();
 
@@ -418,25 +426,23 @@ public class ShopTodaySpecialFragment extends BaseFragment
      */
     private void share()
     {
-        DialogUtils mDialogUtils = new DialogUtils(mContext);
-        mDialogUtils.showShareDialog(mTitle, mTitle + "  " + shareUrl,items.size()>0?items.get(0).imageUrl:mImageUrl, shareUrl, new PlatformActionListener()
-        {
+        mDialogUtils.showShareDialog(mTitle, mTitle + "  " + shareUrl, items.size() > 0 ? items.get(0).imageUrl : mImageUrl, shareUrl, new PlatformActionListener() {
             @Override
-            public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap)
-            {
-                Toast.makeText(mContext, mContext.getString(R.string.share_completed), Toast.LENGTH_SHORT).show();
+            public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
+                Message message = handler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_completed));
+                handler.sendMessage(message);
             }
 
             @Override
-            public void onError(Platform platform, int i, Throwable throwable)
-            {
-                Toast.makeText(mContext, mContext.getString(R.string.share_error), Toast.LENGTH_SHORT).show();
+            public void onError(Platform platform, int i, Throwable throwable) {
+                Message message = handler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_error));
+                handler.sendMessage(message);
             }
 
             @Override
-            public void onCancel(Platform platform, int i)
-            {
-                Toast.makeText(mContext, mContext.getString(R.string.share_cancel), Toast.LENGTH_SHORT).show();
+            public void onCancel(Platform platform, int i) {
+                Message message = handler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_cancel));
+                handler.sendMessage(message);
             }
         });
     }
@@ -600,7 +606,7 @@ public class ShopTodaySpecialFragment extends BaseFragment
             initTime = timeTvs.getTimes() - temp;
             timeTvs.setTimes(initTime);
         }
-        hideInputMethod();
+        mDialogUtils.dismiss();
         super.onResume();
         MobclickAgent.onPageStart(mTitle);
     }

@@ -21,7 +21,7 @@ import com.zhaidou.model.User;
 public class EaseUtils {
 
     public static void startKeFuActivity(Context context){
-        if (AccountManage.getInstance().isConflict()){
+        if ((Integer)SharedPreferencesUtil.getData(context, "userId", -1)==-1||AccountManage.getInstance().isConflict()){
             Intent intent=new Intent(context,LoginActivity.class);
             context.startActivity(intent);
             return;
@@ -35,7 +35,7 @@ public class EaseUtils {
     }
 
     public static void startDesignerActivity(Context context){
-        if (AccountManage.getInstance().isConflict()){
+        if ((Integer)SharedPreferencesUtil.getData(context, "userId", -1)==-1||AccountManage.getInstance().isConflict()){
             Intent intent=new Intent(context,LoginActivity.class);
             context.startActivity(intent);
             return;
