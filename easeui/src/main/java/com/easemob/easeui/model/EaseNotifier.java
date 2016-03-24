@@ -152,12 +152,14 @@ public class EaseNotifier {
         }
         // 判断app是否在后台
         if (!EasyUtils.isAppRunningForeground(appContext)) {
+        EMLog.d(TAG,"EasyUtils.isAppRunningForeground(appContext) = " + EasyUtils.isAppRunningForeground(appContext));
             EMLog.d(TAG, "app is running in backgroud");
             sendNotification(messages, false);
-        } else {
-            sendNotification(messages, true);
         }
-//        sendNotification(messages, true);
+// else {
+//            sendNotification(messages, true);
+//            EMLog.d(TAG,"EasyUtils.isAppRunningForeground(appContext) = " + EasyUtils.isAppRunningForeground(appContext));
+//        }
         viberateAndPlayTone(messages.get(messages.size()-1));
     }
 
@@ -277,13 +279,13 @@ public class EaseNotifier {
             // mBuilder.setNumber(notificationNum);
             Notification notification = mBuilder.build();
 
-//            if (isForeground) {
-//                notificationManager.notify(foregroundNotifyID, notification);
-//                notificationManager.cancel(foregroundNotifyID);
-//            } else {
-//                notificationManager.notify(notifyID, notification);
-//            }
-            notificationManager.notify(foregroundNotifyID, notification);
+            if (isForeground) {
+                notificationManager.notify(foregroundNotifyID, notification);
+                notificationManager.cancel(foregroundNotifyID);
+            } else {
+                notificationManager.notify(notifyID, notification);
+            }
+//            notificationManager.notify(foregroundNotifyID, notification);
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -324,10 +324,10 @@ public class EaseHelper {
                 case EventNewMessage:
                     //应用在后台，不需要刷新UI,通知栏提示新消息
                     System.out.println("!easeUI.hasForegroundActivies() = " + !easeUI.hasForegroundActivies());
-//                    if(!easeUI.hasForegroundActivies()){
-//                        getNotifier().onNewMsg(message);
-//                    }
-                    getNotifier().onNewMsg(message);
+                    if(!easeUI.hasForegroundActivies()){
+                        getNotifier().onNewMsg(message);
+                    }
+//                    getNotifier().onNewMsg(message);
                     break;
                 case EventOfflineMessage:
                     if(!easeUI.hasForegroundActivies()){

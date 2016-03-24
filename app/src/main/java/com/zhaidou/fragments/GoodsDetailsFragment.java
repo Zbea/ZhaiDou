@@ -120,6 +120,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private final int UPDATE_ADD_CART = 5;//加入购物车
     private final int UPDATE_ISADD_CART = 6;//零元特卖是否已经加入购物车了
     private final int UPDATE_OSALE_DELETE = 7;//删除购物车里面的零元特卖
+    private final int UPDATE_SHARE_TOAST=8;
 
     private ScrollView scrollView;
     private ImageView topBtn;
@@ -389,6 +390,11 @@ public class GoodsDetailsFragment extends BaseFragment
                         CommitLjBuy();
                     }
                     break;
+                case UPDATE_SHARE_TOAST:
+                    mDialogUtil.dismiss();
+                    String result = (String) msg.obj;
+                    Toast.makeText(mContext,result,Toast.LENGTH_SHORT).show();
+                    break;
 
             }
         }
@@ -489,7 +495,6 @@ public class GoodsDetailsFragment extends BaseFragment
 
         }
     };
-
     public static GoodsDetailsFragment newInstance(String page, String index)
     {
         GoodsDetailsFragment fragment = new GoodsDetailsFragment();
@@ -1297,28 +1302,27 @@ public class GoodsDetailsFragment extends BaseFragment
         mDialogUtils.showShareDialog(mPage, mPage + "  " + shareUrl, detail!=null?detail.imageUrl:null, shareUrl, new PlatformActionListener()
         {
             @Override
-            public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap)
-            {
-                Toast.makeText(mContext, mContext.getString(R.string.share_completed), Toast.LENGTH_SHORT).show();
+            public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
+                Message message = handler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_completed));
+                handler.sendMessage(message);
             }
 
             @Override
-            public void onError(Platform platform, int i, Throwable throwable)
-            {
-                Toast.makeText(mContext, mContext.getString(R.string.share_error), Toast.LENGTH_SHORT).show();
+            public void onError(Platform platform, int i, Throwable throwable) {
+                Message message = handler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_error));
+                handler.sendMessage(message);
             }
 
             @Override
-            public void onCancel(Platform platform, int i)
-            {
-                Toast.makeText(mContext, mContext.getString(R.string.share_cancel), Toast.LENGTH_SHORT).show();
+            public void onCancel(Platform platform, int i) {
+                Message message = handler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_cancel));
+                handler.sendMessage(message);
             }
         });
     }
 
 
     /**
-     *
      * 红色标识提示显示数量
      */
     private void initCartTips()
@@ -2092,6 +2096,7 @@ public class GoodsDetailsFragment extends BaseFragment
         }
         super.onResume();
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_goods_detail));
+        mDialogUtil.dismiss();
     }
 
     @Override

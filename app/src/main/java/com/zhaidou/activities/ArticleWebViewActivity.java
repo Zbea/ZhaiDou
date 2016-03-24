@@ -3,6 +3,8 @@ package com.zhaidou.activities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceResponse;
@@ -38,7 +40,20 @@ public class ArticleWebViewActivity extends BaseActivity implements View.OnClick
     private ImageView iv_share;
     private Context mContext;
     private boolean isShowShare,isShowTitle;
-
+    private DialogUtils mDialogUtils;
+    private final int UPDATE_SHARE_TOAST=0;
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case UPDATE_SHARE_TOAST:
+                    mDialogUtils.dismiss();
+                    String result = (String) msg.obj;
+                    Toast.makeText(mContext,result,Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,6 +157,7 @@ public class ArticleWebViewActivity extends BaseActivity implements View.OnClick
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("ZhaidouVesion", getResources().getString(R.string.app_versionName));
         webView.loadUrl(url + "?open=app", headers);
+        mDialogUtils = new DialogUtils(this);
 
     }
 
@@ -162,22 +178,23 @@ public class ArticleWebViewActivity extends BaseActivity implements View.OnClick
     }
 
     private void doShare() {
-
-        DialogUtils mDialogUtils=new DialogUtils(this);
-        mDialogUtils.showShareDialog(title,title+"  "+url,imageUrl,url,new PlatformActionListener() {
+        mDialogUtils.showShareDialog(title, title + "  " + url, imageUrl, url, new PlatformActionListener() {
             @Override
             public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
-                Toast.makeText(ArticleWebViewActivity.this,mContext.getString(R.string.share_completed),Toast.LENGTH_SHORT).show();
+                Message message =mHandler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_completed));
+                mHandler.sendMessage(message);
             }
 
             @Override
             public void onError(Platform platform, int i, Throwable throwable) {
-                Toast.makeText(ArticleWebViewActivity.this,mContext.getString(R.string.share_error),Toast.LENGTH_SHORT).show();
+                Message message = mHandler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_error));
+                mHandler.sendMessage(message);
             }
 
             @Override
             public void onCancel(Platform platform, int i) {
-                Toast.makeText(ArticleWebViewActivity.this,mContext.getString(R.string.share_cancel),Toast.LENGTH_SHORT).show();
+                Message message = mHandler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_cancel));
+                mHandler.sendMessage(message);
             }
         });
     }
@@ -187,6 +204,7 @@ public class ArticleWebViewActivity extends BaseActivity implements View.OnClick
         super.onResume();
         MobclickAgent.onPageStart("ArticleWebViewActivity");
         MobclickAgent.onResume(this);
+        mDialogUtils.dismiss();
     }
 
     @Override

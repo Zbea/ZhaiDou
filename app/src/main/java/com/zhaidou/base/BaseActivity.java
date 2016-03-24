@@ -31,6 +31,7 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
     protected WebView webView;
     protected String from;
     protected User user;
+    protected InputMethodManager inputMethodManager;
 
     public void navigationToFragment(Fragment fragment) {
         if (fragment != null && fragment instanceof RegisterFragment) {
@@ -105,9 +106,9 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
         return tm.getDeviceId();
     }
     protected void hideInputMethod(){
-        InputMethodManager inputMethodManager=(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         System.out.println("inputMethodManager.isActive() = " + inputMethodManager.isActive());
 //        if (inputMethodManager.isActive())
-            inputMethodManager.hideSoftInputFromWindow(getWindow().peekDecorView().getApplicationWindowToken(),0);
+            inputMethodManager.hideSoftInputFromWindow(getWindow().peekDecorView().getApplicationWindowToken(), 0);
     }
 }
