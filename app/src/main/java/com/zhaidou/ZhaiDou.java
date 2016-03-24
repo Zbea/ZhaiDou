@@ -12,6 +12,7 @@ public class ZhaiDou {
     public static String HOME_BASE="http://stg.zhaidou.com/";
 
 
+
     //美丽家
     public static String HomeBeautifulUrl=HOME_BASE_URL+"zd/getPosts.action?plug=006&pageSize=10&pageNo=";
     //分类
