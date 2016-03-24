@@ -59,7 +59,9 @@
                         android:textSize="12sp"
                         android:textColor="@color/text_gary_color"
                         android:text="规格："
+                        android:visibility="gone"
                         />
+
                     <com.zhaidou.view.TypeFaceTextView
                         android:id="@+id/orderItemSizeTv"
                         android:layout_width="wrap_content"
