@@ -194,6 +194,14 @@ public class MagicClassicCaseFragment extends BaseFragment
             imageView.setLayoutParams(param);
             TextView titleTv = (TextView) contentView.findViewById(R.id.titleTv);
             TextView infoTv = (TextView) contentView.findViewById(R.id.infoTv);
+            if (screenHeight==1776)
+            {
+                infoTv.setMaxLines(4);
+            }
+            else
+            {
+                infoTv.setMaxLines(5);
+            }
             LinearLayout detailsTv = (LinearLayout) contentView.findViewById(R.id.detailsTv);
             contentView.setOnClickListener(new View.OnClickListener()
             {

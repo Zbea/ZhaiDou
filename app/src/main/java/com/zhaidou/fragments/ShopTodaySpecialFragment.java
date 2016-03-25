@@ -342,7 +342,7 @@ public class ShopTodaySpecialFragment extends BaseFragment
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         mScrollView.setOnRefreshListener(onRefreshListener);
         mListView = (ListViewForScrollView) mView.findViewById(R.id.shopListView);
-        adapter = new ShopTodaySpecialAdapter(mContext, items);
+        adapter = new ShopTodaySpecialAdapter(mContext, items,0);
         mListView.setAdapter(adapter);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {

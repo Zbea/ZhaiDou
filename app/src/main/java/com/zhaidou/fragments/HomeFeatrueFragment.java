@@ -378,7 +378,7 @@ public class HomeFeatrueFragment extends BaseFragment {
             introduceTv = (TypeFaceTextView) rootView.findViewById(R.id.adText);
             doubleLine=(LinearLayout) rootView.findViewById(R.id.doubleLine);
             mListView = (ListViewForScrollView) rootView.findViewById(R.id.shopListView);
-            shopTodaySpecialAdapter = new ShopTodaySpecialAdapter(mContext, items);
+            shopTodaySpecialAdapter = new ShopTodaySpecialAdapter(mContext, items,1);
             mListView.setAdapter(shopTodaySpecialAdapter);
             mListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
             {
