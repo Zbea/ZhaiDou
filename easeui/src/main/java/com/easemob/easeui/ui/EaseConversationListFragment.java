@@ -1,11 +1,5 @@
 package com.easemob.easeui.ui;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Hashtable;
-import java.util.List;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,6 +26,12 @@ import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMConversation;
 import com.easemob.easeui.R;
 import com.easemob.easeui.widget.EaseConversationList;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Hashtable;
+import java.util.List;
 
 /**
  * 会话列表fragment
@@ -214,9 +214,27 @@ public class EaseConversationListFragment extends EaseBaseFragment {
 			e.printStackTrace();
 		}
 		List<EMConversation> list = new ArrayList<EMConversation>();
-		for (Pair<Long, EMConversation> sortItem : sortList) {
-			list.add(sortItem.second);
-		}
+        if (sortList.size()==0){
+            list.add(new EMConversation("designer"));
+            list.add(new EMConversation("service"));
+        }else if (sortList.size()==1){
+            EMConversation second = sortList.get(0).second;
+            String userName = second.getUserName();
+            list.add(userName.equalsIgnoreCase("service")?new EMConversation("designer"):second);
+            list.add(userName.equalsIgnoreCase("service")?second:new EMConversation("service"));
+        }else if (sortList.size()==2){
+            EMConversation first = sortList.get(0).second;
+            if ("service".equalsIgnoreCase(first.getUserName())){
+                list.add(sortList.get(1).second);
+                list.add(first);
+            }else {
+                list.add(sortList.get(0).second);
+                list.add(sortList.get(1).second);
+            }
+        }
+//		for (Pair<Long, EMConversation> sortItem : sortList) {
+//			list.add(sortItem.second);
+//		}
 		return list;
 	}
 

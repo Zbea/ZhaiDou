@@ -229,7 +229,6 @@ public class EaseMessageAdapter extends BaseAdapter{
         case TXT:
             if(message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
                 chatRow = new EaseChatRowBigExpression(context, message, position, this);
-                System.out.println("1");
             }else{
                 chatRow = new EaseChatRowText(context, message, position, this);
             }

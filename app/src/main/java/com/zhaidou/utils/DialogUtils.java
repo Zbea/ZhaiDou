@@ -18,6 +18,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.zhaidou.R;
@@ -315,6 +316,10 @@ public class DialogUtils {
                 switch (position) {
                     case 0:
 //                        mDialog.dismiss();
+                        if (!com.alibaba.sdk.android.util.NetworkUtils.isNetworkAvaiable(mContext)){
+                            Toast.makeText(mContext, "网络异常", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         Wechat.ShareParams weChatSP = new Wechat.ShareParams();
                         weChatSP.setTitle(title);
                         weChatSP.setText(content);
@@ -328,6 +333,10 @@ public class DialogUtils {
                         break;
                     case 1:
 //                        mDialog.dismiss();
+                        if (!com.alibaba.sdk.android.util.NetworkUtils.isNetworkAvaiable(mContext)){
+                            Toast.makeText(mContext,"网络异常",Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         WechatMoments.ShareParams WMSP = new WechatMoments.ShareParams();
                         WMSP.setShareType(Platform.SHARE_WEBPAGE);
                         WMSP.setTitle(title);
@@ -341,6 +350,10 @@ public class DialogUtils {
                         break;
                     case 2:
                         mDialog.dismiss();
+                        if (!com.alibaba.sdk.android.util.NetworkUtils.isNetworkAvaiable(mContext)){
+                            Toast.makeText(mContext,"网络异常",Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         cn.sharesdk.sina.weibo.SinaWeibo.ShareParams sp = new cn.sharesdk.sina.weibo.SinaWeibo.ShareParams();
                         sp.setText(content);
                         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
@@ -362,6 +375,10 @@ public class DialogUtils {
                         break;
                     case 3:
                         mDialog.dismiss();
+                        if (!com.alibaba.sdk.android.util.NetworkUtils.isNetworkAvaiable(mContext)){
+                            Toast.makeText(mContext,"网络异常",Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         QQ.ShareParams QQSp = new QQ.ShareParams();
                         QQSp.setTitle(title);
                         QQSp.setTitleUrl(url);
@@ -374,6 +391,10 @@ public class DialogUtils {
                         break;
                     case 4:
                         mDialog.dismiss();
+                        if (!com.alibaba.sdk.android.util.NetworkUtils.isNetworkAvaiable(mContext)){
+                            Toast.makeText(mContext,"网络异常",Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         QZone.ShareParams QZoneSP = new QZone.ShareParams();
                         QZoneSP.setTitle(title);
                         QZoneSP.setTitleUrl(url); // 标题的超链接

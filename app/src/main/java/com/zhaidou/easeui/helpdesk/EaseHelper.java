@@ -115,7 +115,6 @@ public class EaseHelper {
         easeUI.setUserProfileProvider(new EaseUI.EaseUserProfileProvider() {
             @Override
             public EaseUser getUser(String username) {
-                System.out.println("EaseHelper.getUser--------->"+username);
                     EaseUser easeUser = new EaseUser(username);
                 if (username.equalsIgnoreCase(EMChatManager.getInstance().getCurrentUser())){
                     easeUser.setAvatar((String)SharedPreferencesUtil.getData(appContext,"avatar",""));
