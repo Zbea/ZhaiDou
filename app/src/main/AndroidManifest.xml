@@ -140,12 +140,12 @@
         <activity android:name="com.alibaba.sdk.android.login.ui.QrLoginActivity"
             android:theme="@style/tae_sdk_login_qr_activity_style"/>
 
-        <activity
-            android:name="cn.sharesdk.demo.wxapi.WXEntryActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:exported="true"
-            android:screenOrientation="portrait" />
+        <!--<activity-->
+            <!--android:name="cn.sharesdk.demo.wxapi.WXEntryActivity"-->
+            <!--android:theme="@android:style/Theme.Translucent.NoTitleBar"-->
+            <!--android:configChanges="keyboardHidden|orientation|screenSize"-->
+            <!--android:exported="true"-->
+            <!--android:screenOrientation="portrait" />-->
         <activity
             android:name=".wxapi.WXEntryActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -371,30 +371,6 @@
         <activity android:name="com.easemob.easeui.ui.EaseShowBigImageActivity"
             android:screenOrientation="portrait"/>
 
-
-
-        <!--<! xiaomi push start，不需要删除即可-->-->
-        <!--<service-->
-            <!--android:name="com.xiaomi.mipush.sdk.PushMessageHandler"-->
-            <!--android:enabled="true"-->
-            <!--android:exported="true" />-->
-        <!--<service android:enabled="true"-->
-            <!--android:name="com.xiaomi.mipush.sdk.MessageHandleService" />-->
-
-        <!--<receiver-->
-            <!--android:name="com.easemob.chat.EMMipushReceiver"-->
-            <!--android:exported="true" >-->
-            <!--<intent-filter>-->
-                <!--<action android:name="com.xiaomi.mipush.RECEIVE_MESSAGE" />-->
-            <!--</intent-filter>-->
-            <!--<intent-filter>-->
-                <!--<action android:name="com.xiaomi.mipush.MESSAGE_ARRIVED" />-->
-            <!--</intent-filter>-->
-            <!--<intent-filter>-->
-                <!--<action android:name="com.xiaomi.mipush.ERROR" />-->
-            <!--</intent-filter>-->
-        <!--</receiver>-->
-        <!--<!xiaomi push end -->-->
         <service
             android:name="com.xiaomi.mipush.sdk.PushMessageHandler"
             android:enabled="true"
