@@ -3,6 +3,7 @@ package com.zhaidou.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,7 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
     private List<ShopTodayItem> items;
     private ViewHolder viewHolder;
     private Context context;
+    private int type;//type=1不可分享
 
     public void clear()
     {
@@ -41,10 +43,11 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
         notifyDataSetChanged();
     }
 
-    public ShopTodaySpecialAdapter(Context context, List<ShopTodayItem> items)
+    public ShopTodaySpecialAdapter(Context context, List<ShopTodayItem> items,int type)
     {
         this.context = context;
         this.items = items;
+        this.type=type;
     }
 
     class ViewHolder
@@ -171,8 +174,24 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
             @Override
             public void onClick(View view)
             {
-                GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).title, items.get(position).goodsId);
-                ((MainActivity) context).navigationToFragment(goodsDetailsFragment);
+
+                if (type==1)
+                {
+                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).title, items.get(position).goodsId);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("index", items.get(position).goodsId);
+                    bundle.putString("page", items.get(position).title);
+                    bundle.putBoolean("canShare", false);
+                    goodsDetailsFragment.setArguments(bundle);
+                    ((MainActivity) context).navigationToFragmentWithAnim(goodsDetailsFragment);
+                }
+                else
+                {
+                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).title, items.get(position).goodsId);
+                    ((MainActivity) context).navigationToFragment(goodsDetailsFragment);
+                }
+
+
             }
         });
 
