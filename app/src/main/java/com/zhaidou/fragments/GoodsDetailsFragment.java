@@ -495,6 +495,7 @@ public class GoodsDetailsFragment extends BaseFragment
 
         }
     };
+
     public static GoodsDetailsFragment newInstance(String page, String index)
     {
         GoodsDetailsFragment fragment = new GoodsDetailsFragment();
@@ -1298,9 +1299,8 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     private void share()
     {
-        DialogUtils mDialogUtils = new DialogUtils(mContext);
-        mDialogUtils.showShareDialog(mPage, mPage + "  " + shareUrl, detail!=null?detail.imageUrl:null, shareUrl, new PlatformActionListener()
-        {
+        mDialogUtil = new DialogUtils(mContext);
+        mDialogUtil.showShareDialog(mPage, mPage + "  " + shareUrl, detail != null ? detail.imageUrl : null, shareUrl, new PlatformActionListener() {
             @Override
             public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
                 Message message = handler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_completed));
