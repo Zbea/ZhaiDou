@@ -103,6 +103,7 @@
     <orderEntry type="library" exported="" name="support-annotations-20.0.0" level="project" />
     <orderEntry type="library" exported="" name="bugly_1.2.3.8__release" level="project" />
     <orderEntry type="library" exported="" name="analytics-5.6.1" level="project" />
+    <orderEntry type="library" exported="" name="glide-3.7.0" level="project" />
     <orderEntry type="library" exported="" name="securityguard-1.2.36" level="project" />
     <orderEntry type="library" exported="" name="universal-image-loader-1.9.2" level="project" />
     <orderEntry type="library" exported="" name="ShareSDK-Wechat-Moments-2.7.0" level="project" />
