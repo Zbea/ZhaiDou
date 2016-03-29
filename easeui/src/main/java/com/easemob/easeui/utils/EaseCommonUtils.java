@@ -13,8 +13,6 @@
  */
 package com.easemob.easeui.utils;
 
-import java.util.List;
-
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.content.Context;
@@ -29,6 +27,8 @@ import com.easemob.easeui.R;
 import com.easemob.easeui.domain.EaseUser;
 import com.easemob.util.EMLog;
 import com.easemob.util.HanziToPinyin;
+
+import java.util.List;
 
 public class EaseCommonUtils {
 	private static final String TAG = "CommonUtils";
