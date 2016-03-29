@@ -2,10 +2,8 @@ package com.zhaidou.base;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -21,9 +19,7 @@ import android.widget.Toast;
 
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
-import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.model.Store;
-import com.zhaidou.utils.NetStateUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.view.HeaderLayout;
 
@@ -202,8 +198,8 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     }
     protected void hideInputMethod(){
         if (inputMethodManager==null)
-            inputMethodManager=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (inputMethodManager.isActive())
+            inputMethodManager=(InputMethodManager)getActivity().getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        System.out.println("inputMethodManager.isActive() = " + inputMethodManager.isActive());
             inputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().peekDecorView().getApplicationWindowToken(),0);
     }
 
@@ -235,4 +231,10 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     public interface OnReturnSuccess{
         public void onSuccess(Store store);
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
 }

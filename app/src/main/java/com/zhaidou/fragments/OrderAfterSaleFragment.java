@@ -16,7 +16,6 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.text.TextPaint;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -357,7 +356,6 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                     }
                     isFromCamera = true;
                     File file = new File(filePath);
-                    Log.i("MENU_CAMERA_SELECTED-------------->", filePath + "------->" + imagePath.size());
                     degree = PhotoUtil.readPictureDegree(file.getAbsolutePath());
                     if (imagePath != null && !TextUtils.isEmpty(filePath.trim()) && imagePath.size() < 3) {
                         imagePath.remove("");
@@ -381,7 +379,6 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                     }
                     isFromCamera = false;
                     uri = data.getData();
-                    Log.i("MENU_PHOTO_SELECTED------------>", uri.getPath());
 
                     try {
                         Bitmap bm = null;
@@ -395,7 +392,6 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                         cursor.moveToFirst();
                         //最后根据索引值获取图片路径
                         String path = cursor.getString(column_index);
-                        Log.i("MENU_PHOTO_SELECTED------------>path", path + "---------------->" + imagePath.size());
                         ToolUtils.setImageCacheUrl("file://" + path, iv_return_img);
                         if (imagePath != null && !TextUtils.isEmpty(path.trim()) && imagePath.size() <= 3) {
                             imagePath.remove("");

@@ -78,6 +78,7 @@ public class ShopTodaySpecialFragment extends BaseFragment
     private final int UPDATE_CONTENT = 0;
     private final int UPDATE_TIMER_START_AND_DETAIL_DATA = 1;
     private final int UPDATE_CARTCAR_DATA = 2;
+    private final int UPDATE_SHARE_TOAST=3;
 
     private int page = 1;
     private int pageSize;
@@ -106,7 +107,6 @@ public class ShopTodaySpecialFragment extends BaseFragment
     private int cartCount;//购物车商品数量
     private int userId;
     private String token;
-    private boolean isChlick;//防止重复点击
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -168,6 +168,7 @@ public class ShopTodaySpecialFragment extends BaseFragment
                     {
                         mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                     }
+                    mScrollView.onRefreshComplete();
                     break;
                 case UPDATE_CARTCAR_DATA:
                     initCartTips();
@@ -175,6 +176,11 @@ public class ShopTodaySpecialFragment extends BaseFragment
                     {
                         ((MainActivity) mContext).CartTip(cartCount);
                     }
+                    break;
+                case UPDATE_SHARE_TOAST:
+                    mDialogUtils.dismiss();
+                    String result = (String) msg.obj;
+                    Toast.makeText(mContext,result,Toast.LENGTH_SHORT).show();
                     break;
             }
         }
@@ -188,7 +194,10 @@ public class ShopTodaySpecialFragment extends BaseFragment
             items.clear();
             page = 1;
             FetchData();
-            FetchCountData();
+            if (checkLogin())
+            {
+                FetchCountData();
+            }
         }
 
         @Override
@@ -236,6 +245,7 @@ public class ShopTodaySpecialFragment extends BaseFragment
             }
         }
     };
+    private DialogUtils mDialogUtils;
 
 
     public static ShopTodaySpecialFragment newInstance(String page, String index, String imageUrl)
@@ -306,9 +316,7 @@ public class ShopTodaySpecialFragment extends BaseFragment
      */
     private void initView()
     {
-        ToolUtils.setLog("22222");
         shareUrl = shareUrl + mIndex;
-
         loadingView = (LinearLayout) mView.findViewById(R.id.loadingView);
         nullNetView = (LinearLayout) mView.findViewById(R.id.nullNetline);
         nullView = (LinearLayout) mView.findViewById(R.id.nullline);
@@ -330,31 +338,28 @@ public class ShopTodaySpecialFragment extends BaseFragment
         myCartBtn.setOnClickListener(onClickListener);
 
 
-
+        mScrollView = (PullToRefreshScrollView) mView.findViewById(R.id.scrollView);
+        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
+        mScrollView.setOnRefreshListener(onRefreshListener);
         mListView = (ListViewForScrollView) mView.findViewById(R.id.shopListView);
-        adapter = new ShopTodaySpecialAdapter(mContext, items);
+        adapter = new ShopTodaySpecialAdapter(mContext, items,0);
         mListView.setAdapter(adapter);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                if (!isChlick)
-                {
-                    isChlick = true;
                     mDialog.show();
                     GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).title, items.get(position).goodsId);
                     ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
                     mDialog.dismiss();
-                }
             }
         });
 
-        mScrollView = (PullToRefreshScrollView) mView.findViewById(R.id.scrollView);
-        mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
-        mScrollView.setOnRefreshListener(onRefreshListener);
+
 
         mRequestQueue = Volley.newRequestQueue(mContext);
+        mDialogUtils = new DialogUtils(mContext);
 
         initData();
 
@@ -382,6 +387,7 @@ public class ShopTodaySpecialFragment extends BaseFragment
             if (checkLogin())
             {
                 FetchCountData();
+
             }
         } else
         {
@@ -420,25 +426,23 @@ public class ShopTodaySpecialFragment extends BaseFragment
      */
     private void share()
     {
-        DialogUtils mDialogUtils = new DialogUtils(mContext);
-        mDialogUtils.showShareDialog(mTitle, mTitle + "  " + shareUrl, mImageUrl, shareUrl, new PlatformActionListener()
-        {
+        mDialogUtils.showShareDialog(mTitle, mTitle + "  " + shareUrl, items.size() > 0 ? items.get(0).imageUrl : mImageUrl, shareUrl, new PlatformActionListener() {
             @Override
-            public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap)
-            {
-                Toast.makeText(mContext, mContext.getString(R.string.share_completed), Toast.LENGTH_SHORT).show();
+            public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
+                Message message = handler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_completed));
+                handler.sendMessage(message);
             }
 
             @Override
-            public void onError(Platform platform, int i, Throwable throwable)
-            {
-                Toast.makeText(mContext, mContext.getString(R.string.share_error), Toast.LENGTH_SHORT).show();
+            public void onError(Platform platform, int i, Throwable throwable) {
+                Message message = handler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_error));
+                handler.sendMessage(message);
             }
 
             @Override
-            public void onCancel(Platform platform, int i)
-            {
-                Toast.makeText(mContext, mContext.getString(R.string.share_cancel), Toast.LENGTH_SHORT).show();
+            public void onCancel(Platform platform, int i) {
+                Message message = handler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_cancel));
+                handler.sendMessage(message);
             }
         });
     }
@@ -602,6 +606,7 @@ public class ShopTodaySpecialFragment extends BaseFragment
             initTime = timeTvs.getTimes() - temp;
             timeTvs.setTimes(initTime);
         }
+        mDialogUtils.dismiss();
         super.onResume();
         MobclickAgent.onPageStart(mTitle);
     }
@@ -609,7 +614,6 @@ public class ShopTodaySpecialFragment extends BaseFragment
     @Override
     public void onPause()
     {
-        isChlick = false;
         systemTime = System.currentTimeMillis();
         isFrist = true;
         super.onPause();
@@ -619,11 +623,13 @@ public class ShopTodaySpecialFragment extends BaseFragment
     @Override
     public void onDestroy()
     {
+        hideInputMethod();
         if (broadcastReceiver != null)
             mContext.unregisterReceiver(broadcastReceiver);
         timeTvs.stop();
         mRequestQueue.stop();
         super.onDestroy();
     }
+
 
 }

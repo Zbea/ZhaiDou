@@ -18,7 +18,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
@@ -112,7 +111,7 @@ public class AccountFindPwdActivity extends FragmentActivity {
     };
 
     private void doVertify(final String phone, final String verifyCode) {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_RESET_PSW_CONFRIM_URL + phone + "&vcode=" + verifyCode, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(AccountFindPwdActivity.this, Request.Method.GET,ZhaiDou.USER_RESET_PSW_CONFRIM_URL + phone + "&vcode=" + verifyCode, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 String code = jsonObject.optString("code");
@@ -174,7 +173,7 @@ public class AccountFindPwdActivity extends FragmentActivity {
      * @param phone 手机号码
      */
     private void getVerifyCode(String phone) {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + "?phone=" + phone + "&flag=2", new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(AccountFindPwdActivity.this,ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + "?phone=" + phone + "&flag=2", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 String code = jsonObject.optString("code");
@@ -245,7 +244,7 @@ public class AccountFindPwdActivity extends FragmentActivity {
         String code = mCodeView.getText().toString();
         Map<String, String> valueParams = new HashMap<String, String>();
         valueParams.put("user[email]", code);
-        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_REGISTER_URL, valueParams, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(AccountFindPwdActivity.this,Request.Method.POST, ZhaiDou.USER_REGISTER_URL, valueParams, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null)

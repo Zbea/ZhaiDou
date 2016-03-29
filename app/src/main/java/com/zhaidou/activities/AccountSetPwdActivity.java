@@ -11,7 +11,6 @@ import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -82,7 +81,6 @@ public class AccountSetPwdActivity extends FragmentActivity {
         setContentView(R.layout.act_account_set_pwd_page);
         token = getIntent().getStringExtra("token");
         verifyCode = getIntent().getStringExtra("code");
-        System.out.println("AccountSetPwdActivity.onCreate---->" + verifyCode);
         phone = getIntent().getStringExtra("phone");
 
         headTitle = (TextView) findViewById(R.id.title_tv);
@@ -98,7 +96,6 @@ public class AccountSetPwdActivity extends FragmentActivity {
     }
 
     private void doReset(String password) {
-        System.out.println("AccountSetPwdActivity.doReset------>" + phone + "---" + verifyCode);
         mDialog = CustomLoadingDialog.setLoadingDialog(AccountSetPwdActivity.this, "修改密码中");
         String md5str = MD5Util.getMD5Encoding(phone + verifyCode + "adminzhaidou888");
         Map<String, String> valueParams = new HashMap<String, String>();
@@ -106,7 +103,7 @@ public class AccountSetPwdActivity extends FragmentActivity {
         valueParams.put("password", password);
         valueParams.put("md5str", md5str);
 
-        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_RESET_PSW_URL, valueParams, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(AccountSetPwdActivity.this,Request.Method.POST, ZhaiDou.USER_RESET_PSW_URL, valueParams, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null)
@@ -133,14 +130,7 @@ public class AccountSetPwdActivity extends FragmentActivity {
             public void onErrorResponse(VolleyError volleyError) {
 
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
+        });
         ((ZDApplication) getApplication()).mRequestQueue.add(request);
     }
 

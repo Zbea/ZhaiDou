@@ -1,53 +1,53 @@
 package com.zhaidou.fragments;
 
 import android.app.Dialog;
- import android.content.Context;
- import android.content.Intent;
- import android.content.SharedPreferences;
- import android.os.AsyncTask;
- import android.os.Bundle;
- import android.os.Handler;
- import android.os.Message;
- import android.support.v4.app.Fragment;
- import android.text.TextUtils;
- import android.util.Log;
- import android.view.LayoutInflater;
- import android.view.View;
- import android.view.ViewGroup;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
- import android.widget.Toast;
- import com.android.volley.RequestQueue;
- import com.android.volley.toolbox.Volley;
+import android.widget.Toast;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
- import com.zhaidou.ZhaiDou;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.AccountRegisterSetPwdActivity;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseActivity;
- import com.zhaidou.base.BaseFragment;
- import com.zhaidou.dialog.CustomLoadingDialog;
- import com.zhaidou.model.User;
+import com.zhaidou.base.BaseFragment;
+import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.model.User;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomEditText;
 
 import org.apache.http.HttpResponse;
- import org.apache.http.NameValuePair;
- import org.apache.http.client.HttpClient;
- import org.apache.http.client.entity.UrlEncodedFormEntity;
- import org.apache.http.client.methods.HttpPost;
- import org.apache.http.impl.client.DefaultHttpClient;
- import org.apache.http.message.BasicNameValuePair;
- import org.apache.http.protocol.HTTP;
- import org.json.JSONArray;
- import org.json.JSONObject;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
- import java.io.BufferedReader;
- import java.io.InputStreamReader;
- import java.util.ArrayList;
- import java.util.HashMap;
- import java.util.List;
- import java.util.Map;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
  public class RegisterFragment extends BaseFragment implements View.OnClickListener {
@@ -182,8 +182,6 @@ import org.apache.http.HttpResponse;
          protected void onPostExecute(String s) {
              if (mDialog != null)
                  mDialog.dismiss();
-             Log.i("onPostExecute------------>", s);
-             Log.i("setRegisterOrLoginListener-------->", mRegisterListener.toString());
              try {
                  JSONObject json = new JSONObject(s);
                  Object obj = json.opt("message");
@@ -266,7 +264,6 @@ import org.apache.http.HttpResponse;
      }
 
      public void setRegisterOrLoginListener(RegisterOrLoginListener mRegisterListerner) {
-         Log.i("setRegisterOrLoginListener-------->", mRegisterListerner.toString());
          this.mRegisterListener = mRegisterListerner;
      }
 

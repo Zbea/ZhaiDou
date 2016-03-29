@@ -11,15 +11,11 @@ import android.widget.RelativeLayout;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.zhaidou.R;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.utils.SharedPreferencesUtil;
-import com.zhaidou.utils.ToolUtils;
-import com.zhaidou.view.RoundImageView;
 import com.zhaidou.view.TypeFaceTextView;
 
 import java.util.List;
@@ -83,7 +79,7 @@ public class ShopSpecialAdapter extends BaseAdapter
     {
         if (convertView == null)
         {
-            convertView = LayoutInflater.from(context).inflate(R.layout.shop_special_item, null);
+            convertView = LayoutInflater.from(context).inflate(R.layout.item_home_shop_special, null);
             viewHolder = new ViewHolder();
             viewHolder.itemName = (TypeFaceTextView) convertView.findViewById(R.id.shop_name_item);
             viewHolder.itemSale = (TypeFaceTextView) convertView.findViewById(R.id.shop_name_sale);

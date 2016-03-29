@@ -25,8 +25,10 @@ import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.fragments.GoodsDetailsFragment;
 import com.zhaidou.fragments.HomeArticleListFragment;
+import com.zhaidou.fragments.HomeBeautifulFragment;
 import com.zhaidou.fragments.HomeFeatrueFragment;
 import com.zhaidou.fragments.HomeWeixinListFragment;
+import com.zhaidou.fragments.MagicDesignFragment;
 import com.zhaidou.fragments.ShopTodaySpecialFragment;
 import com.zhaidou.fragments.SpecialSaleFragment;
 import com.zhaidou.model.Category;
@@ -146,8 +148,8 @@ public class ToolUtils
     public static final void setImageCacheUrl(String url,ImageView imageView)
     {
         DisplayImageOptions options=new DisplayImageOptions.Builder()
-                .showImageForEmptyUri(R.drawable.icon_loading_defalut)
-                .showImageOnFail(R.drawable.icon_loading_defalut)
+//                .showImageForEmptyUri(R.drawable.icon_loading_defalut)
+//                .showImageOnFail(R.drawable.icon_loading_defalut)
                 .resetViewBeforeLoading(false)//default 设置图片在加载前是否重置、复位
                 .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
                 .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
@@ -192,11 +194,11 @@ public class ToolUtils
                 .showImageOnLoading(resId)
                 .showImageForEmptyUri(resId)
                 .showImageOnFail(resId)
-                .resetViewBeforeLoading(false)//default 设置图片在加载前是否重置、复位
                 .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
                 .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .imageScaleType(ImageScaleType.EXACTLY)
+//                .delayBeforeLoading(100)//载入图片前稍做延时可以提高整体滑动的流畅度
                 .build();
 
         ImageLoader.getInstance().displayImage(url, imageView,options);
@@ -412,6 +414,16 @@ public class ToolUtils
         {
             HomeWeixinListFragment homeFeatrueFragment = HomeWeixinListFragment.newInstance(item.title, item.typeValue);
             ((MainActivity) mContext).navigationToFragmentWithAnim(homeFeatrueFragment);
+        }
+        else if(item.type==8)
+        {
+            HomeBeautifulFragment goodsDetailsFragment = HomeBeautifulFragment.newInstance(item.title, 0+"");
+            ((MainActivity) mContext).navigationToFragment(goodsDetailsFragment);
+        }
+        else if(item.type==9)
+        {
+            MagicDesignFragment magicDesignFragment = MagicDesignFragment.newInstance(item.title, item.typeValue);
+            ((MainActivity) mContext).navigationToFragmentWithAnim(magicDesignFragment);
         }
         else
         {

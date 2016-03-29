@@ -11,6 +11,7 @@ import java.util.List;
  */
 public class AccountManage {
     private static AccountManage mAccountManage = null;
+    private boolean isConflict;
     private List<AccountListener> mAccountListener=new ArrayList<AccountListener>();
 
     public static AccountManage getInstance() {
@@ -31,5 +32,13 @@ public class AccountManage {
         for (AccountListener listener:mAccountListener) {
             listener.onLogOut();
         }
+    }
+
+    public boolean isConflict() {
+        return isConflict;
+    }
+
+    public void setConflict(boolean isConflict) {
+        this.isConflict = isConflict;
     }
 }

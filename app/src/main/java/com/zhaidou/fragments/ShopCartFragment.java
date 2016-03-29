@@ -471,7 +471,7 @@ public class ShopCartFragment extends BaseFragment
                 @Override
                 public void onClick(View view)
                 {
-                    if (items != null && items.size() > 0)
+                    if (items != null && items.size() >=tag)
                     {
                         GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(tag).name, items.get(tag).goodsId);
                         ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);

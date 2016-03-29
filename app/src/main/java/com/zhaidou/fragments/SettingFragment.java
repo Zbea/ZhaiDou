@@ -1,6 +1,7 @@
 package com.zhaidou.fragments;
 
 import android.app.Dialog;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,6 +28,7 @@ import com.zhaidou.base.AccountManage;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.CountManage;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
+import com.zhaidou.easeui.helpdesk.EaseHelper;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.NetworkUtils;
@@ -70,7 +72,10 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                     AccountManage.getInstance().notifyLogOut();
                     Intent intent = new Intent(ZhaiDou.IntentRefreshLoginExitTag);
                     mContext.sendBroadcast(intent);
-                    ((MainActivity) mContext).logout(SettingFragment.this);
+                    EaseHelper.getInstance().logout(true,null);
+                            ((MainActivity) mContext).logout(SettingFragment.this);
+                    NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+                    notificationManager.cancel(0525);
                     ((MainActivity) mContext).CartTip(0);
                     break;
                 case 1:
@@ -201,7 +206,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
             @Override
             public void run() {
                 String url = ZhaiDou.ApkUrl;
-                String result = NetService.getHttpService(url);
+                String result = NetService.getHttpService(url,mContext);
                 if (result != null) {
                     mHandler.obtainMessage(1, result).sendToTarget();
                 }

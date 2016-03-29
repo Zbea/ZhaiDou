@@ -19,7 +19,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -32,6 +31,7 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.ProfileManage;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.ZhaiDouRequest;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONObject;
@@ -178,19 +178,22 @@ public class ProfileEditFragment extends BaseFragment implements View.OnClickLis
                         return;
                     }
                     hideInputMethod();
-                    mParams.put("nick_name",tv_edit_msg.getText().toString().trim());
-                    UpdateUserInfo("nick_name",mParams, mProfileId);
+                    mParams.put("nick_name", tv_edit_msg.getText().toString().trim());
+                    UpdateUserInfo("nick_name", mParams,mProfileId);
                 }
                 break;
         }
     }
 
     private void UpdateUserInfo(String type,HashMap<String,String> map, String id) {
+        Object userId = SharedPreferencesUtil.getData(mContext, "userId", -1);
+        System.out.println("id = " + id+"----------------"+userId);
         mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
         Map<String, String> params = new HashMap<String, String>();
+        params.put("_method","PUT");
         params.put("id", id);
         params.put("profile", new JSONObject(map).toString());
-        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_EDIT_PROFILE_URL, params, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, ZhaiDou.USER_EDIT_PROFILE_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 mDialog.dismiss();
@@ -217,14 +220,7 @@ public class ProfileEditFragment extends BaseFragment implements View.OnClickLis
             public void onErrorResponse(VolleyError volleyError) {
 
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 

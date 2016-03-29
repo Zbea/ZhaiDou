@@ -3,8 +3,6 @@ package com.zhaidou.fragments;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,11 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -28,18 +24,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.activities.HomeCompetitionActivity;
-import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.adapter.ShopSpecialAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
@@ -50,7 +40,6 @@ import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomBannerView;
 import com.zhaidou.view.ListViewForScrollView;
-import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -90,14 +79,13 @@ public class MainHomeFragment extends BaseFragment implements
     private List<SwitchImage> banners = new ArrayList<SwitchImage>();
     private List<SwitchImage> codes = new ArrayList<SwitchImage>();
     private List<SwitchImage> specials = new ArrayList<SwitchImage>();
-    private List<SwitchImage> switchImages = new ArrayList<SwitchImage>();
     private LinearLayout loadingView, nullNetView, nullView;
     private TextView reloadBtn, reloadNetBtn;
     private CustomBannerView customBannerView;
-    private LinearLayout linearLayout, codeView;
+    private LinearLayout linearLayout, codeView, moduleView;
     private PullToRefreshScrollView mScrollView;
-    private ImageView[] specialBanner = new ImageView[3];
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
+    private long formerTime;
 
     private Handler handler = new Handler()
     {
@@ -122,7 +110,7 @@ public class MainHomeFragment extends BaseFragment implements
             {
                 setAdView();
                 setCodeView();
-                setSpecialView();
+                setModuleView();
             }
         }
     };
@@ -169,35 +157,129 @@ public class MainHomeFragment extends BaseFragment implements
             TextView codeName = (TextView) mView.findViewById(R.id.codeName);
             codeName.setText(codes.get(i).title);
             ImageView imageIv = (ImageView) mView.findViewById(R.id.codeImage);
-            ToolUtils.setImageCacheUrl(codes.get(i).imageUrl, imageIv,R.drawable.icon_loading_circle);
+            ToolUtils.setImageCacheUrl(codes.get(i).imageUrl, imageIv, R.drawable.icon_loading_circle);
             mView.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
                 {
-                    SwitchImage item = codes.get(pos);
-                    ToolUtils.setBannerGoto(item, mContext);
+                    if (isTimeInterval())
+                    {
+                        SwitchImage item = codes.get(pos);
+                        ToolUtils.setBannerGoto(item, mContext);
+                    }
                 }
             });
             codeView.addView(mView);
         }
     }
 
-    private void setSpecialView()
+    /**
+     * 设置时间间隔,防止重复点击
+     */
+    private boolean isTimeInterval()
     {
-        if (specials.size() > 0)
-        {
-            mSpecialLayout.setVisibility(View.VISIBLE);
-            for (int i = 0; i < specials.size(); i++)
-            {
-                specialBanner[i].setTag(specials.get(i));
-                ToolUtils.setImageCacheUrl(specials.get(i).imageUrl, specialBanner[i],R.drawable.icon_loading_item);
-            }
-        } else
-        {
-            mSpecialLayout.setVisibility(View.GONE);
-        }
+        long currentTime=System.currentTimeMillis();
 
+        if ((currentTime- formerTime)>1500)
+        {
+            formerTime =currentTime;
+            return true;
+        }
+        else
+        {
+            formerTime =currentTime;
+            return false;
+        }
+    }
+
+    private void setModuleView()
+    {
+        moduleView.removeAllViews();
+        if (specials.size() <= 0)
+        {
+            return;
+        }
+        int num = specials.size() % 5 > 0 ? specials.size() / 5 + 1 : specials.size()/ 5;
+        for (int i = 0; i < num; i++)
+        {
+            final int pos = i * 5;
+            final View mView = LayoutInflater.from(mContext).inflate(R.layout.item_home_module, null);
+            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+                    screenWidth, screenWidth * (1260 + 32) / 1194);
+            mView.setLayoutParams(param);
+            ImageView imageIv1 = (ImageView) mView.findViewById(R.id.moduleIv1);
+            ToolUtils.setImageCacheUrl(specials.get(pos).imageUrl, imageIv1, R.drawable.icon_loading_home_topic_big);
+            imageIv1.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    if (isTimeInterval())
+                    {
+                        SwitchImage item = specials.get(pos);
+                        ToolUtils.setBannerGoto(item, mContext);
+                    }
+                }
+            });
+            ImageView imageIv2 = (ImageView) mView.findViewById(R.id.moduleIv2);
+            ToolUtils.setImageCacheUrl(specials.get(pos + 1).imageUrl, imageIv2, R.drawable.icon_loading_home_topic_small);
+            imageIv2.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    if (isTimeInterval())
+                    {
+                        SwitchImage item = specials.get(pos + 1);
+                        ToolUtils.setBannerGoto(item, mContext);
+                    }
+                }
+            });
+            ImageView imageIv3 = (ImageView) mView.findViewById(R.id.moduleIv3);
+            ToolUtils.setImageCacheUrl(specials.get(pos + 2).imageUrl, imageIv3, R.drawable.icon_loading_home_topic_small);
+            imageIv3.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    if (isTimeInterval())
+                    {
+                        SwitchImage item = specials.get(pos + 2);
+                        ToolUtils.setBannerGoto(item, mContext);
+                    }
+                }
+            });
+            ImageView imageIv4 = (ImageView) mView.findViewById(R.id.moduleIv4);
+            ToolUtils.setImageCacheUrl(specials.get(pos + 3).imageUrl, imageIv4, R.drawable.icon_loading_home_topic_small);
+            imageIv4.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    if (isTimeInterval())
+                    {
+                        SwitchImage item = specials.get(pos + 3);
+                        ToolUtils.setBannerGoto(item, mContext);
+                    }
+                }
+            });
+            ImageView imageIv5 = (ImageView) mView.findViewById(R.id.moduleIv5);
+            ToolUtils.setImageCacheUrl(specials.get(pos + 4).imageUrl, imageIv5, R.drawable.icon_loading_home_topic_small);
+            imageIv5.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    if (isTimeInterval())
+                    {
+                        SwitchImage item = specials.get(pos + 4);
+                        ToolUtils.setBannerGoto(item, mContext);
+                    }
+                }
+            });
+            moduleView.addView(mView);
+        }
     }
 
     private OnFragmentInteractionListener mListener;
@@ -231,7 +313,7 @@ public class MainHomeFragment extends BaseFragment implements
     {
         if (view == null)
         {
-            view = inflater.inflate(R.layout.fragment_home, container, false);
+            view = inflater.inflate(R.layout.fragment_main_home, container, false);
             mContext = getActivity();
             initView();
 
@@ -262,22 +344,12 @@ public class MainHomeFragment extends BaseFragment implements
         adapterList = new ShopSpecialAdapter(mContext, items, screenWidth);
         listView.setAdapter(adapterList);
 
-        specialBanner[0] = (ImageView) view.findViewById(R.id.image1);
-        specialBanner[1] = (ImageView) view.findViewById(R.id.image2);
-        specialBanner[2] = (ImageView) view.findViewById(R.id.image3);
-        specialBanner[0].setOnClickListener(this);
-        specialBanner[1].setOnClickListener(this);
-        specialBanner[2].setOnClickListener(this);
-
         mScrollView = (PullToRefreshScrollView) view.findViewById(R.id.sv_home_scrollview);
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         mScrollView.setOnRefreshListener(this);
 
         codeView = (LinearLayout) view.findViewById(R.id.homeCodeView);
-        view.findViewById(R.id.ll_lottery).setOnClickListener(this);
-        view.findViewById(R.id.ll_special_shop).setOnClickListener(this);
-        view.findViewById(R.id.ll_sale).setOnClickListener(this);
-        view.findViewById(R.id.ll_forward).setOnClickListener(this);
+        moduleView = (LinearLayout) view.findViewById(R.id.moduleView);
 
         mSearchView = (ImageView) view.findViewById(R.id.iv_search);
         mSearchView.setOnClickListener(this);
@@ -345,31 +417,6 @@ public class MainHomeFragment extends BaseFragment implements
 //                ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
                 ((MainActivity) getActivity()).gotoCategory();
                 break;
-            case R.id.ll_lottery:
-                Intent detailIntent = new Intent(getActivity(), HomeCompetitionActivity.class);
-                detailIntent.putExtra("url", ZhaiDou.PRIZE_SCRAPING_URL);
-                detailIntent.putExtra("from", "lottery");
-                detailIntent.putExtra("title", "天天刮奖");
-                getActivity().startActivity(detailIntent);
-                break;
-
-            case R.id.ll_special_shop:
-                HomeStrategyFragment shopSpecialFragment = HomeStrategyFragment.newInstance("", 0);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopSpecialFragment);
-                break;
-
-            case R.id.ll_sale:
-                SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(specialSaleFragment);
-                break;
-            case R.id.ll_forward:
-                Intent intent1 = new Intent();
-                intent1.putExtra("url", ZhaiDou.FORWARD_URL);
-                intent1.putExtra("from", "beauty");
-                intent1.putExtra("title", "转发有喜");
-                intent1.setClass(getActivity(), ItemDetailActivity.class);
-                getActivity().startActivity(intent1);
-                break;
             case R.id.nullReload:
                 mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
                 initDate();
@@ -378,12 +425,6 @@ public class MainHomeFragment extends BaseFragment implements
                 mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
                 initDate();
                 break;
-        }
-        int viewId = view.getId();
-        if (viewId == R.id.image1 || viewId == R.id.image2 || viewId == R.id.image3)
-        {
-            SwitchImage item = (SwitchImage) view.getTag();
-            ToolUtils.setBannerGoto(item,mContext);
         }
     }
 
@@ -394,7 +435,8 @@ public class MainHomeFragment extends BaseFragment implements
     {
         final String url = ZhaiDou.HomeShopListUrl + page + "&typeEnum=1";
         ToolUtils.setLog(url);
-        JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+
+        JsonObjectRequest jr = new JsonObjectRequest(url ,new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -404,7 +446,7 @@ public class MainHomeFragment extends BaseFragment implements
                     if (mDialog != null)
                         mDialog.dismiss();
                     mScrollView.onRefreshComplete();
-                    if (currentPage==1)
+                    if (currentPage == 1)
                     {
                         nullView.setVisibility(View.VISIBLE);
                         nullNetView.setVisibility(View.GONE);
@@ -412,8 +454,8 @@ public class MainHomeFragment extends BaseFragment implements
                     return;
                 }
                 ToolUtils.setLog(response.toString());
-                int  code = response.optInt("code");
-                if(code==500)
+                int code = response.optInt("code");
+                if (code == 500)
                 {
                     if (mDialog != null)
                         mDialog.dismiss();
@@ -424,10 +466,10 @@ public class MainHomeFragment extends BaseFragment implements
                     return;
                 }
                 JSONObject jsonObject = response.optJSONObject("data");
-                pageCount = jsonObject.optInt("totalCount");
-                pageSize = jsonObject.optInt("pageSize");
-                if (jsonObject!=null)
+                if (jsonObject != null)
                 {
+                    pageCount = jsonObject.optInt("totalCount");
+                    pageSize = jsonObject.optInt("pageSize");
                     JSONArray jsonArray = jsonObject.optJSONArray("themeList");
 
                     if (jsonArray != null)
@@ -491,6 +533,9 @@ public class MainHomeFragment extends BaseFragment implements
 
     private void FetchSpecialData()
     {
+        final Map<String, String> headers = new HashMap<String, String>();
+        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeBannerUrl + "01,02,03", new Response.Listener<JSONObject>()
         {
             @Override
@@ -515,7 +560,7 @@ public class MainHomeFragment extends BaseFragment implements
                                     String typeValue = obj.optString("code");
                                     String imageUrl = obj.optString("pictureUrl");
                                     String title = obj.optString("name");
-                                    if (type==1)
+                                    if (type == 1)
                                     {
                                         typeValue = obj.optString("url");
                                     }
@@ -536,7 +581,7 @@ public class MainHomeFragment extends BaseFragment implements
                                     }
                                     if (flags.equals("03"))
                                     {
-                                        ToolUtils.setLog("switchImage:"+switchImage.type);
+                                        ToolUtils.setLog("switchImage:" + switchImage.type);
                                         codes.add(switchImage);
                                     }
                                 }
@@ -551,7 +596,14 @@ public class MainHomeFragment extends BaseFragment implements
             public void onErrorResponse(VolleyError volleyError)
             {
             }
-        });
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                return headers;
+            }
+        };
         mRequestQueue.add(request);
     }
 

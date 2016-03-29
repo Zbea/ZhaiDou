@@ -1,22 +1,11 @@
 package com.zhaidou.view;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.content.res.TypedArray;
-import android.content.res.XmlResourceParser;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
-import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -61,7 +50,6 @@ public class AutoGridView extends LinearLayout implements View.OnClickListener{
 
     public AutoGridView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        Log.i("3","3");
         mContext=context;
         setOrientation(LinearLayout.VERTICAL);
         screenWidth=this.getMeasuredWidth();

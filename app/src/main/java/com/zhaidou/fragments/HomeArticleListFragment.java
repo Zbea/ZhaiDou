@@ -6,14 +6,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +21,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
-import com.pulltorefresh.PullToRefreshListView;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
@@ -187,7 +183,6 @@ public class HomeArticleListFragment extends BaseFragment {
         JsonObjectRequest jr = new JsonObjectRequest(url,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                Log.i("FetchData--->data---->",response.toString());
                 if (page==1)
                     articleList.clear();
                 scrollView.onRefreshComplete();
@@ -209,7 +204,6 @@ public class HomeArticleListFragment extends BaseFragment {
                     Article item =new Article(id,title,img_url,is_new,reviews);
                     articleList.add(item);
                 }
-                Log.i("articleList----------------->",articleList.size()+"");
 
                 Message message = new Message();
                 message.what=UPDATE_HOMELIST;
@@ -249,7 +243,7 @@ public class HomeArticleListFragment extends BaseFragment {
             convertView = mHashMap.get(position);
 
             if (convertView==null)
-                convertView=mInflater.inflate(R.layout.home_item_list,null);
+                convertView=mInflater.inflate(R.layout.item_strategy_list,null);
 
             TextView title = ViewHolder.get(convertView, R.id.title);
             TextView articleViews = ViewHolder.get(convertView,R.id.views);

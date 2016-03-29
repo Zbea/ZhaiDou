@@ -1,9 +1,7 @@
 package com.zhaidou.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Paint;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +19,7 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.OrderItem1;
 import com.zhaidou.model.Store;
-import com.zhaidou.utils.DeviceUtils;
+import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.ToolUtils;
 
 import java.util.List;
@@ -132,12 +130,13 @@ public class ReturnDetailFragment extends BaseFragment {
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.tv_service:
-                if (DeviceUtils.isApkInstalled(getActivity(), "com.tencent.mobileqq")) {
-                    String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_Number);
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                } else {
-                    ShowToast("没有安装QQ客户端哦");
-                }
+//                if (DeviceUtils.isApkInstalled(getActivity(), "com.tencent.mobileqq")) {
+//                    String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + mContext.getResources().getString(R.string.QQ_Number);
+//                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+//                } else {
+//                    ShowToast("没有安装QQ客户端哦");
+//                }
+                EaseUtils.startKeFuActivity(mContext);
                 break;
         }
     }

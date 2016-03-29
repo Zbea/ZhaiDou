@@ -18,12 +18,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshListView;
@@ -38,6 +36,7 @@ import com.zhaidou.base.CountManage;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Order1;
 import com.zhaidou.model.Store;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -200,7 +199,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                                 params.put("userId", mUserId);
                                 params.put("clientVersion", "45");
                                 params.put("orderCode", order.orderCode);
-                                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_APPLY_CANCEL, new JSONObject(params), new Response.Listener<JSONObject>() {
+                                ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, ZhaiDou.URL_ORDER_APPLY_CANCEL,params, new Response.Listener<JSONObject>() {
                                     @Override
                                     public void onResponse(JSONObject jsonObject) {
                                         int status = jsonObject.optInt("status");
@@ -226,7 +225,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_cancel_ok), new DialogUtils.PositiveListener() {
                             @Override
                             public void onPositive() {
-                                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_CANCEL, new JSONObject(params), new Response.Listener<JSONObject>() {
+                                ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, ZhaiDou.URL_ORDER_CANCEL,params, new Response.Listener<JSONObject>() {
                                     @Override
                                     public void onResponse(JSONObject jsonObject) {
                                         int status = jsonObject.optInt("status");
@@ -265,14 +264,13 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_confirm), new DialogUtils.PositiveListener() {
                             @Override
                             public void onPositive() {
-                                System.out.println("OrderAllOrdersFragment.onPositive");
                                 Map<String, String> params = new HashMap<String, String>();
                                 params.put("businessType", "01");
                                 params.put("clientType", "ANDROID");
                                 params.put("userId", mUserId);
                                 params.put("clientVersion", "45");
                                 params.put("orderCode", order.orderCode);
-                                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_CONFIRM, new JSONObject(params), new Response.Listener<JSONObject>() {
+                                ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, ZhaiDou.URL_ORDER_CONFIRM,params, new Response.Listener<JSONObject>() {
                                     @Override
                                     public void onResponse(JSONObject jsonObject) {
                                         int status = jsonObject.optInt("status");
@@ -304,7 +302,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_delete), new DialogUtils.PositiveListener() {
                         @Override
                         public void onPositive() {
-                            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_DELETE, new JSONObject(params), new Response.Listener<JSONObject>() {
+                            ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, ZhaiDou.URL_ORDER_DELETE,params, new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject jsonObject) {
                                     int status = jsonObject.optInt("status");
@@ -361,7 +359,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         params.put("type",type);
         params.put("pageNo", page + "");
         params.put("pageSize", "10");// ZhaiDou.URL_ORDER_LIST,
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.URL_ORDER_LIST, new JSONObject(params), new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, ZhaiDou.URL_ORDER_LIST, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null) mDialog.dismiss();
@@ -395,6 +393,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                 } else {
                     ShowToast(message);
                 }
+                allOrderAdapter.notifyDataSetChanged();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -408,15 +407,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                 }
                 Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 
@@ -490,6 +481,8 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         ll_btn.setVisibility(View.GONE);
                         btn2.setBackgroundResource(R.drawable.btn_no_click_selector);
                     }
+                    if (order.orderRemainingTime<=0)
+                        tv_order_status.setText("超时过期");
                     hasUnPayOrder = true;
                     break;
                 case ZhaiDou.STATUS_DELIVERY:
@@ -542,6 +535,12 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     iv_delete.setVisibility(View.GONE);
                     ll_btn.setVisibility(View.GONE);
                     break;
+                case ZhaiDou.STATUS_RETURN_MONEY_SUCCESS:
+                    ll_btn.setVisibility(View.GONE);
+                    break;
+                default:
+                    ll_btn.setVisibility(View.GONE);
+                    break;
             }
             return convertView;
         }
@@ -549,7 +548,6 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
     @Override
     public void onDestroyView() {
-        System.out.println("OrderAllOrdersFragment.onDestroyView");
         if (timer != null) {
             timer.cancel();
             timer = null;
@@ -564,7 +562,6 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     @Override
     public void onResume() {
         if (!isDataLoaded) {//&&hasUnPayOrder
-            System.out.println("OrderAllOrdersFragment.onResume----------------------------->" + isDataLoaded);
             mOrderList.clear();
             timerMapStamp.clear();
             FetchOrderList(mCurrentPage = 1, mCurrentType);

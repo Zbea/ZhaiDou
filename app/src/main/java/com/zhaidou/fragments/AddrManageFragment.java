@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -425,10 +424,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
 
     public String executeHttpPost(String name, String mobile, String addr, String id) throws Exception
     {
-        Log.i("name--->", name == null ? "" : name);
-        Log.i("mobile--->", mobile == null ? "" : mobile);
-        Log.i("addr--->", addr == null ? "" : addr);
-        Log.i("id--->", id == null ? "" : id);
+
         BufferedReader in = null;
         try
         {

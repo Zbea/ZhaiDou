@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/icon_magic_desgin_bg">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/header_height_dimen">
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/back_btn"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:textColor="@color/text_main_color"
+            android:drawablePadding="6dp"
+            android:textSize="16sp"
+            android:text="返回"
+            android:clickable="true"
+            android:layout_centerVertical="true"
+            android:drawableLeft="@drawable/icon_back_gary"/>
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_main_color"
+            android:layout_centerInParent="true"
+            android:textSize="18sp"
+            android:text="在线设计"/>
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="80dp"
+        android:orientation="vertical"
+        android:gravity="center_vertical">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:drawablePadding="6dp"
+                android:lineSpacingMultiplier="1.3"
+                android:textSize="16sp"
+                android:text="宅豆软装服务："
+                />
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/text_normal_color"
+                android:singleLine="true"
+                android:textSize="14sp"
+                android:text=" 设计概念图，配色方案，平面点位图及软装提案"
+                />
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/text_normal_color"
+                android:singleLine="true"
+                android:textSize="14sp"
+                android:lineSpacingMultiplier="1.3"
+                android:text="（包括所有软装材料和购买渠道）"
+                />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:drawablePadding="6dp"
+                android:textSize="16sp"
+                android:lineSpacingMultiplier="1.3"
+                android:text="需要提供材料："
+                />
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_normal_color"
+                android:singleLine="true"
+                android:textSize="14sp"
+                android:layout_marginTop="10dp"
+                android:lineSpacingMultiplier="1.3"
+                android:text="户型图及尺寸、现场照片及最喜爱的装修风格"
+                />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:textColor="@color/green_color"
+            android:drawablePadding="6dp"
+            android:layout_centerVertical="true"
+            android:textSize="16sp"
+            android:layout_marginBottom="10dp"
+            android:lineSpacingMultiplier="1.3"
+            android:text="整套客厅区域设计方案：699元"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/design_rl"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_alignParentBottom="true"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/btn_green_click_bg">
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:layout_centerVertical="true"
+                    android:textSize="16sp"
+                    android:text="找她设计"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/case_rl"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_marginLeft="5dp"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/btn_red_click_selector">
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:layout_centerVertical="true"
+                    android:textSize="16sp"
+                    android:text="方案详情"/>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/caseBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:textColor="@color/text_normal_color"
+            android:drawablePadding="6dp"
+            android:layout_centerVertical="true"
+            android:layout_margin="15dp"
+            android:text="更多设计方案>>"/>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

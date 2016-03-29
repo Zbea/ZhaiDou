@@ -104,7 +104,7 @@ public class MainCategoryFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_category, container, false);
+        View view = inflater.inflate(R.layout.fragment_main_category, container, false);
         view.findViewById(R.id.searchLayout).setOnClickListener(this);
         mCategoryListView = (ListView) view.findViewById(R.id.category);
         mGridView = (GridView) view.findViewById(R.id.categoryItem);

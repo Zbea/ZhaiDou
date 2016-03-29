@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.telephony.TelephonyManager;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -30,6 +31,7 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
     protected WebView webView;
     protected String from;
     protected User user;
+    protected InputMethodManager inputMethodManager;
 
     public void navigationToFragment(Fragment fragment) {
         if (fragment != null && fragment instanceof RegisterFragment) {
@@ -102,5 +104,11 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
     public String getDeviceId() {
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         return tm.getDeviceId();
+    }
+    protected void hideInputMethod(){
+        inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        System.out.println("inputMethodManager.isActive() = " + inputMethodManager.isActive());
+//        if (inputMethodManager.isActive())
+            inputMethodManager.hideSoftInputFromWindow(getWindow().peekDecorView().getApplicationWindowToken(), 0);
     }
 }

@@ -14,7 +14,6 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -268,7 +267,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 HashMap<String,String> params =new HashMap<String, String>();
                 params.put("nick_name",tv_nick.getText().toString().trim());
                 params.put("mobile",tv_mobile.getText().toString().trim());
-                ProfileEditFragment profileFragment = ProfileEditFragment.newInstance(NICK,params, id + "", "个人昵称");
+                ProfileEditFragment profileFragment = ProfileEditFragment.newInstance(NICK,params, profileId + "", "个人昵称");
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container, profileFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
                 break;
@@ -299,7 +298,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                         user.setAddress2(address);
                         ll_addr_info.setVisibility(TextUtils.isEmpty(address) ? View.GONE : View.VISIBLE);
                         tv_addr_null.setVisibility(TextUtils.isEmpty(address) ? View.VISIBLE : View.GONE);
-                        System.out.println("name = [" + name + "], mobile = [" + mobile + "], address = [" + address + "]");
                         tv_addr_username.setText(name);
                         tv_addr_mobile.setText(mobile);
                         tv_addr.setText(address);
@@ -405,6 +403,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     String description = userObj.optString("description");
                     description = description.equals("null") ? "" : description;
                     profileId = userObj.optString("id");
+                    System.out.println("getUserData----------profileId = " + profileId);
                     boolean verified = userObj.optBoolean("verified");
                     String first_name = userObj.optString("first_name");
                     String address2 = userObj.optString("address2");
@@ -446,7 +445,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
     public void getUserInfo() {
 
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL + "?id=" + id, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,ZhaiDou.USER_SIMPLE_PROFILE_URL + "?id=" + id, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
@@ -469,7 +468,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                Log.i("volleyError---------->", volleyError.toString());
             }
         });
         mRequestQueue.add(request);
@@ -499,7 +497,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 }
                 break;
             case MENU_PHOTO_SELECTED:// 本地修改头像
-                Log.i("requestCode", "本地修改头像");
                 Uri uri = null;
                 if (data == null) {
                     return;
@@ -521,11 +518,13 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 break;
             case 2:// 裁剪头像返回
                 // TODO sent to crop
-                Log.i("裁剪头像返回----->", "裁剪头像返回");
                 if (data == null) {
                     Toast.makeText(getActivity(), "取消选择", Toast.LENGTH_SHORT).show();
                     return;
                 } else {
+                    Bundle extras = data.getExtras();
+                    boolean is_pressed_cancel = extras.getBoolean("is_pressed_cancel", false);
+                    if (!is_pressed_cancel)
                     saveCropAvator(data);
                 }
                 // 初始化文件路径
@@ -564,14 +563,11 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
      * @param data
      */
     private void saveCropAvator(Intent data) {
-        Log.i("saveCropAvator--------->", "saveCropAvator");
         Bundle extras = data.getExtras();
         if (extras != null) {
             Bitmap bitmap = extras.getParcelable("data");
-            Log.i("life", "avatar - bitmap = " + bitmap);
 
             String base64str = PhotoUtil.bitmapToBase64(bitmap);
-            Log.i("base64str0---------->", base64str);
             UpLoadTask(base64str);
         }
     }
@@ -585,7 +581,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         userParams.put("avatar", "data:image/png;base64," + base64);
         JSONObject jsonObject = new JSONObject(userParams);
         params.put("user", jsonObject.toString());
-        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_UPDATE_AVATAR_URL, params, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, ZhaiDou.USER_UPDATE_AVATAR_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
@@ -599,8 +595,9 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     user.setAvatar(avatar);
                     user.setEmail(email);
                     user.setNickName(tv_nick.getText().toString());
-                    Message message = new Message();
-                    message.what = UPDATE_USER_INFO;
+                    Message message = mHandler.obtainMessage(UPDATE_USER_INFO);
+//                    Message message = new Message();
+//                    message.what = UPDATE_USER_INFO;
                     message.obj = user;
                     mHandler.sendMessage(message);
                     ProfileManage.getInstance().notify(HEADER, "http://" + avatar);
@@ -613,14 +610,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             public void onErrorResponse(VolleyError volleyError) {
 
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 
@@ -661,7 +651,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             try {
                 result = NativeHttpUtil.post(ZhaiDou.USER_EDIT_PROFILE_URL + profileId, token, map);
             } catch (Exception e) {
-                Log.e("Exception-------->", e.getMessage());
             }
 
             return result;

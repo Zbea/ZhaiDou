@@ -2,6 +2,8 @@ package com.zhaidou.utils;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -16,14 +18,19 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.view.CustomEditText;
 
+import java.io.File;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -72,6 +79,7 @@ public class DialogUtils {
             }
         }
     };
+    private Dialog mDialog;
 
     public DialogUtils(Context mContext) {
         this.mContext = mContext;
@@ -210,7 +218,6 @@ public class DialogUtils {
             @Override
             public void dismiss() {
                 super.dismiss();
-                System.out.println("DialogUtils.dismiss");
                 if (mTimer != null) {
                     mTimer.cancel();
                     mTimer = null;
@@ -272,6 +279,7 @@ public class DialogUtils {
     }
 
     public void showShareDialog(final String title, final String content, final String imageUrl, final String url, final PlatformActionListener platformActionListener) {
+        System.out.println("title = [" + title + "], content = [" + content + "], imageUrl = [" + imageUrl + "], url = [" + url + "], platformActionListener = [" + platformActionListener + "]");
         ShareSDK.initSDK(mContext);
         View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_share_custom, null);
         GridView mGridView = (GridView) view.findViewById(R.id.gv_share);
@@ -282,7 +290,7 @@ public class DialogUtils {
                 R.drawable.skyblue_logo_qq_checked, R.drawable.skyblue_logo_qzone_checked, R.drawable.skyblue_logo_sinaweibo_checked};
         ShareAdapter shareAdapter = new ShareAdapter(mContext, titleList, drawableId);
         mGridView.setAdapter(shareAdapter);
-        final Dialog mDialog = new Dialog(mContext, R.style.custom_dialog);
+        mDialog = new Dialog(mContext, R.style.custom_dialog);
         mDialog.setCanceledOnTouchOutside(true);
         mDialog.setCancelable(true);
         mDialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -308,7 +316,11 @@ public class DialogUtils {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        mDialog.dismiss();
+//                        mDialog.dismiss();
+                        if (!com.alibaba.sdk.android.util.NetworkUtils.isNetworkAvaiable(mContext)){
+                            Toast.makeText(mContext, "网络异常", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         Wechat.ShareParams weChatSP = new Wechat.ShareParams();
                         weChatSP.setTitle(title);
                         weChatSP.setText(content);
@@ -317,10 +329,15 @@ public class DialogUtils {
                         weChatSP.setShareType(Platform.SHARE_WEBPAGE);
                         Platform wechat = ShareSDK.getPlatform(Wechat.NAME);
                         wechat.setPlatformActionListener(platformActionListener);
+                        wechat.removeAccount(true);
                         wechat.share(weChatSP);
                         break;
                     case 1:
-                        mDialog.dismiss();
+//                        mDialog.dismiss();
+                        if (!com.alibaba.sdk.android.util.NetworkUtils.isNetworkAvaiable(mContext)){
+                            Toast.makeText(mContext,"网络异常",Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         WechatMoments.ShareParams WMSP = new WechatMoments.ShareParams();
                         WMSP.setShareType(Platform.SHARE_WEBPAGE);
                         WMSP.setTitle(title);
@@ -329,30 +346,56 @@ public class DialogUtils {
                         WMSP.setUrl(url);
                         Platform wm = ShareSDK.getPlatform(WechatMoments.NAME);
                         wm.setPlatformActionListener(platformActionListener);
+                        wm.removeAccount(true);
                         wm.share(WMSP);
                         break;
                     case 2:
                         mDialog.dismiss();
+                        if (!com.alibaba.sdk.android.util.NetworkUtils.isNetworkAvaiable(mContext)){
+                            Toast.makeText(mContext,"网络异常",Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         cn.sharesdk.sina.weibo.SinaWeibo.ShareParams sp = new cn.sharesdk.sina.weibo.SinaWeibo.ShareParams();
                         sp.setText(content);
-                        sp.setImageUrl(imageUrl);
+                        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                            Collection<String> keys = ImageLoader.getInstance().getMemoryCache().keys();
+                            Iterator<String> iterator = keys.iterator();
+                            while (iterator.hasNext()) {
+                                String next = iterator.next();
+                                if (!TextUtils.isEmpty(imageUrl)&&next.contains(imageUrl)) {
+                                    Bitmap bitmap = ImageLoader.getInstance().getMemoryCache().get(next);
+                                    File sina = PhotoUtil.saveBitmapFile(bitmap, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + "/sina.jpg");
+                                    sp.setImagePath(sina.getAbsolutePath());
+                                }
+                            }
+                        }
                         Platform weibo = ShareSDK.getPlatform(SinaWeibo.NAME);
+                        weibo.removeAccount(true);
                         weibo.setPlatformActionListener(platformActionListener);
                         weibo.share(sp);
                         break;
                     case 3:
                         mDialog.dismiss();
+                        if (!com.alibaba.sdk.android.util.NetworkUtils.isNetworkAvaiable(mContext)){
+                            Toast.makeText(mContext,"网络异常",Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         QQ.ShareParams QQSp = new QQ.ShareParams();
                         QQSp.setTitle(title);
                         QQSp.setTitleUrl(url);
                         QQSp.setText(content);
                         QQSp.setImageUrl(imageUrl);
                         Platform qq = ShareSDK.getPlatform(QQ.NAME);
+                        qq.removeAccount(true);
                         qq.setPlatformActionListener(platformActionListener);
                         qq.share(QQSp);
                         break;
                     case 4:
                         mDialog.dismiss();
+                        if (!com.alibaba.sdk.android.util.NetworkUtils.isNetworkAvaiable(mContext)){
+                            Toast.makeText(mContext,"网络异常",Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         QZone.ShareParams QZoneSP = new QZone.ShareParams();
                         QZoneSP.setTitle(title);
                         QZoneSP.setTitleUrl(url); // 标题的超链接
@@ -361,6 +404,7 @@ public class DialogUtils {
                         QZoneSP.setSite(mContext.getString(R.string.app_name));
                         QZoneSP.setSiteUrl(url);
                         Platform qzone = ShareSDK.getPlatform(QZone.NAME);
+                        qzone.removeAccount(true);
                         qzone.setPlatformActionListener(platformActionListener); // 设置分享事件回调
                         qzone.share(QZoneSP);
                         break;
@@ -370,6 +414,12 @@ public class DialogUtils {
                 }
             }
         });
+    }
+
+    public void dismiss(){
+        System.out.println("mDialog = " + mDialog);
+        if (mDialog!=null)
+            mDialog.dismiss();
     }
 
     public class ShareAdapter extends BaseListAdapter<String> {

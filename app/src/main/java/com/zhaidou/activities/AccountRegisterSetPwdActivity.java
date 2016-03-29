@@ -18,7 +18,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
@@ -139,10 +138,9 @@ public class AccountRegisterSetPwdActivity extends FragmentActivity {
      */
     private void getVerifyCode() {
         codeTimer();
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_REGISTER_VERIFY_CODE_URL+"?phone="+phone+"&flag=1",new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(AccountRegisterSetPwdActivity.this,ZhaiDou.USER_REGISTER_VERIFY_CODE_URL+"?phone="+phone+"&flag=1",new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                System.out.println("AccountRegisterSetPwdActivity.onResponse---------->"+jsonObject.toString());
                 JSONObject dataObj = jsonObject.optJSONObject("data");
                 String message=dataObj.optString("message");
                 int status= dataObj.optInt("status");
@@ -203,7 +201,7 @@ public class AccountRegisterSetPwdActivity extends FragmentActivity {
         valueParams.put("phone", phone);
         valueParams.put("vcode", code);
         valueParams.put("password", pwd);
-        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_REGISTER_WITH_PHONE_URL, valueParams, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(AccountRegisterSetPwdActivity.this,Request.Method.POST, ZhaiDou.USER_REGISTER_WITH_PHONE_URL, valueParams, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null)
