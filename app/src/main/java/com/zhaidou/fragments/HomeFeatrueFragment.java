@@ -161,7 +161,7 @@ public class HomeFeatrueFragment extends BaseFragment {
                     contactQQ.setVisibility(View.GONE);
                     break;
                 case UPDATE_DOUBLE_LIST:
-                    setAddImage();
+                    setAddImage(bannerLine,imageUrl,false);
                     mScrollView.onRefreshComplete();
                     if (pageCount > pageSize * page)
                     {
@@ -179,53 +179,10 @@ public class HomeFeatrueFragment extends BaseFragment {
                     contactQQ.setVisibility(View.GONE);
                     break;
                 case UPDATE_ARTICLE_SHOPPING:
-
-                    ToolUtils.setImageCacheUrl(imageUrl,imageIv,R.drawable.icon_loading_item);
+                    setAddImage(imageIv,imageUrl,true);
+                    setAddImage(infoImage,shopSpecialItem.imageUrl,true);
+//                    ToolUtils.setImageCacheUrl(imageUrl,imageIv,R.drawable.icon_loading_item);
                     infoTv.setText(introduce);
-
-                    DisplayImageOptions options=new DisplayImageOptions.Builder()
-                            .showImageOnLoading(R.drawable.icon_loading_item)
-                            .showImageForEmptyUri(R.drawable.icon_loading_item)
-                            .showImageOnFail(R.drawable.icon_loading_item)
-                            .resetViewBeforeLoading(false)//default 设置图片在加载前是否重置、复位
-                            .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
-                            .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
-                            .bitmapConfig(Bitmap.Config.RGB_565)
-                            .imageScaleType(ImageScaleType.EXACTLY)
-                            .build();
-                    ImageLoader.getInstance().displayImage(shopSpecialItem.imageUrl, infoImage, options, new ImageLoadingListener()
-                    {
-                        @Override
-                        public void onLoadingStarted(String s, View view)
-                        {
-                        }
-                        @Override
-                        public void onLoadingFailed(String s, View view, FailReason failReason)
-                        {
-                        }
-                        @Override
-                        public void onLoadingComplete(String s, View view, Bitmap bitmap)
-                        {
-                            if (bitmap != null)
-                            {
-                                LargeImgView imageView1 = (LargeImgView) view;
-                                imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
-                                if (bitmap.getHeight() < 4000)
-                                {
-                                    imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
-                                    imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, bitmap.getHeight() * screenWidth / bitmap.getWidth()));
-                                    imageView1.setImageBitmap(bitmap);
-                                } else
-                                {
-                                    imageView1.setImageBitmapLarge(bitmap);
-                                }
-                            }
-                        }
-                        @Override
-                        public void onLoadingCancelled(String s, View view)
-                        {
-                        }
-                    });
 
                     articleShoppingpAdapter.notifyDataSetChanged();
                     mScrollView.onRefreshComplete();
@@ -389,8 +346,8 @@ public class HomeFeatrueFragment extends BaseFragment {
                 }
             });
 
-            imageIv=(ImageView)rootView.findViewById(R.id.detailsImageIv);
-            imageIv.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 316 / 722));
+            imageIv=(ImageView)rootView.findViewById(R.id.detailsImageIvs);
+            imageIv.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
             infoTv=(TextView)rootView.findViewById(R.id.infoTv);
             infoImage=(LargeImgView)rootView.findViewById(R.id.infoImage);
             articleLine=(LinearLayout) rootView.findViewById(R.id.articleLine);
@@ -486,7 +443,7 @@ public class HomeFeatrueFragment extends BaseFragment {
         ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
     }
 
-    private void setAddImage()
+    private void setAddImage(ImageView imgView,String url, final boolean flags)
     {
         DisplayImageOptions options=new DisplayImageOptions.Builder()
                 .showImageOnLoading(R.drawable.icon_loading_item)
@@ -494,9 +451,9 @@ public class HomeFeatrueFragment extends BaseFragment {
                 .showImageOnFail(R.drawable.icon_loading_item)
                 .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
                 .bitmapConfig(Bitmap.Config.RGB_565)
-                .imageScaleType(ImageScaleType.EXACTLY)
+                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
                 .build();
-        ImageLoader.getInstance().displayImage(imageUrl, bannerLine, options, new ImageLoadingListener()
+        ImageLoader.getInstance().displayImage(url, imgView, options, new ImageLoadingListener()
         {
             @Override
             public void onLoadingStarted(String s, View view)
@@ -511,21 +468,33 @@ public class HomeFeatrueFragment extends BaseFragment {
             @Override
             public void onLoadingComplete(String s, View view, Bitmap bitmap)
             {
-                if (bitmap != null)
+                if (flags)
                 {
-                    LargeImgView imageView1 = (LargeImgView) view;
+                    ImageView imageView1 = (ImageView) view;
                     imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (screenWidth * bitmap.getHeight() / bitmap.getWidth()));
-                    bannerLine.setLayoutParams(params);
-                    imageView1.setLayoutParams(params);
-                    if (bitmap.getHeight() < 4000)
-                    {
+                        imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
+                        imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, bitmap.getHeight() * screenWidth / bitmap.getWidth()));
                         imageView1.setImageBitmap(bitmap);
-                    } else
+                }
+                else
+                {
+                    if (bitmap != null)
                     {
-                        imageView1.setImageBitmapLarge(bitmap);
+                        LargeImgView imageView1 = (LargeImgView) view;
+                        imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
+                        if (bitmap.getHeight() < 4000)
+                        {
+                            imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
+                            imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, bitmap.getHeight() * screenWidth / bitmap.getWidth()));
+                            imageView1.setImageBitmap(bitmap);
+                        } else
+                        {
+                            imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+                            imageView1.setImageBitmapLarge(bitmap);
+                        }
                     }
                 }
+
             }
 
             @Override

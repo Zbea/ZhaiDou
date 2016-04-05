@@ -264,7 +264,7 @@ public class ShopPaymentFragment extends BaseFragment
         mDialogUtils=new DialogUtils(mContext);
         api = WXAPIFactory.createWXAPI(mContext, null);
         api.registerApp("wxce03c66622e5b243");
-        ToolUtils.setLog("api:"+api.registerApp("wxce03c66622e5b243"));
+
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         userName = (String) SharedPreferencesUtil.getData(getActivity(), "nickName", "");
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
@@ -512,7 +512,7 @@ public class ShopPaymentFragment extends BaseFragment
                                     final String mpackage = object.optString("packageValue");
                                     final String nonceStr = object.optString("nonceString");
                                     final String prepayId = object.optString("prepayId");
-                                    final String paySign = object.optString("");
+                                    final String paySign = object.optString("sign");
                                     final String partnerId = object.optString("partnerId");
                                     PayReq request = new PayReq();
 
@@ -523,7 +523,8 @@ public class ShopPaymentFragment extends BaseFragment
                                     request.nonceStr = nonceStr;
                                     request.timeStamp = timeStamp;
                                     request.sign = paySign;
-                                    api.sendReq(request);
+//                                    api.sendReq(request);
+                                    ToolUtils.setLog("状态"+api.sendReq(request));
 
                                 } else
                                 {

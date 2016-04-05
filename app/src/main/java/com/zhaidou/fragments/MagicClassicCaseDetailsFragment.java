@@ -9,6 +9,8 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -95,27 +97,18 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
                 ToolUtils.setImageCacheUrl(imageUrl, imageIv, R.drawable.icon_loading_defalut);
                 ToolUtils.setLog(introduce);
                 webview.loadData(introduce, "text/html; charset=UTF-8", "UTF-8");
-                webview.getSettings().setJavaScriptEnabled(true);
-//                webview.setWebViewClient(new WebViewClient()
-//                {
-//                    @Override
-//                    public void onPageFinished(WebView view, String url)
-//                     {
-//                        view.loadUrl("javascript:!function(){" +
-//
-//                                "s=document.createElement('style');s.innerHTML="
-//
-//                                + "\"@font-face{font-family:FZLTXHK;src:url('**injection**/FZLTXHK.TTF');}*{font-family:FZLTXHK !important;}\";"
-//
-//                                + "document.getElementsByTagName('head')[0].appendChild(s);" +
-//
-//                                "document.getElementsByTagName('body')[0].style.fontFamily = \"FZLTXHK\";}()");
-//                        super.onPageFinished(view, url);
-//                    }
-//                }
-//                );
+                webview.setWebViewClient(new WebViewClient()
+                 {
+                     @Override
+                     public boolean shouldOverrideUrlLoading(WebView view, String url)
+                      {
+                        view.loadUrl(url);
+                        return false;
+                      }
+                  }
+                );
 
-                if (pageCount > pageSize*page)
+                if (pageCount > pageSize * page)
                 {
                     mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
                 } else
@@ -125,7 +118,7 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
                 titleTv.setText(title);
                 loadingView.setVisibility(View.GONE);
                 contactQQ.setVisibility(View.VISIBLE);
-                nullGoods.setVisibility(items.size()>0?View.GONE:View.VISIBLE);
+                nullGoods.setVisibility(items.size() > 0 ? View.GONE : View.VISIBLE);
                 articleShoppingAdapter.notifyDataSetChanged();
                 mScrollView.onRefreshComplete();
             }
@@ -146,7 +139,7 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView)
         {
-            page=page+1;
+            page = page + 1;
             FetchData();
         }
     };
@@ -257,7 +250,7 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
             }
         });
 
-        nullGoods= (TextView) view.findViewById(R.id.nullGoods);
+        nullGoods = (TextView) view.findViewById(R.id.nullGoods);
 
         contactQQ = (RelativeLayout) view.findViewById(R.id.rl_qq_contact);
         contactQQ.setOnClickListener(onClickListener);
@@ -344,8 +337,8 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
                                     String code = obj.optString("productCode");
                                     String Listtitle = obj.optString("productName");
                                     DecimalFormat df = new DecimalFormat("#.00");
-                                    double price =Double.parseDouble(df.format(obj.optDouble("tshPrice"))) ;
-                                    double cost_price =Double.parseDouble(df.format(obj.optDouble("marketPrice")));
+                                    double price = Double.parseDouble(df.format(obj.optDouble("tshPrice")));
+                                    double cost_price = Double.parseDouble(df.format(obj.optDouble("marketPrice")));
                                     String imageUrl = obj.optString("mainPic");
                                     int num = obj.optInt("totalStock");
                                     ShopTodayItem shopTodayItem = new ShopTodayItem(code, Listtitle, imageUrl, price, cost_price, num, 0);

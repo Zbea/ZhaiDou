@@ -188,7 +188,7 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:id="@+id/detailsImageIv"
+                    android:id="@+id/detailsImageIvs"
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:scaleType="fitXY"
@@ -290,7 +290,7 @@
     <RelativeLayout
         android:id="@+id/rl_qq_contact"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
         android:layout_alignParentBottom="true"
         android:background="@color/green_color">
 
