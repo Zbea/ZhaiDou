@@ -307,7 +307,11 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                     JSONObject dataObj = jsonObject.optJSONObject("data");
 
                     JSONObject userObj = dataObj.optJSONObject("user");
-                    String avatar = userObj.optJSONObject("avatar").optString("url");
+                    String avatar="";
+                    if (userObj.optJSONObject("avatar")!=null)
+                    {
+                        avatar = userObj.optJSONObject("avatar").optString("url");
+                    }
                     String nick_name = userObj.optString("nick_name");
                     String province = userObj.optString("province");
                     String city = userObj.optString("city");

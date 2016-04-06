@@ -29,8 +29,8 @@ public class ZhaiDouRequest extends Request<JSONObject> {
 
     private final Response.Listener<JSONObject> mListener;
     private Map<String,String> params;
-    protected Map<String,String> mHeaders;
-    protected Context mContext;
+    private Map<String,String> mHeaders;
+    private Context mContext;
 
     public ZhaiDouRequest(Context context, String url, Response.Listener<JSONObject> listener,
                           Response.ErrorListener errorListener) {
@@ -50,6 +50,8 @@ public class ZhaiDouRequest extends Request<JSONObject> {
     public ZhaiDouRequest(Context context,int method,String url,Map<String,String> params, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
         this(context,Method.POST, url, listener, errorListener);
         this.params=params;
+        mContext=context;
+        initHeader();
     }
 
     @Override
@@ -86,7 +88,7 @@ public class ZhaiDouRequest extends Request<JSONObject> {
 
     private void initHeader(){
         mHeaders=new HashMap<String, String>();
-        mHeaders.put("SECAuthorization", (String) SharedPreferencesUtil.getData(mContext,"token",""));
+        mHeaders.put("SECAuthorization", (String) SharedPreferencesUtil.getData(mContext, "token", ""));
         mHeaders.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
     }
 

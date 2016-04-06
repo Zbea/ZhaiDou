@@ -22,10 +22,12 @@ import com.alibaba.sdk.android.callback.CallbackContext;
 import com.alibaba.sdk.android.login.LoginService;
 import com.alibaba.sdk.android.login.callback.LoginCallback;
 import com.alibaba.sdk.android.session.model.Session;
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
@@ -47,6 +49,7 @@ import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomEditText;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.security.MessageDigest;
@@ -87,6 +90,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     RequestQueue requestQueue;
     private DialogUtils mDialogUtils;
     private boolean validate_phone = false;
+    private String token;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -304,7 +308,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         params.put("uid", userId);
         params.put("provider", tag);
         params.put("nick_name", nick);
-
         ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,Request.Method.POST, ZhaiDou.USER_LOGIN_THIRD_VERIFY_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -326,7 +329,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     thirdPartyRegisterTask(registers);
                 } else {
                     JSONObject userJson = dataObj.optJSONObject("user");
-                    String token = userJson.optJSONObject("user_tokens").optString("token");
+                    token = userJson.optJSONObject("user_tokens").optString("token");
                     JSONArray userArray = userJson.optJSONArray("users");
                     if (userArray != null && userArray.length() > 0) {
                         JSONObject user = userArray.optJSONObject(0);
@@ -349,13 +352,30 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     }
 
     private void bingPhoneTask(String phone, String verifyCode, final Dialog mDialog, final String token) {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("phone", phone);
-        params.put("vcode", verifyCode);
-        ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,Request.Method.POST, ZhaiDou.USER_LOGIN_BINE_PHONE_URL, params, new Response.Listener<JSONObject>() {
+        JSONObject params = new JSONObject();
+        try
+        {
+            params.put("phone", phone);
+            params.put("vcode", verifyCode);
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_BINE_PHONE_URL, params, new Response.Listener<JSONObject>()
+        {
             @Override
-            public void onResponse(JSONObject jsonObject) {
+            public void onResponse(JSONObject jsonObject)
+            {
+                if(jsonObject==null)
+                {
+                    return;
+                }
+                ToolUtils.setLog(jsonObject.toString());
                 JSONObject dataObj = jsonObject.optJSONObject("data");
+                if(dataObj==null)
+                {
+                    return;
+                }
                 int status = dataObj.optInt("status");
                 if (201 == status) {
                     mDialog.dismiss();
@@ -373,14 +393,28 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     String message = dataObj.optString("message");
                     Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                 }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
 
             }
-        });
-        ((ZDApplication) getApplication()).mRequestQueue.add(request);
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                if (mDialog != null)
+                    mDialog.dismiss();
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", getApplicationContext().getResources().getString(R.string.app_versionName));
+                headers.put("SECAuthorization", token);
+                return headers;
+            }
+        };
+        requestQueue.add(request);
     }
 
     private void authorize(Platform plat) {
