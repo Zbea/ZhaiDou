@@ -273,6 +273,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             case R.id.ll_qq:
                 Platform qq = ShareSDK.getPlatform(QQ.NAME);
                 authorize(qq);
+                ToolUtils.setLog("开始qq注册");
                 break;
             case R.id.ll_weibo:
                 //新浪微博
@@ -410,6 +411,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         } else {
             plat.SSOSetting(false);
         }
+        ToolUtils.setLog("注册");
         plat.showUser(null);
     }
 
@@ -452,6 +454,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     @Override
     public void onComplete(final Platform platform, int i, final HashMap<String, Object> stringObjectHashMap) {
         mHandler.sendEmptyMessage(SHOW_DIALOG);
+        ToolUtils.setLog("拿到第三方注册数据");
         Log.i("onComplete----->", platform.getName() + "---" + i);
         Log.i("stringObjectHashMap", stringObjectHashMap.toString());
         String plat = platform.getName();
@@ -471,7 +474,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 
     @Override
     public void onError(Platform platform, int i, Throwable throwable) {
-        Log.i("platform----->", platform.getName() + "---" + i + throwable.getMessage().toString());
+        Log.i("platform----->", platform.getName() + "---" + i );
     }
 
     @Override
@@ -520,6 +523,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     int status = jsonObject.optInt("status");
                     String message = jsonObject.optString("message");
                     if (status == 200) {
+                        ToolUtils.setLog("注册成功了");
                         JSONObject dataObj = jsonObject.optJSONObject("data");
                         JSONArray errMsg = jsonObject.optJSONArray("message");
                         if (errMsg != null) {

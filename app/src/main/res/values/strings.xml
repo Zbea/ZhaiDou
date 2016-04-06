@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
     <string name="app_name">宅豆</string>
-    <string name="app_versionName">3.2</string>
+    <string name="app_versionName">3.1.1</string>
     <string name="loading_fail_txt">抱歉,加载失败,请重试</string>
     <string name="net_fail_txt">抱歉,网络连接失败</string>
     <string name="phone_lose_txt">抱歉,无效手机号码</string>
