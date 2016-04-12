@@ -29,7 +29,9 @@ public class CartGoodsItem implements Serializable
     public double saveTotalMoney;
     //总钱
     public double totalMoney;
-    //添加数量
+    /**
+     * 添加数量
+     */
     public int num;
     //商品库存
     public int count;

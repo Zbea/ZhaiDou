@@ -229,6 +229,43 @@
 
             </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/jsCouponLine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/default_margin"
+            android:padding="@dimen/default_margin"
+            android:background="@color/white"
+            >
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/text_main_color"
+                android:textSize="16sp"
+                android:text="优惠卷"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:marqueeRepeatLimit="marquee_forever"/>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/jsCouponTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.000001"
+                android:textColor="@color/green_color"
+                android:textSize="16sp"
+                android:text="满300减50元"
+                android:drawableRight="@drawable/icon_arrow_right"
+                android:drawablePadding="10dp"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:marqueeRepeatLimit="marquee_forever"/>
+
+            </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -281,6 +318,43 @@
 
                     <TextView
                         android:id="@+id/jsPriceTotalTv"
+                        android:layout_width="150dp"
+                        android:gravity="right|center_vertical"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.000001"
+                        android:textSize="16sp"
+                        android:textColor="@color/red"
+                        android:singleLine="true"
+                        android:text="￥ 555.5"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="@color/line_color"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/default_margin"
+                    android:gravity="center_vertical"
+                    >
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/text_main_color"
+                        android:text="优惠金额"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:marqueeRepeatLimit="marquee_forever"/>
+
+                    <TextView
+                        android:id="@+id/jsPriceCouponTv"
                         android:layout_width="150dp"
                         android:gravity="right|center_vertical"
                         android:layout_height="wrap_content"

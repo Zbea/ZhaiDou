@@ -18,10 +18,12 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_web_view">关闭</string>
 
-    <string name="title_main_magic_classic_case">免费经典方案</string>
-    <string name="title_main_magic_image_case">免费软装图例</string>
-    <string name="title_main_magic_choose_consult">免费选款咨询</string>
-    <string name="title_main_magic_online_design">在线设计服务</string>
+    <string name="title_main_magic_classic_case">改造案例</string>
+    <string name="title_main_magic_image_case">软装图库</string>
+    <string name="title_main_magic_guide">软装指南</string>
+    <string name="title_main_magic_online_design">在线设计</string>
+    <string name="title_main_magic_classroom">色彩课堂</string>
+    <string name="title_main_magic_diy">DIY搭配</string>
     
     <string name="home_shop_special_text">特卖商城</string>
     <string name="shop_taday_special_text">今日特卖</string>
@@ -201,6 +203,15 @@
         <item>0元的怎么要运费，可以包邮吗？</item>
         <item>商品质量有保障吗？</item>
         <item>品牌的是正品吗？</item>
+    </array>
+    <!--软装指南-->
+    <array name="magicGuide">
+        <item>软装设计是如何收费的?</item>
+        <item>软装设计的流程是怎样的？</item>
+        <item>你们推荐的商品是自营的吗？质量有保障吗？</item>
+        <item>DIY搭配工具里的单品可以购买吗？</item>
+        <item>硬装已做好，但不是很满意，想通过软装改善一下！</item>
+        <item>多久能给我方案呢？</item>
     </array>
 
 </resources>

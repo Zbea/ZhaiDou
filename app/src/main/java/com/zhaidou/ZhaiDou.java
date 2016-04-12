@@ -6,11 +6,11 @@ package com.zhaidou;
 public class ZhaiDou {
 
     public static String HOME_PAGE_URL = "http://buy.zhaidou.com/?json=get_category_posts&slug=%E5%AE%B6%E9%A5%B0%E4%BC%98%E9%80%89&status=publish";
-//    public static String HOME_BASE_URL = "http://tportal-web.zhaidou.com/";
-//    public static String HOME_BASE="http://stg.zhaidou.com/";
+    public static String HOME_BASE_URL = "http://tportal-web.zhaidou.com/";
+    public static String HOME_BASE="http://stg.zhaidou.com/";
 
-    public static String HOME_BASE_URL = "http://portal-web.zhaidou.com/";
-    public static String HOME_BASE="http://www.zhaidou.com/";
+//    public static String HOME_BASE_URL = "http://portal-web.zhaidou.com/";
+//    public static String HOME_BASE="http://www.zhaidou.com/";
 
 
     //美丽家
@@ -71,6 +71,11 @@ public class ZhaiDou {
     public static String CommitPaymentUrl=HOME_BASE_URL+"pay/payConfirm.action";
     //获取订单详情
     public static String GetOrderDetailsUrl=HOME_BASE_URL+"order/getOrderDetail.action";
+
+    //获取可使用优惠劵列表:
+    public static String GetOrderCouponUrl=HOME_BASE_URL+"user/getEnableCoupons.action";
+    //获取默认优惠劵:
+    public static String GetOrderCouponDefaultUrl=HOME_BASE_URL+"user/getEnableCoupons_default.action";
 
     //地址列表
     public static String AddressListUrl=HOME_BASE_URL+"user/receivers.action";

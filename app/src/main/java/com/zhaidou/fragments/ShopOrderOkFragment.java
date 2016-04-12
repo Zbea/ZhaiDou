@@ -39,6 +39,7 @@ import com.zhaidou.dialog.CustomToastDialog;
 import com.zhaidou.model.Address;
 import com.zhaidou.model.CartArrayItem;
 import com.zhaidou.model.CartGoodsItem;
+import com.zhaidou.model.Coupon;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -55,12 +56,16 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +93,8 @@ public class ShopOrderOkFragment extends BaseFragment
     private TypeFaceTextView backBtn, titleTv;
     private Button okBtn;
     private LinearLayout orderAddressInfoLine, orderAddressNullLine, orderAddressEditLine;
-    private LinearLayout orderGoodsListLine, orderVerifyLine;
+    private LinearLayout orderGoodsListLine, orderVerifyLine,orderCouponLine;
+    private TextView couponNameTv, moneyCouponTv;
     private TypeFaceEditText bzInfo;
     private TextView moneyTv, moneyYfTv, moneyTotalTv;
     private TextView addressNameTv, addressPhoneTv, addressinfoTv, noFreeTv;
@@ -122,6 +128,8 @@ public class ShopOrderOkFragment extends BaseFragment
     private final int UPDATE_VERFIY = 6;
     private final int UPDATE_VERFIY_SUCCESSS = 7;
     private final int UPDATE_GETSMS_SUCCESSS = 8;
+    private final int UPDATE_COUPON_SUCCESSS = 9;
+    private final int UPDATE_NULLCOUPON_SUCCESSS = 10;
 
     private boolean isOSaleBuy;//是否已经购买过零元特卖
     private boolean isOSale;//是否含有零元特卖
@@ -135,6 +143,10 @@ public class ShopOrderOkFragment extends BaseFragment
     private int flags = 2;//1代表立即购买
     private ArrayList<CartArrayItem> cartArrayItems=new ArrayList<CartArrayItem>();
     private List<CartArrayItem> orderArrayItems=new ArrayList<CartArrayItem>();
+    private JSONArray goodsArray;
+    private Coupon mCoupon;
+    private int mStatus=0;
+
 
     private Handler handler = new Handler()
     {
@@ -232,7 +244,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     {
                         verifyView.setVisibility(View.GONE);
                     }
-                    FetchAddressData();
+                    FetchCouponData();
                     break;
                 case UPDATE_VERFIY_SUCCESSS:
                     isVerify=false;
@@ -241,6 +253,16 @@ public class ShopOrderOkFragment extends BaseFragment
                     break;
                 case UPDATE_GETSMS_SUCCESSS:
                     codeTimer();
+                    break;
+                case UPDATE_COUPON_SUCCESSS:
+                    couponNameTv.setText(mCoupon.info);
+                    moneyCouponTv.setText("￥"+ToolUtils.isIntPrice(mCoupon.money+""));
+                    FetchAddressData();
+                    break;
+                case UPDATE_NULLCOUPON_SUCCESSS:
+                    couponNameTv.setText("不使用优惠券");
+                    moneyCouponTv.setText("￥"+0);
+                    FetchAddressData();
                     break;
             }
         }
@@ -384,6 +406,32 @@ public class ShopOrderOkFragment extends BaseFragment
                         ToolUtils.setToast(mContext, R.string.phone_lose_txt);
                     }
                     break;
+                case R.id.jsCouponLine:
+                    if (goodsArray==null)
+                        setGoodsArray();
+                    final ShopOrderSelectCouponFragment s = ShopOrderSelectCouponFragment.newInstance("", mStatus, mCoupon, goodsArray.toString());
+                    ((MainActivity) getActivity()).navigationToFragment(s);
+                    s.setOnCouponListener(new ShopOrderSelectCouponFragment.OnCouponListener()
+                    {
+                        @Override
+                        public void onDefaultCouponChange(Coupon coupon)
+                        {
+                            if (coupon==null)
+                            {
+                                couponNameTv.setText("不使用优惠券");
+                                moneyCouponTv.setText("￥"+0);
+                            }
+                            else
+                            {
+                                mCoupon=coupon;
+                                couponNameTv.setText(mCoupon.info);
+                                moneyCouponTv.setText("￥"+ToolUtils.isIntPrice(mCoupon.money+""));
+                            }
+
+                        }
+                    });
+
+                    break;
                 case R.id.nullReload:
                     initData();
                     break;
@@ -447,7 +495,6 @@ public class ShopOrderOkFragment extends BaseFragment
      */
     private void initView()
     {
-        ToolUtils.setLog("flags"+flags);
         if (flags!=1)
         {
             Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
@@ -497,6 +544,12 @@ public class ShopOrderOkFragment extends BaseFragment
                 isNoFree = true;
             }
         }
+
+        orderCouponLine = (LinearLayout) mView.findViewById(R.id.jsCouponLine);
+        orderCouponLine.setOnClickListener(onClickListener);
+        couponNameTv = (TextView) mView.findViewById(R.id.jsCouponTv);
+        moneyCouponTv = (TextView) mView.findViewById(R.id.jsPriceCouponTv);
+
         moneyTv = (TextView) mView.findViewById(R.id.jsPriceTotalTv);
         moneyYfTv = (TextView) mView.findViewById(R.id.jsPriceYfTv);
         moneyTotalTv = (TextView) mView.findViewById(R.id.jsTotalMoney);
@@ -559,8 +612,34 @@ public class ShopOrderOkFragment extends BaseFragment
         token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
 
+        setGoodsArray();
         initDataView();
         initData();
+    }
+
+    /**
+     * 设置商品数据jsonArray
+     */
+    private void setGoodsArray()
+    {
+        goodsArray=new JSONArray();
+        try
+        {
+            for (int i = 0; i <items.size(); i++)
+            {
+                CartGoodsItem cartArrayItem=items.get(i);
+                JSONObject jsonObject=new JSONObject();
+                jsonObject.put("skucode",cartArrayItem.sizeId);
+                jsonObject.put("num",cartArrayItem.num);
+                goodsArray.put(jsonObject);
+            }
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
     }
 
     private void initData()
@@ -814,13 +893,12 @@ public class ShopOrderOkFragment extends BaseFragment
             params.add(new BasicNameValuePair("orderPayAmount", money+""));
             params.add(new BasicNameValuePair("userAddressId", address.getId()+""));
             params.add(new BasicNameValuePair("token", token));
-            params.add(new BasicNameValuePair("version", mContext.getResources().getString(R.string.app_versionName).substring(1)));
+            params.add(new BasicNameValuePair("version", mContext.getResources().getString(R.string.app_versionName)));
             params.add(new BasicNameValuePair("clientType", "ANDROID"));
             params.add(new BasicNameValuePair("clientVersion", (ZDApplication.localVersionCode+3)+""));
             params.add(new BasicNameValuePair("remark", bzInfo.getText().toString()));
 
             JSONArray storeArray=new JSONArray();
-            ToolUtils.setLog("orderArrayItems.size()1+"+orderArrayItems.size());
             for (int i = 0; i < orderArrayItems.size(); i++)
             {
                 CartArrayItem cartArrays=orderArrayItems.get(i);
@@ -882,6 +960,105 @@ public class ShopOrderOkFragment extends BaseFragment
             }
         }
         return result;
+    }
+
+    /**
+     * 获取默认优惠券
+     */
+    private void FetchCouponData()
+    {
+        JSONObject json=new JSONObject();
+        try
+        {
+            json.put("userId",userId);
+            json.put("skuAndNumLists",goodsArray);
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,ZhaiDou.GetOrderCouponDefaultUrl,json, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                mDialog.dismiss();
+                ToolUtils.setLog(jsonObject.toString());
+                int status=jsonObject.optInt("status");
+                if (status!=200)
+                {
+                    ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+                }
+                JSONObject object=jsonObject.optJSONObject("data");
+                JSONObject datasObject = object.optJSONObject("data");
+                if (datasObject != null && datasObject.length() > 0)
+                {
+                        int id=datasObject.optInt("id");
+                        int couponId=datasObject.optInt("couponId");
+                        int couponRuleId=datasObject.optInt("couponRuleId");
+                        String couponCode=datasObject.optString("couponCode");
+                        double enoughValue=datasObject.optDouble("enoughValue");
+                        double money=datasObject.optDouble("bookValue");
+                        String info=datasObject.optString("couponName");
+                        String startTime=datasObject.optString("startTime");
+                        String endTime=datasObject.optString("endTime");
+                        int days=0;
+                        try
+                        {
+                            SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            Date endDate=format.parse(endTime);
+                            long diff=endDate.getTime()-System.currentTimeMillis();
+                            days=(int) (diff / (1000 * 60 * 60 * 24))+diff %(1000 * 60 * 60 * 24)>0?1:0;
+                        } catch (ParseException e)
+                        {
+                            e.printStackTrace();
+                        }
+
+                        String statu=datasObject.optString("status");
+                        String property=datasObject.optString("property");
+                        String goodsType=datasObject.optString("goodsType");
+
+                        mCoupon.id=id;
+                        mCoupon.couponId=couponId;
+                        mCoupon.couponRuleId=couponRuleId;
+                        mCoupon.couponCode=couponCode;
+                        mCoupon.enoughMoney=enoughValue;
+                        mCoupon.money=money;
+                        mCoupon.info=info;
+                        mCoupon.startDate=startTime;
+                        mCoupon.endDate=endTime;
+                        mCoupon.time=days;
+                        mCoupon.status=statu;
+                        mCoupon.property=property;
+                        mCoupon.type=goodsType;
+                        mCoupon.isDefault=false;
+
+                    handler.sendEmptyMessage(UPDATE_COUPON_SUCCESSS);
+                } else
+                {
+                    mStatus=1;
+                    handler.sendEmptyMessage(UPDATE_NULLCOUPON_SUCCESSS);
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                mDialog.dismiss();
+                ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                headers.put("SECAuthorization", token);
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
     }
 
     /**

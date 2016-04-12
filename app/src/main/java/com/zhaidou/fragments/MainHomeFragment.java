@@ -200,7 +200,7 @@ public class MainHomeFragment extends BaseFragment implements
         {
             return;
         }
-        int num = specials.size() % 5 > 0 ? specials.size() / 5 + 1 : specials.size()/ 5;
+        int num = specials.size() / 5 ;
         for (int i = 0; i < num; i++)
         {
             final int pos = i * 5;
