@@ -329,6 +329,7 @@ public class ShopCartFragment extends BaseFragment
         allCb = (CheckBox) mView.findViewById(R.id.allCB);
 //        allCb.setOnCheckedChangeListener(onCheckedChangeListener);
         allCb.setOnClickListener(onClickListener);
+        allCb.setId(0);
 
         mScrollView = (PullToRefreshScrollView) mView.findViewById(R.id.scrollView);
         mScrollView.setOnRefreshListener(onRefreshListener);

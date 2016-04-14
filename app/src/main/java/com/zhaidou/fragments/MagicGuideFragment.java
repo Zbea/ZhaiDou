@@ -107,55 +107,6 @@ public class MagicGuideFragment extends BaseFragment implements View.OnClickList
         }
     }
 
-
-//    public class StringAdapter extends BaseAdapter
-//    {
-//        ViewHolder viewHolder;
-//
-//        class ViewHolder
-//        {
-//            TypeFaceTextView itemName;
-//        }
-//
-//        @Override
-//        public int getCount()
-//        {
-//            return arrays.size();
-//        }
-//
-//        @Override
-//        public Object getItem(int arg0)
-//        {
-//            return arrays.get(arg0);
-//        }
-//
-//        @Override
-//        public long getItemId(int position)
-//        {
-//            return position;
-//        }
-//
-//        @Override
-//        public View getView(int position, View convertView, ViewGroup parent)
-//        {
-//            if (convertView == null)
-//            {
-//                convertView = LayoutInflater.from(mContext).inflate(R.layout.item_magic_guide_list, null);
-//                viewHolder = new ViewHolder();
-//                viewHolder.itemName = (TypeFaceTextView) convertView.findViewById(R.id.guideTitle);
-//                convertView.setTag(viewHolder);
-//            }
-//            else
-//            {
-//                viewHolder = (ViewHolder) convertView.getTag();
-//            }
-//
-//            viewHolder.itemName.setText(arrays.get(position));
-//
-//            return convertView;
-//        }
-//    }
-
     public class StringAdapter extends BaseListAdapter<String>
     {
         public StringAdapter(Context context, List<String> strings)

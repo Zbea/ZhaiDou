@@ -233,14 +233,14 @@
             android:id="@+id/jsCouponLine"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:layout_marginTop="@dimen/default_margin"
             android:padding="@dimen/default_margin"
             android:background="@color/white"
             >
 
             <com.zhaidou.view.TypeFaceTextView
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textColor="@color/text_main_color"
@@ -252,12 +252,12 @@
 
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/jsCouponTv"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.000001"
                 android:textColor="@color/green_color"
-                android:textSize="16sp"
-                android:text="满300减50元"
+                android:textSize="14sp"
+                android:text=""
                 android:drawableRight="@drawable/icon_arrow_right"
                 android:drawablePadding="10dp"
                 android:singleLine="true"
@@ -325,7 +325,7 @@
                         android:textSize="16sp"
                         android:textColor="@color/red"
                         android:singleLine="true"
-                        android:text="￥ 555.5"/>
+                        android:text="￥0"/>
 
                 </LinearLayout>
 
@@ -362,7 +362,7 @@
                         android:textSize="16sp"
                         android:textColor="@color/red"
                         android:singleLine="true"
-                        android:text="￥ 555.5"/>
+                        android:text="￥0"/>
 
                 </LinearLayout>
 
@@ -410,7 +410,7 @@
                         android:textSize="16sp"
                         android:textColor="@color/red"
                         android:singleLine="true"
-                        android:text="￥ 10"/>
+                        android:text="￥0"/>
 
                 </LinearLayout>
 
@@ -440,7 +440,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/red"
                         android:textSize="18sp"
-                        android:text="￥ 4000"/>
+                        android:text="￥0"/>
 
                 </LinearLayout>
 
