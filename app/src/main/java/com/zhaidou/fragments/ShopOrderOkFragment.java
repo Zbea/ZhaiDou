@@ -1002,7 +1002,7 @@ public class ShopOrderOkFragment extends BaseFragment
             request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
             // 创建名/值组列表
             List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("userId", 1 + ""));
+            params.add(new BasicNameValuePair("userId", userId + ""));
             params.add(new BasicNameValuePair("skuAndNumLists", goodsArray.toString()));
             // 创建UrlEncodedFormEntity对象
             UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
@@ -1433,6 +1433,9 @@ public class ShopOrderOkFragment extends BaseFragment
             handler.sendEmptyMessage(UPDATE_NULLCOUPON_SUCCESSS);
         }
     }
+
+
+
 
     public void onResume()
     {

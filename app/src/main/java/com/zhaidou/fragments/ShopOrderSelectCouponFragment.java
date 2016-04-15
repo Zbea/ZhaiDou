@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
@@ -52,9 +48,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class ShopOrderSelectCouponFragment extends BaseFragment implements View.OnClickListener
@@ -66,6 +60,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
     private LinearLayout exchangeBtn, noCouponBtn;
     private ImageView noCouponIv;
     private int userId;
+    private String userName;
     private String token;
     private OnCouponListener onCouponListener;
 
@@ -78,13 +73,18 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
     private TextView reloadBtn, reloadNetBtn;
     private CouponAdapter couponAdapter;
 
-    private final int UPDATE_ADDRESS_LIST = 0;
+    private final int UPDATE_COUPON_LIST = 0;
     private final int UPDATE_RESULT = 1;
+    private final int UPDATE_REDEEM_COUPON_RESULT = 2;
+    private final int UPDATE_PARSE_REDEEM_COUPON_RESULT = 3;
+
     private int mCheckedPosition = -1;
 
     private List<Coupon> items = new ArrayList<Coupon>();
     private Coupon mCoupon;
     private String mDatas;
+    private String couponCode;
+    private Coupon redeemCoupon;
 
 
     private Handler handler = new Handler()
@@ -94,7 +94,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
         {
             switch (msg.what)
             {
-                case UPDATE_ADDRESS_LIST:
+                case UPDATE_COUPON_LIST:
                     if (mDialog != null)
                         mDialog.dismiss();
                     if (mCoupon != null)
@@ -107,10 +107,10 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                             }
                         }
                     }
-                    else
-                    {
-                        noCouponIv.setImageResource(R.drawable.icon_address_checked);
-                    }
+//                    else
+//                    {
+//                        noCouponIv.setImageResource(R.drawable.icon_address_checked);
+//                    }
                     loadingView.setVisibility(View.GONE);
                     couponNullView.setVisibility(View.GONE);
                     couponAdapter.notifyDataSetChanged();
@@ -125,6 +125,32 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                         JsonParse(msg.obj.toString());
                     }
                     break;
+                case UPDATE_PARSE_REDEEM_COUPON_RESULT:
+                    if(mDialog!=null)
+                    {
+                        mDialog.dismiss();
+                    }
+                    if (msg.obj!=null)
+                    {
+                        JsonRedeemParse(msg.obj.toString());
+                    }
+                    break;
+                case UPDATE_REDEEM_COUPON_RESULT:
+
+                    if (mDialog != null)
+                        mDialog.dismiss();
+                    for (int i = 0; i < items.size(); i++)
+                    {
+                        if (items.get(i).id == mCoupon.id)
+                        {
+                            mCheckedPosition = i;
+                        }
+                    }
+                    loadingView.setVisibility(View.GONE);
+                    couponNullView.setVisibility(View.GONE);
+                    couponAdapter.notifyDataSetChanged();
+                    break;
+
             }
         }
     };
@@ -144,6 +170,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                     onCouponListener.onDefaultCouponChange(null);
                     break;
                 case R.id.bt_add_coupon:
+                    addCoupon();
                     break;
                 case R.id.nullReload:
                     commit();
@@ -243,7 +270,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
         mRequestQueue = Volley.newRequestQueue(mContext);
         token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
-
+        userName = (String) SharedPreferencesUtil.getData(mContext, "nickName", "");
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "");
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
@@ -258,7 +285,60 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
     }
 
     /**
-     * 提交订单接口
+     * 添加优惠券
+     */
+    private void addCoupon()
+    {
+        final Dialog dialog = new Dialog(mContext, R.style.custom_dialog);
+
+        View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_redeem_coupon, null);
+        final TextView tv_msg = (TextView) view.findViewById(R.id.tv_msg);
+        TextView cancelTv = (TextView) view.findViewById(R.id.cancelTv);
+        cancelTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        TextView okTv = (TextView) view.findViewById(R.id.okTv);
+        okTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                couponCode=tv_msg.getText().toString();
+                if (TextUtils.isEmpty(couponCode))
+                {
+                    ToolUtils.setToast(mContext,"抱歉，请先填写兑换码");
+                    return;
+                }
+                dialog.dismiss();
+                if (mDialog!=null)
+                    mDialog.show();
+                FetchRedeem();
+
+            }
+        });
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(true);
+        dialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        dialog.show();
+
+    }
+
+    /**
+     * 加载失败
+     */
+    private void loadingFail()
+    {
+        if (mDialog != null)
+            mDialog.dismiss();
+        ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+    }
+
+
+
+    /**
+     * 获取优惠券列表
      */
     private void commit()
     {
@@ -275,8 +355,25 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
     }
 
     /**
-     * 请求订单
-     *
+     * 提交兑换优惠券接口
+     */
+    private void FetchRedeem()
+    {
+        new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                String result = FetchRedeemRequset();
+                handler.obtainMessage(UPDATE_PARSE_REDEEM_COUPON_RESULT,result).sendToTarget();
+            }
+        }).start();
+
+    }
+
+
+    /**
+     * 获取优惠券列表
      * @return
      */
     private String FetchRequset()
@@ -293,8 +390,68 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
             request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
             // 创建名/值组列表
             List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("userId", 1 + ""));
+            params.add(new BasicNameValuePair("userId", userId + ""));
             params.add(new BasicNameValuePair("skuAndNumLists", new JSONArray(mDatas).toString()));
+            // 创建UrlEncodedFormEntity对象
+            UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
+                    params, HTTP.UTF_8);
+            request.setEntity(formEntiry);
+            // 执行请求
+            HttpResponse response = client.execute(request);
+
+            in = new BufferedReader(new InputStreamReader(response.getEntity()
+                    .getContent()));
+            StringBuffer sb = new StringBuffer("");
+            String line = "";
+            String NL = System.getProperty("line.separator");
+            while ((line = in.readLine()) != null)
+            {
+                sb.append(line + NL);
+            }
+            in.close();
+            result = sb.toString();
+            return result;
+
+        } catch (Exception e)
+        {
+
+        } finally
+        {
+            if (in != null)
+            {
+                try
+                {
+                    in.close();
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @return
+     */
+    private String FetchRedeemRequset()
+    {
+        String result = null;
+        BufferedReader in = null;
+        try
+        {
+            // 定义HttpClient
+            HttpClient client = new DefaultHttpClient();
+            // 实例化HTTP方法
+            HttpPost request = new HttpPost(ZhaiDou.GetRedeemAndCheckCouponUrl);
+            request.addHeader("SECAuthorization", token);
+            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+            // 创建名/值组列表
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("userId", userId + ""));
+            params.add(new BasicNameValuePair("skuAndNumLists", new JSONArray(mDatas).toString()));
+            params.add(new BasicNameValuePair("nickName", userName));
+            params.add(new BasicNameValuePair("couponCode", couponCode));
             // 创建UrlEncodedFormEntity对象
             UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
                     params, HTTP.UTF_8);
@@ -413,7 +570,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
 
                     items.add(coupon);
                 }
-                handler.sendEmptyMessage(UPDATE_ADDRESS_LIST);
+                handler.sendEmptyMessage(UPDATE_COUPON_LIST);
             } else
             {
                 couponNullView.setVisibility(View.VISIBLE);
@@ -426,116 +583,100 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
         }
     }
 
-
-    private void FetchData()
+    /**
+     * 兑换优惠券接口
+     * @param json
+     */
+    private void JsonRedeemParse(String json)
     {
-        JSONObject json = new JSONObject();
+        ToolUtils.setLog("json：" + json);
+        if (json==null)
+        {
+            ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+            return;
+        }
+        JSONObject jsonObject = null;
         try
         {
-            json.put("userId", 1);
-            json.put("skuAndNumLists", new JSONArray(mDatas));
+            jsonObject = new JSONObject(json);
         } catch (JSONException e)
         {
             e.printStackTrace();
         }
-        ToolUtils.setLog("json：" + json.toString());
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.GetOrderCouponUrl, json.toString(), new Response.Listener<JSONObject>()
+        int status = jsonObject.optInt("status");
+        if (status != 200)
         {
-            @Override
-            public void onResponse(JSONObject jsonObject)
+            loadingFail();
+        }
+        JSONObject datasObject = jsonObject.optJSONObject("data");
+        if (datasObject != null && datasObject.length() > 0)
+        {
+            int code=datasObject.optInt("code");
+            String message=datasObject.optString("msg");
+            JSONObject couponObject=datasObject.optJSONObject("data");
+            if (code==0)
             {
-                mDialog.dismiss();
-                ToolUtils.setLog("测试：" + jsonObject.toString());
-                int status = jsonObject.optInt("status");
-                if (status != 200)
+                if (couponObject != null && couponObject.length() > 0)
                 {
-                    ToolUtils.setToast(mContext, R.string.loading_fail_txt);
-                }
-                JSONObject object = jsonObject.optJSONObject("data");
-                if (object == null)
-                {
-                    nullNetView.setVisibility(View.GONE);
-                    nullView.setVisibility(View.VISIBLE);
-                    return;
-                }
-                JSONArray datasObject = object.optJSONArray("data");
-                if (datasObject != null && datasObject.length() > 0)
-                {
-                    for (int i = 0; i < datasObject.length(); i++)
+                    JSONObject couponUseInfoPO=couponObject.optJSONObject("couponUseInfoPO");
+
+                    int id=couponUseInfoPO.optInt("id");
+                    int couponId=couponUseInfoPO.optInt("couponId");
+                    int couponRuleId=couponUseInfoPO.optInt("couponRuleId");
+                    String couponCode=couponUseInfoPO.optString("couponCode");
+                    double enoughValue=couponUseInfoPO.optDouble("enoughValue");
+                    double money=couponUseInfoPO.optDouble("bookValue");
+                    String info=couponUseInfoPO.optString("couponName");
+                    String startTime=couponUseInfoPO.optString("startTime");
+                    String endTime=couponUseInfoPO.optString("endTime");
+                    int days=0;
+                    try
                     {
-                        JSONObject couponObject = datasObject.optJSONObject(i);
-                        int id = couponObject.optInt("id");
-                        int couponId = couponObject.optInt("couponId");
-                        int couponRuleId = couponObject.optInt("couponRuleId");
-                        String couponCode = couponObject.optString("couponCode");
-                        double enoughValue = couponObject.optDouble("enoughValue");
-                        double money = couponObject.optDouble("bookValue");
-                        String info = couponObject.optString("couponName");
-                        String startTime = couponObject.optString("startTime");
-                        String endTime = couponObject.optString("endTime");
-                        int days = 0;
-                        try
-                        {
-                            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                            Date endDate = format.parse(endTime);
-                            long diff = endDate.getTime() - System.currentTimeMillis();
-                            days = (int) (diff / (1000 * 60 * 60 * 24)) + diff % (1000 * 60 * 60 * 24) > 0 ? 1 : 0;
-                        } catch (ParseException e)
-                        {
-                            e.printStackTrace();
-                        }
-
-                        String statu = couponObject.optString("status");
-                        String property = couponObject.optString("property");
-                        String goodsType = couponObject.optString("goodsType");
-
-                        Coupon coupon = new Coupon();
-                        coupon.id = id;
-                        coupon.couponId = couponId;
-                        coupon.couponRuleId = couponRuleId;
-                        coupon.couponCode = couponCode;
-                        coupon.enoughMoney = enoughValue;
-                        coupon.money = money;
-                        coupon.info = info;
-                        coupon.startDate = startTime;
-                        coupon.endDate = endTime;
-                        coupon.time = days;
-                        coupon.status = statu;
-                        coupon.property = property;
-                        coupon.type = goodsType;
-                        coupon.isDefault = false;
-
-                        items.add(coupon);
+                        SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        Date endDate=format.parse(endTime);
+                        long diff=endDate.getTime()-System.currentTimeMillis();
+                        days=(int) (diff / (1000 * 60 * 60 * 24))+diff %(1000 * 60 * 60 * 24)>0?1:0;
+                    } catch (ParseException e)
+                    {
+                        e.printStackTrace();
                     }
-                    handler.sendEmptyMessage(UPDATE_ADDRESS_LIST);
+                    endTime=endTime.split(" ")[0];
+                    String statu=couponUseInfoPO.optString("status");
+                    String property=couponUseInfoPO.optString("property");
+                    String goodsType=couponUseInfoPO.optString("goodsType");
+                    Coupon coup=new Coupon();
+                    coup.id=id;
+                    coup.couponId=couponId;
+                    coup.couponRuleId=couponRuleId;
+                    coup.couponCode=couponCode;
+                    coup.enoughMoney=enoughValue;
+                    coup.money=money;
+                    coup.info=info;
+                    coup.startDate=startTime;
+                    coup.endDate=endTime;
+                    coup.time=days;
+                    coup.status=statu;
+                    coup.property=property;
+                    coup.type=goodsType;
+                    coup.isDefault=false;
+                    items.add(coup);
+                    handler.sendEmptyMessage(UPDATE_COUPON_LIST);
                 } else
                 {
-                    nullNetView.setVisibility(View.GONE);
-                    nullView.setVisibility(View.VISIBLE);
+                    loadingFail();
                 }
             }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
+            else
             {
                 if (mDialog != null)
                     mDialog.dismiss();
-                nullNetView.setVisibility(View.GONE);
-                nullView.setVisibility(View.VISIBLE);
+                ToolUtils.setToastLong(mContext,message);
             }
-        })
+        }
+        else
         {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
+            loadingFail();
+        }
     }
 
     public class CouponAdapter extends BaseListAdapter<Coupon>
