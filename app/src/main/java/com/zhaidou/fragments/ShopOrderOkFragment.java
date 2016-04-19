@@ -1417,7 +1417,7 @@ public class ShopOrderOkFragment extends BaseFragment
             mCoupon.couponCode=couponCode;
             mCoupon.enoughMoney=enoughValue;
             mCoupon.money=money;
-            mCoupon.info=info;
+            mCoupon.info="满"+enoughValue+"减"+money;
             mCoupon.startDate=startTime;
             mCoupon.endDate=endTime;
             mCoupon.time=days;

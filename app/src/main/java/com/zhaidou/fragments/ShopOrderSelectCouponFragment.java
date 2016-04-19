@@ -134,6 +134,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                     {
                         JsonRedeemParse(msg.obj.toString());
                     }
+
                     break;
                 case UPDATE_REDEEM_COUPON_RESULT:
 
@@ -559,7 +560,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                     coupon.couponCode = couponCode;
                     coupon.enoughMoney = enoughValue;
                     coupon.money = money;
-                    coupon.info = info;
+                    coupon.info = "满"+enoughValue+"减"+money;
                     coupon.startDate = startTime;
                     coupon.endDate = endTime;
                     coupon.time = days;
@@ -651,7 +652,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                     coup.couponCode=couponCode;
                     coup.enoughMoney=enoughValue;
                     coup.money=money;
-                    coup.info=info;
+                    coup.info="满"+enoughValue+"减"+money;
                     coup.startDate=startTime;
                     coup.endDate=endTime;
                     coup.time=days;

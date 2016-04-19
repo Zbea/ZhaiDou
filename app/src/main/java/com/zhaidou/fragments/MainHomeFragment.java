@@ -131,6 +131,7 @@ public class MainHomeFragment extends BaseFragment implements
                 {
                     SwitchImage item = banners.get(postion);
                     ToolUtils.setBannerGoto(item, mContext);
+                    FetchClickStatisticalData(item.title,item.typeValue,item.type,postion);
                 }
             });
             linearLayout.addView(customBannerView);
@@ -601,6 +602,51 @@ public class MainHomeFragment extends BaseFragment implements
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError
             {
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
+    }
+
+    /**
+     * 点击统计数据
+     */
+    private void FetchClickStatisticalData(String name,String url,int bannerType,int bannerIndex)
+    {
+        int userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
+        String surl;
+        if (checkLogin())
+        {
+            surl=ZhaiDou.HomeClickStatisticalUrl+name+"&url="+url+"&userId="+userId+"&sourceCode=3&bannerType="+bannerType+"&bannerIndex="+bannerIndex;
+        }
+        else
+        {
+            surl=ZhaiDou.HomeClickStatisticalUrl+name+"&url="+url+"&sourceCode=3&bannerType="+bannerType+"&bannerIndex="+bannerIndex;
+        }
+
+        JsonObjectRequest request = new JsonObjectRequest(surl, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+                if (response != null)
+                {
+                    ToolUtils.setLog(response.toString());
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
             }
         };
