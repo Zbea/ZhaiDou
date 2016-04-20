@@ -224,7 +224,7 @@ public class ShopOrderOkFragment extends BaseFragment
                         JSONObject orderObj = jsonObject.optJSONObject("data");
                         int orderId = orderObj.optInt("orderId");
                         String orderCode = orderObj.optString("orderCode");
-                        double amount = orderObj.optDouble("orderTotalAmount");
+                        double amount = orderObj.optDouble("orderPayAmount");
                         long time = orderObj.optLong("orderRemainingTime");
                         ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId,orderCode ,amount,time, null);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
@@ -258,6 +258,7 @@ public class ShopOrderOkFragment extends BaseFragment
                 case UPDATE_COUPON_SUCCESSS:
                     couponNameTv.setText(mCoupon.info);
                     moneyCouponTv.setText("￥"+ToolUtils.isIntPrice(mCoupon.money+""));
+                    setYFMoney(0);
                     break;
                 case UPDATE_NULLCOUPON_SUCCESSS:
                     couponNameTv.setText("暂无优惠券可用");
@@ -434,6 +435,7 @@ public class ShopOrderOkFragment extends BaseFragment
                                 couponNameTv.setText(mCoupon.info);
                                 moneyCouponTv.setText("￥"+ToolUtils.isIntPrice(mCoupon.money+""));
                             }
+                            setYFMoney(0);
 
                         }
                     });
@@ -681,12 +683,21 @@ public class ShopOrderOkFragment extends BaseFragment
             moneyYfTv.setText("￥" + 0);
             noFreeTv.setVisibility(View.VISIBLE);
         }
-
         ToolUtils.setLog("运费：" + moneyYF);
-
         DecimalFormat df = new DecimalFormat("###.00");
-        totalMoney = Double.parseDouble(df.format(money + moneyYF));
-        moneyTotalTv.setText("￥" + ToolUtils.isIntPrice("" + totalMoney));
+        if (mCoupon!=null)
+        {
+            totalMoney = Double.parseDouble(df.format(money + moneyYF-mCoupon.money));
+            if (totalMoney<0)
+                totalMoney=0;
+            moneyTotalTv.setText("￥" + ToolUtils.isIntPrice("" + totalMoney));
+        }
+        else
+        {
+            totalMoney = Double.parseDouble(df.format(money + moneyYF));
+            moneyTotalTv.setText("￥" + ToolUtils.isIntPrice("" + totalMoney));
+        }
+
     }
 
     /**
@@ -896,14 +907,22 @@ public class ShopOrderOkFragment extends BaseFragment
             // 创建名/值组列表
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("businessType", "01"));
-            params.add(new BasicNameValuePair("userId", userId+""));
-            params.add(new BasicNameValuePair("orderPayAmount", money+""));
+            params.add(new BasicNameValuePair("userId", userId + ""));
+            if (mCoupon != null)
+            {
+                params.add(new BasicNameValuePair("orderPayAmount", (money-mCoupon.money)+""));
+            } else
+            {
+                params.add(new BasicNameValuePair("orderPayAmount", money+""));
+            }
             params.add(new BasicNameValuePair("userAddressId", address.getId()+""));
             params.add(new BasicNameValuePair("token", token));
             params.add(new BasicNameValuePair("version", mContext.getResources().getString(R.string.app_versionName)));
             params.add(new BasicNameValuePair("clientType", "ANDROID"));
             params.add(new BasicNameValuePair("clientVersion", (ZDApplication.localVersionCode+3)+""));
             params.add(new BasicNameValuePair("remark", bzInfo.getText().toString()));
+            params.add(new BasicNameValuePair("couponsKey", mCoupon.couponCode));
+            params.add(new BasicNameValuePair("couponsAmount",mCoupon.money+""));
 
             JSONArray storeArray=new JSONArray();
             for (int i = 0; i < orderArrayItems.size(); i++)
@@ -1417,7 +1436,7 @@ public class ShopOrderOkFragment extends BaseFragment
             mCoupon.couponCode=couponCode;
             mCoupon.enoughMoney=enoughValue;
             mCoupon.money=money;
-            mCoupon.info="满"+enoughValue+"减"+money;
+            mCoupon.info="满"+ToolUtils.isIntPrice(enoughValue+"")+"减"+ToolUtils.isIntPrice(money+"");
             mCoupon.startDate=startTime;
             mCoupon.endDate=endTime;
             mCoupon.time=days;
