@@ -182,7 +182,7 @@ public class MainHomeFragment extends BaseFragment implements
     {
         long currentTime=System.currentTimeMillis();
 
-        if ((currentTime- formerTime)>1500)
+        if ((currentTime- formerTime)>1000)
         {
             formerTime =currentTime;
             return true;

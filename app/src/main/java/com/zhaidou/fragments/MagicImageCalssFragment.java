@@ -137,9 +137,9 @@ public class MagicImageCalssFragment extends BaseFragment
             {
                 layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 200);
             }
-            if (i > 1)
+            if (i>1)
             {
-                layoutParams.topMargin = 25;
+                layoutParams.topMargin=25;
             }
             cover.setLayoutParams(layoutParams);
             title.setText(article.name);

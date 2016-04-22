@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
@@ -37,6 +38,8 @@ import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONObject;
 
+import java.io.File;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,12 +53,13 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     private String mParam2;
 
     ProfileFragment mProfileFragment;
+    private TextView tv_size;
 
     SharedPreferences mSharedPreferences;
     RequestQueue requestQueue;
     private DialogUtils mDialogUtil;
     private Dialog mDialog;
-    private boolean isNetState;
+    private String cachePath="/sdcard/zhaidou";
     private Context mContext;
     private String serverName;
     private String serverInfo;
@@ -123,6 +127,8 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         LinearLayout versionBtn = (LinearLayout) view.findViewById(R.id.ll_version);
         versionBtn.setOnClickListener(this);
 
+        tv_size = (TextView) view.findViewById(R.id.tv_size);
+
         view.findViewById(R.id.rl_back).setOnClickListener(this);
         view.findViewById(R.id.ll_recommend).setOnClickListener(this);
         view.findViewById(R.id.ll_profile).setOnClickListener(this);
@@ -133,12 +139,118 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         view.findViewById(R.id.ll_add_v).setOnClickListener(this);
         view.findViewById(R.id.ll_version).setOnClickListener(this);
         view.findViewById(R.id.ll_award_history).setOnClickListener(this);
+        view.findViewById(R.id.ll_clear).setOnClickListener(this);
         view.findViewById(R.id.ll_about).setOnClickListener(this);
         view.findViewById(R.id.bt_logout).setOnClickListener(this);
         mSharedPreferences = getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         requestQueue = Volley.newRequestQueue(getActivity());
+
+        tv_size.setText(setCountSize());
+
         return view;
     }
+
+    /**
+     * 计算大小
+     */
+    private String setCountSize()
+    {
+        long size=0;
+        File file=new File(cachePath);
+        if (file.exists())
+        {
+            if (file.isDirectory())
+            {
+                size=getFileSizes(file);
+            }
+        }
+        String sies=FormetFileSize(size);
+        return sies;
+    }
+
+    /**
+     * 获取指定文件夹
+     * @param file
+     * @return
+     */
+    private long getFileSizes(File file)
+    {
+        long size=0;
+        if (file.exists())
+        {
+            if (file.isDirectory())
+            {
+                File[] files=file.listFiles();
+                for (int i = 0; i < files.length; i++)
+                {
+                    if (files[i].isDirectory())
+                    {
+                        size=size+getFileSizes(files[i]);
+                    }
+                    else
+                    {
+                        size=size+file.length();
+                    }
+                }
+
+            }
+        }
+        return size;
+    }
+
+    /**
+     * 转换文件大小
+     *
+     * @param fileS
+     * @return
+     */
+    private String FormetFileSize(long fileS) {
+        DecimalFormat df = new DecimalFormat("#.00");
+        String fileSizeString = "";
+        String wrongSize = "0B";
+        if (fileS == 0) {
+            return wrongSize;
+        }
+        if (fileS < 1024) {
+            fileSizeString = df.format((double) fileS) + "B";
+        } else if (fileS < 1048576) {
+            fileSizeString = df.format((double) fileS / 1024) + "KB";
+        } else if (fileS < 1073741824) {
+            fileSizeString = df.format((double) fileS / 1048576) + "MB";
+        } else {
+            fileSizeString = df.format((double) fileS / 1073741824) + "GB";
+        }
+        return fileSizeString;
+    }
+
+
+    private void deleteFile(File file)
+    {
+        if (file.exists())
+        {
+            if (file.isFile())
+            {
+                file.delete();
+                return;
+            }
+            else
+            {
+                File[] childFile=file.listFiles();
+                if (childFile==null&&childFile.length==0)
+                {
+                    file.delete();
+                }
+                else
+                {
+                    for (File f:childFile)
+                    {
+                        deleteFile(f);
+                    }
+                }
+            }
+        }
+    }
+
 
     @Override
     public void onClick(View view) {
@@ -172,7 +284,19 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                 ImageBgFragment addVFragment = ImageBgFragment.newInstance("如何加V");
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(addVFragment);
                 break;
-            case R.id.ll_award_history:
+            case R.id.ll_clear:
+
+                deleteFile(new File(cachePath));
+                new Handler().postDelayed(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        ToolUtils.setToast(mContext,"清除缓存成功");
+                        tv_size.setText("0B");
+                    }
+                },1000);
+
                 break;
             case R.id.ll_about:
                 AboutFragment aboutFragment = AboutFragment.newInstance("", "");
