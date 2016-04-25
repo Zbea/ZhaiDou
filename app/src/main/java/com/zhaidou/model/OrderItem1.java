@@ -29,6 +29,8 @@ public class OrderItem1 implements Serializable{
     public String pictureBigUrl;
     public String pictureSmallUrl;
     public String pictureMiddleUrl;
+    public String favorableAmount1;
+    public String paidAmount;
 
     //退换货
     public int returnFlowDetailId;

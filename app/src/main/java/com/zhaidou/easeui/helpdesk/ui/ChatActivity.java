@@ -3,6 +3,7 @@ package com.zhaidou.easeui.helpdesk.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
@@ -47,13 +48,13 @@ public class ChatActivity extends BaseActivity {
         intent.putExtra(Constant.EXTRA_USER_ID, getIntent().getStringExtra(Constant.EXTRA_USER_ID));
         intent.putExtra(Constant.EXTRA_SHOW_USERNICK, true);
         intent.putExtra(Constant.MESSAGE_TO_INTENT_EXTRA,"service".equalsIgnoreCase(getIntent().getStringExtra(Constant.EXTRA_USER_ID))?Constant.MESSAGE_TO_SERVICE:Constant.MESSAGE_TO_DESIGNER);
-        intent.putExtra("userNickname",mUser.getNickName());
-        intent.putExtra("trueName", mUser.getNickName());
+        intent.putExtra("userNickname",!TextUtils.isEmpty(mUser.getNickName())?mUser.getNickName():"");
+        intent.putExtra("trueName", !TextUtils.isEmpty(mUser.getNickName())?mUser.getNickName():"");
         intent.putExtra("qq", "");
-        intent.putExtra("phone", mUser.getMobile());
+        intent.putExtra("phone",!TextUtils.isEmpty(mUser.getMobile())? mUser.getMobile():"");
         intent.putExtra("companyName", "");
-        intent.putExtra("description", mUser.getDescription());
-        intent.putExtra("email", mUser.getEmail());
+        intent.putExtra("description", !TextUtils.isEmpty(mUser.getDescription())?mUser.getDescription():"");
+        intent.putExtra("email", !TextUtils.isEmpty(mUser.getEmail())?mUser.getEmail():"");
         chatFragment.setArguments(intent.getExtras());// 传入参数
         getSupportFragmentManager().beginTransaction().add(R.id.container, chatFragment).addToBackStack("ChatFragment").commit();
         findViewById(R.id.ll_back).setOnClickListener(new View.OnClickListener() {

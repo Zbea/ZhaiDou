@@ -30,6 +30,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ConversationListActivity;
+import com.zhaidou.activities.CouponsActivity;
 import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.base.AccountManage;
 import com.zhaidou.base.BaseActivity;
@@ -190,6 +191,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             view.findViewById(R.id.ll_collocation).setOnClickListener(this);
             view.findViewById(R.id.rl_msg).setOnClickListener(this);
             view.findViewById(R.id.rl_service).setOnClickListener(this);
+            view.findViewById(R.id.couponLayout).setOnClickListener(this);
 
             mRequestQueue = Volley.newRequestQueue(getActivity());
             getUserDetail();
@@ -250,6 +252,9 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             case R.id.tv_return:
                 OrderReturnFragment returnFragment = OrderReturnFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(returnFragment);
+                break;
+            case R.id.couponLayout:
+                startActivity(new Intent(getActivity(), CouponsActivity.class));
                 break;
             case R.id.rl_addr_manage:
                 AddrManageFragment addrManageFragment = AddrManageFragment.newInstance("", "", "", "", 0);
