@@ -57,12 +57,12 @@
                 android:divider="@null"
                 android:layout_height="wrap_content"
                 android:layout_margin="15dp"
-                android:background="@drawable/magic_shape"/>
+                />
 
             <LinearLayout
                 android:id="@+id/btn_no_coupon"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="55dp"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
                 android:layout_marginBottom="65dp"
@@ -123,12 +123,35 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/loadingView"
+        android:id="@+id/couponNullLine"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/rl_actionbar"
-        android:background="@color/white"
-        android:orientation="vertical"></LinearLayout>
+        android:layout_above="@+id/bt_add_coupon"
+        android:gravity="center"
+        android:visibility="gone"
+        android:background="@color/page_bg"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_null_coupon"/>
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_gary_color"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="50dp"
+            android:text="暂无优惠券可用"/>
+    </LinearLayout>
+
+    <include
+        layout="@layout/content_null_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/rl_actionbar"></include>
 
 
 </RelativeLayout>

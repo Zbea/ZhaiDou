@@ -130,6 +130,7 @@ public class ShopOrderOkFragment extends BaseFragment
     private final int UPDATE_GETSMS_SUCCESSS = 8;
     private final int UPDATE_COUPON_SUCCESSS = 9;
     private final int UPDATE_NULLCOUPON_SUCCESSS = 10;
+    private final int UPDATE_COUPON_RESULT = 11;
 
     private boolean isOSaleBuy;//是否已经购买过零元特卖
     private boolean isOSale;//是否含有零元特卖
@@ -223,7 +224,7 @@ public class ShopOrderOkFragment extends BaseFragment
                         JSONObject orderObj = jsonObject.optJSONObject("data");
                         int orderId = orderObj.optInt("orderId");
                         String orderCode = orderObj.optString("orderCode");
-                        double amount = orderObj.optDouble("orderTotalAmount");
+                        double amount = orderObj.optDouble("orderPayAmount");
                         long time = orderObj.optLong("orderRemainingTime");
                         ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId,orderCode ,amount,time, null);
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
@@ -244,7 +245,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     {
                         verifyView.setVisibility(View.GONE);
                     }
-                    FetchCouponData();
+                    GetCoupon();
                     break;
                 case UPDATE_VERFIY_SUCCESSS:
                     isVerify=false;
@@ -257,11 +258,17 @@ public class ShopOrderOkFragment extends BaseFragment
                 case UPDATE_COUPON_SUCCESSS:
                     couponNameTv.setText(mCoupon.info);
                     moneyCouponTv.setText("￥"+ToolUtils.isIntPrice(mCoupon.money+""));
-                    FetchAddressData();
+                    setYFMoney(0);
                     break;
                 case UPDATE_NULLCOUPON_SUCCESSS:
-                    couponNameTv.setText("不使用优惠券");
+                    couponNameTv.setText("暂无优惠券可用");
                     moneyCouponTv.setText("￥"+0);
+                    break;
+                case UPDATE_COUPON_RESULT:
+                    if(mDialog!=null)
+                        mDialog.dismiss();
+                    if (msg.obj!=null)
+                        JsonParse(msg.obj.toString());
                     FetchAddressData();
                     break;
             }
@@ -409,7 +416,7 @@ public class ShopOrderOkFragment extends BaseFragment
                 case R.id.jsCouponLine:
                     if (goodsArray==null)
                         setGoodsArray();
-                    final ShopOrderSelectCouponFragment s = ShopOrderSelectCouponFragment.newInstance("", mStatus, mCoupon, goodsArray.toString());
+                    ShopOrderSelectCouponFragment s = ShopOrderSelectCouponFragment.newInstance("", mStatus, mCoupon, goodsArray.toString());
                     ((MainActivity) getActivity()).navigationToFragment(s);
                     s.setOnCouponListener(new ShopOrderSelectCouponFragment.OnCouponListener()
                     {
@@ -418,6 +425,7 @@ public class ShopOrderOkFragment extends BaseFragment
                         {
                             if (coupon==null)
                             {
+                                mCoupon=null;
                                 couponNameTv.setText("不使用优惠券");
                                 moneyCouponTv.setText("￥"+0);
                             }
@@ -427,6 +435,7 @@ public class ShopOrderOkFragment extends BaseFragment
                                 couponNameTv.setText(mCoupon.info);
                                 moneyCouponTv.setText("￥"+ToolUtils.isIntPrice(mCoupon.money+""));
                             }
+                            setYFMoney(0);
 
                         }
                     });
@@ -674,12 +683,21 @@ public class ShopOrderOkFragment extends BaseFragment
             moneyYfTv.setText("￥" + 0);
             noFreeTv.setVisibility(View.VISIBLE);
         }
-
         ToolUtils.setLog("运费：" + moneyYF);
-
         DecimalFormat df = new DecimalFormat("###.00");
-        totalMoney = Double.parseDouble(df.format(money + moneyYF));
-        moneyTotalTv.setText("￥" + ToolUtils.isIntPrice("" + totalMoney));
+        if (mCoupon!=null)
+        {
+            totalMoney = Double.parseDouble(df.format(money + moneyYF-mCoupon.money));
+            if (totalMoney<0)
+                totalMoney=0;
+            moneyTotalTv.setText("￥" + ToolUtils.isIntPrice("" + totalMoney));
+        }
+        else
+        {
+            totalMoney = Double.parseDouble(df.format(money + moneyYF));
+            moneyTotalTv.setText("￥" + ToolUtils.isIntPrice("" + totalMoney));
+        }
+
     }
 
     /**
@@ -889,14 +907,22 @@ public class ShopOrderOkFragment extends BaseFragment
             // 创建名/值组列表
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("businessType", "01"));
-            params.add(new BasicNameValuePair("userId", userId+""));
-            params.add(new BasicNameValuePair("orderPayAmount", money+""));
+            params.add(new BasicNameValuePair("userId", userId + ""));
+            if (mCoupon != null)
+            {
+                params.add(new BasicNameValuePair("orderPayAmount", (money-mCoupon.money)+""));
+            } else
+            {
+                params.add(new BasicNameValuePair("orderPayAmount", money+""));
+            }
             params.add(new BasicNameValuePair("userAddressId", address.getId()+""));
             params.add(new BasicNameValuePair("token", token));
             params.add(new BasicNameValuePair("version", mContext.getResources().getString(R.string.app_versionName)));
             params.add(new BasicNameValuePair("clientType", "ANDROID"));
             params.add(new BasicNameValuePair("clientVersion", (ZDApplication.localVersionCode+3)+""));
             params.add(new BasicNameValuePair("remark", bzInfo.getText().toString()));
+            params.add(new BasicNameValuePair("couponsKey", mCoupon.couponCode));
+            params.add(new BasicNameValuePair("couponsAmount",mCoupon.money+""));
 
             JSONArray storeArray=new JSONArray();
             for (int i = 0; i < orderArrayItems.size(); i++)
@@ -963,102 +989,77 @@ public class ShopOrderOkFragment extends BaseFragment
     }
 
     /**
-     * 获取默认优惠券
+     * 获取优惠券接口
      */
-    private void FetchCouponData()
+    private void GetCoupon()
     {
-        JSONObject json=new JSONObject();
+        new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                String result = FetchCouponRequset();
+                handler.obtainMessage(UPDATE_COUPON_RESULT,result).sendToTarget();
+            }
+        }).start();
+    }
+
+    /**请求优惠券
+     * @return
+     */
+    private String FetchCouponRequset()
+    {
+        String result = null;
+        BufferedReader in = null;
         try
         {
-            json.put("userId",userId);
-            json.put("skuAndNumLists",goodsArray);
-        } catch (JSONException e)
+            // 定义HttpClient
+            HttpClient client = new DefaultHttpClient();
+            // 实例化HTTP方法
+            HttpPost request = new HttpPost(ZhaiDou.GetOrderCouponDefaultUrl);
+            request.addHeader("SECAuthorization", token);
+            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+            // 创建名/值组列表
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("userId", userId + ""));
+            params.add(new BasicNameValuePair("skuAndNumLists", goodsArray.toString()));
+            // 创建UrlEncodedFormEntity对象
+            UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
+                    params, HTTP.UTF_8);
+            request.setEntity(formEntiry);
+            // 执行请求
+            HttpResponse response = client.execute(request);
+
+            in = new BufferedReader(new InputStreamReader(response.getEntity()
+                    .getContent()));
+            StringBuffer sb = new StringBuffer("");
+            String line = "";
+            String NL = System.getProperty("line.separator");
+            while ((line = in.readLine()) != null)
+            {
+                sb.append(line + NL);
+            }
+            in.close();
+            result = sb.toString();
+            return result;
+
+        } catch (Exception e)
         {
-            e.printStackTrace();
+
+        } finally
+        {
+            if (in != null)
+            {
+                try
+                {
+                    in.close();
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
         }
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,ZhaiDou.GetOrderCouponDefaultUrl,json, new Response.Listener<JSONObject>()
-        {
-            @Override
-            public void onResponse(JSONObject jsonObject)
-            {
-                mDialog.dismiss();
-                ToolUtils.setLog(jsonObject.toString());
-                int status=jsonObject.optInt("status");
-                if (status!=200)
-                {
-                    ToolUtils.setToast(mContext,R.string.loading_fail_txt);
-                }
-                JSONObject object=jsonObject.optJSONObject("data");
-                JSONObject datasObject = object.optJSONObject("data");
-                if (datasObject != null && datasObject.length() > 0)
-                {
-                        int id=datasObject.optInt("id");
-                        int couponId=datasObject.optInt("couponId");
-                        int couponRuleId=datasObject.optInt("couponRuleId");
-                        String couponCode=datasObject.optString("couponCode");
-                        double enoughValue=datasObject.optDouble("enoughValue");
-                        double money=datasObject.optDouble("bookValue");
-                        String info=datasObject.optString("couponName");
-                        String startTime=datasObject.optString("startTime");
-                        String endTime=datasObject.optString("endTime");
-                        int days=0;
-                        try
-                        {
-                            SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                            Date endDate=format.parse(endTime);
-                            long diff=endDate.getTime()-System.currentTimeMillis();
-                            days=(int) (diff / (1000 * 60 * 60 * 24))+diff %(1000 * 60 * 60 * 24)>0?1:0;
-                        } catch (ParseException e)
-                        {
-                            e.printStackTrace();
-                        }
-
-                        String statu=datasObject.optString("status");
-                        String property=datasObject.optString("property");
-                        String goodsType=datasObject.optString("goodsType");
-
-                        mCoupon.id=id;
-                        mCoupon.couponId=couponId;
-                        mCoupon.couponRuleId=couponRuleId;
-                        mCoupon.couponCode=couponCode;
-                        mCoupon.enoughMoney=enoughValue;
-                        mCoupon.money=money;
-                        mCoupon.info=info;
-                        mCoupon.startDate=startTime;
-                        mCoupon.endDate=endTime;
-                        mCoupon.time=days;
-                        mCoupon.status=statu;
-                        mCoupon.property=property;
-                        mCoupon.type=goodsType;
-                        mCoupon.isDefault=false;
-
-                    handler.sendEmptyMessage(UPDATE_COUPON_SUCCESSS);
-                } else
-                {
-                    mStatus=1;
-                    handler.sendEmptyMessage(UPDATE_NULLCOUPON_SUCCESSS);
-                }
-            }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-                mDialog.dismiss();
-                ToolUtils.setToast(mContext,R.string.loading_fail_txt);
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
+        return result;
     }
 
     /**
@@ -1371,6 +1372,89 @@ public class ShopOrderOkFragment extends BaseFragment
         };
         mRequestQueue.add(request);
     }
+
+
+    /**
+     * json解析
+     * @param json
+     */
+    private void JsonParse(String json)
+    {
+        ToolUtils.setLog(json);
+        JSONObject jsonObject= null;
+        try
+        {
+            jsonObject = new JSONObject(json);
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        int status=jsonObject.optInt("status");
+        if (status!=200)
+        {
+            ToolUtils.setToast(mContext,"抱歉,优惠券加载失败");
+        }
+        JSONObject object=jsonObject.optJSONObject("data");
+        if(object==null)
+        {
+            mStatus=1;
+            handler.sendEmptyMessage(UPDATE_NULLCOUPON_SUCCESSS);
+            return;
+        }
+        JSONObject datasObject = object.optJSONObject("data");
+        if (datasObject != null && datasObject.length() > 0)
+        {
+            int id=datasObject.optInt("id");
+            int couponId=datasObject.optInt("couponId");
+            int couponRuleId=datasObject.optInt("couponRuleId");
+            String couponCode=datasObject.optString("couponCode");
+            double enoughValue=datasObject.optDouble("enoughValue");
+            double money=datasObject.optDouble("bookValue");
+            String info=datasObject.optString("couponName");
+            String startTime=datasObject.optString("startTime");
+            String endTime=datasObject.optString("endTime");
+            int days=0;
+            try
+            {
+                SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date endDate=format.parse(endTime);
+                long diff=endDate.getTime()-System.currentTimeMillis();
+                days=(int) (diff / (1000 * 60 * 60 * 24))+diff %(1000 * 60 * 60 * 24)>0?1:0;
+            } catch (ParseException e)
+            {
+                e.printStackTrace();
+            }
+            endTime=endTime.split(" ")[0];
+
+            String statu=datasObject.optString("status");
+            String property=datasObject.optString("property");
+            String goodsType=datasObject.optString("goodsType");
+            mCoupon=new Coupon();
+            mCoupon.id=id;
+            mCoupon.couponId=couponId;
+            mCoupon.couponRuleId=couponRuleId;
+            mCoupon.couponCode=couponCode;
+            mCoupon.enoughMoney=enoughValue;
+            mCoupon.money=money;
+            mCoupon.info="满"+ToolUtils.isIntPrice(enoughValue+"")+"减"+ToolUtils.isIntPrice(money+"");
+            mCoupon.startDate=startTime;
+            mCoupon.endDate=endTime;
+            mCoupon.time=days;
+            mCoupon.status=statu;
+            mCoupon.property=property;
+            mCoupon.type=goodsType;
+            mCoupon.isDefault=false;
+
+            handler.sendEmptyMessage(UPDATE_COUPON_SUCCESSS);
+        } else
+        {
+            mStatus=1;
+            handler.sendEmptyMessage(UPDATE_NULLCOUPON_SUCCESSS);
+        }
+    }
+
+
+
 
     public void onResume()
     {
