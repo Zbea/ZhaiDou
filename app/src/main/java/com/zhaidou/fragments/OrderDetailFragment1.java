@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
@@ -294,34 +295,47 @@ public class OrderDetailFragment1 extends BaseFragment {
             ListView mListView = ViewHolder.get(convertView, R.id.lv_order_list);
             TextView btn1 = ViewHolder.get(convertView, R.id.bt_received);
             TextView btn2 = ViewHolder.get(convertView, R.id.bt_logistics);
-            LinearLayout mBottomLayout = ViewHolder.get(convertView, R.id.ll_bottom);
+            RelativeLayout mBottomLayout = ViewHolder.get(convertView, R.id.buttonLayout);
 
             final LinearLayout detailContainer = ViewHolder.get(convertView, R.id.detailContainer);
             TextView mReceiverName = ViewHolder.get(convertView, R.id.tv_receiver_name);
             TextView mReceiverPhone = ViewHolder.get(convertView, R.id.tv_receiver_phone);
             final TextView mReceiverAddress = ViewHolder.get(convertView, R.id.tv_receiver_address);
-            TextView mOrderAmount = ViewHolder.get(convertView, R.id.total);
+            TextView mTotal = ViewHolder.get(convertView, R.id.total);
+            TextView mGoodsAccount = ViewHolder.get(convertView, R.id.goodsAccount);
+            TextView mFavourableAccount = ViewHolder.get(convertView, R.id.favourableAccount);
+            TextView mCarriage = ViewHolder.get(convertView, R.id.carriage);
 
             final Store store = getList().get(position);
             mReceiverName.setText(store.deliveryAddressPO.realName);
             mReceiverPhone.setText(store.deliveryAddressPO.mobile);
             mReceiverAddress.setText(store.deliveryAddressPO.provinceName + store.deliveryAddressPO.cityName + store.deliveryAddressPO.address);
-            mOrderAmount.setText("￥" + store.orderActualAmount);
+            mTotal.setText("￥" + store.orderActualAmount);
+            mGoodsAccount.setText("￥"+store.itemTotalAmount);
+            mFavourableAccount.setText("￥"+store.orderPayAmount);
+            mCarriage.setText("￥"+store.deliveryFee);
             mOrderNumber.setText(store.orderCode + "");
             mOrderTime.setText(store.creationTime);
             mOrderStatus.setText(store.orderShowStatus);
 
             if (ZhaiDou.STATUS_DEAL_SUCCESS == store.status) {/**交易成功*/
-                mBottomLayout.setVisibility(View.VISIBLE);
+//                mBottomLayout.setVisibility(View.VISIBLE);
                 btn1.setText("申请退货");
                 btn2.setText("查看物流");
                 btn1.setBackgroundResource(R.drawable.btn_green_click_bg);
                 btn2.setBackgroundResource(R.drawable.btn_green_click_bg);
                 btn1.setVisibility(store.isFinishAfterTime==1?View.GONE:View.VISIBLE);
-                if (store.returnGoodsFlag == 1)
-                    mBottomLayout.setVisibility(View.GONE);
+                if (store.returnGoodsFlag == 1){
+//                    btn1.setVisibility(View.GONE);
+//                    btn2.setVisibility(View.GONE);
+                    mBottomLayout.setVisibility(View.INVISIBLE);
+                }
+//                    mBottomLayout.setVisibility(View.GONE);
             } else if (ZhaiDou.STATUS_UNDELIVERY == store.status || ZhaiDou.STATUS_PICKINGUP == store.status || ZhaiDou.STATUS_UNPAY == store.status||ZhaiDou.STATUS_ORDER_APPLY_CANCEL==store.status) {/**待发货,已拣货,待支付,退款申请*/
-                mBottomLayout.setVisibility(View.GONE);
+//                mBottomLayout.setVisibility(View.GONE);
+//                btn1.setVisibility(View.GONE);
+//                btn2.setVisibility(View.GONE);
+                mBottomLayout.setVisibility(View.INVISIBLE);
             } else if (ZhaiDou.STATUS__DELIVERYED == store.status) {
                 mBottomLayout.setVisibility(View.VISIBLE);
                 btn2.setText("查看物流");
@@ -329,7 +343,10 @@ public class OrderDetailFragment1 extends BaseFragment {
                 btn2.setBackgroundResource(R.drawable.btn_green_click_bg);
                 btn1.setBackgroundResource(R.drawable.btn_red_click_selector);
             } else if (ZhaiDou.STATUS_ORDER_CANCEL == store.status||ZhaiDou.STATUS_RETURN_MONEY_SUCCESS==store.status) {//已取消//退款完成
-                mBottomLayout.setVisibility(View.GONE);
+//                mBottomLayout.setVisibility(View.GONE);
+//                btn1.setVisibility(View.GONE);
+//                btn2.setVisibility(View.GONE);
+                mBottomLayout.setVisibility(View.INVISIBLE);
             }
 
             final OrderItemAdapter adapter = new OrderItemAdapter(mContext, store.orderItemPOList) {
@@ -337,7 +354,7 @@ public class OrderDetailFragment1 extends BaseFragment {
                 public int getCount() {
                     if (!store.isExpand) {
                         detailContainer.setVisibility(View.GONE);
-                        return 1;
+                        return store.orderItemPOList.size();
                     }
                     detailContainer.setVisibility(View.VISIBLE);
                     return super.getCount();
@@ -349,6 +366,7 @@ public class OrderDetailFragment1 extends BaseFragment {
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
                     Store store1 = (Store) values;
                     store1.isExpand = !store1.isExpand;
+                    v.setSelected(store1.isExpand);
                     adapter.notifyDataSetChanged();
                 }
             });

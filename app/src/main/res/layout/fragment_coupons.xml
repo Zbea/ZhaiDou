@@ -1,0 +1,17 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f1f1f1">
+
+    <com.pulltorefresh.PullToRefreshListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:dividerHeight="20dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:scrollbars="none"
+        android:listSelector="@android:color/transparent"
+        android:divider="@android:color/transparent"/>
+
+</LinearLayout>

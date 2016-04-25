@@ -44,7 +44,6 @@ public class ZDApplication extends EaseApplication {
             public void gotResult(int i, String s, Set<String> strings) {
             }
         });
-
         initTypeFace();
         try {
             PackageInfo packageInfo = getApplicationContext().getPackageManager().getPackageInfo(getPackageName(), 0);

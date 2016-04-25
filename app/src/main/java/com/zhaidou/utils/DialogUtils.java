@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -128,7 +129,7 @@ public class DialogUtils {
         final View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_loading, null);
         TextView textView = (TextView) view.findViewById(R.id.loading_tv);
         textView.setText("");
-        Dialog mDialog = new Dialog(mContext, R.style.custom_dialog_no);
+        mDialog = new Dialog(mContext, R.style.custom_dialog_no);
         mDialog.setCanceledOnTouchOutside(false);
         mDialog.setCancelable(true);
         mDialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -278,6 +279,35 @@ public class DialogUtils {
         return mDialog;
     }
 
+    public Dialog showCouponDialog(final PositiveListener2 positiveListener, final CancelListener cancelListener) {
+        final Dialog mDialog = new Dialog(mContext, R.style.custom_dialog);
+        mDialog.setCanceledOnTouchOutside(true);
+        mDialog.setCancelable(true);
+        mDialog.setContentView(R.layout.dialog_coupon);
+        mDialog.show();
+        mDialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (cancelListener != null)
+                    cancelListener.onCancel();
+                mDialog.dismiss();
+            }
+        });
+        mDialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText editText = (EditText) mDialog.findViewById(R.id.message);
+                if (TextUtils.isEmpty(editText.getText().toString().trim())) {
+                    Toast.makeText(mContext, "请输入兑换码", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                mDialog.dismiss();
+                positiveListener.onPositive(editText.getText().toString());
+            }
+        });
+        return mDialog;
+    }
+
     public void showShareDialog(final String title, final String content, final String imageUrl, final String url, final PlatformActionListener platformActionListener) {
         System.out.println("title = [" + title + "], content = [" + content + "], imageUrl = [" + imageUrl + "], url = [" + url + "], platformActionListener = [" + platformActionListener + "]");
         ShareSDK.initSDK(mContext);
@@ -317,7 +347,7 @@ public class DialogUtils {
                 switch (position) {
                     case 0:
 //                        mDialog.dismiss();
-                        if (!com.alibaba.sdk.android.util.NetworkUtils.isNetworkAvaiable(mContext)){
+                        if (!com.alibaba.sdk.android.util.NetworkUtils.isNetworkAvaiable(mContext)) {
                             Toast.makeText(mContext, "网络异常", Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -334,8 +364,8 @@ public class DialogUtils {
                         break;
                     case 1:
 //                        mDialog.dismiss();
-                        if (!com.alibaba.sdk.android.util.NetworkUtils.isNetworkAvaiable(mContext)){
-                            Toast.makeText(mContext,"网络异常",Toast.LENGTH_SHORT).show();
+                        if (!com.alibaba.sdk.android.util.NetworkUtils.isNetworkAvaiable(mContext)) {
+                            Toast.makeText(mContext, "网络异常", Toast.LENGTH_SHORT).show();
                             return;
                         }
                         WechatMoments.ShareParams WMSP = new WechatMoments.ShareParams();
@@ -351,8 +381,8 @@ public class DialogUtils {
                         break;
                     case 2:
                         mDialog.dismiss();
-                        if (!com.alibaba.sdk.android.util.NetworkUtils.isNetworkAvaiable(mContext)){
-                            Toast.makeText(mContext,"网络异常",Toast.LENGTH_SHORT).show();
+                        if (!com.alibaba.sdk.android.util.NetworkUtils.isNetworkAvaiable(mContext)) {
+                            Toast.makeText(mContext, "网络异常", Toast.LENGTH_SHORT).show();
                             return;
                         }
                         cn.sharesdk.sina.weibo.SinaWeibo.ShareParams sp = new cn.sharesdk.sina.weibo.SinaWeibo.ShareParams();
@@ -362,7 +392,7 @@ public class DialogUtils {
                             Iterator<String> iterator = keys.iterator();
                             while (iterator.hasNext()) {
                                 String next = iterator.next();
-                                if (!TextUtils.isEmpty(imageUrl)&&next.contains(imageUrl)) {
+                                if (!TextUtils.isEmpty(imageUrl) && next.contains(imageUrl)) {
                                     Bitmap bitmap = ImageLoader.getInstance().getMemoryCache().get(next);
                                     File sina = PhotoUtil.saveBitmapFile(bitmap, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + "/sina.jpg");
                                     sp.setImagePath(sina.getAbsolutePath());
@@ -376,8 +406,8 @@ public class DialogUtils {
                         break;
                     case 3:
                         mDialog.dismiss();
-                        if (!com.alibaba.sdk.android.util.NetworkUtils.isNetworkAvaiable(mContext)){
-                            Toast.makeText(mContext,"网络异常",Toast.LENGTH_SHORT).show();
+                        if (!com.alibaba.sdk.android.util.NetworkUtils.isNetworkAvaiable(mContext)) {
+                            Toast.makeText(mContext, "网络异常", Toast.LENGTH_SHORT).show();
                             return;
                         }
                         QQ.ShareParams QQSp = new QQ.ShareParams();
@@ -392,8 +422,8 @@ public class DialogUtils {
                         break;
                     case 4:
                         mDialog.dismiss();
-                        if (!com.alibaba.sdk.android.util.NetworkUtils.isNetworkAvaiable(mContext)){
-                            Toast.makeText(mContext,"网络异常",Toast.LENGTH_SHORT).show();
+                        if (!com.alibaba.sdk.android.util.NetworkUtils.isNetworkAvaiable(mContext)) {
+                            Toast.makeText(mContext, "网络异常", Toast.LENGTH_SHORT).show();
                             return;
                         }
                         QZone.ShareParams QZoneSP = new QZone.ShareParams();
@@ -416,9 +446,9 @@ public class DialogUtils {
         });
     }
 
-    public void dismiss(){
+    public void dismiss() {
         System.out.println("mDialog = " + mDialog);
-        if (mDialog!=null)
+        if (mDialog != null)
             mDialog.dismiss();
     }
 
@@ -470,6 +500,9 @@ public class DialogUtils {
 
     public interface PositiveListener {
         public void onPositive();
+    }
+    public interface PositiveListener2 {
+        public void onPositive(Object o);
     }
 
     public interface CancelListener {

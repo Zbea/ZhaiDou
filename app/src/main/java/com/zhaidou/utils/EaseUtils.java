@@ -21,12 +21,12 @@ import com.zhaidou.model.User;
 public class EaseUtils {
 
     public static void startKeFuActivity(Context context){
-        if ((Integer)SharedPreferencesUtil.getData(context, "userId", -1)==-1||AccountManage.getInstance().isConflict()){
+        User user = SharedPreferencesUtil.getUser(context);
+        if ((Integer)SharedPreferencesUtil.getData(context, "userId", -1)==-1||user==null||AccountManage.getInstance().isConflict()){
             Intent intent=new Intent(context,LoginActivity.class);
             context.startActivity(intent);
             return;
         }
-        User user = SharedPreferencesUtil.getUser(context);
         Intent intent2 = new Intent(context, ChatActivity.class);
         intent2.putExtra(Constant.EXTRA_USER_ID, "service");
         intent2.putExtra("queueName", "service");
@@ -35,12 +35,12 @@ public class EaseUtils {
     }
 
     public static void startDesignerActivity(Context context){
-        if ((Integer)SharedPreferencesUtil.getData(context, "userId", -1)==-1||AccountManage.getInstance().isConflict()){
+        User user = SharedPreferencesUtil.getUser(context);
+        if ((Integer)SharedPreferencesUtil.getData(context, "userId", -1)==-1||user==null||AccountManage.getInstance().isConflict()){
             Intent intent=new Intent(context,LoginActivity.class);
             context.startActivity(intent);
             return;
         }
-        User user = SharedPreferencesUtil.getUser(context);
         Intent intent2 = new Intent(context, ChatActivity.class);
         intent2.putExtra(Constant.EXTRA_USER_ID, "designer");
         intent2.putExtra("queueName", "designer");

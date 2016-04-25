@@ -76,6 +76,8 @@ public class ZhaiDou {
     public static String GetOrderCouponUrl=HOME_BASE_URL+"user/getEnableCoupons.action";
     //获取默认优惠劵:
     public static String GetOrderCouponDefaultUrl=HOME_BASE_URL+"user/getEnableCoupons_default.action";
+    //获取我的优惠卷
+    public static String COUPONS_MINE_URL=HOME_BASE_URL+"user/get_my_coupons.action";
 
     //地址列表
     public static String AddressListUrl=HOME_BASE_URL+"user/receivers.action";
