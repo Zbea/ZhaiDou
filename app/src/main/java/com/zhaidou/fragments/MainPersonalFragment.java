@@ -308,27 +308,32 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
                 String msg = jsonObject.optString("message");
-                if (status == 200) {
+                if (status == 200)
+                {
                     JSONObject dataObj = jsonObject.optJSONObject("data");
 
                     JSONObject userObj = dataObj.optJSONObject("user");
-                    String avatar="";
-                    if (userObj.optJSONObject("avatar")!=null)
+                    String avatar = "";
+                    if (userObj != null)
                     {
-                        avatar = userObj.optJSONObject("avatar").optString("url");
-                    }
-                    String nick_name = userObj.optString("nick_name");
-                    String province = userObj.optString("province");
-                    String city = userObj.optString("city");
-//                    User user = new User();
-                    mUser.setAvatar(avatar);
-                    mUser.setNickName(nick_name);
-                    mUser.setProvince(province);
-                    mUser.setCity(city);
-                    Message message = new Message();
+                        if (userObj.optJSONObject("avatar")!=null)
+                        {
+                            avatar = userObj.optJSONObject("avatar").optString("url");
+                        }
+                        String nick_name = userObj.optString("nick_name");
+                        String province = userObj.optString("province");
+                        String city = userObj.optString("city");
+                        //                    User user = new User();
+                        mUser.setAvatar(avatar);
+                        mUser.setNickName(nick_name);
+                        mUser.setProvince(province);
+                        mUser.setCity(city);
+                        Message message = new Message();
 //                    message.what = UPDATE_USER_INFO;
 //                    message.obj = user;
-                    mHandler.sendEmptyMessage(UPDATE_USER_INFO);
+                        mHandler.sendEmptyMessage(UPDATE_USER_INFO);
+                    }
+
                 } else {
                     ShowToast(msg);
                 }

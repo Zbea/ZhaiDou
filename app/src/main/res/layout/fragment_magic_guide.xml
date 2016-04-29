@@ -5,36 +5,12 @@
     android:background="@color/white"
     android:orientation="vertical">
 
-    <ScrollView
+    <com.zhaidou.view.CustomProgressWebview
+        android:id="@+id/webView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="none">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="190dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/icon_guide_banner"/>
-
-            <com.zhaidou.view.ListViewForScrollView
-                android:id="@+id/listView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="none"
-                android:listSelector="@color/transparent"
-                android:divider="@null">
-
-                </com.zhaidou.view.ListViewForScrollView>
-
-
-            </LinearLayout>
-
-        </ScrollView>
+        android:layout_height="match_parent"
+        android:scrollbars="none"
+        ></com.zhaidou.view.CustomProgressWebview>
 
     <com.zhaidou.view.TypeFaceTextView
         android:id="@+id/back_btn"
@@ -42,12 +18,12 @@
         android:layout_height="50dp"
         android:gravity="center_vertical"
         android:paddingLeft="10dp"
-        android:textColor="@color/green_color"
+        android:textColor="@color/white"
         android:drawablePadding="6dp"
         android:textSize="16sp"
         android:text="返回"
         android:clickable="true"
-        android:drawableLeft="@drawable/icon_back_green_selector"/>
+        android:drawableLeft="@drawable/icon_back"/>
 
 
 
