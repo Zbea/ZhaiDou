@@ -22,12 +22,14 @@ import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshListView;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Coupons;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.view.ClickableTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -106,11 +108,11 @@ public class CouponsFragment extends Fragment implements PullToRefreshBase.OnRef
         String mUserId= SharedPreferencesUtil.getData(getActivity(),"userId",-1)+"";
         Map<String, String> mParams = new HashMap<String, String>();
         mParams.put("user_id", mUserId);
-        mParams.put("pageNum", "1");
+        mParams.put("pageNum", ""+page);
         mParams.put("pageSize", "20");
         mParams.put("status", mStatus);
 
-        ZhaiDouRequest request = new ZhaiDouRequest(getActivity(), Request.Method.POST, "http://tportal-web.zhaidou.com/user/get_my_coupons.action", mParams, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(getActivity(), Request.Method.POST, ZhaiDou.COUPONS_MINE_URL, mParams, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
@@ -144,7 +146,7 @@ public class CouponsFragment extends Fragment implements PullToRefreshBase.OnRef
     public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
         mCouponAdapter.clear();
         mListView.setMode(PullToRefreshBase.Mode.BOTH);
-        FetchData(currentPage = 0);
+        FetchData(currentPage = 1);
     }
 
     @Override
@@ -152,7 +154,7 @@ public class CouponsFragment extends Fragment implements PullToRefreshBase.OnRef
         FetchData(++currentPage);
     }
 
-    private class CouponAdapter extends BaseListAdapter<Coupons> {
+    public class CouponAdapter extends BaseListAdapter<Coupons> implements ClickableTextView.OnTextClickListener {
 
         public CouponAdapter(Context context, List<Coupons> list) {
             super(context, list);
@@ -166,7 +168,7 @@ public class CouponsFragment extends Fragment implements PullToRefreshBase.OnRef
             TextView mMoney = ViewHolder.get(convertView, R.id.money);
             TextView mDetail = ViewHolder.get(convertView, R.id.detail);
             ImageView mImageView = ViewHolder.get(convertView, R.id.arrow);
-            TextView mCategory = ViewHolder.get(convertView, R.id.category);
+            ClickableTextView mCategory = ViewHolder.get(convertView, R.id.category);
             ImageView mTipView=ViewHolder.get(convertView,R.id.mTipView);
             Coupons coupons = getList().get(position);
             mTitle.setText(coupons.couponName);
@@ -184,10 +186,12 @@ public class CouponsFragment extends Fragment implements PullToRefreshBase.OnRef
             mMoney.setText(Html.fromHtml("<big><big>￥<big><big><big>" + coupons.bookValue + "</big></big></big></big></big>"));
             mDetail.setText(Html.fromHtml(String.format("%s到期<font color=red>(仅剩%s天)</font><br><br>满%s使用",endTimeStr,day,coupons.enoughValue)));
             String categoryStr = "";
+            List<Integer> ids=new ArrayList<Integer>();
             for (String category : coupons.couponGoodsTypeNames) {
                 categoryStr += (category + "、");
+                ids.add(1);
             }
-            mCategory.setText(categoryStr.substring(0, categoryStr.length() - 1));
+            mCategory.setClickText(categoryStr.length() > 0 ? categoryStr.substring(0, categoryStr.length() - 1) : "",ids,this);
             mCategory.setVisibility((mImageView.isSelected() ? View.VISIBLE : View.GONE));
             if (mServerTime<endTime.getTime()){
                 mTipView.setVisibility("U".equalsIgnoreCase(mStatus)?View.VISIBLE:View.GONE);
@@ -203,6 +207,11 @@ public class CouponsFragment extends Fragment implements PullToRefreshBase.OnRef
                 mDetail.setText(Html.fromHtml(String.format("%s到期<br><br>满%s使用",endTimeStr,coupons.enoughValue)));
             }
             return convertView;
+        }
+
+        @Override
+        public void onTextClick(String categoryStr, int id) {
+            System.out.println("categoryStr = [" + categoryStr + "], id = [" + id + "]");
         }
     }
 

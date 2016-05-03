@@ -30,7 +30,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -38,6 +40,7 @@ import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
@@ -48,6 +51,7 @@ import com.zhaidou.model.Order;
 import com.zhaidou.model.OrderItem1;
 import com.zhaidou.model.ReturnItem;
 import com.zhaidou.model.Store;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.PhotoUtil;
@@ -179,7 +183,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
         mListView = (ListView) view.findViewById(R.id.lv_aftersale);
         afterSaleAdapter = new AfterSaleAdapter(getActivity(), new ArrayList<OrderItem1>());
         mListView.setAdapter(afterSaleAdapter);
-//        FetchOrderDetail(mStore);
+        FetchOrderDetail(mStore);
 
         iv_return_img = (ImageView) view.findViewById(R.id.iv_return_img);
         iv_return_img.setOnClickListener(this);
@@ -265,11 +269,38 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                 }
             }
         });
-        initData(mStore);
     }
 
-    private void initData(Store store) {
-        afterSaleAdapter.addAll(store.orderItemPOList);
+    private void FetchOrderDetail(Store mStore) {
+        Map<String,String> map=new HashMap<String, String>();
+        map.put("orderCode",mStore.parentOrderCode);
+        map.put("childOrderCode",mStore.orderCode);
+        System.out.println("map = " + map);
+        ZhaiDouRequest request=new ZhaiDouRequest(mContext, Request.Method.POST,ZhaiDou.ORDER_RETURN_DETAIL,map,new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                System.out.println("jsonObject = " + jsonObject);
+                int status = jsonObject.optInt("status");
+                String message = jsonObject.optString("message");
+                if (status==200){
+                    JSONArray data = jsonObject.optJSONArray("data");
+                    List<OrderItem1> orderItem1s = JSON.parseArray(data.toString(), OrderItem1.class);
+                    initData(orderItem1s);
+                    return;
+                }
+                Toast.makeText(mContext,message,Toast.LENGTH_SHORT).show();
+            }
+        },new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        });
+        ((ZDApplication)mContext.getApplicationContext()).mRequestQueue.add(request);
+    }
+
+    private void initData(List<OrderItem1> orderItems) {
+        afterSaleAdapter.addAll(orderItems);
         afterSaleAdapter.notifyDataSetChanged();
     }
 

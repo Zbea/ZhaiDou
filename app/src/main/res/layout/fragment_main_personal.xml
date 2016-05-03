@@ -332,7 +332,7 @@
                     android:drawablePadding="10dp"
                     android:gravity="center_vertical"
                     android:paddingLeft="15dp"
-                    android:text="优惠卷"
+                    android:text="优惠券"
                     android:textColor="@color/text_main_color" />
 
                 <ImageView

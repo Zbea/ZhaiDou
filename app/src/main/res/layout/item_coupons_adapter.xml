@@ -29,12 +29,13 @@
             android:paddingRight="15dp"/>
     </RelativeLayout>
 
-    <com.zhaidou.view.TypeFaceTextView
+    <com.zhaidou.view.ClickableTextView
         android:id="@+id/category"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="桌面收纳"
         android:paddingRight="15dp"
+        android:clickable="true"
         android:layout_marginBottom="10dp"/>
     <ImageView
         android:layout_width="wrap_content"

@@ -1,7 +1,4 @@
-package com.zhaidou.model;/**
- * Created by wangclark on 15/12/3.
- */
-
+package com.zhaidou.model;
 import java.io.Serializable;
 
 /**
