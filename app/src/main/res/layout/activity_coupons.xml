@@ -67,6 +67,7 @@
         android:orientation="horizontal">
 
         <com.zhaidou.view.TypeFaceRadioButton
+            android:id="@+id/unused"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -79,6 +80,7 @@
             android:background="@drawable/options_goods_selector"/>
 
         <com.zhaidou.view.TypeFaceRadioButton
+            android:id="@+id/used"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -89,6 +91,7 @@
             android:button="@null"
             android:textSize="16sp"/>
         <com.zhaidou.view.TypeFaceRadioButton
+            android:id="@+id/overtime"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"

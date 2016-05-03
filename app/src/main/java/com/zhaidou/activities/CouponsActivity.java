@@ -46,13 +46,14 @@ public class CouponsActivity extends BaseActivity implements View.OnClickListene
         findViewById(R.id.rl_back).setOnClickListener(this);
         findViewById(R.id.exchange).setOnClickListener(this);
         final RadioGroup radioGroup= (RadioGroup) findViewById(R.id.radioGroup);
-        radioGroup.check(1);
-        showFragment(1);
+        radioGroup.check(R.id.unused);
+        showFragment(0);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 radioGroup.check(checkedId);
-                showFragment(checkedId);
+                int index=checkedId==R.id.unused?0:checkedId==R.id.used?1:2;
+                showFragment(index);
             }
         });
     }
@@ -60,7 +61,7 @@ public class CouponsActivity extends BaseActivity implements View.OnClickListene
     private void showFragment(int index){
         System.out.println("index = " + index);
         FragmentManager supportFragmentManager = getSupportFragmentManager();
-        mCurrentFragment = CouponsFragment.newInstance(mStatusArrAy[index - 1], "");
+        mCurrentFragment = CouponsFragment.newInstance(mStatusArrAy[index], "");
         supportFragmentManager.beginTransaction().replace(R.id.container, mCurrentFragment).commit();
     }
 
