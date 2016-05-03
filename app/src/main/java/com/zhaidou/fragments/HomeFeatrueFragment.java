@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -49,6 +50,7 @@ import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.CustomProgressWebview;
 import com.zhaidou.view.LargeImgView;
 import com.zhaidou.view.ListViewForScrollView;
 import com.zhaidou.view.TypeFaceTextView;
@@ -92,7 +94,8 @@ public class HomeFeatrueFragment extends BaseFragment {
 
     private TextView cartTipsTv;
     private TextView titleTv;
-    private LargeImgView bannerLine,infoImage;
+    private LargeImgView bannerLine;
+    private CustomProgressWebview infoImage;
     private ImageView myCartBtn,imageIv;
     private RelativeLayout contactQQ,cartView;
     private PullToRefreshScrollView mScrollView;
@@ -179,9 +182,8 @@ public class HomeFeatrueFragment extends BaseFragment {
                     contactQQ.setVisibility(View.GONE);
                     break;
                 case UPDATE_ARTICLE_SHOPPING:
-                    setAddImage(imageIv,imageUrl,true);
-                    setAddImage(infoImage,shopSpecialItem.imageUrl,true);
-//                    ToolUtils.setImageCacheUrl(imageUrl,imageIv,R.drawable.icon_loading_item);
+                    setAddImage(imageIv, imageUrl, true);
+                    infoImage.loadUrl(shopSpecialItem.imageUrl);
                     infoTv.setText(introduce);
 
                     articleShoppingpAdapter.notifyDataSetChanged();
@@ -349,7 +351,16 @@ public class HomeFeatrueFragment extends BaseFragment {
             imageIv=(ImageView)rootView.findViewById(R.id.detailsImageIvs);
             imageIv.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
             infoTv=(TextView)rootView.findViewById(R.id.infoTv);
-            infoImage=(LargeImgView)rootView.findViewById(R.id.infoImage);
+            infoImage=(CustomProgressWebview)rootView.findViewById(R.id.infoImage);
+            WebSettings webSettings = infoImage.getSettings();
+            webSettings.setJavaScriptEnabled(true);
+            webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+            webSettings.setAllowFileAccess(true);
+            webSettings.setDomStorageEnabled(true);
+            webSettings.setUseWideViewPort(true);
+            webSettings.setLoadWithOverviewMode(true);
+            webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+
             articleLine=(LinearLayout) rootView.findViewById(R.id.articleLine);
             articleGridView = (GridView) rootView.findViewById(R.id.magicItemList);
             articleGridView.setEmptyView(mEmptyView);
@@ -449,10 +460,13 @@ public class HomeFeatrueFragment extends BaseFragment {
                 .showImageOnLoading(R.drawable.icon_loading_item)
                 .showImageForEmptyUri(R.drawable.icon_loading_item)
                 .showImageOnFail(R.drawable.icon_loading_item)
-                .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
-                .bitmapConfig(Bitmap.Config.RGB_565)
-                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
+//                .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
+//                .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
+//                .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
+//                .bitmapConfig(Bitmap.Config.RGB_565)
+                .imageScaleType(ImageScaleType.EXACTLY)
                 .build();
+        ToolUtils.setLog("url:"+url);
         ImageLoader.getInstance().displayImage(url, imgView, options, new ImageLoadingListener()
         {
             @Override
@@ -472,7 +486,6 @@ public class HomeFeatrueFragment extends BaseFragment {
                 {
                     ImageView imageView1 = (ImageView) view;
                     imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
-                        imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
                         imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, bitmap.getHeight() * screenWidth / bitmap.getWidth()));
                         imageView1.setImageBitmap(bitmap);
                 }
@@ -480,16 +493,17 @@ public class HomeFeatrueFragment extends BaseFragment {
                 {
                     if (bitmap != null)
                     {
+                        ToolUtils.setLog("bitmap.getHeight():"+bitmap.getHeight());
+                        ToolUtils.setLog("bitmap.getWidth():"+bitmap.getWidth());
+
                         LargeImgView imageView1 = (LargeImgView) view;
-                        imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
-                        if (bitmap.getHeight() < 4000)
+                        imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, bitmap.getHeight() * screenWidth / bitmap.getWidth()));
+                        if (bitmap.getHeight() < 1000)
                         {
                             imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
-                            imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, bitmap.getHeight() * screenWidth / bitmap.getWidth()));
                             imageView1.setImageBitmap(bitmap);
                         } else
                         {
-                            imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
                             imageView1.setImageBitmapLarge(bitmap);
                         }
                     }

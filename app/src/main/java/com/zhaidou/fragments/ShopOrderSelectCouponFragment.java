@@ -26,29 +26,24 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Coupon;
+import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class ShopOrderSelectCouponFragment extends BaseFragment implements View.OnClickListener
@@ -85,6 +80,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
     private String mDatas;
     private String couponCode;
     private Coupon redeemCoupon;
+    final Map<String,String> headers=new HashMap<String, String>();
 
 
     private Handler handler = new Handler()
@@ -273,6 +269,10 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
         userName = (String) SharedPreferencesUtil.getData(mContext, "nickName", "");
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "");
+
+        headers.put("SECAuthorization", token);
+        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
             commit();
@@ -336,19 +336,28 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
         ToolUtils.setToast(mContext,R.string.loading_fail_txt);
     }
 
-
-
     /**
      * 获取优惠券列表
      */
     private void commit()
     {
+        // 创建名/值组列表
+        final List<NameValuePair> params = new ArrayList<NameValuePair>();
+        try
+        {
+            params.add(new BasicNameValuePair("userId", userId + ""));
+            params.add(new BasicNameValuePair("skuAndNumLists", new JSONArray(mDatas).toString()));
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+
         new Thread(new Runnable()
         {
             @Override
             public void run()
             {
-                String result = FetchRequset();
+                String result= NetService.GETHttpPostService(mContext, ZhaiDou.GetOrderCouponUrl, headers, params);
                 handler.obtainMessage(UPDATE_RESULT,result).sendToTarget();
             }
         }).start();
@@ -360,136 +369,29 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
      */
     private void FetchRedeem()
     {
+        // 创建名/值组列表
+        final List<NameValuePair> params = new ArrayList<NameValuePair>();
+        try
+        {
+            params.add(new BasicNameValuePair("userId", userId + ""));
+            params.add(new BasicNameValuePair("skuAndNumLists", new JSONArray(mDatas).toString()));
+            params.add(new BasicNameValuePair("nickName", userName));
+            params.add(new BasicNameValuePair("couponCode", couponCode));
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+
         new Thread(new Runnable()
         {
             @Override
             public void run()
             {
-                String result = FetchRedeemRequset();
+                String result= NetService.GETHttpPostService(mContext, ZhaiDou.GetRedeemAndCheckCouponUrl, headers, params);
                 handler.obtainMessage(UPDATE_PARSE_REDEEM_COUPON_RESULT,result).sendToTarget();
             }
         }).start();
 
-    }
-
-
-    /**
-     * 获取优惠券列表
-     * @return
-     */
-    private String FetchRequset()
-    {
-        String result = null;
-        BufferedReader in = null;
-        try
-        {
-            // 定义HttpClient
-            HttpClient client = new DefaultHttpClient();
-            // 实例化HTTP方法
-            HttpPost request = new HttpPost(ZhaiDou.GetOrderCouponUrl);
-            request.addHeader("SECAuthorization", token);
-            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-            // 创建名/值组列表
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("userId", userId + ""));
-            params.add(new BasicNameValuePair("skuAndNumLists", new JSONArray(mDatas).toString()));
-            // 创建UrlEncodedFormEntity对象
-            UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
-                    params, HTTP.UTF_8);
-            request.setEntity(formEntiry);
-            // 执行请求
-            HttpResponse response = client.execute(request);
-
-            in = new BufferedReader(new InputStreamReader(response.getEntity()
-                    .getContent()));
-            StringBuffer sb = new StringBuffer("");
-            String line = "";
-            String NL = System.getProperty("line.separator");
-            while ((line = in.readLine()) != null)
-            {
-                sb.append(line + NL);
-            }
-            in.close();
-            result = sb.toString();
-            return result;
-
-        } catch (Exception e)
-        {
-
-        } finally
-        {
-            if (in != null)
-            {
-                try
-                {
-                    in.close();
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * @return
-     */
-    private String FetchRedeemRequset()
-    {
-        String result = null;
-        BufferedReader in = null;
-        try
-        {
-            // 定义HttpClient
-            HttpClient client = new DefaultHttpClient();
-            // 实例化HTTP方法
-            HttpPost request = new HttpPost(ZhaiDou.GetRedeemAndCheckCouponUrl);
-            request.addHeader("SECAuthorization", token);
-            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-            // 创建名/值组列表
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("userId", userId + ""));
-            params.add(new BasicNameValuePair("skuAndNumLists", new JSONArray(mDatas).toString()));
-            params.add(new BasicNameValuePair("nickName", userName));
-            params.add(new BasicNameValuePair("couponCode", couponCode));
-            // 创建UrlEncodedFormEntity对象
-            UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
-                    params, HTTP.UTF_8);
-            request.setEntity(formEntiry);
-            // 执行请求
-            HttpResponse response = client.execute(request);
-
-            in = new BufferedReader(new InputStreamReader(response.getEntity()
-                    .getContent()));
-            StringBuffer sb = new StringBuffer("");
-            String line = "";
-            String NL = System.getProperty("line.separator");
-            while ((line = in.readLine()) != null)
-            {
-                sb.append(line + NL);
-            }
-            in.close();
-            result = sb.toString();
-            return result;
-
-        } catch (Exception e)
-        {
-
-        } finally
-        {
-            if (in != null)
-            {
-                try
-                {
-                    in.close();
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return result;
     }
 
     /**

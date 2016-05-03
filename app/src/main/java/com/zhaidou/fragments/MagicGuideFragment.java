@@ -1,25 +1,21 @@
 package com.zhaidou.fragments;
 
 
-import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.TextView;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.base.BaseListAdapter;
-import com.zhaidou.base.ViewHolder;
-import com.zhaidou.view.ListViewForScrollView;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import com.zhaidou.view.CustomProgressWebview;
 
 /**
  * 软装指南
@@ -31,10 +27,7 @@ public class MagicGuideFragment extends BaseFragment implements View.OnClickList
     private String mParam1;
     private String mParam2;
     private View rootView;
-    private ListViewForScrollView listView;
-    private StringAdapter arrayAdapter;
-    private List<String> arrays=new ArrayList<String>();
-    private HashMap<Integer,View> maps=new HashMap<Integer, View>();
+    private CustomProgressWebview webview;
 
 
     public static MagicGuideFragment newInstance(String param1, String param2) {
@@ -78,24 +71,39 @@ public class MagicGuideFragment extends BaseFragment implements View.OnClickList
     private void initView()
     {
         rootView.findViewById(R.id.back_btn).setOnClickListener(this);
-        listView=(ListViewForScrollView)rootView.findViewById(R.id.listView);
-
-        String[] array=mContext.getResources().getStringArray(R.array.magicGuide);
-        for (String item :array)
-        {
-            arrays.add(item);
-        }
-        arrayAdapter=new StringAdapter(mContext,arrays);
-        listView.setAdapter(arrayAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        webview=(CustomProgressWebview)rootView.findViewById(R.id.webView);
+        final String Url="http://tm.zhaidou.com/rzzh/list.html";
+        webview.loadUrl(Url);
+        WebSettings webSettings=webview.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        webview.setWebViewClient(new WebViewClient()
         {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            public void onPageFinished(WebView view, String url)
             {
+                view.loadUrl("javascript:!function(){" +
 
+                        "s=document.createElement('style');s.innerHTML="
+
+                        + "\"@font-face{font-family:FZLTXHK;src:url('**injection**/FZLTXHK.TTF');}*{font-family:FZLTXHK !important;}\";"
+
+                        + "document.getElementsByTagName('head')[0].appendChild(s);" +
+
+                        "document.getElementsByTagName('body')[0].style.fontFamily = \"FZLTXHK\";}()");
+                super.onPageFinished(view, url);
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url)
+            {
+                Intent intent = new Intent(getActivity(), HomePTActivity.class);
+                intent.putExtra("url", url);
+                intent.putExtra("title", "");
+                startActivity(intent);
+                return true;
             }
         });
-
     }
 
     @Override
@@ -107,25 +115,7 @@ public class MagicGuideFragment extends BaseFragment implements View.OnClickList
         }
     }
 
-    public class StringAdapter extends BaseListAdapter<String>
-    {
-        public StringAdapter(Context context, List<String> strings)
-        {
-            super(context, strings);
-        }
 
-        @Override
-        public View bindView(int position, View convertView, ViewGroup parent)
-        {
-            convertView=maps.get(position);
-            if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_magic_guide_list,null);
-            TextView tv_name = ViewHolder.get(convertView, R.id.guideTitle);
-            tv_name.setText(getList().get(position));
-            maps.put(position,convertView);
-            return convertView;
-        }
-    }
 
     public void onResume() {
         super.onResume();

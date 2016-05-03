@@ -40,6 +40,7 @@ import com.zhaidou.model.Address;
 import com.zhaidou.model.CartArrayItem;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.Coupon;
+import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -47,20 +48,12 @@ import com.zhaidou.view.CustomEditText;
 import com.zhaidou.view.TypeFaceEditText;
 import com.zhaidou.view.TypeFaceTextView;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -261,7 +254,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     setYFMoney(0);
                     break;
                 case UPDATE_NULLCOUPON_SUCCESSS:
-                    couponNameTv.setText("暂无优惠券可用");
+                    couponNameTv.setText("不使用优惠券");
                     moneyCouponTv.setText("￥"+0);
                     break;
                 case UPDATE_COUPON_RESULT:
@@ -848,12 +841,68 @@ public class ShopOrderOkFragment extends BaseFragment
      */
     private void commit()
     {
+        final Map<String,String> headers=new HashMap<String, String>();
+        headers.put("SECAuthorization", token);
+        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+
+        // 创建名/值组列表
+        final List<NameValuePair> params = new ArrayList<NameValuePair>();
+        try
+        {
+            params.add(new BasicNameValuePair("businessType", "01"));
+            params.add(new BasicNameValuePair("userId", userId + ""));
+            if (mCoupon != null)
+            {
+                params.add(new BasicNameValuePair("orderPayAmount", (money-mCoupon.money)+""));
+                params.add(new BasicNameValuePair("couponsKey", mCoupon.couponCode));
+                params.add(new BasicNameValuePair("couponsAmount",mCoupon.money+""));
+            } else
+            {
+                params.add(new BasicNameValuePair("orderPayAmount", money+""));
+            }
+            params.add(new BasicNameValuePair("userAddressId", address.getId()+""));
+            params.add(new BasicNameValuePair("token", token));
+            params.add(new BasicNameValuePair("version", mContext.getResources().getString(R.string.app_versionName)));
+            params.add(new BasicNameValuePair("clientType", "ANDROID"));
+            params.add(new BasicNameValuePair("clientVersion", (ZDApplication.localVersionCode+3)+""));
+            params.add(new BasicNameValuePair("remark", bzInfo.getText().toString()));
+
+            JSONArray storeArray=new JSONArray();
+            for (int i = 0; i < orderArrayItems.size(); i++)
+            {
+                CartArrayItem cartArrays=orderArrayItems.get(i);
+                JSONObject storeObject=new JSONObject();
+                storeObject.put("storeId",cartArrays.storeId);
+                storeObject.put("storeDeliveryId",2);
+                storeObject.put("storeDeliveryFee",moneyYF);
+                storeObject.put("messageToStore",bzInfo_Str);
+                JSONArray goodsArray=new JSONArray();
+
+                for (int j = 0; j <cartArrays.goodsItems.size(); j++)
+                {
+                    CartGoodsItem cartGoodsItem=cartArrays.goodsItems.get(j);
+                    JSONObject goodsObject=new JSONObject();
+                    goodsObject.put("productSKUCode",cartGoodsItem.sizeId);
+                    goodsObject.put("quantity",cartGoodsItem.num);
+                    goodsObject.put("price",cartGoodsItem.currentPrice);
+                    goodsObject.put("points",0);
+                    goodsArray.put(goodsObject);
+                }
+                storeObject.put("orderItemList",goodsArray);
+                storeArray.put(storeObject);
+            }
+            params.add(new BasicNameValuePair("storeOrderItemPOList", storeArray.toString()));
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+
         new Thread(new Runnable()
         {
             @Override
             public void run()
             {
-                String result = FetchRequset();
+                String result= NetService.GETHttpPostService(mContext,ZhaiDou.CommitOrdersUrl,headers,params);
                 if (result != null && result.length() > 0)
                 {
                     try
@@ -889,178 +938,29 @@ public class ShopOrderOkFragment extends BaseFragment
     }
 
     /**
-     * 请求订单
-     * @return
-     */
-    private String FetchRequset()
-    {
-        String result = null;
-        BufferedReader in = null;
-        try
-        {
-            // 定义HttpClient
-            HttpClient client = new DefaultHttpClient();
-            // 实例化HTTP方法
-            HttpPost request = new HttpPost(ZhaiDou.CommitOrdersUrl);
-            request.addHeader("SECAuthorization", token);
-            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-            // 创建名/值组列表
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("businessType", "01"));
-            params.add(new BasicNameValuePair("userId", userId + ""));
-            if (mCoupon != null)
-            {
-                params.add(new BasicNameValuePair("orderPayAmount", (money-mCoupon.money)+""));
-            } else
-            {
-                params.add(new BasicNameValuePair("orderPayAmount", money+""));
-            }
-            params.add(new BasicNameValuePair("userAddressId", address.getId()+""));
-            params.add(new BasicNameValuePair("token", token));
-            params.add(new BasicNameValuePair("version", mContext.getResources().getString(R.string.app_versionName)));
-            params.add(new BasicNameValuePair("clientType", "ANDROID"));
-            params.add(new BasicNameValuePair("clientVersion", (ZDApplication.localVersionCode+3)+""));
-            params.add(new BasicNameValuePair("remark", bzInfo.getText().toString()));
-            params.add(new BasicNameValuePair("couponsKey", mCoupon.couponCode));
-            params.add(new BasicNameValuePair("couponsAmount",mCoupon.money+""));
-
-            JSONArray storeArray=new JSONArray();
-            for (int i = 0; i < orderArrayItems.size(); i++)
-            {
-                CartArrayItem cartArrays=orderArrayItems.get(i);
-                JSONObject storeObject=new JSONObject();
-                storeObject.put("storeId",cartArrays.storeId);
-                storeObject.put("storeDeliveryId",2);
-                storeObject.put("storeDeliveryFee",moneyYF);
-                storeObject.put("messageToStore",bzInfo_Str);
-                JSONArray goodsArray=new JSONArray();
-
-                for (int j = 0; j <cartArrays.goodsItems.size(); j++)
-                {
-                    CartGoodsItem cartGoodsItem=cartArrays.goodsItems.get(j);
-                    JSONObject goodsObject=new JSONObject();
-                    goodsObject.put("productSKUCode",cartGoodsItem.sizeId);
-                    goodsObject.put("quantity",cartGoodsItem.num);
-                    goodsObject.put("price",cartGoodsItem.currentPrice);
-                    goodsObject.put("points",0);
-                    goodsArray.put(goodsObject);
-                }
-                storeObject.put("orderItemList",goodsArray);
-                storeArray.put(storeObject);
-            }
-            params.add(new BasicNameValuePair("storeOrderItemPOList", storeArray.toString()));
-            // 创建UrlEncodedFormEntity对象
-            UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
-                    params, HTTP.UTF_8);
-            request.setEntity(formEntiry);
-            // 执行请求
-            HttpResponse response = client.execute(request);
-
-            in = new BufferedReader(new InputStreamReader(response.getEntity()
-                    .getContent()));
-            StringBuffer sb = new StringBuffer("");
-            String line = "";
-            String NL = System.getProperty("line.separator");
-            while ((line = in.readLine()) != null)
-            {
-                sb.append(line + NL);
-            }
-            in.close();
-            result = sb.toString();
-            return result;
-
-        } catch (Exception e)
-        {
-
-        } finally
-        {
-            if (in != null)
-            {
-                try
-                {
-                    in.close();
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
      * 获取优惠券接口
      */
     private void GetCoupon()
     {
+        final Map<String,String> headers=new HashMap<String, String>();
+        headers.put("SECAuthorization", token);
+        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+        // 创建名/值组列表
+        final List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("userId", userId + ""));
+        params.add(new BasicNameValuePair("skuAndNumLists", goodsArray.toString()));
+
         new Thread(new Runnable()
         {
             @Override
             public void run()
             {
-                String result = FetchCouponRequset();
+                String result= NetService.GETHttpPostService(mContext,ZhaiDou.GetOrderCouponDefaultUrl,headers,params);
                 handler.obtainMessage(UPDATE_COUPON_RESULT,result).sendToTarget();
             }
         }).start();
     }
 
-    /**请求优惠券
-     * @return
-     */
-    private String FetchCouponRequset()
-    {
-        String result = null;
-        BufferedReader in = null;
-        try
-        {
-            // 定义HttpClient
-            HttpClient client = new DefaultHttpClient();
-            // 实例化HTTP方法
-            HttpPost request = new HttpPost(ZhaiDou.GetOrderCouponDefaultUrl);
-            request.addHeader("SECAuthorization", token);
-            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-            // 创建名/值组列表
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("userId", userId + ""));
-            params.add(new BasicNameValuePair("skuAndNumLists", goodsArray.toString()));
-            // 创建UrlEncodedFormEntity对象
-            UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
-                    params, HTTP.UTF_8);
-            request.setEntity(formEntiry);
-            // 执行请求
-            HttpResponse response = client.execute(request);
-
-            in = new BufferedReader(new InputStreamReader(response.getEntity()
-                    .getContent()));
-            StringBuffer sb = new StringBuffer("");
-            String line = "";
-            String NL = System.getProperty("line.separator");
-            while ((line = in.readLine()) != null)
-            {
-                sb.append(line + NL);
-            }
-            in.close();
-            result = sb.toString();
-            return result;
-
-        } catch (Exception e)
-        {
-
-        } finally
-        {
-            if (in != null)
-            {
-                try
-                {
-                    in.close();
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return result;
-    }
 
     /**
      * 请求收货地址信息
@@ -1392,7 +1292,9 @@ public class ShopOrderOkFragment extends BaseFragment
         int status=jsonObject.optInt("status");
         if (status!=200)
         {
+            handler.sendEmptyMessage(UPDATE_NULLCOUPON_SUCCESSS);
             ToolUtils.setToast(mContext,"抱歉,优惠券加载失败");
+            return;
         }
         JSONObject object=jsonObject.optJSONObject("data");
         if(object==null)

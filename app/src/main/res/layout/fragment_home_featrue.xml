@@ -210,12 +210,17 @@
                     </com.zhaidou.view.TypeFaceTextView>
 
                 </LinearLayout>
-
-                <com.zhaidou.view.LargeImgView
+                <com.zhaidou.view.CustomProgressWebview
                     android:id="@+id/infoImage"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/icon_loading_item"/>
+                    android:layout_height="match_parent"
+                    android:scrollbars="none"/>
+
+                <!--<com.zhaidou.view.LargeImgView-->
+                    <!--android:id="@+id/infoImage"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:src="@drawable/icon_loading_item"/>-->
 
                 <View
                     android:layout_width="match_parent"
