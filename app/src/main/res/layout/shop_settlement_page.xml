@@ -245,7 +245,7 @@
                 android:layout_weight="1"
                 android:textColor="@color/text_main_color"
                 android:textSize="16sp"
-                android:text="优惠卷"
+                android:text="优惠券"
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:marqueeRepeatLimit="marquee_forever"/>
@@ -432,7 +432,7 @@
                         android:layout_marginTop="1.5dp"
                         android:textColor="@color/text_main_color"
                         android:textSize="16sp"
-                        android:text="总计："/>
+                        android:text="实付金额："/>
 
                     <TextView
                         android:id="@+id/jsTotalMoney"

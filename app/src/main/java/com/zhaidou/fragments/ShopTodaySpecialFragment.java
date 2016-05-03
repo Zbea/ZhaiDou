@@ -474,6 +474,7 @@ public class ShopTodaySpecialFragment extends BaseFragment
                     }
                     return;
                 }
+                ToolUtils.setLog(""+response.toString());
                 JSONObject obj;
                 JSONObject jsonObject1 = response.optJSONObject("data");
                 if (jsonObject1 != null)

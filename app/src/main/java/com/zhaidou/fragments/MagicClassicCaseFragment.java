@@ -167,6 +167,7 @@ public class MagicClassicCaseFragment extends BaseFragment
             @Override
             public void onResponse(JSONObject response)
             {
+                ToolUtils.setLog(""+response.toString());
                 if (mDialog != null)
                 {
                     mDialog.dismiss();

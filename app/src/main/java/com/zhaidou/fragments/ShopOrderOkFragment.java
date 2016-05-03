@@ -54,6 +54,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -250,7 +251,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     break;
                 case UPDATE_COUPON_SUCCESSS:
                     couponNameTv.setText(mCoupon.info);
-                    moneyCouponTv.setText("￥"+ToolUtils.isIntPrice(mCoupon.money+""));
+                    moneyCouponTv.setText("￥-"+ToolUtils.isIntPrice(mCoupon.money+""));
                     setYFMoney(0);
                     break;
                 case UPDATE_NULLCOUPON_SUCCESSS:
@@ -426,7 +427,7 @@ public class ShopOrderOkFragment extends BaseFragment
                             {
                                 mCoupon=coupon;
                                 couponNameTv.setText(mCoupon.info);
-                                moneyCouponTv.setText("￥"+ToolUtils.isIntPrice(mCoupon.money+""));
+                                moneyCouponTv.setText("￥-"+ToolUtils.isIntPrice(mCoupon.money+""));
                             }
                             setYFMoney(0);
 
@@ -853,7 +854,9 @@ public class ShopOrderOkFragment extends BaseFragment
             params.add(new BasicNameValuePair("userId", userId + ""));
             if (mCoupon != null)
             {
-                params.add(new BasicNameValuePair("orderPayAmount", (money-mCoupon.money)+""));
+                BigDecimal bd1 = new BigDecimal(Double.toString(money));
+                BigDecimal bd2 = new BigDecimal(Double.toString(mCoupon.money));
+                params.add(new BasicNameValuePair("orderPayAmount", bd1.subtract(bd2).doubleValue()+""));
                 params.add(new BasicNameValuePair("couponsKey", mCoupon.couponCode));
                 params.add(new BasicNameValuePair("couponsAmount",mCoupon.money+""));
             } else
@@ -1321,7 +1324,7 @@ public class ShopOrderOkFragment extends BaseFragment
                 SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date endDate=format.parse(endTime);
                 long diff=endDate.getTime()-System.currentTimeMillis();
-                days=(int) (diff / (1000 * 60 * 60 * 24))+diff %(1000 * 60 * 60 * 24)>0?1:0;
+                days=(int) (diff / (1000 * 60 * 60 * 24)+((diff %(1000 * 60 * 60 * 24))>0?1:0));
             } catch (ParseException e)
             {
                 e.printStackTrace();

@@ -29,7 +29,7 @@ public class ZhaiDou {
     public static String HomeGoodsListUrl=HOME_BASE_URL+"index/getActivityProductList.action?activityCode=";
 
     //免费经典方案
-    public static String MagicClassicCaseUrl=HOME_BASE_URL+"decorate/getFreeClassicsCases.action?pageNo=1&pageSize=20";
+    public static String MagicClassicCaseUrl=HOME_BASE_URL+"decorate/getFreeClassicsCases.action?pageNo=1&pageSize=50";
     //免费经典方案详情
     public static String MagicClassicCaseDetailsUrl=HOME_BASE_URL+"decorate/getFreeClassicsCaseDetail.action?caseId=";
     //图列风格
