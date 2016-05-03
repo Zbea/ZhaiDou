@@ -32,6 +32,7 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
 import com.zhaidou.model.Order1;
+import com.zhaidou.model.User;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -290,7 +291,8 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
 
     private void FetchReceiveData() {
         Map<String,String> params = new HashMap();
-        params.put("userId",ZhaiDou.TESTUSERID);
+        User user = SharedPreferencesUtil.getUser(getActivity());
+        params.put("userId",user.getId()+"");
         params.put("clientType","ANDROID");
         params.put("clientVersion","45");
         params.put("businessType","01");
