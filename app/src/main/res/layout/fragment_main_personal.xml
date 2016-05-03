@@ -328,7 +328,7 @@
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/icon_collocation"
+                    android:drawableLeft="@drawable/icon_coupon"
                     android:drawablePadding="10dp"
                     android:gravity="center_vertical"
                     android:paddingLeft="15dp"
