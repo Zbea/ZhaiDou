@@ -29,20 +29,16 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.easemob.EMCallBack;
-import com.easemob.chat.EMChatManager;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.AccountManage;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.easeui.helpdesk.EaseHelper;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
-import com.zhaidou.utils.MD5Util;
 import com.zhaidou.utils.NativeHttpUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -665,38 +661,11 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     }
 
     private void loginToEaseServer(final User user){
-//        Message message = new Message();
-//        message.obj = user;
-//        message.what = 0;
-//        mHandler.sendMessage(message);
-
-
-        EMChatManager.getInstance().login("zhaidou"+user.getId(), MD5Util.MD5Encode("zhaidou" + user.getId() + "Yage2016!").toUpperCase(), new EMCallBack() {
-            @Override
-            public void onSuccess() {
-                if (mDialog != null)
-                    mDialog.dismiss();
-                EaseHelper.getInstance().setCurrentUserName(user.getNickName());
-                EMChatManager.getInstance().loadAllConversations();
-                boolean updatenick = EMChatManager.getInstance().updateCurrentUserNick(
-                        user.getNickName());
-                if (!updatenick) {
-                    Log.e("LoginActivity", "update current user nick fail");
-                }
-                Message message = new Message();
-                message.obj = user;
-                message.what = 0;
-                mHandler.sendMessage(message);
-            }
-
-            @Override
-            public void onProgress(int progress, String status) {
-            }
-
-            @Override
-            public void onError(final int code, final String message) {
-            }
-        });
+//        EaseUtils.login(user);
+        Message message = new Message();
+        message.obj = user;
+        message.what = 0;
+        mHandler.sendMessage(message);
     }
     public String string2MD5(String inStr){
         MessageDigest md5 = null;

@@ -82,8 +82,7 @@
                 android:id="@+id/lv_aftersale"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:divider="@color/black"
-                android:dividerHeight="0.5dp" />
+                android:divider="@null" />
 
             <LinearLayout
                 android:layout_width="match_parent"

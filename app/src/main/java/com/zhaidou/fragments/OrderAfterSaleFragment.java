@@ -372,7 +372,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
             textPaint.setAntiAlias(true);
             textPaint.setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
             ToolUtils.setImageCacheUrl(item.pictureMiddleUrl, iv_order_img, R.drawable.icon_loading_defalut);
-            mCouponMsg.setText(Html.fromHtml(String.format("优惠 <font color=black>￥%s</font> 实付 <font color=black>￥%s</font>", item.favorableAmount1,item.paidAmount)));
+            mCouponMsg.setText(Html.fromHtml(String.format("优惠:<font color=black>￥%s</font>   实付:<font color=black>￥%s</font>", item.favorableAmount1,item.paidAmount)));
             return convertView;
         }
     }
