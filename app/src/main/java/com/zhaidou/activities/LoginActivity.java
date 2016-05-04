@@ -670,6 +670,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 //        message.what = 0;
 //        mHandler.sendMessage(message);
 
+
         EMChatManager.getInstance().login("zhaidou"+user.getId(), MD5Util.MD5Encode("zhaidou" + user.getId() + "Yage2016!").toUpperCase(), new EMCallBack() {
             @Override
             public void onSuccess() {
