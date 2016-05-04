@@ -108,7 +108,7 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
     protected void hideInputMethod(){
         inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         System.out.println("inputMethodManager.isActive() = " + inputMethodManager.isActive());
-//        if (inputMethodManager.isActive())
+        if (inputMethodManager.isActive())
             inputMethodManager.hideSoftInputFromWindow(getWindow().peekDecorView().getApplicationWindowToken(), 0);
     }
 }

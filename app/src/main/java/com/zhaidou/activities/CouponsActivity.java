@@ -102,6 +102,7 @@ public class CouponsActivity extends BaseActivity implements View.OnClickListene
                         },new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError volleyError) {
+                                hideInputMethod();
                                 mDialogUtils.dismiss();
                             }
                         });
