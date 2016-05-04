@@ -248,8 +248,6 @@ public class HomeFeatrueFragment extends BaseFragment {
                     initData();
                     break;
                 case R.id.rl_qq_contact:
-//                    MagicDesignFragment magicDesignFragment = MagicDesignFragment.newInstance("", "");
-//                    ((MainActivity) mContext).navigationToFragmentWithAnim(magicDesignFragment);
                     EaseUtils.startDesignerActivity(mContext);
                     break;
                 case R.id.ll_back:

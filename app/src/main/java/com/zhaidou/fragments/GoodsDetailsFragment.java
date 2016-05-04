@@ -898,12 +898,12 @@ public class GoodsDetailsFragment extends BaseFragment
                 textView.setClickable(false);
             } else
             {
-                if (specificationList.size() == 1)
-                {
-                    sigleClickPosition = position;
-                    textView.setSelected(true);
-                    sizeEvent(specification);
-                }
+//                if (specificationList.size() == 1)
+//                {
+//                    sigleClickPosition = position;
+//                    textView.setSelected(true);
+//                    sizeEvent(specification);
+//                }
                 textSingleTvs.add(textView);
             }
             if (isSizeSubclass)
@@ -1052,18 +1052,18 @@ public class GoodsDetailsFragment extends BaseFragment
             } else
             {
                 textView.setSelected(false);
-                if (isFristSubclass)
-                {
-                    isFristSubclass = false;
-                    if (specificationList.size() == 1)
-                        if (specificationList.get(0).sizess.size() == 1)
-                        {
-                            isClickSubclass=true;
-                            sigleClickPosition = 0;
-                            textView.setSelected(true);
-                            sizeEvent(specification);
-                        }
-                }
+//                if (isFristSubclass)
+//                {
+//                    isFristSubclass = false;
+//                    if (specificationList.size() == 1)
+//                        if (specificationList.get(0).sizess.size() == 1)
+//                        {
+//                            isClickSubclass=true;
+//                            sigleClickPosition = 0;
+//                            textView.setSelected(true);
+//                            sizeEvent(specification);
+//                        }
+//                }
                 textSubclassTvs.add(textView);
             }
             flowLayoutSubclass.addView(view, lp);

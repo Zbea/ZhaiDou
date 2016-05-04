@@ -232,7 +232,7 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
         reloadNetBtn.setOnClickListener(onClickListener);
 
         imageIv = (ImageView) view.findViewById(R.id.detailsImageIv);
-        imageIv.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 3 / 4));
+        imageIv.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
         webview = (CustomProgressWebview) view.findViewById(R.id.detailsWebView);
         mScrollView = (PullToRefreshScrollView) view.findViewById(R.id.scrollView);
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);

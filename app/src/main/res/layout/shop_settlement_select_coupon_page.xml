@@ -38,7 +38,7 @@
             android:layout_centerInParent="true"
             android:textSize="18sp"
             android:textColor="@color/white"
-            android:text="可用优惠卷"/>
+            android:text="可用优惠券"/>
     </RelativeLayout>
 
     <ScrollView

@@ -444,7 +444,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         Date endDate = format.parse(endTime);
                         long diff = endDate.getTime() - System.currentTimeMillis();
-                        days = (int) (diff / (1000 * 60 * 60 * 24)) + diff % (1000 * 60 * 60 * 24) > 0 ? 1 : 0;
+                        days = (int)((diff / (1000 * 60 * 60 * 24)) + (diff % (1000 * 60 * 60 * 24) > 0 ? 1 : 0)) ;
                     } catch (ParseException e)
                     {
                         e.printStackTrace();
@@ -538,11 +538,13 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                         SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         Date endDate=format.parse(endTime);
                         long diff=endDate.getTime()-System.currentTimeMillis();
-                        days=(int) (diff / (1000 * 60 * 60 * 24))+diff %(1000 * 60 * 60 * 24)>0?1:0;
+                        ToolUtils.setLog("diff：" + diff);
+                        days=(int) (diff / (1000 * 60 * 60 * 24)+(diff %(1000 * 60 * 60 * 24)>0?1:0));
                     } catch (ParseException e)
                     {
                         e.printStackTrace();
                     }
+                    ToolUtils.setLog("days：" + days);
                     endTime=endTime.split(" ")[0];
                     String statu=couponUseInfoPO.optString("status");
                     String property=couponUseInfoPO.optString("property");
@@ -554,7 +556,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                     coup.couponCode=couponCode;
                     coup.enoughMoney=enoughValue;
                     coup.money=money;
-                    coup.info="满"+enoughValue+"减"+money;
+                    coup.info="满"+ToolUtils.isIntPrice(enoughValue+"")+"减"+ToolUtils.isIntPrice(money+"");
                     coup.startDate=startTime;
                     coup.endDate=endTime;
                     coup.time=days;
