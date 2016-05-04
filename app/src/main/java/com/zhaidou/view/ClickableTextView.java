@@ -35,12 +35,12 @@ public class ClickableTextView extends TypeFaceTextView {
         super(context, attrs, defStyle);
     }
 
-    public void setClickText(String text,List<Integer> ids,OnTextClickListener onTextClickListener){
+    public void setClickText(String text,List<String> ids,OnTextClickListener onTextClickListener){
         setMovementMethod(LinkMovementMethod.getInstance());
         setText(addClickablePart(text,ids,onTextClickListener), BufferType.SPANNABLE);
     }
 
-    private SpannableStringBuilder addClickablePart(String str, List<Integer> ids, final OnTextClickListener onTextClickListener) {
+    private SpannableStringBuilder addClickablePart(String str, List<String> ids, final OnTextClickListener onTextClickListener) {
         if (TextUtils.isEmpty(str))
             return null;
         SpannableStringBuilder ssb = new SpannableStringBuilder();
@@ -50,7 +50,7 @@ public class ClickableTextView extends TypeFaceTextView {
             // 最后一个
             for (int i = 0; i < mCategories.size(); i++) {
                 final String category =mCategories.get(i);
-                final Integer id = ids.get(i);
+                final String id = ids.get(i);
                 final int start = str.indexOf(category);
                 ssb.setSpan(new ClickableSpan() {
 
@@ -73,6 +73,6 @@ public class ClickableTextView extends TypeFaceTextView {
     }
 
     public interface OnTextClickListener{
-        public void onTextClick(String categoryStr,int id);
+        public void onTextClick(String categoryStr,String id);
     }
 }

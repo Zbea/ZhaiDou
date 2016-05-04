@@ -4,7 +4,6 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +22,8 @@ import com.pulltorefresh.PullToRefreshListView;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
+import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Coupons;
@@ -42,7 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CouponsFragment extends Fragment implements PullToRefreshBase.OnRefreshListener2<ListView>{
+public class CouponsFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<ListView>{
     private static final String ARG_PARAM1 = "status";
     private static final String ARG_PARAM2 = "param2";
 
@@ -57,6 +58,7 @@ public class CouponsFragment extends Fragment implements PullToRefreshBase.OnRef
     private int currentPage;
     private Dialog dialog;
     private long mServerTime;
+    private View mRootView;
 
     public static CouponsFragment newInstance(String param1, String param2) {
         CouponsFragment fragment = new CouponsFragment();
@@ -82,24 +84,32 @@ public class CouponsFragment extends Fragment implements PullToRefreshBase.OnRef
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View mRootView = inflater.inflate(R.layout.fragment_coupons,null);
-        mListView = (PullToRefreshListView) mRootView.findViewById(R.id.listView);
-        mListView.setMode(PullToRefreshBase.Mode.BOTH);
-        mListView.setOnRefreshListener(this);
-        mCouponsList = new ArrayList<Coupons>();
-        mCouponAdapter = new CouponAdapter(getActivity(), mCouponsList);
-        mListView.setAdapter(mCouponAdapter);
-        mDialogUtils=new DialogUtils(getActivity());
-        FetchData(currentPage=1);
-        mCouponAdapter.setOnInViewClickListener(R.id.categoryLayout, new BaseListAdapter.onInternalClickListener() {
-            @Override
-            public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                ImageView mArrowView = (ImageView) v.findViewById(R.id.arrow);
-                mArrowView.setSelected(!mArrowView.isSelected());
-                mCouponAdapter.notifyDataSetChanged();
+
+        if (null != mRootView) {
+            ViewGroup parent = (ViewGroup) mRootView.getParent();
+            if (null != parent) {
+                parent.removeView(mRootView);
             }
-        });
-        dialog = mDialogUtils.showLoadingDialog();
+        } else {
+            mRootView = inflater.inflate(R.layout.fragment_coupons, null);
+            mListView = (PullToRefreshListView) mRootView.findViewById(R.id.listView);
+            mListView.setMode(PullToRefreshBase.Mode.BOTH);
+            mListView.setOnRefreshListener(this);
+            mCouponsList = new ArrayList<Coupons>();
+            mCouponAdapter = new CouponAdapter(getActivity(), mCouponsList);
+            mListView.setAdapter(mCouponAdapter);
+            mDialogUtils = new DialogUtils(getActivity());
+            FetchData(currentPage = 1);
+            mCouponAdapter.setOnInViewClickListener(R.id.categoryLayout, new BaseListAdapter.onInternalClickListener() {
+                @Override
+                public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                    ImageView mArrowView = (ImageView) v.findViewById(R.id.arrow);
+                    mArrowView.setSelected(!mArrowView.isSelected());
+                    mCouponAdapter.notifyDataSetChanged();
+                }
+            });
+            dialog = mDialogUtils.showLoadingDialog();
+        }
         return mRootView;
     }
 
@@ -126,7 +136,7 @@ public class CouponsFragment extends Fragment implements PullToRefreshBase.OnRef
                         mCouponAdapter.addAll(couponses);
                         if (couponses.size()<pageSize){
                             mListView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
-                            Toast.makeText(getActivity(),"加载完毕",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContext,"加载完毕",Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -186,17 +196,22 @@ public class CouponsFragment extends Fragment implements PullToRefreshBase.OnRef
             mMoney.setText(Html.fromHtml("<big><big>￥<big><big><big>" + coupons.bookValue + "</big></big></big></big></big>"));
             mDetail.setText(Html.fromHtml(String.format("%s到期<font color=red>(仅剩%s天)</font><br><br>满%s使用",endTimeStr,day,coupons.enoughValue)));
             String categoryStr = "";
-            List<Integer> ids=new ArrayList<Integer>();
-            for (String category : coupons.couponGoodsTypeNames) {
+            List<String> ids=new ArrayList<String>();
+            for (int i = 0; i < coupons.couponGoodsTypeNames.size(); i++) {
+                String category = coupons.couponGoodsTypeNames.get(i);
                 categoryStr += (category + "、");
-                ids.add(1);
+                ids.add(coupons.couponGoodsTypeNamesCategeryID.get(i));
             }
             mCategory.setClickText(categoryStr.length() > 0 ? categoryStr.substring(0, categoryStr.length() - 1) : "",ids,this);
             mCategory.setVisibility((mImageView.isSelected() ? View.VISIBLE : View.GONE));
-            if (mServerTime<endTime.getTime()){
-                mTipView.setVisibility("U".equalsIgnoreCase(mStatus)?View.VISIBLE:View.GONE);
+            mTipView.setVisibility(View.GONE);
+            convertView.setBackgroundResource(R.drawable.coupons_bg);
+            if ("U".equalsIgnoreCase(mStatus)){
+                mTipView.setVisibility(View.VISIBLE);
                 mTipView.setImageResource(R.drawable.coupon_used);
-            }else {
+                convertView.setBackgroundResource(R.drawable.coupon_bg_used);
+            }else if ("O".equalsIgnoreCase(mStatus)){
+                convertView.setBackgroundResource(R.drawable.coupon_bg_used);
                 mTipView.setVisibility(View.VISIBLE);
                 mTipView.setImageResource(R.drawable.coupon_overtime);
             }
@@ -206,12 +221,15 @@ public class CouponsFragment extends Fragment implements PullToRefreshBase.OnRef
                 mDetail.setTextColor(getResources().getColor(R.color.gray_9));
                 mDetail.setText(Html.fromHtml(String.format("%s到期<br><br>满%s使用",endTimeStr,coupons.enoughValue)));
             }
+            mImageView.setVisibility("A".equalsIgnoreCase(coupons.goodsType)?View.GONE:View.VISIBLE);
             return convertView;
         }
 
         @Override
-        public void onTextClick(String categoryStr, int id) {
+        public void onTextClick(String categoryStr, String id) {
             System.out.println("categoryStr = [" + categoryStr + "], id = [" + id + "]");
+            SearchFragment searchFragment = SearchFragment.newInstance(id, 2);
+            ((BaseActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
         }
     }
 
