@@ -62,7 +62,7 @@ public class ZhaiDou {
     //搜索商品接口keyword
     public static String SearchGoodsKeyWordUrl=HOME_BASE_URL+"product/searchProduct.action?businessType=01&searchType=10&pageSize=10&keyword=";
     //搜索商品接口Id
-    public static String SearchGoodsIdUrl=HOME_BASE_URL+"product/searchProduct.action?businessType=01&searchType=10&pageSize=10&expandedRequest=";
+    public static String SearchGoodsIdUrl=HOME_BASE_URL+"product/searchProduct.action?businessType=01&searchType=20&pageSize=10&expandedRequest=";
     //热搜词
     public static String SearchHotUrl=HOME_BASE_URL+"product/getHotKeywordList.action";
     //提交订单接口

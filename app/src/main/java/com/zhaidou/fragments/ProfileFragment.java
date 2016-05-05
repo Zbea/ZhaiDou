@@ -492,7 +492,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     isFromCamera = true;
                     File file = new File(filePath);
                     degree = PhotoUtil.readPictureDegree(file.getAbsolutePath());
-                    startImageAction(Uri.fromFile(file), 200, 200,
+                    startImageAction(Uri.fromFile(file), 150, 150,
                             2, true);
                 }
                 break;
@@ -509,7 +509,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     }
                     isFromCamera = false;
                     uri = data.getData();
-                    startImageAction(uri, 200, 200,
+                    startImageAction(uri, 150, 150,
                             2, true);
                 } else {
                     Toast.makeText(getActivity(), "照片获取失败", Toast.LENGTH_SHORT).show();
@@ -517,13 +517,16 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
                 break;
             case 2:// 裁剪头像返回
-                // TODO sent to crop
                 if (data == null) {
                     Toast.makeText(getActivity(), "取消选择", Toast.LENGTH_SHORT).show();
                     return;
                 } else {
                     Bundle extras = data.getExtras();
-                    boolean is_pressed_cancel = extras.getBoolean("is_pressed_cancel", false);
+                    boolean is_pressed_cancel=false;
+                    if (extras!=null)
+                    {
+                        is_pressed_cancel = extras.getBoolean("is_pressed_cancel", false);
+                    }
                     if (!is_pressed_cancel)
                         saveCropAvator(data);
                 }
@@ -551,7 +554,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         intent.putExtra("outputY", outputY);
         intent.putExtra("scale", true);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-        intent.putExtra("return-data", true);
+        intent.putExtra("return-data", false);
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
         intent.putExtra("noFaceDetection", true); // no face detection
         startActivityForResult(intent, requestCode);
@@ -566,9 +569,8 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         Bundle extras = data.getExtras();
         if (extras != null) {
             Bitmap bitmap = extras.getParcelable("data");
-
             String base64str = PhotoUtil.bitmapToBase64(bitmap);
-            System.out.println("base64str = " + base64str);
+            ToolUtils.setLog("base64str:"+base64str);
             UpLoadTask(base64str);
         }
     }
@@ -598,8 +600,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     user.setEmail(email);
                     user.setNickName(tv_nick.getText().toString());
                     Message message = mHandler.obtainMessage(UPDATE_USER_INFO);
-//                    Message message = new Message();
-//                    message.what = UPDATE_USER_INFO;
                     message.obj = user;
                     mHandler.sendMessage(message);
                     ProfileManage.getInstance().notify(HEADER, "http://" + avatar);
