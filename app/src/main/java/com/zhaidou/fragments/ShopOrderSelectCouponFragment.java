@@ -137,6 +137,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
 
                     if (mDialog != null)
                         mDialog.dismiss();
+                    ToolUtils.setToast(mContext,"兑换成功");
                     for (int i = 0; i < items.size(); i++)
                     {
                         if (items.get(i).id == mCoupon.id)
@@ -299,7 +300,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
         cancelTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                closeInput();
+                closeInput(view);
                 dialog.dismiss();
             }
         });
@@ -317,7 +318,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                 dialog.dismiss();
                 if (mDialog!=null)
                     mDialog.show();
-                closeInput();
+                closeInput(view);
                 FetchRedeem();
 
             }
@@ -329,11 +330,11 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
 
     }
 
-    private void closeInput()
+    private void closeInput(View dialog)
     {
         InputMethodManager inputMethodManagers=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (inputMethodManagers.isActive())
-            inputMethodManagers.hideSoftInputFromWindow(getActivity().getWindow().getDecorView().getWindowToken(),0);
+            inputMethodManagers.hideSoftInputFromWindow(dialog.getWindowToken(),0);
     }
 
     /**
@@ -574,7 +575,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                     coup.type=goodsType;
                     coup.isDefault=false;
                     items.add(coup);
-                    handler.sendEmptyMessage(UPDATE_COUPON_LIST);
+                    handler.sendEmptyMessage(UPDATE_REDEEM_COUPON_RESULT);
                 } else
                 {
                     loadingFail();

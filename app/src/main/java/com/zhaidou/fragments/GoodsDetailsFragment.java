@@ -840,8 +840,7 @@ public class GoodsDetailsFragment extends BaseFragment
         {
             flowLayoutSubclass.removeAllViews();
         }
-        MarginLayoutParams lp = new MarginLayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        MarginLayoutParams lp = new MarginLayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         lp.leftMargin = 10;
         lp.rightMargin = 5;
         lp.topMargin = 10;
