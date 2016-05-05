@@ -128,7 +128,7 @@
             android:name=".activities.AccountFindPwdActivity"
             android:theme="@style/StyledIndicators">
         </activity>
-        <activity android:name=".activities.CouponsActivity"
+        <activity android:name=".activities.CouponsContainerFragment"
             android:theme="@android:style/Theme.Holo.Light.NoActionBar"
             android:configChanges="orientation|keyboardHidden"/>
         <activity android:name=".alipay.PayDemoActivity">

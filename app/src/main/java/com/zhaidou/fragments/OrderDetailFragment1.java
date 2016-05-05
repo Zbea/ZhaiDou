@@ -312,7 +312,7 @@ public class OrderDetailFragment1 extends BaseFragment {
             mReceiverAddress.setText(store.deliveryAddressPO.provinceName + store.deliveryAddressPO.cityName + store.deliveryAddressPO.address);
             mTotal.setText("￥" + store.orderActualAmount);
             mGoodsAccount.setText("￥"+store.itemTotalAmount);
-            mFavourableAccount.setText("￥"+store.orderPayAmount);
+            mFavourableAccount.setText("￥"+store.discountAmount);
             mCarriage.setText("￥"+store.deliveryFee);
             mOrderNumber.setText(store.orderCode + "");
             mOrderTime.setText(store.creationTime);
@@ -326,15 +326,9 @@ public class OrderDetailFragment1 extends BaseFragment {
                 btn2.setBackgroundResource(R.drawable.btn_green_click_bg);
                 btn1.setVisibility(store.isFinishAfterTime==1?View.GONE:View.VISIBLE);
                 if (store.returnGoodsFlag == 1){
-//                    btn1.setVisibility(View.GONE);
-//                    btn2.setVisibility(View.GONE);
                     mBottomLayout.setVisibility(View.INVISIBLE);
                 }
-//                    mBottomLayout.setVisibility(View.GONE);
             } else if (ZhaiDou.STATUS_UNDELIVERY == store.status || ZhaiDou.STATUS_PICKINGUP == store.status || ZhaiDou.STATUS_UNPAY == store.status||ZhaiDou.STATUS_ORDER_APPLY_CANCEL==store.status) {/**待发货,已拣货,待支付,退款申请*/
-//                mBottomLayout.setVisibility(View.GONE);
-//                btn1.setVisibility(View.GONE);
-//                btn2.setVisibility(View.GONE);
                 mBottomLayout.setVisibility(View.INVISIBLE);
             } else if (ZhaiDou.STATUS__DELIVERYED == store.status) {
                 mBottomLayout.setVisibility(View.VISIBLE);
@@ -343,9 +337,6 @@ public class OrderDetailFragment1 extends BaseFragment {
                 btn2.setBackgroundResource(R.drawable.btn_green_click_bg);
                 btn1.setBackgroundResource(R.drawable.btn_red_click_selector);
             } else if (ZhaiDou.STATUS_ORDER_CANCEL == store.status||ZhaiDou.STATUS_RETURN_MONEY_SUCCESS==store.status) {//已取消//退款完成
-//                mBottomLayout.setVisibility(View.GONE);
-//                btn1.setVisibility(View.GONE);
-//                btn2.setVisibility(View.GONE);
                 mBottomLayout.setVisibility(View.INVISIBLE);
             }
 

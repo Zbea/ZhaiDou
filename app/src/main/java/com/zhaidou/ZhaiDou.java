@@ -73,6 +73,8 @@ public class ZhaiDou {
     public static String CommitPaymentUrl=HOME_BASE_URL+"pay/payConfirm.action";
     //获取订单详情
     public static String GetOrderDetailsUrl=HOME_BASE_URL+"order/getOrderDetail.action";
+    //退货详情
+    public static String ORDER_RETURN_DETAIL=HOME_BASE_URL+"order/getEveryProductDiscountAmount.action";
 
     //获取可使用优惠劵列表:
     public static String GetOrderCouponUrl=HOME_BASE_URL+"user/getEnableCoupons.action";

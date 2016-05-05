@@ -52,5 +52,5 @@ public class Coupons {
     public String gmtModified;
     public String goodsType;
     public List<String> couponGoodsTypeNames;
-
+    public List<String> couponGoodsTypeNamesCategeryID;
 }

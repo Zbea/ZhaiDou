@@ -29,20 +29,17 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.easemob.EMCallBack;
-import com.easemob.chat.EMChatManager;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.AccountManage;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.easeui.helpdesk.EaseHelper;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
-import com.zhaidou.utils.MD5Util;
+import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NativeHttpUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -233,8 +230,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                                     String email = userObj.optString("email");
                                     String nick = userObj.optString("nick_name");
                                     User user = new User(id, email, token, nick, null);
-                                    loginToEaseServer(user);
-//                                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+//                                    loginToEaseServer(user);
+                                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
                                 }
                             } else {
                                 if (mDialog != null)
@@ -456,6 +453,9 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
      * @param mDialog
      */
     private void getVerifyCode(String phone, final Dialog mDialog) {
+        if (ToolUtils.isPhoneOk(phone)){
+            Toast.makeText(LoginActivity.this,"请输入正确的手机号码",Toast.LENGTH_SHORT).show();
+        }
         ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + "?phone=" + phone + "&flag=1", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -572,8 +572,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 //                    String avatar = userJson.optJSONObject("avatar").optString("url","");
                         String nick = userJson.optString("nick_name");
                         User user = new User(id, email, token, nick, "");
-                        loginToEaseServer(user);
-//                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+//                        loginToEaseServer(user);
+                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
                     } else {
                         Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                     }
@@ -665,49 +665,11 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     }
 
     private void loginToEaseServer(final User user){
-        EMChatManager.getInstance().login("zhaidou"+user.getId(),MD5Util.MD5Encode("zhaidou"+user.getId()+"Yage2016!").toUpperCase(), new EMCallBack() {
-            @Override
-            public void onSuccess() {
-                if (mDialog != null)
-                    mDialog.dismiss();
-                // 登陆成功，保存用户名
-                EaseHelper.getInstance().setCurrentUserName(user.getNickName());
-                // 注册群组和联系人监听
-//                DemoHelper.getInstance().registerGroupAndContactListener();
-
-                // ** 第一次登录或者之前logout后再登录，加载所有本地群和回话
-                // ** manually load all local groups and
-//                EMClient.getInstance().groupManager().loadAllGroups();
-                EMChatManager.getInstance().loadAllConversations();
-
-//                更新当前用户的nickname 此方法的作用是在ios离线推送时能够显示用户nick
-                boolean updatenick = EMChatManager.getInstance().updateCurrentUserNick(
-                        user.getNickName());
-                if (!updatenick) {
-                    Log.e("LoginActivity", "update current user nick fail");
-                }
-                //异步获取当前用户的昵称和头像(从自己服务器获取，demo使用的一个第三方服务)
-//                DemoHelper.getInstance().getUserProfileManager().asyncGetCurrentUserInfo();
-
-//                if (!LoginActivity.this.isFinishing() && pd.isShowing()) {
-//                    pd.dismiss();
-//                }
-//                mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
-                Message message = new Message();
-                message.obj = user;
-                message.what = 0;
-                mHandler.sendMessage(message);
-            }
-
-            @Override
-            public void onProgress(int progress, String status) {
-            }
-
-            @Override
-            public void onError(final int code, final String message) {
-//                Toast.makeText(LoginActivity.this,"登录聊天服务器失败",Toast.LENGTH_SHORT).show();
-            }
-        });
+        EaseUtils.login(user);
+        Message message = new Message();
+        message.obj = user;
+        message.what = 0;
+        mHandler.sendMessage(message);
     }
     public String string2MD5(String inStr){
         MessageDigest md5 = null;

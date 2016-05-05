@@ -258,7 +258,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                             ShowToast("订单已超时");
                             return;
                         }
-                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.orderId, order.orderCode, Double.parseDouble(order.orderTotalAmount), Integer.parseInt(order.orderRemainingTime + ""), null);
+                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.orderId, order.orderCode, Double.parseDouble(order.orderPayAmount), Integer.parseInt(order.orderRemainingTime + ""), null);
                         ((BaseActivity) getActivity()).navigationToFragment(shopPaymentFragment);
                     } else if (ZhaiDou.STATUS__DELIVERYED == order.status) {
                         mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_confirm), new DialogUtils.PositiveListener() {

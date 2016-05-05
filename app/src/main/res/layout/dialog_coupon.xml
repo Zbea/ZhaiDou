@@ -6,7 +6,7 @@
     android:background="@color/white"
     android:orientation="vertical">
     <com.zhaidou.view.TypeFaceTextView
-        android:text="兑换优惠卷"
+        android:text="兑换优惠券"
         android:textColor="#666666"
         android:textSize="16sp"
         android:gravity="center"
@@ -35,7 +35,7 @@
             android:textColor="#3fcccb"
             android:gravity="center"
             android:textSize="14sp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="@color/white"
             android:text="取消"/>
         <TextView
