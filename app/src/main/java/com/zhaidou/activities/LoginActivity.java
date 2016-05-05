@@ -229,8 +229,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                                     String email = userObj.optString("email");
                                     String nick = userObj.optString("nick_name");
                                     User user = new User(id, email, token, nick, null);
-                                    loginToEaseServer(user);
-//                                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+//                                    loginToEaseServer(user);
+                                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
                                 }
                             } else {
                                 if (mDialog != null)

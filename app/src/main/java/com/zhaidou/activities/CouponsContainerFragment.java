@@ -14,6 +14,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.fragments.CouponsFragment;
 import com.zhaidou.model.ZhaiDouRequest;
@@ -102,7 +103,7 @@ public class CouponsContainerFragment extends BaseFragment implements View.OnCli
                         map.put("userId", SharedPreferencesUtil.getData(mContext,"userId",-1)+"");
                         map.put("couponCode",o.toString().trim());
                         map.put("nickName",SharedPreferencesUtil.getData(mContext,"nickName","").toString());
-                        ZhaiDouRequest request=new ZhaiDouRequest(mContext, Request.Method.POST,"http://tportal-web.zhaidou.com/user/activateCoupons.action",map,new Response.Listener<JSONObject>() {
+                        ZhaiDouRequest request=new ZhaiDouRequest(mContext, Request.Method.POST, ZhaiDou.GetRedeemCouponUrl,map,new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject jsonObject) {
                                 mDialogUtils.dismiss();
