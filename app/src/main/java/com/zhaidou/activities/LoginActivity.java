@@ -39,6 +39,7 @@ import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
+import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NativeHttpUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -452,6 +453,9 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
      * @param mDialog
      */
     private void getVerifyCode(String phone, final Dialog mDialog) {
+        if (ToolUtils.isPhoneOk(phone)){
+            Toast.makeText(LoginActivity.this,"请输入正确的手机号码",Toast.LENGTH_SHORT).show();
+        }
         ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + "?phone=" + phone + "&flag=1", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -568,8 +572,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 //                    String avatar = userJson.optJSONObject("avatar").optString("url","");
                         String nick = userJson.optString("nick_name");
                         User user = new User(id, email, token, nick, "");
-                        loginToEaseServer(user);
-//                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+//                        loginToEaseServer(user);
+                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
                     } else {
                         Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                     }
@@ -661,7 +665,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     }
 
     private void loginToEaseServer(final User user){
-//        EaseUtils.login(user);
+        EaseUtils.login(user);
         Message message = new Message();
         message.obj = user;
         message.what = 0;
