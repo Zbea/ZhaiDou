@@ -368,6 +368,9 @@ public class MainHomeFragment extends BaseFragment implements
 
     private void initDate()
     {
+        banners.clear();
+        specials.clear();
+        codes.clear();
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
             FetchSpecialData();

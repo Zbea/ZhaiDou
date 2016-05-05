@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -298,6 +299,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
         cancelTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                closeInput();
                 dialog.dismiss();
             }
         });
@@ -315,6 +317,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                 dialog.dismiss();
                 if (mDialog!=null)
                     mDialog.show();
+                closeInput();
                 FetchRedeem();
 
             }
@@ -324,6 +327,13 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
         dialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         dialog.show();
 
+    }
+
+    private void closeInput()
+    {
+        InputMethodManager inputMethodManagers=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (inputMethodManagers.isActive())
+            inputMethodManagers.hideSoftInputFromWindow(getActivity().getWindow().getDecorView().getWindowToken(),0);
     }
 
     /**
@@ -438,23 +448,23 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                     String info = couponObject.optString("couponName");
                     String startTime = couponObject.optString("startTime");
                     String endTime = couponObject.optString("endTime");
-                    int days = 0;
+                    int days=0;
                     try
                     {
-                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        Date endDate = format.parse(endTime);
-                        long diff = endDate.getTime() - System.currentTimeMillis();
-                        days = (int)((diff / (1000 * 60 * 60 * 24)) + (diff % (1000 * 60 * 60 * 24) > 0 ? 1 : 0)) ;
+                        SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        Date endDate=format.parse(endTime);
+                        long diff=endDate.getTime()-System.currentTimeMillis();
+                        ToolUtils.setLog("diff："+diff);
+                        days=(int) (diff / (1000 * 60 * 60 * 24)+((diff %(1000 * 60 * 60 * 24))>0?1:0));
                     } catch (ParseException e)
                     {
                         e.printStackTrace();
                     }
                     endTime=endTime.split(" ")[0];
-
+                    ToolUtils.setLog("days："+days);
                     String statu = couponObject.optString("status");
                     String property = couponObject.optString("property");
                     String goodsType = couponObject.optString("goodsType");
-
                     Coupon coupon = new Coupon();
                     coupon.id = id;
                     coupon.couponId = couponId;
@@ -538,7 +548,6 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                         SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         Date endDate=format.parse(endTime);
                         long diff=endDate.getTime()-System.currentTimeMillis();
-                        ToolUtils.setLog("diff：" + diff);
                         days=(int) (diff / (1000 * 60 * 60 * 24)+(diff %(1000 * 60 * 60 * 24)>0?1:0));
                     } catch (ParseException e)
                     {

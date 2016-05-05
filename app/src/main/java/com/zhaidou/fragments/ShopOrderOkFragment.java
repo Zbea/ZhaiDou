@@ -1330,7 +1330,6 @@ public class ShopOrderOkFragment extends BaseFragment
                 e.printStackTrace();
             }
             endTime=endTime.split(" ")[0];
-
             String statu=datasObject.optString("status");
             String property=datasObject.optString("property");
             String goodsType=datasObject.optString("goodsType");
