@@ -405,7 +405,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     }
                     timer.start();
                 }
-                Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "网络异常", Toast.LENGTH_SHORT).show();
             }
         });
         mRequestQueue.add(request);

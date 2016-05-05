@@ -4,6 +4,8 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,7 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CouponsFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<ListView>{
+public class CouponsFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<ListView> {
     private static final String ARG_PARAM1 = "status";
     private static final String ARG_PARAM2 = "param2";
 
@@ -61,6 +63,13 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
     private View mRootView;
     private View mEmptyView;
     private TextView mEmptyText;
+
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+
+        }
+    };
 
     public static CouponsFragment newInstance(String param1, String tag) {
         CouponsFragment fragment = new CouponsFragment();
@@ -119,34 +128,38 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
 
 
     private void FetchData(int page) {
-        String mUserId= SharedPreferencesUtil.getData(getActivity(),"userId",-1)+"";
+        System.out.println("page = " + page);
+        String mUserId = SharedPreferencesUtil.getData(getActivity(), "userId", -1) + "";
         Map<String, String> mParams = new HashMap<String, String>();
         mParams.put("user_id", mUserId);
-        mParams.put("pageNum", ""+page);
-        mParams.put("pageSize", "20");
+        mParams.put("page", "" + page);
+        mParams.put("pageSize", "15");
         mParams.put("status", mStatus);
 
         ZhaiDouRequest request = new ZhaiDouRequest(getActivity(), Request.Method.POST, ZhaiDou.COUPONS_MINE_URL, mParams, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
-                mServerTime=jsonObject.optLong("timestamp");
+                mServerTime = jsonObject.optLong("timestamp");
                 if (status == 200) {
                     JSONObject data = jsonObject.optJSONObject("data");
                     JSONArray couponUseInfoDTOs = data.optJSONArray("couponUseInfoDTOs");
+                    int totalCount = data.optInt("totalCount");
                     int pageSize = data.optInt("pageSize");
                     if (couponUseInfoDTOs != null && couponUseInfoDTOs.length() > 0) {
                         List<Coupons> couponses = JSON.parseArray(couponUseInfoDTOs.toString(), Coupons.class);
+                        System.out.println("CouponsFragment.onResponse---->" + couponses.size() + "----" + pageSize);
                         mCouponAdapter.addAll(couponses);
-                        if (couponses.size()<pageSize){
+                        mListView.onRefreshComplete();
+                        Message message = new Message();
+                        if (couponses.size() < pageSize) {
                             mListView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
-                            Toast.makeText(mContext,"加载完毕",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContext, "加载完毕", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
-                mEmptyView.setVisibility(mCouponAdapter.getCount()==0?View.VISIBLE:View.GONE);
-                mEmptyText.setText(String.format("还没有%s的优惠券哦~",mTag));
-                mListView.onRefreshComplete();
+                mEmptyView.setVisibility(mCouponAdapter.getCount() == 0 ? View.VISIBLE : View.GONE);
+                mEmptyText.setText(String.format("还没有%s的优惠券哦~", mTag));
                 mDialogUtils.dismiss();
             }
         }, new Response.ErrorListener() {
@@ -185,11 +198,11 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
             TextView mDetail = ViewHolder.get(convertView, R.id.detail);
             ImageView mImageView = ViewHolder.get(convertView, R.id.arrow);
             ClickableTextView mCategory = ViewHolder.get(convertView, R.id.category);
-            ImageView mTipView=ViewHolder.get(convertView,R.id.mTipView);
+            ImageView mTipView = ViewHolder.get(convertView, R.id.mTipView);
             Coupons coupons = getList().get(position);
             mTitle.setText(coupons.couponName);
-            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy.MM.dd");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
             String endTimeStr = null;
             Date endTime = null;
             try {
@@ -198,36 +211,38 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            String day=(endTime.getTime()-mServerTime)/(1000*60*60*24)+"";
+            long day = (endTime.getTime() - mServerTime) / (1000 * 60 * 60 * 24) + 1;
             mMoney.setText(Html.fromHtml("<big><big>￥<big><big><big>" + coupons.bookValue + "</big></big></big></big></big>"));
-            mDetail.setText(Html.fromHtml(String.format("%s到期<font color=red>(仅剩%s天)</font><br><br>满%s使用",endTimeStr,day,coupons.enoughValue)));
+            mDetail.setText(Html.fromHtml(String.format("%s到期<font color=red>%s</font><br><br>满%s使用", endTimeStr, day <= 3 ? "(仅剩" + day + "天)" : "", coupons.enoughValue)));
             String categoryStr = "";
-            List<String> ids=new ArrayList<String>();
+            List<String> ids = new ArrayList<String>();
+            List<String> couponGoodsTypeNamesCategeryID = coupons.couponGoodsTypeNamesCategeryID;
             for (int i = 0; i < coupons.couponGoodsTypeNames.size(); i++) {
                 String category = coupons.couponGoodsTypeNames.get(i);
                 categoryStr += (category + "、");
-                ids.add(coupons.couponGoodsTypeNamesCategeryID.get(i));
+                if (i < couponGoodsTypeNamesCategeryID.size())
+                    ids.add(coupons.couponGoodsTypeNamesCategeryID.get(i));
             }
-            mCategory.setClickText(categoryStr.length() > 0 ? categoryStr.substring(0, categoryStr.length() - 1) : "",ids,this);
+            mCategory.setClickText(categoryStr.length() > 0 ? categoryStr.substring(0, categoryStr.length() - 1) : "", ids, this);
             mCategory.setVisibility((mImageView.isSelected() ? View.VISIBLE : View.GONE));
             mTipView.setVisibility(View.GONE);
             convertView.setBackgroundResource(R.drawable.coupons_bg);
-            if ("U".equalsIgnoreCase(mStatus)){
+            if ("U".equalsIgnoreCase(mStatus)) {
                 mTipView.setVisibility(View.VISIBLE);
                 mTipView.setImageResource(R.drawable.coupon_used);
                 convertView.setBackgroundResource(R.drawable.coupon_bg_used);
-            }else if ("O".equalsIgnoreCase(mStatus)){
+            } else if ("O".equalsIgnoreCase(mStatus)) {
                 convertView.setBackgroundResource(R.drawable.coupon_bg_used);
                 mTipView.setVisibility(View.VISIBLE);
                 mTipView.setImageResource(R.drawable.coupon_overtime);
             }
-            if (!"N".equalsIgnoreCase(mStatus)){
+            if (!"N".equalsIgnoreCase(mStatus)) {
                 mTitle.setTextColor(getResources().getColor(R.color.gray_9));
                 mMoney.setTextColor(getResources().getColor(R.color.gray_9));
                 mDetail.setTextColor(getResources().getColor(R.color.gray_9));
-                mDetail.setText(Html.fromHtml(String.format("%s到期<br><br>满%s使用",endTimeStr,coupons.enoughValue)));
+                mDetail.setText(Html.fromHtml(String.format("%s到期<br><br>满%s使用", endTimeStr, coupons.enoughValue)));
             }
-            mImageView.setVisibility("A".equalsIgnoreCase(coupons.goodsType)?View.GONE:View.VISIBLE);
+            mImageView.setVisibility("A".equalsIgnoreCase(coupons.goodsType) ? View.GONE : View.VISIBLE);
             return convertView;
         }
 
@@ -239,7 +254,7 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
         }
     }
 
-    public PullToRefreshListView getListView(){
+    public PullToRefreshListView getListView() {
         return mListView;
     }
 

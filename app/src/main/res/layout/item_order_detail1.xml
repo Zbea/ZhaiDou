@@ -443,26 +443,35 @@
                 android:background="@color/white"
                 android:orientation="horizontal">
 
-                <com.zhaidou.view.TypeFaceTextView
-                    android:id="@+id/moreDetail"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:gravity="center_vertical"
-                    android:drawableLeft="@drawable/selector_orderdetail"
-                    android:drawablePadding="5dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:text="更多信息"
-                    android:textColor="#3fcccb"
-                    android:textSize="16sp" />
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="40dp"
+                    android:background="@android:color/white"
+                    android:orientation="horizontal">
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:id="@+id/moreDetail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_centerInParent="true"
+                        android:layout_weight="1"
+                        android:drawableLeft="@drawable/selector_orderdetail"
+                        android:drawablePadding="5dp"
+                        android:gravity="center"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:text="更多信息"
+                        android:textColor="#3fcccb"
+                        android:textSize="16sp" />
+                </RelativeLayout>
+
 
                 <RelativeLayout
                     android:id="@+id/buttonLayout"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="match_parent"
+                    android:layout_weight="2"
                     android:background="@color/white"
                     android:gravity="right"
                     android:paddingBottom="5dp"

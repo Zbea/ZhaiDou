@@ -453,7 +453,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
      * @param mDialog
      */
     private void getVerifyCode(String phone, final Dialog mDialog) {
-        if (ToolUtils.isPhoneOk(phone)){
+        if (TextUtils.isEmpty(phone)||phone.length()!=11){
             Toast.makeText(LoginActivity.this,"请输入正确的手机号码",Toast.LENGTH_SHORT).show();
         }
         ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + "?phone=" + phone + "&flag=1", new Response.Listener<JSONObject>() {
