@@ -25,18 +25,19 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/selector_coupon_arrow"
-            android:paddingRight="15dp"/>
+            android:paddingRight="15dp"
+            android:src="@drawable/selector_coupon_arrow" />
     </RelativeLayout>
 
     <com.zhaidou.view.ClickableTextView
         android:id="@+id/category"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="桌面收纳"
-        android:paddingRight="15dp"
+        android:layout_marginBottom="10dp"
         android:clickable="true"
-        android:layout_marginBottom="10dp"/>
+        android:paddingRight="15dp"
+        android:text="桌面收纳" />
+
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -67,21 +68,23 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        <com.zhaidou.view.TypeFaceTextView
-            android:id="@+id/detail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_centerInParent="true"
-            android:paddingLeft="10dp"
-            android:textColor="#666666" />
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/detail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:paddingLeft="20dp"
+                android:textColor="#666666" />
+
             <ImageView
                 android:id="@+id/mTipView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/coupon_overtime"
+                android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
-                android:layout_alignParentBottom="true"/>
+                android:src="@drawable/coupon_overtime" />
         </RelativeLayout>
     </LinearLayout>
 </LinearLayout>

@@ -682,37 +682,44 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 Fragment shopPaymentSuccessFragmen = manager.findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
                 Fragment shopPaymentFailFragment = manager.findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
                 Fragment shopPaymentFragment = manager.findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
-                if (fragments.get(fragments.size()-1) instanceof GoodsDetailsFragment){
-                    manager.popBackStack();
-                    return true;
-                }
-                if ((orderDetailFragment != null && orderDetailFragment instanceof OrderDetailFragment1))
-                {
-                    //orderDetailFragment
-                    ToolUtils.setLog("关闭orderDetailFragment");
-                    popToStack(orderDetailFragment);
-                    return true;
-                }
-                else if ((shopPaymentSuccessFragmen != null && shopPaymentSuccessFragmen instanceof ShopPaymentSuccessFragment))
-                {
-                    //ShopPaymentSuccessFragment关闭
-                    ToolUtils.setLog("关闭shopPaymentSuccessFragmen");
-                    popToStack(shopPaymentSuccessFragmen);
-                    return true;
-                }
-                 else if ((shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment))
-                {
-                    ToolUtils.setLog("关闭shopPaymentFailFragment");
-                    //ShopPaymentSuccessFragment关闭
-                    popToStack(shopPaymentFailFragment);
-                    return true;
-                }
-                else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment)
-                {
-                    ToolUtils.setLog("关闭shopPaymentFragment");
-                    //ShopPaymentFragment返回弹出提示
-                    BackPaymentDialog(shopPaymentFragment);
-                    return true;
+                Fragment fragment = fragments.get(fragments.size() - 1);
+                if (fragment instanceof GoodsDetailsFragment||fragment instanceof OrderDetailFragment1||fragment instanceof ShopPaymentFailFragment||
+                        fragment instanceof ShopPaymentSuccessFragment||fragment instanceof ShopPaymentFragment){
+
+                    if (fragments.get(fragments.size()-1) instanceof GoodsDetailsFragment){
+                        manager.popBackStack();
+                        return true;
+                    }
+                    if ((orderDetailFragment != null && orderDetailFragment instanceof OrderDetailFragment1))
+                    {
+                        //orderDetailFragment
+                        ToolUtils.setLog("关闭orderDetailFragment");
+                        popToStack(orderDetailFragment);
+                        return true;
+                    }
+                    else if ((shopPaymentSuccessFragmen != null && shopPaymentSuccessFragmen instanceof ShopPaymentSuccessFragment))
+                    {
+                        //ShopPaymentSuccessFragment关闭
+                        ToolUtils.setLog("关闭shopPaymentSuccessFragmen");
+                        popToStack(shopPaymentSuccessFragmen);
+                        return true;
+                    }
+                     else if ((shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment))
+                    {
+                        ToolUtils.setLog("关闭shopPaymentFailFragment");
+                        //ShopPaymentSuccessFragment关闭
+                        popToStack(shopPaymentFailFragment);
+                        return true;
+                    }
+                    else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment)
+                    {
+                        ToolUtils.setLog("关闭shopPaymentFragment");
+                        //ShopPaymentFragment返回弹出提示
+                        BackPaymentDialog(shopPaymentFragment);
+                        return true;
+                    }
+                }else {
+                    return super.onKeyDown(keyCode, event);
                 }
             }
         }
@@ -945,4 +952,5 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         message.obj=unreadMsgCount;
         mHandler.sendMessage(message);
     }
+
 }
