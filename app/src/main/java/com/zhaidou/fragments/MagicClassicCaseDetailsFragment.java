@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +26,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.zhaidou.MainActivity;
@@ -94,8 +99,46 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
         {
             if (msg.what == 1)
             {
-                ToolUtils.setImageCacheUrl(imageUrl, imageIv, R.drawable.icon_loading_defalut);
-                ToolUtils.setLog(introduce);
+                DisplayImageOptions options = new DisplayImageOptions.Builder()
+                        .showImageOnLoading(R.drawable.icon_loading_defalut)
+                        .showImageForEmptyUri(R.drawable.icon_loading_defalut)
+                        .showImageOnFail(R.drawable.icon_loading_defalut)
+                        .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
+                        .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
+                        .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
+                        .build();
+                ImageLoader.getInstance().displayImage(imageUrl, imageIv, options, new ImageLoadingListener()
+                {
+                    @Override
+                    public void onLoadingStarted(String s, View view)
+                    {
+                    }
+
+                    @Override
+                    public void onLoadingFailed(String s, View view, FailReason failReason)
+                    {
+                    }
+
+                    @Override
+                    public void onLoadingComplete(String s, View view, Bitmap bitmap)
+                    {
+                        if (bitmap != null)
+                        {
+                            ImageView imageView1 = (ImageView) view;
+                            imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+                                imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
+                                imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, bitmap.getHeight() * screenWidth / bitmap.getWidth()));
+                                imageView1.setImageBitmap(bitmap);
+
+                        }
+                    }
+
+                    @Override
+                    public void onLoadingCancelled(String s, View view)
+                    {
+
+                    }
+                });
                 webview.loadData(introduce, "text/html; charset=UTF-8", "UTF-8");
                 webview.setWebViewClient(new WebViewClient()
                  {
