@@ -40,26 +40,7 @@ public class CouponsContainerFragment extends BaseFragment implements View.OnCli
     private LayoutInflater mLayoutInflater;
     private DialogUtils mDialogUtils;
     private com.zhaidou.fragments.CouponsFragment mCurrentFragment;
-//
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_coupons);
-//        mDialogUtils=new DialogUtils(this);
-//        findViewById(R.id.rl_back).setOnClickListener(this);
-//        findViewById(R.id.exchange).setOnClickListener(this);
-//        final RadioGroup radioGroup= (RadioGroup) findViewById(R.id.radioGroup);
-//        radioGroup.check(R.id.unused);
-//        showFragment(0);
-//        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(RadioGroup group, int checkedId) {
-//                radioGroup.check(checkedId);
-//                int index=checkedId==R.id.unused?0:checkedId==R.id.used?1:2;
-//                showFragment(index);
-//            }
-//        });
-//    }
+    private int index;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -74,7 +55,7 @@ public class CouponsContainerFragment extends BaseFragment implements View.OnCli
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 radioGroup.check(checkedId);
-                int index=checkedId==R.id.unused?0:checkedId==R.id.used?1:2;
+                index = checkedId== R.id.unused?0:checkedId==R.id.used?1:2;
                 showFragment(index);
             }
         });
@@ -82,18 +63,14 @@ public class CouponsContainerFragment extends BaseFragment implements View.OnCli
     }
 
     private void showFragment(int index){
-        System.out.println("index = " + index);
         FragmentManager supportFragmentManager = getChildFragmentManager();
-        mCurrentFragment = CouponsFragment.newInstance(mStatusArrAy[index], "");
+        mCurrentFragment = CouponsFragment.newInstance(mStatusArrAy[index],mTextViewArray[index]);
         supportFragmentManager.beginTransaction().replace(R.id.container, mCurrentFragment).commit();
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-//            case R.id.rl_back:
-//                finish();
-//                break;
             case R.id.exchange:
                 mDialogUtils.showCouponDialog(new DialogUtils.PositiveListener2() {
                     @Override

@@ -48,7 +48,7 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
     private static final String ARG_PARAM2 = "param2";
 
     private String mStatus;
-    private String mParam2;
+    private String mTag;
 
     private PullToRefreshListView mListView;
     private List<Coupons> mCouponsList;
@@ -59,12 +59,14 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
     private Dialog dialog;
     private long mServerTime;
     private View mRootView;
+    private View mEmptyView;
+    private TextView mEmptyText;
 
-    public static CouponsFragment newInstance(String param1, String param2) {
+    public static CouponsFragment newInstance(String param1, String tag) {
         CouponsFragment fragment = new CouponsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_PARAM2, tag);
         fragment.setArguments(args);
         return fragment;
     }
@@ -77,7 +79,7 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mStatus = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mTag = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -92,6 +94,8 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
             }
         } else {
             mRootView = inflater.inflate(R.layout.fragment_coupons, null);
+            mEmptyView = mRootView.findViewById(R.id.ll_empty);
+            mEmptyText = (TextView) mRootView.findViewById(R.id.emptyText);
             mListView = (PullToRefreshListView) mRootView.findViewById(R.id.listView);
             mListView.setMode(PullToRefreshBase.Mode.BOTH);
             mListView.setOnRefreshListener(this);
@@ -140,6 +144,8 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
                         }
                     }
                 }
+                mEmptyView.setVisibility(mCouponAdapter.getCount()==0?View.VISIBLE:View.GONE);
+                mEmptyText.setText(String.format("还没有%s的优惠券哦~",mTag));
                 mListView.onRefreshComplete();
                 mDialogUtils.dismiss();
             }
