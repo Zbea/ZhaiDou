@@ -301,6 +301,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     }
 
     private void thirdPartyVerify(final String tag, final String userId, String nick, final String avatarUrl) {
+        System.out.println("LoginActivity.thirdPartyVerify--------");
         Map<String, String> params = new HashMap<String, String>();
         params.put("uid", userId);
         params.put("provider", tag);
@@ -308,7 +309,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,Request.Method.POST, ZhaiDou.USER_LOGIN_THIRD_VERIFY_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("jsonObject--->", jsonObject.toString());
+                Log.i("LoginActivity.thirdPartyVerify----jsonObject--->", jsonObject.toString());
                 JSONObject dataObj = jsonObject.optJSONObject("data");
                 int flag = dataObj.optInt("flag");
 
@@ -550,10 +551,13 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     }
 
     private void thirdPartyRegisterTask(Map<String, String> params) {
+        System.out.println("LoginActivity.thirdPartyRegisterTask");
         ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,Request.Method.POST, ZhaiDou.USER_REGISTER_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+                System.out.println("LoginActivity.onResponse-----》"+jsonObject.toString());
                 if (jsonObject != null) {
+                    System.out.println("jsonObject = " + jsonObject);
                     int status = jsonObject.optInt("status");
                     String message = jsonObject.optString("message");
                     if (status == 200) {

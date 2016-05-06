@@ -74,4 +74,35 @@ public class EaseUtils {
         });
     }
 
+    public static void login(final User user, final LoginListener loginListener){
+        EMChatManager.getInstance().login("zhaidou"+user.getId(), MD5Util.MD5Encode("zhaidou" + user.getId() + "Yage2016!").toUpperCase(), new EMCallBack() {
+            @Override
+            public void onSuccess() {
+                EaseHelper.getInstance().setCurrentUserName(user.getNickName());
+                EMChatManager.getInstance().loadAllConversations();
+                boolean updatenick = EMChatManager.getInstance().updateCurrentUserNick(
+                        user.getNickName());
+                if (!updatenick) {
+                    Log.e("LoginActivity", "update current user nick fail");
+                }
+                if (loginListener!=null)
+                    loginListener.onSuccess();
+
+            }
+
+            @Override
+            public void onProgress(int progress, String status) {
+            }
+
+            @Override
+            public void onError(final int code, final String message) {
+            }
+        });
+    }
+
+    public interface LoginListener{
+        public void onSuccess();
+    }
+
+
 }

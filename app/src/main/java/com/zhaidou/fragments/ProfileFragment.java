@@ -522,6 +522,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     return;
                 } else {
                     Bundle extras = data.getExtras();
+                    System.out.println("extras = " + extras);
                     boolean is_pressed_cancel=false;
                     if (extras!=null)
                     {
@@ -554,7 +555,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         intent.putExtra("outputY", outputY);
         intent.putExtra("scale", true);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-        intent.putExtra("return-data", false);
+        intent.putExtra("return-data", true);
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
         intent.putExtra("noFaceDetection", true); // no face detection
         startActivityForResult(intent, requestCode);
@@ -576,6 +577,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     }
 
     private void UpLoadTask(String base64) {
+        System.out.println("base64 = " + base64);
         token = mSharedPreferences.getString("token", null);
         id = mSharedPreferences.getInt("userId", -1);
         Map<String, String> params = new HashMap<String, String>();

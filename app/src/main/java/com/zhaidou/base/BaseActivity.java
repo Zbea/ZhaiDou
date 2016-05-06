@@ -105,7 +105,7 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         return tm.getDeviceId();
     }
-    protected void hideInputMethod(){
+    public void hideInputMethod(){
         inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         System.out.println("inputMethodManager.isActive() = " + inputMethodManager.isActive());
         if (inputMethodManager.isActive())

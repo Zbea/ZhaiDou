@@ -1,11 +1,14 @@
 package com.zhaidou.activities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -15,6 +18,7 @@ import com.android.volley.VolleyError;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.fragments.CouponsFragment;
 import com.zhaidou.model.ZhaiDouRequest;
@@ -110,7 +114,16 @@ public class CouponsContainerFragment extends BaseFragment implements View.OnCli
                         });
                         ((ZDApplication)mContext.getApplicationContext()).mRequestQueue.add(request);
                     }
-                },null);
+                },new DialogUtils.CancelListener2() {
+                    @Override
+                    public void onCancel(Object o) {
+                        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        EditText editText= (EditText) o;
+                        inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(),0);
+                        ((BaseActivity)getActivity()).hideInputMethod();
+                        mDialogUtils.dismiss();
+                    }
+                });
                 break;
         }
     }

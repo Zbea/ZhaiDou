@@ -35,6 +35,7 @@ public class ModifyPswFragment extends BaseFragment {
     private TextView mCurrentPsw, mNewPsw, mConfirmPsw;
 
     private DialogUtils mDialogUtils;
+
     public ModifyPswFragment() {
     }
 
@@ -46,9 +47,8 @@ public class ModifyPswFragment extends BaseFragment {
         mConfirmPsw = (TextView) view.findViewById(R.id.confirm);
         mNewPsw = (TextView) view.findViewById(R.id.newPsw);
         mCurrentPsw = (TextView) view.findViewById(R.id.current);
-
         view.findViewById(R.id.commit).setOnClickListener(this);
-        mDialogUtils=new DialogUtils(getActivity());
+        mDialogUtils = new DialogUtils(getActivity());
         return view;
     }
 
@@ -74,17 +74,19 @@ public class ModifyPswFragment extends BaseFragment {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.USER_PSW_CHANGE_URL, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                if (dialog!=null)
+                if (dialog != null)
                     dialog.dismiss();
                 int status = jsonObject.optInt("status");
                 String message = jsonObject.optString("message");
                 if (200 == status) {
                     JSONObject data = jsonObject.optJSONObject("data");
-                    int pswStatus = data.optInt("status");
-                    String msg = data.optString("message");
-                    ShowToast(msg);
-                    if (200==pswStatus)
-                    ((BaseActivity)getActivity()).popToStack(ModifyPswFragment.this);
+                    if (data != null) {
+                        int pswStatus = data.optInt("status");
+                        String msg = data.optString("message");
+                        ShowToast(msg);
+                        if (200 == pswStatus)
+                            ((BaseActivity) getActivity()).popToStack(ModifyPswFragment.this);
+                    }
                 } else {
                     ShowToast(message);
                 }
