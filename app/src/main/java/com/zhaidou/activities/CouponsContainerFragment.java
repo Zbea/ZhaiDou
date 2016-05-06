@@ -95,7 +95,7 @@ public class CouponsContainerFragment extends BaseFragment implements View.OnCli
                                     System.out.println("status = " + status);
                                     if ("N".equalsIgnoreCase(status)) {
                                         mCurrentFragment.getListView().setRefreshing(true);
-                                        mCurrentFragment.onPullDownToRefresh(mCurrentFragment.getListView());
+//                                        mCurrentFragment.onPullDownToRefresh(mCurrentFragment.getListView());
                                     }
                                     Toast.makeText(mContext,"兑换成功",Toast.LENGTH_SHORT).show();
                                 }
@@ -105,6 +105,7 @@ public class CouponsContainerFragment extends BaseFragment implements View.OnCli
                             public void onErrorResponse(VolleyError volleyError) {
                                 hideInputMethod();
                                 mDialogUtils.dismiss();
+
                             }
                         });
                         ((ZDApplication)mContext.getApplicationContext()).mRequestQueue.add(request);

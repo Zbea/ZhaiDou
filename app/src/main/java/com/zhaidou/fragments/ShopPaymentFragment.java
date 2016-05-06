@@ -148,6 +148,8 @@ public class ShopPaymentFragment extends BaseFragment
                                 Toast.LENGTH_SHORT).show();
                     } else if (TextUtils.equals(resultStatus, "6001"))
                     {
+                        ShopPaymentFailFragment shopPaymentFailFragment = ShopPaymentFailFragment.newInstance(payOrderId, payMoney, 0, initTime, payOrderCode);
+                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
                         // 其他值就可以判断为支付失败，包括用户主动取消支付，或者系统返回的错误
                         Toast.makeText(getActivity(), "支付取消",
                                 Toast.LENGTH_SHORT).show();
