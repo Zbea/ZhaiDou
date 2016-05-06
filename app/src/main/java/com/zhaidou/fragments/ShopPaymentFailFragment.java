@@ -39,12 +39,17 @@ import com.zhaidou.base.CountManage;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.Order;
+import com.zhaidou.model.Order1;
 import com.zhaidou.model.OrderItem;
+import com.zhaidou.model.OrderItem1;
 import com.zhaidou.model.Store;
+import com.zhaidou.model.User;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -84,10 +89,10 @@ public class ShopPaymentFailFragment extends BaseFragment {
     private double total = 0;
     private double fare = 0;
     private double amount = 0;
-    private TextView tv_total, tv_fare, tv_amount,mCouponMoney,mProductNum;
+    private TextView tv_total, tv_fare, tv_amount, mCouponMoney, mProductNum;
     private int mCheckPosition = 0;
     private Button bt_pay;
-    private String token,userName;
+    private String token, userName;
     private int userId;
     private IWXAPI api;
     private RequestQueue mRequestQueue;
@@ -150,12 +155,21 @@ public class ShopPaymentFailFragment extends BaseFragment {
                     break;
                 }
                 case UPDATE_FEE_DETAIL:
-                    Store store= (Store) msg.obj;
-                    tv_amount.setText("￥"+store.orderTotalAmount);
-                    tv_fare.setText("￥" + store.deliveryFee);
-                    tv_total.setText("￥" + store.orderPayAmount);
-                    mCouponMoney.setText("￥-"+store.discountAmount);
-                    mProductNum.setText(store.orderItemPOList.size());
+                    Order1 order = (Order1) msg.obj;
+                    System.out.println("order = " + order);
+                    tv_amount.setText("￥" + order.itemTotalAmount);
+                    tv_fare.setText("￥" + order.deliveryFee);
+                    tv_total.setText("￥" + order.orderPayAmount);
+                    mCouponMoney.setText("￥" + (Double.parseDouble(order.discountAmount)>0?"-"+order.discountAmount:order.discountAmount));
+                    List<Store> childOrderPOList = order.childOrderPOList;
+                    int num=0;
+                    for (Store store:childOrderPOList){
+                        List<OrderItem1> orderItemPOList = store.orderItemPOList;
+                        for(OrderItem1 orderItem1:orderItemPOList){
+                            num+= orderItem1.quantity;
+                        }
+                    }
+                    mProductNum.setText(num+ "");
                     mTimer = new Timer();
                     mTimer.schedule(new MyTimer(), 1000, 1000);
                     break;
@@ -245,8 +259,8 @@ public class ShopPaymentFailFragment extends BaseFragment {
         tv_amount = (TextView) mView.findViewById(R.id.failPriceTotalTv);
         tv_fare = (TextView) mView.findViewById(R.id.failPriceYfTv);
         tv_total = (TextView) mView.findViewById(R.id.failTotalMoney);
-        mCouponMoney=(TextView)mView.findViewById(R.id.couponMoney);
-        mProductNum=(TextView)mView.findViewById(R.id.jsTotalNum);
+        mCouponMoney = (TextView) mView.findViewById(R.id.couponMoney);
+        mProductNum = (TextView) mView.findViewById(R.id.jsTotalNum);
 
         cb_weixin = (CheckBox) mView.findViewById(R.id.cb_weixin);
         cb_weixin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -269,7 +283,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
             }
         });
 
-        mDialog=CustomLoadingDialog.setLoadingDialog(mContext,"");
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "");
         FetchOrderDetail();
 
     }
@@ -299,26 +313,29 @@ public class ShopPaymentFailFragment extends BaseFragment {
      * 获取订单详情
      */
     private void FetchOrderDetail() {
-        JSONObject json = null;
-        try {
-            json = new JSONObject();
-            json.put("businessType", "01");
-            json.put("userId", userId);
-            json.put("orderCode", payOrderCode);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        User user = SharedPreferencesUtil.getUser(mContext);
+        Map<String, String> params = new HashMap<String, String>();//28129
+        params.put("userId", user.getId() + "");//64410//16665//29650//mUserId
+        params.put("clientType", "ANDROID");
+        params.put("clientVersion", "45");
+        params.put("businessType", "01");
+        params.put("type", "0");
+        params.put("orderCode", payOrderCode);
         System.out.println("payOrderCode = " + payOrderCode);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.GetOrderDetailsUrl, json, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext, Request.Method.POST, ZhaiDou.URL_ORDER_LIST, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 mDialog.dismiss();
                 if (jsonObject != null) {
                     int status = jsonObject.optInt("status");
                     if (status == 200) {
-                        JSONObject dataObject = jsonObject.optJSONObject("data");
-                        Store store = JSON.parseObject(dataObject.toString(), Store.class);
+                        JSONArray dataObject = jsonObject.optJSONArray("data");
+                        List<Order1> orders = JSON.parseArray(dataObject.toString(), Order1.class);
+                        Message message = new Message();
+                        message.obj = orders.get(0);
+                        System.out.println("store = " + orders);
+                        message.what = UPDATE_FEE_DETAIL;
+                        mHandler.sendMessage(message);
 //                        if (dataObject != null)
 //                            payMoney = dataObject.optDouble("orderTotalAmount")!=0?dataObject.optDouble("orderTotalAmount"):payMoney;
 //                        payGoodsMoney = dataObject.optDouble("itemTotalAmount");
@@ -326,10 +343,10 @@ public class ShopPaymentFailFragment extends BaseFragment {
 //                        payOrderId = dataObject.optLong("orderId")!=0?dataObject.optLong("orderId"):payOrderId;
 //                        payOrderCode = dataObject.optString("orderCode")!=""?dataObject.optString("orderCode"):payOrderCode;
 //                        mTimeStamp = dataObject.optInt("orderRemainingTime");
-                        Message message=new Message();
-                        message.obj=store;
-                        message.what=UPDATE_FEE_DETAIL;
-                        mHandler.sendMessage(message);
+//                        Message message=new Message();
+//                        message.obj=store;
+//                        message.what=UPDATE_FEE_DETAIL;
+//                        mHandler.sendMessage(message);
                     }
                 }
             }
