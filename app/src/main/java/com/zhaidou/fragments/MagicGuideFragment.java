@@ -13,6 +13,7 @@ import android.webkit.WebViewClient;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.view.CustomProgressWebview;
@@ -72,8 +73,7 @@ public class MagicGuideFragment extends BaseFragment implements View.OnClickList
     {
         rootView.findViewById(R.id.back_btn).setOnClickListener(this);
         webview=(CustomProgressWebview)rootView.findViewById(R.id.webView);
-        final String Url="http://tm.zhaidou.com/rzzh/list.html";
-        webview.loadUrl(Url);
+        webview.loadUrl(ZhaiDou.MagicGuideUrl);
         WebSettings webSettings=webview.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);

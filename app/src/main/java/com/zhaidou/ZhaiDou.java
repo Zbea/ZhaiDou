@@ -12,7 +12,8 @@ public class ZhaiDou {
 //    public static String HOME_BASE_URL = "http://portal-web.zhaidou.com/";
 //    public static String HOME_BASE="http://www.zhaidou.com/";
 
-
+    //软装指南
+    public static String MagicGuideUrl="http://m.zhaidou.com/rzzh/list.html";
     //美丽家
     public static String HomeBeautifulUrl=HOME_BASE_URL+"zd/getPosts.action?plug=006&pageSize=10&pageNo=";
     //分类
