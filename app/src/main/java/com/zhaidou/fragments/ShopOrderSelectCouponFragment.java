@@ -455,7 +455,6 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                         SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         Date endDate=format.parse(endTime);
                         long diff=endDate.getTime()-System.currentTimeMillis();
-                        ToolUtils.setLog("diff："+diff);
                         days=(int) (diff / (1000 * 60 * 60 * 24)+((diff %(1000 * 60 * 60 * 24))>0?1:0));
                     } catch (ParseException e)
                     {
@@ -473,7 +472,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                     coupon.couponCode = couponCode;
                     coupon.enoughMoney = enoughValue;
                     coupon.money = money;
-                    coupon.info = "满"+enoughValue+"减"+money;
+                    coupon.info="满"+ToolUtils.isIntPrice(enoughValue+"")+"减"+ToolUtils.isIntPrice(money+"");
                     coupon.startDate = startTime;
                     coupon.endDate = endTime;
                     coupon.time = days;
@@ -554,7 +553,6 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                     {
                         e.printStackTrace();
                     }
-                    ToolUtils.setLog("days：" + days);
                     endTime=endTime.split(" ")[0];
                     String statu=couponUseInfoPO.optString("status");
                     String property=couponUseInfoPO.optString("property");
