@@ -17,6 +17,7 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.alipay.sdk.app.PayTask;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -39,6 +40,7 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.Order;
 import com.zhaidou.model.OrderItem;
+import com.zhaidou.model.Store;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
@@ -46,7 +48,6 @@ import com.zhaidou.view.TypeFaceTextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -83,7 +84,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
     private double total = 0;
     private double fare = 0;
     private double amount = 0;
-    private TextView tv_total, tv_fare, tv_amount;
+    private TextView tv_total, tv_fare, tv_amount,mCouponMoney,mProductNum;
     private int mCheckPosition = 0;
     private Button bt_pay;
     private String token,userName;
@@ -149,11 +150,12 @@ public class ShopPaymentFailFragment extends BaseFragment {
                     break;
                 }
                 case UPDATE_FEE_DETAIL:
-                    DecimalFormat df = new DecimalFormat("###.00");
-                    tv_amount.setText("￥" + ToolUtils.isIntPrice("" + payGoodsMoney));
-                    if (payYFMoney >= 0)
-                        tv_fare.setText("￥" + ToolUtils.isIntPrice("" + Double.parseDouble(df.format(payYFMoney) + "")));
-                    tv_total.setText("￥" + ToolUtils.isIntPrice("" + payMoney));
+                    Store store= (Store) msg.obj;
+                    tv_amount.setText("￥"+store.orderTotalAmount);
+                    tv_fare.setText("￥" + store.deliveryFee);
+                    tv_total.setText("￥" + store.orderPayAmount);
+                    mCouponMoney.setText("￥-"+store.discountAmount);
+                    mProductNum.setText(store.orderItemPOList.size());
                     mTimer = new Timer();
                     mTimer.schedule(new MyTimer(), 1000, 1000);
                     break;
@@ -243,6 +245,8 @@ public class ShopPaymentFailFragment extends BaseFragment {
         tv_amount = (TextView) mView.findViewById(R.id.failPriceTotalTv);
         tv_fare = (TextView) mView.findViewById(R.id.failPriceYfTv);
         tv_total = (TextView) mView.findViewById(R.id.failTotalMoney);
+        mCouponMoney=(TextView)mView.findViewById(R.id.couponMoney);
+        mProductNum=(TextView)mView.findViewById(R.id.jsTotalNum);
 
         cb_weixin = (CheckBox) mView.findViewById(R.id.cb_weixin);
         cb_weixin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -305,6 +309,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println("payOrderCode = " + payOrderCode);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.GetOrderDetailsUrl, json, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -313,16 +318,20 @@ public class ShopPaymentFailFragment extends BaseFragment {
                     int status = jsonObject.optInt("status");
                     if (status == 200) {
                         JSONObject dataObject = jsonObject.optJSONObject("data");
-                        if (dataObject != null)
-                            payMoney = dataObject.optDouble("orderTotalAmount")!=0?dataObject.optDouble("orderTotalAmount"):payMoney;
-                        payGoodsMoney = dataObject.optDouble("itemTotalAmount");
-                        payYFMoney = payMoney - payGoodsMoney;
-                        payOrderId = dataObject.optLong("orderId")!=0?dataObject.optLong("orderId"):payOrderId;
-                        payOrderCode = dataObject.optString("orderCode")!=""?dataObject.optString("orderCode"):payOrderCode;
-                        mTimeStamp = dataObject.optInt("orderRemainingTime");
+                        Store store = JSON.parseObject(dataObject.toString(), Store.class);
+//                        if (dataObject != null)
+//                            payMoney = dataObject.optDouble("orderTotalAmount")!=0?dataObject.optDouble("orderTotalAmount"):payMoney;
+//                        payGoodsMoney = dataObject.optDouble("itemTotalAmount");
+//                        payYFMoney = payMoney - payGoodsMoney;
+//                        payOrderId = dataObject.optLong("orderId")!=0?dataObject.optLong("orderId"):payOrderId;
+//                        payOrderCode = dataObject.optString("orderCode")!=""?dataObject.optString("orderCode"):payOrderCode;
+//                        mTimeStamp = dataObject.optInt("orderRemainingTime");
+                        Message message=new Message();
+                        message.obj=store;
+                        message.what=UPDATE_FEE_DETAIL;
+                        mHandler.sendMessage(message);
                     }
                 }
-                mHandler.sendEmptyMessage(UPDATE_FEE_DETAIL);
             }
         }, new Response.ErrorListener() {
             @Override

@@ -127,7 +127,7 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
     }
 
 
-    private void FetchData(int page) {
+    private void FetchData(final int page) {
         System.out.println("page = " + page);
         String mUserId = SharedPreferencesUtil.getData(getActivity(), "userId", -1) + "";
         Map<String, String> mParams = new HashMap<String, String>();
@@ -144,17 +144,17 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
                 if (status == 200) {
                     JSONObject data = jsonObject.optJSONObject("data");
                     JSONArray couponUseInfoDTOs = data.optJSONArray("couponUseInfoDTOs");
-                    int totalCount = data.optInt("totalCount");
                     int pageSize = data.optInt("pageSize");
                     if (couponUseInfoDTOs != null && couponUseInfoDTOs.length() > 0) {
                         List<Coupons> couponses = JSON.parseArray(couponUseInfoDTOs.toString(), Coupons.class);
                         System.out.println("CouponsFragment.onResponse---->" + couponses.size() + "----" + pageSize);
+                        if (page==1) mCouponAdapter.clear();
                         mCouponAdapter.addAll(couponses);
                         mListView.onRefreshComplete();
-                        Message message = new Message();
                         if (couponses.size() < pageSize) {
                             mListView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
-                            Toast.makeText(mContext, "加载完毕", Toast.LENGTH_SHORT).show();
+                            if (mCouponAdapter.getCount() > pageSize)
+                                Toast.makeText(mContext, "加载完毕", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -173,6 +173,7 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
 
     @Override
     public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+        System.out.println("CouponsFragment.onPullDownToRefresh");
         mCouponAdapter.clear();
         mListView.setMode(PullToRefreshBase.Mode.BOTH);
         FetchData(currentPage = 1);
