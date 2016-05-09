@@ -45,8 +45,7 @@ public class ChatActivity extends BaseActivity {
         toChatUsername = HelpDeskPreferenceUtils.getInstance(this).getSettingCustomerAccount();
         mUser = (User) getIntent().getSerializableExtra("user");
         // 可以直接new EaseChatFratFragment使用
-        chatFragment = new ChatFragment();
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
         intent.putExtra(Constant.EXTRA_USER_ID, getIntent().getStringExtra(Constant.EXTRA_USER_ID));
         intent.putExtra(Constant.EXTRA_SHOW_USERNICK, true);
         intent.putExtra(Constant.MESSAGE_TO_INTENT_EXTRA, "service".equalsIgnoreCase(getIntent().getStringExtra(Constant.EXTRA_USER_ID)) ? Constant.MESSAGE_TO_SERVICE : Constant.MESSAGE_TO_DESIGNER);
@@ -57,7 +56,6 @@ public class ChatActivity extends BaseActivity {
         intent.putExtra("companyName", "");
         intent.putExtra("description", !TextUtils.isEmpty(mUser.getDescription()) ? mUser.getDescription() : "");
         intent.putExtra("email", !TextUtils.isEmpty(mUser.getEmail()) ? mUser.getEmail() : "");
-        chatFragment.setArguments(intent.getExtras());// 传入参数
         findViewById(R.id.ll_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,12 +86,18 @@ public class ChatActivity extends BaseActivity {
             EaseUtils.login(user, new EaseUtils.LoginListener() {
                 @Override
                 public void onSuccess() {
-                    getSupportFragmentManager().beginTransaction().add(R.id.container, chatFragment).addToBackStack("ChatFragment").commit();
+                    setUpFragment(intent);
                 }
             });
         }else {
-            getSupportFragmentManager().beginTransaction().add(R.id.container, chatFragment).addToBackStack("ChatFragment").commit();
+            setUpFragment(intent);
         }
+    }
+
+    private void setUpFragment(Intent intent){
+        chatFragment = new ChatFragment();
+        chatFragment.setArguments(intent.getExtras());// 传入参数
+        getSupportFragmentManager().beginTransaction().add(R.id.container, chatFragment).addToBackStack("ChatFragment").commit();
     }
 
     @Override

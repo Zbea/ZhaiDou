@@ -18,6 +18,7 @@ import com.zhaidou.easeui.helpdesk.EaseApplication;
 import com.zhaidou.easeui.helpdesk.EaseHelper;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.DeviceUtils;
+import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.MD5Util;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -66,7 +67,7 @@ public class ZDApplication extends EaseApplication {
         mRequestQueue = Volley.newRequestQueue(this);
         User user = SharedPreferencesUtil.getUser(this);
         if (user.getId()>0)
-            loginToEaseServer(user);
+            EaseUtils.login(user);
     }
 
     /**
