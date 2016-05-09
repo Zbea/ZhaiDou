@@ -112,6 +112,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                     couponNullView.setVisibility(View.GONE);
                     couponAdapter.notifyDataSetChanged();
                     break;
+
                 case UPDATE_RESULT:
                     if(mDialog!=null)
                     {
