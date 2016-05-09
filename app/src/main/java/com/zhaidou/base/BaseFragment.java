@@ -25,9 +25,8 @@ import com.zhaidou.view.HeaderLayout;
 
 /**
  * A simple {@link Fragment} subclass.
- *
  */
-public abstract class BaseFragment extends Fragment implements View.OnTouchListener,View.OnClickListener{
+public abstract class BaseFragment extends Fragment implements View.OnTouchListener, View.OnClickListener {
     /**
      * 公用的Header布局
      */
@@ -57,7 +56,7 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     protected int screenWidth;
     protected int screenHeight;
     public Context mContext;
-    protected boolean isDialogFirstVisible=true;
+    protected boolean isDialogFirstVisible = true;
 
     public String versionCode;
     public String versionName;
@@ -70,16 +69,16 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
         super.onCreate(savedInstanceState);
 //        setRetainInstance(true);
         mInflater = LayoutInflater.from(getActivity());
-        mEmptyView =mInflater.inflate(R.layout.list_empty_view,null);
-        mContext=getActivity();
+        mEmptyView = mInflater.inflate(R.layout.list_empty_view, null);
+        mContext = getActivity();
         DisplayMetrics dm = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
-        screenWidth=dm.widthPixels;
-        screenHeight=dm.heightPixels;
-        PackageInfo packageInfo= null;
+        screenWidth = dm.widthPixels;
+        screenHeight = dm.heightPixels;
+        PackageInfo packageInfo = null;
         try {
-            packageInfo = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(),0);
-            versionCode = packageInfo.versionCode+"";
+            packageInfo = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
+            versionCode = packageInfo.versionCode + "";
             versionName = packageInfo.versionName;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
@@ -87,25 +86,24 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     }
 
 
-
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        currentFragment=this;
+        currentFragment = this;
         view.setOnTouchListener(this);
         view.setOnClickListener(null);
-        mBackView=view.findViewById(R.id.ll_back);
-        inputMethodManager=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (mBackView!=null)
+        mBackView = view.findViewById(R.id.ll_back);
+        inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (mBackView != null)
             mBackView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (inputMethodManager.isActive())
-                        inputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().peekDecorView().getApplicationWindowToken(),0);
-                    if (currentFragment.getParentFragment()!=null){
+                        inputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().peekDecorView().getApplicationWindowToken(), 0);
+                    if (currentFragment.getParentFragment() != null) {
                         currentFragment.getParentFragment().getChildFragmentManager().popBackStack();
                         return;
                     }
-                    ((BaseActivity)getActivity()).popToStack(currentFragment);
+                    ((BaseActivity) getActivity()).popToStack(currentFragment);
                 }
             });
     }
@@ -114,27 +112,22 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
 
     }
 
-    public int getScreenWidth()
-    {
+    public int getScreenWidth() {
         return screenWidth;
     }
 
     Toast mToast;
 
     public void ShowToast(String text) {
-        if (mToast == null)
-        {
-            if(getActivity()!=null)
-            {
+        if (mToast == null) {
+            if (getActivity() != null) {
                 mToast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
             }
-        }
-        else
-        {
+        } else {
             mToast.setText(text);
         }
-        if (mToast!=null)
-        mToast.show();
+        if (mToast != null)
+            mToast.show();
     }
 
     public void ShowToast(int text) {
@@ -146,13 +139,15 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
         mToast.show();
     }
 
-    /** 打Log
+    /**
+     * 打Log
      * ShowLog
+     *
      * @return void
      * @throws
      */
-    public void ShowLog(String msg){
-        Log.i("zhaidou",msg);
+    public void ShowLog(String msg) {
+        Log.i("zhaidou", msg);
     }
 
     public View findViewById(int paramInt) {
@@ -161,10 +156,10 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
 
     /**
      * 检查是否登录
+     *
      * @return
      */
-    public boolean checkLogin()
-    {
+    public boolean checkLogin() {
         String token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
         int userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
         boolean isLogin = !TextUtils.isEmpty(token) && userId > -1;
@@ -173,6 +168,7 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
 
     /**
      * 动画启动页面 startAnimActivity
+     *
      * @throws
      */
     public void startAnimActivity(Intent intent) {
@@ -190,17 +186,18 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.ll_back:
-                Log.i("onClick---->","onClick");
+                Log.i("onClick---->", "onClick");
                 break;
         }
     }
-    protected void hideInputMethod(){
-        if (inputMethodManager==null)
-            inputMethodManager=(InputMethodManager)getActivity().getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+    protected void hideInputMethod() {
+        if (inputMethodManager == null)
+            inputMethodManager = (InputMethodManager) getActivity().getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         System.out.println("inputMethodManager.isActive() = " + inputMethodManager.isActive());
-            inputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().peekDecorView().getApplicationWindowToken(),0);
+        inputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().peekDecorView().getApplicationWindowToken(), 0);
     }
 
     @Override
@@ -211,8 +208,7 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     /**
      * 关闭当前页面
      */
-    public void colseFragment(Fragment fragment)
-    {
+    public void colseFragment(Fragment fragment) {
         ((MainActivity) getActivity()).popToStack(fragment);
     }
 
@@ -220,7 +216,7 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
         this.onFragmentCloseListener = onFragmentCloseListener;
     }
 
-    public interface onFragmentCloseListener{
+    public interface onFragmentCloseListener {
         public void onClose();
     }
 
@@ -228,7 +224,7 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
         this.onReturnSuccess = onReturnSuccess;
     }
 
-    public interface OnReturnSuccess{
+    public interface OnReturnSuccess {
         public void onSuccess(Store store);
     }
 

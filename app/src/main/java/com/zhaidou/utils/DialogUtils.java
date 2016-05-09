@@ -279,24 +279,24 @@ public class DialogUtils {
         return mDialog;
     }
 
-    public Dialog showCouponDialog(final PositiveListener2 positiveListener, final CancelListener cancelListener) {
+    public Dialog showCouponDialog(final PositiveListener2 positiveListener, final CancelListener2 cancelListener) {
         final Dialog mDialog = new Dialog(mContext, R.style.custom_dialog);
         mDialog.setCanceledOnTouchOutside(true);
         mDialog.setCancelable(true);
         mDialog.setContentView(R.layout.dialog_coupon);
         mDialog.show();
+        final EditText editText = (EditText) mDialog.findViewById(R.id.message);
         mDialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (cancelListener != null)
-                    cancelListener.onCancel();
+                    cancelListener.onCancel(editText);
                 mDialog.dismiss();
             }
         });
         mDialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText editText = (EditText) mDialog.findViewById(R.id.message);
                 if (TextUtils.isEmpty(editText.getText().toString().trim())) {
                     Toast.makeText(mContext, "请输入兑换码", Toast.LENGTH_SHORT).show();
                     return;
@@ -507,6 +507,9 @@ public class DialogUtils {
 
     public interface CancelListener {
         public void onCancel();
+    }
+    public interface CancelListener2 {
+        public void onCancel(Object o);
     }
 
     public interface VerifyCodeListener {
