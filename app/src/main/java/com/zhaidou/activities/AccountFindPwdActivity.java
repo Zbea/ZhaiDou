@@ -116,7 +116,7 @@ public class AccountFindPwdActivity extends FragmentActivity {
             public void onResponse(JSONObject jsonObject) {
                 String code = jsonObject.optString("code");
                 String msg = jsonObject.optString("message");
-                if (code!=null&&!"404".equalsIgnoreCase(code)) {
+                if (!"404".equalsIgnoreCase(code)) {
                     JSONObject dataObj = jsonObject.optJSONObject("data");
                     int status = dataObj.optInt("status");
                     String message = dataObj.optString("message");
