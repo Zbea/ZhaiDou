@@ -578,6 +578,8 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
     private void UpLoadTask(String base64) {
         System.out.println("base64 = " + base64);
+        if (TextUtils.isEmpty(base64))
+            return;
         token = mSharedPreferences.getString("token", null);
         id = mSharedPreferences.getInt("userId", -1);
         Map<String, String> params = new HashMap<String, String>();
