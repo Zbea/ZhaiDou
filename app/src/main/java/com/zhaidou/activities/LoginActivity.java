@@ -364,45 +364,36 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             @Override
             public void onResponse(JSONObject jsonObject)
             {
-                if(jsonObject==null)
-                {
-                    return;
-                }
                 ToolUtils.setLog(jsonObject.toString());
                 JSONObject dataObj = jsonObject.optJSONObject("data");
-                if(dataObj==null)
-                {
-                    return;
-                }
-                int status = dataObj.optInt("status");
-                if (201 == status) {
-                    mDialog.dismiss();
-                    ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(LoginActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                    JSONObject userObj = dataObj.optJSONObject("user");
-                    int id = userObj.optInt("id");
-                    String phone = userObj.optString("phone");
-                    String nick = userObj.optString("nick_name");
-                    String email = userObj.optString("email");
-                    String avatar = userObj.optJSONObject("avatar").optString("mobile_icon");
-                    validate_phone = true;
-                    User user = new User(id, email, token, nick, avatar);
-                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
-                } else {
-                    String message = dataObj.optString("message");
-                    Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+                if(dataObj!=null){
+                    int status = dataObj.optInt("status");
+                    if (201 == status) {
+                        mDialog.dismiss();
+                        ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(LoginActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                        JSONObject userObj = dataObj.optJSONObject("user");
+                        int id = userObj.optInt("id");
+                        String phone = userObj.optString("phone");
+                        String nick = userObj.optString("nick_name");
+                        String email = userObj.optString("email");
+                        String avatar = userObj.optJSONObject("avatar").optString("mobile_icon");
+                        validate_phone = true;
+                        User user = new User(id, email, token, nick, avatar);
+                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+                    } else {
+                        String message = dataObj.optString("message");
+                        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+                    }
                 }
 
             }
-        }, new Response.ErrorListener()
-        {
+        }, new Response.ErrorListener(){
             @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
+            public void onErrorResponse(VolleyError volleyError){
                 if (mDialog != null)
                     mDialog.dismiss();
             }
-        })
-        {
+        }){
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError
             {
@@ -420,19 +411,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         if (plat == null) {
             return;
         }
-//        if(plat.isValid()) {
-//            String userId = plat.getDb().getUserId();
-//            String username = plat.getDb().getUserName();
-//            String token = plat.getDb().getToken();
-//            if (userId != null) {
-//                Log.i("userId---------->",userId+"");
-//                Log.i("username---------->",username+"");
-//                Log.i("token---------->",token+"");
-////                UIHandler.sendEmptyMessage(MSG_USERID_FOUND, this);
-////                login(plat.getName(), userId, null);
-//                return;
-//            }
-//        }
         if (plat.isValid()) {
             plat.removeAccount();
         }

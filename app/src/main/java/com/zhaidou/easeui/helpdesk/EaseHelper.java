@@ -288,6 +288,7 @@ public class EaseHelper {
 //        Intent intent = new Intent(appContext, MainActivity.class);
 //        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //        intent.putExtra(Constant.ACCOUNT_CONFLICT, true);
+        EaseHelper.getInstance().logout(true,null);
         AccountManage.getInstance().setConflict(true);
     }
     
