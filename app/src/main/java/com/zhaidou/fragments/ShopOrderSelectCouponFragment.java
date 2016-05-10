@@ -16,17 +16,22 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Coupon;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -43,6 +48,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -173,10 +179,10 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                     addCoupon();
                     break;
                 case R.id.nullReload:
-                    commit();
+                    FetchData();
                     break;
                 case R.id.netReload:
-                    commit();
+                    FetchData();
                     break;
 
             }
@@ -278,7 +284,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
 
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
-            commit();
+            FetchData();
         } else
         {
             if (mDialog != null)
@@ -348,6 +354,32 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
         ToolUtils.setToast(mContext,R.string.loading_fail_txt);
     }
 
+    private void FetchData() {
+        Map<String,String> mParams=new Hashtable<String, String>();
+        try
+        {
+            mParams.put("userId", userId + "");
+            mParams.put("skuAndNumLists", new JSONArray(mDatas).toString());
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        ZhaiDouRequest request = new ZhaiDouRequest(getActivity(), Request.Method.POST, ZhaiDou.GetOrderCouponUrl, mParams, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (jsonObject!=null)
+                ToolUtils.setLog(jsonObject.toString());
+                handler.obtainMessage(UPDATE_RESULT,jsonObject.toString()).sendToTarget();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                loadingFail();
+            }
+        });
+        ((ZDApplication) getActivity().getApplicationContext()).mRequestQueue.add(request);
+    }
+
     /**
      * 获取优惠券列表
      */
@@ -381,28 +413,31 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
      */
     private void FetchRedeem()
     {
-        // 创建名/值组列表
-        final List<NameValuePair> params = new ArrayList<NameValuePair>();
+        Map<String,String> mParams=new Hashtable<String, String>();
         try
         {
-            params.add(new BasicNameValuePair("userId", userId + ""));
-            params.add(new BasicNameValuePair("skuAndNumLists", new JSONArray(mDatas).toString()));
-            params.add(new BasicNameValuePair("nickName", userName));
-            params.add(new BasicNameValuePair("couponCode", couponCode));
+            mParams.put("userId", userId + "");
+            mParams.put("skuAndNumLists", new JSONArray(mDatas).toString());
+            mParams.put("nickName", userName);
+            mParams.put("couponCode", couponCode);
         } catch (JSONException e)
         {
             e.printStackTrace();
         }
-
-        new Thread(new Runnable()
-        {
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext, Request.Method.POST, ZhaiDou.GetRedeemAndCheckCouponUrl, mParams, new Response.Listener<JSONObject>() {
             @Override
-            public void run()
-            {
-                String result= NetService.GETHttpPostService(mContext, ZhaiDou.GetRedeemAndCheckCouponUrl, headers, params);
-                handler.obtainMessage(UPDATE_PARSE_REDEEM_COUPON_RESULT,result).sendToTarget();
+            public void onResponse(JSONObject jsonObject) {
+                if (jsonObject!=null)
+                ToolUtils.setLog(jsonObject.toString());
+                handler.obtainMessage(UPDATE_PARSE_REDEEM_COUPON_RESULT,jsonObject).sendToTarget();
             }
-        }).start();
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                loadingFail();
+            }
+        });
+        ((ZDApplication) mContext.getApplicationContext()).mRequestQueue.add(request);
 
     }
 

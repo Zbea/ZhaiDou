@@ -14,6 +14,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
@@ -73,6 +74,8 @@ public class NetService
         {
             // 定义HttpClient
             HttpClient client = new DefaultHttpClient();
+            client.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT,20000);
+            client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT,20000);
             // 实例化HTTP方法
             HttpPost request = new HttpPost(url);
             for (String key:headers.keySet())

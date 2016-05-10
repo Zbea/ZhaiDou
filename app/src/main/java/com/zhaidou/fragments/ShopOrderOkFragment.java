@@ -40,6 +40,7 @@ import com.zhaidou.model.Address;
 import com.zhaidou.model.CartArrayItem;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.Coupon;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -61,6 +62,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -945,23 +947,23 @@ public class ShopOrderOkFragment extends BaseFragment
      */
     private void GetCoupon()
     {
-        final Map<String,String> headers=new HashMap<String, String>();
-        headers.put("SECAuthorization", token);
-        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-        // 创建名/值组列表
-        final List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("userId", userId + ""));
-        params.add(new BasicNameValuePair("skuAndNumLists", goodsArray.toString()));
-
-        new Thread(new Runnable()
-        {
+        Map<String,String> mParams=new Hashtable<String, String>();
+        mParams.put("userId", userId + "");
+        mParams.put("skuAndNumLists", goodsArray.toString());
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext, Request.Method.POST, ZhaiDou.GetOrderCouponDefaultUrl, mParams, new Response.Listener<JSONObject>() {
             @Override
-            public void run()
-            {
-                String result= NetService.GETHttpPostService(mContext,ZhaiDou.GetOrderCouponDefaultUrl,headers,params);
-                handler.obtainMessage(UPDATE_COUPON_RESULT,result).sendToTarget();
+            public void onResponse(JSONObject jsonObject) {
+                if (jsonObject!=null)
+                    ToolUtils.setLog(jsonObject.toString());
+                handler.obtainMessage(UPDATE_COUPON_RESULT,jsonObject).sendToTarget();
             }
-        }).start();
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+            }
+        });
+        ((ZDApplication) mContext.getApplicationContext()).mRequestQueue.add(request);
+
     }
 
 
