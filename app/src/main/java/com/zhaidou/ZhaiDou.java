@@ -6,11 +6,11 @@ package com.zhaidou;
 public class ZhaiDou {
 
     public static String HOME_PAGE_URL = "http://buy.zhaidou.com/?json=get_category_posts&slug=%E5%AE%B6%E9%A5%B0%E4%BC%98%E9%80%89&status=publish";
-//    public static String HOME_BASE_URL = "http://tportal-web.zhaidou.com/";
-//    public static String HOME_BASE="http://stg.zhaidou.com/";
+    public static String HOME_BASE_URL = "http://tportal-web.zhaidou.com/";
+    public static String HOME_BASE="http://stg.zhaidou.com/";
 
-    public static String HOME_BASE_URL = "http://portal-web.zhaidou.com/";
-    public static String HOME_BASE="http://www.zhaidou.com/";
+//    public static String HOME_BASE_URL = "http://portal-web.zhaidou.com/";
+//    public static String HOME_BASE="http://www.zhaidou.com/";
 
     //软装指南
     public static String MagicGuideUrl="http://m.zhaidou.com/rzzh/list.html";
@@ -179,6 +179,11 @@ public class ZhaiDou {
      * 我的头像保存目录
      */
     public static String MyAvatarDir = "/sdcard/zhaidou/avatar/";
+
+    /**
+     * 评论图片目录
+     */
+    public static String MyCommentDir = "/sdcard/zhaidou/comment/";
 
     public enum ListType {
         HOME,

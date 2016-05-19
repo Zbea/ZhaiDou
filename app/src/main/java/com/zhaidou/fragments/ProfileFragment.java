@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -570,6 +571,10 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         Bundle extras = data.getExtras();
         if (extras != null) {
             Bitmap bitmap = extras.getParcelable("data");
+            if (bitmap == null)
+            {
+                bitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() + filePath);
+            }
             String base64str = PhotoUtil.bitmapToBase64(bitmap);
             ToolUtils.setLog("base64str:"+base64str);
             UpLoadTask(base64str);

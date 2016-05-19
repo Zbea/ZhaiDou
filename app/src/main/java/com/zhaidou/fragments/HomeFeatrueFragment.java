@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -46,7 +47,6 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.ShopTodayItem;
-import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -91,7 +91,7 @@ public class HomeFeatrueFragment extends BaseFragment {
     private Dialog mDialog;
     private Context mContext;
     private View rootView;
-
+    private FrameLayout frameLayout;
     private TextView cartTipsTv;
     private TextView titleTv;
     private LargeImgView bannerLine;
@@ -113,6 +113,7 @@ public class HomeFeatrueFragment extends BaseFragment {
     private String token;
     private int userId;
     private int cartCount;//购物车商品数量
+    private CommentSendFragment commentSendFragment;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -248,7 +249,12 @@ public class HomeFeatrueFragment extends BaseFragment {
                     initData();
                     break;
                 case R.id.rl_qq_contact:
-                    EaseUtils.startDesignerActivity(mContext);
+//                    EaseUtils.startDesignerActivity(mContext);
+//                    CommentFragment commentFragment = CommentFragment.newInstance("","");
+//                    ((MainActivity) getActivity()).navigationToFragment(commentFragment);
+                    frameLayout.setVisibility(View.VISIBLE);
+                    commentSendFragment = CommentSendFragment.newInstance("", "");
+                    getFragmentManager().beginTransaction().add(R.id.frameLayout, commentSendFragment).addToBackStack(null).commitAllowingStateLoss();
                     break;
                 case R.id.ll_back:
                     ((MainActivity) getActivity()).popToStack(HomeFeatrueFragment.this);
@@ -385,6 +391,9 @@ public class HomeFeatrueFragment extends BaseFragment {
             initData();
 
             initBroadcastReceiver();
+
+            frameLayout=(FrameLayout)rootView.findViewById(R.id.frameLayout);
+
 
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。

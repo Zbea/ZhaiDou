@@ -318,6 +318,14 @@
             android:src="@drawable/icon_long_arrow_right_white"/>
     </RelativeLayout>
 
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        </FrameLayout>
+
     <include
         layout="@layout/content_null_layout"
         android:layout_width="match_parent"
