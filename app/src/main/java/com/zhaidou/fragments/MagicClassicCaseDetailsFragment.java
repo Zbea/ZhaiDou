@@ -40,7 +40,6 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.ShopTodayItem;
-import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomProgressWebview;
@@ -215,9 +214,9 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
                     initData();
                     break;
                 case R.id.rl_qq_contact:
-//                    MagicDesignFragment magicDesignFragment = MagicDesignFragment.newInstance("", "");
-//                    ((MainActivity) mContext).navigationToFragmentWithAnim(magicDesignFragment);
-                    EaseUtils.startDesignerActivity(mContext);
+                    CommentListFragment commentListFragment = CommentListFragment.newInstance("", "");
+                    ((MainActivity) mContext).navigationToFragmentWithAnim(commentListFragment);
+//                    EaseUtils.startDesignerActivity(mContext);
                     break;
                 case R.id.back_btn:
                     ((MainActivity) getActivity()).popToStack(MagicClassicCaseDetailsFragment.this);

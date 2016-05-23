@@ -1,43 +1,46 @@
 package com.zhaidou.model;
-/**
- * User: Scoield(553899626@qq.com)
- * Date: 2015-09-28
- * Time: 15:34
- * Description:评论的javaBean,
- */
-public class Comment {
-    private User user;
-    private String comment;
 
-    public User getUser() {
-        return user;
-    }
+import java.util.ArrayList;
+import java.util.List;
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+public class Comment
+{
+    /**
+     * 评论人
+     */
+    public int userId;
+    /**
+     * 评论人
+     */
+    public String header;
+    /**
+     * 评论人
+     */
+    public User user;
+    /**
+     * 回复的人
+     */
+    public User userReply;
+    /**
+     * 回复时间
+     */
+    public String time;
+    /**
+     * 评论信息
+     */
+    public String comment;
+    /**
+     * 评论图片
+     */
+    public List<String> images=new ArrayList<String>();
 
-    public String getComment() {
-        return comment;
-    }
+    /**
+     * 回复的评论信息
+     */
+    public String commentReply;
+    /**
+     * 回复的评论图片
+     */
+    public List<String> imagesReply=new ArrayList<String>();
 
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public Comment(User user, String comment) {
-        this.user = user;
-        this.comment = comment;
-    }
-
-    public Comment() {
-    }
-
-    @Override
-    public String toString() {
-        return "Comment{" +
-                "user=" + user +
-                ", comment='" + comment + '\'' +
-                '}';
-    }
 }

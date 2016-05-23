@@ -74,9 +74,8 @@
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="55dp"
         android:layout_below="@+id/rl_actionbar"
-        android:layout_marginBottom="65dp"
-        android:background="@color/white"
         android:scrollbars="none">
 
         <LinearLayout
@@ -91,9 +90,6 @@
                 android:scrollbars="none"
                 android:listSelector="@android:color/transparent"
                 android:dividerHeight="0dp"
-                android:layout_marginLeft="7dp"
-                android:layout_marginBottom="7dp"
-                android:layout_marginRight="7dp"
                 />
         </LinearLayout>
 
@@ -103,7 +99,7 @@
     <LinearLayout
         android:id="@+id/commentEditLine"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_height="45dp"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:gravity="center_vertical"
@@ -125,5 +121,13 @@
             android:textSize="16sp" />
 
         </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+    </FrameLayout>
 
 </RelativeLayout>

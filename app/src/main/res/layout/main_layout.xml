@@ -54,7 +54,7 @@
                 android:drawablePadding="4dp"
                 android:text="分类"
                 android:textSize="10sp"
-                android:drawableTop="@drawable/main_category_selector"
+                android:drawableTop="@drawable/main_goods_selector"
                 android:gravity="center_horizontal"
                 android:textColor="@color/main_options_text_color_selecter"
                 />
