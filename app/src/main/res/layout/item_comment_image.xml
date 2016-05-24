@@ -4,13 +4,22 @@
               android:layout_height="match_parent"
               android:orientation="vertical" >
 
+    <RelativeLayout
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginRight="10dp">
     <ImageView
         android:id="@+id/imageBg_iv"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginRight="10dp"
         android:scaleType="fitXY"
-        android:clickable="true"
         android:src="@drawable/icon_loading_defalut" />
+        <TextView
+            android:id="@+id/imageBgBtn"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:clickable="true"
+            android:background="@color/transparent"/>
+    </RelativeLayout>
 
 </LinearLayout>

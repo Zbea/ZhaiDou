@@ -307,12 +307,12 @@ public class CommentListFragment extends BaseFragment
                 final int position=i;
                 View mView = LayoutInflater.from(mContext).inflate(R.layout.item_comment_image, null);
                 ImageView imageIv = ( ImageView ) mView.findViewById(R.id.imageBg_iv);
-                mView.setOnClickListener(new View.OnClickListener()
+                TextView btn=( TextView ) mView.findViewById(R.id.imageBgBtn);
+                btn.setOnClickListener(new View.OnClickListener()
                 {
                     @Override
                     public void onClick(View v)
                     {
-                        ToolUtils.setLog("position:"+position+"点击了");
                         CommentImageFragment commentImageFragment=CommentImageFragment.newInstance(im,position);
                         ((MainActivity)mContext).navigationToFragmentWithAnim(commentImageFragment);
 

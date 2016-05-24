@@ -52,7 +52,7 @@
                 android:layout_centerInParent="true"
                 android:contentDescription="@string/app_name"
                 android:drawablePadding="4dp"
-                android:text="分类"
+                android:text="商城"
                 android:textSize="10sp"
                 android:drawableTop="@drawable/main_goods_selector"
                 android:gravity="center_horizontal"
