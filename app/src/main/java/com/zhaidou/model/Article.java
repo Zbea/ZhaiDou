@@ -13,6 +13,17 @@ public class Article implements Serializable
     private String is_new;
     private int reviews;
     private String date;
+    private String info;
+
+    public String getInfo()
+    {
+        return info;
+    }
+
+    public void setInfo(String info)
+    {
+        this.info = info;
+    }
 
     public String getDate()
     {
@@ -70,6 +81,15 @@ public class Article implements Serializable
         this.img_url = img_url;
         this.is_new = is_new;
         this.reviews = reviews;
+    }
+
+    public Article(int id, String title, String img_url, String is_new, int reviews,String info) {
+        this.id = id;
+        this.title = title;
+        this.img_url = img_url;
+        this.is_new = is_new;
+        this.reviews = reviews;
+        this.info = info;
     }
 
     public Article() {

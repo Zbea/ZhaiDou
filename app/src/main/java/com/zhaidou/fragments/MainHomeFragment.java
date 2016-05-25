@@ -27,12 +27,13 @@ import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.adapter.ShopSpecialAdapter;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.base.BaseListAdapter;
+import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.model.Article;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.SwitchImage;
 import com.zhaidou.utils.NetworkUtils;
@@ -40,6 +41,7 @@ import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomBannerView;
 import com.zhaidou.view.ListViewForScrollView;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -67,22 +69,21 @@ public class MainHomeFragment extends BaseFragment implements
 
     private static final int UPDATE_BANNER = 4;
 
-    private View mSpecialLayout;
     private ImageView mSearchView;
     private View view;
     private Dialog mDialog;
     private Context mContext;
 
     private List<ShopSpecialItem> items = new ArrayList<ShopSpecialItem>();
-    private ShopSpecialAdapter adapterList;
+    private ArticleAdapter adapterList;
     private RequestQueue mRequestQueue;
     private List<SwitchImage> banners = new ArrayList<SwitchImage>();
     private List<SwitchImage> codes = new ArrayList<SwitchImage>();
-    private List<SwitchImage> specials = new ArrayList<SwitchImage>();
+    private List<Article> articles = new ArrayList<Article>();
     private LinearLayout loadingView, nullNetView, nullView;
     private TextView reloadBtn, reloadNetBtn;
     private CustomBannerView customBannerView;
-    private LinearLayout linearLayout, codeView, moduleView;
+    private LinearLayout linearLayout, codeView;
     private PullToRefreshScrollView mScrollView;
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private long formerTime;
@@ -110,7 +111,6 @@ public class MainHomeFragment extends BaseFragment implements
             {
                 setAdView();
                 setCodeView();
-                setModuleView();
             }
         }
     };
@@ -194,94 +194,7 @@ public class MainHomeFragment extends BaseFragment implements
         }
     }
 
-    private void setModuleView()
-    {
-        moduleView.removeAllViews();
-        if (specials.size() <= 0)
-        {
-            return;
-        }
-        int num = specials.size() / 5 ;
-        for (int i = 0; i < num; i++)
-        {
-            final int pos = i * 5;
-            final View mView = LayoutInflater.from(mContext).inflate(R.layout.item_home_module, null);
-            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
-                    screenWidth, screenWidth * (1260 + 32) / 1194);
-            mView.setLayoutParams(param);
-            ImageView imageIv1 = (ImageView) mView.findViewById(R.id.moduleIv1);
-            ToolUtils.setImageCacheUrl(specials.get(pos).imageUrl, imageIv1, R.drawable.icon_loading_home_topic_big);
-            imageIv1.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    if (isTimeInterval())
-                    {
-                        SwitchImage item = specials.get(pos);
-                        ToolUtils.setBannerGoto(item, mContext);
-                    }
-                }
-            });
-            ImageView imageIv2 = (ImageView) mView.findViewById(R.id.moduleIv2);
-            ToolUtils.setImageCacheUrl(specials.get(pos + 1).imageUrl, imageIv2, R.drawable.icon_loading_home_topic_small);
-            imageIv2.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    if (isTimeInterval())
-                    {
-                        SwitchImage item = specials.get(pos + 1);
-                        ToolUtils.setBannerGoto(item, mContext);
-                    }
-                }
-            });
-            ImageView imageIv3 = (ImageView) mView.findViewById(R.id.moduleIv3);
-            ToolUtils.setImageCacheUrl(specials.get(pos + 2).imageUrl, imageIv3, R.drawable.icon_loading_home_topic_small);
-            imageIv3.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    if (isTimeInterval())
-                    {
-                        SwitchImage item = specials.get(pos + 2);
-                        ToolUtils.setBannerGoto(item, mContext);
-                    }
-                }
-            });
-            ImageView imageIv4 = (ImageView) mView.findViewById(R.id.moduleIv4);
-            ToolUtils.setImageCacheUrl(specials.get(pos + 3).imageUrl, imageIv4, R.drawable.icon_loading_home_topic_small);
-            imageIv4.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    if (isTimeInterval())
-                    {
-                        SwitchImage item = specials.get(pos + 3);
-                        ToolUtils.setBannerGoto(item, mContext);
-                    }
-                }
-            });
-            ImageView imageIv5 = (ImageView) mView.findViewById(R.id.moduleIv5);
-            ToolUtils.setImageCacheUrl(specials.get(pos + 4).imageUrl, imageIv5, R.drawable.icon_loading_home_topic_small);
-            imageIv5.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    if (isTimeInterval())
-                    {
-                        SwitchImage item = specials.get(pos + 4);
-                        ToolUtils.setBannerGoto(item, mContext);
-                    }
-                }
-            });
-            moduleView.addView(mView);
-        }
-    }
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -342,7 +255,7 @@ public class MainHomeFragment extends BaseFragment implements
 
         listView = (ListViewForScrollView) view.findViewById(R.id.homeItemList);
         listView.setOnItemClickListener(this);
-        adapterList = new ShopSpecialAdapter(mContext, items, screenWidth);
+        adapterList = new ArticleAdapter(mContext, articles);
         listView.setAdapter(adapterList);
 
         mScrollView = (PullToRefreshScrollView) view.findViewById(R.id.sv_home_scrollview);
@@ -350,12 +263,9 @@ public class MainHomeFragment extends BaseFragment implements
         mScrollView.setOnRefreshListener(this);
 
         codeView = (LinearLayout) view.findViewById(R.id.homeCodeView);
-        moduleView = (LinearLayout) view.findViewById(R.id.moduleView);
 
-        mSearchView = (ImageView) view.findViewById(R.id.iv_search);
+        mSearchView = (ImageView) view.findViewById(R.id.iv_message);
         mSearchView.setOnClickListener(this);
-        mSpecialLayout = view.findViewById(R.id.specialLayout);
-        mSpecialLayout.setVisibility(View.GONE);
 
         currentPage = 1;
 
@@ -369,10 +279,10 @@ public class MainHomeFragment extends BaseFragment implements
     private void initDate()
     {
         banners.clear();
-        specials.clear();
         codes.clear();
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
+            initData();
             FetchSpecialData();
             FetchData(currentPage);
         } else
@@ -382,6 +292,19 @@ public class MainHomeFragment extends BaseFragment implements
             nullView.setVisibility(View.GONE);
         }
 
+    }
+
+    private void initData()
+    {
+        Article article=new Article(0,"改造加|都是知性优雅风","http://imgs.zhaidou.com/activity/67/HD2016FUN19432367/ac1_20160001.jpg",
+                "",12,"北欧，是一个温暖而美丽的词汇，宁静、唯美、简单、温馨……很多人都喜欢北欧简约的风格设计");
+        Article article1=new Article(0,"改造加|都是知性优雅风","http://imgs.zhaidou.com/activity/97/HD2016FQU04587497/ac1_20160002.jpg",
+                "",12,"北欧，是一个温暖而美丽的词汇，宁静、唯美、简单、温馨……很多人都喜欢北欧简约的风格设计");
+        articles.add(article);
+        articles.add(article1);
+        articles.add(article);
+        articles.add(article);
+        adapterList.notifyDataSetChanged();
     }
 
     @Override
@@ -416,10 +339,8 @@ public class MainHomeFragment extends BaseFragment implements
     {
         switch (view.getId())
         {
-            case R.id.iv_search:
-//                SearchFragment searchFragment = SearchFragment.newInstance("", 1);
-//                ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
-                ((MainActivity) getActivity()).gotoCategory();
+            case R.id.iv_message:
+
                 break;
             case R.id.nullReload:
                 mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
@@ -540,7 +461,7 @@ public class MainHomeFragment extends BaseFragment implements
         final Map<String, String> headers = new HashMap<String, String>();
         headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
 
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeBannerUrl + "01,02,03", new Response.Listener<JSONObject>()
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeBannerUrl + "01,03", new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -578,10 +499,6 @@ public class MainHomeFragment extends BaseFragment implements
                                     if (flags.equals("01"))
                                     {
                                         banners.add(switchImage);
-                                    }
-                                    if (flags.equals("02"))
-                                    {
-                                        specials.add(switchImage);
                                     }
                                     if (flags.equals("03"))
                                     {
@@ -659,13 +576,7 @@ public class MainHomeFragment extends BaseFragment implements
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
     {
-        ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(items.get(position).title, items.get(position).goodsId, items.get(position).imageUrl);
-        ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
-        if ("1".equalsIgnoreCase(items.get(position).isNew + ""))
-        {
-            SharedPreferencesUtil.saveData(mContext, "homeNews_" + items.get(position).goodsId, false);
-            view.findViewById(R.id.newsView).setVisibility(View.GONE);
-        }
+
     }
 
     @Override
@@ -677,7 +588,6 @@ public class MainHomeFragment extends BaseFragment implements
         items.clear();
         banners.clear();
         codes.clear();
-        specials.clear();
         FetchData(currentPage = 1);
         FetchSpecialData();
     }
@@ -686,6 +596,41 @@ public class MainHomeFragment extends BaseFragment implements
     public void onPullUpToRefresh(PullToRefreshBase<ScrollView> refreshView)
     {
         FetchData(++currentPage);
+    }
+
+
+
+    public class ArticleAdapter extends BaseListAdapter<Article>
+    {
+        Context context;
+
+        public ArticleAdapter(Context context, List<Article> list)
+        {
+            super(context, list);
+            this.context = context;
+        }
+
+        @Override
+        public View bindView(int position, View convertView, ViewGroup parent)
+        {
+            convertView = mHashMap.get(position);
+            if (convertView == null)
+                convertView = mInflater.inflate(R.layout.item_home_article_list, null);
+            ImageView cover = ViewHolder.get(convertView, R.id.cover);
+            cover.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 316 / 722));
+            TextView title = ViewHolder.get(convertView, R.id.title);
+            TypeFaceTextView info = ViewHolder.get(convertView, R.id.info);
+            TypeFaceTextView comments = ViewHolder.get(convertView, R.id.comments);
+
+            Article article = getList().get(position);
+            ToolUtils.setImageCacheUrl(article.getImg_url(), cover,R.drawable.icon_loading_item);
+            title.setText(article.getTitle());
+            info.setText(article.getInfo());
+            comments.setText("评论:"+article.getReviews());
+
+            mHashMap.put(position, convertView);
+            return convertView;
+        }
     }
 
 

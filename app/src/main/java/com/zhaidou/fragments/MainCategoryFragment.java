@@ -105,7 +105,6 @@ public class MainCategoryFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_category, container, false);
-        view.findViewById(R.id.searchLayout).setOnClickListener(this);
         mCategoryListView = (ListView) view.findViewById(R.id.category);
         mGridView = (GridView) view.findViewById(R.id.categoryItem);
         mCategoryAdapter = new CategoryAdapter(getActivity(), categoryList);
@@ -201,15 +200,6 @@ public class MainCategoryFragment extends BaseFragment {
         mRequestQueue.add(request);
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.searchLayout:
-                SearchFragment searchFragment = SearchFragment.newInstance("", 1);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
-                break;
-        }
-    }
 
     @Override
     public void onHiddenChanged(boolean hidden) {

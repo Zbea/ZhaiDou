@@ -21,15 +21,13 @@
             android:textSize="18sp"/>
 
         <ImageView
-            android:id="@+id/iv_search"
-            android:layout_width="wrap_content"
+            android:id="@+id/iv_message"
+            android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:scaleType="center"
-            android:src="@drawable/icon_search"/>
+            android:padding="14dp"
+            android:src="@drawable/icon_goods_message"/>
 
     </RelativeLayout>
 
@@ -51,71 +49,26 @@
             android:orientation="vertical">
 
 
-
-                <LinearLayout
-                    android:id="@+id/bannerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    </LinearLayout>
-                <LinearLayout
-                    android:id="@+id/homeCodeView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:orientation="horizontal"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="10dp">
-                    </LinearLayout>
-
             <LinearLayout
-                android:id="@+id/specialLayout"
+                android:id="@+id/bannerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:visibility="gone"
                 android:orientation="vertical">
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="8dp"
-                android:background="#f6f6f6"></View>
 
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/moduleView"
+                android:id="@+id/homeCodeView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="8dp"
-                android:background="#f6f6f6"></View>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
                 android:background="@color/white"
-                android:gravity="center_vertical"
                 android:orientation="horizontal">
-                <TextView
-                    android:layout_width="7dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginTop="5dp"
-                    android:background="@color/green_color"/>
-                <com.zhaidou.view.TypeFaceTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/default_margin"
-                    android:layout_marginRight="@dimen/default_margin"
-                    android:text="新特卖 • 每天早上10点上新"
-                    android:textColor="@color/text_main_color"
-                    android:textSize="15sp"/>
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:background="#f6f6f6"></View>
 
             <com.zhaidou.view.ListViewForScrollView
                 android:id="@+id/homeItemList"

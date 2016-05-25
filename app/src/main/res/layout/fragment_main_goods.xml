@@ -11,25 +11,57 @@
         android:layout_height="@dimen/header_height_dimen"
         android:background="@color/actionbar_background_color">
 
-        <com.zhaidou.view.TypeFaceTextView
-            android:id="@+id/tv_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="@string/title_home"
-            android:textColor="@color/white"
-            android:textSize="18sp"/>
+        <ImageView
+            android:id="@+id/iv_category"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:padding="14dp"
+            android:src="@drawable/icon_goods_category"/>
+
+        <LinearLayout
+            android:id="@+id/iv_searchs"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="11.5dp"
+            android:layout_marginBottom="11.5dp"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:gravity="center"
+            android:clickable="true"
+            android:background="@drawable/search_titlebar_bg">
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="搜索"
+                android:textColor="#D0D0D0"
+                android:drawableLeft="@drawable/icon_search_gray"
+                android:drawablePadding="10dp"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:scaleType="fitXY"
+                android:visibility="gone"
+                android:src="@drawable/icon_search_gray" />
+        </LinearLayout>
 
         <ImageView
-            android:id="@+id/iv_search"
-            android:layout_width="wrap_content"
+            android:id="@+id/iv_message"
+            android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:scaleType="center"
-            android:src="@drawable/icon_search"/>
+            android:padding="14dp"
+            android:src="@drawable/icon_goods_message"/>
 
     </RelativeLayout>
 
@@ -50,8 +82,6 @@
             android:background="@color/white"
             android:orientation="vertical">
 
-
-
                 <LinearLayout
                     android:id="@+id/bannerView"
                     android:layout_width="match_parent"
@@ -66,7 +96,8 @@
                     android:background="@color/white"
                     android:orientation="horizontal"
                     android:paddingBottom="10dp"
-                    android:paddingTop="10dp">
+                    android:paddingTop="10dp"
+                    android:visibility="gone">
                     </LinearLayout>
 
             <LinearLayout

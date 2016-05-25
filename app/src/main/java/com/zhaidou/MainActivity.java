@@ -49,6 +49,7 @@ import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.fragments.DiyFragment;
 import com.zhaidou.fragments.GoodsDetailsFragment;
 import com.zhaidou.fragments.MainCategoryFragment;
+import com.zhaidou.fragments.MainGoodsFragment;
 import com.zhaidou.fragments.MainHomeFragment;
 import com.zhaidou.fragments.MainMagicFragment;
 import com.zhaidou.fragments.MainPersonalFragment;
@@ -87,7 +88,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private FragmentManager manager;
     private Fragment utilityFragment;
     private Fragment magicHomeFragment;
-    private Fragment categoryFragment;
+    private Fragment goodsFragment;
     private ShopCartFragment shopCartFragment;
 
     private TextView homeButton;
@@ -407,8 +408,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             public void onClick(View view)
             {
 
-//                titleView.setText("每日精选功能美物");
-
                 selectFragment(currentFragment, utilityFragment);
                 setButton(view);
             }
@@ -438,7 +437,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             @Override
             public void onClick(View view)
             {
-//                titleView.setText("全类别");
                 gotoCategory();
 
             }
@@ -512,11 +510,11 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
      */
     public void gotoCategory()
     {
-        if (categoryFragment == null)
+        if (goodsFragment == null)
         {
-            categoryFragment = MainCategoryFragment.newInstance("", "");
+            goodsFragment = MainGoodsFragment.newInstance("", "");
         }
-        selectFragment(currentFragment, categoryFragment);
+        selectFragment(currentFragment, goodsFragment);
         setButton(categoryButton);
 
     }

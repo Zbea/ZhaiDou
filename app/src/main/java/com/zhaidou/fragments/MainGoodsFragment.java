@@ -1,9 +1,7 @@
 package com.zhaidou.fragments;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -68,7 +66,8 @@ public class MainGoodsFragment extends BaseFragment implements
     private static final int UPDATE_BANNER = 4;
 
     private View mSpecialLayout;
-    private ImageView mSearchView;
+    private LinearLayout mSearchView;
+    private ImageView categoryIv,messageTv;
     private View view;
     private Dialog mDialog;
     private Context mContext;
@@ -283,8 +282,6 @@ public class MainGoodsFragment extends BaseFragment implements
         }
     }
 
-    private OnFragmentInteractionListener mListener;
-
     public static MainGoodsFragment newInstance(String url, String type)
     {
         MainGoodsFragment fragment = new MainGoodsFragment();
@@ -314,7 +311,7 @@ public class MainGoodsFragment extends BaseFragment implements
     {
         if (view == null)
         {
-            view = inflater.inflate(R.layout.fragment_main_home, container, false);
+            view = inflater.inflate(R.layout.fragment_main_goods, container, false);
             mContext = getActivity();
             initView();
 
@@ -352,8 +349,12 @@ public class MainGoodsFragment extends BaseFragment implements
         codeView = (LinearLayout) view.findViewById(R.id.homeCodeView);
         moduleView = (LinearLayout) view.findViewById(R.id.moduleView);
 
-        mSearchView = (ImageView) view.findViewById(R.id.iv_search);
+        mSearchView = (LinearLayout) view.findViewById(R.id.iv_searchs);
         mSearchView.setOnClickListener(this);
+        categoryIv = (ImageView) view.findViewById(R.id.iv_category);
+        categoryIv.setOnClickListener(this);
+        messageTv = (ImageView) view.findViewById(R.id.iv_message);
+        messageTv.setOnClickListener(this);
         mSpecialLayout = view.findViewById(R.id.specialLayout);
         mSpecialLayout.setVisibility(View.GONE);
 
@@ -384,42 +385,24 @@ public class MainGoodsFragment extends BaseFragment implements
 
     }
 
-    @Override
-    public void onAttach(Activity activity)
-    {
-        super.onAttach(activity);
-        try
-        {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e)
-        {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
 
-    @Override
-    public void onDetach()
-    {
-        super.onDetach();
-        mListener = null;
-    }
-
-
-    public interface OnFragmentInteractionListener
-    {
-        public void onFragmentInteraction(Uri uri);
-    }
 
     @Override
     public void onClick(View view)
     {
         switch (view.getId())
         {
-            case R.id.iv_search:
-//                SearchFragment searchFragment = SearchFragment.newInstance("", 1);
-//                ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
-                ((MainActivity) getActivity()).gotoCategory();
+            case R.id.iv_searchs:
+                SearchFragment searchFragment = SearchFragment.newInstance("", 1);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
+//                ((MainActivity) getActivity()).gotoCategory();
+                break;
+            case R.id.iv_category:
+                MainCategoryFragment mainCategoryFragment = MainCategoryFragment.newInstance("", "");
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(mainCategoryFragment);
+                break;
+            case R.id.iv_message:
+
                 break;
             case R.id.nullReload:
                 mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
