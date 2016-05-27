@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:padding="10dp"
+        android:padding="12dp"
         android:orientation="vertical">
 
         <TextView
@@ -33,9 +33,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="12dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
+            android:layout_marginBottom="3dp"
             >
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/info"
@@ -45,11 +46,13 @@
                 android:layout_weight="1"
                 android:singleLine="true"
                 android:ellipsize="end"
+                android:textSize="13sp"
                 android:textColor="@color/text_normal_color"
                 />
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/comments"
                 android:text="123"
+                android:textSize="13sp"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="5dp"
                 android:layout_width="wrap_content"

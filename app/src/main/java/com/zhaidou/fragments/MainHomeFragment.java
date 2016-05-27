@@ -34,7 +34,6 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
-import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.SwitchImage;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -74,7 +73,6 @@ public class MainHomeFragment extends BaseFragment implements
     private Dialog mDialog;
     private Context mContext;
 
-    private List<ShopSpecialItem> items = new ArrayList<ShopSpecialItem>();
     private ArticleAdapter adapterList;
     private RequestQueue mRequestQueue;
     private List<SwitchImage> banners = new ArrayList<SwitchImage>();
@@ -99,7 +97,7 @@ public class MainHomeFragment extends BaseFragment implements
                 if (mDialog != null)
                     mDialog.dismiss();
                 loadingView.setVisibility(View.GONE);
-                if (pageCount > items.size())
+                if (pageCount > articles.size())
                 {
                     mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
                 } else
@@ -302,9 +300,6 @@ public class MainHomeFragment extends BaseFragment implements
                 "",12,"北欧，是一个温暖而美丽的词汇，宁静、唯美、简单、温馨……很多人都喜欢北欧简约的风格设计");
         articles.add(article);
         articles.add(article1);
-        articles.add(article);
-        articles.add(article);
-        adapterList.notifyDataSetChanged();
     }
 
     @Override
@@ -358,9 +353,8 @@ public class MainHomeFragment extends BaseFragment implements
      */
     private void FetchData(final int page)
     {
-        final String url = ZhaiDou.HomeShopListUrl + page + "&typeEnum=1";
+        final String url = ZhaiDou.HomeArticleGoodsUrl + page;
         ToolUtils.setLog(url);
-
         JsonObjectRequest jr = new JsonObjectRequest(url ,new Response.Listener<JSONObject>()
         {
             @Override
@@ -395,28 +389,20 @@ public class MainHomeFragment extends BaseFragment implements
                 {
                     pageCount = jsonObject.optInt("totalCount");
                     pageSize = jsonObject.optInt("pageSize");
-                    JSONArray jsonArray = jsonObject.optJSONArray("themeList");
+                    JSONArray jsonArray = jsonObject.optJSONArray("freeClassicsCasePOs");
 
                     if (jsonArray != null)
                         for (int i = 0; i < jsonArray.length(); i++)
                         {
                             JSONObject obj = jsonArray.optJSONObject(i);
-                            String id = obj.optString("activityCode");
-                            String title = obj.optString("activityName");
-                            String sales = obj.optString("discountLabel");
-                            long startTime = obj.optLong("startTime");
-                            long endTime = obj.optLong("endTime");
-                            int overTime = Integer.parseInt((String.valueOf((endTime - System.currentTimeMillis()) / (24 * 60 * 60 * 1000))));
-                            if ((endTime - System.currentTimeMillis()) % (24 * 60 * 60 * 1000) > 0)
-                            {
-                                overTime = overTime + 1;
-                            }
-
+                            int id = obj.optInt("id");
+                            String title = obj.optString("caseName");
+                            String info = obj.optString("mainDesc");
                             String imageUrl = obj.optString("mainPic");
-                            int isNew = obj.optInt("newFlag");
-                            ShopSpecialItem shopSpecialItem = new ShopSpecialItem(id, title, sales, startTime, endTime, overTime, imageUrl, isNew);
+                            Article article=new Article(id,title,imageUrl,
+                                    "",12,info);
 
-                            items.add(shopSpecialItem);
+                            articles.add(article);
                         }
                     Message message = new Message();
                     message.what = 1001;
@@ -433,7 +419,7 @@ public class MainHomeFragment extends BaseFragment implements
                     mDialog.dismiss();
                 mScrollView.onRefreshComplete();
                 mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
-                if (items.size() != 0)
+                if (articles.size() != 0)
                 {
                     currentPage--;
                     ToolUtils.setToast(mContext, R.string.loading_fail_txt);
@@ -461,7 +447,7 @@ public class MainHomeFragment extends BaseFragment implements
         final Map<String, String> headers = new HashMap<String, String>();
         headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
 
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeBannerUrl + "01,03", new Response.Listener<JSONObject>()
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeBannerUrl + "03,05", new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -496,7 +482,7 @@ public class MainHomeFragment extends BaseFragment implements
                                     switchImage.imageUrl = imageUrl;
                                     switchImage.title = title;
                                     switchImage.template_type = j == 0 ? 0 : 1;
-                                    if (flags.equals("01"))
+                                    if (flags.equals("05"))
                                     {
                                         banners.add(switchImage);
                                     }
@@ -585,7 +571,7 @@ public class MainHomeFragment extends BaseFragment implements
         String label = DateUtils.formatDateTime(getActivity(), System.currentTimeMillis(),
                 DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
         refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
-        items.clear();
+        articles.clear();
         banners.clear();
         codes.clear();
         FetchData(currentPage = 1);

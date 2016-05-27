@@ -31,6 +31,7 @@ import com.zhaidou.fragments.HomeWeixinListFragment;
 import com.zhaidou.fragments.MagicClassicCaseDetailsFragment;
 import com.zhaidou.fragments.MagicClassicCaseFragment;
 import com.zhaidou.fragments.MagicDesignFragment;
+import com.zhaidou.fragments.MagicImageCaseFragment;
 import com.zhaidou.fragments.ShopTodaySpecialFragment;
 import com.zhaidou.fragments.SpecialSaleFragment;
 import com.zhaidou.model.Category;
@@ -436,6 +437,11 @@ public class ToolUtils
         {
             MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "");
             ((MainActivity) mContext).navigationToFragment(magicClassicCaseFragment);
+        }
+        else if(item.type==12)
+        {
+            MagicImageCaseFragment magicImageCaseFragment = MagicImageCaseFragment.newInstance("", "");
+            ((MainActivity) mContext).navigationToFragment(magicImageCaseFragment);
         }
         else
         {
