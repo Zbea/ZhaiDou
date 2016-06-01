@@ -357,7 +357,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
             }
         });
         imageLine.addView(mView);
-        if (photos.size()>=3)
+        if (photos.size()>3)
         {
             imageAddBtn.setVisibility(View.GONE);
         }
@@ -385,12 +385,12 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
     public void onResume()
     {
         super.onResume();
-        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.setting_recommend_txt));
+        MobclickAgent.onPageStart("评论发送");
     }
 
     public void onPause()
     {
         super.onPause();
-        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.setting_recommend_txt));
+        MobclickAgent.onPageEnd("评论发送");
     }
 }

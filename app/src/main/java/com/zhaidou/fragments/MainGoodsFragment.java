@@ -372,6 +372,7 @@ public class MainGoodsFragment extends BaseFragment implements
         banners.clear();
         specials.clear();
         codes.clear();
+        items.clear();
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
             FetchSpecialData();
@@ -669,6 +670,17 @@ public class MainGoodsFragment extends BaseFragment implements
     public void onPullUpToRefresh(PullToRefreshBase<ScrollView> refreshView)
     {
         FetchData(++currentPage);
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            if (items == null | items.size() < 1) {
+                initDate();
+            }
+        }
+
     }
 
 

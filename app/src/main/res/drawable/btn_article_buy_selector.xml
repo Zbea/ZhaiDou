@@ -5,28 +5,28 @@
     <item
         android:state_pressed="true" >
         <shape
-            android:shape="rectangle"
             >
             <!-- 填充颜色 -->
             <solid android:color="#aaff6262" ></solid>
 
-            <size android:height="30dp"></size>
+            <size android:height="25dp"></size>
 
             <!-- 矩形的圆角半径 -->
-            <corners android:radius="30dp" />
+            <corners android:bottomLeftRadius="12.5dp" android:bottomRightRadius="12.5dp"
+                     android:topLeftRadius="12.5dp" android:topRightRadius="12.5dp"/>
 
         </shape>
         </item>
     
     <item >
-        <shape
-            android:shape="rectangle">
+        <shape>
             <!-- 填充颜色 -->
             <solid android:color="#ff6262"></solid>
 
-            <size android:height="30dp"></size>
+            <size android:height="25dp"></size>
             <!-- 矩形的圆角半径 -->
-            <corners android:radius="30dp" />
+            <corners android:bottomLeftRadius="12.5dp" android:bottomRightRadius="12.5dp"
+                     android:topLeftRadius="12.5dp" android:topRightRadius="12.5dp"/>
 
         </shape>
         </item>

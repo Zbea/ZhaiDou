@@ -27,6 +27,7 @@ import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
@@ -278,9 +279,9 @@ public class MainHomeFragment extends BaseFragment implements
     {
         banners.clear();
         codes.clear();
+        articles.clear();
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
-            initData();
             FetchSpecialData();
             FetchData(currentPage);
         } else
@@ -290,16 +291,6 @@ public class MainHomeFragment extends BaseFragment implements
             nullView.setVisibility(View.GONE);
         }
 
-    }
-
-    private void initData()
-    {
-        Article article=new Article(0,"改造加|都是知性优雅风","http://imgs.zhaidou.com/activity/67/HD2016FUN19432367/ac1_20160001.jpg",
-                "",12,"北欧，是一个温暖而美丽的词汇，宁静、唯美、简单、温馨……很多人都喜欢北欧简约的风格设计");
-        Article article1=new Article(0,"改造加|都是知性优雅风","http://imgs.zhaidou.com/activity/97/HD2016FQU04587497/ac1_20160002.jpg",
-                "",12,"北欧，是一个温暖而美丽的词汇，宁静、唯美、简单、温馨……很多人都喜欢北欧简约的风格设计");
-        articles.add(article);
-        articles.add(article1);
     }
 
     @Override
@@ -399,8 +390,9 @@ public class MainHomeFragment extends BaseFragment implements
                             String title = obj.optString("caseName");
                             String info = obj.optString("mainDesc");
                             String imageUrl = obj.optString("mainPic");
+                            int num = obj.optInt("commentCount");
                             Article article=new Article(id,title,imageUrl,
-                                    "",12,info);
+                                    "",num,info);
 
                             articles.add(article);
                         }
@@ -562,7 +554,8 @@ public class MainHomeFragment extends BaseFragment implements
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
     {
-
+        HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment=HomeArticleGoodsDetailsFragment.newInstance("",""+articles.get(position).getId());
+        ((MainActivity)mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
     }
 
     @Override
@@ -603,7 +596,7 @@ public class MainHomeFragment extends BaseFragment implements
             if (convertView == null)
                 convertView = mInflater.inflate(R.layout.item_home_article_list, null);
             ImageView cover = ViewHolder.get(convertView, R.id.cover);
-            cover.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 316 / 722));
+            cover.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 400/ 750));
             TextView title = ViewHolder.get(convertView, R.id.title);
             TypeFaceTextView info = ViewHolder.get(convertView, R.id.info);
             TypeFaceTextView comments = ViewHolder.get(convertView, R.id.comments);
@@ -617,6 +610,17 @@ public class MainHomeFragment extends BaseFragment implements
             mHashMap.put(position, convertView);
             return convertView;
         }
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            if (articles == null | articles.size() < 1) {
+                initDate();
+            }
+        }
+
     }
 
 

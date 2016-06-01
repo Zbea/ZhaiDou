@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -155,7 +156,7 @@ public class CommentListFragment extends BaseFragment
      */
     private void initView()
     {
-//        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "");
+//        mView.findViewById(R.id.rl_actionbar).getBackground().setAlpha(255);
         commentNumTv=(TextView)mView.findViewById(R.id.commentNumTv);
         commentNumTv.setText(""+num);
 
@@ -326,7 +327,10 @@ public class CommentListFragment extends BaseFragment
         }
     }
 
-
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        return true;
+    }
 
     public void onResume()
     {

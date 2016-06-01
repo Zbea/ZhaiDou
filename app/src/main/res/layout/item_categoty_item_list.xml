@@ -11,7 +11,8 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:src="@drawable/icon_loading_category"
-        android:scaleType="centerInside"/>
+        android:padding="13dp"
+        />
 
     <com.zhaidou.view.TypeFaceTextView
         android:id="@+id/categoryName"

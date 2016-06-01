@@ -18,10 +18,12 @@ public class ZhaiDou {
     public static String HomeBeautifulUrl=HOME_BASE_URL+"zd/getPosts.action?plug=006&pageSize=10&pageNo=";
     //分类
     public static String HomeCategoryUrl=HOME_BASE_URL+"category/queryCategory.action";
-    //首页banner
+    //模块接口
     public static String HomeBannerUrl=HOME_BASE_URL+"index/getBoardContent.action?boardCodes=";
-    //首页banner
+    //首页文章列表
     public static String HomeArticleGoodsUrl=HOME_BASE_URL+"decorate/getChangeCases.action?pageSize=20&pageNo=";
+    //首页文章详情
+    public static String HomeArticleGoodsDetailsUrl=HOME_BASE_URL+"decorate/getChangeCaseDetail.action?caseId=";
     //首页banner点击统计接口
     public static String HomeClickStatisticalUrl=HOME_BASE_URL+"api/countBannerClick.action?name=";
     //首页微信文章列表

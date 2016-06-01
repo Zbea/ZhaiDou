@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@color/page_bg">
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/page_bg">
 
     <RelativeLayout
         android:id="@+id/rl_actionbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/header_height_dimen"
-        android:layout_alignParentTop="true"
         android:background="@color/actionbar_background_color">
 
         <LinearLayout
@@ -26,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="10dp"
-                android:src="@drawable/icon_back_selector" />
+                android:src="@drawable/icon_back_selector"/>
 
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
@@ -37,7 +36,7 @@
                 android:gravity="center"
                 android:text="返回"
                 android:textColor="@color/white"
-                android:textSize="16sp" />
+                android:textSize="16sp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -46,25 +45,27 @@
             android:layout_centerInParent="true"
             android:orientation="horizontal">
 
-        <com.zhaidou.view.TypeFaceTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="评论列表( "
-            android:textColor="@color/white"
-            android:textSize="18sp" />
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="评论列表( "
+                android:textColor="@color/white"
+                android:textSize="18sp"/>
+
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/commentNumTv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="15"
                 android:textColor="@color/white"
-                android:textSize="18sp" />
+                android:textSize="18sp"/>
+
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=" )"
                 android:textColor="@color/white"
-                android:textSize="18sp" />
+                android:textSize="18sp"/>
 
         </LinearLayout>
     </RelativeLayout>
@@ -74,7 +75,6 @@
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="55dp"
         android:layout_below="@+id/rl_actionbar"
         android:scrollbars="none">
 
@@ -82,6 +82,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+
             <com.zhaidou.view.ListViewForScrollView
                 android:id="@+id/lv_special_list"
                 android:layout_width="match_parent"
@@ -91,36 +92,52 @@
                 android:listSelector="@android:color/transparent"
                 android:dividerHeight="0dp"
                 />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                ></View>
+
         </LinearLayout>
 
     </com.pulltorefresh.PullToRefreshScrollView>
 
 
     <LinearLayout
-        android:id="@+id/commentEditLine"
         android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:orientation="horizontal"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:gravity="center_vertical"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        android:background="@color/white">
+        android:orientation="vertical">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/icon_comment_bottom"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/all_e"></View>
 
-        <com.zhaidou.view.TypeFaceTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="说两句,评论一下"
-            android:layout_marginLeft="5dp"
-            android:textColor="@color/edit_hint_gray"
-            android:textSize="16sp" />
+        <LinearLayout
+            android:id="@+id/commentEditLine"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:background="@color/white">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_comment_bottom"/>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="说两句,评论一下"
+                android:layout_marginLeft="5dp"
+                android:textColor="@color/edit_hint_gray"
+                android:textSize="16sp"/>
 
         </LinearLayout>
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/frameLayout"

@@ -14,8 +14,8 @@
         <ImageView
             android:id="@+id/goodsImageTv"
             android:layout_weight="0.00001"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
             android:layout_margin="10dp"
             android:scaleType="fitXY"
             android:src="@drawable/icon_loading_defalut"/>
@@ -46,8 +46,8 @@
                         android:id="@+id/goodsNameTv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="15sp"
                         android:textColor="@color/text_main_color"
+                        android:layout_marginTop="2dp"
                         android:text="商品价格名称哈哈啊哈哈dsfsdfsdfsfdsdfsdfsfds"
                         android:maxLines="2"
                         android:ellipsize="end"
@@ -97,8 +97,6 @@
                         android:id="@+id/goodsPriceTv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
-                        android:textSize="16sp"
                         android:textColor="@color/red"
                         android:text="$123.5"
                         />
@@ -133,7 +131,6 @@
                     android:layout_weight="1"
                     android:clickable="true"
                     android:textColor="@color/green_color"
-                    android:textSize="16sp"
                     android:text="宅豆"/>
 
                 <com.zhaidou.view.TypeFaceTextView
@@ -144,11 +141,8 @@
                     android:clickable="true"
                     android:gravity="center"
                     android:textColor="@color/white"
-                    android:textSize="15sp"
                     android:paddingLeft="15dp"
                     android:paddingRight="15dp"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
                     android:background="@drawable/btn_article_buy_selector"
                     android:text="去购买"/>
 
