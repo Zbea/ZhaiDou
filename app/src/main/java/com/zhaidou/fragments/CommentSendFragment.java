@@ -35,6 +35,10 @@ import com.zhaidou.view.TypeFaceEditText;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 
@@ -48,13 +52,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import internal.org.apache.http.entity.mime.HttpMultipartMode;
-import internal.org.apache.http.entity.mime.content.FileBody;
-import internal.org.apache.http.entity.mime.content.StringBody;
-
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
 
 /**
  * Created by roy on 15/8/28.
@@ -482,7 +479,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
         BufferedReader in = null;
         try
         {
-            org.apache.http.entity.mime.MultipartEntity multipartEntity = new org.apache.http.entity.mime.MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE, BOUNDARY, Charset.defaultCharset());
+            MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE, BOUNDARY, Charset.defaultCharset());
             multipartEntity.addPart("commentUserId",new StringBody(userId+""));
             multipartEntity.addPart("commentUserName",new StringBody( userName,Charset.defaultCharset()));
             multipartEntity.addPart("content",new StringBody(commentInfo,Charset.defaultCharset()));

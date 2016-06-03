@@ -111,7 +111,6 @@ public static final int *;
 -keep class com.ta.** {*;}
 -dontwarn com.ta.**
 
-
 ##腾讯统计#
 -keep class com.tencent.stat.**  {* ;}
 -keep class com.tencent.mid.**  {* ;}
