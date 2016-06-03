@@ -24,6 +24,10 @@ public class ZhaiDou {
     public static String HomeArticleGoodsUrl=HOME_BASE_URL+"decorate/getChangeCases.action?pageSize=20&pageNo=";
     //首页文章详情
     public static String HomeArticleGoodsDetailsUrl=HOME_BASE_URL+"decorate/getChangeCaseDetail.action?caseId=";
+    //首页文章评论
+    public static String HomeArticleCommentUrl=HOME_BASE_URL+"comment/commentView.action?articleId=";
+    //添加评论
+    public static String CommentAddUrl=HOME_BASE_URL+"comment/addProductComment?";
     //首页banner点击统计接口
     public static String HomeClickStatisticalUrl=HOME_BASE_URL+"api/countBannerClick.action?name=";
     //首页微信文章列表
