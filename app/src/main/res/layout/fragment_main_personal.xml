@@ -18,39 +18,50 @@
             android:clickable="true">
 
             <FrameLayout
-                android:id="@+id/tv_shopping_cart"
+                android:id="@+id/unreadMsgLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:visibility="gone">
+                android:visibility="visible">
 
-                <com.zhaidou.view.TypeFaceTextView
-                    android:layout_width="wrap_content"
+                <ImageView
+                    android:layout_width="30dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="20dp"
-                    android:background="@drawable/icon_shopping_cart"
-                    android:textColor="@color/white" />
+                    android:src="@drawable/icon_goods_message"/>
 
-                <TextView
-                    android:id="@+id/tv_cart_count"
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/unreadMsg"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginLeft="10dp"
-                    android:background="@drawable/shop_goods_my_cart_tips_red_bg"
+                    android:layout_gravity="right|center"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/msg_selector"
                     android:gravity="center"
+                    android:minWidth="17dp"
+                    android:paddingLeft="3dp"
+                    android:paddingRight="3dp"
+                    android:layout_marginTop="-10dp"
+                    android:text="99+"
                     android:textColor="@color/white"
                     android:textSize="12sp" />
             </FrameLayout>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="horizontal">
 
             <com.zhaidou.view.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/iv_header"
                 android:layout_width="@dimen/account_image_width_dimen"
                 android:layout_height="@dimen/account_image_width_dimen"
+                android:layout_marginBottom="15dp"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
-                android:layout_marginTop="55dp"
+                android:layout_marginTop="15dp"
                 android:src="@drawable/icon_header_default"
                 app:border_color="#adb0ba"
                 app:border_overlay="true"
@@ -58,117 +69,41 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:layout_marginTop="65dp"
-                android:layout_toRightOf="@id/iv_header"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
                 android:orientation="vertical">
 
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/tv_nickname"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/account_text_txt" />
+                    android:text="周杰伦"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/account_text_txt"
+                    android:textStyle="bold" />
 
                 <com.zhaidou.view.TypeFaceTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:visibility="gone" />
-
-                <LinearLayout
+                    android:id="@+id/tv_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:orientation="horizontal"
-                    android:paddingRight="10dp">
-
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="简介："
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/account_text_info_txt" />
-
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:id="@+id/tv_desc"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:maxLines="2"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/account_text_info_txt" />
-
-                </LinearLayout>
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:text="真理是惟一可靠的标砖"
+                    android:textColor="#6e6e6e"
+                    android:textSize="@dimen/account_text_info_txt" />
             </LinearLayout>
+        </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="39dp"
-                android:layout_alignParentBottom="true"
-                android:background="@drawable/bg_personal_tab"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <LinearLayout
-                    android:id="@+id/ll_collect"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:id="@+id/tv_collect"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textColor="@color/white" />
-
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="我的收藏"
-                        android:textColor="@color/white" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginTop="5dp"
-                    android:background="@color/white" />
-
-                <LinearLayout
-                    android:id="@+id/ll_collocation"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:id="@+id/tv_collocation"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textColor="@color/white" />
-
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="我的豆搭"
-                        android:textColor="@color/white" />
-                </LinearLayout>
-            </LinearLayout>
-        </RelativeLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="#F5F5F5" />
 
         <RelativeLayout
             android:id="@+id/all_order"
             android:layout_width="match_parent"
             android:layout_height="@dimen/list_height_dimen"
-            android:layout_marginTop="-39dp"
             android:background="@color/white"
             android:gravity="center_vertical">
 
@@ -206,12 +141,10 @@
                     android:src="@drawable/icon_arrow_right" />
             </LinearLayout>
         </RelativeLayout>
-
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#EEEEEE" />
-
+            android:background="#F5F5F5" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -282,6 +215,18 @@
 
         <ImageView
             android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="#F5F5F5" />
+
+        <com.zhaidou.view.ChildGridView
+            android:id="@+id/gridView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:horizontalSpacing="1dp"
+            android:verticalSpacing="1dp"
+            android:numColumns="3"/>
+        <ImageView
+            android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/line_bottom"
             android:visibility="gone" />
@@ -312,226 +257,12 @@
                 android:src="@drawable/icon_arrow_right" />
         </RelativeLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/default_margin"
-            android:background="@color/white"
-            android:orientation="vertical">
-            <RelativeLayout
-                android:id="@+id/couponLayout"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/list_height_dimen"
-                android:background="@drawable/item_click_selector"
-                android:gravity="center_vertical">
-
-                <com.zhaidou.view.TypeFaceTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/icon_coupon"
-                    android:drawablePadding="10dp"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="15dp"
-                    android:text="优惠券"
-                    android:textColor="@color/text_main_color" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:paddingRight="15dp"
-                    android:src="@drawable/icon_arrow_right" />
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginLeft="@dimen/list_height_dimen"
-                android:background="@color/line_color"></View>
-            <RelativeLayout
-                android:id="@+id/rl_collocation"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/list_height_dimen"
-                android:background="@drawable/item_click_selector"
-                android:gravity="center_vertical">
-
-                <com.zhaidou.view.TypeFaceTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/icon_collocation"
-                    android:drawablePadding="10dp"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="15dp"
-                    android:text="我的豆搭"
-                    android:textColor="@color/text_main_color" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:paddingRight="15dp"
-                    android:src="@drawable/icon_arrow_right" />
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginLeft="@dimen/list_height_dimen"
-                android:background="@color/line_color"></View>
-
-            <RelativeLayout
-                android:id="@+id/rl_competition"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:background="@drawable/item_click_selector"
-                android:gravity="center_vertical">
-
-                <com.zhaidou.view.TypeFaceTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/icon_pintie"
-                    android:drawablePadding="10dp"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="15dp"
-                    android:text="拼贴大赛"
-                    android:textColor="@color/text_main_color" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:paddingRight="15dp"
-                    android:src="@drawable/icon_arrow_right" />
-            </RelativeLayout>
-        </LinearLayout>
-
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/line_bottom"
             android:visibility="gone" />
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/default_margin"
-            android:background="@color/white"
-            android:orientation="vertical">
-
-            <RelativeLayout
-                android:id="@+id/rl_msg"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/list_height_dimen"
-                android:background="@drawable/item_click_selector"
-                android:gravity="center_vertical">
-
-                <com.zhaidou.view.TypeFaceTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/icon_msg"
-                    android:drawablePadding="10dp"
-                    android:gravity="center_vertical"
-                    android:layout_centerVertical="true"
-                    android:paddingLeft="15dp"
-                    android:text="我的消息"
-                    android:textColor="@color/text_main_color" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-
-                    <com.zhaidou.view.TypeFaceTextView
-                        android:id="@+id/unreadMsg"
-                        android:layout_width="wrap_content"
-                        android:minWidth="17dp"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/msg_selector"
-                        android:layout_marginRight="10dp"
-                        android:textColor="@color/white"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:textSize="12sp"
-                        android:paddingLeft="3dp"
-                        android:paddingRight="3dp"
-                        android:text="99+" />
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:paddingRight="15dp"
-                        android:src="@drawable/icon_arrow_right" />
-                </LinearLayout>
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginLeft="40dp"
-                android:background="@color/line_color"></View>
-
-            <RelativeLayout
-                android:id="@+id/rl_service"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/list_height_dimen"
-                android:background="@drawable/item_click_selector"
-                android:gravity="center_vertical">
-
-                <com.zhaidou.view.TypeFaceTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/icon_service"
-                    android:drawablePadding="10dp"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="15dp"
-                    android:text="在线客服"
-                    android:textColor="@color/text_main_color" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:paddingRight="15dp"
-                    android:src="@drawable/icon_arrow_right" />
-            </RelativeLayout>
-
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginLeft="40dp"
-                android:background="@color/line_color"></View>
-
-            <RelativeLayout
-                android:id="@+id/rl_contact"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/list_height_dimen"
-                android:background="@drawable/item_click_selector"
-                android:gravity="center_vertical">
-
-                <com.zhaidou.view.TypeFaceTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/icon_contact"
-                    android:drawablePadding="10dp"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="15dp"
-                    android:text="联系我们"
-                    android:textColor="@color/text_main_color" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:paddingRight="15dp"
-                    android:src="@drawable/icon_arrow_right" />
-            </RelativeLayout>
-        </LinearLayout>
 
         <View
             android:layout_width="match_parent"

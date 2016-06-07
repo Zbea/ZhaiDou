@@ -23,6 +23,7 @@ import com.alibaba.sdk.android.login.LoginService;
 import com.alibaba.sdk.android.login.callback.LoginCallback;
 import com.alibaba.sdk.android.session.model.Session;
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -214,7 +215,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 params.put("password", password);
 
                 mDialog = CustomLoadingDialog.setLoadingDialog(LoginActivity.this, "登陆中");
-                final ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,Request.Method.POST, ZhaiDou.USER_LOGIN_URL, params, new Response.Listener<JSONObject>() {
+                final ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this, Request.Method.POST, ZhaiDou.USER_LOGIN_URL, params, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
                         if (jsonObject != null) {
@@ -306,7 +307,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         params.put("uid", userId);
         params.put("provider", tag);
         params.put("nick_name", nick);
-        ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,Request.Method.POST, ZhaiDou.USER_LOGIN_THIRD_VERIFY_URL, params, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this, Request.Method.POST, ZhaiDou.USER_LOGIN_THIRD_VERIFY_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 Log.i("LoginActivity.thirdPartyVerify----jsonObject--->", jsonObject.toString());
@@ -344,29 +345,31 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
+                System.out.println("volleyError.networkResponse.toString() = " + volleyError.networkResponse.toString());
+                System.out.println("volleyError.getLocalizedMessage() = " + volleyError.getLocalizedMessage());
+
             }
         });
+        request.setRetryPolicy(new DefaultRetryPolicy(5000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         requestQueue.add(request);
     }
 
     private void bingPhoneTask(String phone, String verifyCode, final Dialog mDialog, final String token) {
         JSONObject params = new JSONObject();
-        try
-        {
+        try {
             params.put("phone", phone);
             params.put("vcode", verifyCode);
-        } catch (JSONException e)
-        {
+        } catch (JSONException e) {
             e.printStackTrace();
         }
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_BINE_PHONE_URL, params, new Response.Listener<JSONObject>()
-        {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_BINE_PHONE_URL, params, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(JSONObject jsonObject)
-            {
+            public void onResponse(JSONObject jsonObject) {
                 ToolUtils.setLog(jsonObject.toString());
                 JSONObject dataObj = jsonObject.optJSONObject("data");
-                if(dataObj!=null){
+                if (dataObj != null) {
                     int status = dataObj.optInt("status");
                     if (201 == status) {
                         mDialog.dismiss();
@@ -387,16 +390,15 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 }
 
             }
-        }, new Response.ErrorListener(){
+        }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError volleyError){
+            public void onErrorResponse(VolleyError volleyError) {
                 if (mDialog != null)
                     mDialog.dismiss();
             }
-        }){
+        }) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
+            public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("ZhaidouVesion", getApplicationContext().getResources().getString(R.string.app_versionName));
                 headers.put("SECAuthorization", token);
@@ -432,10 +434,10 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
      * @param mDialog
      */
     private void getVerifyCode(String phone, final Dialog mDialog) {
-        if (TextUtils.isEmpty(phone)||phone.length()!=11){
-            Toast.makeText(LoginActivity.this,"请输入正确的手机号码",Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(phone) || phone.length() != 11) {
+            Toast.makeText(LoginActivity.this, "请输入正确的手机号码", Toast.LENGTH_SHORT).show();
         }
-        ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + "?phone=" + phone + "&flag=1", new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this, ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + "?phone=" + phone + "&flag=1", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 JSONObject dataObj = jsonObject.optJSONObject("data");
@@ -487,7 +489,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 
     @Override
     public void onError(Platform platform, int i, Throwable throwable) {
-        Log.i("platform----->", platform.getName() + "---" + i );
+        Log.i("platform----->", platform.getName() + "---" + i);
     }
 
     @Override
@@ -530,10 +532,10 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 
     private void thirdPartyRegisterTask(Map<String, String> params) {
         System.out.println("LoginActivity.thirdPartyRegisterTask");
-        ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,Request.Method.POST, ZhaiDou.USER_REGISTER_URL, params, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this, Request.Method.POST, ZhaiDou.USER_REGISTER_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                System.out.println("LoginActivity.onResponse-----》"+jsonObject.toString());
+                System.out.println("LoginActivity.onResponse-----》" + jsonObject.toString());
                 if (jsonObject != null) {
                     System.out.println("jsonObject = " + jsonObject);
                     int status = jsonObject.optInt("status");
@@ -548,14 +550,16 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                         }
 
                         JSONObject userJson = dataObj.optJSONObject("user");
-                        int id = userJson.optInt("id");
-                        String email = userJson.optString("email");
-                        String token = userJson.optString("authentication_token");
+                        if (userJson != null) {
+                            int id = userJson.optInt("id");
+                            String email = userJson.optString("email");
+                            String token = userJson.optString("authentication_token");
 //                    String avatar = userJson.optJSONObject("avatar").optString("url","");
-                        String nick = userJson.optString("nick_name");
-                        User user = new User(id, email, token, nick, "");
+                            String nick = userJson.optString("nick_name");
+                            User user = new User(id, email, token, nick, "");
 //                        loginToEaseServer(user);
-                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+                            mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+                        }
                     } else {
                         Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                     }
@@ -567,6 +571,9 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 
             }
         });
+        request.setRetryPolicy(new DefaultRetryPolicy(5000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         ((ZDApplication) getApplication()).mRequestQueue.add(request);
     }
 
@@ -646,18 +653,19 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             inputMethodManager.hideSoftInputFromWindow(getWindow().peekDecorView().getApplicationWindowToken(), 0);
     }
 
-    private void loginToEaseServer(final User user){
+    private void loginToEaseServer(final User user) {
         EaseUtils.login(user);
         Message message = new Message();
         message.obj = user;
         message.what = 0;
         mHandler.sendMessage(message);
     }
-    public String string2MD5(String inStr){
+
+    public String string2MD5(String inStr) {
         MessageDigest md5 = null;
-        try{
+        try {
             md5 = MessageDigest.getInstance("MD5");
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.toString());
             e.printStackTrace();
             return "";
@@ -669,7 +677,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             byteArray[i] = (byte) charArray[i];
         byte[] md5Bytes = md5.digest(byteArray);
         StringBuffer hexValue = new StringBuffer();
-        for (int i = 0; i < md5Bytes.length; i++){
+        for (int i = 0; i < md5Bytes.length; i++) {
             int val = ((int) md5Bytes[i]) & 0xff;
             if (val < 16)
                 hexValue.append("0");

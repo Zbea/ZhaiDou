@@ -6,13 +6,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -29,21 +30,28 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.activities.*;
+import com.zhaidou.activities.ConversationListActivity;
+import com.zhaidou.activities.CouponsContainerFragment;
+import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.base.AccountManage;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.CountManage;
 import com.zhaidou.base.EaseManage;
 import com.zhaidou.base.ProfileManage;
+import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.User;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainPersonalFragment extends BaseFragment implements View.OnClickListener, CountManage.onCountChangeListener, ProfileManage.OnProfileChange, AccountManage.AccountListener, EaseManage.onMessageChange {
@@ -76,6 +84,8 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     private int count = 0;
     private int collectNum = 0;
 
+    private GridView mGridView;
+    private ShareAdapter mShareAdapter;
     private TextView unReadMsgView;
     private User mUser;
 
@@ -122,7 +132,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                     mCartCount.setText("" + num);
                     break;
                 case UPDATE_UNREAD_MSG:
-                    setUnreadMsg();
+                    setUnreadMsg(0);
                     break;
             }
         }
@@ -168,11 +178,10 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             iv_header = (ImageView) view.findViewById(R.id.iv_header);
             tv_desc = (TextView) view.findViewById(R.id.tv_desc);
             tv_nickname = (TextView) view.findViewById(R.id.tv_nickname);
-            tv_collect = (TextView) view.findViewById(R.id.tv_collect);
-            tv_collocation = (TextView) view.findViewById(R.id.tv_collocation);
             tv_unpay_count = (TextView) view.findViewById(R.id.tv_unpay_count);
             mCartCount = (TextView) view.findViewById(R.id.tv_cart_count);
             unReadMsgView = (TextView) view.findViewById(R.id.unreadMsg);
+            mGridView= (GridView) view.findViewById(R.id.gridView);
 
             view.findViewById(R.id.accountInfoBtn).setOnClickListener(this);
             mPrePayView.setOnClickListener(this);
@@ -180,32 +189,66 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             mReturnView.setOnClickListener(this);
             mAllOrderView.setOnClickListener(this);
             mSettingView.setOnClickListener(this);
-            view.findViewById(R.id.tv_shopping_cart).setOnClickListener(this);
-            view.findViewById(R.id.rl_contact).setOnClickListener(this);
-            view.findViewById(R.id.rl_competition).setOnClickListener(this);
-            view.findViewById(R.id.rl_collocation).setOnClickListener(this);
             view.findViewById(R.id.rl_addr_manage).setOnClickListener(this);
-            view.findViewById(R.id.ll_collect).setOnClickListener(this);
-            view.findViewById(R.id.ll_collocation).setOnClickListener(this);
-            view.findViewById(R.id.rl_msg).setOnClickListener(this);
-            view.findViewById(R.id.rl_service).setOnClickListener(this);
-            view.findViewById(R.id.couponLayout).setOnClickListener(this);
+            view.findViewById(R.id.unreadMsgLayout).setOnClickListener(this);
+
 
             mRequestQueue = Volley.newRequestQueue(getActivity());
             getUserDetail();
             getUserInfo();
+            fetchUnReadComment();
             userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
             token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
 
             int value = CountManage.getInstance().value(CountManage.TYPE.TAG_PREPAY);
             tv_unpay_count.setText(value + "");
-            tv_unpay_count.setVisibility(value == 0 ? View.GONE : View.VISIBLE);
-            setUnreadMsg();
             CountManage.getInstance().setOnCountChangeListener(this);
             AccountManage.getInstance().register(this);
             ProfileManage.getInstance().register(this);
             EaseManage.getInstance().setOnMessageChange(this);
             mUser=new User();
+
+            int[] drawableId = {R.drawable.icon_coupon, R.drawable.icon_softcover, R.drawable.icon_collocation,
+                    R.drawable.icon_pintie, R.drawable.icon_service, R.drawable.icon_contact};
+
+            String[] titlearr ={" 优惠卷","软装清单","我的豆搭","拼贴大赛","在线客服","联系我们"};
+            List<String> titleList = Arrays.asList(titlearr);
+            mShareAdapter=new ShareAdapter(mContext, titleList, drawableId);
+            mGridView.setAdapter(mShareAdapter);
+            mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    switch (position){
+                        case 0:
+                            CouponsContainerFragment couponsFragment=new CouponsContainerFragment();
+                            ((BaseActivity)getActivity()).navigationToFragment(couponsFragment);
+                            break;
+                        case 1:
+                            break;
+                        case 2:
+                            CollocationFragment collocationFragment = CollocationFragment.newInstance("", "");
+                            ((MainActivity) getActivity()).navigationToFragmentWithAnim(collocationFragment);
+                            break;
+                        case 3:
+                            Intent intent = new Intent(getActivity(), HomePTActivity.class);
+                            intent.putExtra("url", ZhaiDou.COMPETITION_URL);
+                            intent.putExtra("from", "competition");
+                            intent.putExtra("title", "拼贴大赛");
+                            intent.setFlags(2);
+                            startActivity(intent);
+                            break;
+                        case 4:
+                            EaseUtils.startKeFuActivity(mContext);
+                            break;
+                        case 5:
+                            ContactUsFragment contactUsFragment = ContactUsFragment.newInstance("", "");
+                            ((MainActivity) getActivity()).navigationToFragmentWithAnim(contactUsFragment);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            });
 
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
@@ -216,27 +259,19 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
         return view;
     }
 
-    private void setUnreadMsg() {
+    private void setUnreadMsg(int unReadComment) {
         int unreadMsgsCount = EMChatManager.getInstance().getUnreadMsgsCount();
-        unReadMsgView.setVisibility(unreadMsgsCount > 0 ? View.VISIBLE : View.GONE);
-        unReadMsgView.setText(unreadMsgsCount > 99 ? "99+" : unreadMsgsCount + "");
+        unReadMsgView.setVisibility((unreadMsgsCount+unReadComment) > 0 ? View.VISIBLE : View.GONE);
+        unReadMsgView.setText((unreadMsgsCount+unReadComment) > 99 ? "99+" : unreadMsgsCount + "");
     }
 
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.tv_shopping_cart:
-                ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopCartFragment);
-                break;
             case R.id.all_order:
                 OrderAllOrdersFragment allOrdersFragment = OrderAllOrdersFragment.newInstance(ZhaiDou.TYPE_ORDER_ALL, "");
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(allOrdersFragment);
-                break;
-            case R.id.rl_collocation:
-                CollocationFragment collocationFragment = CollocationFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(collocationFragment);
                 break;
             case R.id.tv_pre_pay:
                 ((MainActivity) getActivity()).hideTip(View.GONE);
@@ -251,10 +286,6 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 OrderReturnFragment returnFragment = OrderReturnFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(returnFragment);
                 break;
-            case R.id.couponLayout:
-                CouponsContainerFragment couponsFragment=new CouponsContainerFragment();
-                ((BaseActivity)getActivity()).navigationToFragment(couponsFragment);
-                break;
             case R.id.rl_addr_manage:
                 AddrManageFragment addrManageFragment = AddrManageFragment.newInstance("", "", "", "", 0);
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(addrManageFragment);
@@ -263,39 +294,14 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 SettingFragment mSettingFragment = SettingFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(mSettingFragment);
                 break;
-            case R.id.rl_contact:
-                ContactUsFragment contactUsFragment = ContactUsFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(contactUsFragment);
-                break;
             case R.id.accountInfoBtn:
                 mProfileFragment = ProfileFragment.newInstance("", "");
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(mProfileFragment);
                 break;
-            case R.id.rl_competition:
-                Intent intent = new Intent(getActivity(), HomePTActivity.class);
-                intent.putExtra("url", ZhaiDou.COMPETITION_URL);
-                intent.putExtra("from", "competition");
-                intent.putExtra("title", "拼贴大赛");
-                intent.setFlags(2);
-                startActivity(intent);
-                break;
-            case R.id.ll_collect:
-                CollectFragment collectFragment = CollectFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(collectFragment);
-                collectFragment.setCollectCountChangeListener(new CollectFragment.CollectCountChangeListener() {
-                    @Override
-                    public void onCountChange(int count, Fragment fragment) {
-                        tv_collect.setText(collectNum - 1 <= 0 ? 0 + "" : "" + --collectNum);
-                    }
-                });
-                break;
-            case R.id.rl_msg:
+            case R.id.unreadMsgLayout:
                 Intent intent1 = new Intent(getActivity(), ConversationListActivity.class);
                 intent1.putExtra("userId", "service");
                 startActivity(intent1);
-                break;
-            case R.id.rl_service:
-                EaseUtils.startKeFuActivity(mContext);
                 break;
         }
     }
@@ -353,7 +359,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     }
 
     public void getUserDetail() {
-        Object id = SharedPreferencesUtil.getData(getActivity(), "userId", 0);
+        Object id = SharedPreferencesUtil.getData(mContext, "userId", 0);
         JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_DETAIL_PROFILE_URL + "?id=" + id, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -418,13 +424,13 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             getUserDetail();
             getUserInfo();
         }
-        setUnreadMsg();
+        setUnreadMsg(0);
         super.onHiddenChanged(hidden);
     }
 
     public void onResume() {
         super.onResume();
-        setUnreadMsg();
+        fetchUnReadComment();
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_personal));
         InputMethodManager inputMethodManager=(InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
         if (inputMethodManager.isActive())
@@ -473,5 +479,50 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     @Override
     public void onMessage(int unreadMsgCount) {
         mHandler.sendEmptyMessage(UPDATE_UNREAD_MSG);
+    }
+
+
+    public class ShareAdapter extends BaseListAdapter<String> {
+        private int[] drawableId;
+        private List<String> titles;
+
+        public ShareAdapter(Context context, List<String> titles, int[] drawableId) {
+            super(context, titles);
+            this.drawableId = drawableId;
+        }
+
+        @Override
+        public View bindView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null)
+                convertView = mInflater.inflate(R.layout.item_share_view, null);
+            ImageView imageView = ViewHolder.get(convertView, R.id.iv_plat);
+            TextView textView = ViewHolder.get(convertView, R.id.tv_plat);
+            String title = getList().get(position);
+            textView.setText(title);
+            textView.setTextSize(13);
+            imageView.setImageResource(drawableId[position]);
+            imageView.setVisibility(TextUtils.isEmpty(title) ? View.INVISIBLE : View.VISIBLE);
+            return convertView;
+        }
+    }
+
+    public void fetchUnReadComment(){
+        ZhaiDouRequest request=new ZhaiDouRequest(mContext,"http://tportal-web.zhaidou.com/comment/getUnReadNum.action?commentUserId=28822",new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                int status = jsonObject.optInt("status");
+                if (status==200){
+                    JSONObject data = jsonObject.optJSONObject("data");
+                    int notReadNum = data.optInt("NotReadNum");
+                    setUnreadMsg(notReadNum);
+                }
+            }
+        },new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        });
+        ((ZDApplication)mContext.getApplicationContext()).mRequestQueue.add(request);
     }
 }

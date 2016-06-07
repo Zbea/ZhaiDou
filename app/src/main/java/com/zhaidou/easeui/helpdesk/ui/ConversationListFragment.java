@@ -12,6 +12,7 @@ import com.easemob.chat.EMConversation;
 import com.easemob.easeui.ui.EaseConversationListFragment;
 import com.easemob.util.NetUtils;
 import com.zhaidou.R;
+import com.zhaidou.activities.CommentActivity;
 import com.zhaidou.base.EaseManage;
 import com.zhaidou.easeui.helpdesk.Constant;
 import com.zhaidou.model.User;
@@ -44,9 +45,13 @@ public class ConversationListFragment extends EaseConversationListFragment imple
                 String username = conversation.getUserName();
                 System.out.println("ConversationListFragment.onItemClick---------->"+username+"----"+EMChatManager.getInstance().getCurrentUser());
                 System.out.println("ConversationListFragment.onItemClick-->"+conversation.toString());
-                if (username.equals(EMChatManager.getInstance().getCurrentUser()))
+                if (username.equals(EMChatManager.getInstance().getCurrentUser())){
                     Toast.makeText(getActivity(), R.string.Cant_chat_with_yourself, 0).show();
-                else {
+                }else if ("comment".equalsIgnoreCase(username)){
+                    System.out.println("username = " + username);
+                    Intent intent=new Intent(getActivity(), CommentActivity.class);
+                    startActivity(intent);
+                }else {
                     // 进入聊天页面
                     Intent intent = new Intent(getActivity(), ChatActivity.class);
                     User user = SharedPreferencesUtil.getUser(getActivity());

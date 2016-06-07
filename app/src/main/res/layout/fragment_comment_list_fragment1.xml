@@ -1,0 +1,78 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:id="@+id/commemtLayout"
+    android:clickable="true"
+    android:orientation="horizontal">
+
+    <com.zhaidou.view.CircleImageView
+        android:id="@+id/avatar"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="8.5dp"
+        android:src="@drawable/icon_header_default" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:textColor="#333333"
+                android:id="@+id/username"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_weight="1"
+                android:text="Scoield"
+                android:textSize="14sp" />
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:textColor="#333333"
+                android:id="@+id/time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:text="昨天"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <com.zhaidou.view.ChildGridView
+            android:id="@+id/gridView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:numColumns="4"
+            android:layout_marginTop="15dp"
+            android:verticalSpacing="10dp"
+            android:horizontalSpacing="10dp"/>
+        <com.zhaidou.view.TypeFaceTextView
+            android:textColor="#333333"
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="哇，很厉害，可以帮我设计吗？"
+            android:textSize="14sp" />
+        <com.zhaidou.view.TypeFaceTextView
+            android:textColor="#333333"
+            android:id="@+id/subject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:background="#f4f4f4"
+            android:textSize="13sp"
+            android:padding="5dp"
+            android:text="来自"
+            android:layout_marginBottom="15dp"/>
+    </LinearLayout>
+</LinearLayout>

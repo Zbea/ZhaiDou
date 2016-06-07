@@ -10,12 +10,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.TextView.BufferType;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatRoom;
 import com.easemob.chat.EMConversation;
-import com.easemob.chat.EMConversation.EMConversationType;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
@@ -112,28 +110,28 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 			holder.list_itease_layout = (RelativeLayout) convertView.findViewById(R.id.list_itease_layout);
 			convertView.setTag(holder);
 		}
-		holder.list_itease_layout.setBackgroundResource(R.drawable.ease_mm_listitem);
-
+//		holder.list_itease_layout.setBackgroundResource(R.drawable.ease_mm_listitem);
+//
 		// 获取与此用户/群组的会话
 		EMConversation conversation = getItem(position);
 		// 获取用户username或者群组groupid
 		String username = conversation.getUserName();
 
-		if (conversation.getType() == EMConversationType.GroupChat) {
+		if (conversation.getType() == EMConversation.EMConversationType.GroupChat) {
 			// 群聊消息，显示群聊头像
 			holder.avatar.setImageResource(R.drawable.ease_group_icon);
 			EMGroup group = EMGroupManager.getInstance().getGroup(username);
 			holder.name.setText(group != null ? group.getGroupName() : username);
-		} else if (conversation.getType() == EMConversationType.ChatRoom) {
+		} else if (conversation.getType() == EMConversation.EMConversationType.ChatRoom) {
 			holder.avatar.setImageResource(R.drawable.ease_group_icon);
 			EMChatRoom room = EMChatManager.getInstance().getChatRoom(username);
 			holder.name.setText(room != null && !TextUtils.isEmpty(room.getName()) ? room.getName() : username);
 		} else {
 			EaseUserUtils.setUserAvatar(getContext(), username, holder.avatar);
-            holder.name.setText("service".equalsIgnoreCase(username)?"客服":"设计师");
+            holder.name.setText("service".equalsIgnoreCase(username)?"客服":"comment".equalsIgnoreCase(username)?"评论":"设计师");
 //			EaseUserUtils.setUserNick(username, holder.name);
 		}
-
+//
 		if (conversation.getUnreadMsgCount() > 0) {
 			// 显示与此用户的消息未读数
 //			holder.unreadLabel.setText(String.valueOf(conversation.getUnreadMsgCount()));
@@ -146,7 +144,7 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 			// 把最后一条消息的内容作为item的message内容
 			EMMessage lastMessage = conversation.getLastMessage();
 			holder.message.setText(EaseSmileUtils.getSmiledText(getContext(),
-					EaseCommonUtils.getMessageDigest(lastMessage, (this.getContext()))), BufferType.SPANNABLE);
+                    EaseCommonUtils.getMessageDigest(lastMessage, (this.getContext()))), TextView.BufferType.SPANNABLE);
 
             holder.time.setText(DateUtils.convertTimeToFormat(lastMessage.getMsgTime()));
 			if (lastMessage.direct == EMMessage.Direct.SEND && lastMessage.status == EMMessage.Status.FAIL) {
@@ -170,7 +168,7 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 		if (avatarRadius != -1) {
 			holder.avatar.setRadius(avatarRadius);
 		}
-		// 设置自定义属性
+//		// 设置自定义属性
 		holder.name.setTextColor(primaryColor);
 		holder.message.setTextColor(secondaryColor);
 		holder.time.setTextColor(timeColor);

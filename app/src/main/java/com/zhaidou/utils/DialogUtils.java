@@ -14,15 +14,18 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -442,6 +445,57 @@ public class DialogUtils {
                         mDialog.dismiss();
                         break;
                 }
+            }
+        });
+    }
+
+
+    public void showListDialog(final AdapterView.OnItemClickListener onItemClickListener) {
+        ShareSDK.initSDK(mContext);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_list_custom, null);
+        ListView mListView = (ListView) view.findViewById(R.id.listView);
+        TextView tv_cancel = (TextView) view.findViewById(R.id.tv_cancel);
+        String[] titlearr = mContext.getResources().getStringArray(R.array.share_title);
+        List<String> titleList = Arrays.asList(titlearr);
+        int[] drawableId = {R.drawable.skyblue_logo_wechat_checked, R.drawable.skyblue_logo_wechatmoments_checked, R.drawable.skyblue_logo_sinaweibo_checked,
+                R.drawable.skyblue_logo_qq_checked, R.drawable.skyblue_logo_qzone_checked, R.drawable.skyblue_logo_sinaweibo_checked};
+        mListView.setAdapter(new ArrayAdapter<String>(mContext,android.R.layout.simple_list_item_1,new String[]{"删除"}){
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                TextView view1 = (TextView) super.getView(position, convertView, parent);
+                view1.setBackgroundColor(mContext.getResources().getColor(R.color.white));
+                view1.setTextColor(mContext.getResources().getColor(R.color.red));
+                view1.setTypeface(((ZDApplication)mContext.getApplicationContext()).getTypeFace());
+                view1.setGravity(Gravity.CENTER);
+                return view1;
+            }
+        });
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mDialog.dismiss();
+                onItemClickListener.onItemClick(parent,view,position,id);
+            }
+        });
+        mDialog = new Dialog(mContext, R.style.custom_dialog);
+        mDialog.setCanceledOnTouchOutside(true);
+        mDialog.setCancelable(true);
+        mDialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mDialog.show();
+        Window win = mDialog.getWindow();
+        win.setWindowAnimations(R.style.pop_anim_style);
+        win.getDecorView().setPadding(0, 0, 0, 0);
+        WindowManager.LayoutParams lp = win.getAttributes();
+        lp.width = WindowManager.LayoutParams.FILL_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.gravity = Gravity.BOTTOM;
+
+        win.setAttributes(lp);
+
+        tv_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
             }
         });
     }
