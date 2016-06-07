@@ -35,10 +35,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
     packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
     }
+
     lintOptions {
         abortOnError false
         disable 'MissingTranslation'
@@ -74,7 +79,6 @@ dependencies {
     compile files('libs/mta-mid-sdk-2.20.jar')
     compile files('libs/mta-stats-sdk-2.0.4.jar')
     compile files('libs/fastjson-1.2.7.jar')
-    compile files('libs/httpmime-4.1.jar')
     compile project(':easeui')
     compile files('libs/MiPush_SDK_Client_2_2_21.jar')
     compile files('libs/ShareSDK-Wechat-Moments-2.7.0.jar')
@@ -87,4 +91,5 @@ dependencies {
     compile files('libs/ShareSDK-Core-2.7.0.jar')
     compile files('libs/MobTools-2016.0301.1053.jar')
     compile files('libs/MobCommons-2016.0301.1053.jar')
+    compile files('libs/httpmime-4.1.jar')
 }

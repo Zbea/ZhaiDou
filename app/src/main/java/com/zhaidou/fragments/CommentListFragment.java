@@ -3,6 +3,7 @@ package com.zhaidou.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,23 +15,39 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
+import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Comment;
 import com.zhaidou.model.User;
+import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CircleImageView;
 import com.zhaidou.view.ListViewForScrollView;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
@@ -46,15 +63,18 @@ public class CommentListFragment extends BaseFragment
 
     private Dialog mDialog;
     private View mView;
-    private TextView commentNumTv;
+    private TextView commentNumTv,nullCommentTv;
     private PullToRefreshScrollView scrollView;
     private ListViewForScrollView listView;
     private FrameLayout frameLayout;
     private  LinearLayout commentLine;
 
-    private int num=5;
+    private int page = 1;
+    private int pageSize;
+    private int pageCount;
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private List<Comment> comments=new ArrayList<Comment>();
+    private CommentAdapter commentAdapter;
 
 
     private Handler mHandler = new Handler()
@@ -65,6 +85,22 @@ public class CommentListFragment extends BaseFragment
             switch (msg.what)
             {
                 case 1:
+                    if (mDialog != null)
+                    {
+                        mDialog.dismiss();
+                    }
+                    commentNumTv.setText("("+pageCount+")");
+                    commentNumTv.setVisibility(pageCount>0?View.VISIBLE:View.GONE);
+                    nullCommentTv.setVisibility(pageCount>0?View.GONE:View.VISIBLE);
+                    commentAdapter.notifyDataSetChanged();
+                    scrollView.onRefreshComplete();
+                    if (comments.size()< pageCount)
+                    {
+                        scrollView.setMode(PullToRefreshBase.Mode.BOTH);
+                    } else
+                    {
+                        scrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+                    }
 
                     break;
             }
@@ -77,12 +113,15 @@ public class CommentListFragment extends BaseFragment
         @Override
         public void onPullDownToRefresh(PullToRefreshBase refreshView)
         {
-
+            page=1;
+            comments.clear();
+            FetchData();
         }
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView)
         {
-
+            page++;
+            FetchData();
         }
     };
 
@@ -96,9 +135,18 @@ public class CommentListFragment extends BaseFragment
             switch (v.getId())
             {
                 case R.id.commentEditLine:
-                    frameLayout.setVisibility(View.VISIBLE);
-                    CommentSendFragment commentSendFragment = CommentSendFragment.newInstance("", "");
-                    getFragmentManager().beginTransaction().add(R.id.frameLayout, commentSendFragment).addToBackStack(null).commitAllowingStateLoss();
+                    if (checkLogin())
+                    {
+                        frameLayout.setVisibility(View.VISIBLE);
+                        CommentSendFragment commentSendFragment = CommentSendFragment.newInstance(mPage, mIndex);
+                        getFragmentManager().beginTransaction().add(R.id.frameLayout, commentSendFragment).addToBackStack(null).commitAllowingStateLoss();
+                    }
+                    else
+                    {
+                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+                        intent.setFlags(1);
+                        getActivity().startActivity(intent);
+                    }
                     break;
 
             }
@@ -156,21 +204,30 @@ public class CommentListFragment extends BaseFragment
      */
     private void initView()
     {
-//        mView.findViewById(R.id.rl_actionbar).getBackground().setAlpha(255);
         commentNumTv=(TextView)mView.findViewById(R.id.commentNumTv);
-        commentNumTv.setText(""+num);
+        nullCommentTv=(TextView)mView.findViewById(R.id.commentNullTv);
 
         scrollView=(PullToRefreshScrollView)mView.findViewById(R.id.scrollView);
         scrollView.setMode(PullToRefreshBase.Mode.BOTH);
         scrollView.setOnRefreshListener(onRefreshListener);
         listView=(ListViewForScrollView)mView.findViewById(R.id.lv_special_list);
+        commentAdapter=new CommentAdapter(mContext,comments);
+        listView.setAdapter(commentAdapter);
 
         commentLine=(LinearLayout)mView.findViewById(R.id.commentEditLine);
         commentLine.setOnClickListener(onClickListener);
 
         frameLayout=(FrameLayout)mView.findViewById(R.id.frameLayout);
 
-        initData();
+        if (NetworkUtils.isNetworkAvailable(mContext))
+        {
+            mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
+            FetchData();
+        } else
+        {
+            Toast.makeText(mContext, "抱歉,网络链接失败", Toast.LENGTH_SHORT).show();
+        }
+//        initData();
     }
 
     private void initData()
@@ -210,6 +267,85 @@ public class CommentListFragment extends BaseFragment
     }
 
 
+    public void FetchData()
+    {
+        String url = ZhaiDou.HomeArticleCommentUrl + mIndex + "&pageNo=" + page + "&pageSize=20";
+        ToolUtils.setLog(url);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,url,
+                new Response.Listener<JSONObject>()
+                {
+                    @Override
+                    public void onResponse(JSONObject response)
+                    {
+                        if (mDialog != null)
+                            mDialog.dismiss();
+                        scrollView.onRefreshComplete();
+                        if (response == null)
+                        {
+                            ToolUtils.setToast(mContext, R.string.loading_fail_txt);
+                            return;
+                        }
+                        ToolUtils.setLog(response.toString());
+                        JSONObject obj;
+                        int status = response.optInt("status");
+                        JSONObject jsonObject1 = response.optJSONObject("data");
+                        if (jsonObject1 != null)
+                        {
+                            pageCount = jsonObject1.optInt("totalCount");
+                            pageSize = jsonObject1.optInt("pageSize");
+                            JSONArray jsonArray=jsonObject1.optJSONArray("items");
+                            if (jsonArray!=null&jsonArray.length()>0)
+                                for (int i = 0; i <jsonArray.length() ; i++)
+                                {
+                                    obj=jsonArray.optJSONObject(i);
+                                    JSONObject jsonComment=obj.optJSONObject("comment");
+
+
+
+                                    JSONObject jsonReComment=obj.optJSONObject("reComment");
+
+
+
+
+                                }
+
+
+
+                            mHandler.sendEmptyMessage(1);
+                        } else
+                        {
+                            ToolUtils.setToast(mContext, R.string.loading_fail_txt);
+                            return;
+                        }
+                    }
+                }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+                mDialog.dismiss();
+                scrollView.onRefreshComplete();
+                if (page >1)
+                {
+                    page--;
+                    ToolUtils.setToast(mContext, R.string.loading_fail_txt);
+                }
+            }
+        }
+        )
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
+        ZDApplication.mRequestQueue.add(request);
+    }
+
+
     public class CommentAdapter extends BaseListAdapter<Comment>
     {
         Context context;
@@ -223,7 +359,7 @@ public class CommentListFragment extends BaseFragment
         @Override
         public View bindView(int position, View convertView, ViewGroup parent)
         {
-//            convertView = mHashMap.get(position);
+            convertView = mHashMap.get(position);
             if (convertView == null)
                 convertView = mInflater.inflate(R.layout.item_comment_message, null);
             CircleImageView header = ViewHolder.get(convertView, R.id.commentHeader);
@@ -289,7 +425,7 @@ public class CommentListFragment extends BaseFragment
                 }
                 commentReply.setText("                         "+comment.commentReply);
             }
-//            mHashMap.put(position, convertView);
+            mHashMap.put(position, convertView);
             return convertView;
         }
 

@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,6 +33,8 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.LoginActivity;
+import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -186,8 +189,8 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         @Override
         public void onClick(View view)
         {
-            GoodsArticleListFragment goodsArticleListFragment = GoodsArticleListFragment.newInstance("", mString);
-            CommentListFragment commentListFragment=CommentListFragment.newInstance("","");
+            GoodsArticleListFragment goodsArticleListFragment = GoodsArticleListFragment.newInstance(title, mString);
+            CommentListFragment commentListFragment=CommentListFragment.newInstance(title,mString);
             switch (view.getId())
             {
                 case R.id.nullReload:
@@ -216,9 +219,19 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                     ((MainActivity)mContext).navigationToFragment(commentListFragment);
                     break;
                 case R.id.commentEditLine:
-                    frameLayout.setVisibility(View.VISIBLE);
-                    CommentSendFragment commentSendFragment = CommentSendFragment.newInstance("", "");
-                    getFragmentManager().beginTransaction().add(R.id.frameLayout, commentSendFragment).addToBackStack(null).commitAllowingStateLoss();
+                    if (checkLogin())
+                    {
+                        frameLayout.setVisibility(View.VISIBLE);
+                        CommentSendFragment commentSendFragment = CommentSendFragment.newInstance(title, mString);
+                        getFragmentManager().beginTransaction().add(R.id.frameLayout, commentSendFragment).addToBackStack(null).commitAllowingStateLoss();
+                    }
+                    else
+                    {
+                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+                        intent.setFlags(1);
+                        getActivity().startActivity(intent);
+                    }
+
                     break;
             }
         }
@@ -333,7 +346,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                enterGoods(position);
+//                enterGoods(position);
             }
         });
 
@@ -346,7 +359,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                enterGoods(position);
+//                enterGoods(position);
             }
         });
 
@@ -461,7 +474,9 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                                     int caseId = obj.optInt("caseId");
                                     String type = obj.optString("goodsType");
                                     String title = obj.optString("goodsTitle");
+                                    String productCode = obj.optString("productCode");
                                     String productSkuCode = obj.optString("productSkuCode");
+                                    String productSku = obj.optString("goodsAttr");
                                     DecimalFormat df = new DecimalFormat("#.00");
                                     double price = Double.parseDouble(df.format(obj.optDouble("tshPrice")));
                                     String imageUrl = obj.optString("mainPic");
@@ -469,12 +484,15 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                                     int num = obj.optInt("quantity");
                                     CartGoodsItem cartGoodsItem=new CartGoodsItem();
                                     cartGoodsItem.id=baseid;
-                                    cartGoodsItem.id=caseId;
+                                    cartGoodsItem.id=caseId;//商品id
+                                    cartGoodsItem.goodsId=productCode;
                                     cartGoodsItem.num=num;
                                     cartGoodsItem.imageUrl=imageUrl;
+                                    cartGoodsItem.size=productSku;
                                     cartGoodsItem.sizeId=productSkuCode;
                                     cartGoodsItem.name=title;
-                                    cartGoodsItem.storeId=type;
+                                    cartGoodsItem.storeId=type;//商品类型
+                                    cartGoodsItem.userId=url;//跳转地址
                                     items.add(cartGoodsItem);
                                 }
                             handler.sendEmptyMessage(1);
@@ -535,7 +553,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         }
 
         @Override
-        public View bindView(int position, View convertView, ViewGroup parent)
+        public View bindView(final int position, View convertView, ViewGroup parent)
         {
             convertView = mHashMap.get(position);
 
@@ -550,7 +568,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
             TextView goodsTypeTv = ViewHolder.get(convertView, R.id.goodsTypeTv);
             TextView goodsBuyTv = ViewHolder.get(convertView, R.id.goodsBuyTv);
 
-            CartGoodsItem goodsItem = getList().get(position);
+            final CartGoodsItem goodsItem = getList().get(position);
             goodsNameTv.setText(goodsItem.name);
             goodsSizeTv.setText(goodsItem.size);
             goodsNumTv.setText("X"+goodsItem.num);
@@ -577,6 +595,30 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 goodsTypeTv.setText("宅豆");
                 goodsTypeTv.setTextColor(getResources().getColor(R.color.green_color));
             }
+
+            goodsBuyTv.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    if (goodsItem.storeId.equals("S"))
+                    {
+                        GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).name, items.get(position).goodsId);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("index", items.get(position).goodsId);
+                        bundle.putString("page", items.get(position).name);
+                        goodsDetailsFragment.setArguments(bundle);
+                        ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
+
+                    } else
+                    {
+                        Intent intent = new Intent();
+                        intent.putExtra("url", items.get(position).userId);
+                        intent.setClass(mContext, WebViewActivity.class);
+                        mContext.startActivity(intent);
+                    }
+                }
+            });
 
 
             mHashMap.put(position, convertView);

@@ -12,6 +12,8 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,13 +29,29 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.view.TypeFaceEditText;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+
 
 /**
  * Created by roy on 15/8/28.
@@ -49,6 +67,8 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
     private Dialog mDialog;
     private final int MENU_CAMERA_SELECTED = 0;
     private final int MENU_PHOTO_SELECTED = 1;
+    private final static int REFRESH_COMMIT_SUCCESS=2;//刷新列表
+    private final static int REFRESH_COMMIT_FAIl=3;//刷新列表
 
     private View mView;
     private FrameLayout menuView;
@@ -60,6 +80,11 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
     private PhotoMenuFragment menuFragment;
     private String filePath = "";
     private List<Bitmap> photos=new ArrayList<Bitmap>();
+    private List<File> files=new ArrayList<File>();
+    private File file;
+    private String commentInfo;
+    private int userId;
+    private String userName;
     private OnCommentListener onCommentListener;
 
 
@@ -68,9 +93,13 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
         @Override
         public void handleMessage(Message msg)
         {
+            mDialog.dismiss();
             switch (msg.what)
             {
-                case 1:
+                case REFRESH_COMMIT_SUCCESS:
+
+                    break;
+                case REFRESH_COMMIT_FAIl:
 
                     break;
             }
@@ -87,9 +116,11 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
             {
                 case R.id.commentCancelTv:
                     ((MainActivity) getActivity()).popToStack(CommentSendFragment.this);
+                    if (editText!=null)
+                        closeInput();
                     break;
                 case R.id.commentOkTv:
-
+                    commitComment();
                     break;
                 case R.id.comment_image_add:
                     menuView.setVisibility(View.VISIBLE);
@@ -151,21 +182,33 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
      */
     private void initView()
     {
-//        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "");
+        userId= (Integer)SharedPreferencesUtil.getData(mContext,"userId",0);
+        userName= (String)SharedPreferencesUtil.getData(mContext,"nickName","");
 
         backTv = (TextView) mView.findViewById(R.id.commentCancelTv);
         backTv.setOnClickListener(onClickListener);
-
 
         sentTv = (TextView) mView.findViewById(R.id.commentOkTv);
         sentTv.setOnClickListener(onClickListener);
 
         editText=(TypeFaceEditText)mView.findViewById(R.id.comment_edit);
-        editText.setFocusable(true);
-        editText.setFocusableInTouchMode(true);
-        editText.requestFocus();
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInputFromInputMethod(editText.getWindowToken(), 0);
+        editText.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after)
+            {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count)
+            {
+                commentInfo=s.toString();
+                listenerCommitBtn();
+            }
+            @Override
+            public void afterTextChanged(Editable s)
+            {
+            }
+        });
 
         imageLine = (LinearLayout) mView.findViewById(R.id.comment_image_line);
 
@@ -177,6 +220,52 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
         menuFragment.setMenuSelectListener(this);
         getChildFragmentManager().beginTransaction().replace(R.id.commentMenuLayout, menuFragment).addToBackStack("").hide(menuFragment).commit();
 
+    }
+
+    private void commitComment()
+    {
+        mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"");
+        new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    String result=postSer();
+                    if (result!=null&&result.length()>0)
+                    {
+                        mHandler.obtainMessage(REFRESH_COMMIT_SUCCESS, result).sendToTarget();
+                    }
+                    else
+                    {
+                        mHandler.sendEmptyMessage(REFRESH_COMMIT_FAIl);
+                    }
+
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * 监听是否可以提交回复
+     */
+    private void listenerCommitBtn()
+    {
+        if (commentInfo.length()>0 | photos.size()>0)
+        {
+            sentTv.setTextColor(getResources().getColor(R.color.green_color));
+            sentTv.setClickable(true);
+        }
+        else
+        {
+            sentTv.setTextColor(getResources().getColor(R.color.text_gary_color));
+            sentTv.setClickable(false);
+        }
     }
 
     @Override
@@ -191,7 +280,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
                     dir.mkdirs();
                 }
                 // 原图
-                File file = new File(dir, new SimpleDateFormat("yyMMddHHmmss").format(new Date()));
+                File file = new File(dir, "cc"+new SimpleDateFormat("yyMMddHHmmss").format(new Date()));
                 filePath = file.getAbsolutePath();// 获取相片的保存路径
                 Uri imageUri = Uri.fromFile(file);
 
@@ -209,7 +298,6 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
         }
         toggleMenu();
     }
-
 
     public void toggleMenu()
     {
@@ -294,6 +382,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
      */
     private void startImageAction(Uri uri, int outputX, int outputY, int requestCode, boolean isCrop)
     {
+        file=new File(ZhaiDou.MyCommentDir,new SimpleDateFormat("yyMMddHHmmss").format(new Date()));
         Intent intent = null;
         if (isCrop)
         {
@@ -310,7 +399,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
         intent.putExtra("outputY", outputY);
         intent.putExtra("return-data", true);
         intent.putExtra("scale", true);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
         intent.putExtra("noFaceDetection", true); // no face detection
         startActivityForResult(intent, requestCode);
@@ -342,6 +431,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
      */
     private void addImageView(final Bitmap photo)
     {
+        files.add(file);
         photos.add(photo);
         final View mView = LayoutInflater.from(mContext).inflate(R.layout.item_image_crop, null);
         ImageView imageIv = ( ImageView ) mView.findViewById(R.id.imageBg_iv);
@@ -352,7 +442,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
             @Override
             public void onClick(View v)
             {
-                clearPhotoImage(photo);
+                clearPhotoImage(photo,file);
                 imageLine.removeView(mView);
             }
         });
@@ -361,16 +451,90 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
         {
             imageAddBtn.setVisibility(View.GONE);
         }
+        listenerCommitBtn();
     }
 
-    private void clearPhotoImage(Bitmap photo)
+    /**
+     * 删除选择的图片以及file文件
+     * @param photo
+     * @param file
+     */
+    private void clearPhotoImage(Bitmap photo,File file)
     {
+        files.remove(file);
         photos.remove(photo);
         if (photos.size()<3)
         {
             imageAddBtn.setVisibility(View.VISIBLE);
         }
+        listenerCommitBtn();
     }
+
+
+
+    private String postSer() throws JSONException
+    {
+        String BOUNDARY = UUID.randomUUID().toString();
+        String result = null;
+        BufferedReader in = null;
+        try
+        {
+            MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE, BOUNDARY, Charset.defaultCharset());
+            multipartEntity.addPart("commentUserId",new StringBody(userId+""));
+            multipartEntity.addPart("commentUserName",new StringBody( userName,Charset.defaultCharset()));
+            multipartEntity.addPart("content",new StringBody(commentInfo,Charset.defaultCharset()));
+            multipartEntity.addPart("articleId",new StringBody(mIndex+""));
+            multipartEntity.addPart("articleTitle",new StringBody(mPage+""));
+            multipartEntity.addPart("commentType",new StringBody("T"));
+            if (true)
+            {
+                multipartEntity.addPart("commentId",new StringBody( ""));
+            }
+            for (int i = 0; i < files.size(); i++)
+            {
+                FileBody fileBody = new FileBody(files.get(i));
+                multipartEntity.addPart("MultipartFile[]", fileBody);
+            }
+
+            HttpPost request = new HttpPost(ZhaiDou.CommentAddUrl);
+            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+            request.addHeader("Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
+            request.addHeader("Accept", "application/json");
+            request.setEntity(multipartEntity);
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpResponse response = httpClient.execute(request);
+            in = new BufferedReader(new InputStreamReader(response.getEntity()
+                    .getContent()));
+            StringBuffer sb = new StringBuffer("");
+            String line = "";
+            String NL = System.getProperty("line.separator");
+            while ((line = in.readLine()) != null)
+            {
+                sb.append(line + NL);
+            }
+            in.close();
+            result = sb.toString();
+            return result;
+
+        } catch (Exception e)
+        {
+
+        } finally
+        {
+            if (in != null)
+            {
+                try
+                {
+                    in.close();
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return result;
+    }
+
 
     public void setOnCommentListener(OnCommentListener onCommentListener)
     {
@@ -392,5 +556,23 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
     {
         super.onPause();
         MobclickAgent.onPageEnd("评论发送");
+    }
+
+    private void closeInput()
+    {
+        if (editText!=null)
+        {
+            InputMethodManager inputMethodManagers=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (inputMethodManagers.isActive())
+                inputMethodManagers.hideSoftInputFromWindow(editText.getWindowToken(),0);
+        }
+    }
+
+    @Override
+    public void onDestroy()
+    {
+
+            closeInput();
+        super.onDestroy();
     }
 }
