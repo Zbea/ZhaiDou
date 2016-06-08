@@ -68,4 +68,21 @@ public class Comment
     public String commentType;
     public String status;
     public String createTime;
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "id=" + id +
+                ", content='" + content + '\'' +
+                ", imgMd5='" + imgMd5 + '\'' +
+                ", commentUserId=" + commentUserId +
+                ", commentUserName='" + commentUserName + '\'' +
+                ", commentUserImg='" + commentUserImg + '\'' +
+                ", articleId=" + articleId +
+                ", articleTitle='" + articleTitle + '\'' +
+                ", commentType='" + commentType + '\'' +
+                ", status='" + status + '\'' +
+                ", createTime='" + createTime + '\'' +
+                '}';
+    }
 }

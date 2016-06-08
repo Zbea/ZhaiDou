@@ -2,7 +2,15 @@ package com.zhaidou.fragments;
 
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
+import android.provider.MediaStore;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -13,6 +21,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.android.volley.Request;
@@ -22,23 +31,28 @@ import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshListView;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Comment;
 import com.zhaidou.model.ZhaiDouRequest;
+import com.zhaidou.utils.Api;
 import com.zhaidou.utils.DateUtils;
 import com.zhaidou.utils.DeviceUtils;
 import com.zhaidou.utils.DialogUtils;
+import com.zhaidou.utils.PhotoUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +75,24 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
     private int mCurrentPage;
     private PullToRefreshListView listView;
     private DialogUtils mDialogUtils;
+    private String filePath = "";
+    private final int MENU_CAMERA_SELECTED = 0;
+    private final int MENU_PHOTO_SELECTED = 1;
+    private File file;
 
+    private final int UPDATE_UI_LIST=0;
+    private Handler mHandler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case UPDATE_UI_LIST:
+                    commentListAdapter.clear();
+                    listView.setMode(PullToRefreshBase.Mode.BOTH);
+                    fetchData(mCurrentPage=1);
+                    break;
+            }
+        }
+    };
     public static ReplayFragment newInstance(String param1, String param2) {
         ReplayFragment fragment = new ReplayFragment();
         Bundle args = new Bundle();
@@ -95,7 +126,92 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
         mDialogUtils = new DialogUtils(mContext);
         mDialogUtils.showLoadingDialog();
         fetchData(mCurrentPage = 1);
+        commentListAdapter.setOnInViewClickListener(R.id.avatar, new BaseListAdapter.onInternalClickListener() {
+            @Override
+            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                System.out.println("parentV = [" + parentV + "], v = [" + v + "], position = [" + position + "], values = [" + values + "]");
+                showCommentDialog(values);
+            }
+        });
+        commentListAdapter.setOnInViewClickListener(R.id.username, new BaseListAdapter.onInternalClickListener() {
+            @Override
+            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                Replay replay = (Replay) values;
+                showCommentDialog(values);
+            }
+        });
         return listView;
+    }
+
+    private void showCommentDialog(Object values) {
+        final Replay replay = (Replay) values;
+        mDialogUtils.showCommentDialog(new DialogUtils.onCommentListener() {
+            @Override
+            public void onComment(Object object) {
+                System.out.println("CommentListFragment1.onComment--->" + object);
+                final Map<String, Object> params = (Map<String, Object>) object;
+                params.put("commentUserId", replay.comment.commentUserId);
+                params.put("commentUserName", replay.comment.commentUserName);
+                params.put("articleId", replay.comment.articleId);
+                params.put("articleTitle", replay.comment.articleTitle);
+                params.put("commentType", replay.comment.commentType);
+                params.put("commentId", replay.comment.id);
+                mDialogUtils.showLoadingDialog();
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Api.comment(params, new Api.SuccessListener() {
+                            @Override
+                            public void onSuccess(Object object) {
+                                mDialogUtils.dismiss();
+                                JSONObject jsonObject = (JSONObject) object;
+                                if (jsonObject != null) {
+                                    int status = jsonObject.optInt("status");
+                                    if (status == 200) {
+                                        mHandler.sendEmptyMessage(UPDATE_UI_LIST);
+//                                        ShowToast("回复成功");
+                                    }
+                                }
+
+                                System.out.println("onSuccess---object = " + object);
+                            }
+                        }, new Api.ErrorListener() {
+                            @Override
+                            public void onError(Object object) {
+                                System.out.println("onError----object = " + object);
+                            }
+                        });
+                    }
+                }).start();
+            }
+        }, new DialogUtils.PickerListener() {
+            @Override
+            public void onCamera() {
+                System.out.println("CommentListFragment1.onCamera");
+                File dir = new File(ZhaiDou.MyCommentDir);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+                // 原图
+                File file = new File(dir, "cc" + new SimpleDateFormat("yyMMddHHmmss").format(new Date()));
+                filePath = file.getAbsolutePath();// 获取相片的保存路径
+                Uri imageUri = Uri.fromFile(file);
+
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                startActivityForResult(intent, MENU_CAMERA_SELECTED);
+            }
+
+            @Override
+            public void onPhoto() {
+                System.out.println("CommentListFragment1.onPhoto");
+                Intent intent1 = new Intent(Intent.ACTION_PICK, null);
+                intent1.setDataAndType(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+                startActivityForResult(intent1, MENU_PHOTO_SELECTED);
+            }
+        });
     }
 
     private void fetchData(int page) {
@@ -207,7 +323,94 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        System.out.println("requestCode = [" + requestCode + "], resultCode = [" + resultCode + "], data = [" + data + "]");
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case MENU_CAMERA_SELECTED:// 拍照修改头像
+                if (resultCode == getActivity().RESULT_OK) {
+                    if (!Environment.getExternalStorageState().equals(
+                            Environment.MEDIA_MOUNTED)) {
+                        Toast.makeText(getActivity(), "SD不可用", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    File file = new File(filePath);
+                    startImageAction(Uri.fromFile(file), 200, 200, 2, true);
+                }
+                break;
+            case MENU_PHOTO_SELECTED:// 本地修改头像
+                Uri uri = null;
+                if (data == null) {
+                    return;
+                }
+                if (resultCode == getActivity().RESULT_OK) {
+                    if (!Environment.getExternalStorageState().equals(
+                            Environment.MEDIA_MOUNTED)) {
+                        Toast.makeText(getActivity(), "SD不可用", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    uri = data.getData();
+                    startImageAction(uri, 200, 200, 2, true);
+                } else {
+                    Toast.makeText(getActivity(), "照片获取失败", Toast.LENGTH_SHORT).show();
+                }
 
+                break;
+            case 2:// 裁剪头像返回
+                if (data == null) {
+                    Toast.makeText(getActivity(), "取消选择", Toast.LENGTH_SHORT).show();
+                    return;
+                } else {
+                    saveCropPhoto(data);
+                }
+                // 初始化文件路径
+                filePath = "";
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void startImageAction(Uri uri, int outputX, int outputY, int requestCode, boolean isCrop) {
+        file = new File(ZhaiDou.MyCommentDir, new SimpleDateFormat("yyMMddHHmmss").format(new Date()));
+        Intent intent = null;
+        if (isCrop) {
+            intent = new Intent("com.android.camera.action.CROP");
+        } else {
+            intent = new Intent(Intent.ACTION_GET_CONTENT, null);
+        }
+        intent.setDataAndType(uri, "image/*");
+        intent.putExtra("crop", "true");
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+        intent.putExtra("outputX", outputX);
+        intent.putExtra("outputY", outputY);
+        intent.putExtra("return-data", true);
+        intent.putExtra("scale", true);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+        intent.putExtra("noFaceDetection", true); // no face detection
+        startActivityForResult(intent, requestCode);
+    }
+    private void saveCropPhoto(Intent data) {
+        Bundle extras = data.getExtras();
+        System.out.println("CommentListFragment1.saveCropPhoto-------->" + extras);
+        System.out.println("filePath = " + filePath);
+        Bitmap photo = null;
+        if (extras != null) {
+            photo = extras.getParcelable("data");
+            if (photo == null) {
+                photo = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() + filePath);
+            }
+            System.out.println("photo.getRowBytes() = " + photo.getRowBytes());
+            String bitmap = PhotoUtil.saveBitmap(photo);
+            System.out.println("bitmap = " + bitmap);
+            mDialogUtils.notifyPhotoAdapter(bitmap);
+//            addImageView(photo);
+        }
+
+    }
     public class Replay{
         public Comment comment;
         public Comment reComment;
