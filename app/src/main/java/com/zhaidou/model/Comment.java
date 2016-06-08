@@ -104,16 +104,12 @@ public class Comment implements Serializable
      * createTime : 2016-05-30 20:21:17
      */
 
-    public int id;
     public String content;
     public String imgMd5;
     public int commentUserId;
     public String commentUserName;
     public String commentUserImg;
-    public int articleId;
-    public String articleTitle;
     public String commentType;
-    public String status;
     public String createTime;
     
 }
