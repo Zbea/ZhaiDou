@@ -286,7 +286,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
             TextView mSubject = ViewHolder.get(convertView, R.id.subject);
             TextView mReplay=ViewHolder.get(convertView,R.id.reply);
             Replay replay = getList().get(position);
-            ToolUtils.setImageCacheUrl(replay.comment.commentUserImg.contains("http") ? replay.comment.commentUserImg : "http://" + replay.comment.commentUserImg, mAvatar);
+            ToolUtils.setImageCacheUrl(replay.reComment.commentUserImg.contains("http") ? replay.comment.commentUserImg : "http://" + replay.comment.commentUserImg, mAvatar);
             mUserName.setText(replay.reComment.commentUserName);
             mSubject.setText(Html.fromHtml("来自<font color=#50c2bf>《" + replay.comment.articleTitle + "》</font>"));
             mGridView.setAdapter(new ImageAdapter(convertView.getContext(), !TextUtils.isEmpty(replay.reComment.imgMd5) ?

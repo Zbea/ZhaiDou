@@ -60,7 +60,7 @@ public class Api {
                 String image = images.get(i);
                 if (!TextUtils.isEmpty(image)){
                     FileBody fileBody = new FileBody(new File(images.get(i)));
-                    multipartEntity.addPart("MultipartFile[]", fileBody);
+                    multipartEntity.addPart("files", fileBody);
                 }
             }
 
