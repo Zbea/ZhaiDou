@@ -60,18 +60,18 @@ public class ToolUtils
         String timeStr;
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date mDate = new Date();
-        long diff = mDate.getTime() - df.parse(date).getTime();
-        if (diff >= 24 * 60 * 60 * 1000)
+        long diff = Math.abs(mDate.getTime() - df.parse(date).getTime())/1000;
+        if (diff >= 24 * 60 * 60)
         {
             return date.split(" ")[0];
         } else
         {
-            if (diff > 24 * 60 * 60)
+            if (diff >  60 * 60)
             {
-                timeStr = diff / 24 * 60 * 60 + "小时前";
-            } else if (diff > 60*60)
+                timeStr = diff / (60 * 60) + "小时前";
+            } else if (diff > 60)
             {
-                timeStr = diff / 60*60 + "分钟前";
+                timeStr = diff / (60) + "分钟前";
             } else
             {// 1秒钟-59秒钟
                 timeStr = "刚刚";
