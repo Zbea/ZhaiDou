@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
+import com.zhaidou.activities.ConversationListActivity;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.easeui.helpdesk.Constant;
 import com.zhaidou.easeui.helpdesk.EaseHelper;
@@ -48,6 +49,17 @@ public class EaseUtils {
         intent2.putExtra(Constant.EXTRA_USER_ID, "designer");
         intent2.putExtra("queueName", "designer");
         intent2.putExtra("user",user);
+        context.startActivity(intent2);
+    }
+
+    public static void startConversationListActivity(Context context){
+        User user = SharedPreferencesUtil.getUser(context);
+        if ((Integer)SharedPreferencesUtil.getData(context, "userId", -1)==-1){
+            Intent intent=new Intent(context,LoginActivity.class);
+            context.startActivity(intent);
+            return;
+        }
+        Intent intent2 = new Intent(context, ConversationListActivity.class);
         context.startActivity(intent2);
     }
 

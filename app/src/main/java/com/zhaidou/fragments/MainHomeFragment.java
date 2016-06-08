@@ -37,6 +37,7 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
 import com.zhaidou.model.SwitchImage;
+import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -370,7 +371,7 @@ public class MainHomeFragment extends BaseFragment implements
         switch (view.getId())
         {
             case R.id.iv_message:
-
+                EaseUtils.startConversationListActivity(mContext);
                 break;
             case R.id.nullReload:
                 mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
