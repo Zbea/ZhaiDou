@@ -86,10 +86,11 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
     private View mView;
     private FrameLayout menuView;
     private TextView backTv, sentTv;
-    private LinearLayout imageLine;
+    private LinearLayout imageLine,cancelLine;
     private ImageView imageAddBtn;
     private TypeFaceEditText editText;
 
+    private InputMethodManager inputMethodManagers;
     private PhotoMenuFragment menuFragment;
     private String filePath = "";
     private List<Bitmap> photos=new ArrayList<Bitmap>();
@@ -99,7 +100,6 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
     private int userId;
     private String userName;
     private OnCommentListener onCommentListener;
-
 
     private Handler mHandler = new Handler()
     {
@@ -227,6 +227,11 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
         {
             switch (v.getId())
             {
+                case R.id.commentCancelLine:
+                    ((MainActivity) getActivity()).popToStack(CommentSendFragment.this);
+                    if (editText!=null)
+                        closeInput();
+                    break;
                 case R.id.commentCancelTv:
                     ((MainActivity) getActivity()).popToStack(CommentSendFragment.this);
                     if (editText!=null)
@@ -269,6 +274,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
             mIndex = getArguments().getString(INDEX);
             mComment = (Comment) getArguments().getSerializable(COMMENT);
         }
+        forceOpenSoftKeyboard(getActivity());
     }
 
     @Override
@@ -288,7 +294,6 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
         {
             parent.removeView(mView);
         }
-
         return mView;
     }
 
@@ -298,13 +303,16 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
     private void initView()
     {
         if (mComment!=null)
-        mCommentId=mComment.id;
-        mCommentContent=mComment.comment;
-        mCommentImages=mComment.images;
-        mCommentUserName=mComment.userName;
-        mCommentUserImage=mComment.userImage;
-        mCommentUserId=mComment.userId;
-        mCommentTime=mComment.time;
+        {
+            mCommentId=mComment.id;
+            mCommentContent=mComment.comment;
+            mCommentImages=mComment.images;
+            mCommentUserName=mComment.userName;
+            mCommentUserImage=mComment.userImage;
+            mCommentUserId=mComment.userId;
+            mCommentTime=mComment.time;
+        }
+        inputMethodManagers=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
         userId= (Integer)SharedPreferencesUtil.getData(mContext,"userId",0);
         userName= (String)SharedPreferencesUtil.getData(mContext,"nickName","");
@@ -338,6 +346,9 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
 
         imageAddBtn = (ImageView) mView.findViewById(R.id.comment_image_add);
         imageAddBtn.setOnClickListener(onClickListener);
+
+        cancelLine = (LinearLayout) mView.findViewById(R.id.commentCancelLine);
+        cancelLine.setOnClickListener(onClickListener);
 
         menuView = (FrameLayout) mView.findViewById(R.id.commentMenuLayout);
         menuFragment = PhotoMenuFragment.newInstance("", "");
@@ -623,7 +634,9 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
             multipartEntity.addPart("articleTitle",new StringBody(mPage+"",Charset.defaultCharset()));
             multipartEntity.addPart("commentType",new StringBody("C"));
             if (mComment!=null)
-            multipartEntity.addPart("commentId",new StringBody(mCommentId+""));
+            {
+                multipartEntity.addPart("commentId",new StringBody(mCommentId+""));
+            }
 
             for (int i = 0; i < files.size(); i++)
             {
@@ -691,11 +704,16 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
         MobclickAgent.onPageEnd("评论发送");
     }
 
+    public  void forceOpenSoftKeyboard(Context context)
+    {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
     private void closeInput()
     {
         if (editText!=null)
         {
-            InputMethodManager inputMethodManagers=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             if (inputMethodManagers.isActive())
                 inputMethodManagers.hideSoftInputFromWindow(editText.getWindowToken(),0);
         }

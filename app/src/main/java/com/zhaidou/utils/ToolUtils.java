@@ -58,7 +58,7 @@ public class ToolUtils
     {
         SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date mDate=new Date();
-        long diff=df.parse(date).getTime()-mDate.getTime();
+        long diff=mDate.getTime()-df.parse(date).getTime();
         if (diff>=24*60*60*1000)
         {
             return date.split(" ")[0];

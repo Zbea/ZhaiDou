@@ -106,7 +106,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     private RequestQueue mRequestQueue;
     private int page = 1;
     private int pageSize;
-    private int pageCount, commentCount;
+    private int pageCount, commentCount=0;
     private int commentNum;
     private String imageUrl, title, introduce, areaType, areaSize, style, budget, totalPrice;
     private List<CartGoodsItem> items = new ArrayList<CartGoodsItem>();
@@ -674,7 +674,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                             mDialog.dismiss();
                         if (response == null)
                         {
-                            ToolUtils.setToast(mContext, R.string.loading_fail_txt);
+                            ToolUtils.setToast(mContext, "抱歉,评论加载失败");
                             return;
                         }
                         ToolUtils.setLog(response.toString());
@@ -781,12 +781,11 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                                         comments.add(comment);
                                     }
                                 }
-                            handler.sendEmptyMessage(2);
                         } else
                         {
-                            ToolUtils.setToast(mContext, R.string.loading_fail_txt);
-                            return;
+                            ToolUtils.setToast(mContext, "抱歉,评论加载失败");
                         }
+                        handler.sendEmptyMessage(2);
                     }
                 }, new Response.ErrorListener()
         {
@@ -797,8 +796,8 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 if (page > 1)
                 {
                     page--;
-                    ToolUtils.setToast(mContext, R.string.loading_fail_txt);
                 }
+                ToolUtils.setToast(mContext, "抱歉,评论加载失败");
             }
         }
         )
