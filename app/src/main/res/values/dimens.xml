@@ -30,7 +30,7 @@
     <dimen name="dialog_width_dimen">250dp</dimen>
     <!--我页面顶部高度-->
     <dimen name="account_height_dimen">200dp</dimen>
-    <dimen name="account_image_width_dimen">75dp</dimen>
+    <dimen name="account_image_width_dimen">56dp</dimen>
     <dimen name="account_text_txt">16sp</dimen>
     <dimen name="account_text_info_txt">14sp</dimen>
 

@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:easeui="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/list_itease_layout"
     android:layout_width="match_parent"
-    android:layout_height="59dp"
-     android:id="@+id/list_itease_layout"
-     android:background="#fff"
-    android:gravity="center_vertical" >
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:gravity="center_vertical"
+    android:visibility="visible">
 
     <RelativeLayout
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:id="@+id/avatar_container"
         android:layout_width="50dp"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true" >
+        android:layout_alignParentLeft="true">
 
-      <com.easemob.easeui.widget.EaseImageView
-          easeui:ease_shape_type="round"
+        <com.easemob.easeui.widget.EaseImageView
             android:id="@+id/avatar"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_centerVertical="true"
-            android:src="@drawable/icon_header_default"/>
+            android:src="@drawable/icon_header_default"
+            easeui:ease_shape_type="round" />
 
         <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/unread_msg_number"
@@ -38,9 +41,9 @@
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:paddingLeft="5dp"
+        android:layout_marginTop="13dp"
         android:layout_toRightOf="@id/avatar_container"
+        android:paddingLeft="10dp"
         android:textColor="@color/list_itease_primary_color"
         android:textSize="13sp" />
 
@@ -67,17 +70,17 @@
 
     <TextView
         android:id="@+id/message"
-        android:layout_toLeftOf="@id/time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@id/time"
         android:layout_toRightOf="@id/msg_state"
-        android:singleLine="true"
         android:ellipsize="end"
-        android:paddingRight="7dp"
-        android:paddingTop="7dp"
         android:paddingBottom="7dp"
         android:paddingLeft="5dp"
+        android:paddingRight="7dp"
+        android:paddingTop="7dp"
+        android:singleLine="true"
         android:textColor="@color/list_itease_secondary_color"
         android:textSize="13sp" />
 

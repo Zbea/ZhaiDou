@@ -85,6 +85,7 @@ public abstract class BaseListAdapter<E> extends BaseAdapter {
 		convertView = bindView(position, convertView, parent);
 		// 绑定内部点击监听
 		addInternalClickListener(convertView, position, list.get(position));
+        addInternalLongClickListener(convertView, position, list.get(position));
 		return convertView;
 	}
 
@@ -93,6 +94,7 @@ public abstract class BaseListAdapter<E> extends BaseAdapter {
 
 	// adapter中的内部点击事件
 	public Map<Integer, onInternalClickListener> canClickItem;
+    public Map<Integer, onInternalLongClickListener> canLongClickItem;
 
 	private void addInternalClickListener(final View itemV, final Integer position,final Object valuesMap) {
 		if (canClickItem != null) {
@@ -111,6 +113,24 @@ public abstract class BaseListAdapter<E> extends BaseAdapter {
 			}
 		}
 	}
+    private void addInternalLongClickListener(final View itemV, final Integer position,final Object valuesMap) {
+        if (canLongClickItem != null) {
+            for (Integer key : canLongClickItem.keySet()) {
+                View inView = itemV.findViewById(key);
+                final onInternalLongClickListener inviewListener = canLongClickItem.get(key);
+                if (inView != null && inviewListener != null) {
+                    inView.setOnLongClickListener(new View.OnLongClickListener() {
+
+                        public boolean onLongClick(View v) {
+                            return inviewListener.OnLongClickListener(itemV, v, position,
+                                    valuesMap);
+
+                        }
+                    });
+                }
+            }
+        }
+    }
 
 	public void setOnInViewClickListener(Integer key,
 			onInternalClickListener onClickListener) {
@@ -118,11 +138,21 @@ public abstract class BaseListAdapter<E> extends BaseAdapter {
 			canClickItem = new HashMap<Integer, onInternalClickListener>();
 		canClickItem.put(key, onClickListener);
 	}
+    public void setOnInViewLongClickListener(Integer key,
+                                         onInternalLongClickListener onClickListener) {
+        if (canLongClickItem == null)
+            canLongClickItem = new HashMap<Integer, onInternalLongClickListener>();
+        canLongClickItem.put(key, onClickListener);
+    }
 
 	public interface onInternalClickListener {
 		public void OnClickListener(View parentV, View v, Integer position,
                                     Object values);
 	}
+    public interface onInternalLongClickListener {
+        public boolean OnLongClickListener(View parentV, View v, Integer position,
+                                    Object values);
+    }
 
 	Toast mToast;
 

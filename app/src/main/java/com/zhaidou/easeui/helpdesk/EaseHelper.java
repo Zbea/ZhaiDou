@@ -122,6 +122,8 @@ public class EaseHelper {
                     easeUser.setAvatar(R.drawable.icon_servicer+"");
                 }else if ("designer".equalsIgnoreCase(username)){
                     easeUser.setAvatar(R.drawable.icon_designer+"");
+                }else if ("comment".equalsIgnoreCase(username)){
+                    easeUser.setAvatar(R.drawable.icon_comment+"");
                 }
                 return easeUser;
             }
