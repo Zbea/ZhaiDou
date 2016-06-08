@@ -214,6 +214,8 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                         comments.clear();
                         comments.addAll(comments1);
                         commentAdapter.notifyDataSetChanged();
+                        nullComment.setVisibility(comments.size() > 0 ? View.GONE : View.VISIBLE);
+                        commentAllLine.setVisibility(comments.size() > 0 ? View.VISIBLE : View.GONE);
                     }
                     if (num!=commentCount)
                     {
@@ -429,6 +431,8 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                                     comments.add(0, comment);
                                 }
                                 commentAdapter.notifyDataSetChanged();
+                                nullComment.setVisibility(comments.size() > 0 ? View.GONE : View.VISIBLE);
+                                commentAllLine.setVisibility(comments.size() > 0 ? View.VISIBLE : View.GONE);
                             }
                         }
                     });
