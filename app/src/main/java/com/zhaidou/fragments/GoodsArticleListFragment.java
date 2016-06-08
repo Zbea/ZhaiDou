@@ -195,7 +195,7 @@ public class GoodsArticleListFragment extends BaseFragment
 
     public void FetchData()
     {
-        String url = ZhaiDou.HomeArticleGoodsDetailsUrl + mString+"&pageNo="+page;
+        String url = ZhaiDou.HomeArticleGoodsDetailsUrl + mString+"&pageNo="+page+"&pageSize=10";
         JsonObjectRequest request = new JsonObjectRequest(url,
                 new Response.Listener<JSONObject>()
                 {

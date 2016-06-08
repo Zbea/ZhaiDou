@@ -83,6 +83,8 @@
                         android:textSize="14sp"
                         android:maxLength="200"
                         android:gravity="top"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
                         android:hint="说两句，评论一下"
                         android:background="@color/transparent"
                         android:textColorHint="@color/text_gary_color"/>
