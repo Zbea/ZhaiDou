@@ -33,6 +33,7 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.SwitchImage;
+import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -403,7 +404,7 @@ public class MainGoodsFragment extends BaseFragment implements
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(mainCategoryFragment);
                 break;
             case R.id.iv_message:
-
+                EaseUtils.startConversationListActivity(mContext);
                 break;
             case R.id.nullReload:
                 mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");

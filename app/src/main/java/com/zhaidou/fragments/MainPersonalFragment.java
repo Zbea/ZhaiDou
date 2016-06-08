@@ -223,6 +223,8 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                             ((BaseActivity)getActivity()).navigationToFragment(couponsFragment);
                             break;
                         case 1:
+                            SoftcoverFragment softcoverFragment = SoftcoverFragment.newInstance("", "");
+                            ((MainActivity) getActivity()).navigationToFragment(softcoverFragment);
                             break;
                         case 2:
                             CollocationFragment collocationFragment = CollocationFragment.newInstance("", "");

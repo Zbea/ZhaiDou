@@ -1,0 +1,50 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/page_bg"
+    android:orientation="vertical"
+    >
+    <include
+        android:id="@+id/headLine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        layout="@layout/head_style_page"></include>
+
+    <com.pulltorefresh.PullToRefreshScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/headLine"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/commentNullTv"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:gravity="center"
+                android:visibility="gone"
+                android:textColor="@color/text_gary_color"
+                android:text="暂无评论信息"/>
+
+            <com.zhaidou.view.ListViewForScrollView
+                android:id="@+id/lv_special_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="@null"
+                android:scrollbars="none"
+                android:listSelector="@android:color/transparent"
+                android:dividerHeight="0dp"
+                />
+
+        </LinearLayout>
+
+    </com.pulltorefresh.PullToRefreshScrollView>
+
+
+</LinearLayout>

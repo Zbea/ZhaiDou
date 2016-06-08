@@ -36,6 +36,10 @@ public class ZhaiDou {
     public static String HomeShopListUrl=HOME_BASE_URL+"index/getSpecialSaleList.action?pageSize=10&pageNo=";
     //首页特卖商品列表
     public static String HomeGoodsListUrl=HOME_BASE_URL+"index/getActivityProductList.action?activityCode=";
+    //软装清单
+    public static String HomeSofeListUrl=HOME_BASE_URL+"decorate/getDesignerLists.action?pageSize=20";
+    //软装清单详情
+    public static String HomeSofeListDetailUrl=HOME_BASE_URL+"decorate/getDesignerListDetail.action?caseId=";
 
     //免费经典方案
     public static String MagicClassicCaseUrl=HOME_BASE_URL+"decorate/getFreeClassicsCases.action?pageNo=1&pageSize=50";
