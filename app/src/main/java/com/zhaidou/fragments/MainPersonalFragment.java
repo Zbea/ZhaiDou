@@ -192,7 +192,6 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             view.findViewById(R.id.rl_addr_manage).setOnClickListener(this);
             view.findViewById(R.id.unreadMsgLayout).setOnClickListener(this);
 
-
             mRequestQueue = Volley.newRequestQueue(getActivity());
             getUserDetail();
             getUserInfo();

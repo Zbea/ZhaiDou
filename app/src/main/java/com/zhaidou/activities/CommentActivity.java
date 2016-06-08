@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.zhaidou.R;
 import com.zhaidou.fragments.CommentListFragment1;
@@ -24,6 +25,8 @@ public class CommentActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comment);
+        TextView mTitle= (TextView) findViewById(R.id.title_tv);
+        mTitle.setText("我的评论");
         final RadioGroup radioGroup= (RadioGroup)findViewById(R.id.radioGroup);
 
 

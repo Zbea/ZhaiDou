@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/header_height_dimen"
         android:layout_alignParentTop="true"
-        android:background="@color/actionbar_background_color">
+        android:background="@color/white">
 
         <LinearLayout
             android:id="@+id/ll_back"
@@ -41,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:textColor="@color/white"
+            android:textColor="@android:color/black"
             android:textSize="18sp" />
         <ImageView
             android:layout_alignParentRight="true"
