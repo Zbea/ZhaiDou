@@ -3,10 +3,13 @@ package com.zhaidou.utils;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,10 +35,13 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.view.CustomEditText;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -84,6 +90,7 @@ public class DialogUtils {
         }
     };
     private Dialog mDialog;
+    private PhotoAdapter photoAdapter;
 
     public DialogUtils(Context mContext) {
         this.mContext = mContext;
@@ -459,13 +466,13 @@ public class DialogUtils {
         List<String> titleList = Arrays.asList(titlearr);
         int[] drawableId = {R.drawable.skyblue_logo_wechat_checked, R.drawable.skyblue_logo_wechatmoments_checked, R.drawable.skyblue_logo_sinaweibo_checked,
                 R.drawable.skyblue_logo_qq_checked, R.drawable.skyblue_logo_qzone_checked, R.drawable.skyblue_logo_sinaweibo_checked};
-        mListView.setAdapter(new ArrayAdapter<String>(mContext,android.R.layout.simple_list_item_1,new String[]{"删除"}){
+        mListView.setAdapter(new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, new String[]{"删除"}) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 TextView view1 = (TextView) super.getView(position, convertView, parent);
                 view1.setBackgroundColor(mContext.getResources().getColor(R.color.white));
                 view1.setTextColor(mContext.getResources().getColor(R.color.red));
-                view1.setTypeface(((ZDApplication)mContext.getApplicationContext()).getTypeFace());
+                view1.setTypeface(((ZDApplication) mContext.getApplicationContext()).getTypeFace());
                 view1.setGravity(Gravity.CENTER);
                 return view1;
             }
@@ -474,7 +481,7 @@ public class DialogUtils {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mDialog.dismiss();
-                onItemClickListener.onItemClick(parent,view,position,id);
+                onItemClickListener.onItemClick(parent, view, position, id);
             }
         });
         mDialog = new Dialog(mContext, R.style.custom_dialog);
@@ -496,6 +503,142 @@ public class DialogUtils {
             @Override
             public void onClick(View v) {
                 mDialog.dismiss();
+            }
+        });
+    }
+
+    public void showCommentDialog(final onCommentListener onCommentListener, final PickerListener pickerListener) {
+        View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_comment_view, null);
+        final Dialog mDialog = new Dialog(mContext, R.style.custom_dialog);
+        mDialog.setCanceledOnTouchOutside(true);
+        mDialog.setCancelable(true);
+        mDialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mDialog.show();
+        Window win = mDialog.getWindow();
+        win.setWindowAnimations(R.style.pop_anim_style);
+        win.getDecorView().setPadding(0, 0, 0, 0);
+        WindowManager.LayoutParams lp = win.getAttributes();
+        lp.width = WindowManager.LayoutParams.FILL_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.gravity = Gravity.BOTTOM;
+
+        win.setAttributes(lp);
+        final TextView commentOkTv = (TextView) view.findViewById(R.id.commentOkTv);
+        final TextView commentContent = (TextView) view.findViewById(R.id.comment_edit);
+        GridView mGridView = (GridView) view.findViewById(R.id.gridView);
+        photoAdapter = new PhotoAdapter(mContext, Arrays.asList(new String[]{""}));
+        mGridView.setAdapter(photoAdapter);
+        ImageView comment_image_add = (ImageView) view.findViewById(R.id.comment_image_add);
+        view.findViewById(R.id.commentCancelTv).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+            }
+        });
+        commentContent.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                commentOkTv.setClickable(!TextUtils.isEmpty(commentContent.getText().toString()));
+                commentOkTv.setTextColor(TextUtils.isEmpty(commentContent.getText().toString()) ?
+                        mContext.getResources().getColor(R.color.green_color) :
+                        mContext.getResources().getColor(R.color.text_gary_color));
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        commentOkTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String str = commentContent.getText().toString();
+                if (TextUtils.isEmpty(str)) {
+                    Toast.makeText(mContext, "评论内容不能为空哦", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Map<String,Object> params=new HashMap<String, Object>();
+                params.put("content",str);
+                params.put("images",photoAdapter.getList());
+                System.out.println("photoAdapter = " + photoAdapter.getList());
+                onCommentListener.onComment(params);
+                mDialog.dismiss();
+            }
+        });
+        comment_image_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPickerDialog(pickerListener);
+            }
+        });
+        photoAdapter.setOnInViewClickListener(R.id.photoLayout, new BaseListAdapter.onInternalClickListener() {
+            @Override
+            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                String image = (String) values;
+                if (TextUtils.isEmpty(image)) {
+                    showPickerDialog(pickerListener);
+                }
+            }
+        });
+        photoAdapter.setOnInViewClickListener(R.id.imageClear_iv, new BaseListAdapter.onInternalClickListener() {
+            @Override
+            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                photoAdapter.remove(position);
+            }
+        });
+    }
+
+    public void notifyPhotoAdapter(String image) {
+        if (photoAdapter != null) {
+            List<String> list = photoAdapter.getList();
+            List<String> images=new ArrayList<String>(list);
+            System.out.println("DialogUtils.notifyPhotoAdapter------>" + images.toString() + "-----" + images.size());
+            images.add(images.size()-1,image);
+            photoAdapter.setList(images);
+        }
+    }
+
+    private void showPickerDialog(final PickerListener pickerListener) {
+        View view = LayoutInflater.from(mContext).inflate(R.layout.fragment_photo_menu, null);
+        TextView tv_camera = (TextView) view.findViewById(R.id.tv_camera);
+        TextView tv_photo = (TextView) view.findViewById(R.id.tv_photo);
+        TextView tv_cancel = (TextView) view.findViewById(R.id.tv_cancel);
+        final Dialog mDialog = new Dialog(mContext, R.style.custom_dialog);
+        mDialog.setCanceledOnTouchOutside(true);
+        mDialog.setCancelable(true);
+        mDialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mDialog.show();
+        Window win = mDialog.getWindow();
+        win.setWindowAnimations(R.style.pop_anim_style);
+        win.getDecorView().setPadding(0, 0, 0, 0);
+        WindowManager.LayoutParams lp = win.getAttributes();
+        lp.width = WindowManager.LayoutParams.FILL_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.gravity = Gravity.BOTTOM;
+        win.setAttributes(lp);
+        tv_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+            }
+        });
+        tv_camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+                pickerListener.onCamera();
+            }
+        });
+        tv_photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+                pickerListener.onPhoto();
             }
         });
     }
@@ -529,6 +672,38 @@ public class DialogUtils {
         }
     }
 
+
+    public class PhotoAdapter extends BaseListAdapter<String> {
+
+        public PhotoAdapter(Context context, List<String> list) {
+            super(context, list);
+        }
+
+        @Override
+        public int getCount() {
+            return list.size() >= 4 ? 4 : super.getCount();
+        }
+
+        @Override
+        public View bindView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = mInflater.inflate(R.layout.item_image_crop, null);
+            }
+            ImageView mImageView = ViewHolder.get(convertView, R.id.imageBg_iv);
+            ImageView mClearView = ViewHolder.get(convertView, R.id.imageClear_iv);
+            String item = getItem(position);
+            System.out.println("bindView--item = " + item);
+            if (!TextUtils.isEmpty(item)) {
+                mImageView.setImageBitmap(BitmapFactory.decodeFile(item));
+                mClearView.setVisibility(View.VISIBLE);
+            } else {
+                mImageView.setImageResource(R.drawable.icon_commet_add);
+                mClearView.setVisibility(View.GONE);
+            }
+            return convertView;
+        }
+    }
+
     /**
      * 验证码倒计时事件处理
      */
@@ -555,6 +730,7 @@ public class DialogUtils {
     public interface PositiveListener {
         public void onPositive();
     }
+
     public interface PositiveListener2 {
         public void onPositive(Object o);
     }
@@ -562,6 +738,7 @@ public class DialogUtils {
     public interface CancelListener {
         public void onCancel();
     }
+
     public interface CancelListener2 {
         public void onCancel(Object o);
     }
@@ -578,4 +755,15 @@ public class DialogUtils {
     public interface ShareListener {
         public void onShare(int position, String platform);
     }
+
+    public interface PickerListener {
+        public void onCamera();
+
+        public void onPhoto();
+    }
+
+    public interface onCommentListener {
+        public void onComment(Object object);
+    }
+
 }

@@ -11,6 +11,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
+import android.os.Environment;
 import android.util.Base64;
 
 import java.io.BufferedOutputStream;
@@ -356,6 +357,30 @@ public class PhotoUtil {
         options.inPurgeable = true;
         options.inSampleSize = inSampleSize;
         return options;
+    }
+
+
+    public static String saveBitmap(Bitmap bm) {
+        //在SD卡上创建目录
+        File tmpDir = new File(Environment.getExternalStorageDirectory() + "/zhaidou/comment/");
+        if (!tmpDir.exists()) {
+            tmpDir.mkdir();
+        }
+
+        File img = new File(tmpDir.getAbsolutePath() + System.currentTimeMillis()+".png");
+        try {
+            FileOutputStream fos = new FileOutputStream(img);
+            bm.compress(Bitmap.CompressFormat.PNG, 85, fos);
+            fos.flush();
+            fos.close();
+            return img.getAbsolutePath();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
 
