@@ -71,7 +71,7 @@ public class MagicGuideFragment extends BaseFragment implements View.OnClickList
 
     private void initView()
     {
-        rootView.findViewById(R.id.back_btn).setOnClickListener(this);
+        rootView.findViewById(R.id.ll_back).setOnClickListener(this);
         webview=(CustomProgressWebview)rootView.findViewById(R.id.webView);
         webview.loadUrl(ZhaiDou.MagicGuideUrl);
         WebSettings webSettings=webview.getSettings();
@@ -109,7 +109,7 @@ public class MagicGuideFragment extends BaseFragment implements View.OnClickList
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.back_btn:
+            case R.id.ll_back:
                 ((MainActivity)getActivity()).popToStack(MagicGuideFragment.this);
                 break;
         }

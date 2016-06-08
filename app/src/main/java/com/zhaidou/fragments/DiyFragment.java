@@ -1,20 +1,17 @@
 package com.zhaidou.fragments;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.zhaidou.MainActivity;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
-import com.zhaidou.activities.DiyActivity;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.view.TypeFaceTextView;
 
 public class DiyFragment extends BaseFragment {
     private static final String ARG_PARAM1 = "param1";
@@ -22,7 +19,7 @@ public class DiyFragment extends BaseFragment {
 
     private String mParam1;
     private String mParam2;
-
+    private TextView titleTv;
     private OnFragmentInteractionListener mListener;
 
     public static DiyFragment newInstance(String param1, String param2) {
@@ -50,14 +47,8 @@ public class DiyFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_diy, container, false);
-        view.findViewById(R.id.back_btn).setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                ((MainActivity)getActivity()).popToStack(DiyFragment.this);
-            }
-        });
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_activity_diy);
         return view;
     }
 
@@ -86,6 +77,15 @@ public class DiyFragment extends BaseFragment {
 
     public interface OnFragmentInteractionListener {
         public void onFragmentInteraction(Uri uri);
+    }
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_activity_diy)); //统计页面
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_activity_diy));
     }
 
 }

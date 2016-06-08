@@ -59,9 +59,9 @@ public class ArticleWebViewActivity extends BaseActivity implements View.OnClick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_webview_share);
         mContext=this;
-        tv_back = (TextView) findViewById(R.id.tv_back);
-        iv_share = (ImageView) findViewById(R.id.iv_share);
-        mTitleView = (TextView) findViewById(R.id.tv_title);
+        tv_back = (TextView) findViewById(R.id.ll_back);
+        iv_share = (ImageView) findViewById(R.id.share_iv);
+        mTitleView = (TextView) findViewById(R.id.title_tv);
 
         if (!NetworkUtils.isNetworkAvailable(this)) {
             Toast.makeText(this, "抱歉，请检查网络", Toast.LENGTH_SHORT).show();
@@ -164,14 +164,14 @@ public class ArticleWebViewActivity extends BaseActivity implements View.OnClick
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.tv_back:
+            case R.id.ll_back:
                 if (webView.canGoBack()) {
                     webView.goBack();
                     return;
                 }
                 finish();
                 break;
-            case R.id.iv_share:
+            case R.id.share_iv:
                 doShare();
                 break;
         }

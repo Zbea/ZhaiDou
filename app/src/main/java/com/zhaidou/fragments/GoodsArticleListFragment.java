@@ -33,6 +33,7 @@ import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ListViewForScrollView;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -56,6 +57,7 @@ public class GoodsArticleListFragment extends BaseFragment
     private String mParam1;
     private String mString;
 
+    private TextView titleTv;
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private PullToRefreshScrollView scrollView;
     private ListViewForScrollView listView;
@@ -158,7 +160,8 @@ public class GoodsArticleListFragment extends BaseFragment
 
     private void initView()
     {
-//        view.findViewById(R.id.common_actionbar).getBackground().setAlpha(255);
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText("软装清单");
 
         subtotalTv=(TextView) view.findViewById(R.id.detailsSubtotalTv);
         scrollView = (PullToRefreshScrollView) view.findViewById(R.id.scrollView);

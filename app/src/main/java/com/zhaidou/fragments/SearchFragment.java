@@ -95,7 +95,6 @@ public class SearchFragment extends BaseFragment
 
     private GoodsSingleListFragment mSpecialGoodsFragment;
     private GoodsSingleListFragment mtaobaoGoodsFragment;
-    private SearchArticleListFragment mStrategyFragment;
 
     private boolean isHidenKeyBoard = false;
 
@@ -229,9 +228,6 @@ public class SearchFragment extends BaseFragment
             } else if (page == 1)
             {
                 mtaobaoGoodsFragment.FetchData(search_Str, index, 1);
-            } else
-            {
-                mStrategyFragment.FetchData(search_Str, index, 1);
             }
         }
     };

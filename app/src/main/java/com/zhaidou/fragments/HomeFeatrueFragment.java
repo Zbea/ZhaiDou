@@ -47,6 +47,7 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.ShopTodayItem;
+import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -249,12 +250,7 @@ public class HomeFeatrueFragment extends BaseFragment {
                     initData();
                     break;
                 case R.id.rl_qq_contact:
-//                    EaseUtils.startDesignerActivity(mContext);
-//                    CommentFragment commentFragment = CommentFragment.newInstance("","");
-//                    ((MainActivity) getActivity()).navigationToFragment(commentFragment);
-                    frameLayout.setVisibility(View.VISIBLE);
-                    commentSendFragment = CommentSendFragment.newInstance("", "");
-                    getFragmentManager().beginTransaction().add(R.id.frameLayout, commentSendFragment).addToBackStack(null).commitAllowingStateLoss();
+                    EaseUtils.startDesignerActivity(mContext);
                     break;
                 case R.id.ll_back:
                     ((MainActivity) getActivity()).popToStack(HomeFeatrueFragment.this);

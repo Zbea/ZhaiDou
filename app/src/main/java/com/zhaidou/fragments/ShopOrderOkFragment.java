@@ -301,10 +301,6 @@ public class ShopOrderOkFragment extends BaseFragment
         {
             switch (view.getId())
             {
-                case R.id.back_btn:
-                    ((MainActivity) getActivity()).popToStack(ShopOrderOkFragment.this);
-                    break;
-
                 case R.id.jsOkBtn:
                     //当需要验证手机号码时候，需要先判断
                     if (isVerify)
@@ -517,8 +513,6 @@ public class ShopOrderOkFragment extends BaseFragment
         reloadNetBtn.setOnClickListener(onClickListener);
 
         mRequestQueue = Volley.newRequestQueue(getActivity());
-        backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
-        backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(R.string.shop_order_ok_text);
 

@@ -17,11 +17,13 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.Store;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomProgressWebview;
+import com.zhaidou.view.TypeFaceTextView;
 
 public class OrderLogisticsMsgFragment extends BaseFragment {
     private static final String ARG_STORE= "store";
 
     private Context context;
+    private TextView titleTv;
     private CustomProgressWebview mWebView;
     private TextView logisticsNum, orderNum,deliveryName;
     private ImageView mDeliveryLogo;
@@ -51,6 +53,9 @@ public class OrderLogisticsMsgFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_logistics, container, false);
         context = getActivity();
+
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_logistics);
 
         orderNum = (TextView) view.findViewById(R.id.tv_order_number);
         logisticsNum = (TextView) view.findViewById(R.id.tv_order_amount);

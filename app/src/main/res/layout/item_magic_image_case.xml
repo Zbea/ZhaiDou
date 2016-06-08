@@ -9,28 +9,25 @@
         android:id="@+id/spaceView"
         android:layout_width="match_parent"
         android:layout_height="7dp"
-        ></View>
+        android:background="@color/page_bg"></View>
 
-    <RelativeLayout
-        android:id="@+id/bottomRl"
-        android:layout_width="match_parent"
-        android:layout_height="160dp">
 
-        <com.zhaidou.view.RoundImageView
+        <ImageView
             android:id="@+id/imageIv"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="160dp"
             android:scaleType="fitXY"
             android:src="@drawable/icon_loading_special"/>
 
         <LinearLayout
             android:id="@+id/floatLine"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
             android:gravity="center"
             android:padding="10dp"
             android:orientation="vertical"
-            android:background="@drawable/main_magic_image_shape">
+            >
 
             <TextView
                 android:id="@+id/titleTv"
@@ -38,16 +35,10 @@
                 android:layout_height="wrap_content"
                 android:singleLine="true"
                 android:ellipsize="end"
-                android:textColor="@color/white"
+                android:textColor="@color/text_normal_color"
                 android:textSize="16sp"
                 android:text="够我是"/>
 
-            <View
-                android:layout_width="50dp"
-                android:layout_height="1dp"
-                android:layout_margin="10dp"
-                android:background="@color/white"
-                ></View>
 
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/englishTv"
@@ -55,14 +46,13 @@
                 android:layout_height="wrap_content"
                 android:singleLine="true"
                 android:ellipsize="end"
-                android:textColor="@color/white"
-                android:textSize="12sp"
+                android:textColor="@color/text_gary_color"
+                android:layout_marginTop="10dp"
+                android:textSize="14sp"
                 android:text="够我是"/>
 
 
             </LinearLayout>
-
-        </RelativeLayout>
 
 
 

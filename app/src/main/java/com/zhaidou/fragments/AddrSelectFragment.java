@@ -32,6 +32,7 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Address;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -54,6 +55,7 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
 
     private AddressListener addressListener;
 
+    private TextView titleTv;
     private Dialog mDialog;
     private RequestQueue mRequestQueue;
     private ListView mListview;
@@ -141,6 +143,8 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
 
     private void initView(View view)
     {
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_address_select);
 
         mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
 
@@ -501,10 +505,10 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
 
     public void onResume() {
         super.onResume();
-        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_address_manage));
+        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_address_select));
     }
     public void onPause() {
         super.onPause();
-        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_address_manage));
+        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_address_select));
     }
 }

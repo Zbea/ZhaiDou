@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -37,6 +38,7 @@ import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -56,7 +58,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
     private List<Product> products = new ArrayList<Product>();
 
     private PullToRefreshGridView mGridView;
-
+    private TextView titleTv;
 
     private RequestQueue mRequestQueue;
     private ProductAdapter productAdapter;
@@ -113,6 +115,9 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_collect, container, false);
+
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_collect);
         mGridView = (PullToRefreshGridView) view.findViewById(R.id.gv_collect);
         mGridView.setMode(PullToRefreshBase.Mode.BOTH);
         mGridView.setOnRefreshListener(this);

@@ -101,7 +101,7 @@ public class AccountRegisterSetPwdActivity extends FragmentActivity {
                     }
                     doRegister(phone,code,pwd);
                     break;
-                case R.id.back_btn:
+                case R.id.ll_back:
                     finish();
                     break;
                 case R.id.bt_getCode:
@@ -135,7 +135,7 @@ public class AccountRegisterSetPwdActivity extends FragmentActivity {
 
         mRequestQueue = Volley.newRequestQueue(this);
         mRegister.setOnClickListener(onClickListener);
-        findViewById(R.id.back_btn).setOnClickListener(onClickListener);
+        findViewById(R.id.ll_back).setOnClickListener(onClickListener);
     }
 
     /**

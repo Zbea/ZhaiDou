@@ -35,6 +35,7 @@ import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONObject;
 
@@ -65,6 +66,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     private String serverInfo;
     private String serverUrl;
     private int serverCode;
+    private TextView titleTv;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -126,6 +128,9 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         mDialogUtil = new DialogUtils(mContext);
         LinearLayout versionBtn = (LinearLayout) view.findViewById(R.id.ll_version);
         versionBtn.setOnClickListener(this);
+
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_setting);
 
         tv_size = (TextView) view.findViewById(R.id.tv_size);
 

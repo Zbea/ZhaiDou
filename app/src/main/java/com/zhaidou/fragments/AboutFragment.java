@@ -1,7 +1,6 @@
 package com.zhaidou.fragments;
 
 
-import android.app.Dialog;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -9,25 +8,23 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.view.TypeFaceTextView;
 
 
-public class AboutFragment extends BaseFragment implements View.OnClickListener{
+public class AboutFragment extends BaseFragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     private String mParam1;
     private String mParam2;
 
+    private TextView titleTv;
     private TextView tv_version;
-    private RelativeLayout rl_back;
-    private Dialog mDialog;
 
     public static AboutFragment newInstance(String param1, String param2) {
         AboutFragment fragment = new AboutFragment();
@@ -54,9 +51,9 @@ public class AboutFragment extends BaseFragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.fragment_about, container, false);
         tv_version=(TextView)view.findViewById(R.id.tv_version);
-        rl_back=(RelativeLayout)view.findViewById(R.id.rl_back);
-        tv_version.setOnClickListener(this);
-        rl_back.setOnClickListener(this);
+
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_about);
 
         String version=getVersion();
         if (!TextUtils.isEmpty(version)){
@@ -66,14 +63,6 @@ public class AboutFragment extends BaseFragment implements View.OnClickListener{
         return view;
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.rl_back:
-                ((MainActivity)getActivity()).popToStack(AboutFragment.this);
-                break;
-        }
-    }
 
     /**
      * 获取版本号

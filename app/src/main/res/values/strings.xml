@@ -98,6 +98,7 @@
     <!-- 标题 -->
     <string name="title_about">关于</string>
     <string name="title_address_manage">地址管理</string>
+    <string name="title_address_select">地址选择</string>
     <string name="title_address_create">新建地址</string>
     <string name="title_all_category">分类</string>
     <string name="title_collect">我的收藏</string>
@@ -122,6 +123,8 @@
     <string name="title_change_psd">修改密码</string>
     <string name="title_profile">个人资料</string>
     <string name="title_setting">设置</string>
+
+    <string name="title_magic_class_case">改造案例</string>
 
     <array name="specail_product_sort">
         <item>默认排序</item>

@@ -36,6 +36,7 @@ import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -68,6 +69,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
 
     private Dialog mDialog;
     private RequestQueue mRequestQueue;
+    private TextView titleTv;
     private ListView mListview;
     private LinearLayout couponNullView;
 
@@ -239,6 +241,8 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
 
     private void initView(View view)
     {
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText("可用优惠卷");
 
         loadingView = (LinearLayout) view.findViewById(R.id.loadingView);
         nullNetView = (LinearLayout) view.findViewById(R.id.nullNetline);

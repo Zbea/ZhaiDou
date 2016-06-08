@@ -431,7 +431,7 @@ public class GoodsDetailsFragment extends BaseFragment
         {
             switch (view.getId())
             {
-                case R.id.back_btn:
+                case R.id.ll_back:
                     ((MainActivity) getActivity()).popToStack(GoodsDetailsFragment.this);
                     break;
                 case R.id.goodsMyCartBtn:
@@ -566,7 +566,7 @@ public class GoodsDetailsFragment extends BaseFragment
 
         initBroadcastReceiver();
 
-        backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
+        backBtn = (TypeFaceTextView) mView.findViewById(R.id.ll_back);
         backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(mContext.getResources().getString(R.string.title_goods_detail));

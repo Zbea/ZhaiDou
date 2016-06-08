@@ -9,7 +9,7 @@
         android:id="@+id/home_actionbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/header_height_dimen"
-        android:background="@color/actionbar_background_color">
+        android:background="@color/white">
 
         <ImageView
             android:id="@+id/iv_category"
@@ -24,11 +24,11 @@
             android:id="@+id/iv_searchs"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="11.5dp"
-            android:layout_marginBottom="11.5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:layout_marginLeft="50dp"
             android:layout_marginRight="50dp"
-            android:gravity="center"
+            android:gravity="center_vertical"
             android:clickable="true"
             android:background="@drawable/search_titlebar_bg">
 
@@ -37,21 +37,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:text="搜索"
-                android:textColor="#D0D0D0"
+                android:text="旅行收纳"
+                android:textColor="#aa666666"
+                android:layout_marginLeft="10dp"
                 android:drawableLeft="@drawable/icon_search_gray"
                 android:drawablePadding="10dp"
-                android:textSize="14sp" />
+                android:textSize="13sp" />
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="15dp"
-                android:scaleType="fitXY"
-                android:visibility="gone"
-                android:src="@drawable/icon_search_gray" />
+
         </LinearLayout>
 
         <ImageView
@@ -95,9 +88,7 @@
                     android:layout_height="wrap_content"
                     android:background="@color/white"
                     android:orientation="horizontal"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="10dp"
-                    android:visibility="gone">
+                    >
                     </LinearLayout>
 
             <LinearLayout

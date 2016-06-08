@@ -7,8 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Html;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -35,7 +35,6 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Comment;
-import com.zhaidou.model.User;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CircleImageView;
@@ -44,6 +43,7 @@ import com.zhaidou.view.ListViewForScrollView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -138,7 +138,21 @@ public class CommentListFragment extends BaseFragment
                     if (checkLogin())
                     {
                         frameLayout.setVisibility(View.VISIBLE);
-                        CommentSendFragment commentSendFragment = CommentSendFragment.newInstance(mPage, mIndex);
+                        CommentSendFragment commentSendFragment = CommentSendFragment.newInstance(mPage, mIndex,null);
+                        commentSendFragment.setOnCommentListener(new CommentSendFragment.OnCommentListener()
+                        {
+                            @Override
+                            public void onCommentResult(Comment comment)
+                            {
+                                if (comment!=null)
+                                {
+                                    pageCount++;
+                                    commentNumTv.setText("("+pageCount+")");
+                                    comments.add(0,comment);
+                                    commentAdapter.notifyDataSetChanged();
+                                }
+                            }
+                        });
                         getFragmentManager().beginTransaction().add(R.id.frameLayout, commentSendFragment).addToBackStack(null).commitAllowingStateLoss();
                     }
                     else
@@ -208,12 +222,10 @@ public class CommentListFragment extends BaseFragment
         nullCommentTv=(TextView)mView.findViewById(R.id.commentNullTv);
 
         scrollView=(PullToRefreshScrollView)mView.findViewById(R.id.scrollView);
-        scrollView.setMode(PullToRefreshBase.Mode.BOTH);
         scrollView.setOnRefreshListener(onRefreshListener);
         listView=(ListViewForScrollView)mView.findViewById(R.id.lv_special_list);
         commentAdapter=new CommentAdapter(mContext,comments);
         listView.setAdapter(commentAdapter);
-
         commentLine=(LinearLayout)mView.findViewById(R.id.commentEditLine);
         commentLine.setOnClickListener(onClickListener);
 
@@ -227,43 +239,38 @@ public class CommentListFragment extends BaseFragment
         {
             Toast.makeText(mContext, "抱歉,网络链接失败", Toast.LENGTH_SHORT).show();
         }
-//        initData();
     }
 
-    private void initData()
+
+    private void sendComment(int position)
     {
-        List<String> images=new ArrayList<String>();
-        images.add("http://imgs.zhaidou.com/goods/20/151305001620/gd2_20160001.jpg");
-        images.add("http://imgs.zhaidou.com/goods/35/131205001435/131205001435001/sk1_20160001.jpg");
-        images.add("http://imgs.zhaidou.com/goods/96/141105000796/141105000796002/sk1_20160001.jpg");
-        images.add("http://imgs.zhaidou.com/goods/36/151205000736/151205000736003/sk1_20160002.jpg");
-
-        Comment comment=new Comment();
-        comment.time="11：30";
-        comment.comment="哇，好厉害！这是我家的风格......大家喜欢吗？喜欢我可以帮忙设计";
-        comment.images=images;
-        comment.commentReply="哇，好厉害！喜欢我也想要一套，可以帮我设计吗？";
-        comment.imagesReply=images;
-        User user=new User();
-        user.setNickName("周杰伦");
-        user.setAvatar("http://imgs.zhaidou.com/goods/36/151205000736/151205000736003/sk1_20160002.jpg");
-        comment.user=user;
-        User userReply=new User();
-        userReply.setNickName("周杰伦");
-        comment.userReply=userReply;
-
-        comments.add(comment);
-
-        Comment comment1=new Comment();
-        comment1.time="昨天";
-        comment1.comment="哇，好厉害！这是我家的风格......大家喜欢吗？喜欢我可以帮忙设计";
-        comment1.images=images;
-        comment1.user=user;
-        comments.add(comment1);
-
-        CommentAdapter commentAdapter=new CommentAdapter(mContext,comments);
-        listView.setAdapter(commentAdapter);
-
+//        ToolUtils.setLog("comments:"+comments.get(position).userName);
+//        ToolUtils.setLog("comments:"+comments.get(position).id);
+        if (checkLogin())
+        {
+            frameLayout.setVisibility(View.VISIBLE);
+            CommentSendFragment commentSendFragment = CommentSendFragment.newInstance(mPage, mIndex, comments.get(position));
+            commentSendFragment.setOnCommentListener(new CommentSendFragment.OnCommentListener()
+            {
+                @Override
+                public void onCommentResult(Comment comment)
+                {
+                    if (comment != null)
+                    {
+                        pageCount++;
+                        commentNumTv.setText("(" + pageCount + ")");
+                        comments.add(0, comment);
+                        commentAdapter.notifyDataSetChanged();
+                    }
+                }
+            });
+            getFragmentManager().beginTransaction().add(R.id.frameLayout, commentSendFragment).addToBackStack(null).commitAllowingStateLoss();
+        } else
+        {
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            intent.setFlags(1);
+            getActivity().startActivity(intent);
+        }
     }
 
 
@@ -299,18 +306,92 @@ public class CommentListFragment extends BaseFragment
                                 {
                                     obj=jsonArray.optJSONObject(i);
                                     JSONObject jsonComment=obj.optJSONObject("comment");
+                                    Comment comment=new Comment();
+                                    if (jsonComment!=null)
+                                    {
+                                        int commentId=jsonComment.optInt("id");
+                                        String commentTitle=jsonComment.optString("content");
+                                        String commentUrl=jsonComment.optString("imgMd5");
+                                        List<String> commentImgs=new ArrayList<String>();
+                                        if (commentUrl.length()>0)
+                                        {
+                                            String[] commentUrls=commentUrl.split(",");
+                                            for (int j = 0; j <commentUrls.length; j++)
+                                            {
+                                                commentImgs.add(commentUrls[j]);
+                                            }
+                                        }
+                                        int commentUserId=jsonComment.optInt("commentUserId");
+                                        String commentUserName=jsonComment.optString("commentUserName");
+                                        String commentUserImg="http://"+jsonComment.optString("commentUserImg");
+                                        String articleId=jsonComment.optString("articleId");
+                                        String articleTitle=jsonComment.optString("articleTitle");
+                                        String commentType=jsonComment.optString("commentType");
+                                        String commentStatus=jsonComment.optString("status");
+                                        String commentCreateTime= "";
+                                        try
+                                        {
+                                            commentCreateTime = ToolUtils.getDateDiff(jsonComment.optString("createTime"));
+                                        } catch (ParseException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
 
-
+                                        comment.articleId=articleId;
+                                        comment.articleTitle=articleTitle;
+                                        comment.id=commentId;
+                                        comment.time=commentCreateTime;
+                                        comment.comment=commentTitle;
+                                        comment.images=commentImgs;
+                                        comment.type=commentType;
+                                        comment.status=commentStatus;
+                                        comment.userName=commentUserName;
+                                        comment.userImage=commentUserImg;
+                                        comment.userId=commentUserId;
+                                    }
 
                                     JSONObject jsonReComment=obj.optJSONObject("reComment");
-
-
-
-
+                                    if(jsonReComment!=null)
+                                    {
+                                        int reCommentId=jsonReComment.optInt("id");
+                                        String reCommentTitle=jsonReComment.optString("content");
+                                        String reCommentUrl=jsonReComment.optString("imgMd5");
+                                        List<String> reCommentImgs=new ArrayList<String>();
+                                        if (reCommentUrl.length()>0)
+                                        {
+                                            String[] reCommentUrls=reCommentUrl.split(",");
+                                            for (int j = 0; j <reCommentUrls.length; j++)
+                                            {
+                                                reCommentImgs.add(reCommentUrls[j]);
+                                            }
+                                        }
+                                        int reCommentUserId=jsonReComment.optInt("commentUserId");
+                                        String reCommentUserName=jsonReComment.optString("commentUserName");
+                                        String reCommentUserImg="http://"+jsonReComment.optString("commentUserImg");
+                                        String reCommentArticleId=jsonReComment.optString("articleId");
+                                        String reCommentArticleTitle=jsonReComment.optString("articleTitle");
+                                        String reCommentType=jsonReComment.optString("commentType");
+                                        String reCommentStatus=jsonReComment.optString("status");
+                                        String reCommentCreateTime= "";
+                                        try
+                                        {
+                                            reCommentCreateTime = ToolUtils.getDateDiff(jsonComment.optString("createTime"));
+                                        } catch (ParseException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                        comment.idReply=reCommentId;
+                                        comment.timeReply=reCommentCreateTime;
+                                        comment.commentReply=reCommentTitle;
+                                        comment.imagesReply=reCommentImgs;
+                                        comment.typeReply=reCommentType;
+                                        comment.statusReply=reCommentStatus;
+                                        comment.userNameReply=reCommentUserName;
+                                        comment.userImageReply=reCommentUserImg;
+                                        comment.userIdReply=reCommentUserId;
+                                    }
+                                    comments.add(comment);
                                 }
-
-
-
                             mHandler.sendEmptyMessage(1);
                         } else
                         {
@@ -357,11 +438,19 @@ public class CommentListFragment extends BaseFragment
         }
 
         @Override
-        public View bindView(int position, View convertView, ViewGroup parent)
+        public View bindView(final int position, View convertView, ViewGroup parent)
         {
-            convertView = mHashMap.get(position);
+//            convertView = mHashMap.get(position);
             if (convertView == null)
                 convertView = mInflater.inflate(R.layout.item_comment_message, null);
+            convertView.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    sendComment(position);
+                }
+            });
             CircleImageView header = ViewHolder.get(convertView, R.id.commentHeader);
             TextView name = ViewHolder.get(convertView, R.id.commentNameTv);
             TextView time = ViewHolder.get(convertView, R.id.commentTimeTv);
@@ -377,16 +466,15 @@ public class CommentListFragment extends BaseFragment
             TextView commentReply= ViewHolder.get(convertView, R.id.commentInfoReplyTv);
 
             Comment comment=getList().get(position);
-            ToolUtils.setImageCacheUrl(comment.user.getAvatar(), header, R.drawable.icon_loading_defalut);
-            name.setText(comment.user.getNickName());
-            time.setText(comment.time);
-
             commentImageLine.removeAllViews();
             commentImageFormerLine.removeAllViews();
             commentImageReplyLine.removeAllViews();
 
             if (comment.commentReply==null&comment.imagesReply.size()==0)
             {
+                ToolUtils.setImageCacheUrl(comment.userImage, header, R.drawable.icon_loading_defalut);
+                name.setText(comment.userName);
+                time.setText(comment.time);
                 commentLine.setVisibility(View.VISIBLE);
                 commentReplyLine.setVisibility(View.GONE);
 
@@ -396,36 +484,43 @@ public class CommentListFragment extends BaseFragment
                 }
                 else
                 {
+                    commentImageLine.setVisibility(View.VISIBLE);
                     addImageView(commentImageLine,comment.images);
                 }
                 commentInfo.setText(comment.comment);
             }
             else
             {
+                ToolUtils.setImageCacheUrl(comment.userImage, header, R.drawable.icon_loading_defalut);
+                name.setText(comment.userName);
+                time.setText(comment.time);
                 commentLine.setVisibility(View.GONE);
                 commentReplyLine.setVisibility(View.VISIBLE);
 
-                if (comment.images==null|comment.images.size()==0)
+                if (comment.imagesReply==null|comment.imagesReply.size()==0)
                 {
                     commentImageFormerLine.setVisibility(View.GONE);
                 }
                 else
                 {
-                    addImageView(commentImageFormerLine,comment.images);
+                    commentImageFormerLine.setVisibility(View.VISIBLE);
+                    addImageView(commentImageFormerLine,comment.imagesReply);
                 }
-                commentInfoFormer.setText(comment.comment);
+                commentInfoFormer.setText(comment.commentReply);
 
-                if (comment.imagesReply==null|comment.imagesReply.size()==0)
+                if (comment.images==null|comment.images.size()==0)
                 {
                     commentImageReplyLine.setVisibility(View.GONE);
                 }
                 else
                 {
-                    addImageView(commentImageReplyLine,comment.imagesReply);
+                    commentImageReplyLine.setVisibility(View.VISIBLE);
+                    addImageView(commentImageReplyLine,comment.images);
                 }
-                commentReply.setText("                         "+comment.commentReply);
+
+                commentReply.setText(Html.fromHtml("<font size=\"14\" color=\"#3fcccb\">回复@"+comment.userNameReply+"</font><font size=\"14\" color=\"#666666\"> "+comment.comment+"</font>"));
             }
-            mHashMap.put(position, convertView);
+//            mHashMap.put(position, convertView);
             return convertView;
         }
 
@@ -451,7 +546,7 @@ public class CommentListFragment extends BaseFragment
                     public void onClick(View v)
                     {
                         CommentImageFragment commentImageFragment=CommentImageFragment.newInstance(im,position);
-                        ((MainActivity)mContext).navigationToFragmentWithAnim(commentImageFragment);
+                        ((MainActivity)mContext).navigationToFragment(commentImageFragment);
 
                     }
                 });
@@ -463,10 +558,18 @@ public class CommentListFragment extends BaseFragment
         }
     }
 
-    @Override
-    public boolean onTouch(View view, MotionEvent motionEvent) {
-        return true;
+    private OnCommentListener onCommentListener;
+
+    public void setOnCommentListener(OnCommentListener onCommentListener)
+    {
+        this.onCommentListener=onCommentListener;
     }
+
+    public interface OnCommentListener
+    {
+        void GetComments(List<Comment> comments1,int num);
+    }
+
 
     public void onResume()
     {
@@ -478,5 +581,27 @@ public class CommentListFragment extends BaseFragment
     {
         super.onPause();
         MobclickAgent.onPageEnd("评论列表");
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        if (comments!=null)
+        {
+            if (comments.size()>4)
+            {
+                List<Comment> comments1=new ArrayList<Comment>();
+                for (int i = 0; i <5 ; i++)
+                {
+                    comments1.add(comments.get(i));
+                }
+                onCommentListener.GetComments(comments1,pageCount);
+            }
+            else
+            {
+                onCommentListener.GetComments(comments,pageCount);
+            }
+        }
+        super.onDestroy();
     }
 }

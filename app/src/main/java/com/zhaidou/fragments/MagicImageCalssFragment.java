@@ -221,7 +221,7 @@ public class MagicImageCalssFragment extends BaseFragment
     private void initView()
     {
 
-        titleTv = (TypeFaceTextView) view.findViewById(R.id.tv_title);
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
         titleTv.setText(mParam);
 
         scrollView = (PullToRefreshScrollView) view.findViewById(R.id.scrollView);

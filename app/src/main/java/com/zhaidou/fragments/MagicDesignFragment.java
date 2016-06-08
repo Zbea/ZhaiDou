@@ -41,7 +41,7 @@ public class MagicDesignFragment extends BaseFragment {
         {
             switch (v.getId())
             {
-                case R.id.back_btn:
+                case R.id.ll_back:
                     ((MainActivity) getActivity()).popToStack(MagicDesignFragment.this);
                     break;
                 case R.id.case_rl:
@@ -103,7 +103,7 @@ public class MagicDesignFragment extends BaseFragment {
      */
     private void initView() {
 
-        backBtn = (TextView) mView.findViewById(R.id.back_btn);
+        backBtn = (TextView) mView.findViewById(R.id.ll_back);
         backBtn.setOnClickListener(onClickListener);
 
         qqBtn = (LinearLayout) mView.findViewById(R.id.design_rl);

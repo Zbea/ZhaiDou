@@ -66,7 +66,7 @@ public class AccountSetPwdActivity extends FragmentActivity {
                     }
                     doReset(pwd);
                     break;
-                case R.id.back_btn:
+                case R.id.ll_back:
                     finish();
                     break;
                 default:
@@ -92,7 +92,7 @@ public class AccountSetPwdActivity extends FragmentActivity {
 
         mRequestQueue = Volley.newRequestQueue(this);
         mOk.setOnClickListener(onClickListener);
-        findViewById(R.id.back_btn).setOnClickListener(onClickListener);
+        findViewById(R.id.ll_back).setOnClickListener(onClickListener);
 
     }
 

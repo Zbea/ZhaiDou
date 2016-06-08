@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +22,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
@@ -34,7 +34,7 @@ import com.zhaidou.model.ImageItem;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ListViewForScrollView;
-import com.zhaidou.view.RoundImageView;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -56,6 +56,7 @@ public class MagicImageCaseFragment extends BaseFragment
     private String mParam;
     private String mString;
     private View view;
+    private TextView titleTv;
 
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private PullToRefreshScrollView scrollView;
@@ -157,6 +158,9 @@ public class MagicImageCaseFragment extends BaseFragment
 
     private void initView()
     {
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_main_magic_image_case);
+
         scrollView=(PullToRefreshScrollView)view.findViewById(R.id.scrollView);
         scrollView.setMode(PullToRefreshBase.Mode.BOTH);
         scrollView.setOnRefreshListener(onRefreshListener);
@@ -277,12 +281,10 @@ public class MagicImageCaseFragment extends BaseFragment
                 convertView = mInflater.inflate(R.layout.item_magic_image_case, null);
             TextView title = ViewHolder.get(convertView, R.id.titleTv);
             TextView english = ViewHolder.get(convertView, R.id.englishTv);
-            RoundImageView cover = ViewHolder.get(convertView, R.id.imageIv);
+            ImageView cover = ViewHolder.get(convertView, R.id.imageIv);
             cover.setScaleType(ImageView.ScaleType.FIT_XY);
             View space = ViewHolder.get(convertView, R.id.spaceView);
-            LinearLayout bottom = ViewHolder.get(convertView, R.id.floatLine);
-            cover.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 316 / 722));
-            bottom.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 316 / 722));
+            cover.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 316 / 722));
             if (position==0)
             {
                 space.setVisibility(View.GONE);
@@ -296,11 +298,19 @@ public class MagicImageCaseFragment extends BaseFragment
             title.setText(imageItem.name);
             english.setText(imageItem.englishName);
             ToolUtils.setImageCacheUrl(imageItem.imageUrl, cover,R.drawable.icon_loading_item);
-            cover.setRadius(13);
 
             mHashMap.put(position, convertView);
             return convertView;
         }
+    }
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_main_magic_image_case)); //统计页面
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_main_magic_image_case));
     }
 
 }

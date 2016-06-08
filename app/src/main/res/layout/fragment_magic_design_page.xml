@@ -10,7 +10,7 @@
         android:layout_height="@dimen/header_height_dimen">
 
         <com.zhaidou.view.TypeFaceTextView
-            android:id="@+id/back_btn"
+            android:id="@+id/ll_back"
             android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:paddingLeft="10dp"

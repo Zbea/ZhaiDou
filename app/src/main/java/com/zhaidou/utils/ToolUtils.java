@@ -37,6 +37,9 @@ import com.zhaidou.fragments.SpecialSaleFragment;
 import com.zhaidou.model.Category;
 import com.zhaidou.model.SwitchImage;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,6 +48,27 @@ import java.util.regex.Pattern;
  */
 public class ToolUtils
 {
+
+    /**
+     * 获得时间差别
+     * @param date
+     * @return
+     */
+    public static String getDateDiff(String date) throws ParseException
+    {
+        SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date mDate=new Date();
+        long diff=mDate.getTime()-df.parse(date).getTime();
+        if (diff>=24*60*60*1000)
+        {
+            return date.split(" ")[0];
+        }
+        else
+        {
+            String time=date.split(" ")[1];
+            return time.substring(0,time.length()-3);
+        }
+    }
 
     /**
      * 处理价格为.0或者.00时取整数

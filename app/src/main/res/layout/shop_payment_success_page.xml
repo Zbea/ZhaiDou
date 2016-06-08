@@ -12,18 +12,9 @@
         layout="@layout/head_style_page"
         ></include>
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="650dp"
-        android:layout_weight="4"
-        android:gravity="center"
-        android:scaleType="centerCrop"
-        android:visibility="gone"
-        android:src="@drawable/shop_order_payment_success_bg"/>
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="650dp"
+        android:layout_height="620dp"
         android:layout_weight="4"
         android:gravity="center"
         android:background="@drawable/shop_order_payment_success_bg"
@@ -62,7 +53,7 @@
             android:layout_height="80dp"
             android:paddingLeft="@dimen/default_margin"
             android:paddingRight="@dimen/default_margin"
-            android:background="@color/actionbar_background_color"
+            android:background="@color/white"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -89,7 +80,7 @@
                         android:id="@+id/successAddressNameTv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/white"
+                        android:textColor="@color/text_normal_color"
                         android:text=""
                         android:textSize="14sp"
                         android:singleLine="true"
@@ -100,7 +91,7 @@
                         android:id="@+id/successAddressPhoneTv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/white"
+                        android:textColor="@color/text_normal_color"
                         android:layout_marginLeft="50dp"
                         android:textSize="14sp"
                         android:text=""
@@ -115,7 +106,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:textSize="13sp"
-                    android:textColor="@color/white"
+                    android:textColor="@color/text_normal_color"
                     android:text=""/>
 
 
@@ -123,6 +114,11 @@
 
 
         </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/line_color"/>
 
         <LinearLayout
             android:layout_width="match_parent"

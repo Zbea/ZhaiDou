@@ -27,7 +27,7 @@ public class ZhaiDou {
     //首页文章评论
     public static String HomeArticleCommentUrl=HOME_BASE_URL+"comment/commentView.action?articleId=";
     //添加评论
-    public static String CommentAddUrl=HOME_BASE_URL+"comment/addProductComment?";
+    public static String CommentAddUrl=HOME_BASE_URL+"comment/addProductComment";
     //首页banner点击统计接口
     public static String HomeClickStatisticalUrl=HOME_BASE_URL+"api/countBannerClick.action?name=";
     //首页微信文章列表
@@ -179,8 +179,6 @@ public class ZhaiDou {
     public static String ARTICLE_ITEM_WITH_CATEGORY=HOME_BASE_URL+"article/api/article_items?item_catetory_id=";
 
     public static String SEARCH_ARTICLES_URL=HOME_BASE_URL+"article/api/articles/search";
-
-    public static String ARTICLES_WITH_CATEGORY=HOME_BASE_URL+"article/api/articles?catetory_id=";
 
     public static String FORWARD_URL=HOME_BASE_URL+"retweet";
     /**

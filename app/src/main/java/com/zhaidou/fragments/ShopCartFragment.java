@@ -207,10 +207,6 @@ public class ShopCartFragment extends BaseFragment
         {
             switch (view.getId())
             {
-                case R.id.back_btn:
-                    ((MainActivity) getActivity()).popToStack(ShopCartFragment.this);
-                    break;
-
                 case R.id.okBuyBtn:
                     if (itemsCheck.size() > 0)
                     {
@@ -306,8 +302,7 @@ public class ShopCartFragment extends BaseFragment
         mRequestQueue = Volley.newRequestQueue(mContext);
         mDialogUtil = new DialogUtils(mContext);
 
-        backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
-        backBtn.setOnClickListener(onClickListener);
+        backBtn=(TypeFaceTextView) mView.findViewById(R.id.ll_back);
         if (mIndex == 1)
         {
             backBtn.setVisibility(View.GONE);

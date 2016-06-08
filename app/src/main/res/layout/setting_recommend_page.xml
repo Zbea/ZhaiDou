@@ -18,6 +18,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:scrollbars="none"
+        android:layout_marginTop="1dp"
         android:listSelector="@color/transparent"
         android:divider="@null"></ListView>
 

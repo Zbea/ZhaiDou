@@ -16,13 +16,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
+import com.pulltorefresh.PullToRefreshBase;
+import com.pulltorefresh.PullToRefreshScrollView;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
@@ -31,6 +33,7 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -61,11 +64,12 @@ public class MagicClassicCaseFragment extends BaseFragment
     private Dialog mDialog;
     private Context mContext;
     private ListView listView;
+    private PullToRefreshScrollView scrollView;
+    private TextView titleTv;
 
     private static final int UPDATE_HOMELIST = 1;
-    private RequestQueue mRequestQueue;
     private List<Article> articleList = new ArrayList<Article>();
-    private ItemAdapter mHomeAdapter;
+    private ArticleAdapter mHomeAdapter;
 
 
     private Handler handler = new Handler()
@@ -78,9 +82,33 @@ public class MagicClassicCaseFragment extends BaseFragment
 
                     mHomeAdapter.setList(articleList);
                     mHomeAdapter.notifyDataSetChanged();
+                    if (pageCount > articleList.size())
+                    {
+                        scrollView.setMode(PullToRefreshBase.Mode.BOTH);
+                    } else
+                    {
+                        scrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+                    }
 
                     break;
             }
+        }
+    };
+
+    private PullToRefreshBase.OnRefreshListener2 onRefreshListener=new PullToRefreshBase.OnRefreshListener2()
+    {
+        @Override
+        public void onPullDownToRefresh(PullToRefreshBase refreshView)
+        {
+            currentPage=1;
+            articleList.clear();
+            FetchData();
+        }
+        @Override
+        public void onPullUpToRefresh(PullToRefreshBase refreshView)
+        {
+            currentPage++;
+            FetchData();
         }
     };
 
@@ -131,18 +159,22 @@ public class MagicClassicCaseFragment extends BaseFragment
 
     private void initView()
     {
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_magic_class_case);
 
-        mRequestQueue = Volley.newRequestQueue(mContext);
+        scrollView=(PullToRefreshScrollView)view.findViewById(R.id.scrollView);
+        scrollView.setMode(PullToRefreshBase.Mode.BOTH);
+        scrollView.setOnRefreshListener(onRefreshListener);
         listView=(ListView)view.findViewById(R.id.lv_special_list);
-        mHomeAdapter = new ItemAdapter(mContext,articleList);
+        mHomeAdapter = new ArticleAdapter(mContext,articleList);
         listView.setAdapter(mHomeAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                MagicClassicCaseDetailsFragment magicClassicCaseDetailsFragment = MagicClassicCaseDetailsFragment.newInstance(articleList.get(position).getTitle(), articleList.get(position).getId() + "");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(magicClassicCaseDetailsFragment);
+                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment=HomeArticleGoodsDetailsFragment.newInstance("",""+articleList.get(position).getId());
+                ((MainActivity)mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
             }
         });
 
@@ -160,64 +192,74 @@ public class MagicClassicCaseFragment extends BaseFragment
     }
 
 
+    /**
+     * 加载列表数据
+     */
     private void FetchData()
     {
-        JsonObjectRequest jr = new JsonObjectRequest(ZhaiDou.MagicClassicCaseUrl, new Response.Listener<JSONObject>()
+        final String url = ZhaiDou.HomeArticleGoodsUrl + currentPage;
+        ToolUtils.setLog(url);
+        JsonObjectRequest jr = new JsonObjectRequest(url ,new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
             {
-                ToolUtils.setLog(""+response.toString());
                 if (mDialog != null)
-                {
                     mDialog.dismiss();
-                }
-                if (currentPage == 1)
-                    articleList.clear();
-                if (response != null)
+                if (response == null)
                 {
-                    ToolUtils.setLog(response.toString());
-                    int code = response.optInt("code");
-                    JSONObject dataObject = response.optJSONObject("data");
-                    if (dataObject == null)
-                    {
-                        return;
-                    }
-                    pageSize = dataObject.optInt("pageSize");
-                    pageCount = dataObject.optInt("totalCount");
-                    JSONArray articles = dataObject.optJSONArray("freeClassicsCasePOs");
-                    if (articles != null)
-                    {
-                        for (int i = 0; i < articles.length(); i++)
-                        {
-                            JSONObject article = articles.optJSONObject(i);
-                            int id = article.optInt("id");
-                            String title = article.optString("caseName");
-                            String img_url = article.optString("mainPic");
-                            String info = article.optString("mainDesc");
-                            String date = article.optString("updateTime").split(" ")[0];
-                            Article item = new Article(id, title, img_url, info, 0);
-                            item.setDate(date);
-                            articleList.add(item);
-                        }
-                        handler.sendEmptyMessage(UPDATE_HOMELIST);
-                    }
+                    scrollView.onRefreshComplete();
+                    return;
                 }
+                ToolUtils.setLog(response.toString());
+                int code = response.optInt("code");
+                if (code == 500)
+                {
+                    if (mDialog != null)
+                        mDialog.dismiss();
+                    scrollView.onRefreshComplete();
+                    scrollView.setMode(PullToRefreshBase.Mode.BOTH);
+                    return;
+                }
+                JSONObject jsonObject = response.optJSONObject("data");
+                if (jsonObject != null)
+                {
+                    pageCount = jsonObject.optInt("totalCount");
+                    pageSize = jsonObject.optInt("pageSize");
+                    JSONArray jsonArray = jsonObject.optJSONArray("freeClassicsCasePOs");
+
+                    if (jsonArray != null)
+                        for (int i = 0; i < jsonArray.length(); i++)
+                        {
+                            JSONObject obj = jsonArray.optJSONObject(i);
+                            int id = obj.optInt("id");
+                            String title = obj.optString("caseName");
+                            String info = obj.optString("mainDesc");
+                            String imageUrl = obj.optString("mainPic");
+                            int num = obj.optInt("commentCount");
+                            Article article=new Article(id,title,imageUrl,"",num,info);
+
+                            articleList.add(article);
+                        }
+                    Message message = new Message();
+                    message.what = UPDATE_HOMELIST;
+                    handler.sendMessage(message);
+                }
+
             }
         }, new Response.ErrorListener()
         {
             @Override
             public void onErrorResponse(VolleyError error)
             {
+                scrollView.onRefreshComplete();
                 if (mDialog != null)
-                {
                     mDialog.dismiss();
-                }
-                if (currentPage > 1)
+                if (articleList.size() != 0)
                 {
                     currentPage--;
+                    ToolUtils.setToast(mContext, R.string.loading_fail_txt);
                 }
-                ToolUtils.setToast(mContext, R.string.loading_fail_txt);
             }
         })
         {
@@ -229,15 +271,15 @@ public class MagicClassicCaseFragment extends BaseFragment
                 return headers;
             }
         };
-        mRequestQueue.add(jr);
+        ZDApplication.mRequestQueue.add(jr);
     }
 
 
-    public class ItemAdapter extends BaseListAdapter<Article>
+    public class ArticleAdapter extends BaseListAdapter<Article>
     {
         Context context;
 
-        public ItemAdapter(Context context, List<Article> list)
+        public ArticleAdapter(Context context, List<Article> list)
         {
             super(context, list);
             this.context = context;
@@ -247,35 +289,33 @@ public class MagicClassicCaseFragment extends BaseFragment
         public View bindView(int position, View convertView, ViewGroup parent)
         {
             convertView = mHashMap.get(position);
-
-
             if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_home_design_case_list, null);
-            TextView title = ViewHolder.get(convertView, R.id.title);
-            TextView views = ViewHolder.get(convertView, R.id.views);
+                convertView = mInflater.inflate(R.layout.item_home_article_list, null);
             ImageView cover = ViewHolder.get(convertView, R.id.cover);
-            ImageView icon = ViewHolder.get(convertView, R.id.icon);
-            View space = ViewHolder.get(convertView, R.id.spaceView);
-            cover.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 316 / 722));
-
-            if (position==0)
-            {
-                space.setVisibility(View.GONE);
-            }
-            else
-            {
-                space.setVisibility(View.VISIBLE);
-            }
+            cover.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 400/ 750));
+            TextView title = ViewHolder.get(convertView, R.id.title);
+            TypeFaceTextView info = ViewHolder.get(convertView, R.id.info);
+            TypeFaceTextView comments = ViewHolder.get(convertView, R.id.comments);
 
             Article article = getList().get(position);
-            title.setText(article.getTitle());
-            views.setText(article.getDate());
-            icon.setImageResource(R.drawable.icon_weixin_time);
             ToolUtils.setImageCacheUrl(article.getImg_url(), cover, R.drawable.icon_loading_item);
+            title.setText(article.getTitle());
+            info.setText(article.getInfo());
+            comments.setText("评论:" + article.getReviews());
 
             mHashMap.put(position, convertView);
             return convertView;
         }
     }
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_magic_class_case)); //统计页面
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_magic_class_case));
+    }
+
 
 }

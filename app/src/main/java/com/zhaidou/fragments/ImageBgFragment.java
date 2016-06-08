@@ -42,7 +42,7 @@ public class ImageBgFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.fragment_add_v, container, false);
-        tv_title=(TextView)view.findViewById(R.id.tv_title);
+        tv_title=(TextView)view.findViewById(R.id.title_tv);
         iv_bg_1=(ImageView)view.findViewById(R.id.iv_bg_1);
         iv_bg_2=(ImageView)view.findViewById(R.id.iv_bg_2);
         iv_bg_3=(ImageView)view.findViewById(R.id.iv_bg_3);

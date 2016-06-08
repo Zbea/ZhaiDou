@@ -29,7 +29,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/actionbar_background_color"
+                android:background="@color/white"
                 android:orientation="vertical">
 
 
@@ -67,7 +67,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:textColor="@color/white"
+                                android:textColor="@color/text_normal_color"
                                 android:text="收件人："
                                 android:textSize="14sp"
                                 android:singleLine="true"
@@ -78,7 +78,7 @@
                                 android:id="@+id/jsAddressPhoneTv"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textColor="@color/white"
+                                android:textColor="@color/text_normal_color"
                                 android:layout_marginLeft="15dp"
                                 android:textSize="14sp"
                                 android:text="电话："
@@ -96,7 +96,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="13dp"
                                 android:textSize="13sp"
-                                android:textColor="@color/white"
+                                android:textColor="@color/text_normal_color"
                                 android:text="地址:"/>
 
                             <com.zhaidou.view.TypeFaceTextView
@@ -106,7 +106,7 @@
                                 android:layout_marginTop="13dp"
                                 android:layout_marginLeft="5dp"
                                 android:textSize="13sp"
-                                android:textColor="@color/white"
+                                android:textColor="@color/text_normal_color"
                                 android:text=""/>
                         </LinearLayout>
 
@@ -133,11 +133,17 @@
                         android:layout_height="wrap_content"
                         android:text="添加收货地址"
                         android:layout_marginLeft="5dp"
-                        android:textColor="@color/white"
+                        android:textColor="@color/text_normal_color"
                         android:paddingTop="5dp"
                         android:paddingBottom="5dp"/>
 
                 </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/page_bg"
+                    ></View>
 
                 <LinearLayout
                     android:id="@+id/jsEditAddressBtn"

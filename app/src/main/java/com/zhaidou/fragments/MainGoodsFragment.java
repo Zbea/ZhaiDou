@@ -122,7 +122,7 @@ public class MainGoodsFragment extends BaseFragment implements
         if (customBannerView == null)
         {
             customBannerView = new CustomBannerView(mContext, banners, true);
-            customBannerView.setLayoutParams(screenWidth, screenWidth * 300 / 750);
+            customBannerView.setLayoutParams(screenWidth, screenWidth * 400 / 750);
             customBannerView.setOnBannerClickListener(new CustomBannerView.OnBannerClickListener()
             {
                 @Override

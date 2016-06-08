@@ -84,7 +84,7 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
         mRequestQueue = Volley.newRequestQueue(this);
         mRegister.setOnClickListener(this);
         mLogin.setOnClickListener(this);
-        findViewById(R.id.back_btn).setOnClickListener(this);
+        findViewById(R.id.ll_back).setOnClickListener(this);
     }
 
     @Override
@@ -106,7 +106,7 @@ public class RegisterActivity extends FragmentActivity implements View.OnClickLi
             case R.id.tv_login:
                 finish();
                 break;
-            case R.id.back_btn:
+            case R.id.ll_back:
                 finish();
                 break;
             default:

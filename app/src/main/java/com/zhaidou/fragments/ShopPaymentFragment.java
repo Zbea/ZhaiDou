@@ -182,7 +182,7 @@ public class ShopPaymentFragment extends BaseFragment
         {
             switch (view.getId())
             {
-                case R.id.back_btn:
+                case R.id.ll_back:
                     backDialog();
                     break;
                 case R.id.paymentBtn:
@@ -269,7 +269,7 @@ public class ShopPaymentFragment extends BaseFragment
         userName = (String) SharedPreferencesUtil.getData(getActivity(), "nickName", "");
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
         mRequestQueue = Volley.newRequestQueue(mContext);
-        backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
+        backBtn = (TypeFaceTextView) mView.findViewById(R.id.ll_back);
         backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(R.string.shop_payment_text);

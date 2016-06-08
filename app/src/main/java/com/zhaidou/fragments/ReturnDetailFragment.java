@@ -21,13 +21,14 @@ import com.zhaidou.model.OrderItem1;
 import com.zhaidou.model.Store;
 import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.TypeFaceTextView;
 
 import java.util.List;
 
 public class ReturnDetailFragment extends BaseFragment {
 
     private static final String ARG_STORE = "store";
-
+    private TextView titleTv;
     private Store mStore;
     private View rootView;
     private TextView mOrderNumber, mOrderTime, mOrderStatus,
@@ -72,6 +73,8 @@ public class ReturnDetailFragment extends BaseFragment {
     }
     private void initView(View view) {
         mContext = getActivity();
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_order_detail);
         loadingView = (LinearLayout) view.findViewById(R.id.loadingView);
         mOrderNumber = (TextView) view.findViewById(R.id.tv_order_number);
         mOrderTime = (TextView) view.findViewById(R.id.tv_order_time);
