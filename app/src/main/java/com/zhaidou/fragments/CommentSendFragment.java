@@ -30,7 +30,9 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.model.Comment;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceEditText;
 
 import org.apache.http.HttpResponse;
@@ -41,11 +43,13 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,9 +64,18 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
 {
     private static final String DATA = "page";
     private static final String INDEX = "index";
+    private static final String COMMENT = "comment";
 
     private String mPage;
     private String mIndex;
+    private Comment mComment,comment;
+    private int mCommentId;
+    private String mCommentContent;
+    private String mCommentTime;
+    private List<String> mCommentImages;
+    private String mCommentUserName;
+    private String mCommentUserImage;
+    private int mCommentUserId;
 
     private Dialog mDialog;
     private final int MENU_CAMERA_SELECTED = 0;
@@ -97,10 +110,110 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
             switch (msg.what)
             {
                 case REFRESH_COMMIT_SUCCESS:
+                    ToolUtils.setLog("成功："+msg.obj.toString());
+                    JSONObject jsonObject;
+                    try
+                    {
+                        jsonObject=new JSONObject(msg.obj.toString());
+                        int status=jsonObject.optInt("status");
+                        String message=jsonObject.optString("message");
+                        if (status!=200)
+                        {
+                            ToolUtils.setToastLong(mContext, message);
+                        }
+                        else
+                        {
 
+                            JSONObject dataJsonObject=jsonObject.optJSONObject("data");
+                            if (dataJsonObject!=null)
+                            {
+                                JSONObject commentJsonObject=dataJsonObject.optJSONObject("comment");
+                                if (commentJsonObject!=null)
+                                {
+                                    int commentid=commentJsonObject.optInt("id");
+                                    String commentTitle=commentJsonObject.optString("content");
+                                    String commentUrl=commentJsonObject.optString("imgMd5");
+                                    List<String> commentImgs=new ArrayList<String>();
+                                    if (commentUrl.length()>0)
+                                    {
+                                        String[] commentUrls=commentUrl.split(",");
+                                        for (int j = 0; j <commentUrls.length; j++)
+                                        {
+                                            commentImgs.add(commentUrls[j]);
+                                        }
+                                    }
+                                    int commentUserId=commentJsonObject.optInt("commentUserId");
+                                    String commentUserName=commentJsonObject.optString("commentUserName");
+                                    String commentUserImg=(String)SharedPreferencesUtil.getData(mContext,"avatar","");
+                                    String articleId=commentJsonObject.optString("articleId");
+                                    String articleTitle=commentJsonObject.optString("articleTitle");
+                                    String commentType=commentJsonObject.optString("commentType");
+                                    String commentStatus=commentJsonObject.optString("status");
+                                    String commentCreateTime= "";
+                                    try
+                                    {
+                                        commentCreateTime = ToolUtils.getDateDiff(commentJsonObject.optString("createTime"));
+                                    } catch (ParseException e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                    ToolUtils.setLog(""+commentImgs.size());
+                                    comment=new Comment();
+                                    if (mComment==null)
+                                    {
+                                        comment.articleId=articleId;
+                                        comment.articleTitle=articleTitle;
+                                        comment.id=commentid;
+                                        comment.time=commentCreateTime;
+                                        comment.comment=commentTitle;
+                                        comment.images=commentImgs;
+                                        comment.type=commentType;
+                                        comment.status=commentStatus;
+                                        comment.userName=commentUserName;
+                                        comment.userImage=commentUserImg;
+                                        comment.userId=commentUserId;
+                                    }
+                                    else
+                                    {
+                                        //将返回的信息当初回复信息
+                                        comment.id=commentid;
+                                        comment.time=commentCreateTime;
+                                        comment.comment=commentTitle;
+                                        comment.images=commentImgs;
+                                        comment.type=commentType;
+                                        comment.status=commentStatus;
+                                        comment.userName=commentUserName;
+                                        comment.userImage=commentUserImg;
+                                        comment.userId=commentUserId;
+
+                                        comment.articleId=mIndex;
+                                        comment.articleTitle=mPage;
+
+                                            comment.idReply=mCommentId;
+                                            comment.timeReply=mCommentTime;
+                                            comment.commentReply=mCommentContent;
+                                            comment.imagesReply= mCommentImages;
+                                            comment.typeReply="A";
+                                            comment.statusReply="N";
+                                            comment.userIdReply=mCommentUserId;
+                                            comment.userNameReply=mCommentUserName;
+                                            comment.userImageReply=mCommentUserImage;
+
+                                    }
+                                    onCommentListener.onCommentResult(comment);
+                                    ((MainActivity) getActivity()).popToStack(CommentSendFragment.this);
+                                    if (editText!=null)
+                                        closeInput();
+                                }
+                            }
+                        }
+                    } catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
                     break;
                 case REFRESH_COMMIT_FAIl:
-
+                    ToolUtils.setToastLong(mContext, "抱歉,评论失败");
                     break;
             }
         }
@@ -131,12 +244,13 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
         }
     };
 
-    public static CommentSendFragment newInstance(String page, String index)
+    public static CommentSendFragment newInstance(String page, String index,Comment comment)
     {
         CommentSendFragment fragment = new CommentSendFragment();
         Bundle args = new Bundle();
-        args.putSerializable(DATA, page);
-        args.putSerializable(INDEX, index);
+        args.putString(DATA, page);
+        args.putString(INDEX, index);
+        args.putSerializable(COMMENT, comment);
         fragment.setArguments(args);
         return fragment;
     }
@@ -153,6 +267,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
         {
             mPage = getArguments().getString(DATA);
             mIndex = getArguments().getString(INDEX);
+            mComment = (Comment) getArguments().getSerializable(COMMENT);
         }
     }
 
@@ -182,6 +297,15 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
      */
     private void initView()
     {
+        if (mComment!=null)
+        mCommentId=mComment.id;
+        mCommentContent=mComment.comment;
+        mCommentImages=mComment.images;
+        mCommentUserName=mComment.userName;
+        mCommentUserImage=mComment.userImage;
+        mCommentUserId=mComment.userId;
+        mCommentTime=mComment.time;
+
         userId= (Integer)SharedPreferencesUtil.getData(mContext,"userId",0);
         userName= (String)SharedPreferencesUtil.getData(mContext,"nickName","");
 
@@ -256,15 +380,29 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
      */
     private void listenerCommitBtn()
     {
-        if (commentInfo.length()>0 | photos.size()>0)
+        if (commentInfo != null)
         {
-            sentTv.setTextColor(getResources().getColor(R.color.green_color));
-            sentTv.setClickable(true);
-        }
-        else
+            if (commentInfo.length() > 0|photos.size()>0)
+            {
+                sentTv.setTextColor(getResources().getColor(R.color.green_color));
+                sentTv.setClickable(true);
+            } else
+            {
+                sentTv.setTextColor(getResources().getColor(R.color.text_gary_color));
+                sentTv.setClickable(false);
+            }
+        } else
         {
-            sentTv.setTextColor(getResources().getColor(R.color.text_gary_color));
-            sentTv.setClickable(false);
+            if (photos.size()>0)
+            {
+                sentTv.setTextColor(getResources().getColor(R.color.green_color));
+                sentTv.setClickable(true);
+            }
+            else
+            {
+                sentTv.setTextColor(getResources().getColor(R.color.text_gary_color));
+                sentTv.setClickable(false);
+            }
         }
     }
 
@@ -470,8 +608,6 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
         listenerCommitBtn();
     }
 
-
-
     private String postSer() throws JSONException
     {
         String BOUNDARY = UUID.randomUUID().toString();
@@ -484,22 +620,19 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
             multipartEntity.addPart("commentUserName",new StringBody( userName,Charset.defaultCharset()));
             multipartEntity.addPart("content",new StringBody(commentInfo,Charset.defaultCharset()));
             multipartEntity.addPart("articleId",new StringBody(mIndex+""));
-            multipartEntity.addPart("articleTitle",new StringBody(mPage+""));
-            multipartEntity.addPart("commentType",new StringBody("T"));
-            if (true)
-            {
-                multipartEntity.addPart("commentId",new StringBody( ""));
-            }
+            multipartEntity.addPart("articleTitle",new StringBody(mPage+"",Charset.defaultCharset()));
+            multipartEntity.addPart("commentType",new StringBody("C"));
+            if (mComment!=null)
+            multipartEntity.addPart("commentId",new StringBody(mCommentId+""));
+
             for (int i = 0; i < files.size(); i++)
             {
                 FileBody fileBody = new FileBody(files.get(i));
-                multipartEntity.addPart("MultipartFile[]", fileBody);
+                multipartEntity.addPart("files", fileBody);
             }
 
             HttpPost request = new HttpPost(ZhaiDou.CommentAddUrl);
             request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-            request.addHeader("Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
-            request.addHeader("Accept", "application/json");
             request.setEntity(multipartEntity);
             DefaultHttpClient httpClient = new DefaultHttpClient();
             HttpResponse response = httpClient.execute(request);
@@ -543,7 +676,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
 
     public interface OnCommentListener
     {
-        public void onCommentResult(Boolean result);
+        public void onCommentResult(Comment comment);
     }
 
     public void onResume()

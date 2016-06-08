@@ -37,6 +37,7 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Collocation;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -63,6 +64,7 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
 
     private List<Collocation> collocations=new ArrayList<Collocation>();
     private RequestQueue mRequestQueue;
+    private TextView titleTv;
     private PullToRefreshGridView mGridView;
     private CollocationAdapter mAdapter;
 
@@ -139,6 +141,10 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_collocation, container, false);
+
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_collocation);
+
         mGridView=(PullToRefreshGridView)view.findViewById(R.id.gv_collocation);
         mGridView.setMode(PullToRefreshBase.Mode.BOTH);
         mGridView.setOnRefreshListener(this);

@@ -56,6 +56,7 @@ import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.PhotoUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -77,6 +78,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
     private String mStatus;
 
     private View rootView;
+    private TextView titleTv;
     private TextView mOldPrice, mTitleView;
     private EditText mEditText;
     private RequestQueue requestQueue;
@@ -165,6 +167,9 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
     }
 
     private void initView(View view) {
+
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_after_sale);
         mContext = getActivity();
         mDialogUtils = new DialogUtils(mContext);
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");

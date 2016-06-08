@@ -218,7 +218,7 @@ public class ShopTodaySpecialFragment extends BaseFragment
         {
             switch (view.getId())
             {
-                case R.id.back_btn:
+                case R.id.ll_back:
                     ((MainActivity) getActivity()).popToStack(ShopTodaySpecialFragment.this);
                     break;
                 case R.id.myCartBtn:
@@ -328,8 +328,6 @@ public class ShopTodaySpecialFragment extends BaseFragment
         shareBtn = (ImageView) mView.findViewById(R.id.share_iv);
         shareBtn.setOnClickListener(onClickListener);
 
-        backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
-        backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         timeTvs = (TimerTextView) mView.findViewById(R.id.shopTime1Tv);
         introduceTv = (TypeFaceTextView) mView.findViewById(R.id.adText);

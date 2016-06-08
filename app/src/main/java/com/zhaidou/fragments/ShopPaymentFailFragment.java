@@ -184,9 +184,6 @@ public class ShopPaymentFailFragment extends BaseFragment {
         @Override
         public void onClick(View view) {
             switch (view.getId()) {
-                case R.id.back_btn:
-                    ((MainActivity) getActivity()).popToStack(ShopPaymentFailFragment.this);
-                    break;
                 case R.id.bt_pay:
                     mDialog.show();
                     payment();
@@ -248,8 +245,6 @@ public class ShopPaymentFailFragment extends BaseFragment {
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         userName = (String) SharedPreferencesUtil.getData(getActivity(), "nickName", "");
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
-        backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
-        backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(R.string.shop_payment_fail_text);
 

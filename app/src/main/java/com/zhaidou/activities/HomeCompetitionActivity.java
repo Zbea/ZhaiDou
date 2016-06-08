@@ -69,8 +69,8 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
         nickName = mSharedPreferences.getString("nickName", "");
 
         getUserData();
-        tv_back = (TextView) findViewById(R.id.tv_back);
-        mTitleView = (TextView) findViewById(R.id.tv_title);
+        tv_back = (TextView) findViewById(R.id.ll_back);
+        mTitleView = (TextView) findViewById(R.id.title_tv);
         mChildContainer = (FrameLayout) findViewById(R.id.fl_child_container);
 
         if (!NetworkUtils.isNetworkAvailable(this)) {
@@ -198,6 +198,11 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
         title = getIntent().getStringExtra("title");
         if (!TextUtils.isEmpty(title)) {
             mTitleView.setText(title);
+            mTitleView.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            mTitleView.setVisibility(View.GONE);
         }
 
     }
@@ -205,7 +210,7 @@ public class HomeCompetitionActivity extends BaseActivity implements View.OnClic
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.tv_back:
+            case R.id.ll_back:
                 if (webView.canGoBack()) {
                     webView.goBack();
                     return;

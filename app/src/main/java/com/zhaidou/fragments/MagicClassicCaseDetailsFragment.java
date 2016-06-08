@@ -218,9 +218,6 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
                     ((MainActivity) mContext).navigationToFragmentWithAnim(commentListFragment);
 //                    EaseUtils.startDesignerActivity(mContext);
                     break;
-                case R.id.back_btn:
-                    ((MainActivity) getActivity()).popToStack(MagicClassicCaseDetailsFragment.this);
-                    break;
             }
         }
     };
@@ -260,9 +257,6 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
     {
         titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
         titleTv.setText(mParam);
-
-        backTv = (TextView) view.findViewById(R.id.back_btn);
-        backTv.setOnClickListener(onClickListener);
 
         loadingView = (LinearLayout) view.findViewById(R.id.loadingView);
         nullNetView = (LinearLayout) view.findViewById(R.id.nullNetline);

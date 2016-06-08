@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -74,15 +75,17 @@ public class MainHomeFragment extends BaseFragment implements
     private Dialog mDialog;
     private Context mContext;
 
+    private HorizontalScrollView horizontalScrollView;
     private ArticleAdapter adapterList;
     private RequestQueue mRequestQueue;
     private List<SwitchImage> banners = new ArrayList<SwitchImage>();
     private List<SwitchImage> codes = new ArrayList<SwitchImage>();
+    private List<SwitchImage> goods = new ArrayList<SwitchImage>();
     private List<Article> articles = new ArrayList<Article>();
     private LinearLayout loadingView, nullNetView, nullView;
     private TextView reloadBtn, reloadNetBtn;
     private CustomBannerView customBannerView;
-    private LinearLayout linearLayout, codeView;
+    private LinearLayout linearLayout, codeView,goodsView;
     private PullToRefreshScrollView mScrollView;
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private long formerTime;
@@ -109,10 +112,13 @@ public class MainHomeFragment extends BaseFragment implements
             } else if (msg.what == UPDATE_BANNER)
             {
                 setAdView();
+                setGoodsView();
                 setCodeView();
+
             }
         }
     };
+
 
     /**
      * 广告轮播设置
@@ -122,7 +128,7 @@ public class MainHomeFragment extends BaseFragment implements
         if (customBannerView == null)
         {
             customBannerView = new CustomBannerView(mContext, banners, true);
-            customBannerView.setLayoutParams(screenWidth, screenWidth * 300 / 750);
+            customBannerView.setLayoutParams(screenWidth, screenWidth * 400 / 750);
             customBannerView.setOnBannerClickListener(new CustomBannerView.OnBannerClickListener()
             {
                 @Override
@@ -137,6 +143,41 @@ public class MainHomeFragment extends BaseFragment implements
         } else
         {
             customBannerView.setImages(banners);
+        }
+    }
+
+    /**
+     * 添加首页三个按钮
+     */
+    private void setGoodsView()
+    {
+        horizontalScrollView.setVisibility(goods.size()>0?View.VISIBLE:View.GONE);
+        goodsView.removeAllViews();
+        for (int i = 0; i < goods.size(); i++)
+        {
+            final int pos = i;
+           ImageView imgView=new ImageView(mContext);
+            imgView.setScaleType(ImageView.ScaleType.FIT_XY);
+            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams((screenWidth-110)/3,(screenWidth-110)/3);
+            if (i>0)
+            {
+                param.leftMargin=25;
+            }
+            imgView.setLayoutParams(param);
+            ToolUtils.setImageCacheUrl(goods.get(i).imageUrl, imgView, R.drawable.icon_loading_defalut);
+            imgView.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    if (isTimeInterval())
+                    {
+                        SwitchImage item = goods.get(pos);
+                        ToolUtils.setBannerGoto(item, mContext);
+                    }
+                }
+            });
+            goodsView.addView(imgView);
         }
     }
 
@@ -260,6 +301,9 @@ public class MainHomeFragment extends BaseFragment implements
         mScrollView = (PullToRefreshScrollView) view.findViewById(R.id.sv_home_scrollview);
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         mScrollView.setOnRefreshListener(this);
+
+        horizontalScrollView=(HorizontalScrollView)view.findViewById(R.id.homeGoodsLine);
+        goodsView= (LinearLayout) view.findViewById(R.id.homeGoodsView);
 
         codeView = (LinearLayout) view.findViewById(R.id.homeCodeView);
 
@@ -439,7 +483,7 @@ public class MainHomeFragment extends BaseFragment implements
         final Map<String, String> headers = new HashMap<String, String>();
         headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
 
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeBannerUrl + "03,05", new Response.Listener<JSONObject>()
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeBannerUrl + "03,05,06", new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -480,8 +524,11 @@ public class MainHomeFragment extends BaseFragment implements
                                     }
                                     if (flags.equals("03"))
                                     {
-                                        ToolUtils.setLog("switchImage:" + switchImage.type);
                                         codes.add(switchImage);
+                                    }
+                                    if (flags.equals("06"))
+                                    {
+                                        goods.add(switchImage);
                                     }
                                 }
                         }

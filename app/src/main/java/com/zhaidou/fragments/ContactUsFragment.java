@@ -5,14 +5,15 @@ package com.zhaidou.fragments;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.view.TypeFaceTextView;
 
 public class ContactUsFragment extends BaseFragment {
     private static final String ARG_PARAM1 = "param1";
@@ -20,7 +21,7 @@ public class ContactUsFragment extends BaseFragment {
 
     private String mParam1;
     private String mParam2;
-
+    private TextView titleTv;
 
     public static ContactUsFragment newInstance(String param1, String param2) {
         ContactUsFragment fragment = new ContactUsFragment();
@@ -47,6 +48,9 @@ public class ContactUsFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_contact_us, container, false);
+
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_contact_us);
         view.findViewById(R.id.iv_action_call).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

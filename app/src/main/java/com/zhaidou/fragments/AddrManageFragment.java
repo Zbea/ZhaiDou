@@ -37,6 +37,7 @@ import com.zhaidou.model.Address;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -74,9 +75,9 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
     private LinearLayout ll_edit_addr;
     private LinearLayout ll_manage_address;
     private EditText et_mobile, et_addr, et_name;
-    private TextView tv_save, tv_edit, tv_addr_username, tv_addr_mobile, tv_addr, tv_delete;
-    private String token;
+    private TextView titleTv,tv_save, tv_edit, tv_addr_username, tv_addr_mobile, tv_addr, tv_delete;
     private SharedPreferences mSharedPreferences;
+    private String token;
 
     private AddressListener addressListener;
     private DialogUtils mDialogUtil;
@@ -164,6 +165,8 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
 
     private void initView(View view)
     {
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_address_manage);
 
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading", true);
         isDialogFirstVisible = false;

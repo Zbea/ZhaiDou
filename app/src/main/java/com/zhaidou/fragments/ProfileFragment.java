@@ -44,6 +44,7 @@ import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.NativeHttpUtil;
 import com.zhaidou.utils.PhotoUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONObject;
 
@@ -68,7 +69,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     private String mParam2;
     private View view;
     private Context mContext;
-
+    private TextView titleTv;
     private ImageView iv_header;
     private TextView tv_nick;
     private TextView tv_email;
@@ -190,6 +191,9 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
     private void initView() {
         setStartLoading();
+
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_profile);
 
         mMenuContainer = (FrameLayout) view.findViewById(R.id.rl_header_menu);
         mChildContainer = (FrameLayout) view.findViewById(R.id.fl_child_container);

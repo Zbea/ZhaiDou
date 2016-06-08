@@ -156,7 +156,7 @@ public class PayDemoActivity extends FragmentActivity {
      */
     private void initView() {
         mRequestQueue = Volley.newRequestQueue(mContext);
-        backBtn = (TypeFaceTextView) findViewById(R.id.back_btn);
+        backBtn = (TypeFaceTextView) findViewById(R.id.ll_back);
         backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) findViewById(R.id.title_tv);
         titleTv.setText(R.string.shop_payment_text);
@@ -228,7 +228,7 @@ public class PayDemoActivity extends FragmentActivity {
         @Override
         public void onClick(View view) {
             switch (view.getId()) {
-                case R.id.back_btn:
+                case R.id.ll_back:
                     finish();
                     break;
                 case R.id.paymentBtn:

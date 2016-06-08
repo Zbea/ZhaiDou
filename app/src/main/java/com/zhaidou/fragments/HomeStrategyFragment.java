@@ -186,7 +186,7 @@ public class HomeStrategyFragment extends BaseFragment
         {
             switch (view.getId())
             {
-                case R.id.back_btn:
+                case R.id.ll_back:
                     ((MainActivity) getActivity()).popToStack(HomeStrategyFragment.this);
                     break;
                 case R.id.ll_category_view:
@@ -260,7 +260,7 @@ public class HomeStrategyFragment extends BaseFragment
         reloadNetBtn = (TextView) mView.findViewById(R.id.netReload);
         reloadNetBtn.setOnClickListener(onClickListener);
 
-        backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
+        backBtn = (TypeFaceTextView) mView.findViewById(R.id.ll_back);
         backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(R.string.title_home_strategy);

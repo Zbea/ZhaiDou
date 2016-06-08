@@ -16,6 +16,11 @@
         android:layout_below="@+id/headLine"
         android:orientation="vertical">
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/all_e"></View>
+
         <LinearLayout
             android:id="@+id/paymentView"
             android:layout_width="match_parent"

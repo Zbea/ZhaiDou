@@ -9,7 +9,7 @@
         android:id="@+id/home_actionbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/header_height_dimen"
-        android:background="@color/actionbar_background_color">
+        android:background="@color/white">
 
         <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/tv_title"
@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/title_home"
-            android:textColor="@color/white"
+            android:textColor="@color/text_main_color"
             android:textSize="18sp"/>
 
         <ImageView
@@ -56,19 +56,56 @@
                 android:orientation="vertical">
 
             </LinearLayout>
+            <HorizontalScrollView
+                android:id="@+id/homeGoodsLine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/homeGoodsView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:padding="10dp"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+            </HorizontalScrollView>
 
             <LinearLayout
                 android:id="@+id/homeCodeView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
+                android:visibility="gone"
                 android:orientation="horizontal">
             </LinearLayout>
-
             <View
                 android:layout_width="match_parent"
                 android:layout_height="8dp"
                 android:background="#f6f6f6"></View>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="7dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/green_color"/>
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/default_margin"
+                    android:layout_marginRight="@dimen/default_margin"
+                    android:text="改造案例"
+                    android:textColor="@color/text_main_color"
+                    android:textSize="15sp"/>
+            </LinearLayout>
 
             <com.zhaidou.view.ListViewForScrollView
                 android:id="@+id/homeItemList"

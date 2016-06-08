@@ -41,6 +41,7 @@ import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -62,7 +63,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
     private Dialog mDialog;
     private LinearLayout loadingView;
-
+    private TextView titleTv;
     private RequestQueue mRequestQueue;
     private PullToRefreshListView mListView;
     AllOrderAdapter allOrderAdapter;
@@ -85,7 +86,6 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     private String mCurrentType;
     private boolean isDataLoaded = false;
     private String mUserId;
-    private TextView mTitle;
     private Map<Integer, Long> timerMapStamp = new HashMap<Integer, Long>();
     private boolean hasUnPayOrder = false;
     private Handler handler = new Handler() {
@@ -148,9 +148,14 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             }
         } else {
             rootView = inflater.inflate(R.layout.fragment_all_orders, container, false);
+
             mContext = getActivity();
             mOrderList = new ArrayList<Order1>();
             mDialogUtils = new DialogUtils(mContext);
+
+            titleTv = (TypeFaceTextView) rootView.findViewById(R.id.title_tv);
+            titleTv.setText(R.string.title_all_order);
+
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
             mEmptyView = rootView.findViewById(R.id.nullline);
             mNetErrorView = rootView.findViewById(R.id.nullNetline);
@@ -162,7 +167,6 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             mRequestQueue = Volley.newRequestQueue(getActivity());
             allOrderAdapter = new AllOrderAdapter(getActivity(), mOrderList);
             mListView.setAdapter(allOrderAdapter);
-            mTitle = (TextView) rootView.findViewById(R.id.title);
             token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
             mUserId = SharedPreferencesUtil.getData(mContext, "userId", -1) + "";
 
@@ -322,7 +326,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             });
         }
 
-        mTitle.setText(ZhaiDou.TYPE_ORDER_ALL.equalsIgnoreCase(mCurrentType) ? "全部订单"
+        titleTv.setText(ZhaiDou.TYPE_ORDER_ALL.equalsIgnoreCase(mCurrentType) ? "全部订单"
                 : ZhaiDou.TYPE_ORDER_PREPAY.equalsIgnoreCase(mCurrentType) ? "待支付" : "待收货");
         return rootView;
     }

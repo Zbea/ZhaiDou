@@ -31,6 +31,7 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ListViewForScrollView;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -49,6 +50,7 @@ public class HomeBeautifulFragment extends BaseFragment
 {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private TextView titleTv;
     private View mView;
     private Dialog loading;
     private ListViewForScrollView listView;
@@ -157,6 +159,10 @@ public class HomeBeautifulFragment extends BaseFragment
      */
     private void initView()
     {
+
+        titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_beauty);
+
         listView = (ListViewForScrollView) mView.findViewById(R.id.homeItemList);
         listItem = new ArrayList<JSONObject>();
         mRequestQueue = Volley.newRequestQueue(mContext);

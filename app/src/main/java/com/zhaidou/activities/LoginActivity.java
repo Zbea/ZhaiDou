@@ -160,7 +160,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         mLoginView.setOnClickListener(this);
         mRegisterView.setOnClickListener(this);
         mResetView.setOnClickListener(this);
-        findViewById(R.id.back_btn).setOnClickListener(this);
+        findViewById(R.id.ll_back).setOnClickListener(this);
         findViewById(R.id.ll_qq).setOnClickListener(this);
         findViewById(R.id.ll_weixin).setOnClickListener(this);
         findViewById(R.id.ll_weibo).setOnClickListener(this);
@@ -260,7 +260,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 Intent intent = new Intent(getApplicationContext(), AccountFindPwdActivity.class);
                 startActivity(intent);
                 break;
-            case R.id.back_btn:
+            case R.id.ll_back:
                 finish();
                 break;
             case R.id.ll_weixin:

@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -54,6 +55,8 @@ public class MainCategoryFragment extends BaseFragment {
 
     private String mParam1;
     private String mParam2;
+
+    private LinearLayout searchBtn;
 
     private OnFragmentInteractionListener mListener;
     List<Category> categoryList = new ArrayList<Category>();
@@ -105,6 +108,17 @@ public class MainCategoryFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_category, container, false);
+        searchBtn = (LinearLayout) view.findViewById(R.id.ll_searchs);
+        searchBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                SearchFragment searchFragment = SearchFragment.newInstance("", 1);
+                ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
+            }
+        });
+
         mCategoryListView = (ListView) view.findViewById(R.id.category);
         mGridView = (GridView) view.findViewById(R.id.categoryItem);
         mCategoryAdapter = new CategoryAdapter(getActivity(), categoryList);
@@ -266,5 +280,6 @@ public class MainCategoryFragment extends BaseFragment {
             return convertView;
         }
     }
+
 
 }

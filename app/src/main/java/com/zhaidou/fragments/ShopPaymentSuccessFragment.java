@@ -94,9 +94,6 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
         @Override
         public void onClick(View view) {
             switch (view.getId()) {
-                case R.id.back_btn:
-                    colseFragment(ShopPaymentSuccessFragment.this);
-                    break;
                 case R.id.tv_mall:
                     ToolUtils.setLog("前往商城");
                     colseFragment(ShopPaymentSuccessFragment.this);
@@ -165,8 +162,6 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
      * 初始化数据
      */
     private void initView() {
-        backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
-        backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(R.string.shop_payment_success_text);
         tv_receiver = (TextView) mView.findViewById(R.id.successAddressNameTv);

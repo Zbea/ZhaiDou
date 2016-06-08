@@ -93,7 +93,7 @@ public class AccountFindPwdActivity extends FragmentActivity {
                         ToolUtils.setToast(getApplicationContext(), "抱歉,无效手机号码");
                     }
                     break;
-                case R.id.back_btn:
+                case R.id.ll_back:
                     finish();
                     break;
                 case R.id.bt_getCode:
@@ -163,7 +163,7 @@ public class AccountFindPwdActivity extends FragmentActivity {
         mSharedPreferences = getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
 
         mRequestQueue = Volley.newRequestQueue(this);
-        findViewById(R.id.back_btn).setOnClickListener(onClickListener);
+        findViewById(R.id.ll_back).setOnClickListener(onClickListener);
 
     }
 

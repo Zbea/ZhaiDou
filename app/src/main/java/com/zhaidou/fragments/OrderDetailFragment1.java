@@ -37,6 +37,7 @@ import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -57,7 +58,7 @@ public class OrderDetailFragment1 extends BaseFragment {
 
     private RequestQueue requestQueue;
     private ListView mListView;
-    private TextView mSaleServiceTV;
+    private TextView titleTv;
     private OrderItemAdapter orderItemAdapter;
     private final int UPDATE_COUNT_DOWN_TIME = 2;
     private final int UPDATE_UI_TIMER_FINISH = 3;
@@ -117,6 +118,8 @@ public class OrderDetailFragment1 extends BaseFragment {
 
     private void initView(View view) {
         mContext = getActivity();
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_order_detail);
         mNetWorkLayout = (LinearLayout) view.findViewById(R.id.noNetWork);
         view.findViewById(R.id.reload).setOnClickListener(new View.OnClickListener() {
             @Override
