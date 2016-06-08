@@ -157,7 +157,6 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                 params.put("commentType", replay.comment.commentType);
                 params.put("commentId", replay.comment.id);
                 mDialogUtils.showLoadingDialog();
-
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
