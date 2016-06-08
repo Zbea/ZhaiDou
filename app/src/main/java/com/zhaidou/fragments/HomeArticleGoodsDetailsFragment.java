@@ -844,7 +844,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
             goodsNameTv.setText(goodsItem.name);
             goodsSizeTv.setText(goodsItem.size);
             goodsNumTv.setText("X" + goodsItem.num);
-            goodsPriceTv.setText("￥" + goodsItem.currentPrice);
+            goodsPriceTv.setText("￥" +ToolUtils.isIntPrice(goodsItem.currentPrice+"") );
             ToolUtils.setImageCacheUrl(goodsItem.imageUrl, goodsImageTv, R.drawable.icon_loading_defalut);
 
             if (goodsItem.storeId.equals("T"))
