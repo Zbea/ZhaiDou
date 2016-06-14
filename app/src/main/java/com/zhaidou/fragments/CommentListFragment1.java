@@ -42,6 +42,7 @@ import com.zhaidou.utils.DateUtils;
 import com.zhaidou.utils.DeviceUtils;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.PhotoUtil;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONArray;
@@ -235,9 +236,10 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
     }
 
     private void fetchData(int page) {
+        Integer userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
         Map<String, String> params = new HashMap<String, String>();
         params.put("commentType", mParam2);
-        params.put("commentUserId", "28822");
+        params.put("commentUserId", userId+"");
         params.put("pageSize", "20");
         params.put("pageNo", "" + page);
         ZhaiDouRequest request = new ZhaiDouRequest(mContext, Request.Method.POST, "http://tportal-web.zhaidou.com/comment/getCommentList.action", params, new Response.Listener<JSONObject>() {
