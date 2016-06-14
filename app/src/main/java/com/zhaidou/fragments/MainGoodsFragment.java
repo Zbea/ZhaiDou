@@ -65,9 +65,11 @@ public class MainGoodsFragment extends BaseFragment implements
 
 
     private static final int UPDATE_BANNER = 4;
+    private static final int UPDATE_SEARCH = 5;
 
     private View mSpecialLayout;
     private LinearLayout mSearchView;
+    private TextView titleTv;
     private ImageView categoryIv,messageTv;
     private View view;
     private Dialog mDialog;
@@ -111,6 +113,10 @@ public class MainGoodsFragment extends BaseFragment implements
                 setAdView();
                 setCodeView();
                 setModuleView();
+            }
+            else if (msg.what == UPDATE_SEARCH)
+            {
+                titleTv.setText(msg.obj.toString());
             }
         }
     };
@@ -352,6 +358,9 @@ public class MainGoodsFragment extends BaseFragment implements
 
         mSearchView = (LinearLayout) view.findViewById(R.id.iv_searchs);
         mSearchView.setOnClickListener(this);
+
+        titleTv= (TextView) view.findViewById(R.id.tv_title);
+
         categoryIv = (ImageView) view.findViewById(R.id.iv_category);
         categoryIv.setOnClickListener(this);
         messageTv = (ImageView) view.findViewById(R.id.iv_message);
@@ -378,6 +387,7 @@ public class MainGoodsFragment extends BaseFragment implements
         {
             FetchSpecialData();
             FetchData(currentPage);
+            FetchSearchData();
         } else
         {
             mDialog.dismiss();
@@ -596,6 +606,47 @@ public class MainGoodsFragment extends BaseFragment implements
         mRequestQueue.add(request);
     }
 
+
+    private void FetchSearchData()
+    {
+        final Map<String, String> headers = new HashMap<String, String>();
+        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeSearchStringUrl, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+                if (response != null)
+                {
+                    ToolUtils.setLog(response.toString());
+                    JSONArray jsonArray=response.optJSONArray("data");
+                    String search="";
+                    if (jsonArray!=null)
+                        for (int i = 0; i < jsonArray.length(); i++)
+                        {
+                            search=search+jsonArray.optString(i);
+                        }
+                        handler.obtainMessage(UPDATE_SEARCH,search).sendToTarget();
+
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
+    }
+
     /**
      * 点击统计数据
      */
@@ -665,6 +716,7 @@ public class MainGoodsFragment extends BaseFragment implements
         specials.clear();
         FetchData(currentPage = 1);
         FetchSpecialData();
+        FetchSearchData();
     }
 
     @Override

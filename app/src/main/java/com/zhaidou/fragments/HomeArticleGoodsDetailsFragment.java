@@ -601,7 +601,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                                     DecimalFormat df = new DecimalFormat("#.00");
                                     double price = Double.parseDouble(df.format(obj.optDouble("price")));
                                     String imageUrl = obj.optString("mainPic");
-                                    String url = "http://" + obj.optString("url");
+                                    String url = "http://" + obj.optString("aUrl");
                                     int num = obj.optInt("quantity");
                                     CartGoodsItem cartGoodsItem = new CartGoodsItem();
                                     cartGoodsItem.id = baseid;

@@ -63,9 +63,13 @@
                 android:textSize="18sp"/>
 
         </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/all_e"></View>
     </RelativeLayout>
-
-
 
 
     <com.pulltorefresh.PullToRefreshScrollView
@@ -81,10 +85,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/all_e"></View>
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/commentNullTv"
                 android:layout_width="match_parent"

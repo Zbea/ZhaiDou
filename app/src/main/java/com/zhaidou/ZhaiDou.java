@@ -20,6 +20,8 @@ public class ZhaiDou {
     public static String HomeCategoryUrl=HOME_BASE_URL+"category/queryCategory.action";
     //模块接口
     public static String HomeBannerUrl=HOME_BASE_URL+"index/getBoardContent.action?boardCodes=";
+    //首页搜索文案
+    public static String HomeSearchStringUrl=HOME_BASE_URL+"searchSentence/getSearchSentence.action";
     //首页文章列表
     public static String HomeArticleGoodsUrl=HOME_BASE_URL+"decorate/getChangeCases.action?pageSize=20&pageNo=";
     //首页文章详情
