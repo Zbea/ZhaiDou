@@ -428,7 +428,6 @@ public class SoftListDetailFragment extends BaseFragment {
         if (NetworkUtils.isNetworkAvailable(mContext)) {
             mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
             FetchData();
-//            FetchCommentData();
         } else {
             Toast.makeText(mContext, "抱歉,网络链接失败", Toast.LENGTH_SHORT).show();
         }
@@ -535,7 +534,7 @@ public class SoftListDetailFragment extends BaseFragment {
                                     DecimalFormat df = new DecimalFormat("#.00");
                                     double price = Double.parseDouble(df.format(obj.optDouble("price")));
                                     String imageUrl = obj.optString("mainPic");
-                                    String url = "http://" + obj.optString("url");
+                                    String url = "http://" + obj.optString("aUrl");
                                     int num = obj.optInt("quantity");
                                     CartGoodsItem cartGoodsItem = new CartGoodsItem();
                                     cartGoodsItem.id = baseid;
@@ -875,8 +874,6 @@ public class SoftListDetailFragment extends BaseFragment {
                 ToolUtils.setImageCacheUrl(ims.get(i), imageIv, R.drawable.icon_loading_defalut);
                 viewLayout.addView(mView);
             }
-
-
         }
     }
 

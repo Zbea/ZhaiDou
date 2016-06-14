@@ -111,6 +111,38 @@ public class Comment implements Serializable
     public String commentUserImg;
     public String commentType;
     public String createTime;
-    
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", userName='" + userName + '\'' +
+                ", userImage='" + userImage + '\'' +
+                ", articleId='" + articleId + '\'' +
+                ", articleTitle='" + articleTitle + '\'' +
+                ", type='" + type + '\'' +
+                ", status='" + status + '\'' +
+                ", time='" + time + '\'' +
+                ", comment='" + comment + '\'' +
+                ", images=" + images +
+                ", idReply=" + idReply +
+                ", userIdReply=" + userIdReply +
+                ", userNameReply='" + userNameReply + '\'' +
+                ", userImageReply='" + userImageReply + '\'' +
+                ", typeReply='" + typeReply + '\'' +
+                ", statusReply='" + statusReply + '\'' +
+                ", timeReply='" + timeReply + '\'' +
+                ", commentReply='" + commentReply + '\'' +
+                ", imagesReply=" + imagesReply +
+                ", content='" + content + '\'' +
+                ", imgMd5='" + imgMd5 + '\'' +
+                ", commentUserId=" + commentUserId +
+                ", commentUserName='" + commentUserName + '\'' +
+                ", commentUserImg='" + commentUserImg + '\'' +
+                ", commentType='" + commentType + '\'' +
+                ", createTime='" + createTime + '\'' +
+                '}';
+    }
 }
 

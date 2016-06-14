@@ -103,7 +103,6 @@ public class SoftcoverFragment extends BaseFragment {
         }
     };
 
-
     public static SoftcoverFragment newInstance(String param, String string) {
         SoftcoverFragment fragment = new SoftcoverFragment();
         Bundle args = new Bundle();
@@ -176,7 +175,7 @@ public class SoftcoverFragment extends BaseFragment {
      */
     private void FetchData() {
         String userId= SharedPreferencesUtil.getData(mContext,"userId",-1)+"";
-        final String url = ZhaiDou.HomeSofeListUrl+"&userId="+"117762"+"&pageNo="+ currentPage;
+        final String url = ZhaiDou.HomeSofeListUrl+"&userId="+userId+"&pageNo="+ currentPage;
         ToolUtils.setLog(url);
         JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
             @Override

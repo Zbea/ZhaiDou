@@ -37,12 +37,11 @@ import com.zhaidou.base.AccountManage;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
-import com.zhaidou.base.CountManage;
-import com.zhaidou.base.EaseManage;
+import com.zhaidou.base.CountManager;
 import com.zhaidou.base.ProfileManage;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.User;
-import com.zhaidou.model.ZhaiDouRequest;
+import com.zhaidou.utils.Api;
 import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -54,7 +53,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainPersonalFragment extends BaseFragment implements View.OnClickListener, CountManage.onCountChangeListener, ProfileManage.OnProfileChange, AccountManage.AccountListener, EaseManage.onMessageChange {
+public class MainPersonalFragment extends BaseFragment implements View.OnClickListener, CountManager.onCountChangeListener, ProfileManage.OnProfileChange, AccountManage.AccountListener, CountManager.onCommentChangeListener {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_CONTEXT = "context";
@@ -71,7 +70,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     private final int UPDATE_UNPAY_COUNT = 5;
     private final int UPDATE_UNPAY_COUNT_REFRESH = 6;
     private final int UPDATE_CARTCAR_DATA = 7;
-    private final int UPDATE_UNREAD_MSG=8;
+    private final int UPDATE_UNREAD_MSG = 8;
 
     private ProfileFragment mProfileFragment;
     private ImageView iv_header, mPrePayView, mPreReceivedView, mReturnView;
@@ -100,8 +99,8 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                     SharedPreferencesUtil.saveData(mContext, "avatar", "http://" + mUser.getAvatar());
                     break;
                 case UPDATE_USER_DESCRIPTION:
-                    SharedPreferencesUtil.saveData(mContext,"mobile",mUser.getMobile());
-                    SharedPreferencesUtil.saveData(mContext,"description",mUser.getDescription());
+                    SharedPreferencesUtil.saveData(mContext, "mobile", mUser.getMobile());
+                    SharedPreferencesUtil.saveData(mContext, "description", mUser.getDescription());
                     tv_desc.setText("null".equalsIgnoreCase(mUser.getDescription()) || mUser.getDescription() == null ? "" : mUser.getDescription());
                     break;
                 case UPDATE_USER_COLLECT_COUNT:
@@ -130,9 +129,6 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                     int num = msg.arg2;
                     mCartCount.setVisibility(num > 0 ? View.VISIBLE : View.GONE);
                     mCartCount.setText("" + num);
-                    break;
-                case UPDATE_UNREAD_MSG:
-                    setUnreadMsg(0);
                     break;
             }
         }
@@ -181,7 +177,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             tv_unpay_count = (TextView) view.findViewById(R.id.tv_unpay_count);
             mCartCount = (TextView) view.findViewById(R.id.tv_cart_count);
             unReadMsgView = (TextView) view.findViewById(R.id.unreadMsg);
-            mGridView= (GridView) view.findViewById(R.id.gridView);
+            mGridView = (GridView) view.findViewById(R.id.gridView);
 
             view.findViewById(R.id.accountInfoBtn).setOnClickListener(this);
             mPrePayView.setOnClickListener(this);
@@ -195,32 +191,31 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             mRequestQueue = Volley.newRequestQueue(getActivity());
             getUserDetail();
             getUserInfo();
-            fetchUnReadComment();
             userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
             token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
 
-            int value = CountManage.getInstance().value(CountManage.TYPE.TAG_PREPAY);
+            int value = CountManager.getInstance().value(CountManager.TYPE.TAG_PREPAY);
             tv_unpay_count.setText(value + "");
-            CountManage.getInstance().setOnCountChangeListener(this);
+            CountManager.getInstance().setOnCountChangeListener(this);
+            CountManager.getInstance().setOnCommentChangeListener(this);
             AccountManage.getInstance().register(this);
             ProfileManage.getInstance().register(this);
-            EaseManage.getInstance().setOnMessageChange(this);
-            mUser=new User();
+            mUser = new User();
 
             int[] drawableId = {R.drawable.icon_coupon, R.drawable.icon_softcover, R.drawable.icon_collocation,
                     R.drawable.icon_pintie, R.drawable.icon_service, R.drawable.icon_contact};
 
-            String[] titlearr ={" 优惠卷","软装清单","我的豆搭","拼贴大赛","在线客服","联系我们"};
+            String[] titlearr = {" 优惠卷", "软装清单", "我的豆搭", "拼贴大赛", "在线客服", "联系我们"};
             List<String> titleList = Arrays.asList(titlearr);
-            mShareAdapter=new ShareAdapter(mContext, titleList, drawableId);
+            mShareAdapter = new ShareAdapter(mContext, titleList, drawableId);
             mGridView.setAdapter(mShareAdapter);
             mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    switch (position){
+                    switch (position) {
                         case 0:
-                            CouponsContainerFragment couponsFragment=new CouponsContainerFragment();
-                            ((BaseActivity)getActivity()).navigationToFragment(couponsFragment);
+                            CouponsContainerFragment couponsFragment = new CouponsContainerFragment();
+                            ((BaseActivity) getActivity()).navigationToFragment(couponsFragment);
                             break;
                         case 1:
                             SoftcoverFragment softcoverFragment = SoftcoverFragment.newInstance("", "");
@@ -262,8 +257,9 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
 
     private void setUnreadMsg(int unReadComment) {
         int unreadMsgsCount = EMChatManager.getInstance().getUnreadMsgsCount();
-        unReadMsgView.setVisibility((unreadMsgsCount+unReadComment) > 0 ? View.VISIBLE : View.GONE);
-        unReadMsgView.setText((unreadMsgsCount+unReadComment) > 99 ? "99+" : unreadMsgsCount + "");
+        System.out.println("unReadComment = [" + unReadComment + "]");
+        unReadMsgView.setVisibility((unreadMsgsCount + unReadComment) > 0 ? View.VISIBLE : View.GONE);
+        unReadMsgView.setText((unreadMsgsCount + unReadComment) > 99 ? "99+" : (unreadMsgsCount + unReadComment) + "");
     }
 
 
@@ -314,16 +310,13 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
                 String msg = jsonObject.optString("message");
-                if (status == 200)
-                {
+                if (status == 200) {
                     JSONObject dataObj = jsonObject.optJSONObject("data");
 
                     JSONObject userObj = dataObj.optJSONObject("user");
                     String avatar = "";
-                    if (userObj != null)
-                    {
-                        if (userObj.optJSONObject("avatar")!=null)
-                        {
+                    if (userObj != null) {
+                        if (userObj.optJSONObject("avatar") != null) {
                             avatar = userObj.optJSONObject("avatar").optString("url");
                         }
                         String nick_name = userObj.optString("nick_name");
@@ -419,23 +412,25 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
 
     @Override
     public void onHiddenChanged(boolean hidden) {
+        System.out.println("MainPersonalFragment.onHiddenChanged");
         userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         if (!hidden && userId != -1) {
             getUserDetail();
             getUserInfo();
+            Api.getUnReadComment(userId, null, null);
         }
-        setUnreadMsg(0);
         super.onHiddenChanged(hidden);
     }
 
     public void onResume() {
         super.onResume();
-        fetchUnReadComment();
+        System.out.println("MainPersonalFragment.onResume");
+        Api.getUnReadComment(userId,null,null);
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_personal));
-        InputMethodManager inputMethodManager=(InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager inputMethodManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
         if (inputMethodManager.isActive())
-            inputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().peekDecorView().getApplicationWindowToken(),0);
+            inputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().peekDecorView().getApplicationWindowToken(), 0);
     }
 
     public void onPause() {
@@ -445,7 +440,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
 
     @Override
     public void onCount(int count) {
-        int value = CountManage.getInstance().value(CountManage.TYPE.TAG_PREPAY);
+        int value = CountManager.getInstance().value(CountManager.TYPE.TAG_PREPAY);
         tv_unpay_count.setText(value + "");
         tv_unpay_count.setVisibility(value == 0 ? View.GONE : View.VISIBLE);
 //        if (tv_unpay_count.isShown() || EMChatManager.getInstance().getUnreadMsgsCount() > 0)
@@ -478,8 +473,11 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     }
 
     @Override
-    public void onMessage(int unreadMsgCount) {
-        mHandler.sendEmptyMessage(UPDATE_UNREAD_MSG);
+    public void onChange() {
+        int unreadMsgsCount = EMChatManager.getInstance().getUnreadMsgsCount();
+        Integer NotReadNum = (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(), "NotReadNum", 0);
+        unReadMsgView.setVisibility((unreadMsgsCount + NotReadNum) > 0 ? View.VISIBLE : View.GONE);
+        unReadMsgView.setText((unreadMsgsCount + NotReadNum) > 99 ? "99+" : (unreadMsgsCount + NotReadNum) + "");
     }
 
 
@@ -505,25 +503,5 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             imageView.setVisibility(TextUtils.isEmpty(title) ? View.INVISIBLE : View.VISIBLE);
             return convertView;
         }
-    }
-
-    public void fetchUnReadComment(){
-        ZhaiDouRequest request=new ZhaiDouRequest(mContext,"http://tportal-web.zhaidou.com/comment/getUnReadNum.action?commentUserId=28822",new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject jsonObject) {
-                int status = jsonObject.optInt("status");
-                if (status==200){
-                    JSONObject data = jsonObject.optJSONObject("data");
-                    int notReadNum = data.optInt("NotReadNum");
-                    setUnreadMsg(notReadNum);
-                }
-            }
-        },new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-
-            }
-        });
-        ((ZDApplication)mContext.getApplicationContext()).mRequestQueue.add(request);
     }
 }

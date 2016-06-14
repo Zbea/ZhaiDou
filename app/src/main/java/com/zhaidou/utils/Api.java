@@ -4,9 +4,16 @@ package com.zhaidou.utils;/**
 
 import android.text.TextUtils;
 
+import com.alibaba.fastjson.JSON;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.CountManager;
+import com.zhaidou.model.Comment;
+import com.zhaidou.model.ZhaiDouRequest;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -21,6 +28,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -43,7 +51,7 @@ public class Api {
         String articleTitle = params.get("articleTitle").toString();
         String commentType = params.get("commentType").toString();
         String commentId = params.get("commentId").toString();
-        List<String> images= (List<String>) params.get("images");
+        List<String> images = (List<String>) params.get("images");
         String BOUNDARY = UUID.randomUUID().toString();
         String result = null;
         BufferedReader in = null;
@@ -56,9 +64,9 @@ public class Api {
             multipartEntity.addPart("articleTitle", new StringBody(articleTitle + ""));
             multipartEntity.addPart("commentType", new StringBody(commentType));
             multipartEntity.addPart("commentId", new StringBody(commentId));
-            for (int i = 0; images!=null&&i < images.size(); i++) {
+            for (int i = 0; images != null && i < images.size(); i++) {
                 String image = images.get(i);
-                if (!TextUtils.isEmpty(image)){
+                if (!TextUtils.isEmpty(image)) {
                     FileBody fileBody = new FileBody(new File(images.get(i)));
                     multipartEntity.addPart("files", fileBody);
                 }
@@ -82,7 +90,7 @@ public class Api {
             in.close();
             result = sb.toString();
             System.out.println("result = " + result);
-            JSONObject jsonObject=new JSONObject(result);
+            JSONObject jsonObject = new JSONObject(result);
             successListener.onSuccess(jsonObject);
             return result;
 
@@ -101,10 +109,56 @@ public class Api {
         return result;
     }
 
-    public static void deleteComment(SuccessListener successListener, ErrorListener errorListener) {
-        if (successListener != null) {
-            successListener.onSuccess(new Object());
-        }
+    public static void getUnReadComment(int userId, final SuccessListener successListener, final ErrorListener errorListener) {
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.GET, ZhaiDou.URL_GET_UNREAD_COMMETN + userId, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                int status = jsonObject.optInt("status");
+                if (status == 200) {
+                    JSONObject dataObj = jsonObject.optJSONObject("data");
+                    int notReadNum = dataObj.optInt("NotReadNum");
+                    int unReadComment = dataObj.optInt("UnReadComment");
+                    int unReadDesigner = dataObj.optInt("UnReadDesigner");
+                    JSONObject commentObj = dataObj.optJSONObject("comment");
+                    Comment comment = JSON.parseObject(commentObj.toString(), Comment.class);
+                    SharedPreferencesUtil.saveCommentData(comment,notReadNum,unReadComment,unReadDesigner);
+                    System.out.println("comment = " + comment);
+                    CountManager.getInstance().notifyCommentChange();
+                    if (successListener != null)
+                        successListener.onSuccess(jsonObject);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                if (errorListener != null)
+                    errorListener.onError(volleyError);
+            }
+        });
+        ZDApplication.mRequestQueue.add(request);
+    }
+
+    //删除评论
+    public static void deleteComment(int commentId, final SuccessListener successListener, final ErrorListener errorListener) {
+        String token = (String) SharedPreferencesUtil.getData(ZDApplication.getInstance(), "token", "");
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("id", commentId + "");
+        params.put("token", token);
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.URL_DELETE_COMMENT + commentId,params,new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (successListener != null) {
+                    successListener.onSuccess(new Object());
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                if (errorListener != null)
+                    errorListener.onError(volleyError);
+            }
+        });
+        ZDApplication.mRequestQueue.add(request);
     }
 
 

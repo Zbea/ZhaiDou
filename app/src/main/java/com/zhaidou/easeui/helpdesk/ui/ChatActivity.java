@@ -37,7 +37,7 @@ public class ChatActivity extends BaseActivity {
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
         setContentView(R.layout.em_activity_chat);
-        mTitleView = (TextView) findViewById(R.id.tv_title);
+        mTitleView = (TextView) findViewById(R.id.title_tv);
         System.out.println("ChatActivity.onCreate--->" + getIntent().getStringExtra("queueName"));
         mTitleView.setText("service".equalsIgnoreCase(getIntent().getStringExtra(Constant.EXTRA_USER_ID)) ? "在线客服" : "在线设计师");
         activityInstance = this;
@@ -77,6 +77,8 @@ public class ChatActivity extends BaseActivity {
                     easeUser.setAvatar(R.drawable.icon_servicer + "");
                 } else if ("designer".equalsIgnoreCase(username)) {
                     easeUser.setAvatar(R.drawable.icon_designer + "");
+                }else if ("comment".equalsIgnoreCase(username)){
+                    easeUser.setAvatar(R.drawable.icon_comment+"");
                 }
                 return easeUser;
             }

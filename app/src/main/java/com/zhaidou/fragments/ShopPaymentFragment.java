@@ -35,7 +35,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.alipay.PayResult;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.base.CountManage;
+import com.zhaidou.base.CountManager;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
 import com.zhaidou.model.Store;
@@ -123,7 +123,7 @@ public class ShopPaymentFragment extends BaseFragment
                     {
                         isSuccess = true;
                         notificationPaySuccess();
-                        CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
+                        CountManager.getInstance().minus(CountManager.TYPE.TAG_PREPAY);
                         ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, payMoney+"");
                         ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
 //                        ((MainActivity) getActivity()).popToStack(ShopPaymentFragment.this);
@@ -343,7 +343,7 @@ public class ShopPaymentFragment extends BaseFragment
                             timeInfoTv.setText("00:00");
                             stopView();
                         }
-                        CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
+                        CountManager.getInstance().minus(CountManager.TYPE.TAG_PREPAY);
                     }
                 }
             });
@@ -648,7 +648,7 @@ public class ShopPaymentFragment extends BaseFragment
             case 0://支付成功
                 Log.i("----->", "支付成功");
                 if (!isSuccess){
-                CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
+                CountManager.getInstance().minus(CountManager.TYPE.TAG_PREPAY);
                 notificationPaySuccess();
                 ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, payMoney+"");
                 ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);

@@ -25,18 +25,22 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.easemob.chat.EMChatManager;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
+import com.zhaidou.base.CountManager;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
 import com.zhaidou.model.SwitchImage;
+import com.zhaidou.utils.Api;
 import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -56,7 +60,7 @@ import java.util.WeakHashMap;
 
 public class MainHomeFragment extends BaseFragment implements
         AdapterView.OnItemClickListener, View.OnClickListener,
-        PullToRefreshBase.OnRefreshListener2<ScrollView>
+        PullToRefreshBase.OnRefreshListener2<ScrollView>,CountManager.onCommentChangeListener
 
 {
     private static final String URL = "targetUrl";
@@ -119,6 +123,7 @@ public class MainHomeFragment extends BaseFragment implements
             }
         }
     };
+    private TextView unreadMsg;
 
 
     /**
@@ -317,7 +322,12 @@ public class MainHomeFragment extends BaseFragment implements
 
         linearLayout = (LinearLayout) view.findViewById(R.id.bannerView);
         linearLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 300 / 750));
+        unreadMsg = (TextView) view.findViewById(R.id.unreadMsg);
         initDate();
+        Integer userId= (Integer) SharedPreferencesUtil.getData(mContext,"userId",-1);
+        if (userId!=-1)
+            Api.getUnReadComment(userId,null,null);
+        CountManager.getInstance().setOnCommentChangeListener(this);
     }
 
     private void initDate()
@@ -357,6 +367,14 @@ public class MainHomeFragment extends BaseFragment implements
     {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onChange() {
+        int unreadMsgsCount = EMChatManager.getInstance().getUnreadMsgsCount();
+        Integer NotReadNum= (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(),"NotReadNum",0);
+        unreadMsg.setVisibility((unreadMsgsCount + NotReadNum) > 0 ? View.VISIBLE : View.GONE);
+        unreadMsg.setText((unreadMsgsCount+NotReadNum) > 99 ? "99+" : (unreadMsgsCount+NotReadNum) + "");
     }
 
 
@@ -668,7 +686,9 @@ public class MainHomeFragment extends BaseFragment implements
                 initDate();
             }
         }
-
+        Integer userId= (Integer) SharedPreferencesUtil.getData(mContext,"userId",-1);
+        if (userId!=-1)
+            Api.getUnReadComment(userId, null, null);
     }
 
 

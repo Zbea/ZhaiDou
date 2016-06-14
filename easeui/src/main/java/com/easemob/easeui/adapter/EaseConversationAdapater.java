@@ -1,6 +1,7 @@
 package com.easemob.easeui.adapter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -25,6 +26,8 @@ import com.easemob.easeui.utils.EaseSmileUtils;
 import com.easemob.easeui.utils.EaseUserUtils;
 import com.easemob.easeui.widget.EaseImageView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -131,6 +134,8 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
             holder.name.setText("service".equalsIgnoreCase(username)?"客服":"comment".equalsIgnoreCase(username)?"评论":"设计师");
 //			EaseUserUtils.setUserNick(username, holder.name);
 		}
+
+
 //
 		if (conversation.getUnreadMsgCount() > 0) {
 			// 显示与此用户的消息未读数
@@ -153,6 +158,26 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 				holder.msgState.setVisibility(View.GONE);
 			}
 		}
+
+        if ("comment".equalsIgnoreCase(username)){
+            SharedPreferences sharedPreferences = getContext().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
+            int unReadComment = sharedPreferences.getInt("UnReadComment",0);
+            String commentUserName = sharedPreferences.getString("commentUserName", "");
+            String content = sharedPreferences.getString("content", "");
+            String createTime = sharedPreferences.getString("createTime", "");
+            System.out.println("unReadComment = " + unReadComment);
+            holder.unreadLabel.setVisibility(unReadComment>0?View.VISIBLE:View.GONE);
+//            holder.name.setText(commentUserName);
+            holder.message.setText(content);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            if (!TextUtils.isEmpty(createTime))
+                try {
+                    holder.time.setText(DateUtils.convertTimeToFormat(sdf.parse(createTime).getTime()));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+        }
+
 		/**
 		 * 设置自定义 ImageView 的属性
 		 */
@@ -315,4 +340,6 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 		RelativeLayout list_itease_layout;
 
 	}
+
+
 }
