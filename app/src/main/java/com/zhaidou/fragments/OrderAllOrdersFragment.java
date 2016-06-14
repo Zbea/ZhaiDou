@@ -32,7 +32,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
-import com.zhaidou.base.CountManage;
+import com.zhaidou.base.CountManager;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Order1;
 import com.zhaidou.model.Store;
@@ -237,7 +237,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                                         if (200 == status) {
                                             order.status = ZhaiDou.STATUS_ORDER_CANCEL;
                                             order.orderShowStatus = "已取消";
-                                            CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
+                                            CountManager.getInstance().minus(CountManager.TYPE.TAG_PREPAY);
                                         }
                                         ShowToast(status == 200 ? "取消订单成功" : message);
                                     }
@@ -372,7 +372,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                 String message = jsonObject.optString("message");
                 int totalCount = jsonObject.optInt("totalCount");
                 if (type.equalsIgnoreCase(ZhaiDou.TYPE_ORDER_PREPAY))
-                    CountManage.getInstance().init(CountManage.TYPE.TAG_PREPAY, totalCount);
+                    CountManager.getInstance().init(CountManager.TYPE.TAG_PREPAY, totalCount);
                 if (status == 200) {
                     JSONArray dataArray = jsonObject.optJSONArray("data");
                     int pageNo = jsonObject.optInt("pageNo");
@@ -480,7 +480,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         btn2.setBackgroundResource(R.drawable.btn_red_click_selector);
                     } else {
                         if (!btn2.getText().toString().equalsIgnoreCase("超时过期"))
-                            CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
+                            CountManager.getInstance().minus(CountManager.TYPE.TAG_PREPAY);
                         btn2.setText("超时过期");
                         ll_btn.setVisibility(View.GONE);
                         btn2.setBackgroundResource(R.drawable.btn_no_click_selector);
@@ -558,7 +558,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         }
         isViewDestroy = true;
         if (ZhaiDou.TYPE_ORDER_PREPAY.equalsIgnoreCase(mCurrentType))
-            CountManage.getInstance().refreshData();
+            CountManager.getInstance().refreshData();
         super.onDestroyView();
     }
 

@@ -77,7 +77,7 @@
         android:layout_toRightOf="@id/msg_state"
         android:ellipsize="end"
         android:paddingBottom="7dp"
-        android:paddingLeft="5dp"
+        android:paddingLeft="10dp"
         android:paddingRight="7dp"
         android:paddingTop="7dp"
         android:singleLine="true"

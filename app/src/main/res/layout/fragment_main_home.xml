@@ -19,16 +19,37 @@
             android:text="@string/title_home"
             android:textColor="@color/text_main_color"
             android:textSize="18sp"/>
-
-        <ImageView
-            android:id="@+id/iv_message"
-            android:layout_width="50dp"
-            android:layout_height="match_parent"
+        <FrameLayout
+            android:id="@+id/unreadMsgLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:padding="14dp"
-            android:src="@drawable/icon_goods_message"/>
+            android:visibility="visible">
 
+            <ImageView
+                android:id="@+id/iv_message"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:padding="14dp"
+                android:src="@drawable/icon_goods_message"/>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/unreadMsg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|center"
+                android:background="@drawable/msg_selector"
+                android:gravity="center"
+                android:minWidth="15dp"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="-8dp"
+                android:textColor="@color/white"
+                android:visibility="gone"
+                android:textSize="11sp" />
+        </FrameLayout>
     </RelativeLayout>
 
 

@@ -7,8 +7,10 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.utils.SharedPreferencesUtil;
 
 import org.json.JSONException;
@@ -39,6 +41,12 @@ public class ZhaiDouRequest extends Request<JSONObject> {
         mContext=context;
         initHeader();
     }
+    public ZhaiDouRequest(int method,String url, Response.Listener<JSONObject> listener,
+                          Response.ErrorListener errorListener) {
+        super(method, url, errorListener);
+        mListener = listener;
+        initHeader();
+    }
     public ZhaiDouRequest(Context context,int method, String url, Response.Listener<JSONObject> listener,
                       Response.ErrorListener errorListener) {
         super(method, url, errorListener);
@@ -51,6 +59,11 @@ public class ZhaiDouRequest extends Request<JSONObject> {
         this(context,Method.POST, url, listener, errorListener);
         this.params=params;
         mContext=context;
+        initHeader();
+    }
+    public ZhaiDouRequest(int method,String url,Map<String,String> params, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+        this(Method.POST, url, listener, errorListener);
+        this.params=params;
         initHeader();
     }
 
@@ -88,8 +101,12 @@ public class ZhaiDouRequest extends Request<JSONObject> {
 
     private void initHeader(){
         mHeaders=new HashMap<String, String>();
-        mHeaders.put("SECAuthorization", (String) SharedPreferencesUtil.getData(mContext, "token", ""));
-        mHeaders.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+        mHeaders.put("SECAuthorization", (String) SharedPreferencesUtil.getData(ZDApplication.getInstance(), "token", ""));
+        mHeaders.put("ZhaidouVesion", ZDApplication.getInstance().getResources().getString(R.string.app_versionName));
     }
 
+    @Override
+    public RetryPolicy getRetryPolicy() {
+        return super.getRetryPolicy();
+    }
 }

@@ -126,10 +126,11 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
         commentListAdapter.setOnInViewLongClickListener(R.id.commemtLayout, new BaseListAdapter.onInternalLongClickListener() {
             @Override
             public boolean OnLongClickListener(View parentV, View v, final Integer position, Object values) {
+                final Comment comment= (Comment) values;
                 mDialogUtils.showListDialog(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-                        Api.deleteComment(new Api.SuccessListener() {
+                        Api.deleteComment(comment.commentUserId,new Api.SuccessListener() {
                             @Override
                             public void onSuccess(Object object) {
                                 if (object != null) {
@@ -177,7 +178,6 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
                 params.put("commentType", comment.commentType);
                 params.put("commentId", comment.id);
                 mDialogUtils.showLoadingDialog();
-
                 new Thread(new Runnable() {
                     @Override
                     public void run() {

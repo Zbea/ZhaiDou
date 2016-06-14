@@ -3,9 +3,13 @@ package com.zhaidou.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.zhaidou.ZDApplication;
+import com.zhaidou.model.Comment;
 import com.zhaidou.model.User;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by wangclark on 15/7/3.
@@ -117,5 +121,31 @@ public class SharedPreferencesUtil {
         }
         editor.putInt("historyCount",0);
         editor.commit();
+    }
+
+    public static void saveCommentData(Comment comment,int notReadNum,int unreadComment,int unReadDesigner){
+        SharedPreferences mSharedPreferences = ZDApplication.getInstance().getSharedPreferences
+                (SPName, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString("content",comment.content);
+        editor.putString("commentUserName", comment.commentUserName);
+        editor.putString("articleTitle",comment.articleTitle);
+        editor.putString("status",comment.status);
+        editor.putString("createTime",comment.createTime);
+        editor.putInt("NotReadNum", notReadNum);
+        editor.putInt("UnReadComment", unreadComment);
+        editor.putInt("UnReadDesigner", unReadDesigner);
+        editor.commit();
+    }
+
+    public static Map<String,Integer> getUnReadComment(){
+        Map<String,Integer> map=new HashMap<String, Integer>();
+        Integer NotReadNum     = (Integer) getData(ZDApplication.getInstance(), "NotReadNum", 0);
+        Integer UnReadComment  = (Integer) getData(ZDApplication.getInstance(), "UnReadComment", 0);
+        Integer UnReadDesigner = (Integer) getData(ZDApplication.getInstance(), "UnReadDesigner", 0);
+        map.put("NotReadNum",NotReadNum);
+        map.put("UnReadComment",UnReadComment);
+        map.put("UnReadDesigner",UnReadDesigner);
+        return map;
     }
 }

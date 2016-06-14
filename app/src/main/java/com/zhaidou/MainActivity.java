@@ -43,7 +43,7 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.base.AccountManage;
 import com.zhaidou.base.BaseActivity;
-import com.zhaidou.base.CountManage;
+import com.zhaidou.base.CountManager;
 import com.zhaidou.base.EaseManage;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.fragments.DiyFragment;
@@ -83,7 +83,7 @@ import java.util.Map;
 /**
  */
 public class MainActivity extends BaseActivity implements DiyFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
-        MainHomeFragment.OnFragmentInteractionListener, MainCategoryFragment.OnFragmentInteractionListener, RegisterFragment.RegisterOrLoginListener, CountManage.onCountChangeListener, AccountManage.AccountListener, EaseManage.onMessageChange {
+        MainHomeFragment.OnFragmentInteractionListener, MainCategoryFragment.OnFragmentInteractionListener, RegisterFragment.RegisterOrLoginListener, CountManager.onCountChangeListener, AccountManage.AccountListener, EaseManage.onMessageChange {
 
     private FragmentManager manager;
     private Fragment utilityFragment;
@@ -265,7 +265,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             public void onFailure(int i, String s) {
             }
         });
-        CountManage.getInstance().setOnCountChangeListener(this);
+        CountManager.getInstance().setOnCountChangeListener(this);
         AccountManage.getInstance().register(this);
         EaseManage.getInstance().setOnMessageChange(this);
         if (checkLogin()){
@@ -291,7 +291,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 int status = jsonObject.optInt("status");
                 int totalCount = jsonObject.optInt("totalCount");
                 if (status==200){
-                    CountManage.getInstance().init(CountManage.TYPE.TAG_PREPAY,totalCount);
+                    CountManager.getInstance().init(CountManager.TYPE.TAG_PREPAY,totalCount);
                 }
             }
         }, new Response.ErrorListener() {

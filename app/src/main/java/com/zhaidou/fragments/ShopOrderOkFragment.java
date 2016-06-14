@@ -33,7 +33,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.base.CountManage;
+import com.zhaidou.base.CountManager;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.dialog.CustomToastDialog;
 import com.zhaidou.model.Address;
@@ -213,7 +213,7 @@ public class ShopOrderOkFragment extends BaseFragment
 
                     String result = (String) msg.obj;
                     ToolUtils.setLog(result);
-                    CountManage.getInstance().add(CountManage.TYPE.TAG_PREPAY);
+                    CountManager.getInstance().add(CountManager.TYPE.TAG_PREPAY);
                     try
                     {
                         JSONObject jsonObject = new JSONObject(result);

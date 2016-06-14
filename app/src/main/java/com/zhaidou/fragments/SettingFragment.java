@@ -27,7 +27,7 @@ import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.AccountManage;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.base.CountManage;
+import com.zhaidou.base.CountManager;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.easeui.helpdesk.EaseHelper;
 import com.zhaidou.utils.DialogUtils;
@@ -74,7 +74,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
             switch (msg.what) {
                 case CLEAR_USER_DATA:
                     SharedPreferencesUtil.clearUser(getActivity());
-                    CountManage.getInstance().clearCache();
+                    CountManager.getInstance().clearCache();
                     AccountManage.getInstance().notifyLogOut();
                     Intent intent = new Intent(ZhaiDou.IntentRefreshLoginExitTag);
                     mContext.sendBroadcast(intent);
