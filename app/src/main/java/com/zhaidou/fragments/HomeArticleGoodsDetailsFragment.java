@@ -78,6 +78,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     private String mString;
     private View view;
     private RelativeLayout barLine;
+    private CircleImageView headerImageIv;
     private ImageView shareIv, goodsIv, imageIv, commentIv;
     private CustomProgressWebview webview;
     private ListViewForScrollView goodsListView, commentListView;
@@ -85,7 +86,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     private TextView reloadBtn, reloadNetBtn;
     private LinearLayout contactQQ;
     private RelativeLayout detailsTopLine;
-    private TextView titleTv, areaTypeTv, areasTv, styleTv, budgetTv, nullGoods, nullComment, subtotalTv, commentNumTv;
+    private TextView headerNameTv,titleTv, areaTypeTv, areasTv, styleTv, budgetTv, nullGoods, nullComment, subtotalTv, commentNumTv;
     private LinearLayout totalLine, goodsAllBtn, commentAllLine, commentAllBtn;
     private FrameLayout frameLayout;
     private LinearLayout commentLine;
@@ -108,7 +109,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     private int pageSize;
     private int pageCount, commentCount=0;
     private int commentNum;
-    private String imageUrl, title, introduce, areaType, areaSize, style, budget, totalPrice;
+    private String imageUrl,header,headerName,title, introduce, areaType, areaSize, style, budget, totalPrice;
     private List<CartGoodsItem> items = new ArrayList<CartGoodsItem>();
     private AlphaAnimation alphaAnimation;
     private List<Comment> comments = new ArrayList<Comment>();
@@ -120,14 +121,16 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         {
             if (msg.what == 1)
             {
+                headerNameTv.setText(headerName);
                 titleTv.setText(title);
                 areaTypeTv.setText(areaType);
-                areasTv.setText(areaSize + "平");
+                areasTv.setText(areaSize);
                 styleTv.setText(style);
                 budgetTv.setText(budget);
                 subtotalTv.setText("￥" + ToolUtils.isIntPrice(totalPrice));
                 commentNumTv.setVisibility(commentNum > 0 ? View.VISIBLE : View.GONE);
 
+                ToolUtils.setImageCacheUrl(header, headerImageIv, R.drawable.icon_loading_item);
                 ToolUtils.setImageCacheUrl(imageUrl, imageIv, R.drawable.icon_loading_item);
 
                 webview.loadData(introduce, "text/html; charset=UTF-8", "UTF-8");
@@ -274,6 +277,8 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                                         comments.remove(4);
                                         comments.add(0, comment);
                                     }
+                                    nullComment.setVisibility(comments.size() > 0 ? View.GONE : View.VISIBLE);
+                                    commentAllLine.setVisibility(comments.size() > 0 ? View.VISIBLE : View.GONE);
                                     commentAdapter.notifyDataSetChanged();
                                 }
                             }
@@ -343,6 +348,9 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         reloadBtn.setOnClickListener(onClickListener);
         reloadNetBtn = (TextView) view.findViewById(R.id.netReload);
         reloadNetBtn.setOnClickListener(onClickListener);
+
+        headerImageIv= (CircleImageView) view.findViewById(R.id.detailsHeaderIv);
+        headerNameTv= (TextView) view.findViewById(R.id.detailsHeaderNameTv);
 
         detailsTopLine = (RelativeLayout) view.findViewById(R.id.detailsTopLine);
         detailsTopLine.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 800 / 750));
@@ -574,6 +582,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                             pageCount = jsonObject1.optInt("totalCount");
                             pageSize = jsonObject1.optInt("pageSize");
                             totalPrice = jsonObject1.optString("totalPrice");
+
                             JSONObject jsonObject = jsonObject1.optJSONObject("freeClassicsCasePO");
                             String id = jsonObject.optString("id");
                             title = jsonObject.optString("caseName");
@@ -585,6 +594,10 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                             style = jsonObject.optString("style");
                             budget = jsonObject.optString("budget");
                             commentNum = jsonObject.optInt("commentCount");
+
+                            JSONObject jsonObject2 = jsonObject1.optJSONObject("designerUserPO");
+                            header = jsonObject2.optString("imageUrl");
+                            headerName = jsonObject2.optString("name");
 
                             JSONArray jsonArray = jsonObject1.optJSONArray("changeCaseProductPOs");
                             if (jsonArray != null)

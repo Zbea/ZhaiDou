@@ -165,7 +165,7 @@ public class CustomBannerView extends FrameLayout
                 params.leftMargin = 0;
             } else
             {
-                params.leftMargin = 20;
+                params.leftMargin = 15;
             }
             dot_iv.setLayoutParams(params);
             dots.add(dot_iv);
@@ -203,9 +203,9 @@ public class CustomBannerView extends FrameLayout
         Paint paint=new Paint();
         paint.setAntiAlias(true);
         paint.setColor(Color.parseColor("#f1f1f1"));
-        norBitmap=Bitmap.createBitmap(18,18, Bitmap.Config.ARGB_8888);
+        norBitmap=Bitmap.createBitmap(50,10, Bitmap.Config.ARGB_8888);
         Canvas canvas=new Canvas(norBitmap);
-        canvas.drawCircle(9, 9, 9, paint);
+        canvas.drawRect(0, 0, 50,6, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(norBitmap,0,0,paint);
 
@@ -216,10 +216,10 @@ public class CustomBannerView extends FrameLayout
     {
         Paint paint=new Paint();
         paint.setAntiAlias(true);
-        paint.setColor(Color.WHITE);
-        selectBitmap=Bitmap.createBitmap(18,18, Bitmap.Config.ARGB_8888);
+        paint.setColor(Color.parseColor("#3fcccb"));
+        selectBitmap=Bitmap.createBitmap(50,10, Bitmap.Config.ARGB_8888);
         Canvas canvas=new Canvas(selectBitmap);
-        canvas.drawCircle(9, 9, 9, paint);
+        canvas.drawRect(0, 0, 50,6, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(selectBitmap,0,0,paint);
     }

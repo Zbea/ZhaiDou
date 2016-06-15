@@ -32,14 +32,16 @@
                     android:layout_alignParentTop="true"
                     android:src="@drawable/icon_loading_item"/>
 
-                <ImageView
+                <com.zhaidou.view.CircleImageView
                     android:id="@+id/detailsHeaderIv"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_centerInParent="true"
-                    android:src="@drawable/icon_header_dudu"/>
+                    android:src="@drawable/icon_header_dudu"
+                    />
 
                 <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/detailsHeaderNameTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/text_normal_color"
