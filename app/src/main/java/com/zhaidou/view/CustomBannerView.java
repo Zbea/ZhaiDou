@@ -180,7 +180,7 @@ public class CustomBannerView extends FrameLayout
             dotsLine.addView(dot_iv);
         }
 
-        viewPager = (ViewPager) findViewById(R.id.customVp);
+        viewPager = (ViewPager)view.findViewById(R.id.customVp);
 
         if (imgs.size()>1)
         {

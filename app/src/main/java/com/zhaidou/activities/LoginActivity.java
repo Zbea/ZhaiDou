@@ -345,7 +345,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                System.out.println("volleyError.networkResponse.toString() = " + volleyError.networkResponse.toString());
                 System.out.println("volleyError.getLocalizedMessage() = " + volleyError.getLocalizedMessage());
 
             }

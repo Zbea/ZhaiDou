@@ -57,6 +57,7 @@ import com.zhaidou.view.ListViewForScrollView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -513,7 +514,9 @@ public class SoftListDetailFragment extends BaseFragment {
                         if (jsonObject1 != null) {
                             pageCount = jsonObject1.optInt("totalCount");
                             pageSize = jsonObject1.optInt("pageSize");
-                            totalPrice = jsonObject1.optString("totalPrice");
+                            double aDouble= jsonObject1.optDouble("totalPrice");
+                            BigDecimal bigDecimal=new BigDecimal(aDouble);
+                            totalPrice=String.valueOf(bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue()) ;
 
                             JSONObject jsonObject = jsonObject1.optJSONObject("designerListPO");
                             String id = jsonObject.optString("id");

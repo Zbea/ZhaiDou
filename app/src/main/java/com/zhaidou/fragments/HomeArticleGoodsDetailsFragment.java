@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -55,6 +56,7 @@ import com.zhaidou.view.ListViewForScrollView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -212,6 +214,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 @Override
                 public void GetComments(List<Comment> comments1,int num)
                 {
+                    if (comments1!=null&&comments1.size()>0)
                     if (comments!=comments1)
                     {
                         comments.clear();
@@ -581,7 +584,9 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                         {
                             pageCount = jsonObject1.optInt("totalCount");
                             pageSize = jsonObject1.optInt("pageSize");
-                            totalPrice = jsonObject1.optString("totalPrice");
+                            double aDouble= jsonObject1.optDouble("totalPrice");
+                            BigDecimal bigDecimal=new BigDecimal(aDouble);
+                            totalPrice=String.valueOf(bigDecimal.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue()) ;
 
                             JSONObject jsonObject = jsonObject1.optJSONObject("freeClassicsCasePO");
                             String id = jsonObject.optString("id");
@@ -681,7 +686,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     {
         String url = ZhaiDou.HomeArticleCommentUrl + mString + "&pageNo=" + page + "&pageSize=20";
         ToolUtils.setLog(url);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url,
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url,
                 new Response.Listener<JSONObject>()
                 {
                     @Override
@@ -724,7 +729,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                                         }
                                         int commentUserId = jsonComment.optInt("commentUserId");
                                         String commentUserName = jsonComment.optString("commentUserName");
-                                        String commentUserImg = "http://" + jsonComment.optString("commentUserImg");
+                                        String commentUserImg = jsonComment.optString("commentUserImg");
                                         String articleId = jsonComment.optString("articleId");
                                         String articleTitle = jsonComment.optString("articleTitle");
                                         String commentType = jsonComment.optString("commentType");
@@ -769,7 +774,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                                         }
                                         int reCommentUserId = jsonReComment.optInt("commentUserId");
                                         String reCommentUserName = jsonReComment.optString("commentUserName");
-                                        String reCommentUserImg = "http://" + jsonReComment.optString("commentUserImg");
+                                        String reCommentUserImg = jsonReComment.optString("commentUserImg");
                                         String reCommentArticleId = jsonReComment.optString("articleId");
                                         String reCommentArticleTitle = jsonReComment.optString("articleTitle");
                                         String reCommentType = jsonReComment.optString("commentType");
@@ -827,6 +832,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 return headers;
             }
         };
+        request.setRetryPolicy(new DefaultRetryPolicy(5000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         ZDApplication.mRequestQueue.add(request);
     }
 

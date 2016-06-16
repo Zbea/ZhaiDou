@@ -379,7 +379,7 @@ public class MainGoodsFragment extends BaseFragment implements
         mRequestQueue = Volley.newRequestQueue(getActivity());
 
         linearLayout = (LinearLayout) view.findViewById(R.id.bannerView);
-        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 300 / 750));
+//        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 400 / 750));
         initDate();
         Integer userId= (Integer) SharedPreferencesUtil.getData(mContext,"userId",-1);
         if (userId!=-1)
