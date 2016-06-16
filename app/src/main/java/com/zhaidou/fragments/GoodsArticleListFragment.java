@@ -227,20 +227,26 @@ public class GoodsArticleListFragment extends BaseFragment
                                     int caseId = obj.optInt("caseId");
                                     String type = obj.optString("goodsType");
                                     String title = obj.optString("goodsTitle");
+                                    String productCode = obj.optString("productCode");
                                     String productSkuCode = obj.optString("productSkuCode");
+                                    String productSku = obj.optString("goodsAttr");
                                     DecimalFormat df = new DecimalFormat("#.00");
-                                    double price = Double.parseDouble(df.format(obj.optDouble("tshPrice")));
+                                    double price = Double.parseDouble(df.format(obj.optDouble("price")));
                                     String imageUrl = obj.optString("mainPic");
-                                    String url = obj.optString("url");
+                                    String url = "http://" + obj.optString("aUrl");
                                     int num = obj.optInt("quantity");
-                                    CartGoodsItem cartGoodsItem=new CartGoodsItem();
-                                    cartGoodsItem.id=baseid;
-                                    cartGoodsItem.id=caseId;
-                                    cartGoodsItem.num=num;
-                                    cartGoodsItem.imageUrl=imageUrl;
-                                    cartGoodsItem.sizeId=productSkuCode;
-                                    cartGoodsItem.name=title;
-                                    cartGoodsItem.storeId=type;
+                                    CartGoodsItem cartGoodsItem = new CartGoodsItem();
+                                    cartGoodsItem.id = baseid;
+                                    cartGoodsItem.id = caseId;//商品id
+                                    cartGoodsItem.goodsId = productCode;
+                                    cartGoodsItem.num = num;
+                                    cartGoodsItem.imageUrl = imageUrl;
+                                    cartGoodsItem.size = productSku;
+                                    cartGoodsItem.sizeId = productSkuCode;
+                                    cartGoodsItem.currentPrice = price;
+                                    cartGoodsItem.name = title;
+                                    cartGoodsItem.storeId = type;//商品类型
+                                    cartGoodsItem.userId = url;//跳转地址
                                     articleList.add(cartGoodsItem);
                                 }
                             Message message = new Message();

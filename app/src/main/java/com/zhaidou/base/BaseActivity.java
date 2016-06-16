@@ -61,6 +61,7 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
     }
     public void popToStack(Fragment fragment) {
 
+        
         FragmentManager fragmentManager = getSupportFragmentManager();
         //.setCustomAnimations(R.anim.page_out_into_the,R.anim.page_out_out_the)
         fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();

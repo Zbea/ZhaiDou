@@ -334,6 +334,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
             public void onTextChanged(CharSequence s, int start, int before, int count)
             {
                 commentInfo=s.toString();
+                commentInfo=commentInfo.replaceAll("\\s*","");
                 listenerCommitBtn();
             }
             @Override
@@ -341,6 +342,9 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
             {
             }
         });
+        editText.setFocusable(true);
+        editText.setFocusableInTouchMode(true);
+        editText.requestFocus();
 
         imageLine = (LinearLayout) mView.findViewById(R.id.comment_image_line);
 
