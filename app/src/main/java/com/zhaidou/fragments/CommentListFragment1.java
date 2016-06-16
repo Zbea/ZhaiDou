@@ -359,6 +359,7 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
                 });
             } else {
                 mCommentLayout.setVisibility(View.GONE);
+
             }
             if (replay.reComment != null) {
                 List<String> reImageList=!TextUtils.isEmpty(replay.reComment.imgMd5) ?
