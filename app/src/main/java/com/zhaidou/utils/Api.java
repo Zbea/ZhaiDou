@@ -1,7 +1,4 @@
-package com.zhaidou.utils;/**
- * Created by wangclark on 16/6/7.
- */
-
+package com.zhaidou.utils;
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;

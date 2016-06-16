@@ -14,7 +14,12 @@
 	    />
     
     <include layout="@layout/ease_search_bar" />
-    
+    <include
+        android:id="@+id/headLine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        layout="@layout/head_style_page"></include>
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

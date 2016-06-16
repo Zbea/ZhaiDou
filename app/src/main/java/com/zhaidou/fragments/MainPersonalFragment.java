@@ -30,7 +30,6 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.activities.ConversationListActivity;
 import com.zhaidou.activities.CouponsContainerFragment;
 import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.base.AccountManage;
@@ -40,6 +39,7 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.CountManager;
 import com.zhaidou.base.ProfileManage;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.easeui.helpdesk.ui.ConversationListFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.Api;
 import com.zhaidou.utils.EaseUtils;
@@ -296,9 +296,11 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 ((MainActivity) getActivity()).navigationToFragmentWithAnim(mProfileFragment);
                 break;
             case R.id.unreadMsgLayout:
-                Intent intent1 = new Intent(getActivity(), ConversationListActivity.class);
-                intent1.putExtra("userId", "service");
-                startActivity(intent1);
+//                Intent intent1 = new Intent(getActivity(), ConversationListActivity.class);
+//                intent1.putExtra("userId", "service");
+//                startActivity(intent1);
+                ConversationListFragment conversationListFragment=new ConversationListFragment();
+                ((MainActivity)mContext).navigationToFragment(conversationListFragment);
                 break;
         }
     }

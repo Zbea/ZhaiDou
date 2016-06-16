@@ -3,11 +3,11 @@ package com.zhaidou.model;
 import android.content.Context;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.RetryPolicy;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
@@ -103,10 +103,6 @@ public class ZhaiDouRequest extends Request<JSONObject> {
         mHeaders=new HashMap<String, String>();
         mHeaders.put("SECAuthorization", (String) SharedPreferencesUtil.getData(ZDApplication.getInstance(), "token", ""));
         mHeaders.put("ZhaidouVesion", ZDApplication.getInstance().getResources().getString(R.string.app_versionName));
-    }
-
-    @Override
-    public RetryPolicy getRetryPolicy() {
-        return super.getRetryPolicy();
+        setRetryPolicy(new DefaultRetryPolicy(60 * 1000, 1, 1.0f));
     }
 }

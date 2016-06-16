@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.text.Html;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,9 +31,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshListView;
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.PhotoViewActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -76,15 +80,15 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
     private final int MENU_PHOTO_SELECTED = 1;
     private File file;
 
-    private final int UPDATE_UI_LIST=0;
-    private Handler mHandler=new Handler(){
+    private final int UPDATE_UI_LIST = 0;
+    private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
+            switch (msg.what) {
                 case UPDATE_UI_LIST:
                     commentListAdapter.clear();
                     listView.setMode(PullToRefreshBase.Mode.BOTH);
-                    fetchData(mCurrentPage=1);
+                    fetchData(mCurrentPage = 1);
                     break;
             }
         }
@@ -118,7 +122,7 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
         listView = new PullToRefreshListView(mContext);
         listView.setMode(PullToRefreshBase.Mode.BOTH);
         listView.setOnRefreshListener(this);
-        ArrayList<Comment> list = new ArrayList<Comment>();
+        ArrayList<Entity> list = new ArrayList<Entity>();
         commentListAdapter = new CommentListAdapter(mContext, list);
         listView.setAdapter(commentListAdapter);
         mDialogUtils = new DialogUtils(mContext);
@@ -127,11 +131,12 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
         commentListAdapter.setOnInViewLongClickListener(R.id.commemtLayout, new BaseListAdapter.onInternalLongClickListener() {
             @Override
             public boolean OnLongClickListener(View parentV, View v, final Integer position, Object values) {
-                final Comment comment= (Comment) values;
+                System.out.println("CommentListFragment1.OnLongClickListener");
+                final Comment comment = (Comment) values;
                 mDialogUtils.showListDialog(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-                        Api.deleteComment(comment.commentUserId,new Api.SuccessListener() {
+                        Api.deleteComment(comment.commentUserId, new Api.SuccessListener() {
                             @Override
                             public void onSuccess(Object object) {
                                 if (object != null) {
@@ -156,17 +161,25 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
         commentListAdapter.setOnInViewClickListener(R.id.username, new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                Comment comment = (Comment) values;
-                System.out.println("comment = " + comment);
-                showCommentDialog(values);
+                Entity entity = (Entity) values;
+                showCommentDialog(entity);
             }
         });
-
+        commentListAdapter.setOnInViewClickListener(R.id.subject,new BaseListAdapter.onInternalClickListener() {
+            @Override
+            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                System.out.println("parentV = [" + parentV + "], v = [" + v + "], position = [" + position + "], values = [" + values + "]");
+                Entity entity= (Entity) values;
+                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment=HomeArticleGoodsDetailsFragment.newInstance("",entity.comment.articleId);
+                ((MainActivity)mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
+            }
+        });
         return listView;
     }
 
     private void showCommentDialog(Object values) {
-        final Comment comment = (Comment) values;
+        final Entity entity = (Entity) values;
+        final Comment comment = entity.comment;
         mDialogUtils.showCommentDialog(new DialogUtils.onCommentListener() {
             @Override
             public void onComment(Object object) {
@@ -186,10 +199,10 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
                             @Override
                             public void onSuccess(Object object) {
                                 mDialogUtils.dismiss();
-                                JSONObject jsonObject= (JSONObject) object;
-                                if (jsonObject!=null){
+                                JSONObject jsonObject = (JSONObject) object;
+                                if (jsonObject != null) {
                                     int status = jsonObject.optInt("status");
-                                    if (status==200){
+                                    if (status == 200) {
 //                                        mHandler.sendEmptyMessage(UPDATE_UI_LIST);
                                         ShowToast("回复成功");
                                     }
@@ -239,7 +252,7 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
         Integer userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
         Map<String, String> params = new HashMap<String, String>();
         params.put("commentType", mParam2);
-        params.put("commentUserId", userId+"");
+        params.put("commentUserId", userId + "");
         params.put("pageSize", "20");
         params.put("pageNo", "" + page);
         ZhaiDouRequest request = new ZhaiDouRequest(mContext, Request.Method.POST, "http://tportal-web.zhaidou.com/comment/getCommentList.action", params, new Response.Listener<JSONObject>() {
@@ -251,17 +264,25 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
                 int status = jsonObject.optInt("status");
                 if (status == 200) {
                     JSONObject data = jsonObject.optJSONObject("data");
+                    JSONArray items = data.optJSONArray("items");
                     int totalCount = data.optInt("totalCount");
                     if (totalCount < 20)
                         listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
-                    JSONArray items = data.optJSONArray("items");
-                    List<Comment> commentList = new ArrayList<Comment>();
-                    for (int i = 0; i < items.length(); i++) {
-                        JSONObject commentObj = items.optJSONObject(i).optJSONObject("comment");
-                        Comment comments = JSON.parseObject(commentObj.toString(), Comment.class);
-                        commentList.add(comments);
+                    List<Entity> replays = new ArrayList<Entity>();
+                    for (int i = 0; items != null && i < items.length(); i++) {
+                        JSONObject itemObj = items.optJSONObject(i);
+//                        Entity entity = JSON.parseObject(itemObj.toString(), Entity.class);
+                        JSONObject commentObj = itemObj.optJSONObject("comment");
+                        JSONObject reCommentObj = itemObj.optJSONObject("reComment");
+                        Comment comment = null, reComment = null;
+                        if (commentObj != null)
+                            comment = JSON.parseObject(commentObj.toString(), Comment.class);
+                        if (reCommentObj != null)
+                            reComment = JSON.parseObject(reCommentObj.toString(), Comment.class);
+                        Entity replay = new Entity(comment, reComment);
+                        replays.add(replay);
                     }
-                    commentListAdapter.addAll(commentList);
+                    commentListAdapter.addAll(replays);
                 }
             }
         }, new Response.ErrorListener() {
@@ -286,33 +307,79 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
     }
 
 
-    private class CommentListAdapter extends BaseListAdapter<Comment> {
+    private class CommentListAdapter extends BaseListAdapter<Entity> {
 
-        public CommentListAdapter(Context context, List<Comment> list) {
+        public CommentListAdapter(Context context, List<Entity> list) {
             super(context, list);
         }
 
         @Override
         public View bindView(int position, View convertView, ViewGroup parent) {
             if (contentView == null)
-                convertView = mInflater.inflate(R.layout.fragment_comment_list_fragment1, null);
+                convertView = mInflater.inflate(R.layout.item_comment_receive, null);
             ImageView mAvatar = ViewHolder.get(convertView, R.id.avatar);
             TextView mUserName = ViewHolder.get(convertView, R.id.username);
             TextView mTime = ViewHolder.get(convertView, R.id.time);
             GridView mGridView = ViewHolder.get(convertView, R.id.gridView);
+            GridView mReGridView = ViewHolder.get(convertView, R.id.re_gridView);
             TextView mContent = ViewHolder.get(convertView, R.id.content);
             TextView mSubject = ViewHolder.get(convertView, R.id.subject);
-            Comment comment = getList().get(position);
-            ToolUtils.setImageCacheUrl(comment.commentUserImg.contains("http") ? comment.commentUserImg : "http://" + comment.commentUserImg, mAvatar);
-            mUserName.setText(comment.commentUserName);
-            mSubject.setText(Html.fromHtml("来自<font color=#50c2bf>《" + comment.articleTitle + "》</font>"));
-            mGridView.setAdapter(new ImageAdapter(mContext, comment.imgMd5!=null?Arrays.asList(comment.imgMd5.split(",")):new ArrayList<String>()));
-            mContent.setText(comment.content);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            try {
-                mTime.setText(DateUtils.getDescriptionTimeFromTimestamp(sdf.parse(comment.createTime).getTime()));
-            } catch (ParseException e) {
-                e.printStackTrace();
+            TextView mReplay = ViewHolder.get(convertView, R.id.reply);
+            LinearLayout mCommentLayout = ViewHolder.get(convertView, R.id.commentLayout);
+            LinearLayout mReCommentLayout = ViewHolder.get(convertView, R.id.reCommentLayout);
+            Entity replay = getList().get(position);
+            if (replay.comment != null) {
+                ToolUtils.setImageCacheUrl(replay.comment.commentUserImg.contains("http") ? replay.comment.commentUserImg : "http://" + replay.comment.commentUserImg, mAvatar);
+                mUserName.setText(replay.comment.commentUserName);
+                mSubject.setText(Html.fromHtml("来自<font color=#50c2bf>《" + replay.comment.articleTitle + "》</font>"));
+                List<String> list=!TextUtils.isEmpty(replay.comment.imgMd5) ?
+                        Arrays.asList(replay.comment.imgMd5.split(",")) : new ArrayList<String>();
+                final ImageAdapter imageAdapter = new ImageAdapter(convertView.getContext(), list);
+                mGridView.setAdapter(imageAdapter);
+                mGridView.setVisibility(list.size()>0?View.VISIBLE:View.GONE);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                try {
+                    mTime.setText(DateUtils.getDescriptionTimeFromTimestamp(sdf.parse(replay.comment.createTime).getTime()));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                mContent.setVisibility(!TextUtils.isEmpty(replay.comment.content) ? View.VISIBLE : View.GONE);
+                if (!TextUtils.isEmpty(replay.comment.content)) {
+                    mContent.setText(Html.fromHtml("<font color=#50c2bf>回复我的</font>   " + replay.comment.content));
+                }
+                imageAdapter.setOnInViewClickListener(R.id.imageView,new onInternalClickListener() {
+                    @Override
+                    public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                        System.out.println("parentV = [" + parentV + "], v = [" + v + "], position = [" + position + "], values = [" + values + "]");
+                        List<String> images = imageAdapter.getList();
+                        Intent intent=new Intent(mContext, PhotoViewActivity.class);
+                        intent.putExtra("images",images.toArray(new String[]{}));
+                        startActivity(intent);
+                        System.out.println("imageAdapter = " + images);
+                    }
+                });
+            } else {
+                mCommentLayout.setVisibility(View.GONE);
+            }
+            if (replay.reComment != null) {
+                List<String> reImageList=!TextUtils.isEmpty(replay.reComment.imgMd5) ?
+                        Arrays.asList(replay.reComment.imgMd5.split(",")) : new ArrayList<String>();
+                final ImageAdapter adapter = new ImageAdapter(convertView.getContext(), reImageList);
+                mReGridView.setAdapter(adapter);
+                mReGridView.setVisibility(reImageList.size()>0?View.VISIBLE:View.GONE);
+                mReplay.setVisibility(!TextUtils.isEmpty(replay.reComment.content) ? View.VISIBLE : View.GONE);
+                mReplay.setText(replay.reComment.content);
+                adapter.setOnInViewClickListener(R.id.imageView,new onInternalClickListener() {
+                    @Override
+                    public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                        List<String> images = adapter.getList();
+                        Intent intent=new Intent(mContext, PhotoViewActivity.class);
+                        intent.putExtra("images",images.toArray(new String[]{}));
+                        startActivity(intent);
+                    }
+                });
+            } else {
+                mReCommentLayout.setVisibility(View.GONE);
             }
             return convertView;
         }
@@ -327,7 +394,8 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
         @Override
         public View bindView(int position, View convertView, ViewGroup parent) {
             ImageView imageView = new ImageView(mContext);
-            imageView.setLayoutParams(new AbsListView.LayoutParams(DeviceUtils.dp2px(mContext, 70), DeviceUtils.dp2px(mContext, 70)));
+            imageView.setId(R.id.imageView);
+            imageView.setLayoutParams(new AbsListView.LayoutParams(DeviceUtils.dp2px(mContext, 60), DeviceUtils.dp2px(mContext, 60)));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             String url = getList().get(position);
             ToolUtils.setImageCacheUrl(url, imageView);
@@ -423,5 +491,18 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
 //            addImageView(photo);
         }
 
+    }
+
+    public class Entity {
+        public Comment comment;
+        public Comment reComment;
+
+        public Entity() {
+        }
+
+        public Entity(Comment comment, Comment reComment) {
+            this.comment = comment;
+            this.reComment = reComment;
+        }
     }
 }

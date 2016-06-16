@@ -11,8 +11,9 @@ import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMConversation;
 import com.easemob.easeui.ui.EaseConversationListFragment;
 import com.easemob.util.NetUtils;
+import com.zhaidou.MainActivity;
 import com.zhaidou.R;
-import com.zhaidou.activities.CommentActivity;
+import com.zhaidou.activities.CommentContainerFragment;
 import com.zhaidou.base.EaseManage;
 import com.zhaidou.easeui.helpdesk.Constant;
 import com.zhaidou.model.User;
@@ -49,8 +50,10 @@ public class ConversationListFragment extends EaseConversationListFragment imple
                     Toast.makeText(getActivity(), R.string.Cant_chat_with_yourself, 0).show();
                 }else if ("comment".equalsIgnoreCase(username)){
                     System.out.println("username = " + username);
-                    Intent intent=new Intent(getActivity(), CommentActivity.class);
-                    startActivity(intent);
+//                    Intent intent=new Intent(getActivity(), CommentContainerFragment.class);
+//                    startActivity(intent);
+                    CommentContainerFragment commentContainerFragment=new CommentContainerFragment();
+                    ((MainActivity)getActivity()).navigationToFragment(commentContainerFragment);
                 }else {
                     // 进入聊天页面
                     Intent intent = new Intent(getActivity(), ChatActivity.class);
@@ -71,6 +74,7 @@ public class ConversationListFragment extends EaseConversationListFragment imple
                 }
             }
         });
+
     }
 
     @Override

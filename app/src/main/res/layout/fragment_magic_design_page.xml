@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/icon_magic_desgin_bg">
-
+    android:background="@color/white"
+    android:orientation="vertical">
+    <!--android:background="@drawable/icon_magic_desgin_bg"-->
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -32,8 +33,14 @@
 
     </RelativeLayout>
 
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:layout_height="match_parent"/>
 
     <LinearLayout
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -121,6 +128,7 @@
 
 
     <LinearLayout
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -210,4 +218,4 @@
     </LinearLayout>
 
 
-</RelativeLayout>
+</LinearLayout>

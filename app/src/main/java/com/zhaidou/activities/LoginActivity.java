@@ -181,7 +181,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     /**
      * 获得保存的邮箱帐号
      *
-     * @return
      */
     private String getEmail() {
         return (String) SharedPreferencesUtil.getData(this, "phone", "");
@@ -345,9 +344,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                System.out.println("volleyError.networkResponse.toString() = " + volleyError.networkResponse.toString());
-                System.out.println("volleyError.getLocalizedMessage() = " + volleyError.getLocalizedMessage());
-
             }
         });
         request.setRetryPolicy(new DefaultRetryPolicy(5000,
