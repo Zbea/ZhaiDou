@@ -40,7 +40,6 @@ public class CommentContainerFragment extends BaseFragment {
             mTitle.setText("我的评论");
             final RadioGroup radioGroup = (RadioGroup) rootView.findViewById(R.id.radioGroup);
 
-
             radioGroup.check(R.id.received);
             mCommentListFragment = CommentListFragment1.newInstance(index, commentType[1]);
             mReplyFragment = ReplayFragment.newInstance(index + "", commentType[0]);

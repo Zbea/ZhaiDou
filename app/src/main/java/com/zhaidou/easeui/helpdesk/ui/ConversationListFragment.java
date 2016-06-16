@@ -31,6 +31,7 @@ public class ConversationListFragment extends EaseConversationListFragment imple
 //        errorItemContainer.addView(errorView);
 //        errorText = (TextView) errorView.findViewById(R.id.tv_connect_errormsg);
         EaseManage.getInstance().setOnMessageChange(this);
+//        Api.getUnReadComment();
     }
     
     @Override
@@ -47,7 +48,7 @@ public class ConversationListFragment extends EaseConversationListFragment imple
                 System.out.println("ConversationListFragment.onItemClick---------->"+username+"----"+EMChatManager.getInstance().getCurrentUser());
                 System.out.println("ConversationListFragment.onItemClick-->"+conversation.toString());
                 if (username.equals(EMChatManager.getInstance().getCurrentUser())){
-                    Toast.makeText(getActivity(), R.string.Cant_chat_with_yourself, 0).show();
+                    Toast.makeText(getActivity(), R.string.Cant_chat_with_yourself, Toast.LENGTH_SHORT).show();
                 }else if ("comment".equalsIgnoreCase(username)){
                     System.out.println("username = " + username);
 //                    Intent intent=new Intent(getActivity(), CommentContainerFragment.class);
@@ -92,34 +93,4 @@ public class ConversationListFragment extends EaseConversationListFragment imple
         System.out.println("ConversationListFragment.onMessage");
         refresh();
     }
-
-
-//    @Override
-//    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-//        getActivity().getMenuInflater().inflate(R.menu.em_delete_message, menu);
-//    }
-//
-//    @Override
-//    public boolean onContextItemSelected(MenuItem item) {
-//        boolean deleteMessage = false;
-//        if (item.getItemId() == R.id.delete_message) {
-//            deleteMessage = true;
-//        } else if (item.getItemId() == R.id.delete_conversation) {
-//            deleteMessage = false;
-//        }
-//    	EMConversation tobeDeleteCons = conversationListView.getItem(((AdapterContextMenuInfo) item.getMenuInfo()).position);
-//    	if (tobeDeleteCons == null) {
-//    	    return true;
-//    	}
-//        // 删除此会话
-//        EMClient.getInstance().chatManager().deleteConversation(tobeDeleteCons.getUserName(), deleteMessage);
-//        InviteMessgeDao inviteMessgeDao = new InviteMessgeDao(getActivity());
-//        inviteMessgeDao.deleteMessage(tobeDeleteCons.getUserName());
-//        refresh();
-//
-//        // 更新消息未读数
-//        ((MainActivity) getActivity()).updateUnreadLabel();
-//        return true;
-//    }
-
 }

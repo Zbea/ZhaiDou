@@ -237,7 +237,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
         params.put("commentUserId", userId + "");
         params.put("pageSize", "20");
         params.put("pageNo", "" + page);
-        ZhaiDouRequest request = new ZhaiDouRequest(mContext, Request.Method.POST, "http://tportal-web.zhaidou.com/comment/getCommentList.action", params, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext, Request.Method.POST,ZhaiDou.COMMENT_LIST_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 System.out.println("jsonObject = " + jsonObject);
@@ -313,7 +313,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                         Arrays.asList(replay.comment.imgMd5.split(",")) : new ArrayList<String>();
                 final ImageAdapter adapter = new ImageAdapter(convertView.getContext(), list);
                 mGridView.setAdapter(adapter);
-                mGridView.setVisibility(list.size() > 0 ? View.VISIBLE : View.GONE);
+                mGridView.setVisibility(list.size() > 0 &&!"F".equalsIgnoreCase(replay.comment.status)? View.VISIBLE : View.GONE);
                 adapter.setOnInViewClickListener(R.id.imageView, new onInternalClickListener() {
                     @Override
                     public void OnClickListener(View parentV, View v, Integer position, Object values) {
@@ -339,7 +339,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                         Arrays.asList(replay.reComment.imgMd5.split(",")) : new ArrayList<String>();
                 final ImageAdapter adapter = new ImageAdapter(convertView.getContext(), imageList);
                 mReGridView.setAdapter(adapter);
-                mReGridView.setVisibility(imageList.size() > 0 ? View.VISIBLE : View.GONE);
+                mReGridView.setVisibility(imageList.size() > 0 &&!"F".equalsIgnoreCase(replay.reComment.status)? View.VISIBLE : View.GONE);
                 mReplay.setText(replay.reComment.content);
                 mReplay.setVisibility(!TextUtils.isEmpty(replay.reComment.content) ? View.VISIBLE : View.GONE);
                 adapter.setOnInViewClickListener(R.id.imageView, new onInternalClickListener() {

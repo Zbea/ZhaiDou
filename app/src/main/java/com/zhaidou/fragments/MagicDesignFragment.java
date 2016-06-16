@@ -137,6 +137,8 @@ public class MagicDesignFragment extends BaseFragment {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 System.out.println("url = " + url);
                 if ("zhaidouappdesigncase://designcase".equalsIgnoreCase(url)){
+                    MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "");
+                    ((MainActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
                     return true;
                 }else if ("zhaidouappfaq://faq".equalsIgnoreCase(url)){
                     MagicGuideFragment magicClassicCaseFragment = MagicGuideFragment.newInstance("", "");

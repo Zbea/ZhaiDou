@@ -30,6 +30,8 @@ public class ZhaiDou {
     public static String HomeArticleCommentUrl=HOME_BASE_URL+"comment/commentView.action?articleId=";
     //添加评论
     public static String CommentAddUrl=HOME_BASE_URL+"comment/addProductComment";
+    //获取评论列表
+    public static String COMMENT_LIST_URL=HOME_BASE_URL+"comment/getCommentList.action";
     //首页banner点击统计接口
     public static String HomeClickStatisticalUrl=HOME_BASE_URL+"api/countBannerClick.action?name=";
     //首页微信文章列表

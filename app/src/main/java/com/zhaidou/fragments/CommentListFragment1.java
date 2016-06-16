@@ -128,15 +128,14 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
         mDialogUtils = new DialogUtils(mContext);
         mDialogUtils.showLoadingDialog();
         fetchData(mCurrentPage = 1);
-        commentListAdapter.setOnInViewLongClickListener(R.id.commemtLayout, new BaseListAdapter.onInternalLongClickListener() {
+        commentListAdapter.setOnInViewLongClickListener(R.id.commentContainerLayout, new BaseListAdapter.onInternalLongClickListener() {
             @Override
             public boolean OnLongClickListener(View parentV, View v, final Integer position, Object values) {
-                System.out.println("CommentListFragment1.OnLongClickListener");
-                final Comment comment = (Comment) values;
+                final Entity entity = (Entity) values;
                 mDialogUtils.showListDialog(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-                        Api.deleteComment(comment.commentUserId, new Api.SuccessListener() {
+                        Api.deleteComment(entity.comment.commentUserId, new Api.SuccessListener() {
                             @Override
                             public void onSuccess(Object object) {
                                 if (object != null) {
@@ -255,7 +254,7 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
         params.put("commentUserId", userId + "");
         params.put("pageSize", "20");
         params.put("pageNo", "" + page);
-        ZhaiDouRequest request = new ZhaiDouRequest(mContext, Request.Method.POST, "http://tportal-web.zhaidou.com/comment/getCommentList.action", params, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext, Request.Method.POST, ZhaiDou.COMMENT_LIST_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 System.out.println("jsonObject = " + jsonObject);
@@ -336,7 +335,7 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
                         Arrays.asList(replay.comment.imgMd5.split(",")) : new ArrayList<String>();
                 final ImageAdapter imageAdapter = new ImageAdapter(convertView.getContext(), list);
                 mGridView.setAdapter(imageAdapter);
-                mGridView.setVisibility(list.size()>0?View.VISIBLE:View.GONE);
+                mGridView.setVisibility(list.size()>0&&!"F".equalsIgnoreCase(replay.comment.status)?View.VISIBLE:View.GONE);
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 try {
                     mTime.setText(DateUtils.getDescriptionTimeFromTimestamp(sdf.parse(replay.comment.createTime).getTime()));
@@ -366,7 +365,7 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
                         Arrays.asList(replay.reComment.imgMd5.split(",")) : new ArrayList<String>();
                 final ImageAdapter adapter = new ImageAdapter(convertView.getContext(), reImageList);
                 mReGridView.setAdapter(adapter);
-                mReGridView.setVisibility(reImageList.size()>0?View.VISIBLE:View.GONE);
+                mReGridView.setVisibility(reImageList.size()>0&&!"F".equalsIgnoreCase(replay.reComment.status)?View.VISIBLE:View.GONE);
                 mReplay.setVisibility(!TextUtils.isEmpty(replay.reComment.content) ? View.VISIBLE : View.GONE);
                 mReplay.setText(replay.reComment.content);
                 adapter.setOnInViewClickListener(R.id.imageView,new onInternalClickListener() {
