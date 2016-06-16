@@ -42,6 +42,7 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -96,7 +97,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
     private List<Bitmap> photos=new ArrayList<Bitmap>();
     private List<File> files=new ArrayList<File>();
     private File file;
-    private String commentInfo;
+    private String commentInfo="";
     private int userId;
     private String userName;
     private OnCommentListener onCommentListener;
@@ -127,67 +128,72 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
                             JSONObject dataJsonObject=jsonObject.optJSONObject("data");
                             if (dataJsonObject!=null)
                             {
-                                JSONObject commentJsonObject=dataJsonObject.optJSONObject("comment");
-                                if (commentJsonObject!=null)
+                                JSONArray itemsArray=dataJsonObject.optJSONArray("items");
+                                if (itemsArray!=null)
+                                for (int i = 0; i < itemsArray.length(); i++)
                                 {
-                                    int commentid=commentJsonObject.optInt("id");
-                                    String commentTitle=commentJsonObject.optString("content");
-                                    String commentUrl=commentJsonObject.optString("imgMd5");
-                                    List<String> commentImgs=new ArrayList<String>();
-                                    if (commentUrl.length()>0)
+                                    JSONObject object=itemsArray.optJSONObject(i);
+                                    JSONObject commentJsonObject=object.optJSONObject("comment");
+                                    if (commentJsonObject!=null)
                                     {
-                                        String[] commentUrls=commentUrl.split(",");
-                                        for (int j = 0; j <commentUrls.length; j++)
+                                        int commentid=commentJsonObject.optInt("id");
+                                        String commentTitle=commentJsonObject.optString("content");
+                                        String commentUrl=commentJsonObject.optString("imgMd5");
+                                        List<String> commentImgs=new ArrayList<String>();
+                                        if (commentUrl.length()>0)
                                         {
-                                            commentImgs.add(commentUrls[j]);
+                                            String[] commentUrls=commentUrl.split(",");
+                                            for (int j = 0; j <commentUrls.length; j++)
+                                            {
+                                                commentImgs.add(commentUrls[j]);
+                                            }
                                         }
-                                    }
-                                    int commentUserId=commentJsonObject.optInt("commentUserId");
-                                    String commentUserName=commentJsonObject.optString("commentUserName");
-                                    String commentUserImg=(String)SharedPreferencesUtil.getData(mContext,"avatar","");
-                                    String articleId=commentJsonObject.optString("articleId");
-                                    String articleTitle=commentJsonObject.optString("articleTitle");
-                                    String commentType=commentJsonObject.optString("commentType");
-                                    String commentStatus=commentJsonObject.optString("status");
-                                    String commentCreateTime= "";
-                                    try
-                                    {
-                                        commentCreateTime = ToolUtils.getDateDiff(commentJsonObject.optString("createTime"));
-                                    } catch (ParseException e)
-                                    {
-                                        e.printStackTrace();
-                                    }
-                                    ToolUtils.setLog(""+commentImgs.size());
-                                    comment=new Comment();
-                                    if (mComment==null)
-                                    {
-                                        comment.articleId=articleId;
-                                        comment.articleTitle=articleTitle;
-                                        comment.id=commentid;
-                                        comment.time=commentCreateTime;
-                                        comment.comment=commentTitle;
-                                        comment.images=commentImgs;
-                                        comment.type=commentType;
-                                        comment.status=commentStatus;
-                                        comment.userName=commentUserName;
-                                        comment.userImage=commentUserImg;
-                                        comment.userId=commentUserId;
-                                    }
-                                    else
-                                    {
-                                        //将返回的信息当初回复信息
-                                        comment.id=commentid;
-                                        comment.time=commentCreateTime;
-                                        comment.comment=commentTitle;
-                                        comment.images=commentImgs;
-                                        comment.type=commentType;
-                                        comment.status=commentStatus;
-                                        comment.userName=commentUserName;
-                                        comment.userImage=commentUserImg;
-                                        comment.userId=commentUserId;
+                                        int commentUserId=commentJsonObject.optInt("commentUserId");
+                                        String commentUserName=commentJsonObject.optString("commentUserName");
+                                        String commentUserImg=(String)SharedPreferencesUtil.getData(mContext,"avatar","");
+                                        String articleId=commentJsonObject.optString("articleId");
+                                        String articleTitle=commentJsonObject.optString("articleTitle");
+                                        String commentType=commentJsonObject.optString("commentType");
+                                        String commentStatus=commentJsonObject.optString("status");
+                                        String commentCreateTime= "";
+                                        try
+                                        {
+                                            commentCreateTime = ToolUtils.getDateDiff(commentJsonObject.optString("createTime"));
+                                        } catch (ParseException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                        ToolUtils.setLog(""+commentImgs.size());
+                                        comment=new Comment();
+                                        if (mComment==null)
+                                        {
+                                            comment.articleId=articleId;
+                                            comment.articleTitle=articleTitle;
+                                            comment.id=commentid;
+                                            comment.time=commentCreateTime;
+                                            comment.comment=commentTitle;
+                                            comment.images=commentImgs;
+                                            comment.type=commentType;
+                                            comment.status=commentStatus;
+                                            comment.userName=commentUserName;
+                                            comment.userImage=commentUserImg;
+                                            comment.userId=commentUserId;
+                                        }
+                                        else
+                                        {
+                                            //将返回的信息当初回复信息
+                                            comment.id=commentid;
+                                            comment.time=commentCreateTime;
+                                            comment.comment=commentTitle;
+                                            comment.images=commentImgs;
+                                            comment.type=commentType;
+                                            comment.status=commentStatus;
+                                            comment.userName=commentUserName;
+                                            comment.userImage=commentUserImg;
+                                            comment.userId=commentUserId;
 
-                                        comment.articleId=mIndex;
-                                        comment.articleTitle=mPage;
+                                            comment.articleId=mIndex;
+                                            comment.articleTitle=mPage;
 
                                             comment.idReply=mCommentId;
                                             comment.timeReply=mCommentTime;
@@ -199,12 +205,14 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
                                             comment.userNameReply=mCommentUserName;
                                             comment.userImageReply=mCommentUserImage;
 
+                                        }
+                                        onCommentListener.onCommentResult(comment);
+                                        ((MainActivity) getActivity()).popToStack(CommentSendFragment.this);
+                                        if (editText!=null)
+                                            closeInput();
                                     }
-                                    onCommentListener.onCommentResult(comment);
-                                    ((MainActivity) getActivity()).popToStack(CommentSendFragment.this);
-                                    if (editText!=null)
-                                        closeInput();
                                 }
+
                             }
                         }
                     } catch (JSONException e)
@@ -274,7 +282,6 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
             mIndex = getArguments().getString(INDEX);
             mComment = (Comment) getArguments().getSerializable(COMMENT);
         }
-        forceOpenSoftKeyboard(getActivity());
     }
 
     @Override
@@ -345,6 +352,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
         editText.setFocusable(true);
         editText.setFocusableInTouchMode(true);
         editText.requestFocus();
+        forceOpenSoftKeyboard(mContext);
 
         imageLine = (LinearLayout) mView.findViewById(R.id.comment_image_line);
 
@@ -664,6 +672,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
             }
             in.close();
             result = sb.toString();
+            ToolUtils.setLog(""+result);
             return result;
 
         } catch (Exception e)

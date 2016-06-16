@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -323,7 +324,7 @@ public class CommentListFragment extends BaseFragment
                                         }
                                         int commentUserId=jsonComment.optInt("commentUserId");
                                         String commentUserName=jsonComment.optString("commentUserName");
-                                        String commentUserImg="http://"+jsonComment.optString("commentUserImg");
+                                        String commentUserImg=jsonComment.optString("commentUserImg");
                                         String articleId=jsonComment.optString("articleId");
                                         String articleTitle=jsonComment.optString("articleTitle");
                                         String commentType=jsonComment.optString("commentType");
@@ -367,7 +368,7 @@ public class CommentListFragment extends BaseFragment
                                         }
                                         int reCommentUserId=jsonReComment.optInt("commentUserId");
                                         String reCommentUserName=jsonReComment.optString("commentUserName");
-                                        String reCommentUserImg="http://"+jsonReComment.optString("commentUserImg");
+                                        String reCommentUserImg=jsonReComment.optString("commentUserImg");
                                         String reCommentArticleId=jsonReComment.optString("articleId");
                                         String reCommentArticleTitle=jsonReComment.optString("articleTitle");
                                         String reCommentType=jsonReComment.optString("commentType");
@@ -423,6 +424,7 @@ public class CommentListFragment extends BaseFragment
                 return headers;
             }
         };
+        request.setRetryPolicy(new DefaultRetryPolicy(5000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         ZDApplication.mRequestQueue.add(request);
     }
 
