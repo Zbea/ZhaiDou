@@ -12,6 +12,7 @@ import com.viewpagerindicator.CirclePageIndicator;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.ScaleImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,8 @@ public class PhotoViewActivity extends BaseActivity {
 
     private String[] images;
 
-    List<ImageView> imageViews;
+    List<ScaleImageView> imageViews;
+    private int mCurrentPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,17 +33,18 @@ public class PhotoViewActivity extends BaseActivity {
         findViewById(R.id.rl_back).setBackgroundColor(Color.parseColor("#000000"));
         CirclePageIndicator mIndicator = (CirclePageIndicator) findViewById(R.id.indicator);
         images = getIntent().getStringArrayExtra("images");
-        imageViews = new ArrayList<ImageView>();
+        mCurrentPosition = getIntent().getIntExtra("position", 0);
+        imageViews = new ArrayList<ScaleImageView>();
         for (int i = 0; i < images.length; i++) {
-            ImageView imageView = new ImageView(this);
+            ScaleImageView imageView = new ScaleImageView(this);
             imageView.setId(i);
-            imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            String image = images[i];
-            ToolUtils.setImageCacheUrl(image, imageView);
+            imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+            ToolUtils.setImageCacheUrl(images[i], imageView);
             imageViews.add(imageView);
         }
         mViewPager.setAdapter(new PhotoViewAdapter());
-        mIndicator.setViewPager(mViewPager);
+        mIndicator.setViewPager(mViewPager, mCurrentPosition);
         findViewById(R.id.ll_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,7 +58,7 @@ public class PhotoViewActivity extends BaseActivity {
 
         @Override
         public int getCount() {
-            return images.length;
+            return imageViews.size();
         }
 
         @Override
@@ -70,7 +73,7 @@ public class PhotoViewActivity extends BaseActivity {
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            container.addView(imageViews.get(position),0);
+            container.addView(imageViews.get(position), 0);
             return imageViews.get(position);
         }
     }

@@ -195,6 +195,7 @@ public class ToolUtils
                 .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .imageScaleType(ImageScaleType.EXACTLY)
+                .considerExifParams(true)
                 .build();
 
         ImageLoader.getInstance().displayImage(url, imageView, options);

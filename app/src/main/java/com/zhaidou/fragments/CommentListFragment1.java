@@ -351,8 +351,10 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
                     public void OnClickListener(View parentV, View v, Integer position, Object values) {
                         System.out.println("parentV = [" + parentV + "], v = [" + v + "], position = [" + position + "], values = [" + values + "]");
                         List<String> images = imageAdapter.getList();
+                        System.out.println("images = " + images);
                         Intent intent=new Intent(mContext, PhotoViewActivity.class);
                         intent.putExtra("images",images.toArray(new String[]{}));
+                        intent.putExtra("position",position);
                         startActivity(intent);
                         System.out.println("imageAdapter = " + images);
                     }
@@ -373,8 +375,10 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
                     @Override
                     public void OnClickListener(View parentV, View v, Integer position, Object values) {
                         List<String> images = adapter.getList();
+                        System.out.println("images = " + images);
                         Intent intent=new Intent(mContext, PhotoViewActivity.class);
                         intent.putExtra("images",images.toArray(new String[]{}));
+                        intent.putExtra("position",position);
                         startActivity(intent);
                     }
                 });

@@ -320,6 +320,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                         List<String> images = adapter.getList();
                         Intent intent = new Intent(mContext, PhotoViewActivity.class);
                         intent.putExtra("images", images.toArray(new String[]{}));
+                        intent.putExtra("position",position);
                         startActivity(intent);
                     }
                 });
@@ -348,6 +349,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                         List<String> images = adapter.getList();
                         Intent intent = new Intent(mContext, PhotoViewActivity.class);
                         intent.putExtra("images", images.toArray(new String[]{}));
+                        intent.putExtra("position",position);
                         startActivity(intent);
                     }
                 });

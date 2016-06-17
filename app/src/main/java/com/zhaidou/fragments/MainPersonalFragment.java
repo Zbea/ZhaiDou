@@ -299,8 +299,8 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
 //                Intent intent1 = new Intent(getActivity(), ConversationListActivity.class);
 //                intent1.putExtra("userId", "service");
 //                startActivity(intent1);
-                ConversationListFragment conversationListFragment=new ConversationListFragment();
-                ((MainActivity)mContext).navigationToFragment(conversationListFragment);
+                ConversationListFragment conversationListFragment = new ConversationListFragment();
+                ((MainActivity) mContext).navigationToFragment(conversationListFragment);
                 break;
         }
     }
@@ -428,7 +428,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     public void onResume() {
         super.onResume();
         System.out.println("MainPersonalFragment.onResume");
-        Api.getUnReadComment(userId,null,null);
+        Api.getUnReadComment(userId, null, null);
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_personal));
         InputMethodManager inputMethodManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
         if (inputMethodManager.isActive())
@@ -478,8 +478,11 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     public void onChange() {
         int unreadMsgsCount = EMChatManager.getInstance().getUnreadMsgsCount();
         Integer NotReadNum = (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(), "NotReadNum", 0);
+        Integer UnReadDesigner = (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(), "UnReadDesigner", 0);
         unReadMsgView.setVisibility((unreadMsgsCount + NotReadNum) > 0 ? View.VISIBLE : View.GONE);
         unReadMsgView.setText((unreadMsgsCount + NotReadNum) > 99 ? "99+" : (unreadMsgsCount + NotReadNum) + "");
+        if (UnReadDesigner > 0)
+            mShareAdapter.notifyDataSetChanged();
     }
 
 
@@ -498,9 +501,11 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 convertView = mInflater.inflate(R.layout.item_share_view, null);
             ImageView imageView = ViewHolder.get(convertView, R.id.iv_plat);
             TextView textView = ViewHolder.get(convertView, R.id.tv_plat);
+            ImageView mDotView = ViewHolder.get(convertView, R.id.dotView);
             String title = getList().get(position);
             textView.setText(title);
             textView.setTextSize(13);
+            mDotView.setVisibility(position == 1 && (Integer) SharedPreferencesUtil.getData(mContext, "UnReadDesigner", 0) > 0 ? View.VISIBLE : View.GONE);
             imageView.setImageResource(drawableId[position]);
             imageView.setVisibility(TextUtils.isEmpty(title) ? View.INVISIBLE : View.VISIBLE);
             return convertView;
