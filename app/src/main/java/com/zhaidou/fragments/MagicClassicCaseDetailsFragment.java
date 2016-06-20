@@ -32,9 +32,9 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -215,7 +215,7 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
                     break;
                 case R.id.rl_qq_contact:
                     CommentListFragment commentListFragment = CommentListFragment.newInstance("", "");
-                    ((MainActivity) mContext).navigationToFragmentWithAnim(commentListFragment);
+                    ((BaseActivity) mContext).navigationToFragmentWithAnim(commentListFragment);
 //                    EaseUtils.startDesignerActivity(mContext);
                     break;
             }
@@ -322,7 +322,7 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
         bundle.putString("page", items.get(position).title);
         bundle.putBoolean("canShare", false);
         goodsDetailsFragment.setArguments(bundle);
-        ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
+        ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
     }
 
     public void FetchData()

@@ -30,11 +30,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshListView;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.PhotoViewActivity;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -152,7 +152,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
                     Replay entity = (Replay) values;
                     HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment = HomeArticleGoodsDetailsFragment.newInstance("", entity.comment.articleId);
-                    ((MainActivity) mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
+                    ((BaseActivity) mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
                 }
             });
         }
@@ -328,7 +328,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                 mContent.setText(Html.fromHtml("<font color=#50c2bf>回复我的</font>   " + replay.comment.content));
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 try {
-                    mTime.setText(DateUtils.getDescriptionTimeFromTimestamp(sdf.parse(replay.comment.createTime).getTime()));
+                    mTime.setText(DateUtils.getDescriptionTimeFromTimestamp(sdf.parse(replay.comment.createTime)));
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }

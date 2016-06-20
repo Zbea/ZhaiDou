@@ -1,21 +1,17 @@
 package com.zhaidou.fragments;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.DownloadListener;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.zhaidou.R;
-import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.utils.ToolUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -61,23 +57,39 @@ public class WebViewFragment extends BaseFragment{
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                Intent intent = new Intent();
-                intent.putExtra("url", url);
-                intent.putExtra("from","beauty");
-                intent.setClass(getActivity(), ItemDetailActivity.class);
-                getActivity().startActivity(intent);
-                return true;
+                System.out.println("url = " + url);
+//                Intent intent = new Intent();
+//                intent.putExtra("url", url);
+//                intent.putExtra("from","beauty");
+//                intent.setClass(getActivity(), ItemDetailActivity.class);
+//                getActivity().startActivity(intent);
+                if ("mobile://login?false".equalsIgnoreCase(url)){
+                    return true;
+                }else if (url.contains("zhaidouappproduct:")){
+                    String substring = url.substring(url.lastIndexOf("/") + 1, url.length());
+                    System.out.println("substring = " + substring);
+                }
+                return false;
             }
         });
+//        WebSettings webSettings = webView.getSettings();
+//        webSettings.setJavaScriptEnabled(true);
+//        webSettings.setLoadWithOverviewMode(true);
+//        webSettings.setUseWideViewPort(true);
+
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        webSettings.setAllowFileAccess(true);
+        webSettings.setDomStorageEnabled(true);
         webSettings.setUseWideViewPort(true);
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("ZhaidouVesion", getResources().getString(R.string.app_versionName));
         webView.loadUrl(url,headers);
-
+        System.out.println("url = " + url);
         return view;
     }
 

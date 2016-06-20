@@ -41,6 +41,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.adapter.ShopTodaySpecialAdapter;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -253,14 +254,14 @@ public class HomeFeatrueFragment extends BaseFragment {
                     EaseUtils.startDesignerActivity(mContext);
                     break;
                 case R.id.ll_back:
-                    ((MainActivity) getActivity()).popToStack(HomeFeatrueFragment.this);
+                    ((BaseActivity) getActivity()).popToStack(HomeFeatrueFragment.this);
                     break;
 
                 case R.id.myCartBtn:
                     if (checkLogina())
                     {
                         ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
-                        ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
+                        ((BaseActivity) getActivity()).navigationToFragment(shopCartFragment);
                     } else
                     {
                         Intent intent = new Intent(getActivity(), LoginActivity.class);
@@ -454,7 +455,7 @@ public class HomeFeatrueFragment extends BaseFragment {
         bundle.putString("page", items.get(position).title);
         bundle.putBoolean("canShare", false);
         goodsDetailsFragment.setArguments(bundle);
-        ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
+        ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
     }
 
     private void setAddImage(ImageView imgView,String url, final boolean flags)

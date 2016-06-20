@@ -7,8 +7,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 
 
@@ -35,42 +35,42 @@ public class MainMagicFragment extends BaseFragment
                     if (isTimeInterval())
                     {
                         MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "");
-                        ((MainActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
+                        ((BaseActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
                     }
                     break;
                 case R.id.magicConsultLine:
                     if (isTimeInterval())
                     {
                         MagicGuideFragment magicClassicCaseFragment = MagicGuideFragment.newInstance("", "");
-                        ((MainActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
+                        ((BaseActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
                     }
                     break;
                 case R.id.magicImageLine:
                     if (isTimeInterval())
                     {
                         MagicImageCaseFragment magicImageCaseFragment = MagicImageCaseFragment.newInstance("", "");
-                        ((MainActivity) getActivity()).navigationToFragment(magicImageCaseFragment);
+                        ((BaseActivity) getActivity()).navigationToFragment(magicImageCaseFragment);
                     }
                     break;
                 case R.id.magicDesignLine:
                     if (isTimeInterval())
                     {
                         MagicDesignFragment orderDetailFragment = MagicDesignFragment.newInstance("", "");
-                        ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
+                        ((BaseActivity) getActivity()).navigationToFragment(orderDetailFragment);
                     }
                     break;
                 case R.id.magicDIYLine:
                     if (isTimeInterval())
                     {
                         DiyFragment diyFragment = DiyFragment.newInstance("" ,"");
-                        ((MainActivity) getActivity()).navigationToFragment(diyFragment);
+                        ((BaseActivity) getActivity()).navigationToFragment(diyFragment);
                     }
                     break;
                 case R.id.magicClassroomLine:
                     if (isTimeInterval())
                     {
                         HomeBeautifulFragment goodsDetailsFragment = HomeBeautifulFragment.newInstance("色彩课堂", 0+"");
-                        ((MainActivity) mContext).navigationToFragment(goodsDetailsFragment);
+                        ((BaseActivity) mContext).navigationToFragment(goodsDetailsFragment);
                     }
                     break;
             }

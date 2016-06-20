@@ -37,7 +37,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
@@ -254,7 +253,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                     toggleMenu();
                 } else {
                     PhotoViewFragment photoViewFragment = PhotoViewFragment.newInstance(position, imgPath);
-                    ((MainActivity) getActivity()).navigationToFragment(photoViewFragment);
+                    ((BaseActivity) getActivity()).navigationToFragment(photoViewFragment);
                     photoViewFragment.setPhotoListener(new PhotoViewFragment.PhotoListener() {
                         @Override
                         public void onPhotoDelete(int position, String url) {
@@ -570,7 +569,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                         mStore.returnGoodsFlag=1;
                         if (onReturnSuccess!=null)
                             onReturnSuccess.onSuccess(mStore);
-                        ((MainActivity) getActivity()).popToStack(OrderAfterSaleFragment.this);
+                        ((BaseActivity) getActivity()).popToStack(OrderAfterSaleFragment.this);
                     } else {
                         ShowToast(message);
                     }

@@ -1,6 +1,5 @@
 package com.zhaidou.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,49 +9,96 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
+import com.zhaidou.base.BaseActivity;
+import com.zhaidou.fragments.GoodsDetailsFragment;
+import com.zhaidou.utils.Api;
+import com.zhaidou.utils.DialogUtils;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.view.CustomProgressWebview;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class WebViewActivity extends Activity implements View.OnClickListener{
+public class WebViewActivity extends BaseActivity implements View.OnClickListener {
 
     private String url;
     private CustomProgressWebview webView;
+    private String token;
+    private Integer userId;
+    private String userName;
+    private DialogUtils mDialogUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view);
         findViewById(R.id.ll_back).setOnClickListener(this);
+        mChildContainer = (android.widget.FrameLayout) findViewById(R.id.fl_child_container);
 
         webView = (CustomProgressWebview) findViewById(R.id.webView);
+        token = (String) SharedPreferencesUtil.getData(WebViewActivity.this, "token", "");
+        userId= (Integer) SharedPreferencesUtil.getData(WebViewActivity.this,"userId",0);
+        userName= (String) SharedPreferencesUtil.getData(WebViewActivity.this,"nickName","");
 
+        mDialogUtils=new DialogUtils(this);
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                System.out.println("url = " + url);
                 if (url.startsWith("taobao://"))
                     return true;
+                if (url.contains("zhaidouappproduct:")) {
+                    String substring = url.substring(url.lastIndexOf("/") + 1, url.length());
+                    System.out.println("substring = " + substring);
+                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", substring);
+                    navigationToFragmentWithAnim(goodsDetailsFragment);
+                    return true;
+                }else if (url.contains("zhaidouappgetcoupon://")){
+                    String substring = url.substring(url.lastIndexOf("/") + 1, url.length());
+                    System.out.println("substring = " + substring);
+                    mDialogUtils.showLoadingDialog();
+                    Api.activateCoupons(substring,new Api.SuccessListener() {
+                        @Override
+                        public void onSuccess(Object object) {
+                            if (object!=null)
+                                Toast.makeText(WebViewActivity.this,"领取优惠卷成功",Toast.LENGTH_SHORT).show();
+                            mDialogUtils.dismiss();
+                        }
+                    },new Api.ErrorListener() {
+                        @Override
+                        public void onError(Object object) {
+                            mDialogUtils.dismiss();
+                        }
+                    });
+                }else if ("mobile://login?false".equalsIgnoreCase(url)) {
+                    Intent intent = new Intent(WebViewActivity.this, LoginActivity.class);
+                    intent.setFlags(2);
+                    startActivityForResult(intent, 10000);
+                    return true;
+                }
                 view.loadUrl(url);
                 return true;
             }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+
+                webView.loadUrl("javascript:ReceiveUserInfo(" + userId + ", '" + token + "'," + getDeviceId() + ",'" + userName + "')");
+                super.onPageFinished(view, url);
+            }
         });
 
-        webView.setWebChromeClient(new WebChromeClient()
-        {
+        webView.setWebChromeClient(new WebChromeClient() {
             @Override
-            public void onProgressChanged(WebView view, int newProgress)
-            {
-                if (newProgress==100)
-                {
+            public void onProgressChanged(WebView view, int newProgress) {
+                if (newProgress == 100) {
                     webView.progressBar.setVisibility(View.GONE);
 
-                }
-                else
-                {
+                } else {
                     webView.progressBar.setVisibility(View.VISIBLE);
                     webView.progressBar.setProgress(newProgress);
                 }
@@ -60,8 +106,7 @@ public class WebViewActivity extends Activity implements View.OnClickListener{
             }
         });
 
-        webView.setDownloadListener(new DownloadListener()
-        {
+        webView.setDownloadListener(new DownloadListener() {
             @Override
             public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
                 // 监听下载功能，当用户点击下载链接的时候，直接调用系统的浏览器来下载
@@ -82,19 +127,32 @@ public class WebViewActivity extends Activity implements View.OnClickListener{
 
         String url = getIntent().getStringExtra("url");
 
-        Map<String,String> headers=new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<String, String>();
         headers.put("ZhaidouVesion", getResources().getString(R.string.app_versionName));
-        webView.loadUrl(url,headers);
+        webView.loadUrl(url, headers);
     }
 
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.ll_back:
                 finish();
                 break;
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (resultCode) {
+            case 2000:
+                token = (String) SharedPreferencesUtil.getData(WebViewActivity.this, "token", "");
+                userId= (Integer) SharedPreferencesUtil.getData(WebViewActivity.this,"userId",0);
+                userName= (String) SharedPreferencesUtil.getData(WebViewActivity.this,"nickName","");
+                webView.reload();
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

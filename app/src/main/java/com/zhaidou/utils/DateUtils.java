@@ -2,6 +2,7 @@ package com.zhaidou.utils;/**
  * Created by wangclark on 16/3/4.
  */
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -19,17 +20,19 @@ public class DateUtils {
     private static final int DAY = 24 * 60 * 60;// 天
     private static final int HOUR = 60 * 60;// 小时
     private static final int MINUTE = 60;// 分钟
-    public static long getUnixStamp(){
-        return System.currentTimeMillis()/1000;
+
+    public static long getUnixStamp() {
+        return System.currentTimeMillis() / 1000;
     }
 
     /**
      * 得到昨天的日期
+     *
      * @return
      */
     public static String getYestoryDate() {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE,-1);
+        calendar.add(Calendar.DATE, -1);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String yestoday = sdf.format(calendar.getTime());
         return yestoday;
@@ -37,9 +40,10 @@ public class DateUtils {
 
     /**
      * 得到今天的日期
+     *
      * @return
      */
-    public static  String getTodayDate(){
+    public static String getTodayDate() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String date = sdf.format(new Date());
         return date;
@@ -47,6 +51,7 @@ public class DateUtils {
 
     /**
      * 时间戳转化为时间格式
+     *
      * @param timeStamp
      * @return
      */
@@ -58,26 +63,28 @@ public class DateUtils {
 
     /**
      * 得到日期   yyyy-MM-dd
-     * @param timeStamp  时间戳
+     *
+     * @param timeStamp 时间戳
      * @return
      */
     public static String formatDate(long timeStamp) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String date = sdf.format(timeStamp*1000);
+        String date = sdf.format(timeStamp * 1000);
         return date;
     }
 
     /**
      * 得到时间  HH:mm:ss
-     * @param timeStamp   时间戳
+     *
+     * @param timeStamp 时间戳
      * @return
      */
-    public static String getTime(long timeStamp,String format) {
+    public static String getTime(long timeStamp, String format) {
         String time = null;
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         String date = sdf.format(timeStamp * 1000);
         String[] split = date.split("\\s");
-        if ( split.length > 1 ){
+        if (split.length > 1) {
             time = split[1];
         }
         return time;
@@ -90,12 +97,12 @@ public class DateUtils {
      * @return
      */
     public static String convertTimeToFormat(long timeStamp) {
-        long curTime =System.currentTimeMillis() / (long) 1000 ;
+        long curTime = System.currentTimeMillis() / (long) 1000;
         long time = curTime - timeStamp;
 
         if (time < 3600 * 24 && time >= 0) {
-            return getTime(timeStamp,"HH:mm");
-        } else if (time >= 3600 * 24 && time < 3600 * 24 *2) {
+            return getTime(timeStamp, "HH:mm");
+        } else if (time >= 3600 * 24 && time < 3600 * 24 * 2) {
             return "昨天";
         } else {
             return formatDate(timeStamp);
@@ -109,23 +116,81 @@ public class DateUtils {
      * @return
      */
     public static String timeStampToFormat(long timeStamp) {
-        long curTime =System.currentTimeMillis() / (long) 1000 ;
+        long curTime = System.currentTimeMillis() / (long) 1000;
         long time = curTime - timeStamp;
-        return time/60 + "";
+        return time / 60 + "";
     }
 
-    public static String getDescriptionTimeFromTimestamp(long timestamp) {
+    public static String getDescriptionTimeFromTimestamp(Date date) {
+        long timestamp = date.getTime();
         long currentTime = System.currentTimeMillis();
         long timeGap = Math.abs(currentTime - timestamp) / 1000;// 与现在时间相差秒数
+        System.out.println("timeGap = " + timeGap);
+        System.out.println("DAY = " + DAY+"---"+DAY*2);
+        System.out.println("currentTime = " + currentTime);
+
         String timeStr = null;
-        if (timeGap > YEAR) {
-            timeStr = timeGap / YEAR + "年前";
-        } else if (timeGap > MONTH) {
-            timeStr = timeGap / MONTH + "个月前";
-        } else if (timeGap > DAY) {// 1天以上
-            timeStr = timeGap / DAY + "天前";
+//        if (timeGap > YEAR) {
+//            timeStr = timeGap / YEAR + "年前";
+//        } else if (timeGap > MONTH) {
+//            timeStr = timeGap / MONTH + "个月前";
+//        } else
+        if (timeGap > DAY) {// 1天以上
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DATE,-1);
+            Date time1 = calendar.getTime();
+            System.out.println("(time1.getTime()) = " + (time1.getTime()));
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String yesterday = sdf.format(calendar.getTime());
+            try {
+                Date yesterdayDate = sdf.parse(yesterday);
+                System.out.println("yesterdayDate.getTime() = " + yesterdayDate.getTime());
+                long stamp=(currentTime-yesterdayDate.getTime())/1000;
+                System.out.println("(currentTime-yesterdayDate.getTime()) = " + (currentTime-yesterdayDate.getTime()));
+
+
+//            System.out.println("time = " + time);
+//            timeStr = timeGap / DAY + "天前";
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+                SimpleDateFormat format = new SimpleDateFormat("MM-dd HH:mm");
+                SimpleDateFormat yestodaydate = new SimpleDateFormat("HH:mm");
+                String time = format.format(date);
+                timeStr =time;
+            System.out.println("yesterday = " + yesterday);
+
+
         } else if (timeGap > HOUR) {
-            timeStr = timeGap / HOUR + "小时前";
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DATE,-1);
+            Date time1 = calendar.getTime();
+            System.out.println("(time1.getTime()) = " + (time1.getTime()));
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String yesterday = sdf.format(calendar.getTime());
+            try {
+                Date yesterdayDate = sdf.parse(yesterday);
+                System.out.println("yesterdayDate.getTime() = " + yesterdayDate.getTime());
+                long stamp=(currentTime-yesterdayDate.getTime())/1000;
+                System.out.println("(currentTime-yesterdayDate.getTime()) = " + (currentTime-yesterdayDate.getTime()));
+
+
+                SimpleDateFormat format = new SimpleDateFormat("MM-dd HH:mm");
+                SimpleDateFormat yestodaydate = new SimpleDateFormat("HH:mm");
+                String time = format.format(date);
+                timeStr = stamp >= DAY && timeGap < DAY*2? "昨天 " + yestodaydate.format(date) :
+                        timeGap > HOUR&&timeGap<DAY?timeGap / HOUR + "小时前":time;
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            System.out.println("yesterday = " + yesterday);
+//
+//
+//
+//
+//            timeStr = timeGap / HOUR + "小时前";
         } else if (timeGap > MINUTE) {
             timeStr = timeGap / MINUTE + "分钟前";
         } else {// 1秒钟-59秒钟

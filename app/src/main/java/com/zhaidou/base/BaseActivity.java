@@ -13,12 +13,18 @@ import android.widget.ImageButton;
 
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.fragments.MainCategoryFragment;
+import com.zhaidou.fragments.MainHomeFragment;
+import com.zhaidou.fragments.MainMagicFragment;
 import com.zhaidou.fragments.MainPersonalFragment;
 import com.zhaidou.fragments.RegisterFragment;
+import com.zhaidou.fragments.ShopCartFragment;
 import com.zhaidou.fragments.ShopPaymentFailFragment;
 import com.zhaidou.fragments.ShopPaymentSuccessFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.SharedPreferencesUtil;
+
+import java.util.List;
 
 /**
  * Created by wangclark on 15/7/3.
@@ -38,7 +44,8 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
             RegisterFragment registerFragment = (RegisterFragment) fragment;
             registerFragment.setRegisterOrLoginListener(this);
         }
-        if ("MainActivity".equalsIgnoreCase(((Object) this).getClass().getSimpleName())) {
+        if ("MainActivity".equalsIgnoreCase(((Object) this).getClass().getSimpleName())||
+                "WebViewActivity".equalsIgnoreCase(((Object) this).getClass().getSimpleName())) {
             mChildContainer.setVisibility(View.VISIBLE);
         }
         //.setCustomAnimations(R.anim.page_enter_into_the,R.anim.page_enter_out_the,R.anim.page_out_into_the,R.anim.page_out_out_the)
@@ -51,7 +58,8 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
             RegisterFragment registerFragment = (RegisterFragment) fragment;
             registerFragment.setRegisterOrLoginListener(this);
         }
-        if ("MainActivity".equalsIgnoreCase(((Object) this).getClass().getSimpleName())) {
+        if ("MainActivity".equalsIgnoreCase(((Object) this).getClass().getSimpleName())||
+                "WebViewActivity".equalsIgnoreCase(((Object) this).getClass().getSimpleName())) {
             mChildContainer.setVisibility(View.VISIBLE);
         }
         //.setCustomAnimations(R.anim.page_enter_into_the,R.anim.page_enter_out_the,R.anim.page_out_into_the,R.anim.page_out_out_the)
@@ -112,4 +120,18 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
         if (inputMethodManager.isActive())
             inputMethodManager.hideSoftInputFromWindow(getWindow().peekDecorView().getApplicationWindowToken(), 0);
     }
+
+    /**
+     * 清除除开首页的全部fragment
+     */
+    public void allfragment() {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        for (Fragment fragment : fragments) {
+            if (fragment instanceof MainHomeFragment || fragment instanceof MainPersonalFragment || fragment instanceof MainMagicFragment || fragment instanceof MainCategoryFragment || fragment instanceof ShopCartFragment) {
+            } else {
+                popToStack(fragment);
+            }
+        }
+    }
+
 }

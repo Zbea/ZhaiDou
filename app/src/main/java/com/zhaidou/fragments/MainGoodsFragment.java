@@ -26,11 +26,11 @@ import com.easemob.chat.EMChatManager;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.adapter.ShopSpecialAdapter;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.CountManager;
 import com.zhaidou.dialog.CustomLoadingDialog;
@@ -416,12 +416,12 @@ public class MainGoodsFragment extends BaseFragment implements
         {
             case R.id.iv_searchs:
                 SearchFragment searchFragment = SearchFragment.newInstance("", 1);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
 //                ((MainActivity) getActivity()).gotoCategory();
                 break;
             case R.id.iv_category:
                 MainCategoryFragment mainCategoryFragment = MainCategoryFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(mainCategoryFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(mainCategoryFragment);
                 break;
             case R.id.iv_message:
                 EaseUtils.startConversationListActivity(mContext);
@@ -706,7 +706,7 @@ public class MainGoodsFragment extends BaseFragment implements
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
     {
         ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(items.get(position).title, items.get(position).goodsId, items.get(position).imageUrl);
-        ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
+        ((BaseActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
         if ("1".equalsIgnoreCase(items.get(position).isNew + ""))
         {
             SharedPreferencesUtil.saveData(mContext, "homeNews_" + items.get(position).goodsId, false);
@@ -772,8 +772,8 @@ public class MainGoodsFragment extends BaseFragment implements
     public void onChange() {
         System.out.println("MainGoodsFragment.onChange");
         int unreadMsgsCount = EMChatManager.getInstance().getUnreadMsgsCount();
-        Integer NotReadNum= (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(),"NotReadNum",0);
-        unreadMsg.setVisibility((unreadMsgsCount + NotReadNum) > 0 ? View.VISIBLE : View.GONE);
-        unreadMsg.setText((unreadMsgsCount + NotReadNum) > 99 ? "99+" : (unreadMsgsCount + NotReadNum) + "");
+        Integer UnReadComment= (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(),"UnReadComment",0);
+        unreadMsg.setVisibility((unreadMsgsCount + UnReadComment) > 0 ? View.VISIBLE : View.GONE);
+        unreadMsg.setText((unreadMsgsCount + UnReadComment) > 99 ? "99+" : (unreadMsgsCount + UnReadComment) + "");
     }
 }

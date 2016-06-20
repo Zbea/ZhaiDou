@@ -31,11 +31,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshListView;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.PhotoViewActivity;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -170,7 +170,7 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
                 System.out.println("parentV = [" + parentV + "], v = [" + v + "], position = [" + position + "], values = [" + values + "]");
                 Entity entity= (Entity) values;
                 HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment=HomeArticleGoodsDetailsFragment.newInstance("",entity.comment.articleId);
-                ((MainActivity)mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
+                ((BaseActivity)mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
             }
         });
         return listView;
@@ -338,7 +338,7 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
                 mGridView.setVisibility(list.size()>0&&!"F".equalsIgnoreCase(replay.comment.status)?View.VISIBLE:View.GONE);
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 try {
-                    mTime.setText(DateUtils.getDescriptionTimeFromTimestamp(sdf.parse(replay.comment.createTime).getTime()));
+                    mTime.setText(DateUtils.getDescriptionTimeFromTimestamp(sdf.parse(replay.comment.createTime)));
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }

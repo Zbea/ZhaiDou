@@ -25,9 +25,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Comment;
@@ -207,7 +207,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
 
                                         }
                                         onCommentListener.onCommentResult(comment);
-                                        ((MainActivity) getActivity()).popToStack(CommentSendFragment.this);
+                                        ((BaseActivity) getActivity()).popToStack(CommentSendFragment.this);
                                         if (editText!=null)
                                             closeInput();
                                     }
@@ -236,12 +236,12 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
             switch (v.getId())
             {
                 case R.id.commentCancelLine:
-                    ((MainActivity) getActivity()).popToStack(CommentSendFragment.this);
+                    ((BaseActivity) getActivity()).popToStack(CommentSendFragment.this);
                     if (editText!=null)
                         closeInput();
                     break;
                 case R.id.commentCancelTv:
-                    ((MainActivity) getActivity()).popToStack(CommentSendFragment.this);
+                    ((BaseActivity) getActivity()).popToStack(CommentSendFragment.this);
                     if (editText!=null)
                         closeInput();
                     break;

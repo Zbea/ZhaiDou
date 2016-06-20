@@ -11,7 +11,6 @@ import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMConversation;
 import com.easemob.easeui.ui.EaseConversationListFragment;
 import com.easemob.util.NetUtils;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.activities.CommentContainerFragment;
 import com.zhaidou.base.EaseManage;
@@ -54,7 +53,7 @@ public class ConversationListFragment extends EaseConversationListFragment imple
 //                    Intent intent=new Intent(getActivity(), CommentContainerFragment.class);
 //                    startActivity(intent);
                     CommentContainerFragment commentContainerFragment=new CommentContainerFragment();
-                    ((MainActivity)getActivity()).navigationToFragment(commentContainerFragment);
+                    ((com.zhaidou.base.BaseActivity)getActivity()).navigationToFragment(commentContainerFragment);
                 }else {
                     // 进入聊天页面
                     Intent intent = new Intent(getActivity(), ChatActivity.class);

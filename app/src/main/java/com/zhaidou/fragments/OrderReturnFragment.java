@@ -23,9 +23,9 @@ import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshListView;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -141,7 +141,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 Store store = (Store) values;
                 ReturnDetailFragment returnDetailFragment = ReturnDetailFragment.newInstance(store);
-                ((MainActivity) getActivity()).navigationToFragment(returnDetailFragment);
+                ((BaseActivity) getActivity()).navigationToFragment(returnDetailFragment);
             }
         });
         returnAdapter.setOnInViewClickListener(R.id.iv_delete, new BaseListAdapter.onInternalClickListener() {

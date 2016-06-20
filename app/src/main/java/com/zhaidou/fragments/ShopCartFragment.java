@@ -35,6 +35,7 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CartArrayItem;
@@ -469,7 +470,7 @@ public class ShopCartFragment extends BaseFragment
                     if (items != null && items.size() >=tag)
                     {
                         GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(tag).name, items.get(tag).goodsId);
-                        ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
+                        ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
                     }
                 }
             });
@@ -715,7 +716,7 @@ public class ShopCartFragment extends BaseFragment
         bundle.putInt("flags", 2);
         bundle.putSerializable("goodsList", arraysCheck);
         shopOrderOkFragment.setArguments(bundle);
-        ((MainActivity) getActivity()).navigationToFragment(shopOrderOkFragment);
+        ((BaseActivity) getActivity()).navigationToFragment(shopOrderOkFragment);
     }
 
     /**

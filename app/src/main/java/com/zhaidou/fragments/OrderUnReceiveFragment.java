@@ -23,9 +23,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -273,7 +273,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 Order1 order =(Order1)values;
                 OrderDetailFragment1 orderDetailFragment = OrderDetailFragment1.newInstance(order.orderCode , 2);
-                ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
+                ((BaseActivity) getActivity()).navigationToFragment(orderDetailFragment);
             }
         });
     }

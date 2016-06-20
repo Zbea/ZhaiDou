@@ -21,7 +21,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
@@ -152,7 +151,7 @@ public class OrderDetailFragment1 extends BaseFragment {
                 final Store store = (Store) values;
                 if (ZhaiDou.STATUS_DEAL_SUCCESS == store.status) {
                     OrderAfterSaleFragment afterSaleFragment = OrderAfterSaleFragment.newInstance(store, "");
-                    ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
+                    ((BaseActivity) getActivity()).navigationToFragment(afterSaleFragment);
                     afterSaleFragment.setOnReturnSuccess(new OnReturnSuccess() {
                         @Override
                         public void onSuccess(Store st) {

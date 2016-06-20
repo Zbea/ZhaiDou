@@ -26,9 +26,9 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshGridView;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -173,7 +173,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
             {
                 Product product = (Product) values;
                 GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(product.getTitle(), product.goodsId);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
             }
         });
         mRequestQueue = Volley.newRequestQueue(mContext);

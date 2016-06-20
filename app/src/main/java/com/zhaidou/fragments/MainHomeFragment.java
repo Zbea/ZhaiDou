@@ -29,10 +29,10 @@ import com.easemob.chat.EMChatManager;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.CountManager;
@@ -372,9 +372,9 @@ public class MainHomeFragment extends BaseFragment implements
     @Override
     public void onChange() {
         int unreadMsgsCount = EMChatManager.getInstance().getUnreadMsgsCount();
-        Integer NotReadNum= (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(),"NotReadNum",0);
-        unreadMsg.setVisibility((unreadMsgsCount + NotReadNum) > 0 ? View.VISIBLE : View.GONE);
-        unreadMsg.setText((unreadMsgsCount+NotReadNum) > 99 ? "99+" : (unreadMsgsCount+NotReadNum) + "");
+        Integer UnReadComment= (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(),"UnReadComment",0);
+        unreadMsg.setVisibility((unreadMsgsCount + UnReadComment) > 0 ? View.VISIBLE : View.GONE);
+        unreadMsg.setText((unreadMsgsCount+UnReadComment) > 99 ? "99+" : (unreadMsgsCount+UnReadComment) + "");
     }
 
 
@@ -621,7 +621,7 @@ public class MainHomeFragment extends BaseFragment implements
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
     {
         HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment=HomeArticleGoodsDetailsFragment.newInstance("",""+articles.get(position).getId());
-        ((MainActivity)mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
+        ((BaseActivity)mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
     }
 
     @Override

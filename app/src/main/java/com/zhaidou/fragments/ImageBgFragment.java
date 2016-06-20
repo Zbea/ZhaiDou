@@ -8,8 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.utils.ToolUtils;
 
@@ -78,7 +78,7 @@ public class ImageBgFragment extends BaseFragment {
         view.findViewById(R.id.rl_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((MainActivity)getActivity()).popToStack(ImageBgFragment.this);
+                ((BaseActivity)getActivity()).popToStack(ImageBgFragment.this);
             }
         });
         return view;

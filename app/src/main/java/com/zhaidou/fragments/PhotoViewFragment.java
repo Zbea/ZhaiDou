@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.utils.ToolUtils;
 
@@ -49,7 +49,7 @@ public class PhotoViewFragment extends BaseFragment {
         view.findViewById(R.id.iv_delete).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((MainActivity)getActivity()).popToStack(PhotoViewFragment.this);
+                ((BaseActivity)getActivity()).popToStack(PhotoViewFragment.this);
                 photoListener.onPhotoDelete(mPosition,mUrl);
             }
         });

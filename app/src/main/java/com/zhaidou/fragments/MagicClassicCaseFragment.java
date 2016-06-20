@@ -22,10 +22,10 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -174,7 +174,7 @@ public class MagicClassicCaseFragment extends BaseFragment
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
                 HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment=HomeArticleGoodsDetailsFragment.newInstance("",""+articleList.get(position).getId());
-                ((MainActivity)mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
+                ((BaseActivity)mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
             }
         });
 

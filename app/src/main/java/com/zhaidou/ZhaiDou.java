@@ -103,6 +103,10 @@ public class ZhaiDou {
     public static String GetRedeemCouponUrl=HOME_BASE_URL+"user/activateCoupons.action";
     //兑换优惠劵和校验是否可用（在下单时候使用）
     public static String GetRedeemAndCheckCouponUrl=HOME_BASE_URL+"user/activateAndCheckCoupons.action";
+    //单个优惠卷领取
+    public static String activateCoupons=HOME_BASE_URL+"user/activateCoupons.action";
+    //一件领取优惠卷
+    public static String activateAllCouponsByOneClick=HOME_BASE_URL+"user/activateAllCouponsByOneClick.action";
 
     //地址列表
     public static String AddressListUrl=HOME_BASE_URL+"user/receivers.action";

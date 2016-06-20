@@ -219,11 +219,11 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                             break;
                         case 1:
                             SoftcoverFragment softcoverFragment = SoftcoverFragment.newInstance("", "");
-                            ((MainActivity) getActivity()).navigationToFragment(softcoverFragment);
+                            ((BaseActivity) getActivity()).navigationToFragment(softcoverFragment);
                             break;
                         case 2:
                             CollocationFragment collocationFragment = CollocationFragment.newInstance("", "");
-                            ((MainActivity) getActivity()).navigationToFragmentWithAnim(collocationFragment);
+                            ((BaseActivity) getActivity()).navigationToFragmentWithAnim(collocationFragment);
                             break;
                         case 3:
                             Intent intent = new Intent(getActivity(), HomePTActivity.class);
@@ -238,7 +238,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                             break;
                         case 5:
                             ContactUsFragment contactUsFragment = ContactUsFragment.newInstance("", "");
-                            ((MainActivity) getActivity()).navigationToFragmentWithAnim(contactUsFragment);
+                            ((BaseActivity) getActivity()).navigationToFragmentWithAnim(contactUsFragment);
                             break;
                         default:
                             break;
@@ -268,7 +268,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
         switch (view.getId()) {
             case R.id.all_order:
                 OrderAllOrdersFragment allOrdersFragment = OrderAllOrdersFragment.newInstance(ZhaiDou.TYPE_ORDER_ALL, "");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(allOrdersFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(allOrdersFragment);
                 break;
             case R.id.tv_pre_pay:
                 ((MainActivity) getActivity()).hideTip(View.GONE);
@@ -277,30 +277,30 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 break;
             case R.id.tv_pre_received:
                 OrderAllOrdersFragment unReceiveFragment = OrderAllOrdersFragment.newInstance(ZhaiDou.TYPE_ORDER_PRERECEIVE, "");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(unReceiveFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(unReceiveFragment);
                 break;
             case R.id.tv_return:
                 OrderReturnFragment returnFragment = OrderReturnFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(returnFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(returnFragment);
                 break;
             case R.id.rl_addr_manage:
                 AddrManageFragment addrManageFragment = AddrManageFragment.newInstance("", "", "", "", 0);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(addrManageFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(addrManageFragment);
                 break;
             case R.id.rl_setting:
                 SettingFragment mSettingFragment = SettingFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(mSettingFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(mSettingFragment);
                 break;
             case R.id.accountInfoBtn:
                 mProfileFragment = ProfileFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(mProfileFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(mProfileFragment);
                 break;
             case R.id.unreadMsgLayout:
 //                Intent intent1 = new Intent(getActivity(), ConversationListActivity.class);
 //                intent1.putExtra("userId", "service");
 //                startActivity(intent1);
                 ConversationListFragment conversationListFragment = new ConversationListFragment();
-                ((MainActivity) mContext).navigationToFragment(conversationListFragment);
+                ((BaseActivity) mContext).navigationToFragment(conversationListFragment);
                 break;
         }
     }
@@ -477,10 +477,10 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     @Override
     public void onChange() {
         int unreadMsgsCount = EMChatManager.getInstance().getUnreadMsgsCount();
-        Integer NotReadNum = (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(), "NotReadNum", 0);
+        Integer UnReadComment = (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(), "UnReadComment", 0);
         Integer UnReadDesigner = (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(), "UnReadDesigner", 0);
-        unReadMsgView.setVisibility((unreadMsgsCount + NotReadNum) > 0 ? View.VISIBLE : View.GONE);
-        unReadMsgView.setText((unreadMsgsCount + NotReadNum) > 99 ? "99+" : (unreadMsgsCount + NotReadNum) + "");
+        unReadMsgView.setVisibility((unreadMsgsCount + UnReadComment) > 0 ? View.VISIBLE : View.GONE);
+        unReadMsgView.setText((unreadMsgsCount + UnReadComment) > 99 ? "99+" : (unreadMsgsCount + UnReadComment) + "");
         if (UnReadDesigner > 0)
             mShareAdapter.notifyDataSetChanged();
     }

@@ -23,6 +23,7 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.DeliveryAddress;
 import com.zhaidou.model.OrderItem;
@@ -97,13 +98,17 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
                 case R.id.tv_mall:
                     ToolUtils.setLog("前往商城");
                     colseFragment(ShopPaymentSuccessFragment.this);
-                    ((MainActivity) mContext).allfragment();
-                    ((MainActivity) mContext).toHomeFragment();
+                    ((BaseActivity) mContext).allfragment();
+                    if (mContext instanceof MainActivity){
+                        ((MainActivity) mContext).toHomeFragment();
+                    }else {
+                        ((BaseActivity) mContext).finish();
+                    }
                     break;
                 case R.id.tv_order_detail:
                     ToolUtils.setLog("前往订单");
                     OrderDetailFragment1 orderDetailFragment1=OrderDetailFragment1.newInstance(mOrderCode,1);
-                    ((MainActivity)getActivity()).navigationToFragment(orderDetailFragment1);
+                    ((BaseActivity)getActivity()).navigationToFragment(orderDetailFragment1);
                     orderDetailFragment1.setOnColseSuccess(new OrderDetailFragment1.OnColseSuccess()
                     {
                         @Override

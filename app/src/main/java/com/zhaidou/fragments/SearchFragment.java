@@ -34,10 +34,10 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.viewpagerindicator.TabPageIndicator;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.adapter.SearchAdapter;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.view.AutoGridView;
@@ -173,7 +173,7 @@ public class SearchFragment extends BaseFragment
                     if (!TextUtils.isEmpty(mEditText.getText().toString().trim()))
                     {
                         if (inputMethodManager.isActive())
-                            inputMethodManager.hideSoftInputFromWindow(((MainActivity) mContext).getWindow().peekDecorView().getApplicationWindowToken(), 0);
+                            inputMethodManager.hideSoftInputFromWindow(((BaseActivity) mContext).getWindow().peekDecorView().getApplicationWindowToken(), 0);
                         mIndex=1;
                         onSearch();
                     } else
@@ -183,7 +183,7 @@ public class SearchFragment extends BaseFragment
                     }
                     break;
                 case R.id.ll_back:
-                    ((MainActivity) getActivity()).popToStack(SearchFragment.this);
+                    ((BaseActivity) getActivity()).popToStack(SearchFragment.this);
                     break;
                 case R.id.iv_sort:
                     toggleSortMenu();
@@ -361,7 +361,7 @@ public class SearchFragment extends BaseFragment
         inputMethodManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
 
         if (inputMethodManager.isActive())
-            inputMethodManager.hideSoftInputFromWindow(((MainActivity) mContext).getWindow().peekDecorView().getApplicationWindowToken(), 0);
+            inputMethodManager.hideSoftInputFromWindow(((BaseActivity) mContext).getWindow().peekDecorView().getApplicationWindowToken(), 0);
         mEditText.setOnKeyListener(new View.OnKeyListener()
         {
             @Override

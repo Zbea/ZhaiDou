@@ -33,6 +33,7 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -302,7 +303,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     bundle.putString("page", products.get(position).getTitle());
                     bundle.putBoolean("canShare", false);
                     goodsDetailsFragment.setArguments(bundle);
-                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
+                    ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
                 }
             });
         }
@@ -413,14 +414,14 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         switch (view.getId())
         {
             case R.id.ll_back:
-                ((MainActivity) getActivity()).popToStack(SpecialSaleFragment.this);
+                ((BaseActivity) getActivity()).popToStack(SpecialSaleFragment.this);
                 break;
 
             case R.id.myCartBtn:
                 if (checkLogin())
                 {
                     ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
-                    ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
+                    ((BaseActivity) getActivity()).navigationToFragment(shopCartFragment);
                 } else
                 {
                     Intent intent = new Intent(getActivity(), LoginActivity.class);

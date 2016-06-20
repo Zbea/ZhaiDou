@@ -26,9 +26,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -189,7 +189,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 addressAdapter.notifyDataSetChanged();
                 if (mStatus == STATUS_FROM_ORDER)
                 {
-                    ((MainActivity) getActivity()).popToStack(AddrManageFragment.this);
+                    ((BaseActivity) getActivity()).popToStack(AddrManageFragment.this);
                 }
             }
         });
@@ -281,7 +281,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 String location = address.getProvince() + "-" + address.getCity() + "-" + address.getArea();
                 int provider_id = address.getProvider_id();
                 final AddrNewAddrFragment newAddrFragment = AddrNewAddrFragment.newInstance(id, name, phone, location, addr, provider_id, UPDATE_ADDRESS_INFO);
-                ((MainActivity) getActivity()).navigationToFragment(newAddrFragment);
+                ((BaseActivity) getActivity()).navigationToFragment(newAddrFragment);
 
                 newAddrFragment.setAddrSaveSuccessListener(new AddrNewAddrFragment.AddrSaveSuccessListener()
                 {
@@ -303,7 +303,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                             address1.setArea(area);
                             addressAdapter.remove(position);
                             addressAdapter.add(address1, position);
-                            ((MainActivity) getActivity()).popToStack(newAddrFragment);
+                            ((BaseActivity) getActivity()).popToStack(newAddrFragment);
                         }
                     }
                 });
@@ -351,7 +351,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                 break;
             case R.id.bt_new_address:
                 final AddrNewAddrFragment newAddrFragment = AddrNewAddrFragment.newInstance(0, "", "", "", "", 0, CREATE_NEW_ADDRESS);
-                ((MainActivity) getActivity()).navigationToFragment(newAddrFragment);
+                ((BaseActivity) getActivity()).navigationToFragment(newAddrFragment);
                 newAddrFragment.setAddrSaveSuccessListener(new AddrNewAddrFragment.AddrSaveSuccessListener()
                 {
                     @Override
@@ -371,7 +371,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
                             addr.setCity(city);
                             addr.setArea(area);
                             addressAdapter.add(addr);
-                            ((MainActivity) getActivity()).popToStack(newAddrFragment);
+                            ((BaseActivity) getActivity()).popToStack(newAddrFragment);
                         }
 
                     }
