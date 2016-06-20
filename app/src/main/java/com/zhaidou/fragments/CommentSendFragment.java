@@ -349,10 +349,10 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
             {
             }
         });
-        editText.setFocusable(true);
-        editText.setFocusableInTouchMode(true);
-        editText.requestFocus();
-        forceOpenSoftKeyboard(mContext);
+//        editText.setFocusable(true);
+//        editText.setFocusableInTouchMode(true);
+//        editText.requestFocus();
+//        forceOpenSoftKeyboard(mContext);
 
         imageLine = (LinearLayout) mView.findViewById(R.id.comment_image_line);
 
