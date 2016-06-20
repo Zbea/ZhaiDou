@@ -38,6 +38,7 @@ import com.zhaidou.view.TypeFaceTextView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -217,7 +218,9 @@ public class GoodsArticleListFragment extends BaseFragment
                         {
                             pageCount = jsonObject1.optInt("totalCount");
                             pageSize = jsonObject1.optInt("pageSize");
-                            totalPrice = jsonObject1.optString("totalPrice");
+                            double aDouble= jsonObject1.optDouble("totalPrice");
+                            BigDecimal bigDecimal=new BigDecimal(aDouble);
+                            totalPrice=String.valueOf(bigDecimal.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue()) ;
                             JSONArray jsonArray = jsonObject1.optJSONArray("changeCaseProductPOs");
                             if (jsonArray != null)
                                 for (int i = 0; i < jsonArray.length(); i++)
@@ -298,7 +301,7 @@ public class GoodsArticleListFragment extends BaseFragment
         @Override
         public View bindView(int position, View convertView, ViewGroup parent)
         {
-            convertView = mHashMap.get(position);
+//            convertView = mHashMap.get(position);
 
             if (convertView == null)
                 convertView = mInflater.inflate(R.layout.item_article_goods, null);
@@ -340,7 +343,7 @@ public class GoodsArticleListFragment extends BaseFragment
             }
 
 
-            mHashMap.put(position, convertView);
+//            mHashMap.put(position, convertView);
             return convertView;
         }
     }

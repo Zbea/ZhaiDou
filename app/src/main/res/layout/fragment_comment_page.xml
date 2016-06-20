@@ -60,38 +60,25 @@
 
             </RelativeLayout>
 
-            <ScrollView
+            <com.zhaidou.view.TypeFaceEditText
+                android:id="@+id/comment_edit"
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
                 android:layout_marginLeft="12dp"
                 android:layout_marginRight="12dp"
                 android:layout_marginTop="5dp"
                 android:fillViewport="true"
-                android:background="@drawable/comment_edit_bg">
+                android:background="@drawable/comment_edit_bg"
+                android:padding="10dp"
+                android:textColor="@color/text_normal_color"
+                android:textSize="14sp"
+                android:maxLength="200"
+                android:gravity="top"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:hint="说两句，评论一下"
+                android:textColorHint="@color/text_gary_color"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <com.zhaidou.view.TypeFaceEditText
-                        android:id="@+id/comment_edit"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:padding="10dp"
-                        android:textColor="@color/text_normal_color"
-                        android:textSize="14sp"
-                        android:maxLength="200"
-                        android:gravity="top"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true"
-                        android:hint="说两句，评论一下"
-                        android:background="@color/transparent"
-                        android:textColorHint="@color/text_gary_color"/>
-
-                </LinearLayout>
-
-            </ScrollView>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -119,7 +106,6 @@
         </LinearLayout>
 
     </LinearLayout>
-
     <FrameLayout
         android:id="@+id/commentMenuLayout"
         android:layout_width="match_parent"
