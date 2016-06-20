@@ -17,8 +17,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.fragments.GoodsDetailsFragment;
 import com.zhaidou.model.ShopTodayItem;
 import com.zhaidou.utils.ToolUtils;
@@ -183,12 +183,12 @@ public class ShopTodaySpecialAdapter extends BaseAdapter
                     bundle.putString("page", items.get(position).title);
                     bundle.putBoolean("canShare", false);
                     goodsDetailsFragment.setArguments(bundle);
-                    ((MainActivity) context).navigationToFragmentWithAnim(goodsDetailsFragment);
+                    ((BaseActivity) context).navigationToFragmentWithAnim(goodsDetailsFragment);
                 }
                 else
                 {
                     GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).title, items.get(position).goodsId);
-                    ((MainActivity) context).navigationToFragment(goodsDetailsFragment);
+                    ((BaseActivity) context).navigationToFragment(goodsDetailsFragment);
                 }
 
 

@@ -26,6 +26,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.AccountManage;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.CountManager;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
@@ -261,33 +262,33 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.rl_back:
-                ((MainActivity) getActivity()).popToStack(SettingFragment.this);
+                ((BaseActivity) getActivity()).popToStack(SettingFragment.this);
                 break;
             case R.id.ll_profile:
                 mProfileFragment = ProfileFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(mProfileFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(mProfileFragment);
                 break;
             case R.id.ll_psw_change:
                 ModifyPswFragment modifyPswFragment = new ModifyPswFragment();
-                ((MainActivity) getActivity()).navigationToFragment(modifyPswFragment);
+                ((BaseActivity) getActivity()).navigationToFragment(modifyPswFragment);
                 break;
             case R.id.ll_competition:
                 WebViewFragment webViewFragment = WebViewFragment.newInstance("http://www.zhaidou.com/competitions/current?zdclient=ios", true);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(webViewFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(webViewFragment);
                 break;
             case R.id.ll_bbs_question:
                 break;
             case R.id.ll_collocation:
                 ImageBgFragment fragment = ImageBgFragment.newInstance("豆搭教程");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(fragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(fragment);
                 break;
             case R.id.ll_recommend:
                 SettingRecommendFragment settingRecommendFragment = SettingRecommendFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(settingRecommendFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(settingRecommendFragment);
                 break;
             case R.id.ll_add_v:
                 ImageBgFragment addVFragment = ImageBgFragment.newInstance("如何加V");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(addVFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(addVFragment);
                 break;
             case R.id.ll_clear:
 
@@ -305,7 +306,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                 break;
             case R.id.ll_about:
                 AboutFragment aboutFragment = AboutFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(aboutFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(aboutFragment);
                 break;
             case R.id.bt_logout:
                 mDialogUtil.showDialog("确定退出登录？", new DialogUtils.PositiveListener() {

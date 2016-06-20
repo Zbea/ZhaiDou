@@ -2,11 +2,11 @@ package com.zhaidou.fragments;
 
 
 import android.app.Dialog;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Html;
@@ -33,12 +33,12 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.activities.WebViewActivity;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -226,16 +226,16 @@ public class SoftListDetailFragment extends BaseFragment {
                     share();
                     break;
                 case R.id.goods_iv:
-                    ((MainActivity) mContext).navigationToFragment(goodsArticleListFragment);
+                    ((BaseActivity) mContext).navigationToFragment(goodsArticleListFragment);
                     break;
                 case R.id.comment_iv:
-                    ((MainActivity) mContext).navigationToFragment(commentListFragment);
+                    ((BaseActivity) mContext).navigationToFragment(commentListFragment);
                     break;
                 case R.id.detailsGoodsAllTv:
-                    ((MainActivity) mContext).navigationToFragment(goodsArticleListFragment);
+                    ((BaseActivity) mContext).navigationToFragment(goodsArticleListFragment);
                     break;
                 case R.id.detailsCommentAllTv:
-                    ((MainActivity) mContext).navigationToFragment(commentListFragment);
+                    ((BaseActivity) mContext).navigationToFragment(commentListFragment);
                     break;
                 case R.id.commentEditLine:
                     if (checkLogin()) {
@@ -479,7 +479,7 @@ public class SoftListDetailFragment extends BaseFragment {
             bundle.putString("index", items.get(position).goodsId);
             bundle.putString("page", items.get(position).name);
             goodsDetailsFragment.setArguments(bundle);
-            ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
+            ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
 
         } else {
             Intent intent = new Intent();
@@ -881,7 +881,7 @@ public class SoftListDetailFragment extends BaseFragment {
                     @Override
                     public void onClick(View v) {
                         CommentImageFragment commentImageFragment = CommentImageFragment.newInstance(im, position);
-                        ((MainActivity) mContext).navigationToFragment(commentImageFragment);
+                        ((BaseActivity) mContext).navigationToFragment(commentImageFragment);
 
                     }
                 });

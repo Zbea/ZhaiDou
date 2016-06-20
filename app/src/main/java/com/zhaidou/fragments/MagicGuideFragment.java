@@ -11,10 +11,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomePTActivity;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.view.CustomProgressWebview;
 
@@ -110,7 +110,7 @@ public class MagicGuideFragment extends BaseFragment implements View.OnClickList
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.ll_back:
-                ((MainActivity)getActivity()).popToStack(MagicGuideFragment.this);
+                ((BaseActivity)getActivity()).popToStack(MagicGuideFragment.this);
                 break;
         }
     }

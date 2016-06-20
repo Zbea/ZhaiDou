@@ -26,11 +26,11 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -548,7 +548,7 @@ public class CommentListFragment extends BaseFragment
                     public void onClick(View v)
                     {
                         CommentImageFragment commentImageFragment=CommentImageFragment.newInstance(im,position);
-                        ((MainActivity)mContext).navigationToFragment(commentImageFragment);
+                        ((BaseActivity)mContext).navigationToFragment(commentImageFragment);
 
                     }
                 });

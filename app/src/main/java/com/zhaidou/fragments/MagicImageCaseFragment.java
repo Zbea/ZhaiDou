@@ -23,9 +23,9 @@ import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -185,7 +185,7 @@ public class MagicImageCaseFragment extends BaseFragment
             {
                 ImageItem imageItem = imageItems.get(position);
                 MagicImageCalssFragment magicImageCaseFragment = MagicImageCalssFragment.newInstance(imageItem.name, imageItem.id);
-                ((MainActivity) getActivity()).navigationToFragment(magicImageCaseFragment);
+                ((BaseActivity) getActivity()).navigationToFragment(magicImageCaseFragment);
             }
         });
 

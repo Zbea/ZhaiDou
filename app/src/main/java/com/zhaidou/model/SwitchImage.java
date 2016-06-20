@@ -1,8 +1,5 @@
 package com.zhaidou.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by wangclark on 15/6/12.
  */
@@ -14,5 +11,15 @@ public class SwitchImage {
     public String imageUrl;
     public int template_type;
 
-
+    @Override
+    public String toString() {
+        return "SwitchImage{" +
+                "id=" + id +
+                ", type=" + type +
+                ", typeValue='" + typeValue + '\'' +
+                ", title='" + title + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", template_type=" + template_type +
+                '}';
+    }
 }

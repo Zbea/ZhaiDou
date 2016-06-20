@@ -26,9 +26,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
@@ -179,7 +179,7 @@ public class MagicImageDetailsFragment extends BaseFragment
             @Override
             public void onClick(View v)
             {
-                ((MainActivity) getActivity()).popToStack(MagicImageDetailsFragment.this);
+                ((BaseActivity) getActivity()).popToStack(MagicImageDetailsFragment.this);
             }
         });
 

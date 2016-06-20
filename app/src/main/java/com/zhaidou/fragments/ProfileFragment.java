@@ -33,9 +33,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.ProfileManage;
 import com.zhaidou.dialog.CustomLoadingDialog;
@@ -260,7 +260,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.ll_back:
-                ((MainActivity) getActivity()).popToStack(ProfileFragment.this);
+                ((BaseActivity) getActivity()).popToStack(ProfileFragment.this);
                 break;
             case R.id.rl_header_layout:
                 mMenuContainer.setVisibility(View.VISIBLE);
@@ -287,13 +287,13 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             case R.id.rl_job:
                 if ("未认证设计师".equalsIgnoreCase(tv_job.getText().toString())) {
                     ImageBgFragment addVFragment = ImageBgFragment.newInstance("如何加V");
-                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(addVFragment);
+                    ((BaseActivity) getActivity()).navigationToFragmentWithAnim(addVFragment);
                 }
                 break;
             case R.id.rl_manage_address:
                 String str = TextUtils.isEmpty(mLocationStr) ? user.getProvince() + "-" + user.getCity() + "-" + user.getProvider() : mLocationStr;
                 ProfileAddrFragment fragment = ProfileAddrFragment.newInstance(user.getFirst_name(), user.getMobile(), str, user.getAddress2(), user.getAddress1(), profileId);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(fragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(fragment);
                 fragment.setAddressListener(new ProfileAddrFragment.AddressListener() {
                     @Override
                     public void onAddressDataChange(String name, String mobile, String locationStr, String address) {

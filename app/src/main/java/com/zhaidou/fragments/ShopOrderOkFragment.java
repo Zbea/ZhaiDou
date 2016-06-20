@@ -28,10 +28,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.CountManager;
 import com.zhaidou.dialog.CustomLoadingDialog;
@@ -209,7 +209,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     Intent intent1 = new Intent(ZhaiDou.IntentRefreshCartGoodsCheckTag);
                     mContext.sendBroadcast(intent1);
                     //关闭本页面
-                    ((MainActivity) getActivity()).popToStack(ShopOrderOkFragment.this);
+                    ((BaseActivity) getActivity()).popToStack(ShopOrderOkFragment.this);
 
                     String result = (String) msg.obj;
                     ToolUtils.setLog(result);
@@ -223,7 +223,7 @@ public class ShopOrderOkFragment extends BaseFragment
                         double amount = orderObj.optDouble("orderPayAmount");
                         long time = orderObj.optLong("orderRemainingTime");
                         ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId,orderCode ,amount,time, null);
-                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
+                        ((BaseActivity) getActivity()).navigationToFragment(shopPaymentFragment);
                     } catch (Exception e)
                     {
 
@@ -333,7 +333,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     break;
                 case R.id.jsEditAddressBtn:
                     AddrSelectFragment addrManageFragment = AddrSelectFragment.newInstance("", STATUS_FROM_ORDER, address);
-                    ((MainActivity) getActivity()).navigationToFragment(addrManageFragment);
+                    ((BaseActivity) getActivity()).navigationToFragment(addrManageFragment);
                     addrManageFragment.setAddressListener(new AddrSelectFragment.AddressListener()
                     {
                         @Override
@@ -359,7 +359,7 @@ public class ShopOrderOkFragment extends BaseFragment
                 case R.id.jsAddressNullLine:
 
                     final AddrNewAddrFragment newAddrFragment = AddrNewAddrFragment.newInstance(0, "", "", "", "", 0, 2);
-                    ((MainActivity) getActivity()).navigationToFragment(newAddrFragment);
+                    ((BaseActivity) getActivity()).navigationToFragment(newAddrFragment);
                     newAddrFragment.setAddrSaveSuccessListener(new AddrNewAddrFragment.AddrSaveSuccessListener()
                     {
                         @Override
@@ -384,7 +384,7 @@ public class ShopOrderOkFragment extends BaseFragment
                             addressPhoneTv.setText("电话：" + addr.getPhone());
                             addressNameTv.setText("收件人：" + addr.getName());
                             addressinfoTv.setText(address.getProvince() + address.getCity() + address.getArea() + addr.getAddress());
-                            ((MainActivity) getActivity()).popToStack(newAddrFragment);
+                            ((BaseActivity) getActivity()).popToStack(newAddrFragment);
                         }
                     });
                     break;
@@ -409,7 +409,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     if (goodsArray==null)
                         setGoodsArray();
                     ShopOrderSelectCouponFragment s = ShopOrderSelectCouponFragment.newInstance("", mStatus, mCoupon, goodsArray.toString());
-                    ((MainActivity) getActivity()).navigationToFragment(s);
+                    ((BaseActivity) getActivity()).navigationToFragment(s);
                     s.setOnCouponListener(new ShopOrderSelectCouponFragment.OnCouponListener()
                     {
                         @Override

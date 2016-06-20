@@ -22,10 +22,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -174,7 +174,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                     mCheckedPosition = -1;
                     mStatus = 1;
                     couponAdapter.notifyDataSetChanged();
-                    ((MainActivity) getActivity()).popToStack(ShopOrderSelectCouponFragment.this);
+                    ((BaseActivity) getActivity()).popToStack(ShopOrderSelectCouponFragment.this);
                     onCouponListener.onDefaultCouponChange(null);
                     break;
                 case R.id.bt_add_coupon:
@@ -265,7 +265,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
             {
                 mCheckedPosition = position;
                 couponAdapter.notifyDataSetChanged();
-                ((MainActivity) getActivity()).popToStack(ShopOrderSelectCouponFragment.this);
+                ((BaseActivity) getActivity()).popToStack(ShopOrderSelectCouponFragment.this);
                 onCouponListener.onDefaultCouponChange(items.get(position));
             }
         });

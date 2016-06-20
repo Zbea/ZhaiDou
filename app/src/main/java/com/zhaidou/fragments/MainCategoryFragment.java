@@ -26,9 +26,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -115,7 +115,7 @@ public class MainCategoryFragment extends BaseFragment {
             public void onClick(View v)
             {
                 SearchFragment searchFragment = SearchFragment.newInstance("", 1);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
             }
         });
 
@@ -131,7 +131,7 @@ public class MainCategoryFragment extends BaseFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
                 SearchFragment searchFragment = SearchFragment.newInstance(mCategoryItemAdapter.getList().get(position).categoryId, 2);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
             }
         });
         mRequestQueue = Volley.newRequestQueue(getActivity());

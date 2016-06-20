@@ -1,8 +1,6 @@
-package com.zhaidou.utils;/**
- * Created by wangclark on 16/6/7.
- */
-
+package com.zhaidou.utils;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.android.volley.Request;
@@ -13,6 +11,7 @@ import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.CountManager;
 import com.zhaidou.model.Comment;
+import com.zhaidou.model.Coupons;
 import com.zhaidou.model.ZhaiDouRequest;
 
 import org.apache.http.HttpResponse;
@@ -22,6 +21,8 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -110,10 +111,12 @@ public class Api {
     }
 
     public static void getUnReadComment(int userId, final SuccessListener successListener, final ErrorListener errorListener) {
+        System.out.println("Api.getUnReadComment");
         ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.GET, ZhaiDou.URL_GET_UNREAD_COMMETN + userId, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
+                System.out.println("Api.onResponse");
                 if (status == 200) {
                     JSONObject dataObj = jsonObject.optJSONObject("data");
                     int notReadNum = dataObj.optInt("NotReadNum");
@@ -155,6 +158,98 @@ public class Api {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 if (errorListener != null)
+                    errorListener.onError(volleyError);
+            }
+        });
+        ZDApplication.mRequestQueue.add(request);
+    }
+
+    //单个优惠劵领取接口
+    public static void activateCoupons(String couponCode, final SuccessListener successListener, final ErrorListener errorListener){
+        Map<String,String> params=new HashMap<String, String>();
+        String userId=SharedPreferencesUtil.getData(ZDApplication.getInstance(),"userId",0)+"";
+        String nickName= (String) SharedPreferencesUtil.getData(ZDApplication.getInstance(),"nickName","");
+        params.put("userId",userId);
+        params.put("couponCode",couponCode);
+        params.put("nickName",nickName);
+        ZhaiDouRequest request=new ZhaiDouRequest(Request.Method.POST,ZhaiDou.activateCoupons,params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                int status = jsonObject.optInt("status");
+                String message = jsonObject.optString("message");
+                if (status==200){
+                    JSONObject data = jsonObject.optJSONObject("data");
+                    int code = jsonObject.optInt("code");
+                    if (code==0&&data!=null){
+                        JSONObject object = data.optJSONObject("data");
+                        if (object!=null) {
+                            Coupons coupons = JSON.parseObject(object.toString(), Coupons.class);
+                            successListener.onSuccess(coupons);
+                        }
+                    }else if (code==-1){
+                        String msg = data.optString("msg");
+                        Toast.makeText(ZDApplication.getInstance(),msg,Toast.LENGTH_SHORT).show();
+                    }
+                }else {
+                    Toast.makeText(ZDApplication.getInstance(),message,Toast.LENGTH_SHORT).show();
+                }
+            }
+        },new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                if (errorListener!=null)
+                    errorListener.onError(volleyError);
+            }
+        });
+        ZDApplication.mRequestQueue.add(request);
+    }
+
+    //一键领取优惠劵
+    public static void activateAllCouponsByOneClick(String[] couponCodes, final SuccessListener successListener, final ErrorListener errorListener){
+        Map<String,String> params=new HashMap<String, String>();
+        String userId=SharedPreferencesUtil.getData(ZDApplication.getInstance(),"userId",0)+"";
+        String nickName= (String) SharedPreferencesUtil.getData(ZDApplication.getInstance(),"nickName","");
+        params.put("userId",userId);
+        params.put("nickName",nickName);
+        JSONArray jsonArray=new JSONArray();
+        for (int i = 0; i < couponCodes.length; i++) {
+            String couponCode=couponCodes[i];
+            JSONObject jsonObject=new JSONObject();
+            try {
+                jsonObject.put("couponKey",couponCode);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            jsonArray.put(jsonObject);
+        }
+        params.put("couponCodes",jsonArray.toString());
+        ZhaiDouRequest request=new ZhaiDouRequest(Request.Method.POST,ZhaiDou.activateAllCouponsByOneClick,params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                int status = jsonObject.optInt("status");
+                String message = jsonObject.optString("message");
+                if (status==200){
+                    JSONObject data = jsonObject.optJSONObject("data");
+                    int code = jsonObject.optInt("code");
+                    if (code==0&&data!=null){
+                        JSONObject object = data.optJSONObject("data");
+                        if (object!=null) {
+                            Coupons coupons = JSON.parseObject(object.toString(), Coupons.class);
+                            successListener.onSuccess(coupons);
+                        }
+                    }else if (code==-1){
+                        String msg = data.optString("msg");
+                        Toast.makeText(ZDApplication.getInstance(),msg,Toast.LENGTH_SHORT).show();
+                    }
+                }else {
+                    errorListener.onError(null);
+                    Toast.makeText(ZDApplication.getInstance(),message,Toast.LENGTH_SHORT).show();
+                }
+            }
+        },new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                if (errorListener!=null)
                     errorListener.onError(volleyError);
             }
         });

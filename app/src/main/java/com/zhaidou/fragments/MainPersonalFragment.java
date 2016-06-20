@@ -30,7 +30,6 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.activities.ConversationListActivity;
 import com.zhaidou.activities.CouponsContainerFragment;
 import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.base.AccountManage;
@@ -40,6 +39,7 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.CountManager;
 import com.zhaidou.base.ProfileManage;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.easeui.helpdesk.ui.ConversationListFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.Api;
 import com.zhaidou.utils.EaseUtils;
@@ -219,11 +219,11 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                             break;
                         case 1:
                             SoftcoverFragment softcoverFragment = SoftcoverFragment.newInstance("", "");
-                            ((MainActivity) getActivity()).navigationToFragment(softcoverFragment);
+                            ((BaseActivity) getActivity()).navigationToFragment(softcoverFragment);
                             break;
                         case 2:
                             CollocationFragment collocationFragment = CollocationFragment.newInstance("", "");
-                            ((MainActivity) getActivity()).navigationToFragmentWithAnim(collocationFragment);
+                            ((BaseActivity) getActivity()).navigationToFragmentWithAnim(collocationFragment);
                             break;
                         case 3:
                             Intent intent = new Intent(getActivity(), HomePTActivity.class);
@@ -238,7 +238,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                             break;
                         case 5:
                             ContactUsFragment contactUsFragment = ContactUsFragment.newInstance("", "");
-                            ((MainActivity) getActivity()).navigationToFragmentWithAnim(contactUsFragment);
+                            ((BaseActivity) getActivity()).navigationToFragmentWithAnim(contactUsFragment);
                             break;
                         default:
                             break;
@@ -268,7 +268,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
         switch (view.getId()) {
             case R.id.all_order:
                 OrderAllOrdersFragment allOrdersFragment = OrderAllOrdersFragment.newInstance(ZhaiDou.TYPE_ORDER_ALL, "");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(allOrdersFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(allOrdersFragment);
                 break;
             case R.id.tv_pre_pay:
                 ((MainActivity) getActivity()).hideTip(View.GONE);
@@ -277,28 +277,30 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 break;
             case R.id.tv_pre_received:
                 OrderAllOrdersFragment unReceiveFragment = OrderAllOrdersFragment.newInstance(ZhaiDou.TYPE_ORDER_PRERECEIVE, "");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(unReceiveFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(unReceiveFragment);
                 break;
             case R.id.tv_return:
                 OrderReturnFragment returnFragment = OrderReturnFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(returnFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(returnFragment);
                 break;
             case R.id.rl_addr_manage:
                 AddrManageFragment addrManageFragment = AddrManageFragment.newInstance("", "", "", "", 0);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(addrManageFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(addrManageFragment);
                 break;
             case R.id.rl_setting:
                 SettingFragment mSettingFragment = SettingFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(mSettingFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(mSettingFragment);
                 break;
             case R.id.accountInfoBtn:
                 mProfileFragment = ProfileFragment.newInstance("", "");
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(mProfileFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(mProfileFragment);
                 break;
             case R.id.unreadMsgLayout:
-                Intent intent1 = new Intent(getActivity(), ConversationListActivity.class);
-                intent1.putExtra("userId", "service");
-                startActivity(intent1);
+//                Intent intent1 = new Intent(getActivity(), ConversationListActivity.class);
+//                intent1.putExtra("userId", "service");
+//                startActivity(intent1);
+                ConversationListFragment conversationListFragment = new ConversationListFragment();
+                ((BaseActivity) mContext).navigationToFragment(conversationListFragment);
                 break;
         }
     }
@@ -426,7 +428,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     public void onResume() {
         super.onResume();
         System.out.println("MainPersonalFragment.onResume");
-        Api.getUnReadComment(userId,null,null);
+        Api.getUnReadComment(userId, null, null);
         MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_personal));
         InputMethodManager inputMethodManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
         if (inputMethodManager.isActive())
@@ -475,9 +477,12 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     @Override
     public void onChange() {
         int unreadMsgsCount = EMChatManager.getInstance().getUnreadMsgsCount();
-        Integer NotReadNum = (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(), "NotReadNum", 0);
-        unReadMsgView.setVisibility((unreadMsgsCount + NotReadNum) > 0 ? View.VISIBLE : View.GONE);
-        unReadMsgView.setText((unreadMsgsCount + NotReadNum) > 99 ? "99+" : (unreadMsgsCount + NotReadNum) + "");
+        Integer UnReadComment = (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(), "UnReadComment", 0);
+        Integer UnReadDesigner = (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(), "UnReadDesigner", 0);
+        unReadMsgView.setVisibility((unreadMsgsCount + UnReadComment) > 0 ? View.VISIBLE : View.GONE);
+        unReadMsgView.setText((unreadMsgsCount + UnReadComment) > 99 ? "99+" : (unreadMsgsCount + UnReadComment) + "");
+        if (UnReadDesigner > 0)
+            mShareAdapter.notifyDataSetChanged();
     }
 
 
@@ -496,9 +501,11 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                 convertView = mInflater.inflate(R.layout.item_share_view, null);
             ImageView imageView = ViewHolder.get(convertView, R.id.iv_plat);
             TextView textView = ViewHolder.get(convertView, R.id.tv_plat);
+            ImageView mDotView = ViewHolder.get(convertView, R.id.dotView);
             String title = getList().get(position);
             textView.setText(title);
             textView.setTextSize(13);
+            mDotView.setVisibility(position == 1 && (Integer) SharedPreferencesUtil.getData(mContext, "UnReadDesigner", 0) > 0 ? View.VISIBLE : View.GONE);
             imageView.setImageResource(drawableId[position]);
             imageView.setVisibility(TextUtils.isEmpty(title) ? View.INVISIBLE : View.VISIBLE);
             return convertView;

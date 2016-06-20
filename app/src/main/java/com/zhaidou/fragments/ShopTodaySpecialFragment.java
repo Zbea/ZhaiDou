@@ -33,6 +33,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.adapter.ShopTodaySpecialAdapter;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.ShopSpecialItem;
@@ -219,13 +220,13 @@ public class ShopTodaySpecialFragment extends BaseFragment
             switch (view.getId())
             {
                 case R.id.ll_back:
-                    ((MainActivity) getActivity()).popToStack(ShopTodaySpecialFragment.this);
+                    ((BaseActivity) getActivity()).popToStack(ShopTodaySpecialFragment.this);
                     break;
                 case R.id.myCartBtn:
                     if (checkLogin())
                     {
                         ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
-                        ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
+                        ((BaseActivity) getActivity()).navigationToFragment(shopCartFragment);
                     } else
                     {
                         Intent intent = new Intent(getActivity(), LoginActivity.class);
@@ -349,7 +350,7 @@ public class ShopTodaySpecialFragment extends BaseFragment
             {
                     mDialog.show();
                     GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).title, items.get(position).goodsId);
-                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
+                    ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
                     mDialog.dismiss();
             }
         });

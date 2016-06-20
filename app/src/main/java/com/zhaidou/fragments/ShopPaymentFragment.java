@@ -30,10 +30,10 @@ import com.tencent.mm.sdk.modelpay.PayReq;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.alipay.PayResult;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.CountManager;
 import com.zhaidou.dialog.CustomLoadingDialog;
@@ -125,7 +125,7 @@ public class ShopPaymentFragment extends BaseFragment
                         notificationPaySuccess();
                         CountManager.getInstance().minus(CountManager.TYPE.TAG_PREPAY);
                         ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, payMoney+"");
-                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
+                        ((BaseActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
 //                        ((MainActivity) getActivity()).popToStack(ShopPaymentFragment.this);
                         // 判断resultStatus 为非“9000”则代表可能支付失败
                         // “8000”代表支付结果因为支付渠道原因或者系统原因还在等待支付结果确认，最终交易是否成功以服务端异步通知为准（小概率状态）
@@ -139,7 +139,7 @@ public class ShopPaymentFragment extends BaseFragment
                     {
                         // 其他值就可以判断为支付失败，包括用户主动取消支付，或者系统返回的错误
                         ShopPaymentFailFragment shopPaymentFailFragment = ShopPaymentFailFragment.newInstance(payOrderId, payMoney, 0, initTime, payOrderCode);
-                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
+                        ((BaseActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
 
                     } else if (TextUtils.equals(resultStatus, "6002"))
                     {
@@ -388,7 +388,7 @@ public class ShopPaymentFragment extends BaseFragment
             public void onClick(View view)
             {
                 dialog.dismiss();
-                ((MainActivity) getActivity()).popToStack(ShopPaymentFragment.this);
+                ((BaseActivity) getActivity()).popToStack(ShopPaymentFragment.this);
 //                CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
 //                ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, payMoney+"");
 //                ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
@@ -651,14 +651,14 @@ public class ShopPaymentFragment extends BaseFragment
                 CountManager.getInstance().minus(CountManager.TYPE.TAG_PREPAY);
                 notificationPaySuccess();
                 ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, payMoney+"");
-                ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
+                ((BaseActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                 }
                 isSuccess = true;
                 break;
             case -1://支付失败
                 Log.i("----->", "支付失败");
                 ShopPaymentFailFragment shopPaymentFailFragment = ShopPaymentFailFragment.newInstance(payOrderId, payMoney, 0, initTime, payOrderCode);
-                ((MainActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
+                ((BaseActivity) getActivity()).navigationToFragment(shopPaymentFailFragment);
                 break;
             case -2://取消支付
                 Log.i("----->", "取消支付");

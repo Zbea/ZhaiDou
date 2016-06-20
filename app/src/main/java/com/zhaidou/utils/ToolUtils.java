@@ -17,12 +17,12 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomeCompetitionActivity;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.WebViewActivity;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.fragments.GoodsDetailsFragment;
 import com.zhaidou.fragments.HomeArticleListFragment;
 import com.zhaidou.fragments.HomeBeautifulFragment;
@@ -195,6 +195,7 @@ public class ToolUtils
                 .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .imageScaleType(ImageScaleType.EXACTLY)
+                .considerExifParams(true)
                 .build();
 
         ImageLoader.getInstance().displayImage(url, imageView, options);
@@ -406,10 +407,11 @@ public class ToolUtils
      */
     public static final void setBannerGoto(SwitchImage item, Context mContext)
     {
+        System.out.println("item = " + item);
         if (item.type == 0)
         {
             SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", item.typeValue);
-            ((MainActivity) mContext).navigationToFragment(specialSaleFragment);
+            ((BaseActivity) mContext).navigationToFragment(specialSaleFragment);
         } else if (item.type == 1)
         {
             if (item.title.equals("天天刮奖"))
@@ -425,6 +427,8 @@ public class ToolUtils
                 intent.putExtra("url", item.typeValue);
                 intent.setClass(mContext, WebViewActivity.class);
                 mContext.startActivity(intent);
+//                WebViewFragment webViewFragment= WebViewFragment.newInstance(item.typeValue, false);
+//                ((MainActivity)mContext).navigationToFragment(webViewFragment);
             }
         } else if (item.type == 2)
         {
@@ -443,45 +447,45 @@ public class ToolUtils
             bundle.putString("index", item.typeValue);
             bundle.putString("page", item.title);
             goodsDetailsFragment.setArguments(bundle);
-            ((MainActivity) mContext).navigationToFragment(goodsDetailsFragment);
+            ((BaseActivity) mContext).navigationToFragment(goodsDetailsFragment);
         } else if (item.type == 4)
         {
             Category category = new Category();
             category.setId(Integer.parseInt(item.typeValue));
             HomeArticleListFragment shopTodayHomeArticleListFragment = HomeArticleListFragment.newInstance("", category);
-            ((MainActivity) mContext).navigationToFragment(shopTodayHomeArticleListFragment);
+            ((BaseActivity) mContext).navigationToFragment(shopTodayHomeArticleListFragment);
         } else if (item.type == 5)
         {
             ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title, item.typeValue, item.imageUrl);
-            ((MainActivity) mContext).navigationToFragmentWithAnim(shopTodaySpecialFragment);
+            ((BaseActivity) mContext).navigationToFragmentWithAnim(shopTodaySpecialFragment);
         } else if (item.type == 6)
         {
             HomeFeatrueFragment homeFeatrueFragment = HomeFeatrueFragment.newInstance(item.title, item.typeValue, item.imageUrl);
-            ((MainActivity) mContext).navigationToFragmentWithAnim(homeFeatrueFragment);
+            ((BaseActivity) mContext).navigationToFragmentWithAnim(homeFeatrueFragment);
         } else if (item.type == 7)
         {
             HomeWeixinListFragment homeFeatrueFragment = HomeWeixinListFragment.newInstance(item.title, item.typeValue);
-            ((MainActivity) mContext).navigationToFragmentWithAnim(homeFeatrueFragment);
+            ((BaseActivity) mContext).navigationToFragmentWithAnim(homeFeatrueFragment);
         } else if (item.type == 8)
         {
             HomeBeautifulFragment goodsDetailsFragment = HomeBeautifulFragment.newInstance(item.title, 0 + "");
-            ((MainActivity) mContext).navigationToFragment(goodsDetailsFragment);
+            ((BaseActivity) mContext).navigationToFragment(goodsDetailsFragment);
         } else if (item.type == 9)
         {
             MagicDesignFragment magicDesignFragment = MagicDesignFragment.newInstance(item.title, item.typeValue);
-            ((MainActivity) mContext).navigationToFragmentWithAnim(magicDesignFragment);
+            ((BaseActivity) mContext).navigationToFragmentWithAnim(magicDesignFragment);
         } else if (item.type == 10)
         {
             MagicClassicCaseDetailsFragment magicClassicCaseDetailsFragment = MagicClassicCaseDetailsFragment.newInstance(item.title, item.typeValue);
-            ((MainActivity) mContext).navigationToFragmentWithAnim(magicClassicCaseDetailsFragment);
+            ((BaseActivity) mContext).navigationToFragmentWithAnim(magicClassicCaseDetailsFragment);
         } else if (item.type == 11)
         {
             MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "");
-            ((MainActivity) mContext).navigationToFragment(magicClassicCaseFragment);
+            ((BaseActivity) mContext).navigationToFragment(magicClassicCaseFragment);
         } else if (item.type == 12)
         {
             MagicImageCaseFragment magicImageCaseFragment = MagicImageCaseFragment.newInstance("", "");
-            ((MainActivity) mContext).navigationToFragment(magicImageCaseFragment);
+            ((BaseActivity) mContext).navigationToFragment(magicImageCaseFragment);
         } else
         {
 

@@ -38,13 +38,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.easemob.chat.EMChatManager;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.base.AccountManage;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.CountManager;
-import com.zhaidou.base.EaseManage;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.fragments.DiyFragment;
 import com.zhaidou.fragments.GoodsDetailsFragment;
@@ -83,7 +81,7 @@ import java.util.Map;
 /**
  */
 public class MainActivity extends BaseActivity implements DiyFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
-        MainHomeFragment.OnFragmentInteractionListener, MainCategoryFragment.OnFragmentInteractionListener, RegisterFragment.RegisterOrLoginListener, CountManager.onCountChangeListener, AccountManage.AccountListener, EaseManage.onMessageChange {
+        MainHomeFragment.OnFragmentInteractionListener, MainCategoryFragment.OnFragmentInteractionListener, RegisterFragment.RegisterOrLoginListener, CountManager.onCountChangeListener, AccountManage.AccountListener, CountManager.onCommentChangeListener {
 
     private FragmentManager manager;
     private Fragment utilityFragment;
@@ -99,11 +97,9 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private TextView lastButton;
 
 
-
-
     private TextView titleView;
     private LinearLayout mTabContainer;
-    private ImageView iv_dot,mMsgView;
+    private ImageView iv_dot, mMsgView;
     public TextView cart_dot;
     private LinearLayout viewLayout;
 
@@ -133,78 +129,58 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     public static int screenHeight;
 
 
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
-    {
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent)
-        {
+        public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
-            {
+            if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag)) {
             }
-            if (action.equals(ZhaiDou.IntentRefreshLoginTag))
-            {
+            if (action.equals(ZhaiDou.IntentRefreshLoginTag)) {
                 checkLogin();
                 FetchCountData();
             }
-            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
-            {
+            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag)) {
             }
-            if (action.equalsIgnoreCase(ZhaiDou.BROADCAST_WXAPI_FILTER))
-            {
+            if (action.equalsIgnoreCase(ZhaiDou.BROADCAST_WXAPI_FILTER)) {
                 List<Fragment> fragments = getSupportFragmentManager().getFragments();
                 int result = intent.getIntExtra("code", -2);
-                if (fragments.size() > 1)
-                {
+                if (fragments.size() > 1) {
                     Fragment fragment = fragments.get(fragments.size() - 1);
                     Fragment shopPaymentFragment = getSupportFragmentManager().findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
                     Fragment shopPaymentFailFragment = getSupportFragmentManager().findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
 
-                    if (shopPaymentFragment != null)
-                    {
+                    if (shopPaymentFragment != null) {
                         ((ShopPaymentFragment) shopPaymentFragment).setPayment();
                     }
-                    if (shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment)
-                    {
+                    if (shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment) {
                         ((ShopPaymentFailFragment) shopPaymentFailFragment).handleWXPayResult(result);
-                    } else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment)
-                    {
+                    } else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment) {
                         ((ShopPaymentFragment) shopPaymentFragment).setPayment();
                         ((ShopPaymentFragment) shopPaymentFragment).handleWXPayResult(result);
-                    } else
-                    {
+                    } else {
                     }
                 }
             }
         }
     };
 
-    private Handler mHandler = new Handler()
-    {
+    private Handler mHandler = new Handler() {
         @Override
-        public void handleMessage(Message msg)
-        {
-            switch (msg.what)
-            {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
                 case 0:
-                    if (type == 1)
-                    {
-                        if (persoanlFragment == null)
-                        {
+                    if (type == 1) {
+                        if (persoanlFragment == null) {
                             persoanlFragment = MainPersonalFragment.newInstance("", "");
-                        } else
-                        {
+                        } else {
                             persoanlFragment.refreshData(MainActivity.this);
                         }
                         selectFragment(currentFragment, persoanlFragment);
                         setButton(personalButton);
-                    } else
-                    {
-                        if (shopCartFragment == null)
-                        {
+                    } else {
+                        if (shopCartFragment == null) {
                             shopCartFragment = ShopCartFragment.newInstance("", 1);
-                        } else
-                        {
+                        } else {
                             shopCartFragment.refreshData();
                         }
                         selectFragment(currentFragment, shopCartFragment);
@@ -215,8 +191,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
                 case 1:
                     serverCode = parseJosn(msg.obj.toString());
-                    if (serverCode > ZDApplication.localVersionCode)
-                    {
+                    if (serverCode > ZDApplication.localVersionCode) {
                         CustomVersionUpdateDialog customVersionUpdateDialog = new CustomVersionUpdateDialog(mContext, serverName, serverUrl);
                         customVersionUpdateDialog.checkUpdateInfo();
                     }
@@ -226,29 +201,28 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     CartTip(cartCount);
                     break;
                 case 1000:
-                    Integer unreadMsgCount= (Integer) msg.obj;
-                    mMsgView.setVisibility(unreadMsgCount>0?View.VISIBLE:View.GONE);
+                    Integer unreadMsgCount = (Integer) msg.obj;
+                    mMsgView.setVisibility(unreadMsgCount > 0 ? View.VISIBLE : View.GONE);
                     break;
             }
         }
     };
 
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main_layout);
         manager = getSupportFragmentManager();
         iv_dot = (ImageView) findViewById(R.id.iv_dot);
-        mMsgView= (ImageView) findViewById(R.id.iv_msg);
+        mMsgView = (ImageView) findViewById(R.id.iv_msg);
         cart_dot = (TextView) findViewById(R.id.cartTipsTv);
         CartTip(0);
         viewLayout = (LinearLayout) findViewById(R.id.content);
         mContext = this;
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
-        screenWidth=dm.widthPixels;
-        screenHeight=dm.heightPixels;
+        screenWidth = dm.widthPixels;
+        screenHeight = dm.heightPixels;
         init();
         initBroadcastReceiver();
 
@@ -266,32 +240,31 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         });
         CountManager.getInstance().setOnCountChangeListener(this);
+        CountManager.getInstance().setOnCommentChangeListener(this);
         AccountManage.getInstance().register(this);
-        EaseManage.getInstance().setOnMessageChange(this);
-        if (checkLogin()){
+        if (checkLogin()) {
             FetchUnPayData();
             FetchCountData();
-            onMessage(EMChatManager.getInstance().getUnreadMsgsCount());
         }
     }
 
     private void FetchUnPayData() {
-        String mUserId= SharedPreferencesUtil.getData(this, "userId", -1)+"";
+        String mUserId = SharedPreferencesUtil.getData(this, "userId", -1) + "";
         Map<String, String> params = new HashMap();
-        params.put("userId",mUserId);
+        params.put("userId", mUserId);
         params.put("clientType", "ANDROID");
         params.put("clientVersion", "45");
         params.put("businessType", "01");
         params.put("type", ZhaiDou.TYPE_ORDER_PREPAY);
-        params.put("pageNo","0");
+        params.put("pageNo", "0");
         params.put("pageSize", "0");
-        ZhaiDouRequest request = new ZhaiDouRequest(MainActivity.this,Request.Method.POST, ZhaiDou.URL_ORDER_LIST, params, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(MainActivity.this, Request.Method.POST, ZhaiDou.URL_ORDER_LIST, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
                 int totalCount = jsonObject.optInt("totalCount");
-                if (status==200){
-                    CountManager.getInstance().init(CountManager.TYPE.TAG_PREPAY,totalCount);
+                if (status == 200) {
+                    CountManager.getInstance().init(CountManager.TYPE.TAG_PREPAY, totalCount);
                 }
             }
         }, new Response.ErrorListener() {
@@ -299,43 +272,34 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             public void onErrorResponse(VolleyError volleyError) {
             }
         });
-        ((ZDApplication)getApplicationContext()).mRequestQueue.add(request);
+        ((ZDApplication) getApplicationContext()).mRequestQueue.add(request);
     }
 
-    private void commitActiveData()
-    {
+    private void commitActiveData() {
         ApplicationInfo appInfo = null;
-        try
-        {
+        try {
             appInfo = this.getPackageManager()
                     .getApplicationInfo(getPackageName(),
                             PackageManager.GET_META_DATA);
-        } catch (PackageManager.NameNotFoundException e)
-        {
+        } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
         final String channel = appInfo.metaData.getString("UMENG_CHANNEL");
         Log.d("appInfo---", " msg == " + channel);
         Map<String, String> map = new HashMap<String, String>();
         map.put("device_token[device_token]", DeviceUtils.getImei(this));
-        ZhaiDouRequest request = new ZhaiDouRequest(MainActivity.this,Request.Method.POST, ZhaiDou.URL_STATISTICS, map, new Response.Listener<JSONObject>()
-        {
+        ZhaiDouRequest request = new ZhaiDouRequest(MainActivity.this, Request.Method.POST, ZhaiDou.URL_STATISTICS, map, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(JSONObject jsonObject)
-            {
+            public void onResponse(JSONObject jsonObject) {
             }
-        }, new Response.ErrorListener()
-        {
+        }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
+            public void onErrorResponse(VolleyError volleyError) {
 
             }
-        })
-        {
+        }) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
+            public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> header = new HashMap<String, String>();
                 header.put("zd-client", channel);
                 header.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
@@ -348,17 +312,13 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     /**
      * 获取版本信息
      */
-    private void getVersionServer()
-    {
-        new Thread(new Runnable()
-        {
+    private void getVersionServer() {
+        new Thread(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 String url = ZhaiDou.ApkUrl;
                 String result = NetService.GETHttpService(url, getApplicationContext());
-                if (result != null)
-                {
+                if (result != null) {
                     mHandler.obtainMessage(1, result).sendToTarget();
                 }
             }
@@ -368,8 +328,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     /**
      * 注册广播
      */
-    private void initBroadcastReceiver()
-    {
+    private void initBroadcastReceiver() {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
@@ -378,14 +337,12 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         mContext.registerReceiver(broadcastReceiver, intentFilter);
     }
 
-    public void init()
-    {
+    public void init() {
         mRequestQueue = Volley.newRequestQueue(this, new HttpClientStack(new DefaultHttpClient()));
         FetchCityData();
     }
 
-    public void initComponents()
-    {
+    public void initComponents() {
 
         mTabContainer = (LinearLayout) findViewById(R.id.tab_container);
         mChildContainer = (FrameLayout) findViewById(R.id.fl_child_container);
@@ -393,8 +350,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
         lastButton = homeButton;
 
-        if (utilityFragment == null)
-        {
+        if (utilityFragment == null) {
             utilityFragment = MainHomeFragment.newInstance(ZhaiDou.HOME_PAGE_URL, ZhaiDou.ListType.HOME.toString());
         }
 
@@ -402,11 +358,9 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         setButton(lastButton);
         setDefaultFragment(utilityFragment);
 
-        homeButton.setOnClickListener(new View.OnClickListener()
-        {
+        homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
 
                 selectFragment(currentFragment, utilityFragment);
                 setButton(view);
@@ -414,50 +368,40 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         });
 
         magicButton = (TextView) findViewById(R.id.tab_beauty);
-        magicButton.setOnClickListener(new View.OnClickListener()
-        {
+        magicButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
 
-                    if (magicHomeFragment == null)
-                    {
-                        magicHomeFragment = new MainMagicFragment();
-                    }
-                    selectFragment(currentFragment, magicHomeFragment);
-                    setButton(view);
+                if (magicHomeFragment == null) {
+                    magicHomeFragment = new MainMagicFragment();
+                }
+                selectFragment(currentFragment, magicHomeFragment);
+                setButton(view);
 
 
             }
         });
 
         categoryButton = (TextView) findViewById(R.id.tab_category);
-        categoryButton.setOnClickListener(new View.OnClickListener()
-        {
+        categoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 gotoCategory();
 
             }
         });
 
         cartButton = (TextView) findViewById(R.id.tab_diy);
-        cartButton.setOnClickListener(new View.OnClickListener()
-        {
+        cartButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 type = 2;
-                if (!checkLogin())
-                {
+                if (!checkLogin()) {
                     Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                     intent.setFlags(2);
                     MainActivity.this.startActivityForResult(intent, 10000);
-                } else
-                {
-                    if (shopCartFragment == null)
-                    {
+                } else {
+                    if (shopCartFragment == null) {
                         shopCartFragment = ShopCartFragment.newInstance("haha", 1);
                     }
                     selectFragment(currentFragment, shopCartFragment);
@@ -466,22 +410,18 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         });
 
-        personalButton = (TextView)findViewById(R.id.tab_personal);
-        personalButton.setOnClickListener(new View.OnClickListener()
-        {
+        personalButton = (TextView) findViewById(R.id.tab_personal);
+        personalButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 type = 1;
                 if (!checkLogin())//||!EMChatManager.getInstance().isConnected()
                 {
                     Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                     intent.setFlags(2);
                     MainActivity.this.startActivityForResult(intent, 10000);
-                } else
-                {
-                    if (persoanlFragment == null)
-                    {
+                } else {
+                    if (persoanlFragment == null) {
                         persoanlFragment = MainPersonalFragment.newInstance("", "");
                     }
                     selectFragment(currentFragment, persoanlFragment);
@@ -493,8 +433,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     }
 
-    public void setButton(View view)
-    {
+    public void setButton(View view) {
         TextView button = (TextView) view;
 
         lastButton.setSelected(false);
@@ -508,10 +447,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     /**
      * 跳转分类
      */
-    public void gotoCategory()
-    {
-        if (goodsFragment == null)
-        {
+    public void gotoCategory() {
+        if (goodsFragment == null) {
             goodsFragment = MainGoodsFragment.newInstance("", "");
         }
         selectFragment(currentFragment, goodsFragment);
@@ -519,64 +456,53 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     }
 
-    public void setDefaultFragment(Fragment defaultFragment)
-    {
+    public void setDefaultFragment(Fragment defaultFragment) {
         getSupportFragmentManager().beginTransaction().add(R.id.content, defaultFragment).commit();
     }
 
-    public void selectFragment(Fragment from, Fragment to)
-    {
-        if (currentFragment != to)
-        {
+    public void selectFragment(Fragment from, Fragment to) {
+        if (currentFragment != to) {
             currentFragment = to;
             FragmentTransaction transaction = manager.beginTransaction();
-            if (!to.isAdded())
-            {
+            if (!to.isAdded()) {
                 transaction.hide(from).add(R.id.content, to).commit();
-            } else
-            {
+            } else {
                 transaction.hide(from).show(to).commit();
             }
         }
     }
 
-    public void onFragmentInteraction(Uri uri)
-    {
+    public void onFragmentInteraction(Uri uri) {
 
     }
 
 
     /**
      * 处理重复点击子 fragment时候出现触发底层 fragment 的问题
+     *
      * @param ev
      * @return
      */
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev)
-    {
+    public boolean dispatchTouchEvent(MotionEvent ev) {
         int num = manager.getBackStackEntryCount();
-        if (num < 1)
-        {
+        if (num < 1) {
             mChildContainer.setClickable(false);
-        } else
-        {
+        } else {
             mChildContainer.setClickable(true);
         }
         return super.dispatchTouchEvent(ev);
     }
 
-    public void toggleTabContainer()
-    {
+    public void toggleTabContainer() {
         mTabContainer.setVisibility(mTabContainer.isShown() ? View.GONE : View.VISIBLE);
     }
 
-    public void toggleTabContainer(int visible)
-    {
+    public void toggleTabContainer(int visible) {
         mTabContainer.setVisibility(visible);
     }
 
-    public boolean checkLogin()
-    {
+    public boolean checkLogin() {
         token = (String) SharedPreferencesUtil.getData(this, "token", "");
         id = (Integer) SharedPreferencesUtil.getData(this, "userId", -1);
         boolean isLogin = !TextUtils.isEmpty(token) && id > -1;
@@ -584,11 +510,9 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         CallbackContext.onActivityResult(requestCode, resultCode, data);
-        switch (resultCode)
-        {
+        switch (resultCode) {
             case 2000:
                 int id = data.getIntExtra("id", -1);
                 String email = data.getStringExtra("email");
@@ -613,21 +537,17 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
      * @param json
      * @return
      */
-    private int parseJosn(String json)
-    {
-        try
-        {
+    private int parseJosn(String json) {
+        try {
             JSONObject jsonObject = new JSONObject(json);
-            if (jsonObject!=null)
-            {
+            if (jsonObject != null) {
                 JSONObject object = jsonObject.optJSONObject("data");
                 if (object != null)
                     serverName = object.optString("app_version");
                 serverCode = object.optInt("code_version");
                 serverUrl = object.optString("package_url");
             }
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return serverCode;
@@ -635,18 +555,15 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
 
     @Override
-    protected void onDestroy()
-    {
+    protected void onDestroy() {
         unregisterReceiver(broadcastReceiver);
-        ((ZDApplication)getApplicationContext()).mRequestQueue.cancelAll(null);
+        ((ZDApplication) getApplicationContext()).mRequestQueue.cancelAll(null);
         super.onDestroy();
     }
 
-    public void logout(Fragment fragment)
-    {
+    public void logout(Fragment fragment) {
         popToStack(fragment);
-        if (utilityFragment == null)
-        {
+        if (utilityFragment == null) {
             utilityFragment = MainHomeFragment.newInstance(ZhaiDou.HOME_PAGE_URL, ZhaiDou.ListType.HOME.toString());
         }
         selectFragment(currentFragment, utilityFragment);
@@ -654,69 +571,55 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)
-    {
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
         int num = manager.getBackStackEntryCount();
         List<Fragment> fragments = manager.getFragments();
-        if (num == 0)
-        {
-            if (keyCode == KeyEvent.KEYCODE_BACK)
-            {
-                if ((System.currentTimeMillis() - mTime) > 2000)
-                {
+        if (num == 0) {
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                if ((System.currentTimeMillis() - mTime) > 2000) {
                     Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
                     mTime = System.currentTimeMillis();
-                } else
-                {
+                } else {
                     finish();
                 }
                 return true;
             }
-        } else
-        {
-            if (fragments.size() > 0&&keyCode == KeyEvent.KEYCODE_BACK)
-            {
+        } else {
+            if (fragments.size() > 0 && keyCode == KeyEvent.KEYCODE_BACK) {
                 Fragment orderDetailFragment = manager.findFragmentByTag(OrderDetailFragment1.class.getSimpleName());
                 Fragment shopPaymentSuccessFragmen = manager.findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
                 Fragment shopPaymentFailFragment = manager.findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
                 Fragment shopPaymentFragment = manager.findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
                 Fragment fragment = fragments.get(fragments.size() - 1);
-                if (fragment instanceof GoodsDetailsFragment||fragment instanceof OrderDetailFragment1||fragment instanceof ShopPaymentFailFragment||
-                        fragment instanceof ShopPaymentSuccessFragment||fragment instanceof ShopPaymentFragment){
+                if (fragment instanceof GoodsDetailsFragment || fragment instanceof OrderDetailFragment1 || fragment instanceof ShopPaymentFailFragment ||
+                        fragment instanceof ShopPaymentSuccessFragment || fragment instanceof ShopPaymentFragment) {
 
-                    if (fragments.get(fragments.size()-1) instanceof GoodsDetailsFragment){
+                    if (fragments.get(fragments.size() - 1) instanceof GoodsDetailsFragment) {
                         manager.popBackStack();
                         return true;
                     }
-                    if ((orderDetailFragment != null && orderDetailFragment instanceof OrderDetailFragment1))
-                    {
+                    if ((orderDetailFragment != null && orderDetailFragment instanceof OrderDetailFragment1)) {
                         //orderDetailFragment
                         ToolUtils.setLog("关闭orderDetailFragment");
                         popToStack(orderDetailFragment);
                         return true;
-                    }
-                    else if ((shopPaymentSuccessFragmen != null && shopPaymentSuccessFragmen instanceof ShopPaymentSuccessFragment))
-                    {
+                    } else if ((shopPaymentSuccessFragmen != null && shopPaymentSuccessFragmen instanceof ShopPaymentSuccessFragment)) {
                         //ShopPaymentSuccessFragment关闭
                         ToolUtils.setLog("关闭shopPaymentSuccessFragmen");
                         popToStack(shopPaymentSuccessFragmen);
                         return true;
-                    }
-                     else if ((shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment))
-                    {
+                    } else if ((shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment)) {
                         ToolUtils.setLog("关闭shopPaymentFailFragment");
                         //ShopPaymentSuccessFragment关闭
                         popToStack(shopPaymentFailFragment);
                         return true;
-                    }
-                    else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment)
-                    {
+                    } else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment) {
                         ToolUtils.setLog("关闭shopPaymentFragment");
                         //ShopPaymentFragment返回弹出提示
                         BackPaymentDialog(shopPaymentFragment);
                         return true;
                     }
-                }else {
+                } else {
                     return super.onKeyDown(keyCode, event);
                 }
             }
@@ -729,27 +632,21 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
      *
      * @param shopPaymentFragment
      */
-    private void BackPaymentDialog(final Fragment shopPaymentFragment)
-    {
+    private void BackPaymentDialog(final Fragment shopPaymentFragment) {
         DialogUtils mDialogUtils = new DialogUtils(this);
-        mDialogUtils.showDialog("确认要放弃支付?", new DialogUtils.PositiveListener()
-        {
+        mDialogUtils.showDialog("确认要放弃支付?", new DialogUtils.PositiveListener() {
             @Override
-            public void onPositive()
-            {
+            public void onPositive() {
                 popToStack(shopPaymentFragment);
             }
         }, null);
     }
 
-    public void toHomeFragment()
-    {
-        if (currentFragment instanceof MainHomeFragment)
-        {
+    public void toHomeFragment() {
+        if (currentFragment instanceof MainHomeFragment) {
             FragmentTransaction transaction = manager.beginTransaction();
             transaction.show(currentFragment).commit();
-        } else
-        {
+        } else {
             if (utilityFragment != null)
                 selectFragment(currentFragment, utilityFragment);
             setButton(homeButton);
@@ -759,22 +656,17 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     /**
      * 清除除开首页的全部fragment
      */
-    public void allfragment()
-    {
+    public void allfragment() {
         List<Fragment> fragments = manager.getFragments();
-        for (Fragment fragment : fragments)
-        {
-            if (fragment instanceof MainHomeFragment || fragment instanceof MainPersonalFragment || fragment instanceof MainMagicFragment || fragment instanceof MainCategoryFragment || fragment instanceof ShopCartFragment)
-            {
-            } else
-            {
+        for (Fragment fragment : fragments) {
+            if (fragment instanceof MainHomeFragment || fragment instanceof MainPersonalFragment || fragment instanceof MainMagicFragment || fragment instanceof MainCategoryFragment || fragment instanceof ShopCartFragment) {
+            } else {
                 popToStack(fragment);
             }
         }
     }
 
-    public void hideTip(int v)
-    {
+    public void hideTip(int v) {
         iv_dot.setVisibility(v);
     }
 
@@ -783,31 +675,22 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
      *
      * @param ty
      */
-    public void CartTip(int ty)
-    {
-        if (ty==0)
-        {
+    public void CartTip(int ty) {
+        if (ty == 0) {
             cart_dot.setVisibility(View.GONE);
-        }
-        else
-        {
-            cart_dot.setText(""+ty);
+        } else {
+            cart_dot.setText("" + ty);
             cart_dot.setVisibility(View.VISIBLE);
         }
     }
 
-    private void FetchCityData()
-    {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_ADDRESS_URL, new Response.Listener<JSONObject>()
-        {
+    private void FetchCityData() {
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_ADDRESS_URL, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(JSONObject jsonObject)
-            {
-                if (jsonObject != null)
-                {
+            public void onResponse(JSONObject jsonObject) {
+                if (jsonObject != null) {
                     JSONArray providerArr = jsonObject.optJSONArray("providers");
-                    for (int i = 0; i < providerArr.length(); i++)
-                    {
+                    for (int i = 0; i < providerArr.length(); i++) {
                         JSONObject provinceObj = providerArr.optJSONObject(i);
                         int provinceId = provinceObj.optInt("id");
                         String provinceName = provinceObj.optString("name");
@@ -816,10 +699,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                         province.setName(provinceName);
                         List<City> cityList = new ArrayList<City>();
                         JSONArray cityArr = provinceObj.optJSONArray("cities");
-                        if (cityArr != null && cityArr.length() > 0)
-                        {
-                            for (int k = 0; k < cityArr.length(); k++)
-                            {
+                        if (cityArr != null && cityArr.length() > 0) {
+                            for (int k = 0; k < cityArr.length(); k++) {
                                 JSONObject cityObj = cityArr.optJSONObject(k);
                                 int cityId = cityObj.optInt("id");
                                 String cityName = cityObj.optString("name");
@@ -828,10 +709,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                                 city.setId(cityId);
                                 city.setName(cityName);
                                 List<Area> areaList = new ArrayList<Area>();
-                                if (areaArr != null && areaArr.length() > 0)
-                                {
-                                    for (int j = 0; j < areaArr.length(); j++)
-                                    {
+                                if (areaArr != null && areaArr.length() > 0) {
+                                    for (int j = 0; j < areaArr.length(); j++) {
                                         JSONObject areaObj = areaArr.optJSONObject(j);
                                         int areaId = areaObj.optInt("id");
                                         String areaName = areaObj.optString("name");
@@ -854,17 +733,13 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
                 }
             }
-        }, new Response.ErrorListener()
-        {
+        }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
+            public void onErrorResponse(VolleyError volleyError) {
             }
-        })
-        {
+        }) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
+            public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
@@ -876,33 +751,25 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     /**
      * 请求购物车列表数据
      */
-    public void FetchCountData()
-    {
+    public void FetchCountData() {
         String url = ZhaiDou.CartGoodsCountUrl + id;
         ToolUtils.setLog("url:" + url);
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
-        {
+        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(JSONObject jsonObject)
-            {
-                if (jsonObject != null)
-                {
+            public void onResponse(JSONObject jsonObject) {
+                if (jsonObject != null) {
                     JSONObject object = jsonObject.optJSONObject("data");
                     cartCount = object.optInt("totalQuantity");
                     mHandler.sendEmptyMessage(3);
                 }
             }
-        }, new Response.ErrorListener()
-        {
+        }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
+            public void onErrorResponse(VolleyError volleyError) {
             }
-        })
-        {
+        }) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
+            public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("SECAuthorization", token);
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
@@ -913,17 +780,13 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     }
 
     @Override
-    protected void onResume()
-    {
-        System.out.println("MainActivity.onResume");
-        mMsgView.setVisibility(EMChatManager.getInstance().getUnreadMsgsCount()>0?View.VISIBLE:View.GONE);
+    protected void onResume() {
         super.onResume();
         MobclickAgent.onResume(this);
     }
 
     @Override
-    protected void onPause()
-    {
+    protected void onPause() {
         super.onPause();
         MobclickAgent.onPause(this);
     }
@@ -932,8 +795,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     @Override
     public void onCount(int count) {
-        iv_dot.setVisibility((count>0&&count > currentPrePayCount)?View.VISIBLE:View.GONE);
-        currentPrePayCount=count;
+        iv_dot.setVisibility((count > 0 && count > currentPrePayCount) ? View.VISIBLE : View.GONE);
+        currentPrePayCount = count;
     }
 
     @Override
@@ -943,12 +806,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     }
 
     @Override
-    public void onMessage(int unreadMsgCount) {
-        int unreadCount = EMChatManager.getInstance().getUnreadMsgsCount();
-        Message message=new Message();
-        message.what=1000;
-        message.obj=unreadMsgCount;
-        mHandler.sendMessage(message);
+    public void onChange() {
+        Integer unReadDesigner = (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(), "UnReadDesigner", 0);
+        mMsgView.setVisibility(unReadDesigner > 0 ? View.VISIBLE : View.GONE);
     }
-
 }

@@ -181,7 +181,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     /**
      * 获得保存的邮箱帐号
      *
-     * @return
      */
     private String getEmail() {
         return (String) SharedPreferencesUtil.getData(this, "phone", "");

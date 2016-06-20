@@ -30,6 +30,8 @@ public class ZhaiDou {
     public static String HomeArticleCommentUrl=HOME_BASE_URL+"comment/commentView.action?articleId=";
     //添加评论
     public static String CommentAddUrl=HOME_BASE_URL+"comment/addProductComment";
+    //获取评论列表
+    public static String COMMENT_LIST_URL=HOME_BASE_URL+"comment/getCommentList.action";
     //首页banner点击统计接口
     public static String HomeClickStatisticalUrl=HOME_BASE_URL+"api/countBannerClick.action?name=";
     //首页微信文章列表
@@ -101,6 +103,10 @@ public class ZhaiDou {
     public static String GetRedeemCouponUrl=HOME_BASE_URL+"user/activateCoupons.action";
     //兑换优惠劵和校验是否可用（在下单时候使用）
     public static String GetRedeemAndCheckCouponUrl=HOME_BASE_URL+"user/activateAndCheckCoupons.action";
+    //单个优惠卷领取
+    public static String activateCoupons=HOME_BASE_URL+"user/activateCoupons.action";
+    //一件领取优惠卷
+    public static String activateAllCouponsByOneClick=HOME_BASE_URL+"user/activateAllCouponsByOneClick.action";
 
     //地址列表
     public static String AddressListUrl=HOME_BASE_URL+"user/receivers.action";

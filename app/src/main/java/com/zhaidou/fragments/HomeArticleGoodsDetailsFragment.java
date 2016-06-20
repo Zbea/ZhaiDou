@@ -32,12 +32,12 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.activities.WebViewActivity;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -239,24 +239,22 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                     initData();
                     break;
                 case R.id.rl_qq_contact:
-//                    CommentListFragment commentListFragment = CommentListFragment.newInstance("", "");
-//                    ((MainActivity) mContext).navigationToFragmentWithAnim(commentListFragment);
                     EaseUtils.startDesignerActivity(mContext);
                     break;
                 case R.id.share_iv:
                     share();
                     break;
                 case R.id.goods_iv:
-                    ((MainActivity) mContext).navigationToFragment(goodsArticleListFragment);
+                    ((BaseActivity) mContext).navigationToFragment(goodsArticleListFragment);
                     break;
                 case R.id.comment_iv:
-                    ((MainActivity) mContext).navigationToFragment(commentListFragment);
+                    ((BaseActivity) mContext).navigationToFragment(commentListFragment);
                     break;
                 case R.id.detailsGoodsAllTv:
-                    ((MainActivity) mContext).navigationToFragment(goodsArticleListFragment);
+                    ((BaseActivity) mContext).navigationToFragment(goodsArticleListFragment);
                     break;
                 case R.id.detailsCommentAllTv:
-                    ((MainActivity) mContext).navigationToFragment(commentListFragment);
+                    ((BaseActivity) mContext).navigationToFragment(commentListFragment);
                     break;
                 case R.id.commentEditLine:
                     if (checkLogin())
@@ -541,7 +539,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
             bundle.putString("index", items.get(position).goodsId);
             bundle.putString("page", items.get(position).name);
             goodsDetailsFragment.setArguments(bundle);
-            ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
+            ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
 
         } else
         {
@@ -1014,7 +1012,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                     public void onClick(View v)
                     {
                         CommentImageFragment commentImageFragment = CommentImageFragment.newInstance(im, position);
-                        ((MainActivity) mContext).navigationToFragment(commentImageFragment);
+                        ((BaseActivity) mContext).navigationToFragment(commentImageFragment);
 
                     }
                 });

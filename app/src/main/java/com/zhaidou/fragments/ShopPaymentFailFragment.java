@@ -30,10 +30,10 @@ import com.tencent.mm.sdk.modelpay.PayReq;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.alipay.PayResult;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.CountManager;
 import com.zhaidou.dialog.CustomLoadingDialog;
@@ -127,7 +127,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
                                 Toast.LENGTH_SHORT).show();
                         CountManager.getInstance().minus(CountManager.TYPE.TAG_PREPAY);
                         ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, payMoney + "");
-                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
+                        ((BaseActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                         // 判断resultStatus 为非“9000”则代表可能支付失败
                         // “8000”代表支付结果因为支付渠道原因或者系统原因还在等待支付结果确认，最终交易是否成功以服务端异步通知为准（小概率状态）
                     } else if (TextUtils.equals(resultStatus, "8000")) {
@@ -494,7 +494,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
                 Log.i("----->", "支付成功");
                 CountManager.getInstance().minus(CountManager.TYPE.TAG_PREPAY);
                 ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, payMoney + "");
-                ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
+                ((BaseActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
                 break;
             case -1://支付失败
                 Log.i("----->", "支付失败");

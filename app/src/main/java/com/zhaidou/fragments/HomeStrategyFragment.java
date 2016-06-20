@@ -26,11 +26,11 @@ import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.adapter.HomeListAdapter;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
@@ -187,7 +187,7 @@ public class HomeStrategyFragment extends BaseFragment
             switch (view.getId())
             {
                 case R.id.ll_back:
-                    ((MainActivity) getActivity()).popToStack(HomeStrategyFragment.this);
+                    ((BaseActivity) getActivity()).popToStack(HomeStrategyFragment.this);
                     break;
                 case R.id.ll_category_view:
                     toggleMenu();

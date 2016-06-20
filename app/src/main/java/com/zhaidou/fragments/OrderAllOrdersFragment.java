@@ -26,7 +26,6 @@ import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshListView;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
@@ -179,7 +178,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     if (btn2.getTag() != null)
                         preTime = Long.parseLong(btn2.getTag().toString());
                     OrderDetailFragment1 orderDetailFragment = OrderDetailFragment1.newInstance(order.orderCode, 2);
-                    ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
+                    ((BaseActivity) getActivity()).navigationToFragment(orderDetailFragment);
                 }
             });
             allOrderAdapter.setOnInViewClickListener(R.id.bt_logistics, new BaseListAdapter.onInternalClickListener() {

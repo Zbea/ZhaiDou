@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.model.Store;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -209,7 +208,7 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
      * 关闭当前页面
      */
     public void colseFragment(Fragment fragment) {
-        ((MainActivity) getActivity()).popToStack(fragment);
+        ((BaseActivity) getActivity()).popToStack(fragment);
     }
 
     public void setOnFragmentCloseListener(BaseFragment.onFragmentCloseListener onFragmentCloseListener) {

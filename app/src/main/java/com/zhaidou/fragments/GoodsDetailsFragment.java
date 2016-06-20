@@ -45,10 +45,10 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -254,7 +254,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     mCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + detail.price + ""));
                     mOldPrice.setText("￥" + ToolUtils.isIntPrice("" + detail.cost_price + ""));
                     tv_comment.setText(detail.designer);
-                    mTitle.setText(detail.title);
+                    mTitle.setText(goodsName);
                     setDiscount(detail.price, detail.cost_price);
                     if (detail.specifications != null)
                     {
@@ -432,13 +432,13 @@ public class GoodsDetailsFragment extends BaseFragment
             switch (view.getId())
             {
                 case R.id.ll_back:
-                    ((MainActivity) getActivity()).popToStack(GoodsDetailsFragment.this);
+                    ((BaseActivity) getActivity()).popToStack(GoodsDetailsFragment.this);
                     break;
                 case R.id.goodsMyCartBtn:
                     if (checkLogin())
                     {
                         ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
-                        ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
+                        ((BaseActivity) getActivity()).navigationToFragment(shopCartFragment);
                     } else
                     {
                         Intent intent = new Intent(getActivity(), LoginActivity.class);
@@ -495,10 +495,12 @@ public class GoodsDetailsFragment extends BaseFragment
 
         }
     };
+    private String goodsName;
 
     public static GoodsDetailsFragment newInstance(String page, String index)
     {
         GoodsDetailsFragment fragment = new GoodsDetailsFragment();
+        System.out.println("index = " + index);
         Bundle args = new Bundle();
         args.putString(PAGE, page);
         args.putString(INDEX, index);
@@ -1591,7 +1593,7 @@ public class GoodsDetailsFragment extends BaseFragment
         bundle.putInt("flags", 1);
         bundle.putSerializable("goodsList", arrayItems);
         shopOrderOkFragment.setArguments(bundle);
-        ((MainActivity) getActivity()).navigationToFragment(shopOrderOkFragment);
+        ((BaseActivity) getActivity()).navigationToFragment(shopOrderOkFragment);
 
     }
 
@@ -1618,7 +1620,7 @@ public class GoodsDetailsFragment extends BaseFragment
                         return;
                     }
                     String goodsId = dataObject.optString("productId");
-                    String goodsName = dataObject.optString("productName");
+                    goodsName = dataObject.optString("productName");
                     sizeNameParent = dataObject.optString("attributeName1");
                     sizeNameSubclass = dataObject.optString("attributeName2");
                     flags = dataObject.optString("businessType").equals("01") ? 0 : 1;

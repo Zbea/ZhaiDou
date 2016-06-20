@@ -3,15 +3,19 @@ package com.zhaidou.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.utils.EaseUtils;
 
@@ -42,22 +46,23 @@ public class MagicDesignFragment extends BaseFragment {
             switch (v.getId())
             {
                 case R.id.ll_back:
-                    ((MainActivity) getActivity()).popToStack(MagicDesignFragment.this);
+                    ((BaseActivity) getActivity()).popToStack(MagicDesignFragment.this);
                     break;
                 case R.id.case_rl:
                     GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("宅豆软装设计方案", "191105000227");
-                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
+                    ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
                     break;
                 case R.id.design_rl:
                     EaseUtils.startDesignerActivity(mContext);
                     break;
                 case R.id.caseBtn:
                     MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "");
-                    ((MainActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
+                    ((BaseActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
                     break;
             }
         }
     };
+    private WebView mWebView;
 
     public static MagicDesignFragment newInstance(String page, String index) {
         MagicDesignFragment fragment = new MagicDesignFragment();
@@ -114,6 +119,41 @@ public class MagicDesignFragment extends BaseFragment {
 
         caseBtn= (TextView) mView.findViewById(R.id.caseBtn);
         caseBtn.setOnClickListener(onClickListener);
+
+        mWebView = (WebView) mView.findViewById(R.id.webView);
+        WebSettings webSettings = mWebView.getSettings();
+        //设置WebView属性，能够执行Javascript脚本
+        webSettings.setJavaScriptEnabled(true);
+        //设置可以访问文件
+        webSettings.setAllowFileAccess(true);
+        //设置支持缩放
+        webSettings.setBuiltInZoomControls(true);
+        //加载需要显示的网页
+        mWebView.loadUrl("http://tm.zhaidou.com/design.html?source=android");
+
+        //设置Web视图
+        mWebView.setWebViewClient(new WebViewClient(){
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                System.out.println("url = " + url);
+                if ("zhaidouappdesigncase://designcase".equalsIgnoreCase(url)){
+                    MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "");
+                    ((BaseActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
+                    return true;
+                }else if ("zhaidouappfaq://faq".equalsIgnoreCase(url)){
+                    MagicGuideFragment magicClassicCaseFragment = MagicGuideFragment.newInstance("", "");
+                    ((BaseActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
+                    return true;
+                }else if (!TextUtils.isEmpty(url)&&url.contains("zhaidouappproduct://")){
+                    String substring = url.substring(url.lastIndexOf("/") + 1, url.length());
+                    System.out.println("zhaidouappproduct---substring = " + substring);
+                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", substring);
+                    ((BaseActivity)mContext).navigationToFragment(goodsDetailsFragment);
+                    return true;
+                }
+                return super.shouldOverrideUrlLoading(view, url);
+            }
+        });
     }
 
 

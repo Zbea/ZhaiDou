@@ -403,8 +403,12 @@
         </receiver>
 
         <activity
-            android:name=".activities.CommentActivity"
+            android:name=".activities.CommentContainerFragment"
             android:label="@string/title_activity_comment" >
+        </activity>
+        <activity
+            android:name=".activities.PhotoViewActivity"
+            android:label="@string/title_activity_photo_view" >
         </activity>
     </application>
 
