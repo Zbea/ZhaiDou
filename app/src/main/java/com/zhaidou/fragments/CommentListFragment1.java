@@ -150,20 +150,20 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
             }
         });
 
-        commentListAdapter.setOnInViewClickListener(R.id.avatar, new BaseListAdapter.onInternalClickListener() {
-            @Override
-            public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                System.out.println("parentV = [" + parentV + "], v = [" + v + "], position = [" + position + "], values = [" + values + "]");
-                showCommentDialog(values);
-            }
-        });
-        commentListAdapter.setOnInViewClickListener(R.id.username, new BaseListAdapter.onInternalClickListener() {
-            @Override
-            public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                Entity entity = (Entity) values;
-                showCommentDialog(entity);
-            }
-        });
+//        commentListAdapter.setOnInViewClickListener(R.id.avatar, new BaseListAdapter.onInternalClickListener() {
+//            @Override
+//            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+//                System.out.println("parentV = [" + parentV + "], v = [" + v + "], position = [" + position + "], values = [" + values + "]");
+//                showCommentDialog(values);
+//            }
+//        });
+//        commentListAdapter.setOnInViewClickListener(R.id.username, new BaseListAdapter.onInternalClickListener() {
+//            @Override
+//            public void OnClickListener(View parentV, View v, Integer position, Object values) {
+//                Entity entity = (Entity) values;
+//                showCommentDialog(entity);
+//            }
+//        });
         commentListAdapter.setOnInViewClickListener(R.id.subject,new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
