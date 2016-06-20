@@ -34,10 +34,10 @@ import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.CountManager;
 import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.easeui.helpdesk.ui.ConversationListFragment;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.SwitchImage;
 import com.zhaidou.utils.Api;
-import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -424,7 +424,9 @@ public class MainGoodsFragment extends BaseFragment implements
                 ((BaseActivity) getActivity()).navigationToFragmentWithAnim(mainCategoryFragment);
                 break;
             case R.id.iv_message:
-                EaseUtils.startConversationListActivity(mContext);
+//                EaseUtils.startConversationListActivity(mContext);
+                ConversationListFragment conversationListFragment=new ConversationListFragment();
+                ((BaseActivity) mContext).navigationToFragment(conversationListFragment);
                 break;
             case R.id.nullReload:
                 mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
@@ -772,9 +774,10 @@ public class MainGoodsFragment extends BaseFragment implements
     @Override
     public void onChange() {
         System.out.println("MainGoodsFragment.onChange");
+        Integer userId= (Integer) SharedPreferencesUtil.getData(mContext,"userId",-1);
         int unreadMsgsCount = EMChatManager.getInstance().getUnreadMsgsCount();
         Integer UnReadComment= (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(),"UnReadComment",0);
-        unreadMsg.setVisibility((unreadMsgsCount + UnReadComment) > 0 ? View.VISIBLE : View.GONE);
+        unreadMsg.setVisibility((unreadMsgsCount + UnReadComment) > 0 &&userId!=-1? View.VISIBLE : View.GONE);
         unreadMsg.setText((unreadMsgsCount + UnReadComment) > 99 ? "99+" : (unreadMsgsCount + UnReadComment) + "");
     }
 }

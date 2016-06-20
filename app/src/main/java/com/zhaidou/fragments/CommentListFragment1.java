@@ -173,6 +173,7 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
                 ((BaseActivity)mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
             }
         });
+        listView.setEmptyView(inflater.inflate(R.layout.emptyview,null));
         return listView;
     }
 
@@ -344,8 +345,8 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
                 }
                 mContent.setVisibility(!TextUtils.isEmpty(replay.comment.content) ? View.VISIBLE : View.GONE);
                 if (!TextUtils.isEmpty(replay.comment.content)) {
-//                    mContent.setText(Html.fromHtml("<font color=#50c2bf>回复我的</font>   " + replay.comment.content));
-                    mContent.setText(Html.fromHtml(replay.comment.content));
+                    mContent.setText(Html.fromHtml((replay.reComment!=null?"<font color=#50c2bf>回复@"+replay.reComment.commentUserName+"</font>   ":"") + replay.comment.content));
+//                    mContent.setText(Html.fromHtml(replay.comment.content));
                 }
                 imageAdapter.setOnInViewClickListener(R.id.imageView,new onInternalClickListener() {
                     @Override

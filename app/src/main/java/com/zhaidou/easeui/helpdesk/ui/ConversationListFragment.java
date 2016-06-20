@@ -13,13 +13,14 @@ import com.easemob.easeui.ui.EaseConversationListFragment;
 import com.easemob.util.NetUtils;
 import com.zhaidou.R;
 import com.zhaidou.activities.CommentContainerFragment;
+import com.zhaidou.base.CountManager;
 import com.zhaidou.base.EaseManage;
 import com.zhaidou.easeui.helpdesk.Constant;
 import com.zhaidou.model.User;
 import com.zhaidou.utils.SharedPreferencesUtil;
 
 
-public class ConversationListFragment extends EaseConversationListFragment implements EaseManage.onMessageChange {
+public class ConversationListFragment extends EaseConversationListFragment implements EaseManage.onMessageChange, CountManager.onCommentChangeListener {
 
     private TextView errorText;
 
@@ -31,6 +32,7 @@ public class ConversationListFragment extends EaseConversationListFragment imple
 //        errorText = (TextView) errorView.findViewById(R.id.tv_connect_errormsg);
         EaseManage.getInstance().setOnMessageChange(this);
 //        Api.getUnReadComment();
+        CountManager.getInstance().setOnCommentChangeListener(this);
     }
     
     @Override
@@ -90,6 +92,11 @@ public class ConversationListFragment extends EaseConversationListFragment imple
     @Override
     public void onMessage(int unreadMsgCount) {
         System.out.println("ConversationListFragment.onMessage");
+        refresh();
+    }
+
+    @Override
+    public void onChange() {
         refresh();
     }
 }

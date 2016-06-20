@@ -476,10 +476,11 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
 
     @Override
     public void onChange() {
+        Integer userId= (Integer) SharedPreferencesUtil.getData(mContext,"userId",-1);
         int unreadMsgsCount = EMChatManager.getInstance().getUnreadMsgsCount();
         Integer UnReadComment = (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(), "UnReadComment", 0);
         Integer UnReadDesigner = (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(), "UnReadDesigner", 0);
-        unReadMsgView.setVisibility((unreadMsgsCount + UnReadComment) > 0 ? View.VISIBLE : View.GONE);
+        unReadMsgView.setVisibility((unreadMsgsCount + UnReadComment) > 0&&userId!=-1 ? View.VISIBLE : View.GONE);
         unReadMsgView.setText((unreadMsgsCount + UnReadComment) > 99 ? "99+" : (unreadMsgsCount + UnReadComment) + "");
         if (UnReadDesigner > 0)
             mShareAdapter.notifyDataSetChanged();

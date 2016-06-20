@@ -133,17 +133,23 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
             mDialogUtils = new DialogUtils(mContext);
             mDialogUtils.showLoadingDialog();
             fetchData(mCurrentPage = 1);
-            commentListAdapter.setOnInViewClickListener(R.id.avatar, new BaseListAdapter.onInternalClickListener() {
+//            commentListAdapter.setOnInViewClickListener(R.id.avatar, new BaseListAdapter.onInternalClickListener() {
+//                @Override
+//                public void OnClickListener(View parentV, View v, Integer position, Object values) {
+//                    System.out.println("parentV = [" + parentV + "], v = [" + v + "], position = [" + position + "], values = [" + values + "]");
+//                    showCommentDialog(values);
+//                }
+//            });
+//            commentListAdapter.setOnInViewClickListener(R.id.username, new BaseListAdapter.onInternalClickListener() {
+//                @Override
+//                public void OnClickListener(View parentV, View v, Integer position, Object values) {
+//                    Replay replay = (Replay) values;
+//                    showCommentDialog(values);
+//                }
+//            });
+            commentListAdapter.setOnInViewClickListener(R.id.commentContainerLayout,new BaseListAdapter.onInternalClickListener() {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                    System.out.println("parentV = [" + parentV + "], v = [" + v + "], position = [" + position + "], values = [" + values + "]");
-                    showCommentDialog(values);
-                }
-            });
-            commentListAdapter.setOnInViewClickListener(R.id.username, new BaseListAdapter.onInternalClickListener() {
-                @Override
-                public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                    Replay replay = (Replay) values;
                     showCommentDialog(values);
                 }
             });
@@ -155,6 +161,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                     ((BaseActivity) mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
                 }
             });
+            listView.setEmptyView(inflater.inflate(R.layout.emptyview,null));
         }
         return listView;
     }

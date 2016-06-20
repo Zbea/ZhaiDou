@@ -233,10 +233,12 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         AlibabaSDK.asyncInit(this, new InitResultCallback() {
             @Override
             public void onSuccess() {
+                System.out.println("MainActivity.onSuccess");
             }
 
             @Override
             public void onFailure(int i, String s) {
+                System.out.println("MainActivity.onFailure--->"+i+"-----"+s);
             }
         });
         CountManager.getInstance().setOnCountChangeListener(this);
