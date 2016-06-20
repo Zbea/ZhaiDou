@@ -685,10 +685,10 @@ public class MainHomeFragment extends BaseFragment implements
             if (articles == null | articles.size() < 1) {
                 initDate();
             }
+            Integer userId= (Integer) SharedPreferencesUtil.getData(mContext,"userId",-1);
+            if (userId!=-1)
+                Api.getUnReadComment(userId, null, null);
         }
-        Integer userId= (Integer) SharedPreferencesUtil.getData(mContext,"userId",-1);
-        if (userId!=-1)
-            Api.getUnReadComment(userId, null, null);
     }
 
 

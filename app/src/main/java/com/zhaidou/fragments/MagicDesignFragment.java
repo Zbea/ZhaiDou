@@ -144,11 +144,11 @@ public class MagicDesignFragment extends BaseFragment {
                     MagicGuideFragment magicClassicCaseFragment = MagicGuideFragment.newInstance("", "");
                     ((BaseActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
                     return true;
-                }else if (!TextUtils.isEmpty(url)&&url.startsWith("zhaidouappproduct://")){
+                }else if (!TextUtils.isEmpty(url)&&url.contains("zhaidouappproduct://")){
                     String substring = url.substring(url.lastIndexOf("/") + 1, url.length());
-                    System.out.println("substring = " + substring);
+                    System.out.println("zhaidouappproduct---substring = " + substring);
                     GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", substring);
-                    ((BaseActivity)mContext).navigationToFragmentWithAnim(goodsDetailsFragment);
+                    ((BaseActivity)mContext).navigationToFragment(goodsDetailsFragment);
                     return true;
                 }
                 return super.shouldOverrideUrlLoading(view, url);

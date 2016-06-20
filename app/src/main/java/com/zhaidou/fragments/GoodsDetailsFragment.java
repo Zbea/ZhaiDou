@@ -500,6 +500,7 @@ public class GoodsDetailsFragment extends BaseFragment
     public static GoodsDetailsFragment newInstance(String page, String index)
     {
         GoodsDetailsFragment fragment = new GoodsDetailsFragment();
+        System.out.println("index = " + index);
         Bundle args = new Bundle();
         args.putString(PAGE, page);
         args.putString(INDEX, index);

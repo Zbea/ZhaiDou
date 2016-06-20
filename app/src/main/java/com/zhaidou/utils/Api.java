@@ -111,10 +111,12 @@ public class Api {
     }
 
     public static void getUnReadComment(int userId, final SuccessListener successListener, final ErrorListener errorListener) {
+        System.out.println("Api.getUnReadComment");
         ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.GET, ZhaiDou.URL_GET_UNREAD_COMMETN + userId, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
+                System.out.println("Api.onResponse");
                 if (status == 200) {
                     JSONObject dataObj = jsonObject.optJSONObject("data");
                     int notReadNum = dataObj.optInt("NotReadNum");
@@ -220,7 +222,7 @@ public class Api {
             }
             jsonArray.put(jsonObject);
         }
-        params.put("couponCode",jsonArray.toString());
+        params.put("couponCodes",jsonArray.toString());
         ZhaiDouRequest request=new ZhaiDouRequest(Request.Method.POST,ZhaiDou.activateAllCouponsByOneClick,params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -240,6 +242,7 @@ public class Api {
                         Toast.makeText(ZDApplication.getInstance(),msg,Toast.LENGTH_SHORT).show();
                     }
                 }else {
+                    errorListener.onError(null);
                     Toast.makeText(ZDApplication.getInstance(),message,Toast.LENGTH_SHORT).show();
                 }
             }

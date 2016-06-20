@@ -61,19 +61,37 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
                     String substring = url.substring(url.lastIndexOf("/") + 1, url.length());
                     System.out.println("substring = " + substring);
                     mDialogUtils.showLoadingDialog();
-                    Api.activateCoupons(substring,new Api.SuccessListener() {
-                        @Override
-                        public void onSuccess(Object object) {
-                            if (object!=null)
-                                Toast.makeText(WebViewActivity.this,"领取优惠卷成功",Toast.LENGTH_SHORT).show();
-                            mDialogUtils.dismiss();
-                        }
-                    },new Api.ErrorListener() {
-                        @Override
-                        public void onError(Object object) {
-                            mDialogUtils.dismiss();
-                        }
-                    });
+                    if (substring.contains("_")){
+                        String[] split = substring.split("_");
+                        Api.activateAllCouponsByOneClick(split,new Api.SuccessListener() {
+                            @Override
+                            public void onSuccess(Object object) {
+                                if (object!=null)
+                                    Toast.makeText(WebViewActivity.this,"领取优惠卷成功",Toast.LENGTH_SHORT).show();
+                                mDialogUtils.dismiss();
+                            }
+                        },new Api.ErrorListener() {
+                            @Override
+                            public void onError(Object object) {
+                                mDialogUtils.dismiss();
+                            }
+                        });
+                    }else {
+                        Api.activateCoupons(substring,new Api.SuccessListener() {
+                            @Override
+                            public void onSuccess(Object object) {
+                                if (object!=null)
+                                    Toast.makeText(WebViewActivity.this,"领取优惠卷成功",Toast.LENGTH_SHORT).show();
+                                mDialogUtils.dismiss();
+                            }
+                        },new Api.ErrorListener() {
+                            @Override
+                            public void onError(Object object) {
+                                mDialogUtils.dismiss();
+                            }
+                        });
+                    }
+                    return true;
                 }else if ("mobile://login?false".equalsIgnoreCase(url)) {
                     Intent intent = new Intent(WebViewActivity.this, LoginActivity.class);
                     intent.setFlags(2);

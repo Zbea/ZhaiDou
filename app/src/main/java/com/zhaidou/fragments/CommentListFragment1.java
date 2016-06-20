@@ -344,7 +344,8 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
                 }
                 mContent.setVisibility(!TextUtils.isEmpty(replay.comment.content) ? View.VISIBLE : View.GONE);
                 if (!TextUtils.isEmpty(replay.comment.content)) {
-                    mContent.setText(Html.fromHtml("<font color=#50c2bf>回复我的</font>   " + replay.comment.content));
+//                    mContent.setText(Html.fromHtml("<font color=#50c2bf>回复我的</font>   " + replay.comment.content));
+                    mContent.setText(Html.fromHtml(replay.comment.content));
                 }
                 imageAdapter.setOnInViewClickListener(R.id.imageView,new onInternalClickListener() {
                     @Override

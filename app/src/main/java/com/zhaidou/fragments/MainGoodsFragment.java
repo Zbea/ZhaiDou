@@ -738,14 +738,15 @@ public class MainGoodsFragment extends BaseFragment implements
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
+        System.out.println("MainGoodsFragment.onHiddenChanged");
         if (!hidden) {
             if (items == null | items.size() < 1) {
                 initDate();
             }
+            Integer userId= (Integer) SharedPreferencesUtil.getData(mContext,"userId",-1);
+            if (userId!=-1)
+            Api.getUnReadComment(userId,null,null);
         }
-        Integer userId= (Integer) SharedPreferencesUtil.getData(mContext,"userId",-1);
-        if (userId!=-1)
-        Api.getUnReadComment(userId,null,null);
     }
 
 
