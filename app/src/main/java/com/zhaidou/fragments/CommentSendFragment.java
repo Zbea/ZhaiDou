@@ -327,7 +327,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
         backTv.setOnClickListener(onClickListener);
 
         sentTv = (TextView) mView.findViewById(R.id.commentOkTv);
-        sentTv.setOnClickListener(onClickListener);
+        sentTv.setClickable(false);
 
         editText=(TypeFaceEditText)mView.findViewById(R.id.comment_edit);
         editText.addTextChangedListener(new TextWatcher()
@@ -411,6 +411,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
             {
                 sentTv.setTextColor(getResources().getColor(R.color.green_color));
                 sentTv.setClickable(true);
+                sentTv.setOnClickListener(onClickListener);
             } else
             {
                 sentTv.setTextColor(getResources().getColor(R.color.text_gary_color));
@@ -422,6 +423,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
             {
                 sentTv.setTextColor(getResources().getColor(R.color.green_color));
                 sentTv.setClickable(true);
+                sentTv.setOnClickListener(onClickListener);
             }
             else
             {
