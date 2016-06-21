@@ -25,6 +25,7 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -48,8 +49,7 @@ import java.util.WeakHashMap;
 /**
  * 软装清单
  */
-public class SoftListFragment extends BaseFragment
-{
+public class SoftListFragment extends BaseFragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_CATEGORY = "category";
 
@@ -75,47 +75,38 @@ public class SoftListFragment extends BaseFragment
     private int pageCount;
     private String totalPrice;
 
-    private Handler handler = new Handler()
-    {
-        public void handleMessage(Message msg)
-        {
-            if (mDialog != null)
-            {
+    private Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+            if (mDialog != null) {
                 mDialog.dismiss();
             }
-            subtotalTv.setText("￥"+ToolUtils.isIntPrice(totalPrice));
+            subtotalTv.setText("￥" + ToolUtils.isIntPrice(totalPrice));
             mGoodsAdapter.notifyDataSetChanged();
             scrollView.onRefreshComplete();
-            if (articleList.size()< pageCount)
-            {
+            if (articleList.size() < pageCount) {
                 scrollView.setMode(PullToRefreshBase.Mode.BOTH);
-            } else
-            {
+            } else {
                 scrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
             }
 
         }
     };
 
-    private PullToRefreshBase.OnRefreshListener2 onRefreshListener = new PullToRefreshBase.OnRefreshListener2()
-    {
+    private PullToRefreshBase.OnRefreshListener2 onRefreshListener = new PullToRefreshBase.OnRefreshListener2() {
         @Override
-        public void onPullDownToRefresh(PullToRefreshBase refreshView)
-        {
+        public void onPullDownToRefresh(PullToRefreshBase refreshView) {
             articleList.clear();
             FetchData();
         }
 
         @Override
-        public void onPullUpToRefresh(PullToRefreshBase refreshView)
-        {
+        public void onPullUpToRefresh(PullToRefreshBase refreshView) {
             ++page;
             FetchData();
         }
     };
 
-    public static SoftListFragment newInstance(String param1, String string)
-    {
+    public static SoftListFragment newInstance(String param1, String string) {
         SoftListFragment fragment = new SoftListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
@@ -124,16 +115,13 @@ public class SoftListFragment extends BaseFragment
         return fragment;
     }
 
-    public SoftListFragment()
-    {
+    public SoftListFragment() {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null)
-        {
+        if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mString = getArguments().getString(ARG_CATEGORY);
         }
@@ -141,71 +129,61 @@ public class SoftListFragment extends BaseFragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState)
-    {
-        if (view == null)
-        {
+                             Bundle savedInstanceState) {
+        if (view == null) {
             view = inflater.inflate(R.layout.fragment_home_article_list, container, false);
             mContext = getActivity();
             initView();
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
         ViewGroup parent = (ViewGroup) view.getParent();
-        if (parent != null)
-        {
+        if (parent != null) {
             parent.removeView(view);
         }
         return view;
     }
 
-    private void initView()
-    {
+    private void initView() {
         titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
         titleTv.setText("软装清单");
 
-        subtotalTv=(TextView) view.findViewById(R.id.detailsSubtotalTv);
+        subtotalTv = (TextView) view.findViewById(R.id.detailsSubtotalTv);
         scrollView = (PullToRefreshScrollView) view.findViewById(R.id.scrollView);
         scrollView.setMode(PullToRefreshBase.Mode.BOTH);
         scrollView.setOnRefreshListener(onRefreshListener);
         listView = (ListViewForScrollView) view.findViewById(R.id.lv_special_list);
         mGoodsAdapter = new GoodsAdapter(getActivity(), articleList);
         listView.setAdapter(mGoodsAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
-
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                System.out.println("parent = [" + parent + "], view = [" + view + "], position = [" + position + "], id = [" + id + "]");
+                CartGoodsItem cartGoodsItem = articleList.get(position );
+                GoodsDetailsFragment goodsDetailsFragment=GoodsDetailsFragment.newInstance(cartGoodsItem.name,cartGoodsItem.goodsId);
+                ((BaseActivity)mContext).navigationToFragment(goodsDetailsFragment);
             }
         });
         initData();
     }
 
-    private void initData()
-    {
-        if (NetworkUtils.isNetworkAvailable(mContext))
-        {
+    private void initData() {
+        if (NetworkUtils.isNetworkAvailable(mContext)) {
             mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
             FetchData();
-        } else
-        {
+        } else {
             Toast.makeText(mContext, "抱歉,网络链接失败", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void FetchData()
-    {
-        String url = ZhaiDou.HomeSofeListDetailUrl + mString+"&pageNo="+page+"&pageSize=10";
+    public void FetchData() {
+        String url = ZhaiDou.HomeSofeListDetailUrl + mString + "&pageNo=" + page + "&pageSize=10";
         JsonObjectRequest request = new JsonObjectRequest(url,
-                new Response.Listener<JSONObject>()
-                {
+                new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(JSONObject response)
-                    {
+                    public void onResponse(JSONObject response) {
                         if (mDialog != null)
                             mDialog.dismiss();
-                        if (response == null)
-                        {
+                        if (response == null) {
                             ToolUtils.setToast(mContext, R.string.loading_fail_txt);
                             return;
                         }
@@ -213,17 +191,15 @@ public class SoftListFragment extends BaseFragment
                         JSONObject obj;
                         int status = response.optInt("status");
                         JSONObject jsonObject1 = response.optJSONObject("data");
-                        if (jsonObject1 != null)
-                        {
+                        if (jsonObject1 != null) {
                             pageCount = jsonObject1.optInt("totalCount");
                             pageSize = jsonObject1.optInt("pageSize");
-                            Double aDouble= jsonObject1.optDouble("totalPrice");
-                            DecimalFormat df=new DecimalFormat("#.00");
-                            totalPrice=df.format(aDouble);
+                            Double aDouble = jsonObject1.optDouble("totalPrice");
+                            DecimalFormat df = new DecimalFormat("#.00");
+                            totalPrice = df.format(aDouble);
                             JSONArray jsonArray = jsonObject1.optJSONArray("designerListProductPOs");
                             if (jsonArray != null)
-                                for (int i = 0; i < jsonArray.length(); i++)
-                                {
+                                for (int i = 0; i < jsonArray.length(); i++) {
                                     obj = jsonArray.optJSONObject(i);
                                     int baseid = obj.optInt("id");
                                     int caseId = obj.optInt("caseId");
@@ -253,31 +229,25 @@ public class SoftListFragment extends BaseFragment
                             Message message = new Message();
                             message.what = UPDATE_HOMELIST;
                             handler.sendMessage(message);
-                        } else
-                        {
+                        } else {
                             ToolUtils.setToast(mContext, R.string.loading_fail_txt);
                             return;
                         }
                     }
-                }, new Response.ErrorListener()
-        {
+                }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
+            public void onErrorResponse(VolleyError volleyError) {
                 mDialog.dismiss();
-                if (page > 1)
-                {
+                if (page > 1) {
                     page--;
 
                 }
                 ToolUtils.setToast(mContext, R.string.loading_fail_txt);
             }
         }
-        )
-        {
+        ) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
+            public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
                 return headers;
@@ -286,19 +256,16 @@ public class SoftListFragment extends BaseFragment
         ZDApplication.mRequestQueue.add(request);
     }
 
-    public class GoodsAdapter extends BaseListAdapter<CartGoodsItem>
-    {
+    public class GoodsAdapter extends BaseListAdapter<CartGoodsItem> {
         Context context;
 
-        public GoodsAdapter(Context context, List<CartGoodsItem> list)
-        {
+        public GoodsAdapter(Context context, List<CartGoodsItem> list) {
             super(context, list);
             this.context = context;
         }
 
         @Override
-        public View bindView(int position, View convertView, ViewGroup parent)
-        {
+        public View bindView(int position, View convertView, ViewGroup parent) {
 //            convertView = mHashMap.get(position);
 
             if (convertView == null)
@@ -315,27 +282,20 @@ public class SoftListFragment extends BaseFragment
             CartGoodsItem goodsItem = getList().get(position);
             goodsNameTv.setText(goodsItem.name);
             goodsSizeTv.setText(goodsItem.size);
-            goodsNumTv.setText("X"+goodsItem.num);
-            goodsPriceTv.setText("￥"+goodsItem.currentPrice);
+            goodsNumTv.setText("X" + goodsItem.num);
+            goodsPriceTv.setText("￥" + goodsItem.currentPrice);
             ToolUtils.setImageCacheUrl(goodsItem.imageUrl, goodsImageTv, R.drawable.icon_loading_defalut);
 
-            if(goodsItem.storeId.equals("T"))
-            {
+            if (goodsItem.storeId.equals("T")) {
                 goodsTypeTv.setText("淘宝");
                 goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
-            }
-            else if(goodsItem.storeId.equals("M"))
-            {
+            } else if (goodsItem.storeId.equals("M")) {
                 goodsTypeTv.setText("天猫");
                 goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
-            }
-            else if(goodsItem.storeId.equals("J"))
-            {
+            } else if (goodsItem.storeId.equals("J")) {
                 goodsTypeTv.setText("京东");
                 goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
-            }
-            else
-            {
+            } else {
                 goodsTypeTv.setText("宅豆");
                 goodsTypeTv.setTextColor(getResources().getColor(R.color.green_color));
             }
@@ -352,15 +312,13 @@ public class SoftListFragment extends BaseFragment
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("软装清单");
     }
 
     @Override
-    public void onPause()
-    {
+    public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("软装清单");
     }

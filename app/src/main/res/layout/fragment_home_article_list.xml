@@ -80,7 +80,7 @@
                 android:textSize="15sp"
                 android:text="清单合计："/>
 
-            <com.zhaidou.view.TypeFaceTextView
+            <TextView
                 android:id="@+id/detailsSubtotalTv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

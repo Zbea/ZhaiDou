@@ -524,7 +524,8 @@ public class DialogUtils {
 
         win.setAttributes(lp);
         final TextView commentOkTv = (TextView) view.findViewById(R.id.commentOkTv);
-        final TextView commentContent = (TextView) view.findViewById(R.id.comment_edit);
+        final EditText commentContent = (EditText) view.findViewById(R.id.comment_edit);
+        final TextView textView= (TextView) view.findViewById(R.id.count);
         GridView mGridView = (GridView) view.findViewById(R.id.gridView);
         photoAdapter = new PhotoAdapter(mContext, Arrays.asList(new String[]{""}));
         mGridView.setAdapter(photoAdapter);
@@ -543,10 +544,14 @@ public class DialogUtils {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (commentContent.getText().toString().trim().length()>200)
+                    return;
                 commentOkTv.setClickable(!TextUtils.isEmpty(commentContent.getText().toString()));
                 commentOkTv.setTextColor(TextUtils.isEmpty(commentContent.getText().toString()) ?
                         mContext.getResources().getColor(R.color.green_color) :
                         mContext.getResources().getColor(R.color.text_gary_color));
+                textView.setText((200-commentContent.getText().length())+"");
+
             }
 
             @Override
@@ -557,11 +562,11 @@ public class DialogUtils {
         commentOkTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String str = commentContent.getText().toString();
-                if (TextUtils.isEmpty(str)) {
-                    Toast.makeText(mContext, "评论内容不能为空哦", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                String str = commentContent.getText().toString().trim();
+//                if (TextUtils.isEmpty(str)) {
+//                    Toast.makeText(mContext, "评论内容不能为空哦", Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
                 Map<String,Object> params=new HashMap<String, Object>();
                 params.put("content",str);
                 params.put("images",photoAdapter.getList());
