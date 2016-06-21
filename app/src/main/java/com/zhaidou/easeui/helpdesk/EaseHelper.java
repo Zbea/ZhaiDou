@@ -35,6 +35,7 @@ import com.easemob.util.EMLog;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.base.AccountManage;
+import com.zhaidou.base.CountManager;
 import com.zhaidou.base.EaseManage;
 import com.zhaidou.easeui.helpdesk.domain.EmojiconExampleGroupData;
 import com.zhaidou.easeui.helpdesk.ui.ChatActivity;
@@ -318,6 +319,7 @@ public class EaseHelper {
                     EMLog.d(TAG, "receive the event : " + event.getEvent() + ",id : " + message.getMsgId());
                 }
                 EaseManage.getInstance().refreshData();
+                CountManager.getInstance().notifyCommentChange();
                 
                 switch (event.getEvent()) {
                 case EventNewMessage:
