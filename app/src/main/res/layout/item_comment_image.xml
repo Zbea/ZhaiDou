@@ -12,7 +12,7 @@
         android:id="@+id/imageBg_iv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitXY"
+        android:scaleType="center"
         android:src="@drawable/icon_loading_defalut" />
         <TextView
             android:id="@+id/imageBgBtn"

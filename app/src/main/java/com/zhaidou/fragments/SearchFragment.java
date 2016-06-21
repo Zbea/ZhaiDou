@@ -61,7 +61,7 @@ public class SearchFragment extends BaseFragment
     private static final String DATA = "page";
     private static final String INDEX = "index";
     private View mView;
-    private String mPage;
+    private String mPage="";
     private int mIndex;
     private Context mContext;
     private GridView gv_hot;
@@ -262,7 +262,7 @@ public class SearchFragment extends BaseFragment
         super.onCreate(savedInstanceState);
         if (getArguments() != null)
         {
-            mPage = getArguments().getString(DATA);
+            mPage = mPage+getArguments().getString(DATA);
             mIndex = getArguments().getInt(INDEX);//1为普通搜索2为分类搜索
         }
     }
@@ -288,6 +288,7 @@ public class SearchFragment extends BaseFragment
     private void initView()
     {
         mEditText = (CustomEditText) mView.findViewById(R.id.et_search);
+        mEditText.setHint(mPage.length()>0?mPage:"搜索");
         mSearchiv = (ImageView) mView.findViewById(R.id.iv_search);
         mDeleteView = (TextView) mView.findViewById(R.id.tv_delete);
         mSearchView = (TextView) mView.findViewById(R.id.tv_cancel);

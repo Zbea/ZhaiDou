@@ -38,7 +38,6 @@ import com.zhaidou.view.TypeFaceTextView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -218,9 +217,9 @@ public class GoodsArticleListFragment extends BaseFragment
                         {
                             pageCount = jsonObject1.optInt("totalCount");
                             pageSize = jsonObject1.optInt("pageSize");
-                            double aDouble= jsonObject1.optDouble("totalPrice");
-                            BigDecimal bigDecimal=new BigDecimal(aDouble);
-                            totalPrice=String.valueOf(bigDecimal.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue()) ;
+                            Double aDouble= jsonObject1.optDouble("totalPrice");
+                            DecimalFormat df=new DecimalFormat("#.00");
+                            totalPrice=df.format(aDouble);
                             JSONArray jsonArray = jsonObject1.optJSONArray("changeCaseProductPOs");
                             if (jsonArray != null)
                                 for (int i = 0; i < jsonArray.length(); i++)
@@ -233,7 +232,6 @@ public class GoodsArticleListFragment extends BaseFragment
                                     String productCode = obj.optString("productCode");
                                     String productSkuCode = obj.optString("productSkuCode");
                                     String productSku = obj.optString("goodsAttr");
-                                    DecimalFormat df = new DecimalFormat("#.00");
                                     double price = Double.parseDouble(df.format(obj.optDouble("price")));
                                     String imageUrl = obj.optString("mainPic");
                                     String url = "http://" + obj.optString("aUrl");

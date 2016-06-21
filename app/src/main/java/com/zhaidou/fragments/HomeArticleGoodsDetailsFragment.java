@@ -56,7 +56,6 @@ import com.zhaidou.view.ListViewForScrollView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -223,7 +222,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                         nullComment.setVisibility(comments.size() > 0 ? View.GONE : View.VISIBLE);
                         commentAllLine.setVisibility(comments.size() > 0 ? View.VISIBLE : View.GONE);
                     }
-                    if (num!=commentCount)
+                    if (commentCount<num)
                     {
                         commentCount=num;
                         commentNumTv.setText("(" + commentCount + ")");
@@ -582,9 +581,9 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                         {
                             pageCount = jsonObject1.optInt("totalCount");
                             pageSize = jsonObject1.optInt("pageSize");
-                            double aDouble= jsonObject1.optDouble("totalPrice");
-                            BigDecimal bigDecimal=new BigDecimal(aDouble);
-                            totalPrice=String.valueOf(bigDecimal.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue()) ;
+                            Double aDouble= jsonObject1.optDouble("totalPrice");
+                            DecimalFormat df=new DecimalFormat("#.00");
+                            totalPrice=df.format(aDouble);
 
                             JSONObject jsonObject = jsonObject1.optJSONObject("freeClassicsCasePO");
                             String id = jsonObject.optString("id");
@@ -614,7 +613,6 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                                     String productCode = obj.optString("productCode");
                                     String productSkuCode = obj.optString("productSkuCode");
                                     String productSku = obj.optString("goodsAttr");
-                                    DecimalFormat df = new DecimalFormat("#.00");
                                     double price = Double.parseDouble(df.format(obj.optDouble("price")));
                                     String imageUrl = obj.optString("mainPic");
                                     String url = "http://" + obj.optString("aUrl");
@@ -1024,6 +1022,18 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         }
     }
 
+    private OnCommentListener onCommentListener;
+
+    public  void setOnCommentListener(OnCommentListener onCommentListener)
+    {
+        this.onCommentListener=onCommentListener;
+    }
+
+    public  interface  OnCommentListener
+    {
+        void setComment(int num);
+    }
+
 
     @Override
     public void onResume()
@@ -1039,4 +1049,11 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         MobclickAgent.onPageEnd("案例详情");
     }
 
+    @Override
+    public void onDestroy()
+    {
+        if (onCommentListener!=null)
+            onCommentListener.setComment(commentCount);
+        super.onDestroy();
+    }
 }

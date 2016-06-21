@@ -620,10 +620,22 @@ public class MainHomeFragment extends BaseFragment implements
     }
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
+    public void onItemClick(AdapterView<?> adapterView, View view, final int position, long l)
     {
         HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment=HomeArticleGoodsDetailsFragment.newInstance("",""+articles.get(position).getId());
         ((BaseActivity)mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
+        homeArticleGoodsDetailsFragment.setOnCommentListener(new HomeArticleGoodsDetailsFragment.OnCommentListener()
+        {
+            @Override
+            public void setComment(int num)
+            {
+                if (num!=0)
+                {
+                    articles.get(position).setReviews(num);
+                    adapterList.notifyDataSetChanged();
+                }
+            }
+        });
     }
 
     @Override

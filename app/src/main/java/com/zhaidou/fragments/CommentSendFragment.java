@@ -508,7 +508,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
                         return;
                     }
                     uri = data.getData();
-                    startImageAction(uri, 200, 200, 2, true);
+                    startImageAction(uri, 300,300, 2, true);
                 } else
                 {
                     Toast.makeText(getActivity(), "照片获取失败", Toast.LENGTH_SHORT).show();
@@ -641,7 +641,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
             MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE, BOUNDARY, Charset.defaultCharset());
             multipartEntity.addPart("commentUserId",new StringBody(userId+""));
             multipartEntity.addPart("commentUserName",new StringBody( userName,Charset.defaultCharset()));
-            multipartEntity.addPart("content",new StringBody(commentInfo,Charset.defaultCharset()));
+            multipartEntity.addPart("content",new StringBody(commentInfo+"",Charset.defaultCharset()));
             multipartEntity.addPart("articleId",new StringBody(mIndex+""));
             multipartEntity.addPart("articleTitle",new StringBody(mPage+"",Charset.defaultCharset()));
             multipartEntity.addPart("commentType",new StringBody("C"));
