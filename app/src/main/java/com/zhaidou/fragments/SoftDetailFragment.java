@@ -70,10 +70,10 @@ import cn.sharesdk.framework.PlatformActionListener;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link SoftListDetailFragment#newInstance} factory method to
+ * Use the {@link SoftDetailFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SoftListDetailFragment extends BaseFragment {
+public class SoftDetailFragment extends BaseFragment {
     private static final String ARG_PARAM = "param";
     private static final String ARG_STRING = "string";
 
@@ -178,8 +178,8 @@ public class SoftListDetailFragment extends BaseFragment {
         }
     };
 
-    public static SoftListDetailFragment newInstance(String param, String string) {
-        SoftListDetailFragment fragment = new SoftListDetailFragment();
+    public static SoftDetailFragment newInstance(String param, String string) {
+        SoftDetailFragment fragment = new SoftDetailFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM, param);
         args.putString(ARG_STRING, string);
@@ -187,13 +187,13 @@ public class SoftListDetailFragment extends BaseFragment {
         return fragment;
     }
 
-    public SoftListDetailFragment() {
+    public SoftDetailFragment() {
     }
 
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            GoodsArticleListFragment goodsArticleListFragment = GoodsArticleListFragment.newInstance(title, mString);
+            SoftListFragment goodsArticleListFragment = SoftListFragment.newInstance(title, mString);
             CommentListFragment commentListFragment = CommentListFragment.newInstance(title, mString);
             commentListFragment.setOnCommentListener(new CommentListFragment.OnCommentListener() {
                 @Override
