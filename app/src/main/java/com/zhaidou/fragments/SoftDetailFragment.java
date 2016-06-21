@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,6 +38,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
+import com.zhaidou.activities.PhotoViewActivity;
 import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
@@ -477,6 +479,7 @@ public class SoftDetailFragment extends BaseFragment {
             Bundle bundle = new Bundle();
             bundle.putString("index", items.get(position).goodsId);
             bundle.putString("page", items.get(position).name);
+            bundle.putString("sizeId", items.get(position).sizeId);
             goodsDetailsFragment.setArguments(bundle);
             ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
 
@@ -766,21 +769,14 @@ public class SoftDetailFragment extends BaseFragment {
                 goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
             } else if (goodsItem.storeId.equals("M")) {
                 goodsTypeTv.setText("天猫");
-                goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
+                goodsTypeTv.setTextColor(ColorStateList.valueOf(R.color.red));
             } else if (goodsItem.storeId.equals("J")) {
                 goodsTypeTv.setText("京东");
-                goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
+                goodsTypeTv.setTextColor(ColorStateList.valueOf(R.color.red));
             } else {
                 goodsTypeTv.setText("宅豆");
                 goodsTypeTv.setTextColor(getResources().getColor(R.color.green_color));
             }
-
-            goodsBuyTv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    enterGoods(position);
-                }
-            });
 
 
 //            mHashMap.put(position, convertView);
@@ -866,10 +862,6 @@ public class SoftDetailFragment extends BaseFragment {
          * 选择相片添加布局以及相关逻辑处理
          */
         private void addImageView(LinearLayout viewLayout, final List<String> ims) {
-            final ArrayList<String> im = new ArrayList<String>();
-            for (String key : ims) {
-                im.add(key);
-            }
             for (int i = 0; i < ims.size(); i++) {
                 final int position = i;
                 View mView = LayoutInflater.from(mContext).inflate(R.layout.item_comment_image, null);
@@ -878,8 +870,10 @@ public class SoftDetailFragment extends BaseFragment {
                 btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        CommentImageFragment commentImageFragment = CommentImageFragment.newInstance(im, position);
-                        ((BaseActivity) mContext).navigationToFragment(commentImageFragment);
+                        Intent intent=new Intent(mContext, PhotoViewActivity.class);
+                        intent.putExtra("images",ims.toArray(new String[]{}));
+                        intent.putExtra("position",position);
+                        startActivity(intent);
 
                     }
                 });

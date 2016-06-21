@@ -170,7 +170,7 @@ public class SearchFragment extends BaseFragment
                     SharedPreferencesUtil.clearSearchHistory(mContext);
                     break;
                 case R.id.tv_cancel:
-                    if (!TextUtils.isEmpty(mEditText.getText().toString().trim()))
+                    if (!TextUtils.isEmpty(search_Str))
                     {
                         if (inputMethodManager.isActive())
                             inputMethodManager.hideSoftInputFromWindow(((BaseActivity) mContext).getWindow().peekDecorView().getApplicationWindowToken(), 0);
@@ -289,6 +289,7 @@ public class SearchFragment extends BaseFragment
     {
         mEditText = (CustomEditText) mView.findViewById(R.id.et_search);
         mEditText.setHint(mPage.length()>0?mPage:"搜索");
+        search_Str=mPage;
         mSearchiv = (ImageView) mView.findViewById(R.id.iv_search);
         mDeleteView = (TextView) mView.findViewById(R.id.tv_delete);
         mSearchView = (TextView) mView.findViewById(R.id.tv_cancel);

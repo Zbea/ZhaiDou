@@ -37,6 +37,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
+import com.zhaidou.activities.PhotoViewActivity;
 import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
@@ -559,6 +560,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
             Bundle bundle = new Bundle();
             bundle.putString("index", items.get(position).goodsId);
             bundle.putString("page", items.get(position).name);
+            bundle.putString("sizeId", items.get(position).sizeId);
             goodsDetailsFragment.setArguments(bundle);
             ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
 
@@ -636,7 +638,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                                     String productSku = obj.optString("goodsAttr");
                                     double price = Double.parseDouble(df.format(obj.optDouble("price")));
                                     String imageUrl = obj.optString("mainPic");
-                                    String url = "http://" + obj.optString("aUrl");
+                                    String url =obj.optString("aUrl");
                                     int num = obj.optInt("quantity");
                                     CartGoodsItem cartGoodsItem = new CartGoodsItem();
                                     cartGoodsItem.id = baseid;
@@ -984,6 +986,11 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                     addImageView(commentImageLine,comment.images);
                 }
                 commentInfo.setText(comment.comment);
+                commentInfo.setVisibility(comment.comment.length()>0?View.VISIBLE: View.GONE);
+                if(comment.status.equals("F"))
+                {
+                    commentImageLine.setVisibility(View.GONE);
+                }
             }
             else
             {
@@ -1003,6 +1010,10 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                     addImageView(commentImageFormerLine,comment.imagesReply);
                 }
                 commentInfoFormer.setText(comment.commentReply);
+                if(comment.statusReply.equals("F"))
+                {
+                    commentImageFormerLine.setVisibility(View.GONE);
+                }
 
                 if (comment.images==null|comment.images.size()==0)
                 {
@@ -1013,7 +1024,10 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                     commentImageReplyLine.setVisibility(View.VISIBLE);
                     addImageView(commentImageReplyLine,comment.images);
                 }
-
+                if(comment.status.equals("F"))
+                {
+                    commentImageReplyLine.setVisibility(View.GONE);
+                }
                 commentReply.setText(Html.fromHtml("<font size=\"14\" color=\"#3fcccb\">回复@"+comment.userNameReply+"</font><font size=\"14\" color=\"#666666\"> "+comment.comment+"</font>"));
             }
 //            mHashMap.put(position, convertView);
@@ -1025,11 +1039,6 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
          */
         private void addImageView(LinearLayout viewLayout, final List<String> ims)
         {
-            final ArrayList<String> im = new ArrayList<String>();
-            for (String key : ims)
-            {
-                im.add(key);
-            }
             for (int i = 0; i < ims.size(); i++)
             {
                 final int position = i;
@@ -1041,8 +1050,10 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                     @Override
                     public void onClick(View v)
                     {
-                        CommentImageFragment commentImageFragment = CommentImageFragment.newInstance(im, position);
-                        ((BaseActivity) mContext).navigationToFragment(commentImageFragment);
+                        Intent intent=new Intent(mContext, PhotoViewActivity.class);
+                        intent.putExtra("images",ims.toArray(new String[]{}));
+                        intent.putExtra("position",position);
+                        startActivity(intent);
 
                     }
                 });

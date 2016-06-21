@@ -85,7 +85,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
 
     private View mView;
     private FrameLayout menuView;
-    private TextView backTv, sentTv;
+    private TextView backTv, sentTv,inputNumTv;
     private LinearLayout imageLine,cancelLine;
     private ImageView imageAddBtn;
     private TypeFaceEditText editText;
@@ -342,6 +342,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
                 commentInfo=s.toString();
                 commentInfo=commentInfo.replaceAll("\\s*","");
                 listenerCommitBtn();
+                inputNumTv.setText((200-commentInfo.length())+"");
             }
             @Override
             public void afterTextChanged(Editable s)
@@ -352,6 +353,8 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
 //        editText.setFocusableInTouchMode(true);
 //        editText.requestFocus();
 //        forceOpenSoftKeyboard(mContext);
+
+        inputNumTv= (TextView) mView.findViewById(R.id.inputNumTv);
 
         imageLine = (LinearLayout) mView.findViewById(R.id.comment_image_line);
 
@@ -548,10 +551,10 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
         }
         intent.setDataAndType(uri, "image/*");
         intent.putExtra("crop", "true");
-        intent.putExtra("aspectX", 1);
-        intent.putExtra("aspectY", 1);
-        intent.putExtra("outputX", outputX);
-        intent.putExtra("outputY", outputY);
+//        intent.putExtra("aspectX", 1);
+//        intent.putExtra("aspectY", 1);
+//        intent.putExtra("outputX", outputX);
+//        intent.putExtra("outputY", outputY);
         intent.putExtra("return-data", true);
         intent.putExtra("scale", true);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));

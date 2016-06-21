@@ -30,7 +30,7 @@ import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
-import com.zhaidou.base.BaseActivity;
+import com.zhaidou.activities.PhotoViewActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -523,6 +523,7 @@ public class CommentListFragment extends BaseFragment
                     addImageView(commentImageLine,comment.images);
                 }
                 commentInfo.setText(comment.comment);
+                commentInfo.setVisibility(comment.comment.length()>0?View.VISIBLE: View.GONE);
                 if(comment.status.equals("F"))
                 {
                     commentImageLine.setVisibility(View.GONE);
@@ -547,6 +548,10 @@ public class CommentListFragment extends BaseFragment
                     addImageView(commentImageFormerLine,comment.imagesReply);
                 }
                 commentInfoFormer.setText(comment.commentReply);
+                if(comment.statusReply.equals("F"))
+                {
+                    commentImageFormerLine.setVisibility(View.GONE);
+                }
 
                 if (comment.images==null|comment.images.size()==0)
                 {
@@ -572,11 +577,6 @@ public class CommentListFragment extends BaseFragment
          */
         private void addImageView(LinearLayout viewLayout, final List<String> ims)
         {
-            final ArrayList<String> im=new ArrayList<String>();
-            for (String key:ims)
-            {
-                im.add(key);
-            }
             for (int i = 0; i < ims.size(); i++)
             {
                 final int position=i;
@@ -588,8 +588,10 @@ public class CommentListFragment extends BaseFragment
                     @Override
                     public void onClick(View v)
                     {
-                        CommentImageFragment commentImageFragment=CommentImageFragment.newInstance(im,position);
-                        ((BaseActivity)mContext).navigationToFragment(commentImageFragment);
+                        Intent intent=new Intent(mContext, PhotoViewActivity.class);
+                        intent.putExtra("images",ims.toArray(new String[]{}));
+                        intent.putExtra("position",position);
+                        startActivity(intent);
 
                     }
                 });
