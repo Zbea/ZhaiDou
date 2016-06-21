@@ -50,6 +50,7 @@ public class Api {
         String content = params.get("content").toString();
         String articleId = params.get("articleId").toString();
         String articleTitle = params.get("articleTitle").toString();
+        System.out.println("articleTitle = " + articleTitle);
         String commentType = params.get("commentType").toString();
         String commentId = params.get("commentId").toString();
         List<String> images = (List<String>) params.get("images");
@@ -62,7 +63,7 @@ public class Api {
             multipartEntity.addPart("commentUserName", new StringBody(userName, Charset.defaultCharset()));
             multipartEntity.addPart("content", new StringBody(content, Charset.defaultCharset()));
             multipartEntity.addPart("articleId", new StringBody(articleId + ""));
-            multipartEntity.addPart("articleTitle", new StringBody(articleTitle + ""));
+            multipartEntity.addPart("articleTitle", new StringBody(articleTitle + "",Charset.defaultCharset()));
             multipartEntity.addPart("commentType", new StringBody(commentType));
             multipartEntity.addPart("commentId", new StringBody(commentId));
             for (int i = 0; images != null && i < images.size(); i++) {
