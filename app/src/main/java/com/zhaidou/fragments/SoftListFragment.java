@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +26,7 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
@@ -158,13 +160,26 @@ public class SoftListFragment extends BaseFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 System.out.println("parent = [" + parent + "], view = [" + view + "], position = [" + position + "], id = [" + id + "]");
-                CartGoodsItem cartGoodsItem = articleList.get(position );
-                GoodsDetailsFragment goodsDetailsFragment=GoodsDetailsFragment.newInstance(cartGoodsItem.name,cartGoodsItem.goodsId);
-                ((BaseActivity)mContext).navigationToFragment(goodsDetailsFragment);
+                CartGoodsItem cartGoodsItem = articleList.get(position);
+                if (cartGoodsItem.storeId.equals("S")) {
+
+                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(cartGoodsItem.name, cartGoodsItem.goodsId);
+                    ((BaseActivity) mContext).navigationToFragment(goodsDetailsFragment);
+                } else {
+                    Intent intent = new Intent();
+                    intent.putExtra("url", cartGoodsItem.userId);
+                    intent.setClass(mContext, WebViewActivity.class);
+                    mContext.startActivity(intent);
+                }
             }
-        });
-        initData();
-    }
+
+
+        }
+
+    );
+
+    initData();
+}
 
     private void initData() {
         if (NetworkUtils.isNetworkAvailable(mContext)) {
@@ -256,55 +271,56 @@ public class SoftListFragment extends BaseFragment {
         ZDApplication.mRequestQueue.add(request);
     }
 
-    public class GoodsAdapter extends BaseListAdapter<CartGoodsItem> {
-        Context context;
+public class GoodsAdapter extends BaseListAdapter<CartGoodsItem> {
+    Context context;
 
-        public GoodsAdapter(Context context, List<CartGoodsItem> list) {
-            super(context, list);
-            this.context = context;
-        }
+    public GoodsAdapter(Context context, List<CartGoodsItem> list) {
+        super(context, list);
+        this.context = context;
+    }
 
-        @Override
-        public View bindView(int position, View convertView, ViewGroup parent) {
+    @Override
+    public View bindView(int position, View convertView, ViewGroup parent) {
 //            convertView = mHashMap.get(position);
 
-            if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_article_goods, null);
+        if (convertView == null)
+            convertView = mInflater.inflate(R.layout.item_article_goods, null);
 
-            TextView goodsNameTv = ViewHolder.get(convertView, R.id.goodsNameTv);
-            TextView goodsSizeTv = ViewHolder.get(convertView, R.id.goodsSizeTv);
-            ImageView goodsImageTv = ViewHolder.get(convertView, R.id.goodsImageTv);
-            TextView goodsPriceTv = ViewHolder.get(convertView, R.id.goodsPriceTv);
-            TextView goodsNumTv = ViewHolder.get(convertView, R.id.goodsNumTv);
-            TextView goodsTypeTv = ViewHolder.get(convertView, R.id.goodsTypeTv);
-            TextView goodsBuyTv = ViewHolder.get(convertView, R.id.goodsBuyTv);
+        TextView goodsNameTv = ViewHolder.get(convertView, R.id.goodsNameTv);
+        TextView goodsSizeTv = ViewHolder.get(convertView, R.id.goodsSizeTv);
+        ImageView goodsImageTv = ViewHolder.get(convertView, R.id.goodsImageTv);
+        TextView goodsPriceTv = ViewHolder.get(convertView, R.id.goodsPriceTv);
+        TextView goodsNumTv = ViewHolder.get(convertView, R.id.goodsNumTv);
+        TextView goodsTypeTv = ViewHolder.get(convertView, R.id.goodsTypeTv);
+        TextView goodsBuyTv = ViewHolder.get(convertView, R.id.goodsBuyTv);
 
-            CartGoodsItem goodsItem = getList().get(position);
-            goodsNameTv.setText(goodsItem.name);
-            goodsSizeTv.setText(goodsItem.size);
-            goodsNumTv.setText("X" + goodsItem.num);
-            goodsPriceTv.setText("￥" + goodsItem.currentPrice);
-            ToolUtils.setImageCacheUrl(goodsItem.imageUrl, goodsImageTv, R.drawable.icon_loading_defalut);
+        CartGoodsItem goodsItem = getList().get(position);
+        goodsNameTv.setText(goodsItem.name);
+        goodsSizeTv.setText(goodsItem.size);
+        goodsNumTv.setText("X" + goodsItem.num);
+        goodsPriceTv.setText("￥" + goodsItem.currentPrice);
+        ToolUtils.setImageCacheUrl(goodsItem.imageUrl, goodsImageTv, R.drawable.icon_loading_defalut);
 
-            if (goodsItem.storeId.equals("T")) {
-                goodsTypeTv.setText("淘宝");
-                goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
-            } else if (goodsItem.storeId.equals("M")) {
-                goodsTypeTv.setText("天猫");
-                goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
-            } else if (goodsItem.storeId.equals("J")) {
-                goodsTypeTv.setText("京东");
-                goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
-            } else {
-                goodsTypeTv.setText("宅豆");
-                goodsTypeTv.setTextColor(getResources().getColor(R.color.green_color));
-            }
+        if (goodsItem.storeId.equals("T")) {
+            goodsTypeTv.setText("淘宝");
+            goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
+        } else if (goodsItem.storeId.equals("M")) {
+            goodsTypeTv.setText("天猫");
+            goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
+        } else if (goodsItem.storeId.equals("J")) {
+            goodsTypeTv.setText("京东");
+            goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
+        } else {
+            goodsTypeTv.setText("宅豆");
+            goodsTypeTv.setTextColor(getResources().getColor(R.color.green_color));
+        }
 
 
 //            mHashMap.put(position, convertView);
-            return convertView;
-        }
+        return convertView;
     }
+
+}
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
