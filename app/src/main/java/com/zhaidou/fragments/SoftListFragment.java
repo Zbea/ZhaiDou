@@ -3,6 +3,7 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -164,6 +165,11 @@ public class SoftListFragment extends BaseFragment {
                 if (cartGoodsItem.storeId.equals("S")) {
 
                     GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(cartGoodsItem.name, cartGoodsItem.goodsId);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("index", cartGoodsItem.goodsId);
+                    bundle.putString("page", cartGoodsItem.name);
+                    bundle.putString("sizeId", cartGoodsItem.sizeId);
+                    goodsDetailsFragment.setArguments(bundle);
                     ((BaseActivity) mContext).navigationToFragment(goodsDetailsFragment);
                 } else {
                     Intent intent = new Intent();
@@ -225,7 +231,7 @@ public class SoftListFragment extends BaseFragment {
                                     String productSku = obj.optString("goodsAttr");
                                     double price = Double.parseDouble(df.format(obj.optDouble("price")));
                                     String imageUrl = obj.optString("mainPic");
-                                    String url = "http://" + obj.optString("aUrl");
+                                    String url = obj.optString("aUrl");
                                     int num = obj.optInt("quantity");
                                     CartGoodsItem cartGoodsItem = new CartGoodsItem();
                                     cartGoodsItem.id = baseid;
@@ -298,7 +304,7 @@ public class GoodsAdapter extends BaseListAdapter<CartGoodsItem> {
         goodsNameTv.setText(goodsItem.name);
         goodsSizeTv.setText(goodsItem.size);
         goodsNumTv.setText("X" + goodsItem.num);
-        goodsPriceTv.setText("￥" + goodsItem.currentPrice);
+        goodsPriceTv.setText("￥" +ToolUtils.isIntPrice(goodsItem.currentPrice+"") );
         ToolUtils.setImageCacheUrl(goodsItem.imageUrl, goodsImageTv, R.drawable.icon_loading_defalut);
 
         if (goodsItem.storeId.equals("T")) {
@@ -306,10 +312,10 @@ public class GoodsAdapter extends BaseListAdapter<CartGoodsItem> {
             goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
         } else if (goodsItem.storeId.equals("M")) {
             goodsTypeTv.setText("天猫");
-            goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
+            goodsTypeTv.setTextColor(ColorStateList.valueOf(R.color.red));
         } else if (goodsItem.storeId.equals("J")) {
             goodsTypeTv.setText("京东");
-            goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
+            goodsTypeTv.setTextColor(ColorStateList.valueOf(R.color.red));
         } else {
             goodsTypeTv.setText("宅豆");
             goodsTypeTv.setTextColor(getResources().getColor(R.color.green_color));
