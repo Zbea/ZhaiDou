@@ -152,7 +152,7 @@ public class SoftcoverFragment extends BaseFragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SoftDetailFragment homeArticleGoodsDetailsFragment = SoftDetailFragment.newInstance("", "" + articleList.get(position-1).getId());
+                SoftDetailFragment homeArticleGoodsDetailsFragment = SoftDetailFragment.newInstance("", "" + articleList.get(position).getId());
                 ((BaseActivity) mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
             }
         });
