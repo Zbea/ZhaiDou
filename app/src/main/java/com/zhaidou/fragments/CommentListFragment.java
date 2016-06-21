@@ -11,6 +11,7 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -35,7 +36,10 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Comment;
+import com.zhaidou.utils.Api;
+import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CircleImageView;
 import com.zhaidou.view.ListViewForScrollView;
@@ -75,7 +79,7 @@ public class CommentListFragment extends BaseFragment
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private List<Comment> comments=new ArrayList<Comment>();
     private CommentAdapter commentAdapter;
-
+    private DialogUtils mDialogUtils;
 
     private Handler mHandler = new Handler()
     {
@@ -218,6 +222,7 @@ public class CommentListFragment extends BaseFragment
      */
     private void initView()
     {
+        mDialogUtils = new DialogUtils(mContext);
         commentNumTv=(TextView)mView.findViewById(R.id.commentNumTv);
         nullCommentTv=(TextView)mView.findViewById(R.id.commentNullTv);
 
@@ -242,27 +247,58 @@ public class CommentListFragment extends BaseFragment
     }
 
 
-    private void sendComment(int position)
+    private void sendComment(final int position)
     {
+        final Comment comment=comments.get(position);
         if (checkLogin())
         {
-            frameLayout.setVisibility(View.VISIBLE);
-            CommentSendFragment commentSendFragment = CommentSendFragment.newInstance(mPage, mIndex, comments.get(position));
-            commentSendFragment.setOnCommentListener(new CommentSendFragment.OnCommentListener()
+            int userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
+            if (comment.userId==userId)
             {
-                @Override
-                public void onCommentResult(Comment comment)
-                {
-                    if (comment != null)
-                    {
-                        pageCount++;
-                        commentNumTv.setText("(" + pageCount + ")");
-                        comments.add(0, comment);
-                        commentAdapter.notifyDataSetChanged();
+                mDialogUtils.showListDialog(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
+                        mDialog=CustomLoadingDialog.setLoadingDialog(mContext,"");
+                        Api.deleteComment(comment.id, new Api.SuccessListener()
+                        {
+                            @Override
+                            public void onSuccess(Object object)
+                            {
+                                if (object != null)
+                                {
+                                    mDialog.dismiss();
+                                    ToolUtils.setLog(object.toString());
+                                    commentAdapter.remove(position);
+                                    pageCount--;
+                                    commentNumTv.setText("("+pageCount+")");
+                                    commentNumTv.setVisibility(pageCount>0?View.VISIBLE:View.GONE);
+                                    ShowToast("删除成功");
+                                }
+                            }
+                        }, null);
                     }
-                }
-            });
-            getFragmentManager().beginTransaction().add(R.id.frameLayout, commentSendFragment).addToBackStack(null).commitAllowingStateLoss();
+                });
+            }
+            else
+            {
+                frameLayout.setVisibility(View.VISIBLE);
+                CommentSendFragment commentSendFragment = CommentSendFragment.newInstance(mPage, mIndex, comment);
+                commentSendFragment.setOnCommentListener(new CommentSendFragment.OnCommentListener()
+                {
+                    @Override
+                    public void onCommentResult(Comment comment)
+                    {
+                        if (comment != null)
+                        {
+                            pageCount++;
+                            commentNumTv.setText("(" + pageCount + ")");
+                            comments.add(0, comment);
+                            commentAdapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+                getFragmentManager().beginTransaction().add(R.id.frameLayout, commentSendFragment).addToBackStack(null).commitAllowingStateLoss();
+            }
         } else
         {
             Intent intent = new Intent(getActivity(), LoginActivity.class);
@@ -487,6 +523,11 @@ public class CommentListFragment extends BaseFragment
                     addImageView(commentImageLine,comment.images);
                 }
                 commentInfo.setText(comment.comment);
+                if(comment.status.equals("F"))
+                {
+                    commentImageLine.setVisibility(View.GONE);
+                }
+
             }
             else
             {
@@ -516,7 +557,10 @@ public class CommentListFragment extends BaseFragment
                     commentImageReplyLine.setVisibility(View.VISIBLE);
                     addImageView(commentImageReplyLine,comment.images);
                 }
-
+                if(comment.status.equals("F"))
+                {
+                    commentImageReplyLine.setVisibility(View.GONE);
+                }
                 commentReply.setText(Html.fromHtml("<font size=\"14\" color=\"#3fcccb\">回复@"+comment.userNameReply+"</font><font size=\"14\" color=\"#666666\"> "+comment.comment+"</font>"));
             }
 //            mHashMap.put(position, convertView);

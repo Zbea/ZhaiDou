@@ -9,11 +9,11 @@
             <!-- 填充颜色 -->
             <solid android:color="#aaff6262" ></solid>
 
-            <size android:height="25dp"></size>
+            <size android:height="20dp"></size>
 
             <!-- 矩形的圆角半径 -->
-            <corners android:bottomLeftRadius="12.5dp" android:bottomRightRadius="12.5dp"
-                     android:topLeftRadius="12.5dp" android:topRightRadius="12.5dp"/>
+            <corners android:bottomLeftRadius="10dp" android:bottomRightRadius="10dp"
+                     android:topLeftRadius="10dp" android:topRightRadius="10dp"/>
 
         </shape>
         </item>
@@ -23,10 +23,10 @@
             <!-- 填充颜色 -->
             <solid android:color="#ff6262"></solid>
 
-            <size android:height="25dp"></size>
+            <size android:height="20dp"></size>
             <!-- 矩形的圆角半径 -->
-            <corners android:bottomLeftRadius="12.5dp" android:bottomRightRadius="12.5dp"
-                     android:topLeftRadius="12.5dp" android:topRightRadius="12.5dp"/>
+            <corners android:bottomLeftRadius="10dp" android:bottomRightRadius="10dp"
+                     android:topLeftRadius="10dp" android:topRightRadius="10dp"/>
 
         </shape>
         </item>

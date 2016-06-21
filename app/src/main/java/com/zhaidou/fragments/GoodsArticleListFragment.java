@@ -2,6 +2,8 @@ package com.zhaidou.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +27,8 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.WebViewActivity;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -175,7 +179,22 @@ public class GoodsArticleListFragment extends BaseFragment
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
+                if (articleList.get(position).storeId.equals("S"))
+                {
+                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(articleList.get(position).name, articleList.get(position).goodsId);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("index", articleList.get(position).goodsId);
+                    bundle.putString("page", articleList.get(position).name);
+                    goodsDetailsFragment.setArguments(bundle);
+                    ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
 
+                } else
+                {
+                    Intent intent = new Intent();
+                    intent.putExtra("url", articleList.get(position).userId);
+                    intent.setClass(mContext, WebViewActivity.class);
+                    mContext.startActivity(intent);
+                }
             }
         });
         initData();
@@ -327,12 +346,12 @@ public class GoodsArticleListFragment extends BaseFragment
             else if(goodsItem.storeId.equals("M"))
             {
                 goodsTypeTv.setText("天猫");
-                goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
+                goodsTypeTv.setTextColor(ColorStateList.valueOf(R.color.red));
             }
             else if(goodsItem.storeId.equals("J"))
             {
                 goodsTypeTv.setText("京东");
-                goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
+                goodsTypeTv.setTextColor(ColorStateList.valueOf(R.color.red));
             }
             else
             {
