@@ -220,6 +220,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                         case 1:
                             SharedPreferencesUtil.saveData(ZDApplication.getInstance(), "UnReadDesigner", 0);
                             mShareAdapter.notifyDataSetChanged();
+                            CountManager.getInstance().notifyCommentChange();
                             SoftcoverFragment softcoverFragment = SoftcoverFragment.newInstance("", "");
                             ((BaseActivity) getActivity()).navigationToFragment(softcoverFragment);
                             break;

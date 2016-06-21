@@ -1,8 +1,10 @@
 package com.zhaidou.fragments;
 
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -394,8 +396,29 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                         Toast.makeText(getActivity(), "SD不可用", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    File file = new File(filePath);
-                    startImageAction(Uri.fromFile(file), 200, 200, 2, true);
+                    Uri uri = null;
+                    if (data == null) {
+                        return;
+                    }
+                    uri = data.getData();
+                    try {
+                        Bitmap bm = null;
+                        ContentResolver resolver = getActivity().getContentResolver();
+                        bm = MediaStore.Images.Media.getBitmap(resolver, uri);
+                        String[] proj = {MediaStore.Images.Media.DATA};
+                        Cursor cursor = getActivity().managedQuery(uri, proj, null, null, null);
+                        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                        cursor.moveToFirst();
+                        String path = cursor.getString(column_index);
+                        System.out.println("path = " + path);
+//                        String bitmap = PhotoUtil.saveBitmap(bm);
+//                        System.out.println("bitmap = " + bitmap);
+                        mDialogUtils.notifyPhotoAdapter(path);
+                    } catch (Exception e) {
+
+                    }
+//                    File file = new File(filePath);
+//                    startImageAction(Uri.fromFile(file), 200, 200, 2, true);
                 }
                 break;
             case MENU_PHOTO_SELECTED:// 本地修改头像
@@ -412,25 +435,28 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                         return;
                     }
                     uri = data.getData();
-//                    Bitmap bm = null;
-//                    ContentResolver resolver = getActivity().getContentResolver();
-//                    try {
-//                        bm = MediaStore.Images.Media.getBitmap(resolver, uri);
-//                        String[] proj = {MediaStore.Images.Media.DATA};
-//                        Cursor cursor = getActivity().managedQuery(uri, proj, null, null, null);
-//                        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-//                        cursor.moveToFirst();
-//                        String path = cursor.getString(column_index);
-//                        System.out.println("path = " + path);
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-                    startImageAction(uri, 200, 200, 2, true);
+                    try {
+                        Bitmap bm = null;
+                        ContentResolver resolver = getActivity().getContentResolver();
+                        bm = MediaStore.Images.Media.getBitmap(resolver, uri);
+                        String[] proj = {MediaStore.Images.Media.DATA};
+                        Cursor cursor = getActivity().managedQuery(uri, proj, null, null, null);
+                        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                        cursor.moveToFirst();
+                        String path = cursor.getString(column_index);
+                        System.out.println("path = " + path);
+//                        String bitmap = PhotoUtil.saveBitmap(bm);
+//                        System.out.println("bitmap = " + bitmap);
+                        mDialogUtils.notifyPhotoAdapter(path);
+                    } catch (Exception e) {
+
+                    }
+//                    startImageAction(uri, 200, 200, 2, true);
+//                    saveCropPhoto(data);
                 } else {
                     System.out.println("ReplayFragment.onActivityResult---->else");
                     Toast.makeText(getActivity(), "照片获取失败", Toast.LENGTH_SHORT).show();
                 }
-
                 break;
             case 2:// 裁剪头像返回
                 if (data == null) {

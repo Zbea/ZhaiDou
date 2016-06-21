@@ -30,6 +30,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.WeakHashMap;
 
 /**
  * 会话列表adapter
@@ -54,6 +55,7 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 	private int borderWidth = -1;
 	private int borderColor = -1;
 	private int avatarRadius = -1;
+    private WeakHashMap<Integer,View> mHashMap=new WeakHashMap<Integer, View>();
 
 	public EaseConversationAdapater(Context context, int resource, List<EMConversation> objects) {
 		super(context, resource, objects);
@@ -98,6 +100,7 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+        convertView=mHashMap.get(position);
 		if (convertView == null) {
 			convertView = LayoutInflater.from(getContext()).inflate(R.layout.ease_row_chat_history, parent, false);
 		}
@@ -205,6 +208,7 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 		if (timeSize != 0)
 			holder.time.setTextSize(TypedValue.COMPLEX_UNIT_PX, timeSize);
 
+        mHashMap.put(position,convertView);
 		return convertView;
 	}
 
