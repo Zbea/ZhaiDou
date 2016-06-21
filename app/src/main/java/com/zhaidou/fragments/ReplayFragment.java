@@ -94,6 +94,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
             }
         }
     };
+    private File file1;
 
     public static ReplayFragment newInstance(String param1, String param2) {
         ReplayFragment fragment = new ReplayFragment();
@@ -215,9 +216,9 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                     dir.mkdirs();
                 }
                 // 原图
-                File file = new File(dir, "cc" + new SimpleDateFormat("yyMMddHHmmss").format(new Date()));
-                filePath = file.getAbsolutePath();// 获取相片的保存路径
-                Uri imageUri = Uri.fromFile(file);
+                file1 = new File(dir, "cc" + new SimpleDateFormat("yyMMddHHmmss").format(new Date())+".jpg");
+                filePath = file1.getAbsolutePath();// 获取相片的保存路径
+                Uri imageUri = Uri.fromFile(file1);
 
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
@@ -396,24 +397,28 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                         Toast.makeText(getActivity(), "SD不可用", Toast.LENGTH_SHORT).show();
                         return;
                     }
+                    System.out.println("filePath = " + filePath);
+                    System.out.println("file1.length() = " + file1.length());
+                    System.out.println("file1.length()+\"---\"+file1.getAbsolutePath() = " + file1.length()+"---"+file1.getAbsolutePath());
+                    mDialogUtils.notifyPhotoAdapter(file1.getAbsolutePath());
                     Uri uri = null;
                     if (data == null) {
                         return;
                     }
                     uri = data.getData();
                     try {
-                        Bitmap bm = null;
-                        ContentResolver resolver = getActivity().getContentResolver();
-                        bm = MediaStore.Images.Media.getBitmap(resolver, uri);
-                        String[] proj = {MediaStore.Images.Media.DATA};
-                        Cursor cursor = getActivity().managedQuery(uri, proj, null, null, null);
-                        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                        cursor.moveToFirst();
-                        String path = cursor.getString(column_index);
-                        System.out.println("path = " + path);
+//                        Bitmap bm = null;
+//                        ContentResolver resolver = getActivity().getContentResolver();
+//                        bm = MediaStore.Images.Media.getBitmap(resolver, uri);
+//                        String[] proj = {MediaStore.Images.Media.DATA};
+//                        Cursor cursor = getActivity().managedQuery(uri, proj, null, null, null);
+//                        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+//                        cursor.moveToFirst();
+//                        String path = cursor.getString(column_index);
+//                        System.out.println("path = " + path);
 //                        String bitmap = PhotoUtil.saveBitmap(bm);
 //                        System.out.println("bitmap = " + bitmap);
-                        mDialogUtils.notifyPhotoAdapter(path);
+//                        mDialogUtils.notifyPhotoAdapter(filePath+".jpg");
                     } catch (Exception e) {
 
                     }

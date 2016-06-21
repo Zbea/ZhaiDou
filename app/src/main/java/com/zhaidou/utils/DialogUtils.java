@@ -546,8 +546,8 @@ public class DialogUtils {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (commentContent.getText().toString().trim().length()>200)
                     return;
-                commentOkTv.setClickable(!TextUtils.isEmpty(commentContent.getText().toString()));
-                commentOkTv.setTextColor(TextUtils.isEmpty(commentContent.getText().toString()) ?
+                commentOkTv.setClickable(TextUtils.isEmpty(commentContent.getText().toString()));
+                commentOkTv.setTextColor(!TextUtils.isEmpty(commentContent.getText().toString()) ?
                         mContext.getResources().getColor(R.color.green_color) :
                         mContext.getResources().getColor(R.color.text_gary_color));
                 textView.setText((200-commentContent.getText().length())+"");
@@ -563,10 +563,9 @@ public class DialogUtils {
             @Override
             public void onClick(View v) {
                 String str = commentContent.getText().toString().trim();
-//                if (TextUtils.isEmpty(str)) {
-//                    Toast.makeText(mContext, "评论内容不能为空哦", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
+                if (TextUtils.isEmpty(str)) {
+                    return;
+                }
                 Map<String,Object> params=new HashMap<String, Object>();
                 params.put("content",str);
                 params.put("images",photoAdapter.getList());
