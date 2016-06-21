@@ -205,7 +205,7 @@ public class CustomBannerView extends FrameLayout
         paint.setColor(Color.parseColor("#f1f1f1"));
         norBitmap=Bitmap.createBitmap(50,10, Bitmap.Config.ARGB_8888);
         Canvas canvas=new Canvas(norBitmap);
-        canvas.drawRect(0, 0, 50,6, paint);
+        canvas.drawRect(0, 0, 50,4, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(norBitmap,0,0,paint);
 
@@ -219,7 +219,7 @@ public class CustomBannerView extends FrameLayout
         paint.setColor(Color.parseColor("#3fcccb"));
         selectBitmap=Bitmap.createBitmap(50,10, Bitmap.Config.ARGB_8888);
         Canvas canvas=new Canvas(selectBitmap);
-        canvas.drawRect(0, 0, 50,6, paint);
+        canvas.drawRect(0, 0, 50,4, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(selectBitmap,0,0,paint);
     }
