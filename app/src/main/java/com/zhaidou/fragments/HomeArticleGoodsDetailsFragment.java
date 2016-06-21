@@ -3,6 +3,7 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -44,9 +45,11 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.Comment;
+import com.zhaidou.utils.Api;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NetworkUtils;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CircleImageView;
 import com.zhaidou.view.CustomProgressWebview;
@@ -108,13 +111,13 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     private RequestQueue mRequestQueue;
     private int page = 1;
     private int pageSize;
-    private int pageCount, commentCount=0;
-    private int commentNum;
+    private int commentCount=0;
     private String imageUrl,header,headerName,title, introduce, areaType, areaSize, style, budget, totalPrice;
     private List<CartGoodsItem> items = new ArrayList<CartGoodsItem>();
     private AlphaAnimation alphaAnimation;
     private List<Comment> comments = new ArrayList<Comment>();
     private CommentAdapter commentAdapter;
+    private DialogUtils mDialogUtils;
 
     private Handler handler = new Handler()
     {
@@ -129,7 +132,6 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 styleTv.setText(style);
                 budgetTv.setText(budget);
                 subtotalTv.setText("￥" + ToolUtils.isIntPrice(totalPrice));
-                commentNumTv.setVisibility(commentNum > 0 ? View.VISIBLE : View.GONE);
 
                 ToolUtils.setImageCacheUrl(header, headerImageIv, R.drawable.icon_loading_item);
                 ToolUtils.setImageCacheUrl(imageUrl, imageIv, R.drawable.icon_loading_item);
@@ -157,7 +159,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 commentNumTv.setVisibility(commentCount > 0 ? View.VISIBLE : View.GONE);
                 nullComment.setVisibility(comments.size() > 0 ? View.GONE : View.VISIBLE);
                 commentAllLine.setVisibility(comments.size() > 0 ? View.VISIBLE : View.GONE);
-                commentAdapter.notifyDataSetChanged();
+                commentAdapter.upDate(comments);
             }
             else if (msg.what ==UPDATE_SHARE_TOAST)
             {
@@ -269,17 +271,10 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                                 {
                                     commentCount++;
                                     commentNumTv.setText("(" + commentCount + ")");
-                                    if (comments.size() < 5)
-                                    {
-                                        comments.add(0, comment);
-                                    } else
-                                    {
-                                        comments.remove(4);
-                                        comments.add(0, comment);
-                                    }
+                                    comments.add(0, comment);
+                                    commentAdapter.upDate(comments);
                                     nullComment.setVisibility(comments.size() > 0 ? View.GONE : View.VISIBLE);
                                     commentAllLine.setVisibility(comments.size() > 0 ? View.VISIBLE : View.GONE);
-                                    commentAdapter.notifyDataSetChanged();
                                 }
                             }
                         });
@@ -329,6 +324,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
 
     private void initView()
     {
+        mDialogUtils = new DialogUtils(mContext);
         barLine = (RelativeLayout) view.findViewById(R.id.actionbarBg);
         setAlphaAnimation(barLine, 1, 0);
         shareIv = (ImageView) view.findViewById(R.id.share_iv);
@@ -416,35 +412,61 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         commentListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
             {
+                final Comment comment=comments.get(position);
                 if (checkLogin())
                 {
-                    CommentSendFragment commentSendFragment = CommentSendFragment.newInstance(title, mString, comments.get(position));
-                    commentSendFragment.setOnCommentListener(new CommentSendFragment.OnCommentListener()
+                    int userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
+                    if (comment.userId==userId)
                     {
-                        @Override
-                        public void onCommentResult(Comment comment)
-                        {
-                            if (comment != null)
-                            {
-                                commentCount++;
-                                commentNumTv.setText("(" + commentCount + ")");
-                                if (comments.size() < 5)
+                        mDialogUtils.showListDialog(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
+                                mDialog=CustomLoadingDialog.setLoadingDialog(mContext,"");
+                                Api.deleteComment(comment.id, new Api.SuccessListener()
                                 {
-                                    comments.add(0, comment);
-                                } else
-                                {
-                                    comments.remove(4);
-                                    comments.add(0, comment);
-                                }
-                                commentAdapter.notifyDataSetChanged();
-                                nullComment.setVisibility(comments.size() > 0 ? View.GONE : View.VISIBLE);
-                                commentAllLine.setVisibility(comments.size() > 0 ? View.VISIBLE : View.GONE);
+                                    @Override
+                                    public void onSuccess(Object object)
+                                    {
+                                        if (object != null)
+                                        {
+                                            mDialog.dismiss();
+                                            ToolUtils.setLog(object.toString());
+                                            comments.remove(position);
+                                            commentAdapter.upDate(comments);
+                                            commentCount--;
+                                            commentNumTv.setText("(" + commentCount + ")");
+                                            commentNumTv.setVisibility(commentCount > 0 ? View.VISIBLE : View.GONE);
+                                            ShowToast("删除成功");
+                                        }
+                                    }
+                                }, null);
                             }
-                        }
-                    });
-                    getFragmentManager().beginTransaction().add(R.id.frameLayout, commentSendFragment).addToBackStack(null).commitAllowingStateLoss();
+                        });
+                    }
+                    else
+                    {
+
+                        CommentSendFragment commentSendFragment = CommentSendFragment.newInstance(title, mString, comments.get(position));
+                        commentSendFragment.setOnCommentListener(new CommentSendFragment.OnCommentListener()
+                        {
+                            @Override
+                            public void onCommentResult(Comment comment)
+                            {
+                                if (comment != null)
+                                {
+                                    commentCount++;
+                                    commentNumTv.setText("(" + commentCount + ")");
+                                    comments.add(0, comment);
+                                    commentAdapter.upDate(comments);
+                                    nullComment.setVisibility(comments.size() > 0 ? View.GONE : View.VISIBLE);
+                                    commentAllLine.setVisibility(comments.size() > 0 ? View.VISIBLE : View.GONE);
+                                }
+                            }
+                        });
+                        getFragmentManager().beginTransaction().add(R.id.frameLayout, commentSendFragment).addToBackStack(null).commitAllowingStateLoss();
+                    }
                 } else
                 {
                     Intent intent = new Intent(getActivity(), LoginActivity.class);
@@ -579,7 +601,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                         JSONObject jsonObject1 = response.optJSONObject("data");
                         if (jsonObject1 != null)
                         {
-                            pageCount = jsonObject1.optInt("totalCount");
+                            int pageCount = jsonObject1.optInt("totalCount");
                             pageSize = jsonObject1.optInt("pageSize");
                             Double aDouble= jsonObject1.optDouble("totalPrice");
                             DecimalFormat df=new DecimalFormat("#.00");
@@ -595,7 +617,6 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                             areaSize = jsonObject.optString("areaSize");
                             style = jsonObject.optString("style");
                             budget = jsonObject.optString("budget");
-                            commentNum = jsonObject.optInt("commentCount");
 
                             JSONObject jsonObject2 = jsonObject1.optJSONObject("designerUserPO");
                             header = jsonObject2.optString("imageUrl");
@@ -794,10 +815,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                                         comment.userImageReply=reCommentUserImg;
                                         comment.userIdReply=reCommentUserId;
                                     }
-                                    if (comments.size() < 5)
-                                    {
-                                        comments.add(comment);
-                                    }
+                                    comments.add(comment);
                                 }
                         } else
                         {
@@ -873,25 +891,25 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
             } else if (goodsItem.storeId.equals("M"))
             {
                 goodsTypeTv.setText("天猫");
-                goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
+                goodsTypeTv.setTextColor(ColorStateList.valueOf(R.color.red));
             } else if (goodsItem.storeId.equals("J"))
             {
                 goodsTypeTv.setText("京东");
-                goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
+                goodsTypeTv.setTextColor(ColorStateList.valueOf(R.color.red));
             } else
             {
                 goodsTypeTv.setText("宅豆");
                 goodsTypeTv.setTextColor(getResources().getColor(R.color.green_color));
             }
 
-            goodsBuyTv.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    enterGoods(position);
-                }
-            });
+//            goodsBuyTv.setOnClickListener(new View.OnClickListener()
+//            {
+//                @Override
+//                public void onClick(View v)
+//                {
+//                    enterGoods(position);
+//                }
+//            });
 
 
 //            mHashMap.put(position, convertView);
@@ -907,6 +925,20 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         {
             super(context, list);
             this.context = context;
+        }
+
+        public void upDate(List<Comment> list)
+        {
+            List<Comment> comments1=new ArrayList<Comment>();
+            if (list.size()>5)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    comments1.add(list.get(i));
+                }
+            }
+            this.list=comments1;
+            notifyDataSetChanged();
         }
 
         @Override

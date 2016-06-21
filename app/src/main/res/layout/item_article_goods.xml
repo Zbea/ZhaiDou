@@ -85,9 +85,8 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="60dp"
                     android:layout_weight="0.00001"
-                    android:layout_marginLeft="10dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="right"
@@ -99,6 +98,8 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/red"
                         android:text="$123.5"
+                        android:singleLine="true"
+                        android:ellipsize="end"
                         />
 
                     <TextView
@@ -135,14 +136,12 @@
 
                 <com.zhaidou.view.TypeFaceTextView
                     android:id="@+id/goodsBuyTv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="60dp"
+                    android:layout_height="18sp"
                     android:layout_weight="0.000001"
-                    android:clickable="true"
                     android:gravity="center"
                     android:textColor="@color/white"
-                    android:paddingLeft="15dp"
-                    android:paddingRight="15dp"
+                    android:textSize="12sp"
                     android:background="@drawable/btn_article_buy_selector"
                     android:text="去购买"/>
 

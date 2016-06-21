@@ -139,7 +139,7 @@ public class MagicImageCalssFragment extends BaseFragment
             }
             if (i>1)
             {
-                layoutParams.topMargin=25;
+                layoutParams.topMargin=18;
             }
             cover.setLayoutParams(layoutParams);
             title.setText(article.name);

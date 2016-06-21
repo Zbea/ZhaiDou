@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
@@ -93,10 +92,10 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
 
     private InputMethodManager inputMethodManagers;
     private PhotoMenuFragment menuFragment;
-    private String filePath = "";
     private List<Bitmap> photos=new ArrayList<Bitmap>();
     private List<File> files=new ArrayList<File>();
     private File file;
+    private String pathUrl;
     private String commentInfo="";
     private int userId;
     private String userName;
@@ -432,29 +431,30 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
     @Override
     public void onMenuSelect(int position, String tag)
     {
+        File dir = new File(ZhaiDou.MyCommentDir);
+        if (!dir.exists())
+        {
+            dir.mkdirs();
+        }
+        pathUrl=ZhaiDou.MyCommentDir+"cm"+new SimpleDateFormat("yyMMddHHmmss").format(new Date())+".jpg";
         switch (position)
         {
             case 0:
-                File dir = new File(ZhaiDou.MyCommentDir);
-                if (!dir.exists())
-                {
-                    dir.mkdirs();
-                }
                 // 原图
-                File file = new File(dir, "cc"+new SimpleDateFormat("yyMMddHHmmss").format(new Date()));
-                filePath = file.getAbsolutePath();// 获取相片的保存路径
+                file = new File(pathUrl);
                 Uri imageUri = Uri.fromFile(file);
 
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                this.startActivityForResult(intent, MENU_CAMERA_SELECTED);
+                startActivityForResult(intent, MENU_CAMERA_SELECTED);
                 break;
 
             case 1:
+                file = new File(pathUrl);
                 Intent intent1 = new Intent(Intent.ACTION_PICK, null);
                 intent1.setDataAndType(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-                this.startActivityForResult(intent1, MENU_PHOTO_SELECTED);
+                startActivityForResult(intent1, MENU_PHOTO_SELECTED);
                 break;
         }
         toggleMenu();
@@ -483,14 +483,12 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
             case MENU_CAMERA_SELECTED:// 拍照修改头像
                 if (resultCode == getActivity().RESULT_OK)
                 {
-                    if (!Environment.getExternalStorageState().equals(
-                            Environment.MEDIA_MOUNTED))
+                    if (!ToolUtils.hasSdcard())
                     {
                         Toast.makeText(getActivity(), "SD不可用", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    File file = new File(filePath);
-                    startImageAction(Uri.fromFile(file), 200, 200, 2, true);
+                    startImageAction(Uri.fromFile(file), 250, 250, 2, true);
                 }
                 break;
             case MENU_PHOTO_SELECTED:// 本地修改头像
@@ -501,14 +499,13 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
                 }
                 if (resultCode == getActivity().RESULT_OK)
                 {
-                    if (!Environment.getExternalStorageState().equals(
-                            Environment.MEDIA_MOUNTED))
+                    if (!ToolUtils.hasSdcard())
                     {
                         Toast.makeText(getActivity(), "SD不可用", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     uri = data.getData();
-                    startImageAction(uri, 300,300, 2, true);
+                    startImageAction(uri, 250,250, 2, true);
                 } else
                 {
                     Toast.makeText(getActivity(), "照片获取失败", Toast.LENGTH_SHORT).show();
@@ -524,8 +521,6 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
                 {
                   saveCropPhoto(data);
                 }
-                // 初始化文件路径
-                filePath = "";
                 break;
             default:
                 break;
@@ -543,7 +538,6 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
      */
     private void startImageAction(Uri uri, int outputX, int outputY, int requestCode, boolean isCrop)
     {
-        file=new File(ZhaiDou.MyCommentDir,new SimpleDateFormat("yyMMddHHmmss").format(new Date()));
         Intent intent = null;
         if (isCrop)
         {
@@ -579,8 +573,13 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
             photo = extras.getParcelable("data");
             if (photo == null)
             {
-                photo = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() + filePath);
+                photo = BitmapFactory.decodeFile(pathUrl);
             }
+            addImageView(photo);
+        }
+        else
+        {
+            photo = BitmapFactory.decodeFile(pathUrl);
             addImageView(photo);
         }
     }

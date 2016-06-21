@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
@@ -40,6 +41,7 @@ import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
+import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.adapter.ShopTodaySpecialAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
@@ -110,7 +112,7 @@ public class HomeFeatrueFragment extends BaseFragment {
     private int page = 1;
     private int pageSize;
     private int pageCount;
-    private String imageUrl;
+    private String mainPic,mainUrl,casePic,caseUrl;
     private ShopSpecialItem shopSpecialItem;
     private String token;
     private int userId;
@@ -167,7 +169,7 @@ public class HomeFeatrueFragment extends BaseFragment {
                     contactQQ.setVisibility(View.GONE);
                     break;
                 case UPDATE_DOUBLE_LIST:
-                    setAddImage(bannerLine,imageUrl,false);
+                    setAddImage(bannerLine, mainPic,false);
                     mScrollView.onRefreshComplete();
                     if (pageCount > pageSize * page)
                     {
@@ -185,8 +187,8 @@ public class HomeFeatrueFragment extends BaseFragment {
                     contactQQ.setVisibility(View.GONE);
                     break;
                 case UPDATE_ARTICLE_SHOPPING:
-                    setAddImage(imageIv, imageUrl, true);
-                    infoImage.loadUrl(shopSpecialItem.imageUrl);
+                    setAddImage(imageIv, mainPic, true);
+                    infoImage.loadUrl(casePic);
                     infoTv.setText(introduce);
 
                     articleShoppingpAdapter.notifyDataSetChanged();
@@ -256,6 +258,15 @@ public class HomeFeatrueFragment extends BaseFragment {
                 case R.id.ll_back:
                     ((BaseActivity) getActivity()).popToStack(HomeFeatrueFragment.this);
                     break;
+                case R.id.bannersView:
+                    setMainUrl(mainUrl);
+                    break;
+                case R.id.detailsImageIvs:
+                    setMainUrl(mainUrl);
+                    break;
+                case R.id.infoImage:
+
+                    break;
 
                 case R.id.myCartBtn:
                     if (checkLogina())
@@ -292,7 +303,7 @@ public class HomeFeatrueFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
-            imageUrl = getArguments().getString(ARG_PARAM2);
+            mainPic = getArguments().getString(ARG_PARAM2);
             mTitle = getArguments().getString(ARG_TITLE);
         }
     }
@@ -318,7 +329,8 @@ public class HomeFeatrueFragment extends BaseFragment {
             reloadNetBtn.setOnClickListener(onClickListener);
 
             bannerLine = (LargeImgView) rootView.findViewById(R.id.bannersView);
-            bannerLine.setDrawingCacheEnabled(true);
+            bannerLine.setOnClickListener(onClickListener);
+
             mScrollView = (PullToRefreshScrollView)rootView.findViewById(R.id.scrollView);
             mScrollView.setOnRefreshListener(onRefreshListener);
             singleLine=(LinearLayout) rootView.findViewById(R.id.singleLine);
@@ -350,9 +362,19 @@ public class HomeFeatrueFragment extends BaseFragment {
             });
 
             imageIv=(ImageView)rootView.findViewById(R.id.detailsImageIvs);
+            imageIv.setOnClickListener(onClickListener);
             imageIv.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
             infoTv=(TextView)rootView.findViewById(R.id.infoTv);
             infoImage=(CustomProgressWebview)rootView.findViewById(R.id.infoImage);
+            infoImage.setOnTouchListener(new View.OnTouchListener()
+            {
+                @Override
+                public boolean onTouch(View v, MotionEvent event)
+                {
+                    setMainUrl(caseUrl);
+                    return false;
+                }
+            });
             WebSettings webSettings = infoImage.getSettings();
             webSettings.setJavaScriptEnabled(true);
             webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
@@ -435,6 +457,18 @@ public class HomeFeatrueFragment extends BaseFragment {
         }
     }
 
+    /**
+     * 跳转
+     * @param url
+     */
+    private void setMainUrl(String url)
+    {
+        Intent web = new Intent();
+        web.putExtra("url",url);
+        web.setClass(mContext, WebViewActivity.class);
+        mContext.startActivity(web);
+    }
+
     public boolean checkLogina()
     {
         token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
@@ -465,9 +499,9 @@ public class HomeFeatrueFragment extends BaseFragment {
                 .showImageForEmptyUri(R.drawable.icon_loading_item)
                 .showImageOnFail(R.drawable.icon_loading_item)
 //                .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
-//                .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
-//                .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
-//                .bitmapConfig(Bitmap.Config.RGB_565)
+                .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
+                .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
+                .bitmapConfig(Bitmap.Config.RGB_565)
                 .imageScaleType(ImageScaleType.EXACTLY)
                 .build();
         ToolUtils.setLog("url:"+url);
@@ -567,6 +601,7 @@ public class HomeFeatrueFragment extends BaseFragment {
                             }
                             return;
                         }
+                        ToolUtils.setLog(response.toString());
                         JSONObject obj;
                         int status = response.optInt("status");
                         JSONObject jsonObject1 = response.optJSONObject("data");
@@ -577,15 +612,15 @@ public class HomeFeatrueFragment extends BaseFragment {
                             String title = jsonObject.optString("activityName");
                             long startTime = jsonObject.optLong("startTime");
                             long endTime = jsonObject.optLong("endTime");
-                            imageUrl= jsonObject.optString("mainPic");
+                            mainPic = jsonObject.optString("mainPic");
+                            mainUrl = jsonObject.optString("mainUrl");
                             type= jsonObject.optInt("composingType");
-                            String casePic= jsonObject.optString("casePic");
-                            ToolUtils.setLog(""+type);
+                            casePic= jsonObject.optString("casePic");
+                            caseUrl= jsonObject.optString("caseUrl");
                             int overTime = Integer.parseInt((String.valueOf((endTime-startTime)/(24*60*60*1000))));
                             introduce = jsonObject.optString("description");
                             int isNew = jsonObject.optInt("newFlag");
                             shopSpecialItem = new ShopSpecialItem(id, title, null,startTime, endTime, overTime, null,isNew);
-                            shopSpecialItem.imageUrl=casePic;
 
                             JSONObject jsonObject2 = jsonObject1.optJSONObject("pagePO");
                             pageCount=jsonObject2.optInt("totalCount");
