@@ -1,6 +1,7 @@
 package com.zhaidou.fragments;
 
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -11,10 +12,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.utils.ToolUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,17 +109,14 @@ public class CommentImageFragment extends BaseFragment {
     private void initView() {
 
         viewPager = (ViewPager) mView.findViewById(R.id.viewPager);
-        RelativeLayout.LayoutParams layoutParams=new RelativeLayout.LayoutParams(screenWidth, screenWidth);
-        layoutParams.topMargin=(screenHeight-screenWidth)/2;
-        viewPager.setLayoutParams(layoutParams);
         viewPager.setOnPageChangeListener(onPageChangeListener);
         viewGroupe = (LinearLayout) mView.findViewById(R.id.dotsLine);
 
         for (int i = 0; i < images.size(); i++)
         {
             ImageView imageView = new ImageView(mContext);
-            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-            ToolUtils.setImageCacheUrl(images.get(i), imageView, R.drawable.icon_loading_goods_details);
+            setAddImage(imageView,images.get(i));
+//            ToolUtils.setImageCacheUrl(images.get(i), imageView, R.drawable.icon_loading_goods_details);
             mImageViews.add(imageView);
         }
 
@@ -146,6 +148,43 @@ public class CommentImageFragment extends BaseFragment {
         viewPager.setAdapter(imageAdapter);
         viewPager.setCurrentItem(mIndex);
 
+    }
+
+    private void setAddImage(ImageView imgView,String url)
+    {
+        DisplayImageOptions options=new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.icon_loading_item)
+                .showImageForEmptyUri(R.drawable.icon_loading_item)
+                .showImageOnFail(R.drawable.icon_loading_item)
+                .imageScaleType(ImageScaleType.EXACTLY)
+                .build();
+        ImageLoader.getInstance().displayImage(url, imgView, options, new ImageLoadingListener()
+        {
+            @Override
+            public void onLoadingStarted(String s, View view)
+            {
+            }
+
+            @Override
+            public void onLoadingFailed(String s, View view, FailReason failReason)
+            {
+            }
+
+            @Override
+            public void onLoadingComplete(String s, View view, Bitmap bitmap)
+            {
+                ImageView imageView1 = (ImageView) view;
+                RelativeLayout.LayoutParams layoutParams=new RelativeLayout.LayoutParams(screenWidth, bitmap.getHeight() * screenWidth / bitmap.getWidth());
+                layoutParams.topMargin=(screenHeight-bitmap.getHeight() * screenWidth / bitmap.getWidth())/2;
+                imageView1.setLayoutParams(layoutParams);
+                imageView1.setImageBitmap(bitmap);
+
+            }
+            @Override
+            public void onLoadingCancelled(String s, View view)
+            {
+            }
+        });
     }
 
     /**

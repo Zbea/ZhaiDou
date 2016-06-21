@@ -94,6 +94,7 @@ public class MainGoodsFragment extends BaseFragment implements
     private PullToRefreshScrollView mScrollView;
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private long formerTime;
+    private String searchStr="搜索";
 
     private Handler handler = new Handler()
     {
@@ -122,7 +123,8 @@ public class MainGoodsFragment extends BaseFragment implements
             }
             else if (msg.what == UPDATE_SEARCH)
             {
-                titleTv.setText(msg.obj.toString());
+                searchStr=msg.obj.toString();
+                titleTv.setText(searchStr);
             }
         }
     };
@@ -417,12 +419,12 @@ public class MainGoodsFragment extends BaseFragment implements
         switch (view.getId())
         {
             case R.id.iv_searchs:
-                SearchFragment searchFragment = SearchFragment.newInstance("", 1);
+                SearchFragment searchFragment = SearchFragment.newInstance(searchStr, 1);
                 ((BaseActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
 //                ((MainActivity) getActivity()).gotoCategory();
                 break;
             case R.id.iv_category:
-                MainCategoryFragment mainCategoryFragment = MainCategoryFragment.newInstance("", "");
+                MainCategoryFragment mainCategoryFragment = MainCategoryFragment.newInstance(searchStr, "");
                 ((BaseActivity) getActivity()).navigationToFragmentWithAnim(mainCategoryFragment);
                 break;
             case R.id.iv_message:

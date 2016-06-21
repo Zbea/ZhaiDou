@@ -53,7 +53,7 @@ public class MainCategoryFragment extends BaseFragment {
     private static final String ARG_PARAM2 = "param2";
     private long lastClickTime = 0L;
 
-    private String mParam1;
+    private String mParam1="";
     private String mParam2;
 
     private LinearLayout searchBtn;
@@ -99,7 +99,7 @@ public class MainCategoryFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam1 = mParam1+getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
@@ -108,13 +108,15 @@ public class MainCategoryFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_category, container, false);
+        TextView titleTv=(TextView) view.findViewById(R.id.tv_title);
+        titleTv.setText(mParam1.length()>0?mParam1:"旅行收纳");
         searchBtn = (LinearLayout) view.findViewById(R.id.ll_searchs);
         searchBtn.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                SearchFragment searchFragment = SearchFragment.newInstance("", 1);
+                SearchFragment searchFragment = SearchFragment.newInstance(mParam1, 1);
                 ((BaseActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
             }
         });

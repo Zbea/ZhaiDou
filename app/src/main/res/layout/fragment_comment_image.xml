@@ -43,7 +43,7 @@
 
         <LinearLayout
             android:id="@+id/ll_back"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:clickable="true"
@@ -65,7 +65,7 @@
                 android:layout_marginLeft="6dp"
                 android:textColor="@color/white"
                 android:layout_alignParentLeft="true"
-                android:text="返回"/>
+                android:text=""/>
         </LinearLayout>
 
         <com.zhaidou.view.TypeFaceTextView
