@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -814,4 +815,18 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         Integer unReadDesigner = (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(), "UnReadDesigner", 0);
         mMsgView.setVisibility(unReadDesigner > 0 ? View.VISIBLE : View.GONE);
     }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Log.i("UserInfoActivity", "横屏");
+            Configuration o = newConfig;
+            o.orientation = Configuration.ORIENTATION_PORTRAIT;
+            newConfig.setTo(o);
+        } else if(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            Log.i("UserInfoActivity", "竖屏");
+        }
+        super.onConfigurationChanged(newConfig);
+    }
+
 }
