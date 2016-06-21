@@ -185,6 +185,7 @@ public class GoodsArticleListFragment extends BaseFragment
                     Bundle bundle = new Bundle();
                     bundle.putString("index", articleList.get(position).goodsId);
                     bundle.putString("page", articleList.get(position).name);
+                    bundle.putString("sizeId", articleList.get(position).sizeId);
                     goodsDetailsFragment.setArguments(bundle);
                     ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
 
@@ -253,7 +254,7 @@ public class GoodsArticleListFragment extends BaseFragment
                                     String productSku = obj.optString("goodsAttr");
                                     double price = Double.parseDouble(df.format(obj.optDouble("price")));
                                     String imageUrl = obj.optString("mainPic");
-                                    String url = "http://" + obj.optString("aUrl");
+                                    String url =obj.optString("aUrl");
                                     int num = obj.optInt("quantity");
                                     CartGoodsItem cartGoodsItem = new CartGoodsItem();
                                     cartGoodsItem.id = baseid;

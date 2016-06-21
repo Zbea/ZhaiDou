@@ -85,11 +85,12 @@ public class GoodsDetailsFragment extends BaseFragment
 {
     private static final String PAGE = "page";
     private static final String INDEX = "index";
-    private static final String ISSHOWTIMER = "timer";
+    private static final String SIZEID = "sizeId";
     private static final String CANSHARE = "canShare";
 
     private String mPage;
     private String mIndex;
+    private String mSizeId;
     private View mView;
     private int flags;//1代表零元特卖；2代表已下架商品
     private Context mContext;
@@ -285,7 +286,6 @@ public class GoodsDetailsFragment extends BaseFragment
                     viewPager.setFocusable(true);
                     viewPager.setFocusableInTouchMode(true);
                     viewPager.requestFocus();
-                    viewPager.requestFocusFromTouch();
                     break;
                 case UPDATE_CARTCAR_DATA://更新购物车数量
                     initCartTips();
@@ -523,6 +523,7 @@ public class GoodsDetailsFragment extends BaseFragment
             flags = getArguments().getInt("flags");
             isPublish = (flags == 3 ? true : false);
             canShare = getArguments().getBoolean(CANSHARE, true);
+            mSizeId= getArguments().getString(SIZEID);
         }
     }
 
@@ -899,6 +900,12 @@ public class GoodsDetailsFragment extends BaseFragment
                 textView.setClickable(false);
             } else
             {
+                if (specification.sizeId .equals(mSizeId))
+                {
+                    sigleClickPosition = position;
+                    textView.setSelected(true);
+                    sizeEvent(specification);
+                }
 //                if (specificationList.size() == 1)
 //                {
 //                    sigleClickPosition = position;
@@ -1053,6 +1060,14 @@ public class GoodsDetailsFragment extends BaseFragment
             } else
             {
                 textView.setSelected(false);
+                if (specification.sizeId .equals(mSizeId))
+                {
+                            isClickSubclass=true;
+                            sigleClickPosition = 0;
+                            textView.setSelected(true);
+                            sizeEvent(specification);
+                }
+
 //                if (isFristSubclass)
 //                {
 //                    isFristSubclass = false;

@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 android {
-    signingConfigs {
-        debug {
-            keyAlias 'zd'
-            keyPassword '111111'
-            storeFile file('/Users/wangclark/Downloads/zd.jks')
-            storePassword '111111'
-        }
-    }
+//    signingConfigs {
+//        debug {
+//            keyAlias 'zd'
+//            keyPassword '111111'
+//            storeFile file('/Users/wangclark/Downloads/zd.jks')
+//            storePassword '111111'
+//        }
+//    }
     compileSdkVersion 20
     buildToolsVersion '20.0.0'
     defaultConfig {
