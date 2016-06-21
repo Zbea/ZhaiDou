@@ -3,6 +3,7 @@ package com.zhaidou.fragments;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,6 +33,7 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
@@ -390,6 +392,12 @@ public class MainHomeFragment extends BaseFragment implements
         switch (view.getId())
         {
             case R.id.iv_message:
+                Integer userId= (Integer) SharedPreferencesUtil.getData(mContext,"userId",-1);
+                if (userId==-1){
+                    Intent intent =new Intent(mContext, LoginActivity.class);
+                    startActivity(intent);
+                    return;
+                }
                 ConversationListFragment conversationListFragment=new ConversationListFragment();
                 ((BaseActivity) mContext).navigationToFragment(conversationListFragment);
                 break;

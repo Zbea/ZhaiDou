@@ -150,6 +150,14 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
             commentListAdapter.setOnInViewClickListener(R.id.commentContainerLayout,new BaseListAdapter.onInternalClickListener() {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
+//                    Replay replay= (Replay) values;
+//                    if (replay.reComment!=null){
+//                        Integer userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", 0);
+//                        if (userId==replay.reComment.commentUserId){
+//                            Toast.makeText(mContext,"自己不能评论自己哦",Toast.LENGTH_SHORT).show();
+//                            return;
+//                        }
+//                    }
                     showCommentDialog(values);
                 }
             });
@@ -331,7 +339,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                         startActivity(intent);
                     }
                 });
-                mContent.setVisibility(!TextUtils.isEmpty(replay.comment.content) ? View.VISIBLE : View.GONE);
+//                mContent.setVisibility(!TextUtils.isEmpty(replay.comment.content) ? View.VISIBLE : View.GONE);
                 mContent.setText(Html.fromHtml("<font color=#50c2bf>回复我的</font>   " + replay.comment.content));
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 try {

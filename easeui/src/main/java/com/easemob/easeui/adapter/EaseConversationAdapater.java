@@ -165,10 +165,11 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
             String commentUserName = sharedPreferences.getString("commentUserName", "");
             String content = sharedPreferences.getString("content", "");
             String createTime = sharedPreferences.getString("createTime", "");
+            String imgMd5=sharedPreferences.getString("imgMd5","");
             System.out.println("unReadComment = " + unReadComment);
             holder.unreadLabel.setVisibility(unReadComment>0?View.VISIBLE:View.GONE);
 //            holder.name.setText(commentUserName);
-            holder.message.setText(content);
+            holder.message.setText(!TextUtils.isEmpty(content)?content:!TextUtils.isEmpty(imgMd5)?"[图片]":"");
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             if (!TextUtils.isEmpty(createTime))
                 try {

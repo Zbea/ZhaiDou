@@ -298,7 +298,7 @@
                         android:textSize="15sp"
                         android:text="清单合计："/>
 
-                    <com.zhaidou.view.TypeFaceTextView
+                    <TextView
                         android:id="@+id/detailsSubtotalTv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -425,7 +425,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@color/white"
-        android:visibility="gone"
+        android:visibility="visible"
         >
 
         <LinearLayout
@@ -546,7 +546,7 @@
                 android:paddingRight="8dp"
                 android:paddingTop="16dp"
                 android:paddingBottom="16dp"
-                android:layout_alignParentRight="true"
+                android:layout_toLeftOf="@+id/share_iv"
                 android:src="@drawable/icon_home_article_goods_list"
                 />
 
@@ -571,7 +571,7 @@
                 android:paddingRight="10dp"
                 android:paddingTop="17dp"
                 android:paddingBottom="17dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:src="@drawable/share"
                 />
 

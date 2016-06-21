@@ -128,14 +128,14 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
         mDialogUtils = new DialogUtils(mContext);
         mDialogUtils.showLoadingDialog();
         fetchData(mCurrentPage = 1);
-        commentListAdapter.setOnInViewLongClickListener(R.id.commentContainerLayout, new BaseListAdapter.onInternalLongClickListener() {
+        commentListAdapter.setOnInViewClickListener(R.id.commentContainerLayout, new BaseListAdapter.onInternalClickListener() {
             @Override
-            public boolean OnLongClickListener(View parentV, View v, final Integer position, Object values) {
+            public void OnClickListener(View parentV, View v, final Integer position, Object values) {
                 final Entity entity = (Entity) values;
                 mDialogUtils.showListDialog(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-                        Api.deleteComment(entity.comment.commentUserId, new Api.SuccessListener() {
+                        Api.deleteComment(entity.comment.id, new Api.SuccessListener() {
                             @Override
                             public void onSuccess(Object object) {
                                 if (object != null) {
@@ -146,7 +146,6 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
                         }, null);
                     }
                 });
-                return true;
             }
         });
 

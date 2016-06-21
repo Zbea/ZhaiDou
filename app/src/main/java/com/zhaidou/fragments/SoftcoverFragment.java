@@ -142,7 +142,7 @@ public class SoftcoverFragment extends BaseFragment {
 
     private void initView() {
         titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
-        titleTv.setText("软装清单");
+        titleTv.setText("软装方案");
 
         scrollView = (PullToRefreshScrollView) view.findViewById(R.id.scrollView);
         scrollView.setMode(PullToRefreshBase.Mode.BOTH);

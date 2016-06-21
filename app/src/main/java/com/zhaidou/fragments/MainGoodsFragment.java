@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -29,6 +30,7 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.adapter.ShopSpecialAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
@@ -425,6 +427,12 @@ public class MainGoodsFragment extends BaseFragment implements
                 break;
             case R.id.iv_message:
 //                EaseUtils.startConversationListActivity(mContext);
+                Integer userId= (Integer) SharedPreferencesUtil.getData(mContext,"userId",-1);
+                if (userId==-1){
+                    Intent intent =new Intent(mContext, LoginActivity.class);
+                    startActivity(intent);
+                    return;
+                }
                 ConversationListFragment conversationListFragment=new ConversationListFragment();
                 ((BaseActivity) mContext).navigationToFragment(conversationListFragment);
                 break;

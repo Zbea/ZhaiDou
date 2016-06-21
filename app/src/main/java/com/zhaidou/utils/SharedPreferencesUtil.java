@@ -132,6 +132,7 @@ public class SharedPreferencesUtil {
         editor.putString("articleTitle",comment.articleTitle);
         editor.putString("status",comment.status);
         editor.putString("createTime",comment.createTime);
+        editor.putString("imgMd5",comment.imgMd5);
         editor.putInt("NotReadNum", notReadNum);
         editor.putInt("UnReadComment", unreadComment);
         editor.putInt("UnReadDesigner", unReadDesigner);
@@ -147,5 +148,11 @@ public class SharedPreferencesUtil {
         map.put("UnReadComment",UnReadComment);
         map.put("UnReadDesigner",UnReadDesigner);
         return map;
+    }
+
+    public static void removeUnReadComment(){
+        saveData(ZDApplication.getInstance(), "NotReadNum", 0);
+        saveData(ZDApplication.getInstance(), "UnReadComment", 0);
+        saveData(ZDApplication.getInstance(), "UnReadDesigner", 0);
     }
 }

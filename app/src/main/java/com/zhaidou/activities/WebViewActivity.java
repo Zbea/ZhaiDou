@@ -41,10 +41,10 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
 
         webView = (CustomProgressWebview) findViewById(R.id.webView);
         token = (String) SharedPreferencesUtil.getData(WebViewActivity.this, "token", "");
-        userId= (Integer) SharedPreferencesUtil.getData(WebViewActivity.this,"userId",0);
-        userName= (String) SharedPreferencesUtil.getData(WebViewActivity.this,"nickName","");
+        userId = (Integer) SharedPreferencesUtil.getData(WebViewActivity.this, "userId", 0);
+        userName = (String) SharedPreferencesUtil.getData(WebViewActivity.this, "nickName", "");
 
-        mDialogUtils=new DialogUtils(this);
+        mDialogUtils = new DialogUtils(this);
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -57,34 +57,45 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
                     GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", substring);
                     navigationToFragmentWithAnim(goodsDetailsFragment);
                     return true;
-                }else if (url.contains("zhaidouappgetcoupon://")){
-                    String substring = url.substring(url.lastIndexOf("/") + 1, url.length());
-                    System.out.println("substring = " + substring);
+                } else if (url.contains("zhaidouappgetcoupon://")) {
+                    final String substring = url.substring(url.lastIndexOf("/") + 1, url.length());
                     mDialogUtils.showLoadingDialog();
-                    if (substring.contains("_")){
-                        String[] split = substring.split("_");
-                        Api.activateAllCouponsByOneClick(split,new Api.SuccessListener() {
+                    if (substring.contains("_")) {
+                        final String[] split = substring.split("_");
+                        String item = "'";
+                        for (int i = 0; i < split.length; i++) {
+                            item += split[i] + "','";
+                        }
+                        final String finalItem = item.substring(0, item.length() - 2);
+                        Api.activateAllCouponsByOneClick(split, new Api.SuccessListener() {
                             @Override
                             public void onSuccess(Object object) {
-                                if (object!=null)
-                                    Toast.makeText(WebViewActivity.this,"领取优惠卷成功",Toast.LENGTH_SHORT).show();
+                                if (object != null)
+                                    Toast.makeText(WebViewActivity.this, "领取优惠卷成功", Toast.LENGTH_SHORT).show();
+                                System.out.println("item = " + finalItem);
+//                                webView.loadUrl("javascript:GetCoupon('" + split[0]+"','"+split[1]+ "');");
+                                for (int i = 0; i < split.length; i++) {
+                                    webView.loadUrl("javascript:GetCoupon('" + split[i] + "')");
+                                }
+                                System.out.println("\"javascript:GetCoupon(\" + finalItem + \")\" = " + "javascript:GetCoupon(" + finalItem + ")");
                                 mDialogUtils.dismiss();
                             }
-                        },new Api.ErrorListener() {
+                        }, new Api.ErrorListener() {
                             @Override
                             public void onError(Object object) {
                                 mDialogUtils.dismiss();
                             }
                         });
-                    }else {
-                        Api.activateCoupons(substring,new Api.SuccessListener() {
+                    } else {
+                        Api.activateCoupons(substring, new Api.SuccessListener() {
                             @Override
                             public void onSuccess(Object object) {
-                                if (object!=null)
-                                    Toast.makeText(WebViewActivity.this,"领取优惠卷成功",Toast.LENGTH_SHORT).show();
-                                mDialogUtils.dismiss();
+                                if (object != null)
+                                    Toast.makeText(WebViewActivity.this, "领取优惠卷成功", Toast.LENGTH_SHORT).show();
+                                webView.loadUrl("javascript:GetCoupon('" + substring + "')");
+                                        mDialogUtils.dismiss();
                             }
-                        },new Api.ErrorListener() {
+                        }, new Api.ErrorListener() {
                             @Override
                             public void onError(Object object) {
                                 mDialogUtils.dismiss();
@@ -92,7 +103,7 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
                         });
                     }
                     return true;
-                }else if ("mobile://login?false".equalsIgnoreCase(url)) {
+                } else if ("mobile://login?false".equalsIgnoreCase(url)) {
                     Intent intent = new Intent(WebViewActivity.this, LoginActivity.class);
                     intent.setFlags(2);
                     startActivityForResult(intent, 10000);
@@ -165,8 +176,8 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
         switch (resultCode) {
             case 2000:
                 token = (String) SharedPreferencesUtil.getData(WebViewActivity.this, "token", "");
-                userId= (Integer) SharedPreferencesUtil.getData(WebViewActivity.this,"userId",0);
-                userName= (String) SharedPreferencesUtil.getData(WebViewActivity.this,"nickName","");
+                userId = (Integer) SharedPreferencesUtil.getData(WebViewActivity.this, "userId", 0);
+                userName = (String) SharedPreferencesUtil.getData(WebViewActivity.this, "nickName", "");
                 webView.reload();
                 break;
         }

@@ -128,7 +128,7 @@ public class SoftListDetailFragment extends BaseFragment {
                 areasTv.setText(areaSize);
                 styleTv.setText(style);
                 budgetTv.setText(budget);
-                subtotalTv.setText("￥" + ToolUtils.isIntPrice(totalPrice));
+                subtotalTv.setText(Html.fromHtml("￥" + ToolUtils.isIntPrice(totalPrice)));
                 commentNumTv.setVisibility(commentNum > 0 ? View.VISIBLE : View.GONE);
 
                 ToolUtils.setImageCacheUrl(header, headerImageIv, R.drawable.icon_loading_item);
@@ -217,7 +217,7 @@ public class SoftListDetailFragment extends BaseFragment {
                 case R.id.netReload:
                     initData();
                     break;
-                case R.id.rl_qq_contact:
+                case R.id.detailsContactLine:
 //                    CommentListFragment commentListFragment = CommentListFragment.newInstance("", "");
 //                    ((MainActivity) mContext).navigationToFragmentWithAnim(commentListFragment);
                     EaseUtils.startDesignerActivity(mContext);

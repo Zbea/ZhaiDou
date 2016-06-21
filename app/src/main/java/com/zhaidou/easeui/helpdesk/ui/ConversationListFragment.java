@@ -17,6 +17,7 @@ import com.zhaidou.base.CountManager;
 import com.zhaidou.base.EaseManage;
 import com.zhaidou.easeui.helpdesk.Constant;
 import com.zhaidou.model.User;
+import com.zhaidou.utils.Api;
 import com.zhaidou.utils.SharedPreferencesUtil;
 
 
@@ -54,6 +55,7 @@ public class ConversationListFragment extends EaseConversationListFragment imple
                     System.out.println("username = " + username);
 //                    Intent intent=new Intent(getActivity(), CommentContainerFragment.class);
 //                    startActivity(intent);
+                    SharedPreferencesUtil.saveData(getActivity(),"UnReadComment",0);
                     CommentContainerFragment commentContainerFragment=new CommentContainerFragment();
                     ((com.zhaidou.base.BaseActivity)getActivity()).navigationToFragment(commentContainerFragment);
                 }else {
@@ -97,6 +99,15 @@ public class ConversationListFragment extends EaseConversationListFragment imple
 
     @Override
     public void onChange() {
+        refresh();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        System.out.println("ConversationListFragment.onResume");
+        Integer userId= (Integer) SharedPreferencesUtil.getData(getActivity(),"userId",-1);
+        Api.getUnReadComment(userId,null,null);
         refresh();
     }
 }
