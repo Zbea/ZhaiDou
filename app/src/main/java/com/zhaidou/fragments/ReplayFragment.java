@@ -133,23 +133,17 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
             mDialogUtils = new DialogUtils(mContext);
             mDialogUtils.showLoadingDialog();
             fetchData(mCurrentPage = 1);
-//            commentListAdapter.setOnInViewClickListener(R.id.avatar, new BaseListAdapter.onInternalClickListener() {
-//                @Override
-//                public void OnClickListener(View parentV, View v, Integer position, Object values) {
-//                    System.out.println("parentV = [" + parentV + "], v = [" + v + "], position = [" + position + "], values = [" + values + "]");
-//                    showCommentDialog(values);
-//                }
-//            });
-//            commentListAdapter.setOnInViewClickListener(R.id.username, new BaseListAdapter.onInternalClickListener() {
-//                @Override
-//                public void OnClickListener(View parentV, View v, Integer position, Object values) {
-//                    Replay replay = (Replay) values;
-//                    showCommentDialog(values);
-//                }
-//            });
-            commentListAdapter.setOnInViewClickListener(R.id.commentContainerLayout,new BaseListAdapter.onInternalClickListener() {
+            commentListAdapter.setOnInViewClickListener(R.id.commentContainerLayout, new BaseListAdapter.onInternalClickListener() {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
+//                    Replay replay= (Replay) values;
+//                    if (replay.reComment!=null){
+//                        Integer userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", 0);
+//                        if (userId==replay.reComment.commentUserId){
+//                            Toast.makeText(mContext,"自己不能评论自己哦",Toast.LENGTH_SHORT).show();
+//                            return;
+//                        }
+//                    }
                     showCommentDialog(values);
                 }
             });
@@ -161,7 +155,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                     ((BaseActivity) mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
                 }
             });
-            listView.setEmptyView(inflater.inflate(R.layout.emptyview,null));
+            listView.setEmptyView(inflater.inflate(R.layout.emptyview, null));
         }
         return listView;
     }
@@ -173,11 +167,14 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
             public void onComment(Object object) {
                 System.out.println("CommentListFragment1.onComment--->" + object);
                 final Map<String, Object> params = (Map<String, Object>) object;
-                params.put("commentUserId", replay.comment.commentUserId);
-                params.put("commentUserName", replay.comment.commentUserName);
+                String userId = SharedPreferencesUtil.getData(mContext, "userId", -1) + "";
+                String nickName = (String) SharedPreferencesUtil.getData(mContext, "nickName", "");
+                System.out.println("replay.reComment.articleTitle = " + replay.reComment.articleTitle);
+                params.put("commentUserId", userId);
+                params.put("commentUserName", nickName);
                 params.put("articleId", replay.comment.articleId);
-                params.put("articleTitle", replay.comment.articleTitle);
                 params.put("commentType", replay.comment.commentType);
+                params.put("articleTitle", new String(replay.comment.articleTitle));
                 params.put("commentId", replay.comment.id);
                 mDialogUtils.showLoadingDialog();
                 new Thread(new Runnable() {
@@ -222,7 +219,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
 
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                startActivityForResult(intent, MENU_CAMERA_SELECTED);
+                getParentFragment().startActivityForResult(intent, MENU_CAMERA_SELECTED);
             }
 
             @Override
@@ -231,7 +228,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                 Intent intent1 = new Intent(Intent.ACTION_PICK, null);
                 intent1.setDataAndType(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-                startActivityForResult(intent1, MENU_PHOTO_SELECTED);
+                getParentFragment().startActivityForResult(intent1, MENU_PHOTO_SELECTED);
             }
         });
     }
@@ -244,7 +241,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
         params.put("commentUserId", userId + "");
         params.put("pageSize", "20");
         params.put("pageNo", "" + page);
-        ZhaiDouRequest request = new ZhaiDouRequest(mContext, Request.Method.POST,ZhaiDou.COMMENT_LIST_URL, params, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext, Request.Method.POST, ZhaiDou.COMMENT_LIST_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 System.out.println("jsonObject = " + jsonObject);
@@ -320,18 +317,18 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                         Arrays.asList(replay.comment.imgMd5.split(",")) : new ArrayList<String>();
                 final ImageAdapter adapter = new ImageAdapter(convertView.getContext(), list);
                 mGridView.setAdapter(adapter);
-                mGridView.setVisibility(list.size() > 0 &&!"F".equalsIgnoreCase(replay.comment.status)? View.VISIBLE : View.GONE);
+                mGridView.setVisibility(list.size() > 0 && !"F".equalsIgnoreCase(replay.comment.status) ? View.VISIBLE : View.GONE);
                 adapter.setOnInViewClickListener(R.id.imageView, new onInternalClickListener() {
                     @Override
                     public void OnClickListener(View parentV, View v, Integer position, Object values) {
                         List<String> images = adapter.getList();
                         Intent intent = new Intent(mContext, PhotoViewActivity.class);
                         intent.putExtra("images", images.toArray(new String[]{}));
-                        intent.putExtra("position",position);
+                        intent.putExtra("position", position);
                         startActivity(intent);
                     }
                 });
-                mContent.setVisibility(!TextUtils.isEmpty(replay.comment.content) ? View.VISIBLE : View.GONE);
+//                mContent.setVisibility(!TextUtils.isEmpty(replay.comment.content) ? View.VISIBLE : View.GONE);
                 mContent.setText(Html.fromHtml("<font color=#50c2bf>回复我的</font>   " + replay.comment.content));
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 try {
@@ -347,7 +344,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                         Arrays.asList(replay.reComment.imgMd5.split(",")) : new ArrayList<String>();
                 final ImageAdapter adapter = new ImageAdapter(convertView.getContext(), imageList);
                 mReGridView.setAdapter(adapter);
-                mReGridView.setVisibility(imageList.size() > 0 &&!"F".equalsIgnoreCase(replay.reComment.status)? View.VISIBLE : View.GONE);
+                mReGridView.setVisibility(imageList.size() > 0 && !"F".equalsIgnoreCase(replay.reComment.status) ? View.VISIBLE : View.GONE);
                 mReplay.setText(replay.reComment.content);
                 mReplay.setVisibility(!TextUtils.isEmpty(replay.reComment.content) ? View.VISIBLE : View.GONE);
                 adapter.setOnInViewClickListener(R.id.imageView, new onInternalClickListener() {
@@ -356,7 +353,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                         List<String> images = adapter.getList();
                         Intent intent = new Intent(mContext, PhotoViewActivity.class);
                         intent.putExtra("images", images.toArray(new String[]{}));
-                        intent.putExtra("position",position);
+                        intent.putExtra("position", position);
                         startActivity(intent);
                     }
                 });
@@ -407,14 +404,30 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                     return;
                 }
                 if (resultCode == getActivity().RESULT_OK) {
+                    System.out.println("ReplayFragment.onActivityResult---RESULT_OK");
                     if (!Environment.getExternalStorageState().equals(
                             Environment.MEDIA_MOUNTED)) {
+                        System.out.println("ReplayFragment.onActivityResult!Environment.getExternalStorageState().equals");
                         Toast.makeText(getActivity(), "SD不可用", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     uri = data.getData();
+//                    Bitmap bm = null;
+//                    ContentResolver resolver = getActivity().getContentResolver();
+//                    try {
+//                        bm = MediaStore.Images.Media.getBitmap(resolver, uri);
+//                        String[] proj = {MediaStore.Images.Media.DATA};
+//                        Cursor cursor = getActivity().managedQuery(uri, proj, null, null, null);
+//                        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+//                        cursor.moveToFirst();
+//                        String path = cursor.getString(column_index);
+//                        System.out.println("path = " + path);
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
                     startImageAction(uri, 200, 200, 2, true);
                 } else {
+                    System.out.println("ReplayFragment.onActivityResult---->else");
                     Toast.makeText(getActivity(), "照片获取失败", Toast.LENGTH_SHORT).show();
                 }
 
@@ -435,7 +448,9 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
     }
 
     private void startImageAction(Uri uri, int outputX, int outputY, int requestCode, boolean isCrop) {
+        System.out.println("ReplayFragment.startImageAction");
         file = new File(ZhaiDou.MyCommentDir, new SimpleDateFormat("yyMMddHHmmss").format(new Date()));
+        System.out.println("file = " + file.getAbsolutePath());
         Intent intent = null;
         if (isCrop) {
             intent = new Intent("com.android.camera.action.CROP");
@@ -453,7 +468,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
         intent.putExtra("noFaceDetection", true); // no face detection
-        startActivityForResult(intent, requestCode);
+        getParentFragment().startActivityForResult(intent, requestCode);
     }
 
     private void saveCropPhoto(Intent data) {

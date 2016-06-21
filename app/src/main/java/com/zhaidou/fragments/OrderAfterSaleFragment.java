@@ -425,11 +425,8 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                         bm = MediaStore.Images.Media.getBitmap(resolver, uri);
                         String[] proj = {MediaStore.Images.Media.DATA};
                         Cursor cursor = getActivity().managedQuery(uri, proj, null, null, null);
-                        //按我个人理解 这个是获得用户选择的图片的索引值
                         int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                        //将光标移至开头 ，这个很重要，不小心很容易引起越界
                         cursor.moveToFirst();
-                        //最后根据索引值获取图片路径
                         String path = cursor.getString(column_index);
                         ToolUtils.setImageCacheUrl("file://" + path, iv_return_img);
                         if (imagePath != null && !TextUtils.isEmpty(path.trim()) && imagePath.size() <= 3) {

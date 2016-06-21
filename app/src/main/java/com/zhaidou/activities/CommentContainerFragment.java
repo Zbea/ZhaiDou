@@ -1,5 +1,6 @@
 package com.zhaidou.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,8 +22,8 @@ public class CommentContainerFragment extends BaseFragment {
     private String[] commentType = {"A", "C"};
 
 
-    private Fragment mCommentListFragment;
-    private Fragment mReplyFragment;
+    private CommentListFragment1 mCommentListFragment;
+    private ReplayFragment mReplyFragment;
     private Fragment[] fragments;
 
     private View rootView;
@@ -65,4 +66,14 @@ public class CommentContainerFragment extends BaseFragment {
         supportFragmentManager.beginTransaction().show(fragment).hide(fragments[index == 0 ? 1 : 0]).commit();
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        System.out.println("CommentContainerFragment.onActivityResult");
+        if (index==0){
+            mReplyFragment.onActivityResult(requestCode,resultCode,data);
+        }else if (index==1){
+
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }

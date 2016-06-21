@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,7 +20,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.pulltorefresh.PullToRefreshBase;
-import com.pulltorefresh.PullToRefreshScrollView;
+import com.pulltorefresh.PullToRefreshListView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
@@ -61,8 +60,7 @@ public class SoftcoverFragment extends BaseFragment {
 
     private Dialog mDialog;
     private Context mContext;
-    private ListView listView;
-    private PullToRefreshScrollView scrollView;
+    private PullToRefreshListView listView;
     private TextView titleTv;
 
     private static final int UPDATE_HOMELIST = 1;
@@ -78,11 +76,11 @@ public class SoftcoverFragment extends BaseFragment {
                     mHomeAdapter.setList(articleList);
                     mHomeAdapter.notifyDataSetChanged();
                     if (pageCount > articleList.size()) {
-                        scrollView.setMode(PullToRefreshBase.Mode.BOTH);
+                        listView.setMode(PullToRefreshBase.Mode.BOTH);
                     } else {
-                        scrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+                        listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                     }
-
+                    commentNullTv.setVisibility(articleList.size() == 0 ? View.VISIBLE : View.GONE);
                     break;
             }
         }
@@ -102,6 +100,7 @@ public class SoftcoverFragment extends BaseFragment {
             FetchData();
         }
     };
+    private TextView commentNullTv;
 
     public static SoftcoverFragment newInstance(String param, String string) {
         SoftcoverFragment fragment = new SoftcoverFragment();
@@ -142,22 +141,21 @@ public class SoftcoverFragment extends BaseFragment {
 
     private void initView() {
         titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
-        titleTv.setText("软装清单");
+        titleTv.setText("软装方案");
 
-        scrollView = (PullToRefreshScrollView) view.findViewById(R.id.scrollView);
-        scrollView.setMode(PullToRefreshBase.Mode.BOTH);
-        scrollView.setOnRefreshListener(onRefreshListener);
-        listView = (ListView) view.findViewById(R.id.lv_special_list);
+        commentNullTv = (TextView) view.findViewById(R.id.commentNullTv);
+        listView = (PullToRefreshListView) view.findViewById(R.id.lv_special_list);
+        listView.setMode(PullToRefreshBase.Mode.BOTH);
+        listView.setOnRefreshListener(onRefreshListener);
         mHomeAdapter = new ArticleAdapter(mContext, articleList);
         listView.setAdapter(mHomeAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SoftListDetailFragment homeArticleGoodsDetailsFragment = SoftListDetailFragment.newInstance("", "" + articleList.get(position).getId());
+                SoftDetailFragment homeArticleGoodsDetailsFragment = SoftDetailFragment.newInstance("", "" + articleList.get(position).getId());
                 ((BaseActivity) mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
             }
         });
-
 
         if (NetworkUtils.isNetworkAvailable(mContext)) {
             mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
@@ -174,25 +172,23 @@ public class SoftcoverFragment extends BaseFragment {
      * 加载列表数据
      */
     private void FetchData() {
-        String userId= SharedPreferencesUtil.getData(mContext,"userId",-1)+"";
-        final String url = ZhaiDou.HomeSofeListUrl+"&userId="+userId+"&pageNo="+ currentPage;
+        String userId = SharedPreferencesUtil.getData(mContext, "userId", -1) + "";
+        final String url = ZhaiDou.HomeSofeListUrl + "&userId=" + userId + "&pageNo=" + currentPage;
         ToolUtils.setLog(url);
         JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 if (mDialog != null)
                     mDialog.dismiss();
-                if (response == null) {
-                    scrollView.onRefreshComplete();
-                    return;
-                }
+                listView.onRefreshComplete();
+
                 ToolUtils.setLog(response.toString());
                 int code = response.optInt("code");
                 if (code == 500) {
                     if (mDialog != null)
                         mDialog.dismiss();
-                    scrollView.onRefreshComplete();
-                    scrollView.setMode(PullToRefreshBase.Mode.BOTH);
+                    listView.onRefreshComplete();
+                    listView.setMode(PullToRefreshBase.Mode.BOTH);
                     return;
                 }
                 JSONObject jsonObject = response.optJSONObject("data");
@@ -222,7 +218,7 @@ public class SoftcoverFragment extends BaseFragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                scrollView.onRefreshComplete();
+                listView.onRefreshComplete();
                 if (mDialog != null)
                     mDialog.dismiss();
                 if (articleList.size() != 0) {

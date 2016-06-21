@@ -805,6 +805,8 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     public void onLogOut() {
         iv_dot.setVisibility(View.GONE);
         mMsgView.setVisibility(View.GONE);
+        SharedPreferencesUtil.removeUnReadComment();
+        CountManager.getInstance().notifyCommentChange();
     }
 
     @Override
