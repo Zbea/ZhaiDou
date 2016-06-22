@@ -548,7 +548,8 @@ public class DialogUtils {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (commentContent.getText().toString().trim().length() > 200)
                     return;
-                commentOkTv.setClickable(TextUtils.isEmpty(commentContent.getText().toString()));
+                System.out.println("TextUtils.isEmpty(commentContent.getText().toString()) = " + TextUtils.isEmpty(commentContent.getText().toString()));
+                commentOkTv.setClickable(!TextUtils.isEmpty(commentContent.getText().toString()));
                 commentOkTv.setTextColor(!TextUtils.isEmpty(commentContent.getText().toString()) || photoAdapter.getList().size() > 1 ?
                         mContext.getResources().getColor(R.color.green_color) :
                         mContext.getResources().getColor(R.color.text_gary_color));
