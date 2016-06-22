@@ -343,7 +343,7 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-//                mContent.setVisibility(replay.reComment!=null? View.VISIBLE : View.GONE);
+//                mContent.setVisibility(replay.reComment!=null? VVISIBLE : View.GONE);
                     mContent.setText(Html.fromHtml(replay.comment.content));
                 mContent.setVisibility(!TextUtils.isEmpty(replay.comment.content)?View.VISIBLE:View.GONE);
 //                if (!TextUtils.isEmpty(replay.comment.content)) {
