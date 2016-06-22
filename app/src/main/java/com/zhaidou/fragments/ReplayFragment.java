@@ -400,10 +400,10 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                     System.out.println("filePath = " + filePath);
                     System.out.println("file1.length() = " + file1.length());
                     System.out.println("file1.length()+\"---\"+file1.getAbsolutePath() = " + file1.length()+"---"+file1.getAbsolutePath());
-//                    String getthumbPath = PhotoUtil.getthumbPath(file1.getAbsolutePath());
-//                    File file2=new File(getthumbPath);
-//                    System.out.println("file2.length()+\"----\"+file2.getAbsolutePath() = " + file2.length() + "----" + file2.getAbsolutePath());
-                    mDialogUtils.notifyPhotoAdapter(file1.getAbsolutePath());
+                    String getthumbPath = PhotoUtil.getthumbPath(file1.getAbsolutePath());
+                    File file2=new File(getthumbPath);
+                    System.out.println("file2.length()+\"----\"+file2.getAbsolutePath() = " + file2.length() + "----" + file2.getAbsolutePath());
+                    mDialogUtils.notifyPhotoAdapter(getthumbPath);
                     Uri uri = null;
                     if (data == null) {
                         return;
@@ -453,9 +453,13 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                         cursor.moveToFirst();
                         String path = cursor.getString(column_index);
                         System.out.println("path = " + path);
-//                        String bitmap = PhotoUtil.saveBitmap(bm);
-//                        System.out.println("bitmap = " + bitmap);
-                        mDialogUtils.notifyPhotoAdapter(path);
+
+                        File filee=new File(path);
+                        System.out.println("filee.length()+\"---\"+filee.getAbsolutePath() = " + filee.length()+"---"+filee.getAbsolutePath());
+                        String getthumbPath = PhotoUtil.getthumbPath(filee.getAbsolutePath());
+                        File file2 = new File(getthumbPath);
+                        System.out.println("file2.length()+\"----\"+file2.getAbsolutePath() = " + file2.length() + "----" + file2.getAbsolutePath());
+                        mDialogUtils.notifyPhotoAdapter(getthumbPath);
                     } catch (Exception e) {
 
                     }

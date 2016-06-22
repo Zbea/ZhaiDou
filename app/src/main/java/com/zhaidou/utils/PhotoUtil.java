@@ -396,10 +396,10 @@ public class PhotoUtil {
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(file);
-            bm.compress(Bitmap.CompressFormat.JPEG, 85, fos);
+            bm.compress(Bitmap.CompressFormat.JPEG, 40, fos);
             fos.flush();
             fos.close();
-            return tmpDir.getAbsolutePath();
+            return file.getAbsolutePath();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return null;
