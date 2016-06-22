@@ -342,7 +342,7 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                mContent.setVisibility(replay.reComment!=null? View.VISIBLE : View.GONE);
+//                mContent.setVisibility(replay.reComment!=null? View.VISIBLE : View.GONE);
                     mContent.setText(Html.fromHtml((replay.reComment!=null?"<font color=#50c2bf>回复@"+replay.reComment.commentUserName+"</font>   ":"") + replay.comment.content));
 //                if (!TextUtils.isEmpty(replay.comment.content)) {
 //                    mContent.setText(Html.fromHtml(replay.comment.content));

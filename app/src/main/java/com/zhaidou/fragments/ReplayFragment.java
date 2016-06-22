@@ -400,6 +400,9 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                     System.out.println("filePath = " + filePath);
                     System.out.println("file1.length() = " + file1.length());
                     System.out.println("file1.length()+\"---\"+file1.getAbsolutePath() = " + file1.length()+"---"+file1.getAbsolutePath());
+//                    String getthumbPath = PhotoUtil.getthumbPath(file1.getAbsolutePath());
+//                    File file2=new File(getthumbPath);
+//                    System.out.println("file2.length()+\"----\"+file2.getAbsolutePath() = " + file2.length() + "----" + file2.getAbsolutePath());
                     mDialogUtils.notifyPhotoAdapter(file1.getAbsolutePath());
                     Uri uri = null;
                     if (data == null) {

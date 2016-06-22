@@ -158,6 +158,8 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
 
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("ZhaidouVesion", getResources().getString(R.string.app_versionName));
+        if (url.contains("receive_coupon"))
+            url+="&source=android";
         webView.loadUrl(url, headers);
     }
 
