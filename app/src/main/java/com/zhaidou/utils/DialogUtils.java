@@ -91,6 +91,8 @@ public class DialogUtils {
     };
     private Dialog mDialog;
     private PhotoAdapter photoAdapter;
+    private TextView commentOkTv;
+    private EditText commentContent;
 
     public DialogUtils(Context mContext) {
         this.mContext = mContext;
@@ -523,8 +525,8 @@ public class DialogUtils {
         lp.gravity = Gravity.BOTTOM;
 
         win.setAttributes(lp);
-        final TextView commentOkTv = (TextView) view.findViewById(R.id.commentOkTv);
-        final EditText commentContent = (EditText) view.findViewById(R.id.comment_edit);
+        commentOkTv = (TextView) view.findViewById(R.id.commentOkTv);
+        commentContent = (EditText) view.findViewById(R.id.comment_edit);
         final TextView textView= (TextView) view.findViewById(R.id.count);
         GridView mGridView = (GridView) view.findViewById(R.id.gridView);
         photoAdapter = new PhotoAdapter(mContext, Arrays.asList(new String[]{""}));
@@ -544,13 +546,14 @@ public class DialogUtils {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (commentContent.getText().toString().trim().length()>200)
+                if (commentContent.getText().toString().trim().length() > 200)
                     return;
-                commentOkTv.setClickable(TextUtils.isEmpty(commentContent.getText().toString()));
-                commentOkTv.setTextColor(!TextUtils.isEmpty(commentContent.getText().toString()) ?
+                System.out.println("TextUtils.isEmpty(commentContent.getText().toString()) = " + TextUtils.isEmpty(commentContent.getText().toString()));
+                commentOkTv.setClickable(!TextUtils.isEmpty(commentContent.getText().toString()));
+                commentOkTv.setTextColor(!TextUtils.isEmpty(commentContent.getText().toString()) || photoAdapter.getList().size() > 1 ?
                         mContext.getResources().getColor(R.color.green_color) :
                         mContext.getResources().getColor(R.color.text_gary_color));
-                textView.setText((200-commentContent.getText().length())+"");
+                textView.setText((200 - commentContent.getText().length()) + "");
 
             }
 
@@ -563,12 +566,14 @@ public class DialogUtils {
             @Override
             public void onClick(View v) {
                 String str = commentContent.getText().toString().trim();
-                if (TextUtils.isEmpty(str)) {
+                System.out.println("photoAdapter.getList().size() = " + photoAdapter.getList().size());
+                if (TextUtils.isEmpty(str) && photoAdapter.getList().size() <= 1) {
+                    System.out.println("DialogUtils.onClick");
                     return;
                 }
-                Map<String,Object> params=new HashMap<String, Object>();
-                params.put("content",str);
-                params.put("images",photoAdapter.getList());
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("content", str);
+                params.put("images", photoAdapter.getList());
                 System.out.println("photoAdapter = " + photoAdapter.getList());
                 onCommentListener.onComment(params);
                 mDialog.dismiss();
@@ -605,6 +610,9 @@ public class DialogUtils {
             images.add(images.size()-1,image);
             photoAdapter.setList(images);
         }
+            commentOkTv.setTextColor(!TextUtils.isEmpty(commentContent.getText().toString()) || photoAdapter.getList().size() > 1 ?
+                    mContext.getResources().getColor(R.color.green_color) :
+                    mContext.getResources().getColor(R.color.text_gary_color));
     }
 
     private void showPickerDialog(final PickerListener pickerListener) {
