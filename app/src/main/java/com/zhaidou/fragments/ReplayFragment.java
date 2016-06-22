@@ -309,6 +309,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
             TextView mContent = ViewHolder.get(convertView, R.id.content);
             TextView mSubject = ViewHolder.get(convertView, R.id.subject);
             TextView mReplay = ViewHolder.get(convertView, R.id.reply);
+            TextView mTargetNAME=ViewHolder.get(convertView,R.id.targetName);
             LinearLayout mCommentLayout = ViewHolder.get(convertView, R.id.commentLayout);
             LinearLayout mReCommentLayout = ViewHolder.get(convertView, R.id.reCommentLayout);
             final Replay replay = getList().get(position);
@@ -331,8 +332,8 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                         startActivity(intent);
                     }
                 });
-//                mContent.setVisibility(!TextUtils.isEmpty(replay.comment.content) ? View.VISIBLE : View.GONE);
-                mContent.setText(Html.fromHtml("<font color=#50c2bf>回复我的</font>   " + replay.comment.content));
+                mContent.setVisibility(!TextUtils.isEmpty(replay.comment.content) ? View.VISIBLE : View.GONE);
+                mContent.setText(Html.fromHtml(replay.comment.content));
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 try {
                     mTime.setText(DateUtils.getDescriptionTimeFromTimestamp(sdf.parse(replay.comment.createTime)));
@@ -360,6 +361,9 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                         startActivity(intent);
                     }
                 });
+                if (imageList.size()>0||!TextUtils.isEmpty(replay.reComment.content)){
+                    mTargetNAME.setText("我的评论");
+                }
             } else {
                 mReCommentLayout.setVisibility(View.GONE);
             }
@@ -400,7 +404,10 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                     System.out.println("filePath = " + filePath);
                     System.out.println("file1.length() = " + file1.length());
                     System.out.println("file1.length()+\"---\"+file1.getAbsolutePath() = " + file1.length()+"---"+file1.getAbsolutePath());
-                    mDialogUtils.notifyPhotoAdapter(file1.getAbsolutePath());
+                    String getthumbPath = PhotoUtil.getthumbPath(file1.getAbsolutePath());
+                    File file2=new File(getthumbPath);
+                    System.out.println("file2.length()+\"----\"+file2.getAbsolutePath() = " + file2.length() + "----" + file2.getAbsolutePath());
+                    mDialogUtils.notifyPhotoAdapter(getthumbPath);
                     Uri uri = null;
                     if (data == null) {
                         return;
@@ -450,9 +457,13 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                         cursor.moveToFirst();
                         String path = cursor.getString(column_index);
                         System.out.println("path = " + path);
-//                        String bitmap = PhotoUtil.saveBitmap(bm);
-//                        System.out.println("bitmap = " + bitmap);
-                        mDialogUtils.notifyPhotoAdapter(path);
+
+                        File filee=new File(path);
+                        System.out.println("filee.length()+\"---\"+filee.getAbsolutePath() = " + filee.length()+"---"+filee.getAbsolutePath());
+                        String getthumbPath = PhotoUtil.getthumbPath(filee.getAbsolutePath());
+                        File file2 = new File(getthumbPath);
+                        System.out.println("file2.length()+\"----\"+file2.getAbsolutePath() = " + file2.length() + "----" + file2.getAbsolutePath());
+                        mDialogUtils.notifyPhotoAdapter(getthumbPath);
                     } catch (Exception e) {
 
                     }

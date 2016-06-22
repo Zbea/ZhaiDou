@@ -326,6 +326,7 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
             TextView mReplay = ViewHolder.get(convertView, R.id.reply);
             LinearLayout mCommentLayout = ViewHolder.get(convertView, R.id.commentLayout);
             LinearLayout mReCommentLayout = ViewHolder.get(convertView, R.id.reCommentLayout);
+            TextView mTargetName=ViewHolder.get(convertView,R.id.targetName);
             Entity replay = getList().get(position);
             if (replay.comment != null) {
                 ToolUtils.setImageCacheUrl(replay.comment.commentUserImg.contains("http") ? replay.comment.commentUserImg : "http://" + replay.comment.commentUserImg, mAvatar);
@@ -342,8 +343,9 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                mContent.setVisibility(replay.reComment!=null? View.VISIBLE : View.GONE);
-                    mContent.setText(Html.fromHtml((replay.reComment!=null?"<font color=#50c2bf>回复@"+replay.reComment.commentUserName+"</font>   ":"") + replay.comment.content));
+//                mContent.setVisibility(replay.reComment!=null? View.VISIBLE : View.GONE);
+                    mContent.setText(Html.fromHtml(replay.comment.content));
+                mContent.setVisibility(!TextUtils.isEmpty(replay.comment.content)?View.VISIBLE:View.GONE);
 //                if (!TextUtils.isEmpty(replay.comment.content)) {
 //                    mContent.setText(Html.fromHtml(replay.comment.content));
 //                }
@@ -365,6 +367,7 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
 
             }
             if (replay.reComment != null) {
+                mTargetName.setText(replay.reComment.commentUserName);
                 List<String> reImageList=!TextUtils.isEmpty(replay.reComment.imgMd5) ?
                         Arrays.asList(replay.reComment.imgMd5.split(",")) : new ArrayList<String>();
                 final ImageAdapter adapter = new ImageAdapter(convertView.getContext(), reImageList);

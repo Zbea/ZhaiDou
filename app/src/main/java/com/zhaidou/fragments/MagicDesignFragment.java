@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
+import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.utils.EaseUtils;
@@ -129,26 +130,26 @@ public class MagicDesignFragment extends BaseFragment {
         //设置支持缩放
         webSettings.setBuiltInZoomControls(true);
         //加载需要显示的网页
-        mWebView.loadUrl("http://tm.zhaidou.com/design.html?source=android");
+        mWebView.loadUrl(ZhaiDou.ONLINE_DESIGN_URL);
 
         //设置Web视图
-        mWebView.setWebViewClient(new WebViewClient(){
+        mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 System.out.println("url = " + url);
-                if ("zhaidouappdesigncase://designcase".equalsIgnoreCase(url)){
+                if ("zhaidouappdesigncase://designcase".equalsIgnoreCase(url)) {
                     MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "");
                     ((BaseActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
                     return true;
-                }else if ("zhaidouappfaq://faq".equalsIgnoreCase(url)){
+                } else if ("zhaidouappfaq://faq".equalsIgnoreCase(url)) {
                     MagicGuideFragment magicClassicCaseFragment = MagicGuideFragment.newInstance("", "");
                     ((BaseActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
                     return true;
-                }else if (!TextUtils.isEmpty(url)&&url.contains("zhaidouappproduct://")){
+                } else if (!TextUtils.isEmpty(url) && url.contains("zhaidouappproduct://")) {
                     String substring = url.substring(url.lastIndexOf("/") + 1, url.length());
                     System.out.println("zhaidouappproduct---substring = " + substring);
                     GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", substring);
-                    ((BaseActivity)mContext).navigationToFragment(goodsDetailsFragment);
+                    ((BaseActivity) mContext).navigationToFragment(goodsDetailsFragment);
                     return true;
                 }
                 return super.shouldOverrideUrlLoading(view, url);
