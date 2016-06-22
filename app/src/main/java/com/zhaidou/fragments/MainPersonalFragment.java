@@ -195,6 +195,8 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
 
             int value = CountManager.getInstance().value(CountManager.TYPE.TAG_PREPAY);
+            System.out.println("value = " + value);
+            tv_unpay_count.setVisibility(value>0?View.VISIBLE:View.GONE);
             tv_unpay_count.setText(value + "");
             CountManager.getInstance().setOnCountChangeListener(this);
             CountManager.getInstance().setOnCommentChangeListener(this);
@@ -445,6 +447,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
 
     @Override
     public void onCount(int count) {
+        System.out.println("count = " + count);
         int value = CountManager.getInstance().value(CountManager.TYPE.TAG_PREPAY);
         tv_unpay_count.setText(value + "");
         tv_unpay_count.setVisibility(value == 0 ? View.GONE : View.VISIBLE);

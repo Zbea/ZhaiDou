@@ -56,11 +56,19 @@
             android:orientation="vertical"
             android:padding="5dp">
 
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/targetName"
+                android:textColor="#333333"
+                android:paddingTop="5dp"
+                android:textSize="14sp"
+                android:paddingBottom="10dp"/>
             <com.zhaidou.view.ChildGridView
                 android:id="@+id/re_gridView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
+                android:background="@android:color/transparent"
                 android:horizontalSpacing="5dp"
                 android:numColumns="4"
                 android:stretchMode="columnWidth"

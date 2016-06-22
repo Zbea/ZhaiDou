@@ -309,6 +309,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
             TextView mContent = ViewHolder.get(convertView, R.id.content);
             TextView mSubject = ViewHolder.get(convertView, R.id.subject);
             TextView mReplay = ViewHolder.get(convertView, R.id.reply);
+            TextView mTargetNAME=ViewHolder.get(convertView,R.id.targetName);
             LinearLayout mCommentLayout = ViewHolder.get(convertView, R.id.commentLayout);
             LinearLayout mReCommentLayout = ViewHolder.get(convertView, R.id.reCommentLayout);
             final Replay replay = getList().get(position);
@@ -331,8 +332,8 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                         startActivity(intent);
                     }
                 });
-//                mContent.setVisibility(!TextUtils.isEmpty(replay.comment.content) ? View.VISIBLE : View.GONE);
-                mContent.setText(Html.fromHtml("<font color=#50c2bf>回复我的</font>   " + replay.comment.content));
+                mContent.setVisibility(!TextUtils.isEmpty(replay.comment.content) ? View.VISIBLE : View.GONE);
+                mContent.setText(Html.fromHtml(replay.comment.content));
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 try {
                     mTime.setText(DateUtils.getDescriptionTimeFromTimestamp(sdf.parse(replay.comment.createTime)));
@@ -360,6 +361,9 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                         startActivity(intent);
                     }
                 });
+                if (imageList.size()>0||!TextUtils.isEmpty(replay.reComment.content)){
+                    mTargetNAME.setText("我的评论");
+                }
             } else {
                 mReCommentLayout.setVisibility(View.GONE);
             }
