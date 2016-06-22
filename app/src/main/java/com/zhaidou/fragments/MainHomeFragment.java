@@ -166,10 +166,10 @@ public class MainHomeFragment extends BaseFragment implements
             final int pos = i;
            ImageView imgView=new ImageView(mContext);
             imgView.setScaleType(ImageView.ScaleType.FIT_XY);
-            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams((screenWidth-110)/3,(screenWidth-110)/3);
+            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams((screenWidth-80)/3,(screenWidth-80)/3);
             if (i>0)
             {
-                param.leftMargin=25;
+                param.leftMargin=20;
             }
             imgView.setLayoutParams(param);
             ToolUtils.setImageCacheUrl(goods.get(i).imageUrl, imgView, R.drawable.icon_loading_defalut);
@@ -323,7 +323,6 @@ public class MainHomeFragment extends BaseFragment implements
         mRequestQueue = Volley.newRequestQueue(getActivity());
 
         linearLayout = (LinearLayout) view.findViewById(R.id.bannerView);
-//        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 400 / 750));
         unreadMsg = (TextView) view.findViewById(R.id.unreadMsg);
         initDate();
         Integer userId= (Integer) SharedPreferencesUtil.getData(mContext,"userId",-1);
@@ -334,6 +333,7 @@ public class MainHomeFragment extends BaseFragment implements
 
     private void initDate()
     {
+        goods.clear();
         banners.clear();
         codes.clear();
         articles.clear();
@@ -655,6 +655,7 @@ public class MainHomeFragment extends BaseFragment implements
         articles.clear();
         banners.clear();
         codes.clear();
+        goods.clear();
         FetchData(currentPage = 1);
         FetchSpecialData();
     }

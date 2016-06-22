@@ -259,6 +259,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical|right"
+                    android:visibility="gone"
                     android:padding="12dp">
 
                     <LinearLayout
@@ -381,6 +382,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:visibility="gone"
                     android:padding="12dp">
 
                     <LinearLayout
