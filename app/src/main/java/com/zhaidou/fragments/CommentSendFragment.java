@@ -524,6 +524,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
                     return;
                 } else
                 {
+                    ToolUtils.setLog("回掉");
                   saveCropPhoto(data);
                 }
                 break;
@@ -557,12 +558,13 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
 //        intent.putExtra("aspectY", 1);
 //        intent.putExtra("outputX", outputX);
 //        intent.putExtra("outputY", outputY);
-        intent.putExtra("return-data", true);
+        intent.putExtra("return-data", false);
         intent.putExtra("scale", true);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
         intent.putExtra("noFaceDetection", true); // no face detection
         startActivityForResult(intent, requestCode);
+        ToolUtils.setLog("检测");
     }
 
     /**

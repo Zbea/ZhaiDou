@@ -121,7 +121,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private final int UPDATE_ADD_CART = 5;//加入购物车
     private final int UPDATE_ISADD_CART = 6;//零元特卖是否已经加入购物车了
     private final int UPDATE_OSALE_DELETE = 7;//删除购物车里面的零元特卖
-    private final int UPDATE_SHARE_TOAST=8;
+    private final int UPDATE_SHARE_TOAST = 8;
 
     private ScrollView scrollView;
     private ImageView topBtn;
@@ -393,7 +393,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 case UPDATE_SHARE_TOAST:
                     mDialogUtil.dismiss();
                     String result = (String) msg.obj;
-                    Toast.makeText(mContext,result,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, result, Toast.LENGTH_SHORT).show();
                     break;
 
             }
@@ -523,7 +523,7 @@ public class GoodsDetailsFragment extends BaseFragment
             flags = getArguments().getInt("flags");
             isPublish = (flags == 3 ? true : false);
             canShare = getArguments().getBoolean(CANSHARE, true);
-            mSizeId= getArguments().getString(SIZEID);
+            mSizeId = getArguments().getString(SIZEID);
         }
     }
 
@@ -892,7 +892,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 }
             });
             textView.setText(specification.title);
-            ToolUtils.setLog("specification.num:"+specification.num);
+            ToolUtils.setLog("specification.num:" + specification.num);
             if (specification.num < 1)
             {
                 textView.setBackgroundResource(R.drawable.goods_no_click_selector);
@@ -900,7 +900,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 textView.setClickable(false);
             } else
             {
-                if (specification.sizeId .equals(mSizeId))
+                if (specification.sizeId.equals(mSizeId+""))
                 {
                     sigleClickPosition = position;
                     textView.setSelected(true);
@@ -984,15 +984,32 @@ public class GoodsDetailsFragment extends BaseFragment
             });
             Specification specification = specificationList.get(i);
             textView.setText(specification.title);
-            if (0 == position)
+
+            if (mSizeId!=null)
             {
-                textView.setSelected(true);
-                mSpecificationParent = specificationList.get(i);
+                for (int j = 0; j < specification.sizess.size(); j++)
+                {
+                    if (mSizeId.equals(specification.sizess.get(j).sizeId))
+                    {
+                        doubleClickParentPos = i;
+                        textView.setSelected(true);
+                        mSpecificationParent = specificationList.get(i);
+                        addSizeSubclassView(specification.sizess);
+                    }
+                }
+            } else
+            {
+                if (0 == position)
+                {
+                    textView.setSelected(true);
+                    mSpecificationParent = specificationList.get(i);
+                }
+                addSizeSubclassView(specificationList.get(0).sizess);
             }
             textParentTvs.add(textView);
             flowLayoutParent.addView(view, lp);
         }
-        addSizeSubclassView(specificationList.get(0).sizess);
+
     }
 
 
@@ -1002,8 +1019,8 @@ public class GoodsDetailsFragment extends BaseFragment
     private void addSizeSubclassView(List<Specification> sizes)
     {
         ToolUtils.setLog("子规格");
-        isClickSubclass=false;
-        sigleClickPosition=-1;
+        isClickSubclass = false;
+        sigleClickPosition = -1;
         mSpecificationSubclass = null;
         flowLayoutSubclass.removeAllViews();
         MarginLayoutParams lp = new MarginLayoutParams(
@@ -1027,7 +1044,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     {
                         if (isClickSubclass)
                         {
-                            isClickSubclass=false;
+                            isClickSubclass = false;
                             sigleClickPosition = -1;
                             textView.setSelected(false);
                             mSpecificationSubclass = null;
@@ -1035,7 +1052,7 @@ public class GoodsDetailsFragment extends BaseFragment
                         }
                     } else
                     {
-                        isClickSubclass=true;
+                        isClickSubclass = true;
                         if (mSpecificationParent == null)
                         {
                             ToolUtils.setToast(mContext, "抱歉，请先选择" + sizeNameParent);
@@ -1060,12 +1077,12 @@ public class GoodsDetailsFragment extends BaseFragment
             } else
             {
                 textView.setSelected(false);
-                if (specification.sizeId .equals(mSizeId))
+                if (specification.sizeId.equals(mSizeId+""))
                 {
-                            isClickSubclass=true;
-                            sigleClickPosition = 0;
-                            textView.setSelected(true);
-                            sizeEvent(specification);
+                    isClickSubclass = true;
+                    sigleClickPosition = 0;
+                    textView.setSelected(true);
+                    sizeEvent(specification);
                 }
 
 //                if (isFristSubclass)
@@ -1187,8 +1204,8 @@ public class GoodsDetailsFragment extends BaseFragment
         //设置选择规格顶部图片变化
         if (spe.images != null && spe.images.size() > 0)
         {
-            if (images!=spe.images)
-            images.clear();
+            if (images != spe.images)
+                images.clear();
             images.addAll(spe.images);
             setImageViews();
         }
@@ -1270,7 +1287,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     @Override
                     public void onLoadingStarted(String s, View view)
                     {
-                    } 
+                    }
 
                     @Override
                     public void onLoadingFailed(String s, View view, FailReason failReason)
@@ -1316,21 +1333,25 @@ public class GoodsDetailsFragment extends BaseFragment
     private void share()
     {
         mDialogUtil = new DialogUtils(mContext);
-        mDialogUtil.showShareDialog(mPage, mPage + "  " + shareUrl, detail != null ? detail.imageUrl : null, shareUrl, new PlatformActionListener() {
+        mDialogUtil.showShareDialog(mPage, mPage + "  " + shareUrl, detail != null ? detail.imageUrl : null, shareUrl, new PlatformActionListener()
+        {
             @Override
-            public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
+            public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap)
+            {
                 Message message = handler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_completed));
                 handler.sendMessage(message);
             }
 
             @Override
-            public void onError(Platform platform, int i, Throwable throwable) {
+            public void onError(Platform platform, int i, Throwable throwable)
+            {
                 Message message = handler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_error));
                 handler.sendMessage(message);
             }
 
             @Override
-            public void onCancel(Platform platform, int i) {
+            public void onCancel(Platform platform, int i)
+            {
                 Message message = handler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_cancel));
                 handler.sendMessage(message);
             }
@@ -1364,7 +1385,7 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     private void setImagesReset()
     {
-        if (images!=imageInits)
+        if (images != imageInits)
             images.clear();
         images.addAll(imageInits);
         setImageViews();
@@ -1562,11 +1583,10 @@ public class GoodsDetailsFragment extends BaseFragment
             cartGoodsItem.formalPrice = mSpecificationSubclass.oldPrice;
 
             cartArrayItem.storeMoney = mSpecificationSubclass.price;
-            if (mSpecificationSubclass.images!=null)
+            if (mSpecificationSubclass.images != null)
             {
                 cartGoodsItem.imageUrl = mSpecificationSubclass.images.get(0);
-            }
-            else
+            } else
             {
                 cartGoodsItem.imageUrl = detail.imageUrl;
             }
@@ -1578,11 +1598,10 @@ public class GoodsDetailsFragment extends BaseFragment
             cartGoodsItem.formalPrice = mSpecificationParent.oldPrice;
 
             cartArrayItem.storeMoney = mSpecificationParent.price;
-            if (mSpecificationParent.images!=null)
+            if (mSpecificationParent.images != null)
             {
                 cartGoodsItem.imageUrl = mSpecificationParent.images.get(0);
-            }
-            else
+            } else
             {
                 cartGoodsItem.imageUrl = detail.imageUrl;
             }
@@ -2158,7 +2177,7 @@ public class GoodsDetailsFragment extends BaseFragment
 
     public class ImageAdapter extends PagerAdapter
     {
-       List<ImageView> imageViews=new ArrayList<ImageView>();
+        List<ImageView> imageViews = new ArrayList<ImageView>();
 
         public void initImags(List<ImageView> imageViewss)
         {
