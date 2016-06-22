@@ -53,6 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="55dp"
             android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
             android:orientation="vertical">
 
             <LinearLayout
@@ -71,6 +72,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/text_normal_color"
                 android:paddingBottom="10dp"
+                android:text="评论"
                 ></com.zhaidou.view.TypeFaceTextView>
 
         </LinearLayout>
@@ -81,6 +83,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="55dp"
             android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
             android:orientation="vertical">
 
             <LinearLayout
@@ -89,6 +92,15 @@
                 android:background="@color/page_bg"
                 android:padding="10dp"
                 android:orientation="vertical">
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/commentNameFormerTv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="名称"
+                    android:textColor="@color/text_gary_color"
+                    android:layout_marginBottom="10dp"
+                    ></com.zhaidou.view.TypeFaceTextView>
 
                 <LinearLayout
                     android:id="@+id/commentImageFormerLine"
@@ -116,26 +128,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:orientation="horizontal"
                 >
 
             </LinearLayout>
-
-
-            <RelativeLayout
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/commentInfoReplyTv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp">
-
-                <com.zhaidou.view.TypeFaceTextView
-                    android:id="@+id/commentInfoReplyTv"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text_normal_color"
-                    ></com.zhaidou.view.TypeFaceTextView>
-            </RelativeLayout>
-
+                android:textColor="@color/text_normal_color"
+                android:layout_marginBottom="10dp"
+                android:text="评论"
+                ></com.zhaidou.view.TypeFaceTextView>
 
         </LinearLayout>
 

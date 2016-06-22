@@ -3,13 +3,11 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -47,7 +45,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 /**
  * 软装清单
@@ -62,7 +59,6 @@ public class GoodsArticleListFragment extends BaseFragment
     private String mString;
 
     private TextView titleTv;
-    private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private PullToRefreshScrollView scrollView;
     private ListViewForScrollView listView;
     private TextView subtotalTv;
@@ -319,8 +315,6 @@ public class GoodsArticleListFragment extends BaseFragment
         @Override
         public View bindView(int position, View convertView, ViewGroup parent)
         {
-//            convertView = mHashMap.get(position);
-
             if (convertView == null)
                 convertView = mInflater.inflate(R.layout.item_article_goods, null);
 
@@ -347,28 +341,20 @@ public class GoodsArticleListFragment extends BaseFragment
             else if(goodsItem.storeId.equals("M"))
             {
                 goodsTypeTv.setText("天猫");
-                goodsTypeTv.setTextColor(ColorStateList.valueOf(R.color.red));
+                goodsTypeTv.setTextColor(Color.parseColor("#ff6262"));
             }
             else if(goodsItem.storeId.equals("J"))
             {
                 goodsTypeTv.setText("京东");
-                goodsTypeTv.setTextColor(ColorStateList.valueOf(R.color.red));
+                goodsTypeTv.setTextColor(Color.parseColor("#ff6262"));
             }
             else
             {
                 goodsTypeTv.setText("宅豆");
                 goodsTypeTv.setTextColor(getResources().getColor(R.color.green_color));
             }
-
-
-//            mHashMap.put(position, convertView);
             return convertView;
         }
-    }
-
-    @Override
-    public boolean onTouch(View view, MotionEvent motionEvent) {
-        return true;
     }
 
     @Override

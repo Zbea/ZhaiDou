@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Html;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -105,7 +105,8 @@ public class CommentListFragment extends BaseFragment
                     {
                         scrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                     }
-
+                    if (mDialog != null)
+                        mDialog.dismiss();
                     break;
             }
         }
@@ -318,11 +319,11 @@ public class CommentListFragment extends BaseFragment
                     @Override
                     public void onResponse(JSONObject response)
                     {
-                        if (mDialog != null)
-                            mDialog.dismiss();
                         scrollView.onRefreshComplete();
                         if (response == null)
                         {
+                            if (mDialog != null)
+                                mDialog.dismiss();
                             ToolUtils.setToast(mContext, R.string.loading_fail_txt);
                             return;
                         }
@@ -496,6 +497,7 @@ public class CommentListFragment extends BaseFragment
             LinearLayout commentReplyLine = ViewHolder.get(convertView, R.id.commentReplyLine);
             LinearLayout commentImageFormerLine = ViewHolder.get(convertView, R.id.commentImageFormerLine);
             TextView commentInfoFormer = ViewHolder.get(convertView, R.id.commentInfoFormerTv);
+            TextView commentNameFormer = ViewHolder.get(convertView, R.id.commentNameFormerTv);
 
             LinearLayout commentImageReplyLine = ViewHolder.get(convertView, R.id.commentImageReplyLine);
             TextView commentReply= ViewHolder.get(convertView, R.id.commentInfoReplyTv);
@@ -505,7 +507,7 @@ public class CommentListFragment extends BaseFragment
             commentImageFormerLine.removeAllViews();
             commentImageReplyLine.removeAllViews();
 
-            if (comment.commentReply==null&comment.imagesReply.size()==0)
+            if (TextUtils.isEmpty(comment.commentReply)&comment.imagesReply.size()==0)
             {
                 ToolUtils.setImageCacheUrl(comment.userImage, header, R.drawable.icon_loading_defalut);
                 name.setText(comment.userName);
@@ -523,7 +525,7 @@ public class CommentListFragment extends BaseFragment
                     addImageView(commentImageLine,comment.images);
                 }
                 commentInfo.setText(comment.comment);
-                commentInfo.setVisibility(comment.comment.length()>0?View.VISIBLE: View.GONE);
+                commentInfo.setVisibility(!TextUtils.isEmpty(comment.comment)?View.VISIBLE: View.GONE);
                 if(comment.status.equals("F"))
                 {
                     commentImageLine.setVisibility(View.GONE);
@@ -547,7 +549,9 @@ public class CommentListFragment extends BaseFragment
                     commentImageFormerLine.setVisibility(View.VISIBLE);
                     addImageView(commentImageFormerLine,comment.imagesReply);
                 }
+                commentNameFormer.setText(comment.userNameReply);
                 commentInfoFormer.setText(comment.commentReply);
+                commentInfoFormer.setVisibility(TextUtils.isEmpty(comment.commentReply)?View.GONE: View.VISIBLE);
                 if(comment.statusReply.equals("F"))
                 {
                     commentImageFormerLine.setVisibility(View.GONE);
@@ -566,7 +570,8 @@ public class CommentListFragment extends BaseFragment
                 {
                     commentImageReplyLine.setVisibility(View.GONE);
                 }
-                commentReply.setText(Html.fromHtml("<font size=\"14\" color=\"#3fcccb\">回复@"+comment.userNameReply+"</font><font size=\"14\" color=\"#666666\"> "+comment.comment+"</font>"));
+                commentReply.setText(comment.comment);
+                commentReply.setVisibility(!TextUtils.isEmpty(comment.comment)?View.VISIBLE: View.GONE);
             }
 //            mHashMap.put(position, convertView);
             return convertView;

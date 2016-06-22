@@ -3,18 +3,15 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Html;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -24,14 +21,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.pulltorefresh.PullToRefreshBase;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
@@ -138,22 +133,13 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 ToolUtils.setImageCacheUrl(imageUrl, imageIv, R.drawable.icon_loading_item);
 
                 webview.loadData(introduce, "text/html; charset=UTF-8", "UTF-8");
-                webview.setWebViewClient(new WebViewClient()
-                                         {
-                                             @Override
-                                             public boolean shouldOverrideUrlLoading(WebView view, String url)
-                                             {
-                                                 view.loadUrl(url);
-                                                 return false;
-                                             }
-                                         }
-                );
 
-                loadingView.setVisibility(View.GONE);
                 nullGoods.setVisibility(items.size() > 0 ? View.GONE : View.VISIBLE);
                 totalLine.setVisibility(items.size() > 0 ? View.VISIBLE : View.GONE);
-
                 articleShoppingAdapter.notifyDataSetChanged();
+                loadingView.setVisibility(View.GONE);
+                if (mDialog != null)
+                    mDialog.dismiss();
             } else if (msg.what == 2)
             {
                 commentNumTv.setText(commentCount + "");
@@ -169,24 +155,6 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                     Toast.makeText(mContext,result,Toast.LENGTH_SHORT).show();
             }
 
-        }
-    };
-
-    private PullToRefreshBase.OnRefreshListener2 onRefreshListener = new PullToRefreshBase.OnRefreshListener2()
-    {
-        @Override
-        public void onPullDownToRefresh(PullToRefreshBase refreshView)
-        {
-            items.clear();
-            page = 1;
-            FetchData();
-        }
-
-        @Override
-        public void onPullUpToRefresh(PullToRefreshBase refreshView)
-        {
-            page = page + 1;
-            FetchData();
         }
     };
 
@@ -658,15 +626,11 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                             handler.sendEmptyMessage(1);
                         } else
                         {
-                            if (page == 1)
-                            {
-                                nullNetView.setVisibility(View.GONE);
-                                nullView.setVisibility(View.VISIBLE);
-                                nullDataView.setVisibility(View.GONE);
-                            } else
-                            {
-                                ToolUtils.setToast(mContext, R.string.loading_fail_txt);
-                            }
+                            if (mDialog != null)
+                                mDialog.dismiss();
+                            nullNetView.setVisibility(View.GONE);
+                            nullView.setVisibility(View.VISIBLE);
+                            nullDataView.setVisibility(View.GONE);
                             return;
                         }
                     }
@@ -675,7 +639,8 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
             @Override
             public void onErrorResponse(VolleyError volleyError)
             {
-                mDialog.dismiss();
+                if (mDialog != null)
+                    mDialog.dismiss();
                 if (page == 1)
                 {
                     nullNetView.setVisibility(View.GONE);
@@ -711,8 +676,6 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                     @Override
                     public void onResponse(JSONObject response)
                     {
-                        if (mDialog != null)
-                            mDialog.dismiss();
                         if (response == null)
                         {
                             ToolUtils.setToast(mContext, "抱歉,评论加载失败");
@@ -848,7 +811,6 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 return headers;
             }
         };
-        request.setRetryPolicy(new DefaultRetryPolicy(5000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         ZDApplication.mRequestQueue.add(request);
     }
 
@@ -893,27 +855,16 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
             } else if (goodsItem.storeId.equals("M"))
             {
                 goodsTypeTv.setText("天猫");
-                goodsTypeTv.setTextColor(ColorStateList.valueOf(R.color.red));
+                goodsTypeTv.setTextColor(Color.parseColor("#ff6262"));
             } else if (goodsItem.storeId.equals("J"))
             {
                 goodsTypeTv.setText("京东");
-                goodsTypeTv.setTextColor(ColorStateList.valueOf(R.color.red));
+                goodsTypeTv.setTextColor(Color.parseColor("#ff6262"));
             } else
             {
                 goodsTypeTv.setText("宅豆");
                 goodsTypeTv.setTextColor(getResources().getColor(R.color.green_color));
             }
-
-//            goodsBuyTv.setOnClickListener(new View.OnClickListener()
-//            {
-//                @Override
-//                public void onClick(View v)
-//                {
-//                    enterGoods(position);
-//                }
-//            });
-
-
 //            mHashMap.put(position, convertView);
             return convertView;
         }
@@ -959,7 +910,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
             LinearLayout commentReplyLine = ViewHolder.get(convertView, R.id.commentReplyLine);
             LinearLayout commentImageFormerLine = ViewHolder.get(convertView, R.id.commentImageFormerLine);
             TextView commentInfoFormer = ViewHolder.get(convertView, R.id.commentInfoFormerTv);
-
+            TextView commentNameFormer = ViewHolder.get(convertView, R.id.commentNameFormerTv);
             LinearLayout commentImageReplyLine = ViewHolder.get(convertView, R.id.commentImageReplyLine);
             TextView commentReply = ViewHolder.get(convertView, R.id.commentInfoReplyTv);
 
@@ -986,7 +937,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                     addImageView(commentImageLine,comment.images);
                 }
                 commentInfo.setText(comment.comment);
-                commentInfo.setVisibility(comment.comment.length()>0?View.VISIBLE: View.GONE);
+                commentInfo.setVisibility(!TextUtils.isEmpty(comment.comment)?View.VISIBLE: View.GONE);
                 if(comment.status.equals("F"))
                 {
                     commentImageLine.setVisibility(View.GONE);
@@ -1000,7 +951,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 commentLine.setVisibility(View.GONE);
                 commentReplyLine.setVisibility(View.VISIBLE);
 
-                if (comment.imagesReply==null|comment.imagesReply.size()==0)
+                if (comment.imagesReply==null|comment.imagesReply.size()==0)//原来的信息
                 {
                     commentImageFormerLine.setVisibility(View.GONE);
                 }
@@ -1010,12 +961,14 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                     addImageView(commentImageFormerLine,comment.imagesReply);
                 }
                 commentInfoFormer.setText(comment.commentReply);
+                commentInfoFormer.setVisibility(TextUtils.isEmpty(comment.commentReply)?View.GONE: View.VISIBLE);
+                commentNameFormer.setText(comment.userNameReply);
                 if(comment.statusReply.equals("F"))
                 {
                     commentImageFormerLine.setVisibility(View.GONE);
                 }
 
-                if (comment.images==null|comment.images.size()==0)
+                if (comment.images==null|comment.images.size()==0)//当前你评论的信息
                 {
                     commentImageReplyLine.setVisibility(View.GONE);
                 }
@@ -1028,7 +981,8 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 {
                     commentImageReplyLine.setVisibility(View.GONE);
                 }
-                commentReply.setText(Html.fromHtml("<font size=\"14\" color=\"#3fcccb\">回复@"+comment.userNameReply+"</font><font size=\"14\" color=\"#666666\"> "+comment.comment+"</font>"));
+                commentReply.setText(comment.comment);
+                commentReply.setVisibility(!TextUtils.isEmpty(comment.comment)?View.VISIBLE: View.GONE);
             }
 //            mHashMap.put(position, convertView);
             return convertView;

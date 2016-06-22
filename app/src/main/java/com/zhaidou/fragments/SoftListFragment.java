@@ -3,7 +3,6 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -312,10 +311,10 @@ public class GoodsAdapter extends BaseListAdapter<CartGoodsItem> {
             goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
         } else if (goodsItem.storeId.equals("M")) {
             goodsTypeTv.setText("天猫");
-            goodsTypeTv.setTextColor(ColorStateList.valueOf(R.color.red));
+            goodsTypeTv.setTextColor(Color.parseColor("#ff6262"));
         } else if (goodsItem.storeId.equals("J")) {
             goodsTypeTv.setText("京东");
-            goodsTypeTv.setTextColor(ColorStateList.valueOf(R.color.red));
+            goodsTypeTv.setTextColor(Color.parseColor("#ff6262"));
         } else {
             goodsTypeTv.setText("宅豆");
             goodsTypeTv.setTextColor(getResources().getColor(R.color.green_color));
