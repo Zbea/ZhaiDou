@@ -98,6 +98,7 @@ public class SoftListFragment extends BaseFragment {
         @Override
         public void onPullDownToRefresh(PullToRefreshBase refreshView) {
             articleList.clear();
+            page=1;
             FetchData();
         }
 

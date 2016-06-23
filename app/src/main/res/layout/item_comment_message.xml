@@ -91,6 +91,7 @@
                 android:layout_height="wrap_content"
                 android:background="@color/page_bg"
                 android:padding="10dp"
+                android:layout_marginBottom="10dp"
                 android:orientation="vertical">
 
                 <com.zhaidou.view.TypeFaceTextView
@@ -127,7 +128,6 @@
                 android:id="@+id/commentImageReplyLine"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:orientation="horizontal"
                 >
