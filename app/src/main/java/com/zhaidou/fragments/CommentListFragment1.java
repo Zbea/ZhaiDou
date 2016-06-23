@@ -330,7 +330,7 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
             Entity replay = getList().get(position);
             if (replay.comment != null) {
                 ToolUtils.setImageCacheUrl(replay.comment.commentUserImg.contains("http") ? replay.comment.commentUserImg : "http://" + replay.comment.commentUserImg, mAvatar);
-                mUserName.setText(replay.comment.commentUserName);
+                mUserName.setText("我的评论");//replay.comment.commentUserName
                 mSubject.setText(Html.fromHtml("来自<font color=#50c2bf>《" + replay.comment.articleTitle + "》</font>"));
                 List<String> list=!TextUtils.isEmpty(replay.comment.imgMd5) ?
                         Arrays.asList(replay.comment.imgMd5.split(",")) : new ArrayList<String>();
