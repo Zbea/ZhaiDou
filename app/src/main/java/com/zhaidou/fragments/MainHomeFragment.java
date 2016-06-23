@@ -45,6 +45,7 @@ import com.zhaidou.model.Article;
 import com.zhaidou.model.SwitchImage;
 import com.zhaidou.utils.Api;
 import com.zhaidou.utils.NetworkUtils;
+import com.zhaidou.utils.PixelUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomBannerView;
@@ -166,10 +167,10 @@ public class MainHomeFragment extends BaseFragment implements
             final int pos = i;
            ImageView imgView=new ImageView(mContext);
             imgView.setScaleType(ImageView.ScaleType.FIT_XY);
-            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams((screenWidth-80)/3,(screenWidth-80)/3);
+            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams((screenWidth- PixelUtil.dp2px(40,mContext))/3,(screenWidth- PixelUtil.dp2px(40,mContext))/3);
             if (i>0)
             {
-                param.leftMargin=20;
+                param.leftMargin=PixelUtil.dp2px(10,mContext);
             }
             imgView.setLayoutParams(param);
             ToolUtils.setImageCacheUrl(goods.get(i).imageUrl, imgView, R.drawable.icon_loading_defalut);

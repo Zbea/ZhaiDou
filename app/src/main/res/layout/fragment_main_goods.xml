@@ -142,15 +142,15 @@
                 android:background="#f6f6f6"></View>
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="35dp"
+                android:layout_height="45dp"
                 android:background="@color/white"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
                 <TextView
                     android:layout_width="7dp"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
                     android:background="@color/green_color"/>
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
