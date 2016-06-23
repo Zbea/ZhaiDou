@@ -493,7 +493,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     private void share()
     {
         mDialogUtil = new DialogUtils(mContext);
-        String shareUrl="http://m.zhaidou.com/case_item.html?caseId="+mString;
+        String shareUrl=ZhaiDou.HOME_BASE_WAP_URL+"case_item.html?caseId="+mString;
         mDialogUtil.showShareDialog(mParam, mParam + "  " + shareUrl, imageUrl != null ?imageUrl : null, shareUrl, new PlatformActionListener() {
             @Override
             public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
@@ -889,6 +889,10 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 {
                     comments1.add(list.get(i));
                 }
+            }
+            else
+            {
+                comments1.addAll(list);
             }
             this.list=comments1;
             notifyDataSetChanged();

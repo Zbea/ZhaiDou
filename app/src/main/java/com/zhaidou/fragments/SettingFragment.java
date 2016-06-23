@@ -61,7 +61,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     RequestQueue requestQueue;
     private DialogUtils mDialogUtil;
     private Dialog mDialog;
-    private String cachePath="/sdcard/zhaidou";
+    private String cachePath="/sdcard/zhaidou/";
     private Context mContext;
     private String serverName;
     private String serverInfo;
