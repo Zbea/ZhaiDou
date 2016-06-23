@@ -103,6 +103,7 @@ public class GoodsArticleListFragment extends BaseFragment
         public void onPullDownToRefresh(PullToRefreshBase refreshView)
         {
             articleList.clear();
+            page=1;
             FetchData();
         }
 
