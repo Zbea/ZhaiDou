@@ -70,10 +70,7 @@
                     android:layout_marginLeft="15dp"
                     android:layout_marginRight="15dp"
                     android:layout_marginTop="15dp"
-                    android:src="@drawable/icon_header_default"
-                    app:border_color="#adb0ba"
-                    app:border_overlay="true"
-                    app:border_width="2dp" />
+                    android:src="@drawable/icon_header_default" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
