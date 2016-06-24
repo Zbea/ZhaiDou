@@ -242,7 +242,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
         Map<String, String> params = new HashMap<String, String>();
         params.put("commentType", mParam2);
         params.put("commentUserId", userId + "");
-        params.put("pageSize", "20");
+        params.put("pageSize", "15");
         params.put("pageNo", "" + page);
         ZhaiDouRequest request = new ZhaiDouRequest(mContext, Request.Method.POST, ZhaiDou.COMMENT_LIST_URL, params, new Response.Listener<JSONObject>() {
             @Override
@@ -314,7 +314,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
             LinearLayout mReCommentLayout = ViewHolder.get(convertView, R.id.reCommentLayout);
             final Replay replay = getList().get(position);
             if (replay.comment != null) {
-                ToolUtils.setImageCacheUrl(replay.comment.commentUserImg.contains("http") ? replay.comment.commentUserImg : "http://" + replay.comment.commentUserImg, mAvatar);
+                ToolUtils.setImageCacheUrl(replay.comment.commentUserImg!=null&&replay.comment.commentUserImg.contains("http") ? replay.comment.commentUserImg : "http://" + replay.comment.commentUserImg, mAvatar);
                 mUserName.setText(replay.comment.commentUserName);
                 mSubject.setText(Html.fromHtml("来自<font color=#50c2bf>《" + replay.comment.articleTitle + "》</font>"));
                 List<String> list = !TextUtils.isEmpty(replay.comment.imgMd5) ?

@@ -24,7 +24,7 @@
                 android:layout_width="50dp"
                 android:layout_height="match_parent"
                 android:padding="14dp"
-                android:src="@drawable/icon_goods_message" />
+                android:src="@drawable/icon_msg_white" />
 
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/unreadMsg"
@@ -62,7 +62,7 @@
                 android:background="@color/white"
                 android:orientation="horizontal">
 
-                <com.zhaidou.view.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                <com.zhaidou.view.CircleImageView
                     android:id="@+id/iv_header"
                     android:layout_width="@dimen/account_image_width_dimen"
                     android:layout_height="@dimen/account_image_width_dimen"
