@@ -6,13 +6,13 @@ package com.zhaidou;
 public class ZhaiDou {
 
     public static String HOME_PAGE_URL = "http://buy.zhaidou.com/?json=get_category_posts&slug=%E5%AE%B6%E9%A5%B0%E4%BC%98%E9%80%89&status=publish";
-    public static String HOME_BASE_URL = "http://tportal-web.zhaidou.com/";
-    public static String HOME_BASE="http://stg.zhaidou.com/";
-    public static String HOME_BASE_WAP_URL="http://tm.zhaidou.com/";
+//    public static String HOME_BASE_URL = "http://tportal-web.zhaidou.com/";
+//    public static String HOME_BASE="http://stg.zhaidou.com/";
+//    public static String HOME_BASE_WAP_URL="http://tm.zhaidou.com/";
 
-//    public static String HOME_BASE_URL = "http://portal-web.zhaidou.com/";
-//    public static String HOME_BASE="http://www.zhaidou.com/";
-//    public static String HOME_BASE_WAP_URL="http://m.zhaidou.com/";
+    public static String HOME_BASE_URL = "http://portal-web.zhaidou.com/";
+    public static String HOME_BASE="http://www.zhaidou.com/";
+    public static String HOME_BASE_WAP_URL="http://m.zhaidou.com/";
 
     //在线设计
     public static String ONLINE_DESIGN_URL=HOME_BASE_WAP_URL+"design.html?source=android";
