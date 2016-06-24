@@ -252,7 +252,7 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
         Map<String, String> params = new HashMap<String, String>();
         params.put("commentType", mParam2);
         params.put("commentUserId", userId + "");
-        params.put("pageSize", "20");
+        params.put("pageSize", "15");
         params.put("pageNo", "" + page);
         ZhaiDouRequest request = new ZhaiDouRequest(mContext, Request.Method.POST, ZhaiDou.COMMENT_LIST_URL, params, new Response.Listener<JSONObject>() {
             @Override
