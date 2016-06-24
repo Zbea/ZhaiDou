@@ -208,7 +208,7 @@ mGridView.setFocusable(false);
             int[] drawableId = {R.drawable.icon_coupon, R.drawable.icon_softcover, R.drawable.icon_collocation,
                     R.drawable.icon_pintie, R.drawable.icon_service, R.drawable.icon_contact};
 
-            String[] titlearr = {" 优惠卷", "软装方案", "我的豆搭", "拼贴大赛", "在线客服", "联系我们"};
+            String[] titlearr = {" 优惠券", "软装方案", "我的豆搭", "拼贴大赛", "在线客服", "联系我们"};
             List<String> titleList = Arrays.asList(titlearr);
             mShareAdapter = new ShareAdapter(mContext, titleList, drawableId);
             mGridView.setAdapter(mShareAdapter);
