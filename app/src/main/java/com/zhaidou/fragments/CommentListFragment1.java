@@ -265,7 +265,7 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
                     JSONObject data = jsonObject.optJSONObject("data");
                     JSONArray items = data.optJSONArray("items");
                     int totalCount = data.optInt("totalCount");
-                    if (totalCount < 20)
+                    if (totalCount <15)
                         listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                     List<Entity> replays = new ArrayList<Entity>();
                     for (int i = 0; items != null && i < items.length(); i++) {
