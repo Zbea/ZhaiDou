@@ -311,7 +311,7 @@ public class CommentListFragment extends BaseFragment
 
     public void FetchData()
     {
-        String url = ZhaiDou.HomeArticleCommentUrl + mIndex + "&pageNo=" + page + "&pageSize=20";
+        String url = ZhaiDou.HomeArticleCommentUrl + mIndex + "&pageNo=" + page + "&pageSize=15";
         ToolUtils.setLog(url);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,url,
                 new Response.Listener<JSONObject>()
