@@ -279,6 +279,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
         ((ZDApplication) mContext.getApplicationContext()).mRequestQueue.add(request);
     }
 
+
     @Override
     public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
         commentListAdapter.clear();
