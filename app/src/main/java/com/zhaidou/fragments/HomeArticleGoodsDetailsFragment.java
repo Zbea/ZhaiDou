@@ -79,14 +79,14 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     private View view;
     private RelativeLayout barLine;
     private CircleImageView headerImageIv;
-    private ImageView shareIv, goodsIv, imageIv, commentIv;
+    private ImageView backIv,shareIv, goodsIv, imageIv, commentIv;
     private CustomProgressWebview webview;
     private ListViewForScrollView goodsListView, commentListView;
     private LinearLayout loadingView, nullNetView, nullView, nullDataView;
     private TextView reloadBtn, reloadNetBtn;
     private LinearLayout contactQQ;
     private RelativeLayout detailsTopLine;
-    private TextView headerNameTv,titleTv, areaTypeTv, areasTv, styleTv, budgetTv, nullGoods, nullComment, subtotalTv, commentNumTv;
+    private TextView headerTopTv, headerNameTv,titleTv, areaTypeTv, areasTv, styleTv, budgetTv, nullGoods, nullComment, subtotalTv, commentNumTv;
     private LinearLayout totalLine, goodsAllBtn, commentAllLine, commentAllBtn;
     private FrameLayout frameLayout;
     private LinearLayout commentLine;
@@ -305,6 +305,15 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         goodsIv = (ImageView) view.findViewById(R.id.goods_iv);
         goodsIv.setOnClickListener(onClickListener);
 
+        backIv = (ImageView) view.findViewById(R.id.backIv);
+        headerTopTv=(TextView) view.findViewById(R.id.tv_title);
+
+        headerTopTv.setTextColor(getResources().getColor(R.color.white));
+        backIv.setImageResource(R.drawable.icon_back);
+        shareIv.setImageResource(R.drawable.share_white);
+        commentIv.setImageResource(R.drawable.icon_home_article_comment_white);
+        goodsIv.setImageResource(R.drawable.icon_home_article_goods_list_white);
+
         loadingView = (LinearLayout) view.findViewById(R.id.loadingView);
         nullNetView = (LinearLayout) view.findViewById(R.id.nullNetline);
         nullDataView = (LinearLayout) view.findViewById(R.id.nullDataline);
@@ -344,12 +353,22 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
             @Override
             public void onScrollChanged(int x, int y, int oldx, int oldy)
             {
-                if (y < 10)
+                if (y < 100| y==0)
                 {
 //                    barLine.getBackground().setAlpha( START_ALPHA);
+                    headerTopTv.setTextColor(getResources().getColor(R.color.white));
+                    backIv.setImageResource(R.drawable.icon_back);
+                    shareIv.setImageResource(R.drawable.share_white);
+                    commentIv.setImageResource(R.drawable.icon_home_article_comment_white);
+                    goodsIv.setImageResource(R.drawable.icon_home_article_goods_list_white);
                     setAlphaAnimation(barLine, 1, 0);
                 } else
                 {
+                    headerTopTv.setTextColor(getResources().getColor(R.color.text_main_color));
+                    backIv.setImageResource(R.drawable.icon_back_gary);
+                    shareIv.setImageResource(R.drawable.share);
+                    commentIv.setImageResource(R.drawable.icon_home_article_comment);
+                    goodsIv.setImageResource(R.drawable.icon_home_article_goods_list);
                     if (y > fadingHeight)
                     {
                         y = fadingHeight;   //当滑动到指定位置之后设置颜色为纯色，之前的话要渐变---实现下面的公式即可
