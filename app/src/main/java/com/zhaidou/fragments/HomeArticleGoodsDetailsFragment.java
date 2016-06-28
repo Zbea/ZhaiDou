@@ -189,11 +189,11 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                     {
                         comments.clear();
                         comments.addAll(comments1);
-                        commentAdapter.notifyDataSetChanged();
+                        commentAdapter.upDate(comments);
                         nullComment.setVisibility(comments.size() > 0 ? View.GONE : View.VISIBLE);
                         commentAllLine.setVisibility(comments.size() > 0 ? View.VISIBLE : View.GONE);
                     }
-                    if (commentCount<num)
+                    if (commentCount!=num)
                     {
                         commentCount=num;
                         commentNumTv.setText("(" + commentCount + ")");
