@@ -255,7 +255,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
                     JSONObject data = jsonObject.optJSONObject("data");
                     JSONArray items = data.optJSONArray("items");
                     int totalCount = data.optInt("totalCount");
-                    if (totalCount < 20)
+                    if (totalCount < 15)
                         listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                     List<Replay> replays = new ArrayList<Replay>();
                     for (int i = 0; items != null && i < items.length(); i++) {
@@ -278,6 +278,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
         });
         ((ZDApplication) mContext.getApplicationContext()).mRequestQueue.add(request);
     }
+
 
     @Override
     public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
