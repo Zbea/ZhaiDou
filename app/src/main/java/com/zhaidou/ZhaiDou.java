@@ -18,7 +18,7 @@ public class ZhaiDou {
     public static String ONLINE_DESIGN_URL=HOME_BASE_WAP_URL+"design.html?source=android";
 
     //软装指南
-    public static String MagicGuideUrl="http://m.zhaidou.com/rzzh/list.html";
+    public static String MagicGuideUrl=HOME_BASE_WAP_URL+"rzzh/list.html";
     //美丽家
     public static String HomeBeautifulUrl=HOME_BASE_URL+"zd/getPosts.action?plug=006&pageSize=10&pageNo=";
     //分类

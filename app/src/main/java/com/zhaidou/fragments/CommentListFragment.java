@@ -2,18 +2,15 @@ package com.zhaidou.fragments;
 
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,10 +27,9 @@ import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
-import com.zhaidou.activities.PhotoViewActivity;
+import com.zhaidou.adapter.CommentAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
-import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Comment;
 import com.zhaidou.utils.Api;
@@ -41,7 +37,6 @@ import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
-import com.zhaidou.view.CircleImageView;
 import com.zhaidou.view.ListViewForScrollView;
 
 import org.json.JSONArray;
@@ -232,6 +227,14 @@ public class CommentListFragment extends BaseFragment
         listView=(ListViewForScrollView)mView.findViewById(R.id.lv_special_list);
         commentAdapter=new CommentAdapter(mContext,comments);
         listView.setAdapter(commentAdapter);
+        commentAdapter.setOnInViewClickListener(R.id.ll_click,new BaseListAdapter.onInternalClickListener()
+        {
+            @Override
+            public void OnClickListener(View parentV, View v, Integer position, Object values)
+            {
+                sendComment(position);
+            }
+        });
         commentLine=(LinearLayout)mView.findViewById(R.id.commentEditLine);
         commentLine.setOnClickListener(onClickListener);
 
@@ -246,7 +249,6 @@ public class CommentListFragment extends BaseFragment
             Toast.makeText(mContext, "抱歉,网络链接失败", Toast.LENGTH_SHORT).show();
         }
     }
-
 
     private void sendComment(final int position)
     {
@@ -271,8 +273,8 @@ public class CommentListFragment extends BaseFragment
                                     ToolUtils.setLog(object.toString());
                                     commentAdapter.remove(position);
                                     pageCount--;
-                                    commentNumTv.setText("("+pageCount+")");
-                                    commentNumTv.setVisibility(pageCount>0?View.VISIBLE:View.GONE);
+                                    commentNumTv.setText("(" + pageCount + ")");
+                                    commentNumTv.setVisibility(pageCount > 0 ? View.VISIBLE : View.GONE);
                                     ShowToast("删除成功");
                                 }
                             }
@@ -460,152 +462,6 @@ public class CommentListFragment extends BaseFragment
         };
 //        request.setRetryPolicy(new DefaultRetryPolicy(5000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         ZDApplication.mRequestQueue.add(request);
-    }
-
-
-    public class CommentAdapter extends BaseListAdapter<Comment>
-    {
-        Context context;
-
-        public CommentAdapter(Context context, List<Comment> list)
-        {
-            super(context, list);
-            this.context = context;
-        }
-
-        @Override
-        public View bindView(final int position, View convertView, ViewGroup parent)
-        {
-//            convertView = mHashMap.get(position);
-            if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_comment_message, null);
-            convertView.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    sendComment(position);
-                }
-            });
-            CircleImageView header = ViewHolder.get(convertView, R.id.commentHeader);
-            TextView name = ViewHolder.get(convertView, R.id.commentNameTv);
-            TextView time = ViewHolder.get(convertView, R.id.commentTimeTv);
-            LinearLayout commentLine = ViewHolder.get(convertView, R.id.commentLine);
-            LinearLayout commentImageLine = ViewHolder.get(convertView, R.id.commentImageLine);
-            TextView commentInfo = ViewHolder.get(convertView, R.id.commentInfoTv);
-
-            LinearLayout commentReplyLine = ViewHolder.get(convertView, R.id.commentReplyLine);
-            LinearLayout commentImageFormerLine = ViewHolder.get(convertView, R.id.commentImageFormerLine);
-            TextView commentInfoFormer = ViewHolder.get(convertView, R.id.commentInfoFormerTv);
-            TextView commentNameFormer = ViewHolder.get(convertView, R.id.commentNameFormerTv);
-
-            LinearLayout commentImageReplyLine = ViewHolder.get(convertView, R.id.commentImageReplyLine);
-            TextView commentReply= ViewHolder.get(convertView, R.id.commentInfoReplyTv);
-
-            Comment comment=getList().get(position);
-            commentImageLine.removeAllViews();
-            commentImageFormerLine.removeAllViews();
-            commentImageReplyLine.removeAllViews();
-
-            if (TextUtils.isEmpty(comment.commentReply)&comment.imagesReply.size()==0)
-            {
-                ToolUtils.setImageCacheUrl(comment.userImage, header, R.drawable.icon_loading_defalut);
-                name.setText(comment.userName);
-                time.setText(comment.time);
-                commentLine.setVisibility(View.VISIBLE);
-                commentReplyLine.setVisibility(View.GONE);
-
-                if (comment.images==null|comment.images.size()==0)
-                {
-                    commentImageLine.setVisibility(View.GONE);
-                }
-                else
-                {
-                    commentImageLine.setVisibility(View.VISIBLE);
-                    addImageView(commentImageLine,comment.images);
-                }
-                commentInfo.setText(comment.comment);
-                commentInfo.setVisibility(!TextUtils.isEmpty(comment.comment)?View.VISIBLE: View.GONE);
-                if(comment.status.equals("F"))
-                {
-                    commentImageLine.setVisibility(View.GONE);
-                }
-
-            }
-            else
-            {
-                ToolUtils.setImageCacheUrl(comment.userImage, header, R.drawable.icon_loading_defalut);
-                name.setText(comment.userName);
-                time.setText(comment.time);
-                commentLine.setVisibility(View.GONE);
-                commentReplyLine.setVisibility(View.VISIBLE);
-
-                if (comment.imagesReply==null|comment.imagesReply.size()==0)
-                {
-                    commentImageFormerLine.setVisibility(View.GONE);
-                }
-                else
-                {
-                    commentImageFormerLine.setVisibility(View.VISIBLE);
-                    addImageView(commentImageFormerLine,comment.imagesReply);
-                }
-                commentNameFormer.setText(comment.userNameReply);
-                commentInfoFormer.setText(comment.commentReply);
-                commentInfoFormer.setVisibility(TextUtils.isEmpty(comment.commentReply)?View.GONE: View.VISIBLE);
-                if(comment.statusReply.equals("F"))
-                {
-                    commentImageFormerLine.setVisibility(View.GONE);
-                }
-
-                if (comment.images==null|comment.images.size()==0)
-                {
-                    commentImageReplyLine.setVisibility(View.GONE);
-                }
-                else
-                {
-                    commentImageReplyLine.setVisibility(View.VISIBLE);
-                    addImageView(commentImageReplyLine,comment.images);
-                }
-                if(comment.status.equals("F"))
-                {
-                    commentImageReplyLine.setVisibility(View.GONE);
-                }
-                commentReply.setText(comment.comment);
-                commentReply.setVisibility(!TextUtils.isEmpty(comment.comment)?View.VISIBLE: View.GONE);
-            }
-//            mHashMap.put(position, convertView);
-            return convertView;
-        }
-
-        /**
-         * 选择相片添加布局以及相关逻辑处理
-         */
-        private void addImageView(LinearLayout viewLayout, final List<String> ims)
-        {
-            for (int i = 0; i < ims.size(); i++)
-            {
-                final int position=i;
-                View mView = LayoutInflater.from(mContext).inflate(R.layout.item_comment_image, null);
-                ImageView imageIv = ( ImageView ) mView.findViewById(R.id.imageBg_iv);
-                TextView btn=( TextView ) mView.findViewById(R.id.imageBgBtn);
-                btn.setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        Intent intent=new Intent(mContext, PhotoViewActivity.class);
-                        intent.putExtra("images",ims.toArray(new String[]{}));
-                        intent.putExtra("position",position);
-                        startActivity(intent);
-
-                    }
-                });
-                ToolUtils.setImageCacheUrl(ims.get(i), imageIv, R.drawable.icon_loading_defalut);
-                viewLayout.addView(mView);
-            }
-
-
-        }
     }
 
     private OnCommentListener onCommentListener;
