@@ -2,6 +2,8 @@ package com.zhaidou.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -12,7 +14,6 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -34,11 +35,11 @@ import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
+import com.zhaidou.adapter.HomeArticleAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.CountManager;
-import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.easeui.helpdesk.ui.ConversationListFragment;
 import com.zhaidou.model.Article;
@@ -50,7 +51,6 @@ import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomBannerView;
 import com.zhaidou.view.ListViewForScrollView;
-import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -59,10 +59,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 
-public class MainHomeFragment extends BaseFragment implements
-        AdapterView.OnItemClickListener, View.OnClickListener,
+public class MainHomeFragment extends BaseFragment implements View.OnClickListener,
         PullToRefreshBase.OnRefreshListener2<ScrollView>,CountManager.onCommentChangeListener
 
 {
@@ -84,7 +82,7 @@ public class MainHomeFragment extends BaseFragment implements
     private Context mContext;
 
     private HorizontalScrollView horizontalScrollView;
-    private ArticleAdapter adapterList;
+    private HomeArticleAdapter adapterList;
     private RequestQueue mRequestQueue;
     private List<SwitchImage> banners = new ArrayList<SwitchImage>();
     private List<SwitchImage> codes = new ArrayList<SwitchImage>();
@@ -95,7 +93,6 @@ public class MainHomeFragment extends BaseFragment implements
     private CustomBannerView customBannerView;
     private LinearLayout linearLayout, codeView,goodsView;
     private PullToRefreshScrollView mScrollView;
-    private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private long formerTime;
 
     private Handler handler = new Handler()
@@ -303,9 +300,40 @@ public class MainHomeFragment extends BaseFragment implements
         reloadNetBtn.setOnClickListener(this);
 
         listView = (ListViewForScrollView) view.findViewById(R.id.homeItemList);
-        listView.setOnItemClickListener(this);
-        adapterList = new ArticleAdapter(mContext, articles);
+        adapterList = new HomeArticleAdapter(mContext, articles,1);
         listView.setAdapter(adapterList);
+        adapterList.setOnInViewClickListener(R.id.title,new BaseListAdapter.onInternalClickListener()
+        {
+            @Override
+            public void OnClickListener(View parentV, View v, Integer position, Object values)
+            {
+                ClipboardManager clipboardManager= (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clipData=ClipData.newPlainText("text",articles.get(position).getTitle());
+                clipboardManager.setPrimaryClip(clipData);
+                ToolUtils.setToast(mContext,"复制成功");
+            }
+        });
+        adapterList.setOnInViewClickListener(R.id.cover,new BaseListAdapter.onInternalClickListener()
+        {
+            @Override
+            public void OnClickListener(View parentV, View v, final Integer position, Object values)
+            {
+                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment=HomeArticleGoodsDetailsFragment.newInstance("",""+articles.get(position).getId());
+                ((BaseActivity)mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
+                homeArticleGoodsDetailsFragment.setOnCommentListener(new HomeArticleGoodsDetailsFragment.OnCommentListener()
+                {
+                    @Override
+                    public void setComment(int num)
+                    {
+                        if (num!=0)
+                        {
+                            articles.get(position).setReviews(num);
+                            adapterList.notifyDataSetChanged();
+                        }
+                    }
+                });
+            }
+        });
 
         mScrollView = (PullToRefreshScrollView) view.findViewById(R.id.sv_home_scrollview);
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
@@ -629,25 +657,6 @@ public class MainHomeFragment extends BaseFragment implements
     }
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, final int position, long l)
-    {
-        HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment=HomeArticleGoodsDetailsFragment.newInstance("",""+articles.get(position).getId());
-        ((BaseActivity)mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
-        homeArticleGoodsDetailsFragment.setOnCommentListener(new HomeArticleGoodsDetailsFragment.OnCommentListener()
-        {
-            @Override
-            public void setComment(int num)
-            {
-                if (num!=0)
-                {
-                    articles.get(position).setReviews(num);
-                    adapterList.notifyDataSetChanged();
-                }
-            }
-        });
-    }
-
-    @Override
     public void onPullDownToRefresh(PullToRefreshBase<ScrollView> refreshView)
     {
         String label = DateUtils.formatDateTime(getActivity(), System.currentTimeMillis(),
@@ -667,40 +676,6 @@ public class MainHomeFragment extends BaseFragment implements
         FetchData(++currentPage);
     }
 
-
-
-    public class ArticleAdapter extends BaseListAdapter<Article>
-    {
-        Context context;
-
-        public ArticleAdapter(Context context, List<Article> list)
-        {
-            super(context, list);
-            this.context = context;
-        }
-
-        @Override
-        public View bindView(int position, View convertView, ViewGroup parent)
-        {
-            convertView = mHashMap.get(position);
-            if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_home_article_list, null);
-            ImageView cover = ViewHolder.get(convertView, R.id.cover);
-            cover.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 400/ 750));
-            TextView title = ViewHolder.get(convertView, R.id.title);
-            TypeFaceTextView info = ViewHolder.get(convertView, R.id.info);
-            TypeFaceTextView comments = ViewHolder.get(convertView, R.id.comments);
-
-            Article article = getList().get(position);
-            ToolUtils.setImageCacheUrl(article.getImg_url(), cover,R.drawable.icon_loading_item);
-            title.setText(article.getTitle());
-            info.setText(article.getInfo());
-            comments.setText("评论:"+article.getReviews());
-
-            mHashMap.put(position, convertView);
-            return convertView;
-        }
-    }
 
     @Override
     public void onHiddenChanged(boolean hidden) {

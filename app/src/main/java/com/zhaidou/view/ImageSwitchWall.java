@@ -11,7 +11,6 @@ import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +21,7 @@ import android.widget.TextView;
 import com.viewpagerindicator.CirclePageIndicator;
 import com.zhaidou.R;
 import com.zhaidou.model.SwitchImage;
-import com.zhaidou.utils.AsyncImageLoader1;
+import com.zhaidou.utils.ToolUtils;
 
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
@@ -53,7 +52,6 @@ public class ImageSwitchWall extends RelativeLayout implements
     private int current_direction = 5;
     private ViewPager mViewPager;
     private List<SwitchImage> mDataList;
-    private AsyncImageLoader1 mImageLoader;
     private OnItemClickListener mListener;
     private CirclePageIndicator mIndicator;
 
@@ -96,7 +94,7 @@ public class ImageSwitchWall extends RelativeLayout implements
             iv.setLayoutParams(params);
             iv.setScaleType(ImageView.ScaleType.FIT_XY);
             iv.setOnClickListener(this);
-            mImageLoader.LoadImage(wi.typeValue, iv);
+            ToolUtils.setImageCacheUrl(wi.typeValue, iv,R.drawable.icon_loading_defalut);
             mViewList.add(iv);
         }
         mAdapter = new ISWAdapter();
@@ -133,7 +131,6 @@ public class ImageSwitchWall extends RelativeLayout implements
         mContext = context;
         mHandler = new ISWHandler(this);
         mResources = getResources();
-        mImageLoader = new AsyncImageLoader1(context);
 
         // View v = new View(context);
         // RelativeLayout.LayoutParams params0 = new

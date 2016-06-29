@@ -2,6 +2,8 @@ package com.zhaidou.fragments;
 
 
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,9 +11,6 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,10 +24,10 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.adapter.HomeArticleAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
-import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
 import com.zhaidou.utils.NetworkUtils;
@@ -65,7 +64,7 @@ public class SoftcoverFragment extends BaseFragment {
 
     private static final int UPDATE_HOMELIST = 1;
     private List<Article> articleList = new ArrayList<Article>();
-    private ArticleAdapter mHomeAdapter;
+    private HomeArticleAdapter mHomeAdapter;
 
 
     private Handler handler = new Handler() {
@@ -147,12 +146,25 @@ public class SoftcoverFragment extends BaseFragment {
         listView = (PullToRefreshListView) view.findViewById(R.id.lv_special_list);
         listView.setMode(PullToRefreshBase.Mode.BOTH);
         listView.setOnRefreshListener(onRefreshListener);
-        mHomeAdapter = new ArticleAdapter(mContext, articleList);
+        mHomeAdapter = new HomeArticleAdapter(mContext, articleList,2);
         listView.setAdapter(mHomeAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mHomeAdapter.setOnInViewClickListener(R.id.title, new BaseListAdapter.onInternalClickListener()
+        {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SoftDetailFragment homeArticleGoodsDetailsFragment = SoftDetailFragment.newInstance("", "" + articleList.get(position-1).getId());
+            public void OnClickListener(View parentV, View v, Integer position, Object values)
+            {
+                ClipboardManager clipboardManager = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clipData = ClipData.newPlainText("text", articleList.get(position).getTitle());
+                clipboardManager.setPrimaryClip(clipData);
+                ToolUtils.setToast(mContext, "复制成功");
+            }
+        });
+        mHomeAdapter.setOnInViewClickListener(R.id.cover, new BaseListAdapter.onInternalClickListener()
+        {
+            @Override
+            public void OnClickListener(View parentV, View v, final Integer position, Object values)
+            {
+                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment = HomeArticleGoodsDetailsFragment.newInstance("", "" + articleList.get(position-1).getId());
                 ((BaseActivity) mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
             }
         });
@@ -237,37 +249,6 @@ public class SoftcoverFragment extends BaseFragment {
         ZDApplication.mRequestQueue.add(jr);
     }
 
-
-    public class ArticleAdapter extends BaseListAdapter<Article> {
-        Context context;
-
-        public ArticleAdapter(Context context, List<Article> list) {
-            super(context, list);
-            this.context = context;
-        }
-
-        @Override
-        public View bindView(int position, View convertView, ViewGroup parent) {
-            convertView = mHashMap.get(position);
-            if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_home_article_list, null);
-            ImageView cover = ViewHolder.get(convertView, R.id.cover);
-            cover.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 400 / 750));
-            TextView title = ViewHolder.get(convertView, R.id.title);
-            TypeFaceTextView info = ViewHolder.get(convertView, R.id.info);
-            TypeFaceTextView comments = ViewHolder.get(convertView, R.id.comments);
-
-            Article article = getList().get(position);
-            ToolUtils.setImageCacheUrl(article.getImg_url(), cover, R.drawable.icon_loading_item);
-            title.setText(article.getTitle());
-            info.setText(article.getInfo());
-            comments.setText("评论:" + article.getReviews());
-            comments.setVisibility(View.GONE);
-
-            mHashMap.put(position, convertView);
-            return convertView;
-        }
-    }
 
     public void onResume() {
         super.onResume();

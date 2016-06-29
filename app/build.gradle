@@ -1,21 +1,14 @@
 apply plugin: 'com.android.application'
 android {
-//    signingConfigs {
-//        debug {
-//            keyAlias 'zd'
-//            keyPassword '111111'
-//            storeFile file('/Users/wangclark/Downloads/zd.jks')
-//            storePassword '111111'
-//        }
-//    }
+
     compileSdkVersion 20
     buildToolsVersion '20.0.0'
     defaultConfig {
         applicationId "com.zhaidou"
         minSdkVersion 15
         targetSdkVersion 19
-        versionCode 51
-        versionName "3.3.1"
+        versionCode 52
+        versionName "3.4.0"
         manifestPlaceholders = [UMENG_CHANNEL_VALUE: "default_channel"]
     }
     productFlavors {

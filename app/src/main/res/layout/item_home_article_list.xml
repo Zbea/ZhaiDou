@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/home_item_dimen"
         android:src="@drawable/icon_loading_item"
+        android:clickable="true"
         android:scaleType="fitXY" />
 
     <LinearLayout
@@ -29,14 +30,15 @@
             android:singleLine="true"
             android:ellipsize="end"
             android:textSize="17sp"
+            android:paddingTop="12dp"
             android:layout_marginRight="5dp"
-            android:layout_marginTop="12dp"
+            android:paddingBottom="7dp"
+            android:clickable="true"
             android:textColor="@color/text_main_color" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="7dp"
             android:layout_marginBottom="22dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"

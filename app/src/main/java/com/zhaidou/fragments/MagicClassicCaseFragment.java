@@ -1,6 +1,8 @@
 package com.zhaidou.fragments;
 
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,9 +10,6 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,10 +24,10 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.adapter.HomeArticleAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
-import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
 import com.zhaidou.utils.NetworkUtils;
@@ -42,7 +41,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 /**
  * 软装图例
@@ -56,7 +54,6 @@ public class MagicClassicCaseFragment extends BaseFragment
     private String mString;
     private View view;
 
-    private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private int currentPage = 1;
     private int pageSize;
     private int pageCount;
@@ -69,7 +66,7 @@ public class MagicClassicCaseFragment extends BaseFragment
 
     private static final int UPDATE_HOMELIST = 1;
     private List<Article> articleList = new ArrayList<Article>();
-    private ArticleAdapter mHomeAdapter;
+    private HomeArticleAdapter mHomeAdapter;
 
 
     private Handler handler = new Handler()
@@ -166,18 +163,40 @@ public class MagicClassicCaseFragment extends BaseFragment
         scrollView.setMode(PullToRefreshBase.Mode.BOTH);
         scrollView.setOnRefreshListener(onRefreshListener);
         listView=(ListView)view.findViewById(R.id.lv_special_list);
-        mHomeAdapter = new ArticleAdapter(mContext,articleList);
+        mHomeAdapter = new HomeArticleAdapter(mContext,articleList,1);
         listView.setAdapter(mHomeAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        mHomeAdapter.setOnInViewClickListener(R.id.cover,new BaseListAdapter.onInternalClickListener()
         {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            public void OnClickListener(View parentV, View v, final Integer position, Object values)
             {
                 HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment=HomeArticleGoodsDetailsFragment.newInstance("",""+articleList.get(position).getId());
                 ((BaseActivity)mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
+                homeArticleGoodsDetailsFragment.setOnCommentListener(new HomeArticleGoodsDetailsFragment.OnCommentListener()
+                {
+                    @Override
+                    public void setComment(int num)
+                    {
+                        if (num!=0)
+                        {
+                            articleList.get(position).setReviews(num);
+                            mHomeAdapter.notifyDataSetChanged();
+                        }
+                    }
+                });
             }
         });
-
+        mHomeAdapter.setOnInViewClickListener(R.id.title,new BaseListAdapter.onInternalClickListener()
+        {
+            @Override
+            public void OnClickListener(View parentV, View v, Integer position, Object values)
+            {
+                ClipboardManager clipboardManager= (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clipData=ClipData.newPlainText("text",articleList.get(position).getTitle());
+                clipboardManager.setPrimaryClip(clipData);
+                ToolUtils.setToast(mContext,"复制成功");
+            }
+        });
 
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
@@ -275,38 +294,6 @@ public class MagicClassicCaseFragment extends BaseFragment
     }
 
 
-    public class ArticleAdapter extends BaseListAdapter<Article>
-    {
-        Context context;
-
-        public ArticleAdapter(Context context, List<Article> list)
-        {
-            super(context, list);
-            this.context = context;
-        }
-
-        @Override
-        public View bindView(int position, View convertView, ViewGroup parent)
-        {
-            convertView = mHashMap.get(position);
-            if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_home_article_list, null);
-            ImageView cover = ViewHolder.get(convertView, R.id.cover);
-            cover.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 400/ 750));
-            TextView title = ViewHolder.get(convertView, R.id.title);
-            TypeFaceTextView info = ViewHolder.get(convertView, R.id.info);
-            TypeFaceTextView comments = ViewHolder.get(convertView, R.id.comments);
-
-            Article article = getList().get(position);
-            ToolUtils.setImageCacheUrl(article.getImg_url(), cover, R.drawable.icon_loading_item);
-            title.setText(article.getTitle());
-            info.setText(article.getInfo());
-            comments.setText("评论:" + article.getReviews());
-
-            mHashMap.put(position, convertView);
-            return convertView;
-        }
-    }
 
     public void onResume() {
         super.onResume();
