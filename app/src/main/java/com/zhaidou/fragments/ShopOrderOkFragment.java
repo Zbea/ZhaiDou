@@ -93,7 +93,7 @@ public class ShopOrderOkFragment extends BaseFragment
     private TextView couponNameTv, moneyCouponTv;
     private TypeFaceEditText bzInfo;
     private TextView moneyTv, moneyYfTv, moneyTotalTv;
-    private TextView addressNameTv, addressPhoneTv, addressinfoTv, noFreeTv;
+    private TextView addressNameTv, addressPhoneTv,addressDefaultTv, addressinfoTv, noFreeTv;
     private List<CartGoodsItem> items=new ArrayList<CartGoodsItem>();
     private List<Address> addressList = new ArrayList<Address>();
 
@@ -161,9 +161,10 @@ public class ShopOrderOkFragment extends BaseFragment
 
                     address = addressList.get(0);
                     setYFMoney(address.getPrice());
-                    addressPhoneTv.setText("电话：" + address.getPhone());
-                    addressNameTv.setText("收件人：" + address.getName());
+                    addressPhoneTv.setText(address.getPhone());
+                    addressNameTv.setText(address.getName());
                     addressinfoTv.setText(address.getProvince() + address.getCity() + address.getArea() + address.getAddress());
+                    addressDefaultTv.setVisibility(address.isIs_default()?View.VISIBLE:View.GONE);
                     break;
                 case UPDATE_ISBUYOSALE:
                     if (isOSaleBuy)
@@ -342,8 +343,9 @@ public class ShopOrderOkFragment extends BaseFragment
                             ToolUtils.setLog(maddress.toString());
                             address = maddress;
                             setYFMoney(address.getPrice());
-                            addressPhoneTv.setText("电话：" + address.getPhone());
-                            addressNameTv.setText("收件人：" + address.getName());
+                            addressDefaultTv.setVisibility(address.isIs_default()?View.VISIBLE:View.GONE);
+                            addressPhoneTv.setText(address.getPhone());
+                            addressNameTv.setText(address.getName());
                             addressinfoTv.setText(address.getProvince() + address.getCity() + address.getArea() + address.getAddress());
                         }
 
@@ -381,9 +383,10 @@ public class ShopOrderOkFragment extends BaseFragment
                             orderAddressInfoLine.setVisibility(View.VISIBLE);
                             orderAddressNullLine.setVisibility(View.GONE);
                             orderAddressEditLine.setVisibility(View.VISIBLE);
-                            addressPhoneTv.setText("电话：" + addr.getPhone());
-                            addressNameTv.setText("收件人：" + addr.getName());
+                            addressPhoneTv.setText(addr.getPhone());
+                            addressNameTv.setText(addr.getName());
                             addressinfoTv.setText(address.getProvince() + address.getCity() + address.getArea() + addr.getAddress());
+                            addressDefaultTv.setVisibility(View.VISIBLE);
                             ((BaseActivity) getActivity()).popToStack(newAddrFragment);
                         }
                     });
@@ -556,6 +559,7 @@ public class ShopOrderOkFragment extends BaseFragment
         addressinfoTv = (TextView) mView.findViewById(R.id.jsAddressinfoTv);
         addressNameTv = (TextView) mView.findViewById(R.id.jsAddressNameTv);
         addressPhoneTv = (TextView) mView.findViewById(R.id.jsAddressPhoneTv);
+        addressDefaultTv= (TextView) mView.findViewById(R.id.jsAddressDefaultTv);
 
         bzInfo = (TypeFaceEditText) mView.findViewById(R.id.jsEditBzInfo);
         bzInfo.addTextChangedListener(textWatcher);

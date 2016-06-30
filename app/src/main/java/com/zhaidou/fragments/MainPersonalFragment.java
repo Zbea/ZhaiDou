@@ -178,7 +178,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             mCartCount = (TextView) view.findViewById(R.id.tv_cart_count);
             unReadMsgView = (TextView) view.findViewById(R.id.unreadMsg);
             mGridView = (GridView) view.findViewById(R.id.gridView);
-mGridView.setFocusable(false);
+            mGridView.setFocusable(false);
 
             view.findViewById(R.id.accountInfoBtn).setOnClickListener(this);
             mPrePayView.setOnClickListener(this);

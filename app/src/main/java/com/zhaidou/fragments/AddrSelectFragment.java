@@ -468,14 +468,14 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
             }
 
             Address address = getList().get(position);
-            tv_name.setText("收件人：" + address.getName());
-            tv_mobile.setText("电话：" + address.getPhone());
+            tv_name.setText(address.getName());
+            tv_mobile.setText(address.getPhone());
             if (address.getProvince() == null)
             {
-                tv_addr.setText("地址：" + address.getAddress());
+                tv_addr.setText(address.getAddress());
             } else
             {
-                tv_addr.setText("地址：" + address.getProvince() + address.getCity() + address.getArea() + address.getAddress());
+                tv_addr.setText(address.getProvince() + address.getCity() + address.getArea() + address.getAddress());
             }
             if (address.isIs_default())
             {

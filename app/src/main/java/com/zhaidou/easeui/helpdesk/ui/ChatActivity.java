@@ -60,7 +60,6 @@ public class ChatActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                System.out.println("inputMethodManager.isActive() = " + inputMethodManager.isActive());
                 if (inputMethodManager.isActive())
                     inputMethodManager.hideSoftInputFromWindow(getWindow().peekDecorView().getApplicationWindowToken(), 0);
                 finish();
