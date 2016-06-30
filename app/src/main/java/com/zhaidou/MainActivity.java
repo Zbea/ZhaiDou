@@ -52,7 +52,7 @@ import com.zhaidou.fragments.MainGoodsFragment;
 import com.zhaidou.fragments.MainHomeFragment;
 import com.zhaidou.fragments.MainMagicFragment;
 import com.zhaidou.fragments.MainPersonalFragment;
-import com.zhaidou.fragments.OrderDetailFragment1;
+import com.zhaidou.fragments.OrderDetailFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.fragments.ShopCartFragment;
 import com.zhaidou.fragments.ShopPaymentFailFragment;
@@ -589,19 +589,19 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             }
         } else {
             if (fragments.size() > 0 && keyCode == KeyEvent.KEYCODE_BACK) {
-                Fragment orderDetailFragment = manager.findFragmentByTag(OrderDetailFragment1.class.getSimpleName());
+                Fragment orderDetailFragment = manager.findFragmentByTag(OrderDetailFragment.class.getSimpleName());
                 Fragment shopPaymentSuccessFragmen = manager.findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
                 Fragment shopPaymentFailFragment = manager.findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
                 Fragment shopPaymentFragment = manager.findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
                 Fragment fragment = fragments.get(fragments.size() - 1);
-                if (fragment instanceof GoodsDetailsFragment || fragment instanceof OrderDetailFragment1 || fragment instanceof ShopPaymentFailFragment ||
+                if (fragment instanceof GoodsDetailsFragment || fragment instanceof OrderDetailFragment || fragment instanceof ShopPaymentFailFragment ||
                         fragment instanceof ShopPaymentSuccessFragment || fragment instanceof ShopPaymentFragment) {
 
                     if (fragments.get(fragments.size() - 1) instanceof GoodsDetailsFragment) {
                         manager.popBackStack();
                         return true;
                     }
-                    if ((orderDetailFragment != null && orderDetailFragment instanceof OrderDetailFragment1)) {
+                    if ((orderDetailFragment != null && orderDetailFragment instanceof OrderDetailFragment)) {
                         //orderDetailFragment
                         ToolUtils.setLog("关闭orderDetailFragment");
                         popToStack(orderDetailFragment);

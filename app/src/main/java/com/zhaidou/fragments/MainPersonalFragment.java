@@ -205,8 +205,8 @@ mGridView.setFocusable(false);
             ProfileManage.getInstance().register(this);
             mUser = new User();
 
-            int[] drawableId = {R.drawable.icon_coupon, R.drawable.icon_softcover, R.drawable.icon_collocation,
-                    R.drawable.icon_pintie, R.drawable.icon_service, R.drawable.icon_contact};
+            int[] drawableId = {R.drawable.icon_account_coupon, R.drawable.icon_account_softcover, R.drawable.icon_account_collocation,
+                    R.drawable.icon_account_pintie, R.drawable.icon_account_service, R.drawable.icon_account_contact};
 
             String[] titlearr = {"优惠券", "软装方案", "我的豆搭", "拼贴大赛", "在线客服", "联系我们"};
             List<String> titleList = Arrays.asList(titlearr);

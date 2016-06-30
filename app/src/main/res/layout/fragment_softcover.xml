@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
-        android:drawableTop="@drawable/icon_soft_null"
+        android:drawableTop="@drawable/icon_null_soft"
         android:gravity="center"
         android:drawablePadding="20dp"
         android:text="还没有软装方案噢"

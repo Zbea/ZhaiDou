@@ -26,7 +26,7 @@
                 android:id="@+id/newsView"
                 android:layout_width="@dimen/home_tips_dimen"
                 android:layout_height="@dimen/home_tips_dimen"
-                android:src="@drawable/home_info_news_icon"
+                android:src="@drawable/icon_good_news_icon"
                 />
         </RelativeLayout>
 

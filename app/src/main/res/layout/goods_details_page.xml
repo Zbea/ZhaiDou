@@ -178,21 +178,21 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/icon_quality_goods"/>
+                    android:src="@drawable/icon_goods_quality"/>
 
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:src="@drawable/icon_7_day_return"/>
+                    android:src="@drawable/icon_goods_7_day_return"/>
 
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
-                    android:src="@drawable/icon_delivery"/>
+                    android:src="@drawable/icon_goods_delivery"/>
 
             </LinearLayout>
 
@@ -212,14 +212,14 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/icon_quality_goods"/>
+                    android:src="@drawable/icon_goods_quality"/>
 
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:src="@drawable/icon_delivery"/>
+                    android:src="@drawable/icon_goods_delivery"/>
 
             </LinearLayout>
             <LinearLayout

@@ -171,7 +171,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"
                         android:layout_alignParentRight="true"
-                        android:background="@drawable/icon_return_flag" />
+                        android:background="@drawable/icon_order_return_flag" />
                 </RelativeLayout>
             </LinearLayout>
 

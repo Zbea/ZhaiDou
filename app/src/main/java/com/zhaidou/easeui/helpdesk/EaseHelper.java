@@ -120,11 +120,11 @@ public class EaseHelper {
                 if (username.equalsIgnoreCase(EMChatManager.getInstance().getCurrentUser())){
                     easeUser.setAvatar((String)SharedPreferencesUtil.getData(appContext,"avatar",""));
                 }else if ("service".equalsIgnoreCase(username)){
-                    easeUser.setAvatar(R.drawable.icon_servicer+"");
+                    easeUser.setAvatar(R.drawable.icon_ease_servicer+"");
                 }else if ("designer".equalsIgnoreCase(username)){
-                    easeUser.setAvatar(R.drawable.icon_designer+"");
+                    easeUser.setAvatar(R.drawable.icon_ease_designer+"");
                 }else if ("comment".equalsIgnoreCase(username)){
-                    easeUser.setAvatar(R.drawable.icon_comment+"");
+                    easeUser.setAvatar(R.drawable.icon_ease_comment +"");
                 }
                 return easeUser;
             }

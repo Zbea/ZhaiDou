@@ -24,7 +24,7 @@
                 android:layout_width="50dp"
                 android:layout_height="match_parent"
                 android:padding="14dp"
-                android:src="@drawable/icon_msg_white" />
+                android:src="@drawable/icon_message_white" />
 
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/unreadMsg"
@@ -114,7 +114,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:drawableLeft="@drawable/icon_all_order"
+                    android:drawableLeft="@drawable/icon_account_order"
                     android:drawablePadding="10dp"
                     android:gravity="center"
                     android:paddingLeft="15dp"
@@ -168,7 +168,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
                         android:scaleType="center"
-                        android:src="@drawable/icon_pre_pay"
+                        android:src="@drawable/icon_order_pre_pay"
                         android:textColor="@color/text_main_color" />
 
                     <TextView
@@ -200,7 +200,7 @@
                     android:layout_marginTop="12dp"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:src="@drawable/icon_pre_received"
+                    android:src="@drawable/icon_order_pre_received"
                     android:textColor="@color/text_main_color" />
 
                 <ImageView
@@ -214,7 +214,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:src="@drawable/icon_return"
+                    android:src="@drawable/icon_order_return"
                     android:textColor="@color/text_main_color" />
             </LinearLayout>
 
@@ -248,7 +248,7 @@
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/icon_addr"
+                    android:drawableLeft="@drawable/icon_account_addr"
                     android:drawablePadding="10dp"
                     android:gravity="center_vertical"
                     android:paddingLeft="15dp"
@@ -287,7 +287,7 @@
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/icon_setting"
+                    android:drawableLeft="@drawable/icon_account_setting"
                     android:drawablePadding="10dp"
                     android:gravity="center"
                     android:paddingLeft="15dp"

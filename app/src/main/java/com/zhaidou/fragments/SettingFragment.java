@@ -139,12 +139,9 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         view.findViewById(R.id.ll_recommend).setOnClickListener(this);
         view.findViewById(R.id.ll_profile).setOnClickListener(this);
         view.findViewById(R.id.ll_psw_change).setOnClickListener(this);
-        view.findViewById(R.id.ll_competition).setOnClickListener(this);
-        view.findViewById(R.id.ll_bbs_question).setOnClickListener(this);
         view.findViewById(R.id.ll_collocation).setOnClickListener(this);
         view.findViewById(R.id.ll_add_v).setOnClickListener(this);
         view.findViewById(R.id.ll_version).setOnClickListener(this);
-        view.findViewById(R.id.ll_award_history).setOnClickListener(this);
         view.findViewById(R.id.ll_clear).setOnClickListener(this);
         view.findViewById(R.id.ll_about).setOnClickListener(this);
         view.findViewById(R.id.bt_logout).setOnClickListener(this);
@@ -271,12 +268,6 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
             case R.id.ll_psw_change:
                 ModifyPswFragment modifyPswFragment = new ModifyPswFragment();
                 ((BaseActivity) getActivity()).navigationToFragment(modifyPswFragment);
-                break;
-            case R.id.ll_competition:
-                WebViewFragment webViewFragment = WebViewFragment.newInstance("http://www.zhaidou.com/competitions/current?zdclient=ios", true);
-                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(webViewFragment);
-                break;
-            case R.id.ll_bbs_question:
                 break;
             case R.id.ll_collocation:
                 ImageBgFragment fragment = ImageBgFragment.newInstance("豆搭教程");

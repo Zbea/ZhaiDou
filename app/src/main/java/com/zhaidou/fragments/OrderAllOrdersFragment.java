@@ -177,7 +177,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     final TextView btn2 = (TextView) parentV.findViewById(R.id.bt_received);
                     if (btn2.getTag() != null)
                         preTime = Long.parseLong(btn2.getTag().toString());
-                    OrderDetailFragment1 orderDetailFragment = OrderDetailFragment1.newInstance(order.orderCode, 2);
+                    OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.orderCode, 2);
                     ((BaseActivity) getActivity()).navigationToFragment(orderDetailFragment);
                 }
             });

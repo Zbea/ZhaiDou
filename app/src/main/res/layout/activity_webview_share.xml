@@ -10,6 +10,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         layout="@layout/head_style_share_page"></include>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginTop="@dimen/header_height_dimen"
+        android:background="@color/line_bottom"></View>
     <com.zhaidou.view.CustomProgressWebview
         android:id="@+id/detailView"
         android:layout_below="@+id/headLine"

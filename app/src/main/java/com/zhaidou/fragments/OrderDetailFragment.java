@@ -46,7 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class OrderDetailFragment1 extends BaseFragment {
+public class OrderDetailFragment extends BaseFragment {
     private static final String ARG_ID = "id";
     private static final String ARG_TIMESTMP = "timestmp";
     private static final String ARG_ORDERCODE = "orderCode";
@@ -79,8 +79,8 @@ public class OrderDetailFragment1 extends BaseFragment {
     private Dialog mDialog;
     private String mUserId;
 
-    public static OrderDetailFragment1 newInstance(String orderCode, int flags) {
-        OrderDetailFragment1 fragment = new OrderDetailFragment1();
+    public static OrderDetailFragment newInstance(String orderCode, int flags) {
+        OrderDetailFragment fragment = new OrderDetailFragment();
         Bundle args = new Bundle();
         args.putInt("flags", flags);
         args.putSerializable(ARG_ORDERCODE, orderCode);
@@ -88,7 +88,7 @@ public class OrderDetailFragment1 extends BaseFragment {
         return fragment;
     }
 
-    public OrderDetailFragment1() {
+    public OrderDetailFragment() {
     }
 
     @Override

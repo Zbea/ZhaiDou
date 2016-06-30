@@ -77,7 +77,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:paddingRight="20dp"
-            android:src="@drawable/cancel"/>
+            android:src="@drawable/icon_cancel"/>
     </LinearLayout>
     <RelativeLayout
         android:id="@+id/rl_description"
