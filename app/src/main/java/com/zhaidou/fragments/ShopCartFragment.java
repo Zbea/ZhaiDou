@@ -37,9 +37,11 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.base.CartCountManager;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CartArrayItem;
 import com.zhaidou.model.CartGoodsItem;
+import com.zhaidou.utils.Api;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -59,7 +61,7 @@ import java.util.Map;
 /**
  * Created by roy on 15/7/24.
  */
-public class ShopCartFragment extends BaseFragment
+public class ShopCartFragment extends BaseFragment implements CartCountManager.OnCartCountListener
 {
     private static final String PAGE = "page";
     private static final String INDEX = "index";
@@ -123,7 +125,7 @@ public class ShopCartFragment extends BaseFragment
                     cartCount = 0;
                     nullView.setVisibility(View.VISIBLE);
                     contentView.setVisibility(View.GONE);
-                    ((MainActivity) mContext).CartTip(cartCount);
+                    CartCountManager.newInstance().notify(cartCount);
                 }
             }
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
@@ -135,16 +137,7 @@ public class ShopCartFragment extends BaseFragment
                 checkPoss.clear();
                 refreshData();
             }
-            if (action.equals(ZhaiDou.IntentRefreshAddCartTag))
-            {
-                ToolUtils.setLog("isUnRefresh+"+isUnRefresh);
-                if (!isUnRefresh)
-                {
-                    //发送数量修改广播
-                    refreshData();
-                }
-                isUnRefresh = false;
-            }
+
         }
     };
 
@@ -175,7 +168,7 @@ public class ShopCartFragment extends BaseFragment
                 case 2:
                     break;
                 case 3:
-                    ((MainActivity) mContext).CartTip(cartCount);
+                    CartCountManager.newInstance().notify(cartCount);
                     break;
             }
         }
@@ -331,6 +324,8 @@ public class ShopCartFragment extends BaseFragment
         mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
 
         cartGoodsLine = (LinearLayout) mView.findViewById(R.id.cartGoodsLine);
+
+        CartCountManager.newInstance().setOnCartCountListener(this);
         initData();
 
     }
@@ -864,40 +859,20 @@ public class ShopCartFragment extends BaseFragment
      */
     public void FetchCountData()
     {
-        String url = ZhaiDou.CartGoodsCountUrl + userId;
-        ToolUtils.setLog("url:" + url);
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        Api.getCartCount(userId, new Api.SuccessListener()
         {
             @Override
-            public void onResponse(JSONObject jsonObject)
+            public void onSuccess(Object jsonObject)
             {
                 if (jsonObject != null)
                 {
-                    JSONObject object = jsonObject.optJSONObject("data");
+                    JSONObject object = ((JSONObject) jsonObject).optJSONObject("data");
                     cartCount = object.optInt("totalQuantity");
-                    mHandler.sendEmptyMessage(3);
+                    ((MainActivity) mContext).CartTip(cartCount);
+                    CartCountManager.newInstance().notify(cartCount);
                 }
             }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-                if (mDialog != null)
-                    mDialog.dismiss();
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
+        }, null);
     }
 
     /**
@@ -925,8 +900,9 @@ public class ShopCartFragment extends BaseFragment
                         boxs.remove(itemCheck);
                         refreshItems(cartGoodsItem, 1);
                         cartGoodsLine.removeView(childeView);
+                        //刷新购物车数量
                         cartCount = cartCount - cartGoodsItem.num;
-                        ((MainActivity) mContext).CartTip(cartCount);
+                        CartCountManager.newInstance().notify(cartCount);
                         checkPoss.remove(cartGoodsItem.sizeId);
                         isUnRefresh = true;
                         //发送广播
@@ -988,7 +964,7 @@ public class ShopCartFragment extends BaseFragment
                     {
                         cartCount = cartCount - 1;
                     }
-                    ((MainActivity) mContext).CartTip(cartCount);
+                    CartCountManager.newInstance().notify(cartCount);
                     isUnRefresh = true;
                     sendBroadCastEditAll();
                 } else
@@ -1054,4 +1030,14 @@ public class ShopCartFragment extends BaseFragment
 
     }
 
+    @Override
+    public void onChange(int count)
+    {
+        if (cartCount!=count)
+        {
+            refreshData();
+        }
+        cartCount=count;
+        ((MainActivity) mContext).CartTip(cartCount);
+    }
 }

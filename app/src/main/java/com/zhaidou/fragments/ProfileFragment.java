@@ -331,7 +331,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
      * 设置开始加载进度
      */
     private void setStartLoading() {
-        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading", true);
+        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
     }
 
     /**

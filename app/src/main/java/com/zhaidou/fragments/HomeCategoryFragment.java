@@ -214,7 +214,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
         @Override
         public View bindView(int position, View convertView, ViewGroup parent) {
             if (convertView==null)
-                convertView=mInflater.inflate(R.layout.category_item_gv,null);
+                convertView=mInflater.inflate(R.layout.item_category_gv,null);
             TextView tv_item = ViewHolder.get(convertView, R.id.tv_category_item);
             Category item = getList().get(position);
             if (mCheckedPosition==position){

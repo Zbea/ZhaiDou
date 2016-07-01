@@ -279,8 +279,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
     }
 
     private void initData() {
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading",isDialogFirstVisible);
-        isDialogFirstVisible=false;
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
         if (NetworkUtils.isNetworkAvailable(mContext)) {
             mNetErrorView.setVisibility(View.GONE);
             loadingView.setVisibility(View.GONE);

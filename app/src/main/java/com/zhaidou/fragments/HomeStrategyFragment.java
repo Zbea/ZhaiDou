@@ -30,7 +30,6 @@ import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.adapter.HomeListAdapter;
-import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
@@ -71,7 +70,7 @@ public class HomeStrategyFragment extends BaseFragment
     private static FrameLayout fl_category_menu;
     private static ImageView mCategoryView, mDotView;
 
-    private TypeFaceTextView backBtn, titleTv;
+    private TypeFaceTextView  titleTv;
     private PullToRefreshScrollView mScrollView;
     private ListViewForScrollView mListView;
     private boolean loadedAll = false;
@@ -186,9 +185,6 @@ public class HomeStrategyFragment extends BaseFragment
         {
             switch (view.getId())
             {
-                case R.id.ll_back:
-                    ((BaseActivity) getActivity()).popToStack(HomeStrategyFragment.this);
-                    break;
                 case R.id.ll_category_view:
                     toggleMenu();
                     break;
@@ -260,8 +256,6 @@ public class HomeStrategyFragment extends BaseFragment
         reloadNetBtn = (TextView) mView.findViewById(R.id.netReload);
         reloadNetBtn.setOnClickListener(onClickListener);
 
-        backBtn = (TypeFaceTextView) mView.findViewById(R.id.ll_back);
-        backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(R.string.title_home_strategy);
 
@@ -297,8 +291,7 @@ public class HomeStrategyFragment extends BaseFragment
      */
     private void initData()
     {
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading", isDialogFirstVisible);
-        isDialogFirstVisible = false;
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
             FetchData(currentPage, null);

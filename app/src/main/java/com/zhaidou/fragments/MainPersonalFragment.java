@@ -330,14 +330,10 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                         String nick_name = userObj.optString("nick_name");
                         String province = userObj.optString("province");
                         String city = userObj.optString("city");
-                        //                    User user = new User();
                         mUser.setAvatar(avatar);
                         mUser.setNickName(nick_name);
                         mUser.setProvince(province);
                         mUser.setCity(city);
-                        Message message = new Message();
-//                    message.what = UPDATE_USER_INFO;
-//                    message.obj = user;
                         mHandler.sendEmptyMessage(UPDATE_USER_INFO);
                     }
 
@@ -506,7 +502,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
         @Override
         public View bindView(int position, View convertView, ViewGroup parent) {
             if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_share_view, null);
+                convertView = mInflater.inflate(R.layout.item_personal_view, null);
             ImageView imageView = ViewHolder.get(convertView, R.id.iv_plat);
             TextView textView = ViewHolder.get(convertView, R.id.tv_plat);
             ImageView mDotView = ViewHolder.get(convertView, R.id.dotView);

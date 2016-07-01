@@ -35,9 +35,11 @@ import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.adapter.ShopTodaySpecialAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.base.CartCountManager;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.ShopTodayItem;
+import com.zhaidou.utils.Api;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -61,7 +63,7 @@ import cn.sharesdk.framework.PlatformActionListener;
 /**
  * Created by roy on 15/7/23.
  */
-public class ShopTodaySpecialFragment extends BaseFragment
+public class ShopTodaySpecialFragment extends BaseFragment implements CartCountManager.OnCartCountListener
 {
     private static final String PAGE = "page";
     private static final String INDEX = "index";
@@ -281,12 +283,11 @@ public class ShopTodaySpecialFragment extends BaseFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        ToolUtils.setLog("111111");
         if (mView == null)
         {
             mView = inflater.inflate(R.layout.shop_today_special_page, container, false);
             mContext = getActivity();
-            initBroadcastReceiver();
+//            initBroadcastReceiver();
             initView();
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
@@ -317,6 +318,7 @@ public class ShopTodaySpecialFragment extends BaseFragment
      */
     private void initView()
     {
+        CartCountManager.newInstance().setOnCartCountListener(this);
         shareUrl = shareUrl + mIndex;
         loadingView = (LinearLayout) mView.findViewById(R.id.loadingView);
         nullNetView = (LinearLayout) mView.findViewById(R.id.nullNetline);
@@ -380,13 +382,11 @@ public class ShopTodaySpecialFragment extends BaseFragment
     {
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
-            mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading", isDialogFirstVisible);
-            isDialogFirstVisible = false;
+            mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
             FetchData();
             if (checkLogin())
             {
                 FetchCountData();
-
             }
         } else
         {
@@ -560,40 +560,20 @@ public class ShopTodaySpecialFragment extends BaseFragment
      */
     public void FetchCountData()
     {
-        String url = ZhaiDou.CartGoodsCountUrl + userId;
-        ToolUtils.setLog("url:" + url);
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        Api.getCartCount(userId, new Api.SuccessListener()
         {
             @Override
-            public void onResponse(JSONObject jsonObject)
+            public void onSuccess(Object jsonObject)
             {
                 if (jsonObject != null)
                 {
-                    JSONObject object = jsonObject.optJSONObject("data");
+                    JSONObject object = ((JSONObject) jsonObject).optJSONObject("data");
                     cartCount = object.optInt("totalQuantity");
                     handler.sendEmptyMessage(UPDATE_CARTCAR_DATA);
+                    CartCountManager.newInstance().notify(cartCount);
                 }
             }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-                if (mDialog != null)
-                    mDialog.dismiss();
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
+        }, null);
     }
 
 
@@ -632,4 +612,14 @@ public class ShopTodaySpecialFragment extends BaseFragment
     }
 
 
+    /**
+     * 购物车数量变化刷新
+     * @param count
+     */
+    @Override
+    public void onChange(int count)
+    {
+        cartCount=count;
+        initCartTips();
+    }
 }

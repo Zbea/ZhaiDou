@@ -43,6 +43,42 @@ import java.util.UUID;
  */
 public class Api {
 
+    public static void getApkManage(final SuccessListener successListener, final ErrorListener errorListener) {
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.GET, ZhaiDou.ApkUrl, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (successListener != null)
+                    successListener.onSuccess(jsonObject);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                if (errorListener != null)
+                    errorListener.onError(volleyError);
+            }
+        });
+        ZDApplication.mRequestQueue.add(request);
+    }
+
+    public static void getCartCount(int userId,final SuccessListener successListener, final ErrorListener errorListener) {
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.GET, ZhaiDou.CartGoodsCountUrl + userId, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (successListener != null)
+                    successListener.onSuccess(jsonObject);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                if (errorListener != null)
+                    errorListener.onError(volleyError);
+            }
+        });
+        ZDApplication.mRequestQueue.add(request);
+    }
+
     public static String comment(Map<String, Object> params, SuccessListener successListener, ErrorListener errorListener) {
         System.out.println("params = [" + params + "], successListener = [" + successListener + "], errorListener = [" + errorListener + "]");
         String userId = params.get("commentUserId").toString();

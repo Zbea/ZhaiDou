@@ -55,7 +55,6 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     protected int screenWidth;
     protected int screenHeight;
     public Context mContext;
-    protected boolean isDialogFirstVisible = true;
 
     public String versionCode;
     public String versionName;
@@ -66,9 +65,8 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setRetainInstance(true);
         mInflater = LayoutInflater.from(getActivity());
-        mEmptyView = mInflater.inflate(R.layout.list_empty_view, null);
+        mEmptyView = mInflater.inflate(R.layout.custom_list_empty_view, null);
         mContext = getActivity();
         DisplayMetrics dm = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);

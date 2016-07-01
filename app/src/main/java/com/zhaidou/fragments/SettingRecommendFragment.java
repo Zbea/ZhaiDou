@@ -127,7 +127,7 @@ public class SettingRecommendFragment extends BaseFragment {
      * 初始化
      */
     private void initView() {
-        mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"loading",true);
+        mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"loading");
 
         headTitle = (TextView) mView.findViewById(R.id.title_tv);
         headTitle.setText(R.string.setting_recommend_txt);

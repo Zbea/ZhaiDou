@@ -434,7 +434,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         @Override
         public View bindView(int position, View convertView, ViewGroup parent) {
             if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_order_return, null);
+                convertView = mInflater.inflate(R.layout.item_order_list, null);
             TextView tv_order_time = ViewHolder.get(convertView, R.id.tv_order_time);
             TextView tv_order_number = ViewHolder.get(convertView, R.id.tv_order_number);
             TextView tv_order_amount = ViewHolder.get(convertView, R.id.tv_order_amount);

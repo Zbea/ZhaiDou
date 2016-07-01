@@ -3,7 +3,6 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,11 +27,12 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.AccountManage;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.base.CartCountManager;
 import com.zhaidou.base.CountManager;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.easeui.helpdesk.EaseHelper;
+import com.zhaidou.utils.Api;
 import com.zhaidou.utils.DialogUtils;
-import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -77,23 +77,14 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                     SharedPreferencesUtil.clearUser(getActivity());
                     CountManager.getInstance().clearCache();
                     AccountManage.getInstance().notifyLogOut();
-                    Intent intent = new Intent(ZhaiDou.IntentRefreshLoginExitTag);
-                    mContext.sendBroadcast(intent);
+//                    Intent intent = new Intent(ZhaiDou.IntentRefreshLoginExitTag);
+//                    mContext.sendBroadcast(intent);
                     EaseHelper.getInstance().logout(true,null);
                             ((MainActivity) mContext).logout(SettingFragment.this);
                     NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
                     notificationManager.cancel(0525);
-                    ((MainActivity) mContext).CartTip(0);
-                    break;
-                case 1:
-                    serverCode = parseJosn(msg.obj.toString());
-                    ToolUtils.setLog(" ZDApplication.localVersionCode:" + ZDApplication.localVersionCode);
-                    if (serverCode > ZDApplication.localVersionCode) {
-                        CustomVersionUpdateDialog customVersionUpdateDialog = new CustomVersionUpdateDialog(mContext, serverName, serverUrl);
-                        customVersionUpdateDialog.checkUpdateInfo();
-                    } else {
-                        ToolUtils.setToast(mContext, "当前版本为最新版本");
-                    }
+                    CartCountManager.newInstance().notify(0);
+//                            ((MainActivity) mContext).CartTip(0);
                     break;
             }
         }
@@ -309,7 +300,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                 break;
             case R.id.ll_version:
                 if (NetworkUtils.isNetworkAvailable(mContext)) {
-                    getVersionServer();
+                    FetchAPK();
                 } else {
                     ToolUtils.setToast(mContext, "抱歉,网络连接失败");
                 }
@@ -319,42 +310,29 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         }
     }
 
-    /**
-     * 获取版本信息
-     */
-    private void getVersionServer() {
-        new Thread(new Runnable() {
+    private void FetchAPK()
+    {
+        Api.getApkManage(new Api.SuccessListener()
+        {
             @Override
-            public void run() {
-                String url = ZhaiDou.ApkUrl;
-                String result = NetService.GETHttpService(url, mContext);
-                if (result != null) {
-                    mHandler.obtainMessage(1, result).sendToTarget();
+            public void onSuccess(Object jsonObject)
+            {
+                if (jsonObject != null)
+                {
+                    JSONObject object = ((JSONObject) jsonObject).optJSONObject("data");
+                    if (object != null)
+                        serverName = object.optString("app_version");
+                    serverCode = object.optInt("code_version");
+                    serverUrl = object.optString("package_url");
+                    if (serverCode > ZDApplication.localVersionCode) {
+                        CustomVersionUpdateDialog customVersionUpdateDialog = new CustomVersionUpdateDialog(mContext, serverName, serverUrl);
+                        customVersionUpdateDialog.checkUpdateInfo();
+                    } else {
+                        ToolUtils.setToast(mContext, "当前版本为最新版本");
+                    }
                 }
             }
-        }).start();
-    }
-
-    /**
-     * 版本信息解析
-     *
-     * @param json
-     * @return
-     */
-    private int parseJosn(String json) {
-        try {
-            JSONObject jsonObject = new JSONObject(json);
-            if (jsonObject != null) {
-                JSONObject object = jsonObject.optJSONObject("data");
-                if (object != null)
-                    serverName = object.optString("app_version");
-                serverCode = object.optInt("code_version");
-                serverUrl = object.optString("package_url");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return serverCode;
+        }, null);
     }
 
     public void logout() {

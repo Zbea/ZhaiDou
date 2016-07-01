@@ -711,7 +711,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         {
             convertView = mHashMap.get(position);
             if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_fragment_sale, null);
+                convertView = mInflater.inflate(R.layout.item_goods_sale, null);
             TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
             ImageView image = ViewHolder.get(convertView, R.id.iv_single_item);
             image.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth-30 / 2, (screenWidth-30)/ 2 - 1));

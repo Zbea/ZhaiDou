@@ -107,7 +107,7 @@ public class ReturnDetailFragment extends BaseFragment {
         @Override
         public View bindView(int position, View convertView, ViewGroup parent) {
             if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_order_detail, null);
+                convertView = mInflater.inflate(R.layout.item_order_detail_goods, null);
             TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
             TextView tv_specification = ViewHolder.get(convertView, R.id.tv_specification);
             TextView tv_count = ViewHolder.get(convertView, R.id.tv_count);

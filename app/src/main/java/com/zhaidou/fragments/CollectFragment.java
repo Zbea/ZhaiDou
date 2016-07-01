@@ -162,13 +162,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
         nullLine = (LinearLayout) view.findViewById(R.id.nullLine);
 
         if (NetworkUtils.isNetworkAvailable(getActivity())) {
-            mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading",true);
-//            mHandler.postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//
-//                }
-//            },300);
+            mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
             FetchCollectData();
         } else {
             ToolUtils.setToast(getActivity(), "抱歉,网络连接失败");

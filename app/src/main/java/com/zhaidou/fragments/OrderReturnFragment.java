@@ -178,8 +178,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
     }
 
     private void initData() {
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading", isDialogFirstVisible);
-        isDialogFirstVisible = false;
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
         if (NetworkUtils.isNetworkAvailable(mContext)) {
             mNetErrorView.setVisibility(View.GONE);
             loadingView.setVisibility(View.GONE);
@@ -230,7 +229,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
         public View bindView(int position, View convertView, ViewGroup parent) {
             convertView = mHashMap.get(position);
             if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_order_return, null);
+                convertView = mInflater.inflate(R.layout.item_order_list, null);
             TextView tv_order_time = ViewHolder.get(convertView, R.id.tv_order_time);
             TextView tv_order_number = ViewHolder.get(convertView, R.id.tv_order_number);
             TextView tv_order_amount = ViewHolder.get(convertView, R.id.tv_order_amount);

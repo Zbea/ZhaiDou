@@ -29,18 +29,19 @@ import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
+import com.zhaidou.base.CartCountManager;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Product;
 import com.zhaidou.model.SwitchImage;
 import com.zhaidou.model.User;
+import com.zhaidou.utils.Api;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -56,7 +57,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SpecialSaleFragment extends BaseFragment implements View.OnClickListener, RegisterFragment.RegisterOrLoginListener
+public class SpecialSaleFragment extends BaseFragment implements View.OnClickListener, RegisterFragment.RegisterOrLoginListener,CartCountManager.OnCartCountListener
 {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -168,11 +169,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     break;
                 case UPDATE_CARTCAR_DATA:
                     initCartTips();
-                    if ((((MainActivity)mContext).cart_dot).getVisibility()==View.GONE)
-                {
-                    ((MainActivity)mContext).CartTip(cartCount);
-                }
-
                     break;
             }
         }
@@ -253,9 +249,9 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 
         if (rootView == null)
         {
+            CartCountManager.newInstance().setOnCartCountListener(this);
             mContext = getActivity();
-            initBroadcastReceiver();
-
+//            initBroadcastReceiver();
             rootView = inflater.inflate(R.layout.fragment_special_sale, container, false);
 
             titleTv = (TypeFaceTextView) rootView.findViewById(R.id.title_tv);
@@ -342,7 +338,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
      */
     private void initData()
     {
-        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading", true);
+        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
         if (NetworkUtils.isNetworkAvailable(getActivity()))
         {
             getBannerData();
@@ -607,40 +603,20 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
      */
     public void FetchCountData()
     {
-        String url = ZhaiDou.CartGoodsCountUrl+userId;
-        ToolUtils.setLog("url:" + url);
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        Api.getCartCount(userId, new Api.SuccessListener()
         {
             @Override
-            public void onResponse(JSONObject jsonObject)
+            public void onSuccess(Object jsonObject)
             {
                 if (jsonObject != null)
                 {
-                    JSONObject object = jsonObject.optJSONObject("data");
+                    JSONObject object = ((JSONObject) jsonObject).optJSONObject("data");
                     cartCount = object.optInt("totalQuantity");
                     mHandler.sendEmptyMessage(UPDATE_CARTCAR_DATA);
+                    CartCountManager.newInstance().notify(cartCount);
                 }
             }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-                if (mDialog != null)
-                    mDialog.dismiss();
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
-        requestQueue.add(request);
+        }, null);
     }
 
 
@@ -656,7 +632,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         {
             convertView = mHashMap.get(position);
             if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_fragment_sale, null);
+                convertView = mInflater.inflate(R.layout.item_goods_sale, null);
             TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
             ImageView image = ViewHolder.get(convertView, R.id.iv_single_item);
             image.setLayoutParams(new RelativeLayout.LayoutParams((screenWidth-30)/ 2, (screenWidth-30)/ 2));
@@ -721,5 +697,16 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         if (broadcastReceiver != null)
            mContext.unregisterReceiver(broadcastReceiver);
         super.onDestroy();
+    }
+
+    /**
+     * 购物车数量变化刷新
+     * @param count
+     */
+    @Override
+    public void onChange(int count)
+    {
+        cartCount=count;
+        initCartTips();
     }
 }

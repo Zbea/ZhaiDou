@@ -673,7 +673,7 @@ public class DialogUtils {
         @Override
         public View bindView(int position, View convertView, ViewGroup parent) {
             if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_share_view, null);
+                convertView = mInflater.inflate(R.layout.item_personal_view, null);
             ImageView imageView = ViewHolder.get(convertView, R.id.iv_plat);
             TextView textView = ViewHolder.get(convertView, R.id.tv_plat);
             String title = getList().get(position);

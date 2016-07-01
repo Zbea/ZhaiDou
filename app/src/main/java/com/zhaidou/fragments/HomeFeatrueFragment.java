@@ -439,7 +439,7 @@ public class HomeFeatrueFragment extends BaseFragment {
      * 初始化收据
      */
     private void initData() {
-        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading", true);
+        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
         if (NetworkUtils.isNetworkAvailable(getActivity())) {
 
             FetchData();
@@ -772,7 +772,7 @@ public class HomeFeatrueFragment extends BaseFragment {
         public View bindView(int position, View convertView, ViewGroup parent) {
             convertView = mHashMap.get(position);
             if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_fragment_sale, null);
+                convertView = mInflater.inflate(R.layout.item_goods_sale, null);
             TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
             ImageView image = ViewHolder.get(convertView, R.id.iv_single_item);
             image.setLayoutParams(new RelativeLayout.LayoutParams((screenWidth-30)/ 2, (screenWidth-30)/ 2));

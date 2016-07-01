@@ -168,10 +168,8 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
     }
 
     public void FetchCollocationData(int page){
-        mDialog= CustomLoadingDialog.setLoadingDialog(mActivity,"loading",isDialogFirstVisible);
-        isDialogFirstVisible=false;
+        mDialog= CustomLoadingDialog.setLoadingDialog(mActivity,"loading");
         int userId=mSharedPreferences.getInt("userId", -1);
-        //"http://www.zhaidou.com/api/v1/users/77069/bean_collocations?page="+page
         JsonObjectRequest request =new JsonObjectRequest(ZhaiDou.USER_COLLOCATION_ITEM_URL+userId+"/bean_collocations?page="+page
             ,new Response.Listener<JSONObject>(){
             @Override
@@ -237,7 +235,7 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
         public View bindView(int position, View convertView, ViewGroup parent) {
             convertView=mHashMap.get(position);
             if (convertView==null)
-                convertView=mInflater.inflate(R.layout.gv_collocation_item,null);
+                convertView=mInflater.inflate(R.layout.item_collocation_list,null);
             TextView tv_title = ViewHolder.get(convertView, R.id.tv_collocation_title);
             ImageView iv_thumb=ViewHolder.get(convertView,R.id.iv_collocation_thumb);
             Collocation collocation=getList().get(position);

@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.zhaidou.model.CartGoodsItem;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -21,8 +22,7 @@ public class CreatCartTools
      */
     public static List<CartGoodsItem> selectByAll(CreatCartDB cartDB,int userId)
     {
-        items.removeAll(items);
-        List<CartGoodsItem> itemss=new ArrayList<CartGoodsItem>();
+        items.clear();
         SQLiteDatabase sqLiteDatabase=cartDB.getReadableDatabase();
         sqLiteDatabase.beginTransaction();
         try
@@ -48,7 +48,7 @@ public class CreatCartTools
                 item.isCheck = false;
                 item.isDate="false";
                 item.creatTime = cursor.getLong(cursor.getColumnIndex("creatTime"));
-                itemss.add(item);
+                items.add(item);
             }
             sqLiteDatabase.setTransactionSuccessful();
             cursor.close();
@@ -62,11 +62,7 @@ public class CreatCartTools
             sqLiteDatabase.endTransaction();
             sqLiteDatabase.close();
         }
-        //反序
-        for(int i=itemss.size()-1;i>=0;i--)
-        {
-            items.add(itemss.get(i));
-        }
+        Collections.reverse(items);
         return items;
     }
 

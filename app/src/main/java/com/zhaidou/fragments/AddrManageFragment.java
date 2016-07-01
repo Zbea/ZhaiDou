@@ -168,7 +168,7 @@ public class AddrManageFragment extends BaseFragment implements View.OnClickList
         titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
         titleTv.setText(R.string.title_address_manage);
 
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading", true);
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
         isDialogFirstVisible = false;
         mDialogUtil = new DialogUtils(mContext);
         loadingView = (LinearLayout) view.findViewById(R.id.loadingView);

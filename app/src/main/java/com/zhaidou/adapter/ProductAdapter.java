@@ -45,7 +45,7 @@ public class ProductAdapter extends BaseListAdapter<Product>{
     public View bindView(int position, View convertView, ViewGroup parent) {
         convertView=mHashMap.get(position);
         if (convertView==null)
-            convertView=mInflater.inflate(R.layout.item_fragment_single,null);
+            convertView=mInflater.inflate(R.layout.item_goods_single,null);
         TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
         ImageView image =ViewHolder.get(convertView,R.id.iv_single_item);
         image.setLayoutParams(new LinearLayout.LayoutParams(screenWidth/2-1,screenWidth/2-1));

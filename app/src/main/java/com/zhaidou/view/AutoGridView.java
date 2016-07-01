@@ -73,7 +73,7 @@ public class AutoGridView extends LinearLayout implements View.OnClickListener{
             mChildLinearLayout.setLayoutParams(lp);
 
             while (mTextWidth<getMeasuredWidth()&&i<list.size()){
-                View view= LayoutInflater.from(mContext).inflate(R.layout.view_autogridview_item,null);
+                View view= LayoutInflater.from(mContext).inflate(R.layout.item_view_autogridview,null);
                 TextView textView =(TextView)view.findViewById(R.id.tv_history_item);
 //                TypeFaceTextView textView=new TypeFaceTextView(context);
 //                textView.setId(100);
