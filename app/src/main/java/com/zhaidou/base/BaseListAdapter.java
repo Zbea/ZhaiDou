@@ -97,7 +97,7 @@ public abstract class BaseListAdapter<E> extends BaseAdapter {
     public Map<Integer, onInternalLongClickListener> canLongClickItem;
 
 	private void addInternalClickListener(final View itemV, final Integer position,final Object valuesMap) {
-		if (canClickItem != null) {
+		if (canClickItem != null&itemV!=null) {
 			for (Integer key : canClickItem.keySet()) {
 				View inView = itemV.findViewById(key);
 				final onInternalClickListener inviewListener = canClickItem.get(key);
@@ -114,7 +114,7 @@ public abstract class BaseListAdapter<E> extends BaseAdapter {
 		}
 	}
     private void addInternalLongClickListener(final View itemV, final Integer position,final Object valuesMap) {
-        if (canLongClickItem != null) {
+        if (canLongClickItem != null&itemV!=null) {
             for (Integer key : canLongClickItem.keySet()) {
                 View inView = itemV.findViewById(key);
                 final onInternalLongClickListener inviewListener = canLongClickItem.get(key);
@@ -162,7 +162,6 @@ public abstract class BaseListAdapter<E> extends BaseAdapter {
 
 				@Override
 				public void run() {
-					// TODO Auto-generated method stub
 					if (mToast == null) {
 						mToast = Toast.makeText(mContext, text,
 								Toast.LENGTH_SHORT);
