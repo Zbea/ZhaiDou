@@ -172,7 +172,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         @Override
         public void onClick(View view)
         {
-            GoodsArticleListFragment goodsArticleListFragment = GoodsArticleListFragment.newInstance(title, mString);
+            GoodsArticleListFragment goodsArticleListFragment = GoodsArticleListFragment.newInstance(1, mString);
             CommentListFragment commentListFragment = CommentListFragment.newInstance(title, mString);
             commentListFragment.setOnCommentListener(new CommentListFragment.OnCommentListener()
             {

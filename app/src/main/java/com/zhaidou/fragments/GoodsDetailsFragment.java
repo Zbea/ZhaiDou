@@ -59,6 +59,7 @@ import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.GoodDetail;
 import com.zhaidou.model.GoodInfo;
 import com.zhaidou.model.Specification;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.Api;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.EaseUtils;
@@ -83,7 +84,7 @@ import java.util.Map;
 import cn.sharesdk.framework.Platform;
 import cn.sharesdk.framework.PlatformActionListener;
 
-public class GoodsDetailsFragment extends BaseFragment
+public class GoodsDetailsFragment extends BaseFragment implements CartCountManager.OnCartCountListener
 {
     private static final String PAGE = "page";
     private static final String INDEX = "index";
@@ -192,18 +193,6 @@ public class GoodsDetailsFragment extends BaseFragment
         public void onReceive(Context context, Intent intent)
         {
             String action = intent.getAction();
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
-            {
-                FetchCountData();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshLoginTag))
-            {
-                FetchCountData();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
-            {
-                initCartTips();
-            }
             if (action.equals(ZhaiDou.IntentRefreshOGoodsDetailsTag))
             {
                 isOSaleBuy = true;
@@ -318,18 +307,14 @@ public class GoodsDetailsFragment extends BaseFragment
                     CartCountManager.newInstance().notify(cartCount);
 
                     mTipView.setVisibility(View.VISIBLE);
-
                     AnimationSet animationSet = new AnimationSet(true);
                     animationSet.setDuration(1000);
-
                     ScaleAnimation scaleAnimation = new ScaleAnimation(3f, 1f, 3f, 1f,
                             Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-
                     Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.add_cart_anim);
                     animation.setFillAfter(true);
                     animationSet.addAnimation(scaleAnimation);
                     animationSet.addAnimation(animation);
-
                     mTipView.startAnimation(animationSet);
                     animationSet.setAnimationListener(new Animation.AnimationListener()
                     {
@@ -337,7 +322,6 @@ public class GoodsDetailsFragment extends BaseFragment
                         public void onAnimationStart(Animation animation)
                         {
                         }
-
                         @Override
                         public void onAnimationEnd(Animation animation)
                         {
@@ -345,13 +329,11 @@ public class GoodsDetailsFragment extends BaseFragment
                             mTipView.clearAnimation();
                             initCartTips();
                         }
-
                         @Override
                         public void onAnimationRepeat(Animation animation)
                         {
                         }
                     });
-
                     break;
                 case UPDATE_ISADD_CART://校正是否零元特卖已经加入购物车
                     mDialog.dismiss();
@@ -380,8 +362,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     break;
                 case UPDATE_OSALE_DELETE://删除成功后
                     cartCount = cartCount - 1;
-                    Intent delete = new Intent(ZhaiDou.IntentRefreshAddCartTag);
-                    mContext.sendBroadcast(delete);
+                    CartCountManager.newInstance().notify(cartCount);
                     if (isAddOrBuy)//如果已经存在零元特卖
                     {
                         FetchAddCartData();
@@ -549,14 +530,6 @@ public class GoodsDetailsFragment extends BaseFragment
 
     private void initView()
     {
-        CartCountManager.newInstance().setOnCartCountListener(new CartCountManager.OnCartCountListener()
-        {
-            @Override
-            public void onChange(int count)
-            {
-                initCartTips();
-            }
-        });
         shareUrl = shareUrl + mIndex;
         mDialogUtil = new DialogUtils(mContext);
         shareBtn = (ImageView) mView.findViewById(R.id.share_iv);
@@ -671,6 +644,8 @@ public class GoodsDetailsFragment extends BaseFragment
             }
         });
 
+        CartCountManager.newInstance().setOnCartCountListener(this);
+
         initData();
 
     }
@@ -681,9 +656,6 @@ public class GoodsDetailsFragment extends BaseFragment
     private void initBroadcastReceiver()
     {
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshGoodsDetailsTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshOGoodsDetailsTag);
 
@@ -1624,7 +1596,7 @@ public class GoodsDetailsFragment extends BaseFragment
     {
         subclassSizes.clear();
         String url = ZhaiDou.HomeGoodsDetailsUrl + mIndex;
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -1830,16 +1802,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 nullView.setVisibility(View.VISIBLE);
                 nullNetView.setVisibility(View.GONE);
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 
@@ -1879,7 +1842,7 @@ public class GoodsDetailsFragment extends BaseFragment
             url = ZhaiDou.GoodsDetailsAddUrl + userId + "&productSKUId=" + mSpecificationParent.sizeId;
         }
         ToolUtils.setLog(url);
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -1908,17 +1871,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     mDialog.dismiss();
                 ToolUtils.setToastLong(mContext, R.string.loading_fail_txt);
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 
@@ -1929,7 +1882,7 @@ public class GoodsDetailsFragment extends BaseFragment
     {
         String url = ZhaiDou.IsBuyOSaleUrl + userId;
         ToolUtils.setLog(url);
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -1964,17 +1917,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     ToolUtils.setToastLong(mContext, R.string.loading_fail_txt);
                 }
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 
@@ -1985,7 +1928,7 @@ public class GoodsDetailsFragment extends BaseFragment
     {
         String url = ZhaiDou.IsAddOSaleUrl + userId;
         ToolUtils.setLog(url);
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -2014,17 +1957,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     mDialog.dismiss();
                 ToolUtils.setToastLong(mContext, R.string.loading_fail_txt);
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 
@@ -2035,7 +1968,7 @@ public class GoodsDetailsFragment extends BaseFragment
     {
         String url = ZhaiDou.CartGoodsDeleteUrl + userId + "&productSKUId=" + "[" + sku + "]";
         ToolUtils.setLog("url:" + url);
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -2057,25 +1990,8 @@ public class GoodsDetailsFragment extends BaseFragment
                 if (mDialog != null)
                     mDialog.dismiss();
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
-    }
-
-
-    @Override
-    public void onDestroyView()
-    {
-        super.onDestroyView();
     }
 
     @Override
@@ -2089,7 +2005,6 @@ public class GoodsDetailsFragment extends BaseFragment
     @Override
     public void onResume()
     {
-        System.out.println("GoodsDetailsFragment.onResume");
         if (isFrist)
         {
             long temp = Math.abs(systemTime - System.currentTimeMillis());
@@ -2110,10 +2025,15 @@ public class GoodsDetailsFragment extends BaseFragment
         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_goods_detail));
     }
 
+    /**
+     * 购物车数量变化刷新
+     * @param count
+     */
     @Override
-    public void onHiddenChanged(boolean hidden)
+    public void onChange(int count)
     {
-        super.onHiddenChanged(hidden);
+        cartCount=count;
+        initCartTips();
     }
 
     /**
@@ -2176,12 +2096,6 @@ public class GoodsDetailsFragment extends BaseFragment
             container.addView(imageViews.get(position));
             return imageViews.get(position);
         }
-
-//        @Override
-//        public int getItemPosition(Object object)
-//        {
-//            return null!=imageViews&&imageViews.size()==0?POSITION_NONE:super.getItemPosition(object);
-//        }
     }
 
 }

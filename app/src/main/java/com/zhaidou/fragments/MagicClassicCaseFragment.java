@@ -10,6 +10,7 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -165,19 +166,19 @@ public class MagicClassicCaseFragment extends BaseFragment
         listView=(ListView)view.findViewById(R.id.lv_special_list);
         mHomeAdapter = new HomeArticleAdapter(mContext,articleList,1);
         listView.setAdapter(mHomeAdapter);
-        mHomeAdapter.setOnInViewClickListener(R.id.cover,new BaseListAdapter.onInternalClickListener()
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
-            public void OnClickListener(View parentV, View v, final Integer position, Object values)
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
             {
-                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment=HomeArticleGoodsDetailsFragment.newInstance("",""+articleList.get(position).getId());
-                ((BaseActivity)mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
+                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment = HomeArticleGoodsDetailsFragment.newInstance("", "" + articleList.get(position).getId());
+                ((BaseActivity) mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
                 homeArticleGoodsDetailsFragment.setOnCommentListener(new HomeArticleGoodsDetailsFragment.OnCommentListener()
                 {
                     @Override
                     public void setComment(int num)
                     {
-                        if (num!=0)
+                        if (num != 0)
                         {
                             articleList.get(position).setReviews(num);
                             mHomeAdapter.notifyDataSetChanged();

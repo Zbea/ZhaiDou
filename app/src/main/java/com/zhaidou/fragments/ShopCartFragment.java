@@ -89,11 +89,10 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
     private ArrayList<CartArrayItem> arraysCheck = new ArrayList<CartArrayItem>();
     private List<CartGoodsItem> itemsCheck = new ArrayList<CartGoodsItem>();
     private DialogUtils mDialogUtil;
-    private int totalCount;
-    private double totalMoney;
     private boolean isGoods;//是否存在商品
-    private boolean isFrist = true;
     private int cartCount;//购物车商品数量
+    private final static int UPDATE_CART_LIST=1;
+    private final static int UPDATE_CART_COUNT=2;
 
     private ShopCartAdapter shopCartAdapter;
 
@@ -129,24 +128,16 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
         {
             switch (msg.what)
             {
-                case 1:
+                case UPDATE_CART_LIST:
                     if (isGoods)
                     {
                         addCartGoods();
-                        if (isFrist)
-                        {
-                            isFrist = false;
-                            FetchCountData();
-                        }
                     } else
                     {
                         loadingView.setVisibility(View.GONE);
                         nullView.setVisibility(View.VISIBLE);
                         contentView.setVisibility(View.GONE);
                     }
-                    break;
-                case 3:
-                    CartCountManager.newInstance().notify(cartCount);
                     break;
                 case 10:
                     setGoodsCheckChange();
@@ -229,7 +220,7 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
         {
             mContext = getActivity();
             initBroadcastReceiver();
-            mView = inflater.inflate(R.layout.shop_cart_page1, container, false);
+            mView = inflater.inflate(R.layout.shop_cart_page, container, false);
             initView();
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
@@ -412,6 +403,7 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
             mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
             checkLogin();
             FetchDetailData();
+            FetchCountData();
         } else
         {
             ToolUtils.setToast(mContext, R.string.net_fail_txt);
@@ -522,8 +514,8 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
                 if (jsonObject != null)
                 {
                     JSONObject dataObject = jsonObject.optJSONObject("data");
-                    totalCount = dataObject.optInt("totalQuantity");
-                    totalMoney = dataObject.optDouble("totalAmount");
+                    int totalCount = dataObject.optInt("totalQuantity");
+                    double totalMoney = dataObject.optDouble("totalAmount");
 
                     JSONArray storeArray = dataObject.optJSONArray("productStoreArray");
                     if (storeArray != null && storeArray.length() > 0)
@@ -648,15 +640,21 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
                     int status = jsonObject.optInt("status");
                     if (status == 200)
                     {
-                        items.remove(cartGoodsItem);
                         //刷新购物车数量
                         cartCount = cartCount - cartGoodsItem.num;
                         CartCountManager.newInstance().notify(cartCount);
+
+                        items.remove(cartGoodsItem);
+
                         shopCartAdapter.setIsSelected(cartGoodsItem);
                         shopCartAdapter.notifyDataSetChanged();
                         shopCartAdapter.setRefreshCheckView();
-
-
+                        if (items.size()==0)
+                        {
+                            loadingView.setVisibility(View.GONE);
+                            nullView.setVisibility(View.VISIBLE);
+                            contentView.setVisibility(View.GONE);
+                        }
                     }
                 }
             }

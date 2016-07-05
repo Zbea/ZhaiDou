@@ -302,14 +302,6 @@ public class ZhaiDou {
 
     //广播标识集合
     /**
-     *  购物车选中商品刷新
-     */
-    public static String IntentRefreshCartGoodsCheckTag ="com.zhaidou.home.refesh.cart.goods.check";
-    /**
-     *  加入购物车成功
-     */
-    public static String IntentRefreshAddCartTag="com.zhaidou.home.refesh.goods.add.cart";
-    /**
      * 购物车商品支付成功
      */
     public static String IntentRefreshCartPaySuccessTag ="com.zhaidou.home.refesh.cart.pay.success";

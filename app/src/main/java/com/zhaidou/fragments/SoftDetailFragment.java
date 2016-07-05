@@ -192,7 +192,7 @@ public class SoftDetailFragment extends BaseFragment {
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            SoftListFragment goodsArticleListFragment = SoftListFragment.newInstance(title, mString);
+            GoodsArticleListFragment goodsArticleListFragment = GoodsArticleListFragment.newInstance(2, mString);
             CommentListFragment commentListFragment = CommentListFragment.newInstance(title, mString);
             commentListFragment.setOnCommentListener(new CommentListFragment.OnCommentListener() {
                 @Override

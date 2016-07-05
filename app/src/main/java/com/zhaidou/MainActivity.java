@@ -138,9 +138,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         public void onReceive(Context context, Intent intent)
         {
             String action = intent.getAction();
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
-            {
-            }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag))
             {
                 checkLogin();
@@ -270,7 +267,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
         intentFilter.addAction(ZhaiDou.BROADCAST_WXAPI_FILTER);
         mContext.registerReceiver(broadcastReceiver, intentFilter);
     }

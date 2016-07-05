@@ -32,7 +32,6 @@ public class ArticleGoodsAdapter extends BaseListAdapter<CartGoodsItem>
     public View bindView(final int position, View convertView, ViewGroup parent)
     {
 //            convertView = mHashMap.get(position);
-
         if (convertView == null)
             convertView = mInflater.inflate(R.layout.item_article_goods, null);
 

@@ -11,6 +11,7 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -159,12 +160,12 @@ public class SoftcoverFragment extends BaseFragment {
                 ToolUtils.setToast(mContext, "复制成功");
             }
         });
-        mHomeAdapter.setOnInViewClickListener(R.id.cover, new BaseListAdapter.onInternalClickListener()
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
-            public void OnClickListener(View parentV, View v, final Integer position, Object values)
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment = HomeArticleGoodsDetailsFragment.newInstance("", "" + articleList.get(position-1).getId());
+                SoftDetailFragment homeArticleGoodsDetailsFragment = SoftDetailFragment.newInstance("", "" + articleList.get(position-1).getId());
                 ((BaseActivity) mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
             }
         });

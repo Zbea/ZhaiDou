@@ -14,6 +14,7 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -313,19 +314,19 @@ public class MainHomeFragment extends BaseFragment implements View.OnClickListen
                 ToolUtils.setToast(mContext,"复制成功");
             }
         });
-        adapterList.setOnInViewClickListener(R.id.cover,new BaseListAdapter.onInternalClickListener()
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
-            public void OnClickListener(View parentV, View v, final Integer position, Object values)
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
             {
-                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment=HomeArticleGoodsDetailsFragment.newInstance("",""+articles.get(position).getId());
-                ((BaseActivity)mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
+                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment = HomeArticleGoodsDetailsFragment.newInstance("", "" + articles.get(position).getId());
+                ((BaseActivity) mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
                 homeArticleGoodsDetailsFragment.setOnCommentListener(new HomeArticleGoodsDetailsFragment.OnCommentListener()
                 {
                     @Override
                     public void setComment(int num)
                     {
-                        if (num!=0)
+                        if (num != 0)
                         {
                             articles.get(position).setReviews(num);
                             adapterList.notifyDataSetChanged();
