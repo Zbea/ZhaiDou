@@ -3,7 +3,6 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -32,11 +31,10 @@ import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.activities.WebViewActivity;
+import com.zhaidou.adapter.ArticleGoodsAdapter;
 import com.zhaidou.adapter.CommentAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.base.BaseListAdapter;
-import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.Comment;
@@ -60,7 +58,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 import cn.sharesdk.framework.Platform;
 import cn.sharesdk.framework.PlatformActionListener;
@@ -90,9 +87,8 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     private FrameLayout frameLayout;
     private LinearLayout commentLine;
 
-    private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private CustomScrollView mScrollView;
-    private GoodsAdapter articleShoppingAdapter;
+    private ArticleGoodsAdapter articleShoppingAdapter;
 
     private Dialog mDialog;
     private DialogUtils mDialogUtil;
@@ -381,7 +377,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         });
         goodsListView = (ListViewForScrollView) view.findViewById(R.id.homeItemList);
         goodsListView.setEmptyView(mEmptyView);
-        articleShoppingAdapter = new GoodsAdapter(mContext, items);
+        articleShoppingAdapter = new ArticleGoodsAdapter(mContext, items);
         goodsListView.setAdapter(articleShoppingAdapter);
         goodsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
@@ -834,61 +830,6 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         ZDApplication.mRequestQueue.add(request);
     }
 
-
-    public class GoodsAdapter extends BaseListAdapter<CartGoodsItem>
-    {
-        Context context;
-
-        public GoodsAdapter(Context context, List<CartGoodsItem> list)
-        {
-            super(context, list);
-            this.context = context;
-        }
-
-        @Override
-        public View bindView(final int position, View convertView, ViewGroup parent)
-        {
-//            convertView = mHashMap.get(position);
-
-            if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_article_goods, null);
-
-            TextView goodsNameTv = ViewHolder.get(convertView, R.id.goodsNameTv);
-            TextView goodsSizeTv = ViewHolder.get(convertView, R.id.goodsSizeTv);
-            ImageView goodsImageTv = ViewHolder.get(convertView, R.id.goodsImageTv);
-            TextView goodsPriceTv = ViewHolder.get(convertView, R.id.goodsPriceTv);
-            TextView goodsNumTv = ViewHolder.get(convertView, R.id.goodsNumTv);
-            TextView goodsTypeTv = ViewHolder.get(convertView, R.id.goodsTypeTv);
-            TextView goodsBuyTv = ViewHolder.get(convertView, R.id.goodsBuyTv);
-
-            final CartGoodsItem goodsItem = getList().get(position);
-            goodsNameTv.setText(goodsItem.name);
-            goodsSizeTv.setText(goodsItem.size);
-            goodsNumTv.setText("X" + goodsItem.num);
-            goodsPriceTv.setText("￥" +ToolUtils.isIntPrice(goodsItem.currentPrice+"") );
-            ToolUtils.setImageCacheUrl(goodsItem.imageUrl, goodsImageTv, R.drawable.icon_loading_defalut);
-
-            if (goodsItem.storeId.equals("T"))
-            {
-                goodsTypeTv.setText("淘宝");
-                goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
-            } else if (goodsItem.storeId.equals("M"))
-            {
-                goodsTypeTv.setText("天猫");
-                goodsTypeTv.setTextColor(Color.parseColor("#ff6262"));
-            } else if (goodsItem.storeId.equals("J"))
-            {
-                goodsTypeTv.setText("京东");
-                goodsTypeTv.setTextColor(Color.parseColor("#ff6262"));
-            } else
-            {
-                goodsTypeTv.setText("宅豆");
-                goodsTypeTv.setTextColor(getResources().getColor(R.color.green_color));
-            }
-//            mHashMap.put(position, convertView);
-            return convertView;
-        }
-    }
 
     private OnCommentListener onCommentListener;
 

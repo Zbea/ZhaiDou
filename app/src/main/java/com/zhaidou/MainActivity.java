@@ -55,7 +55,6 @@ import com.zhaidou.fragments.MainPersonalFragment;
 import com.zhaidou.fragments.OrderDetailFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.fragments.ShopCartFragment;
-import com.zhaidou.fragments.ShopCartFragment1;
 import com.zhaidou.fragments.ShopPaymentFailFragment;
 import com.zhaidou.fragments.ShopPaymentFragment;
 import com.zhaidou.fragments.ShopPaymentSuccessFragment;
@@ -91,7 +90,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private Fragment utilityFragment;
     private Fragment magicHomeFragment;
     private Fragment goodsFragment;
-    private ShopCartFragment1 shopCartFragment;
+    private ShopCartFragment shopCartFragment;
 
     private TextView homeButton;
     private TextView magicButton;
@@ -199,7 +198,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     {
                         if (shopCartFragment == null)
                         {
-                            shopCartFragment = ShopCartFragment1.newInstance("", 1);
+                            shopCartFragment = ShopCartFragment.newInstance("", 1);
                         } else
                         {
                             shopCartFragment.refreshData();
@@ -356,7 +355,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 {
                     if (shopCartFragment == null)
                     {
-                        shopCartFragment = ShopCartFragment1.newInstance("haha", 1);
+                        shopCartFragment = ShopCartFragment.newInstance("haha", 1);
                     }
                     selectFragment(currentFragment, shopCartFragment);
                     setButton(view);

@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -37,12 +36,11 @@ import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
-import com.zhaidou.activities.PhotoViewActivity;
 import com.zhaidou.activities.WebViewActivity;
+import com.zhaidou.adapter.ArticleGoodsAdapter;
+import com.zhaidou.adapter.CommentAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.base.BaseListAdapter;
-import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.Comment;
@@ -97,7 +95,7 @@ public class SoftDetailFragment extends BaseFragment {
 
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private CustomScrollView mScrollView;
-    private GoodsAdapter articleShoppingAdapter;
+    private ArticleGoodsAdapter articleShoppingAdapter;
 
     private Dialog mDialog;
     private DialogUtils mDialogUtil;
@@ -379,7 +377,7 @@ public class SoftDetailFragment extends BaseFragment {
         });
         goodsListView = (ListViewForScrollView) view.findViewById(R.id.homeItemList);
         goodsListView.setEmptyView(mEmptyView);
-        articleShoppingAdapter = new GoodsAdapter(mContext, items);
+        articleShoppingAdapter = new ArticleGoodsAdapter(mContext, items);
         goodsListView.setAdapter(articleShoppingAdapter);
         goodsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -751,155 +749,6 @@ public class SoftDetailFragment extends BaseFragment {
         ZDApplication.mRequestQueue.add(request);
     }
 
-
-    public class GoodsAdapter extends BaseListAdapter<CartGoodsItem> {
-        Context context;
-
-        public GoodsAdapter(Context context, List<CartGoodsItem> list) {
-            super(context, list);
-            this.context = context;
-        }
-
-        @Override
-        public View bindView(final int position, View convertView, ViewGroup parent) {
-//            convertView = mHashMap.get(position);
-
-            if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_article_goods, null);
-
-            TextView goodsNameTv = ViewHolder.get(convertView, R.id.goodsNameTv);
-            TextView goodsSizeTv = ViewHolder.get(convertView, R.id.goodsSizeTv);
-            ImageView goodsImageTv = ViewHolder.get(convertView, R.id.goodsImageTv);
-            TextView goodsPriceTv = ViewHolder.get(convertView, R.id.goodsPriceTv);
-            TextView goodsNumTv = ViewHolder.get(convertView, R.id.goodsNumTv);
-            TextView goodsTypeTv = ViewHolder.get(convertView, R.id.goodsTypeTv);
-            TextView goodsBuyTv = ViewHolder.get(convertView, R.id.goodsBuyTv);
-
-            final CartGoodsItem goodsItem = getList().get(position);
-            goodsNameTv.setText(goodsItem.name);
-            goodsSizeTv.setText(goodsItem.size);
-            goodsNumTv.setText("X" + goodsItem.num);
-            goodsPriceTv.setText("￥" + ToolUtils.isIntPrice(goodsItem.currentPrice + ""));
-            ToolUtils.setImageCacheUrl(goodsItem.imageUrl, goodsImageTv, R.drawable.icon_loading_defalut);
-
-            if (goodsItem.storeId.equals("T")) {
-                goodsTypeTv.setText("淘宝");
-                goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
-            } else if (goodsItem.storeId.equals("M")) {
-                goodsTypeTv.setText("天猫");
-                goodsTypeTv.setTextColor(Color.parseColor("#ff6262"));
-            } else if (goodsItem.storeId.equals("J")) {
-                goodsTypeTv.setText("京东");
-                goodsTypeTv.setTextColor(Color.parseColor("#ff6262"));
-            } else {
-                goodsTypeTv.setText("宅豆");
-                goodsTypeTv.setTextColor(getResources().getColor(R.color.green_color));
-            }
-
-
-//            mHashMap.put(position, convertView);
-            return convertView;
-        }
-    }
-
-    public class CommentAdapter extends BaseListAdapter<Comment> {
-        Context context;
-
-        public CommentAdapter(Context context, List<Comment> list) {
-            super(context, list);
-            this.context = context;
-        }
-
-        @Override
-        public View bindView(int position, View convertView, ViewGroup parent) {
-//            convertView = mHashMap.get(position);
-            if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_comment_message, null);
-            CircleImageView header = ViewHolder.get(convertView, R.id.commentHeader);
-            TextView name = ViewHolder.get(convertView, R.id.commentNameTv);
-            TextView time = ViewHolder.get(convertView, R.id.commentTimeTv);
-            LinearLayout commentLine = ViewHolder.get(convertView, R.id.commentLine);
-            LinearLayout commentImageLine = ViewHolder.get(convertView, R.id.commentImageLine);
-            TextView commentInfo = ViewHolder.get(convertView, R.id.commentInfoTv);
-
-            LinearLayout commentReplyLine = ViewHolder.get(convertView, R.id.commentReplyLine);
-            LinearLayout commentImageFormerLine = ViewHolder.get(convertView, R.id.commentImageFormerLine);
-            TextView commentInfoFormer = ViewHolder.get(convertView, R.id.commentInfoFormerTv);
-
-            LinearLayout commentImageReplyLine = ViewHolder.get(convertView, R.id.commentImageReplyLine);
-            TextView commentReply = ViewHolder.get(convertView, R.id.commentInfoReplyTv);
-
-            Comment comment = getList().get(position);
-            commentImageLine.removeAllViews();
-            commentImageFormerLine.removeAllViews();
-            commentImageReplyLine.removeAllViews();
-
-            if (comment.commentReply == null & comment.imagesReply.size() == 0) {
-                ToolUtils.setImageCacheUrl(comment.userImage, header, R.drawable.icon_loading_defalut);
-                name.setText(comment.userName);
-                time.setText(comment.time);
-                commentLine.setVisibility(View.VISIBLE);
-                commentReplyLine.setVisibility(View.GONE);
-
-                if (comment.images == null | comment.images.size() == 0) {
-                    commentImageLine.setVisibility(View.GONE);
-                } else {
-                    commentImageLine.setVisibility(View.VISIBLE);
-                    addImageView(commentImageLine, comment.images);
-                }
-                commentInfo.setText(comment.comment);
-            } else {
-                ToolUtils.setImageCacheUrl(comment.userImage, header, R.drawable.icon_loading_defalut);
-                name.setText(comment.userName);
-                time.setText(comment.time);
-                commentLine.setVisibility(View.GONE);
-                commentReplyLine.setVisibility(View.VISIBLE);
-
-                if (comment.imagesReply == null | comment.imagesReply.size() == 0) {
-                    commentImageFormerLine.setVisibility(View.GONE);
-                } else {
-                    commentImageFormerLine.setVisibility(View.VISIBLE);
-                    addImageView(commentImageFormerLine, comment.imagesReply);
-                }
-                commentInfoFormer.setText(comment.commentReply);
-
-                if (comment.images == null | comment.images.size() == 0) {
-                    commentImageReplyLine.setVisibility(View.GONE);
-                } else {
-                    commentImageReplyLine.setVisibility(View.VISIBLE);
-                    addImageView(commentImageReplyLine, comment.images);
-                }
-
-                commentReply.setText(Html.fromHtml("<font size=\"14\" color=\"#3fcccb\">回复@" + comment.userNameReply + "</font><font size=\"14\" color=\"#666666\"> " + comment.comment + "</font>"));
-            }
-//            mHashMap.put(position, convertView);
-            return convertView;
-        }
-
-        /**
-         * 选择相片添加布局以及相关逻辑处理
-         */
-        private void addImageView(LinearLayout viewLayout, final List<String> ims) {
-            for (int i = 0; i < ims.size(); i++) {
-                final int position = i;
-                View mView = LayoutInflater.from(mContext).inflate(R.layout.item_comment_image, null);
-                ImageView imageIv = (ImageView) mView.findViewById(R.id.imageBg_iv);
-                TextView btn = (TextView) mView.findViewById(R.id.imageBgBtn);
-                btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent=new Intent(mContext, PhotoViewActivity.class);
-                        intent.putExtra("images",ims.toArray(new String[]{}));
-                        intent.putExtra("position",position);
-                        startActivity(intent);
-
-                    }
-                });
-                ToolUtils.setImageCacheUrl(ims.get(i), imageIv, R.drawable.icon_loading_defalut);
-                viewLayout.addView(mView);
-            }
-        }
-    }
 
 
     @Override

@@ -3,7 +3,6 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,7 +11,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,10 +25,9 @@ import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.WebViewActivity;
+import com.zhaidou.adapter.ArticleGoodsAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.base.BaseListAdapter;
-import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.utils.NetworkUtils;
@@ -71,7 +68,7 @@ public class SoftListFragment extends BaseFragment {
     private static final int UPDATE_HOMELIST = 3;
     private List<CartGoodsItem> articleList = new ArrayList<CartGoodsItem>();
 
-    private GoodsAdapter mGoodsAdapter;
+    private ArticleGoodsAdapter mGoodsAdapter;
     private int page = 1;
     private int pageSize;
     private int pageCount;
@@ -155,7 +152,7 @@ public class SoftListFragment extends BaseFragment {
         scrollView.setMode(PullToRefreshBase.Mode.BOTH);
         scrollView.setOnRefreshListener(onRefreshListener);
         listView = (ListViewForScrollView) view.findViewById(R.id.lv_special_list);
-        mGoodsAdapter = new GoodsAdapter(getActivity(), articleList);
+        mGoodsAdapter = new ArticleGoodsAdapter(getActivity(), articleList);
         listView.setAdapter(mGoodsAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -276,57 +273,6 @@ public class SoftListFragment extends BaseFragment {
         };
         ZDApplication.mRequestQueue.add(request);
     }
-
-public class GoodsAdapter extends BaseListAdapter<CartGoodsItem> {
-    Context context;
-
-    public GoodsAdapter(Context context, List<CartGoodsItem> list) {
-        super(context, list);
-        this.context = context;
-    }
-
-    @Override
-    public View bindView(int position, View convertView, ViewGroup parent) {
-//            convertView = mHashMap.get(position);
-
-        if (convertView == null)
-            convertView = mInflater.inflate(R.layout.item_article_goods, null);
-
-        TextView goodsNameTv = ViewHolder.get(convertView, R.id.goodsNameTv);
-        TextView goodsSizeTv = ViewHolder.get(convertView, R.id.goodsSizeTv);
-        ImageView goodsImageTv = ViewHolder.get(convertView, R.id.goodsImageTv);
-        TextView goodsPriceTv = ViewHolder.get(convertView, R.id.goodsPriceTv);
-        TextView goodsNumTv = ViewHolder.get(convertView, R.id.goodsNumTv);
-        TextView goodsTypeTv = ViewHolder.get(convertView, R.id.goodsTypeTv);
-        TextView goodsBuyTv = ViewHolder.get(convertView, R.id.goodsBuyTv);
-
-        CartGoodsItem goodsItem = getList().get(position);
-        goodsNameTv.setText(goodsItem.name);
-        goodsSizeTv.setText(goodsItem.size);
-        goodsNumTv.setText("X" + goodsItem.num);
-        goodsPriceTv.setText("￥" +ToolUtils.isIntPrice(goodsItem.currentPrice+"") );
-        ToolUtils.setImageCacheUrl(goodsItem.imageUrl, goodsImageTv, R.drawable.icon_loading_defalut);
-
-        if (goodsItem.storeId.equals("T")) {
-            goodsTypeTv.setText("淘宝");
-            goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
-        } else if (goodsItem.storeId.equals("M")) {
-            goodsTypeTv.setText("天猫");
-            goodsTypeTv.setTextColor(Color.parseColor("#ff6262"));
-        } else if (goodsItem.storeId.equals("J")) {
-            goodsTypeTv.setText("京东");
-            goodsTypeTv.setTextColor(Color.parseColor("#ff6262"));
-        } else {
-            goodsTypeTv.setText("宅豆");
-            goodsTypeTv.setTextColor(getResources().getColor(R.color.green_color));
-        }
-
-
-//            mHashMap.put(position, convertView);
-        return convertView;
-    }
-
-}
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {

@@ -1,10 +1,8 @@
 package com.zhaidou.fragments;
 
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
@@ -104,31 +102,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     private String token;
     private int userId;
 
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
-    {
-        @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            String action = intent.getAction();
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
-            {
-                FetchCountData();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshAddCartTag))
-            {
-                FetchCountData();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshLoginTag))
-            {
-                checkLogin();
-                FetchCountData();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
-            {
-                initCartTips();
-            }
-        }
-    };
 
     private Handler mHandler = new Handler()
     {
@@ -251,7 +224,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         {
             CartCountManager.newInstance().setOnCartCountListener(this);
             mContext = getActivity();
-//            initBroadcastReceiver();
             rootView = inflater.inflate(R.layout.fragment_special_sale, container, false);
 
             titleTv = (TypeFaceTextView) rootView.findViewById(R.id.title_tv);
@@ -312,18 +284,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         return rootView;
     }
 
-    /**
-     * 注册广播
-     */
-    private void initBroadcastReceiver()
-    {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshAddCartTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
-        getActivity().registerReceiver(broadcastReceiver, intentFilter);
-    }
 
     public boolean checkLogin()
     {
@@ -694,8 +654,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     {
         mTimerView.stop();
         requestQueue.stop();
-        if (broadcastReceiver != null)
-           mContext.unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 

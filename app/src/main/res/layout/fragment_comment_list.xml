@@ -71,42 +71,27 @@
             android:background="@color/all_e"></View>
     </RelativeLayout>
 
-
-    <com.pulltorefresh.PullToRefreshScrollView
-        android:id="@+id/scrollView"
+    <com.pulltorefresh.PullToRefreshListView
+        android:id="@+id/lv_special_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@null"
+        android:listSelector="@android:color/transparent"
+        android:scrollbars="none"
         android:layout_below="@+id/rl_actionbar"
         android:layout_above="@+id/bottomLine"
         android:layout_marginBottom="10dp"
-        android:scrollbars="none">
+        />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <com.zhaidou.view.TypeFaceTextView
-                android:id="@+id/commentNullTv"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:gravity="center"
-                android:visibility="gone"
-                android:textColor="@color/text_gary_color"
-                android:text="暂无评论信息"/>
-
-            <com.zhaidou.view.ListViewForScrollView
-                android:id="@+id/lv_special_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:divider="@null"
-                android:listSelector="@android:color/transparent"
-                android:scrollbars="none"
-                />
-
-        </LinearLayout>
-
-    </com.pulltorefresh.PullToRefreshScrollView>
-
+    <com.zhaidou.view.TypeFaceTextView
+        android:id="@+id/commentNullTv"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:gravity="center"
+        android:visibility="gone"
+        android:textColor="@color/text_gary_color"
+        android:layout_below="@+id/rl_actionbar"
+        android:text="暂无评论信息"/>
 
 
     <LinearLayout

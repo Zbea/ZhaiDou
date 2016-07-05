@@ -2,10 +2,8 @@ package com.zhaidou.fragments;
 
 
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -110,32 +108,6 @@ public class ShopTodaySpecialFragment extends BaseFragment implements CartCountM
     private int cartCount;//购物车商品数量
     private int userId;
     private String token;
-
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
-    {
-        @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            String action = intent.getAction();
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
-            {
-                FetchCountData();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshAddCartTag))
-            {
-                FetchCountData();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshLoginTag))
-            {
-                checkLogin();
-                FetchCountData();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
-            {
-                initCartTips();
-            }
-        }
-    };
 
 
     private Handler handler = new Handler()
@@ -287,7 +259,6 @@ public class ShopTodaySpecialFragment extends BaseFragment implements CartCountM
         {
             mView = inflater.inflate(R.layout.shop_today_special_page, container, false);
             mContext = getActivity();
-//            initBroadcastReceiver();
             initView();
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
@@ -298,20 +269,6 @@ public class ShopTodaySpecialFragment extends BaseFragment implements CartCountM
         }
         return mView;
     }
-
-    /**
-     * 注册广播
-     */
-    private void initBroadcastReceiver()
-    {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshAddCartTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
-        mContext.registerReceiver(broadcastReceiver, intentFilter);
-    }
-
 
     /**
      * 初始化数据
@@ -369,8 +326,8 @@ public class ShopTodaySpecialFragment extends BaseFragment implements CartCountM
 
     public boolean checkLogin()
     {
-        token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
-        userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
+        token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
+        userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
         boolean isLogin = !TextUtils.isEmpty(token) && userId > -1;
         return isLogin;
     }
@@ -604,8 +561,6 @@ public class ShopTodaySpecialFragment extends BaseFragment implements CartCountM
     public void onDestroy()
     {
         hideInputMethod();
-        if (broadcastReceiver != null)
-            mContext.unregisterReceiver(broadcastReceiver);
         timeTvs.stop();
         mRequestQueue.stop();
         super.onDestroy();

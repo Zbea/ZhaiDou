@@ -3,7 +3,6 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,21 +18,19 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.pulltorefresh.PullToRefreshBase;
-import com.pulltorefresh.PullToRefreshScrollView;
+import com.pulltorefresh.PullToRefreshListView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.WebViewActivity;
+import com.zhaidou.adapter.ArticleGoodsAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.base.BaseListAdapter;
-import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
-import com.zhaidou.view.ListViewForScrollView;
 import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
@@ -59,8 +55,7 @@ public class GoodsArticleListFragment extends BaseFragment
     private String mString;
 
     private TextView titleTv;
-    private PullToRefreshScrollView scrollView;
-    private ListViewForScrollView listView;
+    private PullToRefreshListView listView;
     private TextView subtotalTv;
 
     private Dialog mDialog;
@@ -69,7 +64,7 @@ public class GoodsArticleListFragment extends BaseFragment
     private static final int UPDATE_HOMELIST = 3;
     private List<CartGoodsItem> articleList = new ArrayList<CartGoodsItem>();
 
-    private GoodsAdapter mGoodsAdapter;
+    private ArticleGoodsAdapter mGoodsAdapter;
     private int page = 1;
     private int pageSize;
     private int pageCount;
@@ -85,13 +80,13 @@ public class GoodsArticleListFragment extends BaseFragment
             }
             subtotalTv.setText("￥"+ToolUtils.isIntPrice(totalPrice));
             mGoodsAdapter.notifyDataSetChanged();
-            scrollView.onRefreshComplete();
+            listView.onRefreshComplete();
             if (articleList.size()< pageCount)
             {
-                scrollView.setMode(PullToRefreshBase.Mode.BOTH);
+                listView.setMode(PullToRefreshBase.Mode.BOTH);
             } else
             {
-                scrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+                listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
             }
 
         }
@@ -165,11 +160,11 @@ public class GoodsArticleListFragment extends BaseFragment
         titleTv.setText("软装清单");
 
         subtotalTv=(TextView) view.findViewById(R.id.detailsSubtotalTv);
-        scrollView = (PullToRefreshScrollView) view.findViewById(R.id.scrollView);
-        scrollView.setMode(PullToRefreshBase.Mode.BOTH);
-        scrollView.setOnRefreshListener(onRefreshListener);
-        listView = (ListViewForScrollView) view.findViewById(R.id.lv_special_list);
-        mGoodsAdapter = new GoodsAdapter(getActivity(), articleList);
+
+        listView = (PullToRefreshListView) view.findViewById(R.id.lv_special_list);
+        listView.setMode(PullToRefreshBase.Mode.BOTH);
+        listView.setOnRefreshListener(onRefreshListener);
+        mGoodsAdapter = new ArticleGoodsAdapter(getActivity(), articleList);
         listView.setAdapter(mGoodsAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
@@ -301,61 +296,6 @@ public class GoodsArticleListFragment extends BaseFragment
             }
         };
         ZDApplication.mRequestQueue.add(request);
-    }
-
-    public class GoodsAdapter extends BaseListAdapter<CartGoodsItem>
-    {
-        Context context;
-
-        public GoodsAdapter(Context context, List<CartGoodsItem> list)
-        {
-            super(context, list);
-            this.context = context;
-        }
-
-        @Override
-        public View bindView(int position, View convertView, ViewGroup parent)
-        {
-            if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_article_goods, null);
-
-            TextView goodsNameTv = ViewHolder.get(convertView, R.id.goodsNameTv);
-            TextView goodsSizeTv = ViewHolder.get(convertView, R.id.goodsSizeTv);
-            ImageView goodsImageTv = ViewHolder.get(convertView, R.id.goodsImageTv);
-            TextView goodsPriceTv = ViewHolder.get(convertView, R.id.goodsPriceTv);
-            TextView goodsNumTv = ViewHolder.get(convertView, R.id.goodsNumTv);
-            TextView goodsTypeTv = ViewHolder.get(convertView, R.id.goodsTypeTv);
-            TextView goodsBuyTv = ViewHolder.get(convertView, R.id.goodsBuyTv);
-
-            CartGoodsItem goodsItem = getList().get(position);
-            goodsNameTv.setText(goodsItem.name);
-            goodsSizeTv.setText(goodsItem.size);
-            goodsNumTv.setText("X"+goodsItem.num);
-            goodsPriceTv.setText("￥"+ToolUtils.isIntPrice(goodsItem.currentPrice+""));
-            ToolUtils.setImageCacheUrl(goodsItem.imageUrl, goodsImageTv, R.drawable.icon_loading_defalut);
-
-            if(goodsItem.storeId.equals("T"))
-            {
-                goodsTypeTv.setText("淘宝");
-                goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
-            }
-            else if(goodsItem.storeId.equals("M"))
-            {
-                goodsTypeTv.setText("天猫");
-                goodsTypeTv.setTextColor(Color.parseColor("#ff6262"));
-            }
-            else if(goodsItem.storeId.equals("J"))
-            {
-                goodsTypeTv.setText("京东");
-                goodsTypeTv.setTextColor(Color.parseColor("#ff6262"));
-            }
-            else
-            {
-                goodsTypeTv.setText("宅豆");
-                goodsTypeTv.setTextColor(getResources().getColor(R.color.green_color));
-            }
-            return convertView;
-        }
     }
 
     @Override

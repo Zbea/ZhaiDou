@@ -1,10 +1,8 @@
 package com.zhaidou.fragments;
 
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -37,7 +35,6 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
@@ -46,10 +43,12 @@ import com.zhaidou.adapter.ShopTodaySpecialAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
+import com.zhaidou.base.CartCountManager;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.ShopTodayItem;
+import com.zhaidou.utils.Api;
 import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -68,7 +67,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HomeFeatrueFragment extends BaseFragment {
+public class HomeFeatrueFragment extends BaseFragment implements CartCountManager.OnCartCountListener
+{
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String ARG_TITLE = "title";
@@ -118,32 +118,6 @@ public class HomeFeatrueFragment extends BaseFragment {
     private int userId;
     private int cartCount;//购物车商品数量
     private CommentSendFragment commentSendFragment;
-
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
-    {
-        @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            String action = intent.getAction();
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
-            {
-                FetchCountData();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshAddCartTag))
-            {
-                FetchCountData();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshLoginTag))
-            {
-                checkLogina();
-                FetchCountData();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
-            {
-                initCartTips();
-            }
-        }
-    };
 
     private Handler mHandler = new Handler() {
         @Override
@@ -211,10 +185,6 @@ public class HomeFeatrueFragment extends BaseFragment {
 
                 case UPDATE_CART_DATA:
                     initCartTips();
-                    if ((((MainActivity)mContext).cart_dot).getVisibility()==View.GONE)
-                    {
-                        ((MainActivity)mContext).CartTip(cartCount);
-                    }
                     break;
             }
         }
@@ -406,10 +376,9 @@ public class HomeFeatrueFragment extends BaseFragment {
             myCartBtn.setOnClickListener(onClickListener);
             cartTipsTv = (TextView) rootView.findViewById(R.id.myCartTipsTv);
 
+            CartCountManager.newInstance().setOnCartCountListener(this);
             checkLogina();
             initData();
-
-            initBroadcastReceiver();
 
             frameLayout=(FrameLayout)rootView.findViewById(R.id.frameLayout);
 
@@ -421,18 +390,6 @@ public class HomeFeatrueFragment extends BaseFragment {
             parent.removeView(rootView);
         }
         return rootView;
-    }
-    /**
-     * 注册广播
-     */
-    private void initBroadcastReceiver()
-    {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshAddCartTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
-        getActivity().registerReceiver(broadcastReceiver, intentFilter);
     }
 
     /**
@@ -726,40 +683,20 @@ public class HomeFeatrueFragment extends BaseFragment {
      */
     public void FetchCountData()
     {
-        String url = ZhaiDou.CartGoodsCountUrl+userId;
-        ToolUtils.setLog("url:" + url);
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        Api.getCartCount(userId, new Api.SuccessListener()
         {
             @Override
-            public void onResponse(JSONObject jsonObject)
+            public void onSuccess(Object jsonObject)
             {
                 if (jsonObject != null)
                 {
-                    JSONObject object = jsonObject.optJSONObject("data");
+                    JSONObject object = ((JSONObject) jsonObject).optJSONObject("data");
                     cartCount = object.optInt("totalQuantity");
                     mHandler.sendEmptyMessage(UPDATE_CART_DATA);
+                    CartCountManager.newInstance().notify(cartCount);
                 }
             }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-                if (mDialog != null)
-                    mDialog.dismiss();
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
-        requestQueue.add(request);
+        }, null);
     }
 
 
@@ -847,6 +784,17 @@ public class HomeFeatrueFragment extends BaseFragment {
             mHashMap.put(position, convertView);
             return convertView;
         }
+    }
+
+    /**
+     * 购物车数量变化刷新
+     * @param count
+     */
+    @Override
+    public void onChange(int count)
+    {
+        cartCount=count;
+        initCartTips();
     }
 
 }

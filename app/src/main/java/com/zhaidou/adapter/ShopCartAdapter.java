@@ -22,39 +22,38 @@ import com.zhaidou.utils.ToolUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Zbea on 16/7/4.
  */
 public class ShopCartAdapter extends BaseListAdapter<CartGoodsItem>
 {
-    private List<CartGoodsItem> items=new ArrayList<CartGoodsItem>();
     private Handler mHandler;
     private static List<CartGoodsItem> itemChecks=new ArrayList<CartGoodsItem>();
-    private Map<Integer,Boolean> selected=new HashMap<Integer, Boolean>();
-    private Map<Integer,View> views=new HashMap<Integer, View>();
-    private static HashMap<Integer, Boolean> isSelected=new HashMap<Integer, Boolean>();
-    private static HashMap<Integer, Integer> numbers=new HashMap<Integer, Integer>();
+    private static HashMap<String, Boolean> isSelected=new HashMap<String, Boolean>();
 
     public ShopCartAdapter(Context context, List<CartGoodsItem> list,Handler handler)
     {
         super(context, list);
-        items=list;
         mHandler=handler;
     }
 
     @Override
     public void setList(List<CartGoodsItem> list)
     {
-        items=list;
+        HashMap<String, Boolean> initSelected=new HashMap<String, Boolean>();
+        for (int i = 0; i < list.size(); i++)
+        {
+            String sizeId=list.get(i).sizeId;
+            initSelected.put(sizeId, isSelected.get(sizeId)!=null?isSelected.get(sizeId):false);
+        }
+        isSelected=initSelected;
         super.setList(list);
     }
 
     @Override
     public View bindView(final int position, View convertView, ViewGroup parent)
     {
-        convertView=views.get(position);
         if (convertView==null)
             convertView = LayoutInflater.from(mContext).inflate(R.layout.shop_cart_goods_item, null);
         TextView itemName = ViewHolder.get(convertView, R.id.cartItemNameTv);
@@ -92,7 +91,7 @@ public class ShopCartAdapter extends BaseListAdapter<CartGoodsItem>
             itemLine.setVisibility(View.GONE);
         }
 
-        final CartGoodsItem cartGoodsItem=getItem(position);
+        final CartGoodsItem cartGoodsItem=getList().get(position);
 
         //判断商品是否下架或者卖光处理
         if (!cartGoodsItem.isOver.equals("true")&&!cartGoodsItem.isPublish.equals("true")&&!cartGoodsItem.isDate.equals("true"))
@@ -101,26 +100,20 @@ public class ShopCartAdapter extends BaseListAdapter<CartGoodsItem>
             cartNumView.setVisibility(View.VISIBLE);
             cartNumLoseView.setVisibility(View.GONE);
             itemCheck.setVisibility(View.VISIBLE);
-            itemCheck.setChecked(false);
-
             itemCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
             {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b)
                 {
-                    if (!b)
+                    if (b)
                     {
-                        cartGoodsItem.isCheck=true;
-                        isSelected.put(position,true);
-                        itemChecks.add(cartGoodsItem);
+                        isSelected.put(cartGoodsItem.sizeId,true);
                     }
                     else
                     {
-                        cartGoodsItem.isCheck=false;
-                        isSelected.put(position,false);
-                        itemChecks.remove(cartGoodsItem);
+                        isSelected.put(cartGoodsItem.sizeId,false);
                     }
-                    mHandler.sendEmptyMessage(10);
+                    setRefreshCheckView();
                 }
             });
         } else
@@ -133,7 +126,7 @@ public class ShopCartAdapter extends BaseListAdapter<CartGoodsItem>
         }
 
         numLimit.setVisibility(cartGoodsItem.num > cartGoodsItem.count ? View.VISIBLE : View.GONE);
-
+        itemCheck.setChecked(isSelected.get(cartGoodsItem.sizeId)?true:false);
         if (cartGoodsItem.isPublish.equals("true"))
         {
             isOver.setVisibility(View.GONE);
@@ -157,7 +150,6 @@ public class ShopCartAdapter extends BaseListAdapter<CartGoodsItem>
             cartNumView.setVisibility(View.GONE);
             cartNumLoseView.setVisibility(View.VISIBLE);
         }
-        itemCheck.setChecked(cartGoodsItem.isCheck);
         itemName.setText(cartGoodsItem.name);
         itemSize.setText(cartGoodsItem.size);
         itemCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + cartGoodsItem.currentPrice));
@@ -166,19 +158,39 @@ public class ShopCartAdapter extends BaseListAdapter<CartGoodsItem>
         itemNum.setText("" + cartGoodsItem.num);
         itemLoseNum.setText("" + cartGoodsItem.num);
         ToolUtils.setImageCacheUrl(cartGoodsItem.imageUrl, itemImage, R.drawable.icon_loading_defalut);
-
-        views.put(position,convertView);
-        return null;
+        return convertView;
     }
 
 
-    public final static  List<CartGoodsItem> getItemChecks()
+    public List<CartGoodsItem> getItemChecks()
     {
+        itemChecks.clear();
+        for (int i = 0; i <getList().size() ; i++)
+        {
+            CartGoodsItem cartGoodsItem=getList().get(i);
+            if (isSelected.get(cartGoodsItem.sizeId))
+            {
+                if (!cartGoodsItem.isOver.equals("true")&&!cartGoodsItem.isPublish.equals("true")&&!cartGoodsItem.isDate.equals("true"))
+                    itemChecks.add(cartGoodsItem);
+            }
+        }
         return itemChecks;
     }
 
-    public final static void setItemChecks(List<CartGoodsItem> itemChecks)
+    public HashMap<String, Boolean> getIsSelected()
     {
-        ShopCartAdapter.itemChecks=itemChecks;
+        return isSelected;
+    }
+
+    public void setIsSelected(CartGoodsItem cartGoodsItem)
+    {
+        isSelected.remove(cartGoodsItem.sizeId);
+    }
+    /**
+     * 刷新选中数据
+     */
+    public void setRefreshCheckView()
+    {
+        mHandler.sendEmptyMessage(10);
     }
 }

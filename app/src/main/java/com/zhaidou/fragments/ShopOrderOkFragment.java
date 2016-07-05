@@ -955,11 +955,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     ToolUtils.setLog(jsonObject.toString());
                 handler.obtainMessage(UPDATE_COUPON_RESULT,jsonObject).sendToTarget();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-            }
-        });
+        }, null);
         ((ZDApplication) mContext.getApplicationContext()).mRequestQueue.add(request);
 
     }
@@ -970,7 +966,7 @@ public class ShopOrderOkFragment extends BaseFragment
      */
     private void FetchAddressData()
     {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.AddressListUrl, new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,ZhaiDou.AddressListUrl, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -1028,17 +1024,7 @@ public class ShopOrderOkFragment extends BaseFragment
                 nullNetView.setVisibility(View.GONE);
                 nullView.setVisibility(View.VISIBLE);
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 
@@ -1107,7 +1093,7 @@ public class ShopOrderOkFragment extends BaseFragment
     public void FetchSMSData()
     {
         String url = ZhaiDou.OrderGetSMS+phone_Str;
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -1153,17 +1139,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     mDialog.dismiss();
                 ToolUtils.setToastLong(mContext,R.string.loading_fail_txt);
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 
@@ -1356,9 +1332,6 @@ public class ShopOrderOkFragment extends BaseFragment
             handler.sendEmptyMessage(UPDATE_NULLCOUPON_SUCCESSS);
         }
     }
-
-
-
 
     public void onResume()
     {

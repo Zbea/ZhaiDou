@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Zbea on 16/6/28.
+ * 文章评论列表适配器Created by Zbea on 16/6/28.
  */
 public class CommentAdapter extends BaseListAdapter<Comment>
 {
