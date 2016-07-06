@@ -41,6 +41,7 @@ import com.zhaidou.model.CartArrayItem;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.Coupon;
 import com.zhaidou.model.ZhaiDouRequest;
+import com.zhaidou.utils.Api;
 import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -1210,12 +1211,12 @@ public class ShopOrderOkFragment extends BaseFragment
      */
     public void FetchOSaleData()
     {
-        String url = ZhaiDou.IsBuyOSaleUrl+userId;
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        Api.getIsBuyOSale(userId, new Api.SuccessListener()
         {
             @Override
-            public void onResponse(JSONObject jsonObject)
+            public void onSuccess(Object object)
             {
+                JSONObject jsonObject = (JSONObject) object;
                 if (jsonObject != null)
                 {
                     isOSaleBuy = jsonObject.optInt("ifBuy")==1?false:true;
@@ -1226,27 +1227,16 @@ public class ShopOrderOkFragment extends BaseFragment
                     handler.sendEmptyMessage(UPDATE_ISBUYOSALE);
                 }
             }
-        }, new Response.ErrorListener()
+        }, new Api.ErrorListener()
         {
             @Override
-            public void onErrorResponse(VolleyError volleyError)
+            public void onError(Object object)
             {
                 if (mDialog != null)
                     mDialog.dismiss();
                 ToolUtils.setToast(mContext,R.string.loading_fail_txt);
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
+        });
     }
 
 

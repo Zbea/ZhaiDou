@@ -30,31 +30,23 @@ import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Comment;
+import com.zhaidou.utils.Api;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceEditText;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 
 /**
@@ -93,7 +85,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
     private InputMethodManager inputMethodManagers;
     private PhotoMenuFragment menuFragment;
     private List<Bitmap> photos=new ArrayList<Bitmap>();
-    private List<File> files=new ArrayList<File>();
+    private List<String> files=new ArrayList<String>();
     private File file;
     private String pathUrl;
     private String commentInfo="";
@@ -374,30 +366,38 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
     private void commitComment()
     {
         mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"");
+        final Map<String, Object> params = new HashMap<String, Object>();
+        params.put("commentUserId", userId);
+        params.put("commentUserName", userName);
+        params.put("articleId", mIndex+"");
+        params.put("commentType", "C");
+        params.put("articleTitle", mPage+"");
+        params.put("commentId", mCommentId);
+        params.put("content", commentInfo+"");
+        params.put("images", files);
         new Thread(new Runnable()
         {
             @Override
             public void run()
             {
-                try
+                Api.comment(params, new Api.SuccessListener()
                 {
-                    String result=postSer();
-                    if (result!=null&&result.length()>0)
+                    @Override
+                    public void onSuccess(Object object)
                     {
-                        mHandler.obtainMessage(REFRESH_COMMIT_SUCCESS, result).sendToTarget();
+                        mHandler.obtainMessage(REFRESH_COMMIT_SUCCESS, object).sendToTarget();
                     }
-                    else
+                }, new Api.ErrorListener()
+                {
+                    @Override
+                    public void onError(Object object)
                     {
                         mHandler.sendEmptyMessage(REFRESH_COMMIT_FAIl);
                     }
-
-                }
-                catch (JSONException e)
-                {
-                    e.printStackTrace();
-                }
+                });
             }
         }).start();
+
     }
 
     /**
@@ -598,7 +598,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
      */
     private void addImageView(final Bitmap photo)
     {
-        files.add(file);
+        files.add(pathUrl);
         photos.add(photo);
         final View mView = LayoutInflater.from(mContext).inflate(R.layout.item_image_crop, null);
         ImageView imageIv = ( ImageView ) mView.findViewById(R.id.imageBg_iv);
@@ -635,69 +635,6 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
             imageAddBtn.setVisibility(View.VISIBLE);
         }
         listenerCommitBtn();
-    }
-
-    private String postSer() throws JSONException
-    {
-        String BOUNDARY = UUID.randomUUID().toString();
-        String result = null;
-        BufferedReader in = null;
-        try
-        {
-            MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE, BOUNDARY, Charset.defaultCharset());
-            multipartEntity.addPart("commentUserId",new StringBody(userId+""));
-            multipartEntity.addPart("commentUserName",new StringBody( userName,Charset.defaultCharset()));
-            multipartEntity.addPart("content",new StringBody(commentInfo+"",Charset.defaultCharset()));
-            multipartEntity.addPart("articleId",new StringBody(mIndex+""));
-            multipartEntity.addPart("articleTitle",new StringBody(mPage+"",Charset.defaultCharset()));
-            multipartEntity.addPart("commentType",new StringBody("C"));
-            if (mComment!=null)
-            {
-                multipartEntity.addPart("commentId",new StringBody(mCommentId+""));
-            }
-
-            for (int i = 0; i < files.size(); i++)
-            {
-                FileBody fileBody = new FileBody(files.get(i));
-                multipartEntity.addPart("files", fileBody);
-            }
-
-            HttpPost request = new HttpPost(ZhaiDou.CommentAddUrl);
-            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-            request.setEntity(multipartEntity);
-            DefaultHttpClient httpClient = new DefaultHttpClient();
-            HttpResponse response = httpClient.execute(request);
-            in = new BufferedReader(new InputStreamReader(response.getEntity()
-                    .getContent()));
-            StringBuffer sb = new StringBuffer("");
-            String line = "";
-            String NL = System.getProperty("line.separator");
-            while ((line = in.readLine()) != null)
-            {
-                sb.append(line + NL);
-            }
-            in.close();
-            result = sb.toString();
-            ToolUtils.setLog(""+result);
-            return result;
-
-        } catch (Exception e)
-        {
-
-        } finally
-        {
-            if (in != null)
-            {
-                try
-                {
-                    in.close();
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return result;
     }
 
 

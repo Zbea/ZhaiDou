@@ -62,7 +62,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CommentListFragment1 extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<ListView> {
+public class CommentAccountListFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<ListView> {
 
     private static final String ARG_INDEX = "index";
     private static final String ARG_PARAM2 = "param2";
@@ -94,8 +94,8 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
         }
     };
 
-    public static CommentListFragment1 newInstance(int index, String param2) {
-        CommentListFragment1 fragment = new CommentListFragment1();
+    public static CommentAccountListFragment newInstance(int index, String param2) {
+        CommentAccountListFragment fragment = new CommentAccountListFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_INDEX, index);
         args.putString(ARG_PARAM2, param2);
@@ -103,7 +103,7 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
         return fragment;
     }
 
-    public CommentListFragment1() {
+    public CommentAccountListFragment() {
     }
 
     @Override

@@ -30,7 +30,6 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Area;
 import com.zhaidou.model.City;
-import com.zhaidou.model.HttpPatch;
 import com.zhaidou.model.Province;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
@@ -43,6 +42,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
@@ -335,9 +335,8 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
             }else if (mStatus==UPDATE_ADDRESS_INFO){
                 parameters.add(new BasicNameValuePair("id", mId+""));
                 // 实例化HTTP方法
-                HttpPatch request = new HttpPatch(ZhaiDou.AddressEditUrl);
+                HttpPut request = new HttpPut(ZhaiDou.AddressEditUrl);
                 request.addHeader("SECAuthorization",token);
-
                 // 创建UrlEncodedFormEntity对象
                 UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
                         parameters, HTTP.UTF_8);//这里要设置，不然回来乱码

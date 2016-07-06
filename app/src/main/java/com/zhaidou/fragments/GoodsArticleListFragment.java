@@ -168,20 +168,20 @@ public class GoodsArticleListFragment extends BaseFragment
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                if (articleList.get(position).storeId.equals("S"))
+                if (articleList.get(position-1).storeId.equals("S"))
                 {
-                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(articleList.get(position).name, articleList.get(position).goodsId);
+                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", "");
                     Bundle bundle = new Bundle();
-                    bundle.putString("index", articleList.get(position).goodsId);
-                    bundle.putString("page", articleList.get(position).name);
-                    bundle.putString("sizeId", articleList.get(position).sizeId);
+                    bundle.putString("index", articleList.get(position-1).goodsId);
+                    bundle.putString("page", articleList.get(position-1).name);
+                    bundle.putString("sizeId", articleList.get(position-1).sizeId);
                     goodsDetailsFragment.setArguments(bundle);
                     ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
 
                 } else
                 {
                     Intent intent = new Intent();
-                    intent.putExtra("url", articleList.get(position).userId);
+                    intent.putExtra("url", articleList.get(position-1).userId);
                     intent.setClass(mContext, WebViewActivity.class);
                     mContext.startActivity(intent);
                 }

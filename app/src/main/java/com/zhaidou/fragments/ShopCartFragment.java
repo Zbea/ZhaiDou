@@ -13,7 +13,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
@@ -295,10 +294,10 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
         listView=(ListView)mView.findViewById(R.id.cartListView);
         shopCartAdapter=new ShopCartAdapter(mContext,items,mHandler);
         listView.setAdapter(shopCartAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        shopCartAdapter.setOnInViewClickListener(R.id.cartContentLine,new BaseListAdapter.onInternalClickListener()
         {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            public void OnClickListener(View parentV, View v, Integer position, Object values)
             {
                 CartGoodsItem cartGoodsItem = items.get(position);
                 GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(cartGoodsItem.name, cartGoodsItem.goodsId);

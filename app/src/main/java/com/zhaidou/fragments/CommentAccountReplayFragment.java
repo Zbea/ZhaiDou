@@ -63,12 +63,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ReplayFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<ListView> {
+public class CommentAccountReplayFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<ListView> {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private CommentListAdapter commentListAdapter;
@@ -96,8 +95,8 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
     };
     private File file1;
 
-    public static ReplayFragment newInstance(String param1, String param2) {
-        ReplayFragment fragment = new ReplayFragment();
+    public static CommentAccountReplayFragment newInstance(String param1, String param2) {
+        CommentAccountReplayFragment fragment = new CommentAccountReplayFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -105,7 +104,7 @@ public class ReplayFragment extends BaseFragment implements PullToRefreshBase.On
         return fragment;
     }
 
-    public ReplayFragment() {
+    public CommentAccountReplayFragment() {
     }
 
     @Override

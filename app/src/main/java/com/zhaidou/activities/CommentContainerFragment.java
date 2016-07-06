@@ -13,8 +13,8 @@ import android.widget.TextView;
 
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.fragments.CommentListFragment1;
-import com.zhaidou.fragments.ReplayFragment;
+import com.zhaidou.fragments.CommentAccountListFragment;
+import com.zhaidou.fragments.CommentAccountReplayFragment;
 
 public class CommentContainerFragment extends BaseFragment {
 
@@ -22,8 +22,8 @@ public class CommentContainerFragment extends BaseFragment {
     private String[] commentType = {"A", "C"};
 
 
-    private CommentListFragment1 mCommentListFragment;
-    private ReplayFragment mReplyFragment;
+    private CommentAccountListFragment mCommentListFragment;
+    private CommentAccountReplayFragment mReplyFragment;
     private Fragment[] fragments;
 
     private View rootView;
@@ -42,8 +42,8 @@ public class CommentContainerFragment extends BaseFragment {
             final RadioGroup radioGroup = (RadioGroup) rootView.findViewById(R.id.radioGroup);
 
             radioGroup.check(R.id.received);
-            mCommentListFragment = CommentListFragment1.newInstance(index, commentType[1]);
-            mReplyFragment = ReplayFragment.newInstance(index + "", commentType[0]);
+            mCommentListFragment = CommentAccountListFragment.newInstance(index, commentType[1]);
+            mReplyFragment = CommentAccountReplayFragment.newInstance(index + "", commentType[0]);
             fragments = new Fragment[]{mReplyFragment, mCommentListFragment};
             getChildFragmentManager().beginTransaction().add(R.id.container, mCommentListFragment)
                     .add(R.id.container, mReplyFragment).hide(mCommentListFragment).hide(mReplyFragment).commit();

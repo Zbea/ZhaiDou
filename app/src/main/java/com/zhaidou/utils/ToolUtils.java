@@ -416,7 +416,7 @@ public class ToolUtils
         {
             if (item.title.equals("天天刮奖"))
             {
-                Intent detailIntent = new Intent(mContext, HomeCompetitionActivity.class);
+                    Intent detailIntent = new Intent(mContext, HomeCompetitionActivity.class);
                 detailIntent.putExtra("url", item.typeValue);
                 detailIntent.putExtra("from", "lottery");
                 detailIntent.putExtra("title", "天天刮奖");
