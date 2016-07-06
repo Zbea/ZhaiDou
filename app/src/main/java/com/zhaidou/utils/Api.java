@@ -43,6 +43,29 @@ import java.util.UUID;
  */
 public class Api {
 
+    /**
+     * 获取省市区
+     * @param successListener
+     * @param errorListener
+     */
+    public static void getAddressCity(final SuccessListener successListener, final ErrorListener errorListener) {
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.GET, ZhaiDou.ORDER_ADDRESS_URL, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (successListener != null)
+                    successListener.onSuccess(jsonObject);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                if (errorListener != null)
+                    errorListener.onError(volleyError);
+            }
+        });
+        ZDApplication.mRequestQueue.add(request);
+    }
+
 
     /**
      * 零元特卖购买请求
@@ -68,7 +91,11 @@ public class Api {
         ZDApplication.mRequestQueue.add(request);
     }
 
-
+    /**
+     * 自动更新管理
+     * @param successListener
+     * @param errorListener
+     */
     public static void getApkManage(final SuccessListener successListener, final ErrorListener errorListener) {
         ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.GET, ZhaiDou.ApkUrl, new Response.Listener<JSONObject>()
         {

@@ -86,13 +86,10 @@ import android.view.ViewGroup;
 
      public void setData(List<Province> provinceList) {
          for (Province province : provinceList) {
-             Log.i("province----->", province.getName());
              List<City> cityList = province.getCityList();
              for (City city : cityList) {
-                 Log.i("city---------->", city.getName());
                  List<Area> areas = city.getAreas();
                  for (Area area : areas) {
-                     Log.i("area----------->", area.getName());
                  }
              }
          }

@@ -32,7 +32,9 @@ import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.model.Province;
 import com.zhaidou.view.CustomEditText;
+import com.zhaidou.view.WheelViewContainer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -97,6 +99,59 @@ public class DialogUtils {
     public DialogUtils(Context mContext) {
         this.mContext = mContext;
     }
+
+    /**
+     * 展示城市列表
+     * @param provinces
+     * @param positiveListener2
+     * @param cancelListener2
+     */
+    public void showCityDialog(final List<Province> provinces,final PositiveListener2 positiveListener2,CancelListener2 cancelListener2)
+    {
+        final Dialog dialog = new Dialog(mContext, R.style.custom_dialog);
+
+        Window dialogWindow = dialog.getWindow();
+        dialogWindow.setGravity(Gravity.BOTTOM);
+        dialogWindow.setWindowAnimations(R.style.pop_anim_style);
+
+        View mDialogView = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_adddress, null, false);
+        final WheelViewContainer wheelView= (WheelViewContainer) mDialogView.findViewById(R.id.wheel_view_wv);
+        LinearLayout cityView= (LinearLayout) mDialogView.findViewById(R.id.cityView);
+        if(provinces != null && provinces.size() >0)
+        {
+            wheelView.setData(provinces);
+            wheelView.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            wheelView.setVisibility(View.GONE);
+        }
+        TextView cancelTv = (TextView) mDialogView.findViewById(R.id.bt_cancel);
+        cancelTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        TextView okTv = (TextView) mDialogView.findViewById(R.id.bt_confirm);
+        okTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                if(provinces != null && provinces.size() > 0)
+                {
+                    if (positiveListener2!=null)
+                        positiveListener2.onPositive(wheelView);
+                }
+                dialog.dismiss();
+            }
+        });
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.setCancelable(true);
+        dialog.addContentView(mDialogView, new LinearLayout.LayoutParams(DeviceUtils.getScreenWidth(mContext), ViewGroup.LayoutParams.MATCH_PARENT));
+        dialog.show();
+    }
+
 
     public void showDialog(String msg, final PositiveListener positiveListener, final CancelListener cancelListener) {
         this.positiveListener = positiveListener;

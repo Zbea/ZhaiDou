@@ -36,7 +36,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpClientStack;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.activities.LoginActivity;
@@ -124,7 +123,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private final int WX_PAY_SUCCESS = 0;
     private final int WX_PAY_FAILED = -1;
     private final int WX_PAY_CANCEL = -2;
-    public static List<Province> provinceList = new ArrayList<Province>();
+    private  List<Province> provinceList=new ArrayList<Province>();
 
     public int num = 0;
     public int cartCount = 0;
@@ -481,37 +480,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         return isLogin;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        CallbackContext.onActivityResult(requestCode, resultCode, data);
-        switch (resultCode)
-        {
-            case 2000:
-                int id = data.getIntExtra("id", -1);
-                String email = data.getStringExtra("email");
-                String token = data.getStringExtra("token");
-                String nick = data.getStringExtra("nick");
-                User user = new User(id, email, token, nick, null);
-                Message message = new Message();
-                message.obj = user;
-                message.what = 0;
-                mHandler.sendMessage(message);
-                break;
-            case 1000:
-                break;
-        }
 
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    protected void onDestroy()
-    {
-        unregisterReceiver(broadcastReceiver);
-        ((ZDApplication) getApplicationContext()).mRequestQueue.cancelAll(null);
-        super.onDestroy();
-    }
 
     public void logout(Fragment fragment)
     {
@@ -522,95 +491,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         }
         selectFragment(currentFragment, utilityFragment);
         setButton(homeButton);
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)
-    {
-        int num = manager.getBackStackEntryCount();
-        List<Fragment> fragments = manager.getFragments();
-        if (num == 0)
-        {
-            if (keyCode == KeyEvent.KEYCODE_BACK)
-            {
-                if ((System.currentTimeMillis() - mTime) > 2000)
-                {
-                    Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
-                    mTime = System.currentTimeMillis();
-                } else
-                {
-                    finish();
-                }
-                return true;
-            }
-        } else
-        {
-            if (fragments.size() > 0 && keyCode == KeyEvent.KEYCODE_BACK)
-            {
-                Fragment orderDetailFragment = manager.findFragmentByTag(OrderDetailFragment.class.getSimpleName());
-                Fragment shopPaymentSuccessFragmen = manager.findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
-                Fragment shopPaymentFailFragment = manager.findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
-                Fragment shopPaymentFragment = manager.findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
-                Fragment fragment = fragments.get(fragments.size() - 1);
-                if (fragment instanceof GoodsDetailsFragment || fragment instanceof OrderDetailFragment || fragment instanceof ShopPaymentFailFragment ||
-                        fragment instanceof ShopPaymentSuccessFragment || fragment instanceof ShopPaymentFragment)
-                {
-
-                    if (fragments.get(fragments.size() - 1) instanceof GoodsDetailsFragment)
-                    {
-                        manager.popBackStack();
-                        return true;
-                    }
-                    if ((orderDetailFragment != null && orderDetailFragment instanceof OrderDetailFragment))
-                    {
-                        //orderDetailFragment
-                        ToolUtils.setLog("关闭orderDetailFragment");
-                        popToStack(orderDetailFragment);
-                        return true;
-                    } else if ((shopPaymentSuccessFragmen != null && shopPaymentSuccessFragmen instanceof ShopPaymentSuccessFragment))
-                    {
-                        //ShopPaymentSuccessFragment关闭
-                        ToolUtils.setLog("关闭shopPaymentSuccessFragmen");
-                        popToStack(shopPaymentSuccessFragmen);
-                        return true;
-                    } else if ((shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment))
-                    {
-                        ToolUtils.setLog("关闭shopPaymentFailFragment");
-                        //ShopPaymentSuccessFragment关闭
-                        popToStack(shopPaymentFailFragment);
-                        return true;
-                    } else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment)
-                    {
-                        ToolUtils.setLog("关闭shopPaymentFragment");
-                        //ShopPaymentFragment返回弹出提示
-                        BackPaymentDialog(shopPaymentFragment);
-                        return true;
-                    }
-                } else
-                {
-                    return super.onKeyDown(keyCode, event);
-                }
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    /**
-     * 收银台返回弹窗处理
-     *
-     * @param shopPaymentFragment
-     */
-    private void BackPaymentDialog(final Fragment shopPaymentFragment)
-    {
-        DialogUtils mDialogUtils = new DialogUtils(this);
-        mDialogUtils.showDialog("确认要放弃支付?", new DialogUtils.PositiveListener()
-        {
-            @Override
-            public void onPositive()
-            {
-                popToStack(shopPaymentFragment);
-            }
-        }, null);
     }
 
     /**
@@ -636,8 +516,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     }
 
     /**
-     * 显示
-     *
+     * 显示购物车数量
      * @param ty
      */
     public void CartTip(int ty)
@@ -650,6 +529,24 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             cart_dot.setText("" + ty);
             cart_dot.setVisibility(View.VISIBLE);
         }
+    }
+
+    /**
+     * 得到预加载的城市
+     * @return
+     */
+    public List<Province> getAddressCity()
+    {
+        return provinceList;
+    }
+
+    /**
+     * 设置加载城市
+     * @param provinces
+     */
+    public void setAddressCity(List<Province> provinces)
+    {
+        provinceList=provinces;
     }
 
 
@@ -755,13 +652,14 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
 
     private void FetchCityData()
     {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_ADDRESS_URL, new Response.Listener<JSONObject>()
+        Api.getAddressCity(new Api.SuccessListener()
         {
             @Override
-            public void onResponse(JSONObject jsonObject)
+            public void onSuccess(Object object)
             {
-                if (jsonObject != null)
+                if (object != null)
                 {
+                    JSONObject jsonObject=(JSONObject)object;
                     JSONArray providerArr = jsonObject.optJSONArray("providers");
                     for (int i = 0; i < providerArr.length(); i++)
                     {
@@ -808,26 +706,9 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                         province.setCityList(cityList);
                         provinceList.add(province);
                     }
-
                 }
             }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
+        },null);
     }
 
     /**
@@ -909,4 +790,128 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     {
         CartTip(count);
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        CallbackContext.onActivityResult(requestCode, resultCode, data);
+        switch (resultCode)
+        {
+            case 2000:
+                int id = data.getIntExtra("id", -1);
+                String email = data.getStringExtra("email");
+                String token = data.getStringExtra("token");
+                String nick = data.getStringExtra("nick");
+                User user = new User(id, email, token, nick, null);
+                Message message = new Message();
+                message.obj = user;
+                message.what = 0;
+                mHandler.sendMessage(message);
+                break;
+            case 1000:
+                break;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        if (broadcastReceiver!=null)
+            unregisterReceiver(broadcastReceiver);
+        ((ZDApplication) getApplicationContext()).mRequestQueue.cancelAll(null);
+        super.onDestroy();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        int num = manager.getBackStackEntryCount();
+        List<Fragment> fragments = manager.getFragments();
+        if (num == 0)
+        {
+            if (keyCode == KeyEvent.KEYCODE_BACK)
+            {
+                if ((System.currentTimeMillis() - mTime) > 2000)
+                {
+                    Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
+                    mTime = System.currentTimeMillis();
+                } else
+                {
+                    finish();
+                }
+                return true;
+            }
+        } else
+        {
+            if (fragments.size() > 0 && keyCode == KeyEvent.KEYCODE_BACK)
+            {
+                Fragment orderDetailFragment = manager.findFragmentByTag(OrderDetailFragment.class.getSimpleName());
+                Fragment shopPaymentSuccessFragmen = manager.findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
+                Fragment shopPaymentFailFragment = manager.findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
+                Fragment shopPaymentFragment = manager.findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
+                Fragment fragment = fragments.get(fragments.size() - 1);
+                if (fragment instanceof GoodsDetailsFragment || fragment instanceof OrderDetailFragment || fragment instanceof ShopPaymentFailFragment ||
+                        fragment instanceof ShopPaymentSuccessFragment || fragment instanceof ShopPaymentFragment)
+                {
+
+                    if (fragments.get(fragments.size() - 1) instanceof GoodsDetailsFragment)
+                    {
+                        manager.popBackStack();
+                        return true;
+                    }
+                    if ((orderDetailFragment != null && orderDetailFragment instanceof OrderDetailFragment))
+                    {
+                        //orderDetailFragment
+                        ToolUtils.setLog("关闭orderDetailFragment");
+                        popToStack(orderDetailFragment);
+                        return true;
+                    } else if ((shopPaymentSuccessFragmen != null && shopPaymentSuccessFragmen instanceof ShopPaymentSuccessFragment))
+                    {
+                        //ShopPaymentSuccessFragment关闭
+                        ToolUtils.setLog("关闭shopPaymentSuccessFragmen");
+                        popToStack(shopPaymentSuccessFragmen);
+                        return true;
+                    } else if ((shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment))
+                    {
+                        ToolUtils.setLog("关闭shopPaymentFailFragment");
+                        //ShopPaymentSuccessFragment关闭
+                        popToStack(shopPaymentFailFragment);
+                        return true;
+                    } else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment)
+                    {
+                        ToolUtils.setLog("关闭shopPaymentFragment");
+                        //ShopPaymentFragment返回弹出提示
+                        BackPaymentDialog(shopPaymentFragment);
+                        return true;
+                    }
+                } else
+                {
+                    return super.onKeyDown(keyCode, event);
+                }
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    /**
+     * 收银台返回弹窗处理
+     *
+     * @param shopPaymentFragment
+     */
+    private void BackPaymentDialog(final Fragment shopPaymentFragment)
+    {
+        DialogUtils mDialogUtils = new DialogUtils(this);
+        mDialogUtils.showDialog("确认要放弃支付?", new DialogUtils.PositiveListener()
+        {
+            @Override
+            public void onPositive()
+            {
+                popToStack(shopPaymentFragment);
+            }
+        }, null);
+    }
+
 }

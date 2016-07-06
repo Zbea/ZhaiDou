@@ -6,20 +6,13 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
@@ -31,7 +24,7 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Area;
 import com.zhaidou.model.City;
 import com.zhaidou.model.Province;
-import com.zhaidou.model.ZhaiDouRequest;
+import com.zhaidou.utils.Api;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomEditText;
@@ -52,9 +45,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class AddrNewAddrFragment extends BaseFragment implements View.OnClickListener {
     private static final String ARG_ID="id";
@@ -91,6 +82,7 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
     private DialogUtils mDialogUtils;
     private View mContainer;
     private TextView mTitle;
+
 
     public static AddrNewAddrFragment newInstance(int id,String nickname, String mobile,String location,String address, int profileId, int status) {
         AddrNewAddrFragment fragment = new AddrNewAddrFragment();
@@ -156,12 +148,8 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
         token = mSharedPreferences.getString("token", null);
         mDialogUtils=new DialogUtils(getActivity());
 
-        if (MainActivity.provinceList!=null&&MainActivity.provinceList.size()>1)
-        {
-            ToolUtils.setLog("加载已经添加的");
-            provinceList=MainActivity.provinceList;
-        }
-        else
+        provinceList=((MainActivity)mContext).getAddressCity();
+        if (provinceList.size() ==0)
         {
             ToolUtils.setLog("重新加载地址");
             mContainer.setVisibility(View.GONE);
@@ -204,52 +192,19 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
                 new MyTask().execute();
                 break;
             case R.id.ll_address:
-                final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
-
-                Window dialogWindow = dialog.getWindow();
-                dialogWindow.setGravity(Gravity.BOTTOM);
-                dialogWindow.setWindowAnimations(R.style.pop_anim_style);
-
-                View mDialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_adddress, null, false);
-                final WheelViewContainer wheelView= (WheelViewContainer) mDialogView.findViewById(R.id.wheel_view_wv);
-                LinearLayout cityView= (LinearLayout) mDialogView.findViewById(R.id.cityView);
-                if(provinceList != null && provinceList.size() >1)
+                mDialogUtils.showCityDialog(provinceList,new DialogUtils.PositiveListener2()
                 {
-                    wheelView.setData(provinceList);
-                    wheelView.setVisibility(View.VISIBLE);
-                }
-                else
-                {
-                    wheelView.setVisibility(View.GONE);
-                }
-                TextView cancelTv = (TextView) mDialogView.findViewById(R.id.bt_cancel);
-                cancelTv.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                    }
-                });
-                TextView okTv = (TextView) mDialogView.findViewById(R.id.bt_confirm);
-                okTv.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view)
+                    public void onPositive(Object o)
                     {
-                        if(provinceList != null && provinceList.size() > 1)
-                        {
-                            selectedProvince = wheelView.getProvince();
-                            selectedCity = wheelView.getCity();
-                            selectedArea = wheelView.getArea();
-                            mProviderId=selectedArea.getId();
-                            ToolUtils.setLog("ok mProviderId:"+mProviderId);
-                            et_location.setText(selectedProvince.getName() + "-" + selectedCity.getName() + "-" + selectedArea.getName());
-                        }
-                        dialog.dismiss();
+                        WheelViewContainer wheelView= (WheelViewContainer) o;
+                        selectedProvince = wheelView.getProvince();
+                        selectedCity = wheelView.getCity();
+                        selectedArea = wheelView.getArea();
+                        mProviderId=selectedArea.getId();
+                        et_location.setText(selectedProvince.getName() + "-" + selectedCity.getName() + "-" + selectedArea.getName());
                     }
-                });
-                dialog.setCanceledOnTouchOutside(true);
-                dialog.setCancelable(true);
-                dialog.addContentView(mDialogView, new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.MATCH_PARENT));
-                dialog.show();
+                },null);
                 break;
         }
     }
@@ -368,74 +323,79 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
         }
     }
 
-    private void FetchCityData() {
+    private void FetchCityData()
+    {
         mDialog=mDialogUtils.showLoadingDialog();
-        ZhaiDouRequest request = new ZhaiDouRequest(mContext,ZhaiDou.ORDER_ADDRESS_URL, new Response.Listener<JSONObject>() {
+        Api.getAddressCity(new Api.SuccessListener()
+        {
             @Override
-            public void onResponse(JSONObject jsonObject) {
+            public void onSuccess(Object object)
+            {
                 mDialog.dismiss();
-                if (jsonObject != null) {
-                    JSONArray providerArr = jsonObject.optJSONArray("providers");
-                    for (int i = 0; i < providerArr.length(); i++) {
-                        JSONObject provinceObj = providerArr.optJSONObject(i);
-                        int provinceId = provinceObj.optInt("id");
-                        String provinceName = provinceObj.optString("name");
-                        Province province = new Province();
-                        province.setId(provinceId);
-                        province.setName(provinceName);
-                        List<City> cityList = new ArrayList<City>();
-                        JSONArray cityArr = provinceObj.optJSONArray("cities");
-                        if (cityArr != null && cityArr.length() > 0) {
-                            for (int k = 0; k < cityArr.length(); k++) {
-                                JSONObject cityObj = cityArr.optJSONObject(k);
-                                int cityId = cityObj.optInt("id");
-                                String cityName = cityObj.optString("name");
-                                JSONArray areaArr = cityObj.optJSONArray("children");
-                                City city = new City();
-                                city.setId(cityId);
-                                city.setName(cityName);
-                                List<Area> areaList = new ArrayList<Area>();
-                                if (areaArr != null && areaArr.length() > 0) {
-                                    for (int j = 0; j < areaArr.length(); j++) {
-                                        JSONObject areaObj = areaArr.optJSONObject(j);
-                                        int areaId = areaObj.optInt("id");
-                                        String areaName = areaObj.optString("name");
-                                        double areaPrice = areaObj.optDouble("price");
-                                        Area area = new Area();
-                                        area.setId(areaId);
-                                        area.setName(areaName);
-                                        area.setPrice(areaPrice);
-                                        areaList.add(area);
+                if (object != null)
+                {
+                    JSONObject jsonObject = (JSONObject) object;
+                    if (jsonObject != null)
+                    {
+                        JSONArray providerArr = jsonObject.optJSONArray("providers");
+                        for (int i = 0; i < providerArr.length(); i++)
+                        {
+                            JSONObject provinceObj = providerArr.optJSONObject(i);
+                            int provinceId = provinceObj.optInt("id");
+                            String provinceName = provinceObj.optString("name");
+                            Province province = new Province();
+                            province.setId(provinceId);
+                            province.setName(provinceName);
+                            List<City> cityList = new ArrayList<City>();
+                            JSONArray cityArr = provinceObj.optJSONArray("cities");
+                            if (cityArr != null && cityArr.length() > 0)
+                            {
+                                for (int k = 0; k < cityArr.length(); k++)
+                                {
+                                    JSONObject cityObj = cityArr.optJSONObject(k);
+                                    int cityId = cityObj.optInt("id");
+                                    String cityName = cityObj.optString("name");
+                                    JSONArray areaArr = cityObj.optJSONArray("children");
+                                    City city = new City();
+                                    city.setId(cityId);
+                                    city.setName(cityName);
+                                    List<Area> areaList = new ArrayList<Area>();
+                                    if (areaArr != null && areaArr.length() > 0)
+                                    {
+                                        for (int j = 0; j < areaArr.length(); j++)
+                                        {
+                                            JSONObject areaObj = areaArr.optJSONObject(j);
+                                            int areaId = areaObj.optInt("id");
+                                            String areaName = areaObj.optString("name");
+                                            double areaPrice = areaObj.optDouble("price");
+                                            Area area = new Area();
+                                            area.setId(areaId);
+                                            area.setName(areaName);
+                                            area.setPrice(areaPrice);
+                                            areaList.add(area);
+                                        }
+                                        city.setAreas(areaList);
+                                        cityList.add(city);
                                     }
-                                    city.setAreas(areaList);
-                                    cityList.add(city);
                                 }
-
                             }
+                            province.setCityList(cityList);
+                            provinceList.add(province);
                         }
-                        province.setCityList(cityList);
-                        provinceList.add(province);
+                        mContainer.setVisibility(View.VISIBLE);
+                        ((MainActivity)mContext).setAddressCity(provinceList);
                     }
-
                 }
-                mContainer.setVisibility(View.VISIBLE);
             }
-        }, new Response.ErrorListener() {
+        }, new Api.ErrorListener()
+        {
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
+            public void onError(Object object)
+            {
                 mDialog.dismiss();
-                ToolUtils.setToast(mContext,"抱歉,加载城市失败");
+                ToolUtils.setToast(mContext,"抱歉,城市加载失败");
             }
-        }){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers=new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 1, 1.0f));
-        mRequestQueue.add(request);
+        });
     }
 
     public void setAddrSaveSuccessListener(AddrSaveSuccessListener addrSaveSuccessListener) {
