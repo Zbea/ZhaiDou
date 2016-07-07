@@ -4,14 +4,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.utils.EaseUtils;
 
 
 /**
@@ -20,8 +18,7 @@ import com.zhaidou.utils.EaseUtils;
 public class MainMagicFragment extends BaseFragment
 {
     private View mView;
-    private LinearLayout magicClassicLine,magicConsultLine,magicImageLine,magicDesignLine;
-    private ImageView diyBtn;
+    private LinearLayout magicClassicLine,magicGuideLine,magicImageLine,magicDesignLine,classroomLine,diyLine;
     private long formerTime;
 
     /**
@@ -38,34 +35,42 @@ public class MainMagicFragment extends BaseFragment
                     if (isTimeInterval())
                     {
                         MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "");
-                        ((MainActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
+                        ((BaseActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
                     }
                     break;
                 case R.id.magicConsultLine:
                     if (isTimeInterval())
                     {
-                        EaseUtils.startDesignerActivity(mContext);
+                        MagicGuideFragment magicClassicCaseFragment = MagicGuideFragment.newInstance("", "");
+                        ((BaseActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
                     }
                     break;
                 case R.id.magicImageLine:
                     if (isTimeInterval())
                     {
                         MagicImageCaseFragment magicImageCaseFragment = MagicImageCaseFragment.newInstance("", "");
-                        ((MainActivity) getActivity()).navigationToFragment(magicImageCaseFragment);
+                        ((BaseActivity) getActivity()).navigationToFragment(magicImageCaseFragment);
                     }
                     break;
                 case R.id.magicDesignLine:
                     if (isTimeInterval())
                     {
                         MagicDesignFragment orderDetailFragment = MagicDesignFragment.newInstance("", "");
-                        ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
+                        ((BaseActivity) getActivity()).navigationToFragment(orderDetailFragment);
                     }
                     break;
-                case R.id.magicDiyBtn:
+                case R.id.magicDIYLine:
                     if (isTimeInterval())
                     {
                         DiyFragment diyFragment = DiyFragment.newInstance("" ,"");
-                        ((MainActivity) getActivity()).navigationToFragment(diyFragment);
+                        ((BaseActivity) getActivity()).navigationToFragment(diyFragment);
+                    }
+                    break;
+                case R.id.magicClassroomLine:
+                    if (isTimeInterval())
+                    {
+                        HomeBeautifulFragment goodsDetailsFragment = HomeBeautifulFragment.newInstance("色彩课堂", 0+"");
+                        ((BaseActivity) mContext).navigationToFragment(goodsDetailsFragment);
                     }
                     break;
             }
@@ -108,8 +113,8 @@ public class MainMagicFragment extends BaseFragment
         magicClassicLine=(LinearLayout)mView.findViewById(R.id.magicClassicLine);
         magicClassicLine.setOnClickListener(onClickListener);
 
-        magicConsultLine=(LinearLayout)mView.findViewById(R.id.magicConsultLine);
-        magicConsultLine.setOnClickListener(onClickListener);
+        magicGuideLine=(LinearLayout)mView.findViewById(R.id.magicConsultLine);
+        magicGuideLine.setOnClickListener(onClickListener);
 
         magicImageLine=(LinearLayout)mView.findViewById(R.id.magicImageLine);
         magicImageLine.setOnClickListener(onClickListener);
@@ -117,8 +122,11 @@ public class MainMagicFragment extends BaseFragment
         magicDesignLine=(LinearLayout)mView.findViewById(R.id.magicDesignLine);
         magicDesignLine.setOnClickListener(onClickListener);
 
-        diyBtn=(ImageView)mView.findViewById(R.id.magicDiyBtn);
-        diyBtn.setOnClickListener(onClickListener);
+        diyLine=(LinearLayout)mView.findViewById(R.id.magicDIYLine);
+        diyLine.setOnClickListener(onClickListener);
+
+        classroomLine=(LinearLayout)mView.findViewById(R.id.magicClassroomLine);
+        classroomLine.setOnClickListener(onClickListener);
 
     }
 

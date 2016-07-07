@@ -3,16 +3,24 @@ package com.zhaidou;
 import android.content.pm.PackageInfo;
 import android.graphics.Typeface;
 import android.os.Environment;
+import android.util.Log;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.easemob.EMCallBack;
+import com.easemob.chat.EMChatManager;
 import com.nostra13.universalimageloader.cache.disc.impl.LimitedAgeDiscCache;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 import com.zhaidou.easeui.helpdesk.EaseApplication;
+import com.zhaidou.easeui.helpdesk.EaseHelper;
+import com.zhaidou.model.User;
 import com.zhaidou.utils.DeviceUtils;
+import com.zhaidou.utils.EaseUtils;
+import com.zhaidou.utils.MD5Util;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
 import java.io.File;
@@ -57,6 +65,9 @@ public class ZDApplication extends EaseApplication {
         creatFile();
         setImageLoad();
         mRequestQueue = Volley.newRequestQueue(this);
+        User user = SharedPreferencesUtil.getUser(this);
+        if (user.getId()>0)
+            EaseUtils.login(user);
     }
 
     /**
@@ -104,6 +115,33 @@ public class ZDApplication extends EaseApplication {
         return "ZDApplication{" +
                 "mTypeFace=" + mTypeFace +
                 '}';
+    }
+
+    private void loginToEaseServer(final User user){
+        EMChatManager.getInstance().login("zhaidou"+user.getId(), MD5Util.MD5Encode("zhaidou" + user.getId() + "Yage2016!").toUpperCase(), new EMCallBack() {
+            @Override
+            public void onSuccess() {
+                // 登陆成功，保存用户名
+                EaseHelper.getInstance().setCurrentUserName(user.getNickName());
+                EMChatManager.getInstance().loadAllConversations();
+
+//                更新当前用户的nickname 此方法的作用是在ios离线推送时能够显示用户nick
+                boolean updatenick = EMChatManager.getInstance().updateCurrentUserNick(
+                        user.getNickName());
+                if (!updatenick) {
+                    Log.e("LoginActivity", "update current user nick fail");
+                }
+            }
+
+            @Override
+            public void onProgress(int progress, String status) {
+            }
+
+            @Override
+            public void onError(final int code, final String message) {
+//                Toast.makeText(LoginActivity.this,"登录聊天服务器失败",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

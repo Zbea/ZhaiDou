@@ -21,10 +21,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.activities.HomeCompetitionActivity;
 import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.adapter.RecommendAdapter;
 import com.zhaidou.base.BaseFragment;
@@ -78,12 +76,6 @@ public class SettingRecommendFragment extends BaseFragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id)
         {
-//            Intent detailIntent = new Intent(getActivity(), HomeCompetitionActivity.class);
-//            detailIntent.putExtra("url", lists.get(position).appUrl);
-//            detailIntent.putExtra("from", "app");
-//            detailIntent.putExtra("title", lists.get(position).title);
-//            getActivity().startActivity(detailIntent);
-
             Intent intent = new Intent();
             intent.putExtra("url", lists.get(position).appUrl);
             intent.setClass(getActivity(), WebViewActivity.class);
@@ -91,20 +83,6 @@ public class SettingRecommendFragment extends BaseFragment {
         }
     };
 
-
-    private View.OnClickListener onClickListener=new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View v)
-        {
-            switch (v.getId())
-            {
-                case R.id.back_btn:
-                    ((MainActivity) getActivity()).popToStack(SettingRecommendFragment.this);
-                    break;
-            }
-        }
-    };
 
     public static SettingRecommendFragment newInstance(String page, String index) {
         SettingRecommendFragment fragment = new SettingRecommendFragment();
@@ -150,8 +128,7 @@ public class SettingRecommendFragment extends BaseFragment {
      */
     private void initView() {
         mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"loading",true);
-        backBtn = (TextView) mView.findViewById(R.id.back_btn);
-        backBtn.setOnClickListener(onClickListener);
+
         headTitle = (TextView) mView.findViewById(R.id.title_tv);
         headTitle.setText(R.string.setting_recommend_txt);
 

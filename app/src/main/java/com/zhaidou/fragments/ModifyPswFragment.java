@@ -14,6 +14,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
@@ -21,6 +22,7 @@ import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONObject;
 
@@ -35,6 +37,8 @@ public class ModifyPswFragment extends BaseFragment {
     private TextView mCurrentPsw, mNewPsw, mConfirmPsw;
 
     private DialogUtils mDialogUtils;
+    private TextView titleTv;
+
     public ModifyPswFragment() {
     }
 
@@ -43,12 +47,15 @@ public class ModifyPswFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_modify_psw, container, false);
+
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_change_psd);
+
         mConfirmPsw = (TextView) view.findViewById(R.id.confirm);
         mNewPsw = (TextView) view.findViewById(R.id.newPsw);
         mCurrentPsw = (TextView) view.findViewById(R.id.current);
-
         view.findViewById(R.id.commit).setOnClickListener(this);
-        mDialogUtils=new DialogUtils(getActivity());
+        mDialogUtils = new DialogUtils(getActivity());
         return view;
     }
 
@@ -74,17 +81,19 @@ public class ModifyPswFragment extends BaseFragment {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.USER_PSW_CHANGE_URL, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                if (dialog!=null)
+                if (dialog != null)
                     dialog.dismiss();
                 int status = jsonObject.optInt("status");
                 String message = jsonObject.optString("message");
                 if (200 == status) {
                     JSONObject data = jsonObject.optJSONObject("data");
-                    int pswStatus = data.optInt("status");
-                    String msg = data.optString("message");
-                    ShowToast(msg);
-                    if (200==pswStatus)
-                    ((BaseActivity)getActivity()).popToStack(ModifyPswFragment.this);
+                    if (data != null) {
+                        int pswStatus = data.optInt("status");
+                        String msg = data.optString("message");
+                        ShowToast(msg);
+                        if (200 == pswStatus)
+                            ((BaseActivity) getActivity()).popToStack(ModifyPswFragment.this);
+                    }
                 } else {
                     ShowToast(message);
                 }
@@ -127,4 +136,14 @@ public class ModifyPswFragment extends BaseFragment {
         }
         doModifyTask(mCurrentText, mNewText, mConfirmText);
     }
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(mContext.getResources().getString(R.string.title_change_psd)); //统计页面
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_change_psd));
+    }
+
 }

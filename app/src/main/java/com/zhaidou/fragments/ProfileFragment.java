@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -32,9 +33,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.ProfileManage;
 import com.zhaidou.dialog.CustomLoadingDialog;
@@ -43,6 +44,7 @@ import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.NativeHttpUtil;
 import com.zhaidou.utils.PhotoUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONObject;
 
@@ -67,7 +69,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     private String mParam2;
     private View view;
     private Context mContext;
-
+    private TextView titleTv;
     private ImageView iv_header;
     private TextView tv_nick;
     private TextView tv_email;
@@ -123,7 +125,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     tv_mobile.setText(TextUtils.isEmpty(user.getMobile()) ? "" : user.getMobile());
                     tv_job.setText(user.isVerified() ? "宅豆认证设计师" : "未认证设计师");
                     tv_addr_mobile.setText(TextUtils.isEmpty(user.getMobile()) ? "" : user.getMobile());
-                    tv_addr.setText(TextUtils.isEmpty(user.getAddress2()) ? "" : user.getProvince()+user.getCity()+user.getProvider()+user.getAddress2());
+                    tv_addr.setText(TextUtils.isEmpty(user.getAddress2()) ? "" : user.getProvince() + user.getCity() + user.getProvider() + user.getAddress2());
                     tv_addr_username.setText(TextUtils.isEmpty(user.getFirst_name()) ? "" : user.getFirst_name());
 
                     if (TextUtils.isEmpty(user.getAddress2()) || "null".equals(user.getAddress2())) {
@@ -190,6 +192,9 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     private void initView() {
         setStartLoading();
 
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_profile);
+
         mMenuContainer = (FrameLayout) view.findViewById(R.id.rl_header_menu);
         mChildContainer = (FrameLayout) view.findViewById(R.id.fl_child_container);
         view.findViewById(R.id.rl_header_layout).setOnClickListener(this);
@@ -255,7 +260,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.ll_back:
-                ((MainActivity) getActivity()).popToStack(ProfileFragment.this);
+                ((BaseActivity) getActivity()).popToStack(ProfileFragment.this);
                 break;
             case R.id.rl_header_layout:
                 mMenuContainer.setVisibility(View.VISIBLE);
@@ -264,35 +269,35 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
             case R.id.ll_add_v:
                 break;
             case R.id.rl_nickname:
-                HashMap<String,String> params =new HashMap<String, String>();
-                params.put("nick_name",tv_nick.getText().toString().trim());
-                params.put("mobile",tv_mobile.getText().toString().trim());
-                ProfileEditFragment profileFragment = ProfileEditFragment.newInstance(NICK,params, profileId + "", "个人昵称");
+                HashMap<String, String> params = new HashMap<String, String>();
+                params.put("nick_name", tv_nick.getText().toString().trim());
+                params.put("mobile", tv_mobile.getText().toString().trim());
+                ProfileEditFragment profileFragment = ProfileEditFragment.newInstance(NICK, params, profileId + "", "个人昵称");
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container, profileFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
                 break;
             case R.id.rl_mobile:
-                HashMap<String,String> mobileParam =new HashMap<String, String>();
-                mobileParam.put("nick_name",tv_nick.getText().toString().trim());
-                mobileParam.put("mobile",tv_mobile.getText().toString().trim());
-                ProfileEditFragment mobileFragment = ProfileEditFragment.newInstance(MOBILE,mobileParam, profileId, "手机号码");
+                HashMap<String, String> mobileParam = new HashMap<String, String>();
+                mobileParam.put("nick_name", tv_nick.getText().toString().trim());
+                mobileParam.put("mobile", tv_mobile.getText().toString().trim());
+                ProfileEditFragment mobileFragment = ProfileEditFragment.newInstance(MOBILE, mobileParam, profileId, "手机号码");
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container, mobileFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
                 break;
             case R.id.rl_job:
                 if ("未认证设计师".equalsIgnoreCase(tv_job.getText().toString())) {
                     ImageBgFragment addVFragment = ImageBgFragment.newInstance("如何加V");
-                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(addVFragment);
+                    ((BaseActivity) getActivity()).navigationToFragmentWithAnim(addVFragment);
                 }
                 break;
             case R.id.rl_manage_address:
-                String str=TextUtils.isEmpty(mLocationStr)?user.getProvince()+"-"+user.getCity()+"-"+user.getProvider():mLocationStr;
-                ProfileAddrFragment fragment = ProfileAddrFragment.newInstance(user.getFirst_name(), user.getMobile(),str,user.getAddress2(),user.getAddress1(), profileId);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(fragment);
+                String str = TextUtils.isEmpty(mLocationStr) ? user.getProvince() + "-" + user.getCity() + "-" + user.getProvider() : mLocationStr;
+                ProfileAddrFragment fragment = ProfileAddrFragment.newInstance(user.getFirst_name(), user.getMobile(), str, user.getAddress2(), user.getAddress1(), profileId);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(fragment);
                 fragment.setAddressListener(new ProfileAddrFragment.AddressListener() {
                     @Override
-                    public void onAddressDataChange(String name, String mobile,String locationStr,String address) {
-                        mLocationStr=locationStr;
+                    public void onAddressDataChange(String name, String mobile, String locationStr, String address) {
+                        mLocationStr = locationStr;
                         user.setFirst_name(name);
                         user.setMobile(mobile);
                         user.setAddress2(address);
@@ -305,7 +310,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 });
                 break;
             case R.id.tv_edit:
-                AddrManageFragment editFragment = AddrManageFragment.newInstance(user.getFirst_name(), user.getMobile(),user.getAddress2(), profileId, 1);
+                AddrManageFragment editFragment = AddrManageFragment.newInstance(user.getFirst_name(), user.getMobile(), user.getAddress2(), profileId, 1);
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container, editFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
                 break;
@@ -313,8 +318,8 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 new DeleteAddressTask().execute();
                 break;
             case R.id.rl_into:
-                HashMap<String,String> descParam=new HashMap<String, String>();
-                descParam.put("description",tv_intro.getText().toString().trim());
+                HashMap<String, String> descParam = new HashMap<String, String>();
+                descParam.put("description", tv_intro.getText().toString().trim());
                 ProfileEditFragment introFragment = ProfileEditFragment.newInstance(DESC, descParam, profileId, "个人简介");
                 getChildFragmentManager().beginTransaction().replace(R.id.fl_child_container, introFragment).addToBackStack(null).commit();
                 mChildContainer.setVisibility(View.VISIBLE);
@@ -445,7 +450,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
     public void getUserInfo() {
 
-        ZhaiDouRequest request = new ZhaiDouRequest(mContext,ZhaiDou.USER_SIMPLE_PROFILE_URL + "?id=" + id, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext, ZhaiDou.USER_SIMPLE_PROFILE_URL + "?id=" + id, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
@@ -492,7 +497,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     isFromCamera = true;
                     File file = new File(filePath);
                     degree = PhotoUtil.readPictureDegree(file.getAbsolutePath());
-                    startImageAction(Uri.fromFile(file), 200, 200,
+                    startImageAction(Uri.fromFile(file), 150, 150,
                             2, true);
                 }
                 break;
@@ -509,7 +514,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     }
                     isFromCamera = false;
                     uri = data.getData();
-                    startImageAction(uri, 200, 200,
+                    startImageAction(uri, 150, 150,
                             2, true);
                 } else {
                     Toast.makeText(getActivity(), "照片获取失败", Toast.LENGTH_SHORT).show();
@@ -517,15 +522,19 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
                 break;
             case 2:// 裁剪头像返回
-                // TODO sent to crop
                 if (data == null) {
                     Toast.makeText(getActivity(), "取消选择", Toast.LENGTH_SHORT).show();
                     return;
                 } else {
                     Bundle extras = data.getExtras();
-                    boolean is_pressed_cancel = extras.getBoolean("is_pressed_cancel", false);
+                    System.out.println("extras = " + extras);
+                    boolean is_pressed_cancel=false;
+                    if (extras!=null)
+                    {
+                        is_pressed_cancel = extras.getBoolean("is_pressed_cancel", false);
+                    }
                     if (!is_pressed_cancel)
-                    saveCropAvator(data);
+                        saveCropAvator(data);
                 }
                 // 初始化文件路径
                 filePath = "";
@@ -566,22 +575,30 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         Bundle extras = data.getExtras();
         if (extras != null) {
             Bitmap bitmap = extras.getParcelable("data");
-
+            if (bitmap == null)
+            {
+                bitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() + filePath);
+            }
             String base64str = PhotoUtil.bitmapToBase64(bitmap);
+            ToolUtils.setLog("base64str:"+base64str);
             UpLoadTask(base64str);
         }
     }
 
     private void UpLoadTask(String base64) {
+        System.out.println("base64 = " + base64);
+        if (TextUtils.isEmpty(base64))
+            return;
         token = mSharedPreferences.getString("token", null);
         id = mSharedPreferences.getInt("userId", -1);
         Map<String, String> params = new HashMap<String, String>();
         params.put("id", id + "");
+        params.put("_method", "PUT");
         Map<String, String> userParams = new HashMap<String, String>();
         userParams.put("avatar", "data:image/png;base64," + base64);
         JSONObject jsonObject = new JSONObject(userParams);
         params.put("user", jsonObject.toString());
-        ZhaiDouRequest request = new ZhaiDouRequest(mContext,Request.Method.POST, ZhaiDou.USER_UPDATE_AVATAR_URL, params, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext, Request.Method.POST, ZhaiDou.USER_UPDATE_AVATAR_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
@@ -596,8 +613,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                     user.setEmail(email);
                     user.setNickName(tv_nick.getText().toString());
                     Message message = mHandler.obtainMessage(UPDATE_USER_INFO);
-//                    Message message = new Message();
-//                    message.what = UPDATE_USER_INFO;
                     message.obj = user;
                     mHandler.sendMessage(message);
                     ProfileManage.getInstance().notify(HEADER, "http://" + avatar);

@@ -27,9 +27,9 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -122,7 +122,7 @@ public class MagicImageCalssFragment extends BaseFragment
                 public void onClick(View v)
                 {
                     MagicImageDetailsFragment magicImageDetailsFragment = MagicImageDetailsFragment.newInstance(imageItems.get(i).name, imageItems.get(i).id);
-                    ((MainActivity) getActivity()).navigationToFragment(magicImageDetailsFragment);
+                    ((BaseActivity) getActivity()).navigationToFragment(magicImageDetailsFragment);
                 }
             });
             TextView title = (TextView) convertView.findViewById(R.id.titleTv);
@@ -137,9 +137,9 @@ public class MagicImageCalssFragment extends BaseFragment
             {
                 layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 200);
             }
-            if (i > 1)
+            if (i>1)
             {
-                layoutParams.topMargin = 25;
+                layoutParams.topMargin=18;
             }
             cover.setLayoutParams(layoutParams);
             title.setText(article.name);
@@ -221,7 +221,7 @@ public class MagicImageCalssFragment extends BaseFragment
     private void initView()
     {
 
-        titleTv = (TypeFaceTextView) view.findViewById(R.id.tv_title);
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
         titleTv.setText(mParam);
 
         scrollView = (PullToRefreshScrollView) view.findViewById(R.id.scrollView);

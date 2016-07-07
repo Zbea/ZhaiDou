@@ -1,6 +1,7 @@
 package com.easemob.easeui.adapter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -10,12 +11,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.TextView.BufferType;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatRoom;
 import com.easemob.chat.EMConversation;
-import com.easemob.chat.EMConversation.EMConversationType;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
@@ -27,8 +26,11 @@ import com.easemob.easeui.utils.EaseSmileUtils;
 import com.easemob.easeui.utils.EaseUserUtils;
 import com.easemob.easeui.widget.EaseImageView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.WeakHashMap;
 
 /**
  * 会话列表adapter
@@ -53,6 +55,7 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 	private int borderWidth = -1;
 	private int borderColor = -1;
 	private int avatarRadius = -1;
+    private WeakHashMap<Integer,View> mHashMap=new WeakHashMap<Integer, View>();
 
 	public EaseConversationAdapater(Context context, int resource, List<EMConversation> objects) {
 		super(context, resource, objects);
@@ -97,6 +100,7 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+        convertView=mHashMap.get(position);
 		if (convertView == null) {
 			convertView = LayoutInflater.from(getContext()).inflate(R.layout.ease_row_chat_history, parent, false);
 		}
@@ -112,28 +116,30 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 			holder.list_itease_layout = (RelativeLayout) convertView.findViewById(R.id.list_itease_layout);
 			convertView.setTag(holder);
 		}
-		holder.list_itease_layout.setBackgroundResource(R.drawable.ease_mm_listitem);
-
+//		holder.list_itease_layout.setBackgroundResource(R.drawable.ease_mm_listitem);
+//
 		// 获取与此用户/群组的会话
 		EMConversation conversation = getItem(position);
 		// 获取用户username或者群组groupid
 		String username = conversation.getUserName();
 
-		if (conversation.getType() == EMConversationType.GroupChat) {
+		if (conversation.getType() == EMConversation.EMConversationType.GroupChat) {
 			// 群聊消息，显示群聊头像
 			holder.avatar.setImageResource(R.drawable.ease_group_icon);
 			EMGroup group = EMGroupManager.getInstance().getGroup(username);
 			holder.name.setText(group != null ? group.getGroupName() : username);
-		} else if (conversation.getType() == EMConversationType.ChatRoom) {
+		} else if (conversation.getType() == EMConversation.EMConversationType.ChatRoom) {
 			holder.avatar.setImageResource(R.drawable.ease_group_icon);
 			EMChatRoom room = EMChatManager.getInstance().getChatRoom(username);
 			holder.name.setText(room != null && !TextUtils.isEmpty(room.getName()) ? room.getName() : username);
 		} else {
 			EaseUserUtils.setUserAvatar(getContext(), username, holder.avatar);
-            holder.name.setText("service".equalsIgnoreCase(username)?"客服":"设计师");
+            holder.name.setText("service".equalsIgnoreCase(username)?"客服":"comment".equalsIgnoreCase(username)?"评论":"设计师");
 //			EaseUserUtils.setUserNick(username, holder.name);
 		}
 
+
+//
 		if (conversation.getUnreadMsgCount() > 0) {
 			// 显示与此用户的消息未读数
 //			holder.unreadLabel.setText(String.valueOf(conversation.getUnreadMsgCount()));
@@ -146,7 +152,7 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 			// 把最后一条消息的内容作为item的message内容
 			EMMessage lastMessage = conversation.getLastMessage();
 			holder.message.setText(EaseSmileUtils.getSmiledText(getContext(),
-					EaseCommonUtils.getMessageDigest(lastMessage, (this.getContext()))), BufferType.SPANNABLE);
+                    EaseCommonUtils.getMessageDigest(lastMessage, (this.getContext()))), TextView.BufferType.SPANNABLE);
 
             holder.time.setText(DateUtils.convertTimeToFormat(lastMessage.getMsgTime()));
 			if (lastMessage.direct == EMMessage.Direct.SEND && lastMessage.status == EMMessage.Status.FAIL) {
@@ -155,6 +161,27 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 				holder.msgState.setVisibility(View.GONE);
 			}
 		}
+
+        if ("comment".equalsIgnoreCase(username)){
+            SharedPreferences sharedPreferences = getContext().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
+            int unReadComment = sharedPreferences.getInt("UnReadComment",0);
+            String commentUserName = sharedPreferences.getString("commentUserName", "");
+            String content = sharedPreferences.getString("content", "");
+            String createTime = sharedPreferences.getString("createTime", "");
+            String imgMd5=sharedPreferences.getString("imgMd5","");
+            System.out.println("unReadComment = " + unReadComment);
+            holder.unreadLabel.setVisibility(unReadComment>0?View.VISIBLE:View.GONE);
+//            holder.name.setText(commentUserName);
+            holder.message.setText(!TextUtils.isEmpty(content)?content:!TextUtils.isEmpty(imgMd5)?"[图片]":"");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            if (!TextUtils.isEmpty(createTime))
+                try {
+                    holder.time.setText(DateUtils.convertTimeToFormat(sdf.parse(createTime).getTime()));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+        }
+
 		/**
 		 * 设置自定义 ImageView 的属性
 		 */
@@ -170,7 +197,7 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 		if (avatarRadius != -1) {
 			holder.avatar.setRadius(avatarRadius);
 		}
-		// 设置自定义属性
+//		// 设置自定义属性
 		holder.name.setTextColor(primaryColor);
 		holder.message.setTextColor(secondaryColor);
 		holder.time.setTextColor(timeColor);
@@ -181,6 +208,7 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 		if (timeSize != 0)
 			holder.time.setTextSize(TypedValue.COMPLEX_UNIT_PX, timeSize);
 
+        mHashMap.put(position,convertView);
 		return convertView;
 	}
 
@@ -317,4 +345,6 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 		RelativeLayout list_itease_layout;
 
 	}
+
+
 }

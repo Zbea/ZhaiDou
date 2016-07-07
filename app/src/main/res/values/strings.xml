@@ -2,11 +2,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
     <string name="app_name">宅豆</string>
-    <string name="app_versionName">3.1</string>
+    <string name="app_versionName">3.3.1</string>
     <string name="loading_fail_txt">抱歉,加载失败,请重试</string>
     <string name="net_fail_txt">抱歉,网络连接失败</string>
     <string name="phone_lose_txt">抱歉,无效手机号码</string>
-
     <string name="action_settings">宅豆</string>
     <string name="title_activity_gl">攻略</string>
     <string name="title_activity_categories">分类</string>
@@ -17,12 +16,12 @@
     <string name="title_activity_item_detail"></string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_web_view">关闭</string>
-
-    <string name="title_main_magic_classic_case">免费经典方案</string>
-    <string name="title_main_magic_image_case">免费软装图例</string>
-    <string name="title_main_magic_choose_consult">免费选款咨询</string>
-    <string name="title_main_magic_online_design">在线设计服务</string>
-    
+    <string name="title_main_magic_classic_case">改造案例</string>
+    <string name="title_main_magic_image_case">软装图库</string>
+    <string name="title_main_magic_guide">软装指南</string>
+    <string name="title_main_magic_online_design">在线设计</string>
+    <string name="title_main_magic_classroom">色彩课堂</string>
+    <string name="title_main_magic_diy">DIY搭配</string>
     <string name="home_shop_special_text">特卖商城</string>
     <string name="shop_taday_special_text">今日特卖</string>
     <string name="shop_cart_text">特卖购物车</string>
@@ -33,9 +32,8 @@
     <string name="shop_payment_text">收银台</string>
     <string name="shop_payment_fail_text">支付失败</string>
     <string name="shop_payment_success_text">支付成功</string>
-    
-    
-    <!--订单-->
+
+    <!-- 订单 -->
     <string name="order_colse">交易关闭</string>
     <string name="order_logistics">查看物流</string>
     <string name="order_return_good">申请退货</string>
@@ -51,12 +49,12 @@
     <string name="order_zero_return_msg">0元特卖商品不允许退款/退货</string>
     <string name="order_price">￥ %1$s</string>
 
-    <!--售后客服-->
+    <!-- 售后客服 -->
     <string name="QQ_Number">2637059378</string>
     <string name="after_sale_service">售后客服</string>
     <string name="QQ_design">2712830850</string>
 
-    <!--settting相关-->
+    <!-- settting相关 -->
     <string name="setting_recommend_txt">精品推荐</string>
 
     <!-- Tab -->
@@ -82,35 +80,36 @@
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
 
-    <!--订单详情-->
+    <!-- 订单详情 -->
     <string name="sale_service_personal">售后客服</string>
 
-    <!--timer-->
+    <!-- timer -->
     <string name="timer">剩余%1$s天%2$s时%3$s分%4$s秒</string>
     <string name="timer_finish">超时过期</string>
     <string name="timer_start">支付 %1$s</string>
 
-    <!--网络-->
+    <!-- 网络 -->
     <string name="network_load_error">加载失败</string>
 
-    <!--微信支付-->
+    <!-- 微信支付 -->
     <string name="app_tip">提示</string>
     <string name="getting_prepayid">正在获取预支付订单...</string>
 
-    <!--标题-->
+    <!-- 标题 -->
     <string name="title_about">关于</string>
     <string name="title_address_manage">地址管理</string>
+    <string name="title_address_select">地址选择</string>
     <string name="title_address_create">新建地址</string>
     <string name="title_all_category">分类</string>
     <string name="title_collect">我的收藏</string>
     <string name="title_collocation">我的豆搭</string>
     <string name="title_contact_us">联系我们</string>
     <string name="title_goods_detail">商品详情</string>
-    <string name="title_home">宅豆家居特卖</string>
+    <string name="title_home">宅豆家居</string>
     <string name="title_home_strategy">实用攻略</string>
     <string name="title_login">用户登录</string>
     <string name="title_logistics">物流信息</string>
-    <string name="title_beauty">色彩案例</string>
+    <string name="title_beauty">色彩课堂</string>
     <string name="title_after_sale">申请退款/退货</string>
     <string name="title_all_order">所有订单</string>
     <string name="title_order_detail">订单详情</string>
@@ -124,6 +123,7 @@
     <string name="title_change_psd">修改密码</string>
     <string name="title_profile">个人资料</string>
     <string name="title_setting">设置</string>
+    <string name="title_magic_class_case">改造案例</string>
 
     <array name="specail_product_sort">
         <item>默认排序</item>
@@ -140,20 +140,17 @@
         <item>默认排序</item>
         <item>按热度排序</item>
     </array>
-
     <array name="share_title">
         <item>微信好友</item>
         <item>朋友圈</item>
         <item>新浪微博</item>
         <item>QQ好友</item>
         <item>QQ空间</item>
-        <item></item>
+        <item/>
     </array>
-
 
     <string name="btn_scroll_view">ScrollView demo</string>
     <string name="btn_list_view">ListView demo</string>
-
     <string name="header_hint_refresh_normal">Pull to refresh</string>
     <string name="header_hint_refresh_ready">Release to refresh</string>
     <string name="header_hint_refresh_loading">Refreshing…</string>
@@ -164,16 +161,15 @@
     <!-- dialog标题 -->
     <string name="dialog_hint_collect">是否确认取消收藏?</string>
     <string name="dialog_hint_delete">是否确认删除?</string>
-    
-    <!--8分钟-->
+
+    <!-- 8分钟 -->
     <integer name="timer_countdown">900000</integer>
     <integer name="timer_countdown1">8</integer>
 
-
-    <!--标题栏，标题-->
+    <!-- 标题栏，标题 -->
     <string name="title_comment_list">评论</string>
 
-    <!--收藏-->
+    <!-- 收藏 -->
     <string name="collect_success">收藏成功</string>
     <string name="collect_fail">收藏失败</string>
     <string name="collect_cancel">取消收藏</string>
@@ -184,14 +180,14 @@
     <string name="share_cancel">分享取消</string>
     <string name="title_activity_conversation_list">ConversationListActivity</string>
     <string name="hello_world">Hello world!</string>
-    
-    <!--常用语-->
+
+    <!-- 常用语 -->
     <array name="designerWord">
         <item>软装设计是如何收费的?</item>
         <item>软装设计的流程是怎样的？</item>
         <item>你们推荐的商品是自营的吗？质量有保障吗？</item>
         <item>DIY搭配工具里的单品可以购买吗？</item>
-         <item>硬装已做好，但不是很满意，想通过软装改善一下！</item>
+        <item>硬装已做好，但不是很满意，想通过软装改善一下！</item>
         <item>多久能给我方案呢？</item>
     </array>
     <array name="serviceWord">
@@ -202,5 +198,17 @@
         <item>商品质量有保障吗？</item>
         <item>品牌的是正品吗？</item>
     </array>
+    <!-- 软装指南 -->
+    <array name="magicGuide">
+        <item>软装设计是如何收费的?</item>
+        <item>软装设计的流程是怎样的？</item>
+        <item>你们推荐的商品是自营的吗？质量有保障吗？</item>
+        <item>DIY搭配工具里的单品可以购买吗？</item>
+        <item>硬装已做好，但不是很满意，想通过软装改善一下！</item>
+        <item>多久能给我方案呢？</item>
+    </array>
+
+    <string name="title_activity_comment">CommentActivity</string>
+    <string name="title_activity_photo_view">PhotoViewActivity</string>
 
 </resources>

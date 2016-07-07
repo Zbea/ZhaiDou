@@ -1,0 +1,127 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/page_bg"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/headLine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        layout="@layout/head_style_page"></include>
+
+    <ScrollView
+        android:layout_below="@+id/headLine"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <com.zhaidou.view.ListViewForScrollView
+                android:id="@+id/lv_coupon"
+                android:layout_width="match_parent"
+                android:scrollbars="none"
+                android:divider="@null"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                />
+
+            <LinearLayout
+                android:id="@+id/btn_no_coupon"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginBottom="65dp"
+                android:background="@drawable/magic_shape"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="16sp"
+                    android:textColor="@color/text_normal_color"
+                    android:text="有钱任性，不使用优惠券"/>
+
+                <ImageView
+                    android:id="@+id/iv_addr_defalue"
+                    android:layout_width="22dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/selector_address_icon" />
+
+            </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
+
+
+
+    <LinearLayout
+        android:id="@+id/bt_add_coupon"
+        android:layout_width="match_parent"
+        android:background="@drawable/btn_green_click_bg"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        android:layout_height="45dp">
+
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:text="兑换优惠券"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="11dp"
+            android:layout_marginBottom="11dp"
+            android:layout_marginLeft="5dp"
+            android:src="@drawable/icon_shop_coupon_add"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/couponNullLine"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/headLine"
+        android:layout_above="@+id/bt_add_coupon"
+        android:gravity="center"
+        android:visibility="gone"
+        android:background="@color/page_bg"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_null_coupon"/>
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_gary_color"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="50dp"
+            android:text="暂无优惠券可用"/>
+    </LinearLayout>
+
+    <include
+        layout="@layout/content_null_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/headLine"></include>
+
+
+</RelativeLayout>

@@ -7,25 +7,51 @@ public class ZhaiDou {
 
     public static String HOME_PAGE_URL = "http://buy.zhaidou.com/?json=get_category_posts&slug=%E5%AE%B6%E9%A5%B0%E4%BC%98%E9%80%89&status=publish";
 //    public static String HOME_BASE_URL = "http://tportal-web.zhaidou.com/";
+//    public static String HOME_BASE="http://stg.zhaidou.com/";
+//    public static String HOME_BASE_WAP_URL="http://tm.zhaidou.com/";
+
     public static String HOME_BASE_URL = "http://portal-web.zhaidou.com/";
     public static String HOME_BASE="http://www.zhaidou.com/";
-//    public static String HOME_BASE="http://stg.zhaidou.com/";
+    public static String HOME_BASE_WAP_URL="http://m.zhaidou.com/";
 
+    //在线设计
+    public static String ONLINE_DESIGN_URL=HOME_BASE_WAP_URL+"design.html?source=android";
+
+    //软装指南
+    public static String MagicGuideUrl=HOME_BASE_WAP_URL+"rzzh/list.html";
     //美丽家
     public static String HomeBeautifulUrl=HOME_BASE_URL+"zd/getPosts.action?plug=006&pageSize=10&pageNo=";
     //分类
     public static String HomeCategoryUrl=HOME_BASE_URL+"category/queryCategory.action";
-    //首页banner
+    //模块接口
     public static String HomeBannerUrl=HOME_BASE_URL+"index/getBoardContent.action?boardCodes=";
+    //首页搜索文案
+    public static String HomeSearchStringUrl=HOME_BASE_URL+"searchSentence/getSearchSentence.action";
+    //首页文章列表
+    public static String HomeArticleGoodsUrl=HOME_BASE_URL+"decorate/getChangeCases.action?pageSize=20&pageNo=";
+    //首页文章详情
+    public static String HomeArticleGoodsDetailsUrl=HOME_BASE_URL+"decorate/getChangeCaseDetail.action?caseId=";
+    //首页文章评论
+    public static String HomeArticleCommentUrl=HOME_BASE_URL+"comment/commentView.action?articleId=";
+    //添加评论
+    public static String CommentAddUrl=HOME_BASE_URL+"comment/addProductComment";
+    //获取评论列表
+    public static String COMMENT_LIST_URL=HOME_BASE_URL+"comment/getCommentList.action";
+    //首页banner点击统计接口
+    public static String HomeClickStatisticalUrl=HOME_BASE_URL+"api/countBannerClick.action?name=";
     //首页微信文章列表
     public static String HomeWeixinListUrl=HOME_BASE_URL+"zd/getArticles.action?pageSize=10&pageNo=";
     //首页特卖列表
     public static String HomeShopListUrl=HOME_BASE_URL+"index/getSpecialSaleList.action?pageSize=10&pageNo=";
     //首页特卖商品列表
     public static String HomeGoodsListUrl=HOME_BASE_URL+"index/getActivityProductList.action?activityCode=";
+    //软装清单
+    public static String HomeSofeListUrl=HOME_BASE_URL+"decorate/getDesignerLists.action?pageSize=20";
+    //软装清单详情
+    public static String HomeSofeListDetailUrl=HOME_BASE_URL+"decorate/getDesignerListDetail.action?caseId=";
 
     //免费经典方案
-    public static String MagicClassicCaseUrl=HOME_BASE_URL+"decorate/getFreeClassicsCases.action?pageNo=1&pageSize=20";
+    public static String MagicClassicCaseUrl=HOME_BASE_URL+"decorate/getFreeClassicsCases.action?pageNo=1&pageSize=50";
     //免费经典方案详情
     public static String MagicClassicCaseDetailsUrl=HOME_BASE_URL+"decorate/getFreeClassicsCaseDetail.action?caseId=";
     //图列风格
@@ -58,7 +84,7 @@ public class ZhaiDou {
     //搜索商品接口keyword
     public static String SearchGoodsKeyWordUrl=HOME_BASE_URL+"product/searchProduct.action?businessType=01&searchType=10&pageSize=10&keyword=";
     //搜索商品接口Id
-    public static String SearchGoodsIdUrl=HOME_BASE_URL+"product/searchProduct.action?businessType=01&searchType=10&pageSize=10&expandedRequest=";
+    public static String SearchGoodsIdUrl=HOME_BASE_URL+"product/searchProduct.action?businessType=01&searchType=20&pageSize=10&expandedRequest=";
     //热搜词
     public static String SearchHotUrl=HOME_BASE_URL+"product/getHotKeywordList.action";
     //提交订单接口
@@ -69,6 +95,23 @@ public class ZhaiDou {
     public static String CommitPaymentUrl=HOME_BASE_URL+"pay/payConfirm.action";
     //获取订单详情
     public static String GetOrderDetailsUrl=HOME_BASE_URL+"order/getOrderDetail.action";
+    //退货详情
+    public static String ORDER_RETURN_DETAIL=HOME_BASE_URL+"order/getEveryProductDiscountAmount.action";
+
+    //获取可使用优惠劵列表:
+    public static String GetOrderCouponUrl=HOME_BASE_URL+"user/getEnableCoupons.action";
+    //获取默认优惠劵:
+    public static String GetOrderCouponDefaultUrl=HOME_BASE_URL+"user/getEnableCoupons_default.action";
+    //获取我的优惠卷
+    public static String COUPONS_MINE_URL=HOME_BASE_URL+"user/get_my_coupons.action";
+    //兑换优惠劵:
+    public static String GetRedeemCouponUrl=HOME_BASE_URL+"user/activateCoupons.action";
+    //兑换优惠劵和校验是否可用（在下单时候使用）
+    public static String GetRedeemAndCheckCouponUrl=HOME_BASE_URL+"user/activateAndCheckCoupons.action";
+    //单个优惠卷领取
+    public static String activateCoupons=HOME_BASE_URL+"user/activateCoupons.action";
+    //一件领取优惠卷
+    public static String activateAllCouponsByOneClick=HOME_BASE_URL+"user/activateAllCouponsByOneClick.action";
 
     //地址列表
     public static String AddressListUrl=HOME_BASE_URL+"user/receivers.action";
@@ -127,6 +170,11 @@ public class ZhaiDou {
     //
     public static String USER_REGISTER_WITH_PHONE_URL=HOME_BASE_URL+"user/phone_register.action";
 
+    //获取未读评论
+    public static String URL_GET_UNREAD_COMMETN=HOME_BASE_URL+"comment/getUnReadNum.action?commentUserId=";
+    //删除评论
+    public static String URL_DELETE_COMMENT=HOME_BASE_URL+"comment/deleteComment.action?commentId=";
+
     //用户收藏
     public static String USER_COLLECT_ITEM_URL=HOME_BASE_URL+"article/api/article_items/like_article_items?per_page=10&page=";
     //用户取消收藏
@@ -154,13 +202,16 @@ public class ZhaiDou {
 
     public static String SEARCH_ARTICLES_URL=HOME_BASE_URL+"article/api/articles/search";
 
-    public static String ARTICLES_WITH_CATEGORY=HOME_BASE_URL+"article/api/articles?catetory_id=";
-
     public static String FORWARD_URL=HOME_BASE_URL+"retweet";
     /**
      * 我的头像保存目录
      */
     public static String MyAvatarDir = "/sdcard/zhaidou/avatar/";
+
+    /**
+     * 评论图片目录
+     */
+    public static String MyCommentDir = "/sdcard/zhaidou/comment/";
 
     public enum ListType {
         HOME,

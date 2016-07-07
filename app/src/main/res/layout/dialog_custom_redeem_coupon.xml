@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="@dimen/dialog_width_dimen"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/custom_loading_dialog_bg">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:orientation="vertical"
+            android:gravity="center">
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_main_color"
+                android:gravity="center"
+                android:text="兑换优惠券"
+                android:textSize="18sp"/>
+
+            <com.zhaidou.view.TypeFaceEditText
+                android:id="@+id/tv_msg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:padding="6dp"
+                android:textSize="13sp"
+                android:background="@drawable/custom_coupon_dialog_bg"
+                android:textColor="@color/text_normal_color"
+                android:gravity="center"
+                />
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/all_e"></View>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:gravity="center_vertical"
+            android:layout_height="40dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="取消"
+                android:clickable="true"
+                android:textColor="@color/green_color"
+                android:gravity="center"
+                android:id="@+id/cancelTv"
+                android:background="@drawable/btn_click_selector"/>
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/all_e"></View>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:clickable="true"
+                android:textColor="@color/green_color"
+                android:text="兑换"
+                android:background="@drawable/btn_click_selector"
+                android:id="@+id/okTv"/>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</LinearLayout>

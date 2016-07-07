@@ -4,10 +4,14 @@ package com.zhaidou.utils;/**
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
+import com.easemob.EMCallBack;
+import com.easemob.chat.EMChatManager;
+import com.zhaidou.activities.ConversationListActivity;
 import com.zhaidou.activities.LoginActivity;
-import com.zhaidou.base.AccountManage;
 import com.zhaidou.easeui.helpdesk.Constant;
+import com.zhaidou.easeui.helpdesk.EaseHelper;
 import com.zhaidou.easeui.helpdesk.ui.ChatActivity;
 import com.zhaidou.model.User;
 
@@ -21,12 +25,12 @@ import com.zhaidou.model.User;
 public class EaseUtils {
 
     public static void startKeFuActivity(Context context){
-        if ((Integer)SharedPreferencesUtil.getData(context, "userId", -1)==-1||AccountManage.getInstance().isConflict()){
+        User user = SharedPreferencesUtil.getUser(context);
+        if ((Integer)SharedPreferencesUtil.getData(context, "userId", -1)==-1){
             Intent intent=new Intent(context,LoginActivity.class);
             context.startActivity(intent);
             return;
         }
-        User user = SharedPreferencesUtil.getUser(context);
         Intent intent2 = new Intent(context, ChatActivity.class);
         intent2.putExtra(Constant.EXTRA_USER_ID, "service");
         intent2.putExtra("queueName", "service");
@@ -35,17 +39,82 @@ public class EaseUtils {
     }
 
     public static void startDesignerActivity(Context context){
-        if ((Integer)SharedPreferencesUtil.getData(context, "userId", -1)==-1||AccountManage.getInstance().isConflict()){
+        User user = SharedPreferencesUtil.getUser(context);
+        if ((Integer)SharedPreferencesUtil.getData(context, "userId", -1)==-1){
             Intent intent=new Intent(context,LoginActivity.class);
             context.startActivity(intent);
             return;
         }
-        User user = SharedPreferencesUtil.getUser(context);
         Intent intent2 = new Intent(context, ChatActivity.class);
         intent2.putExtra(Constant.EXTRA_USER_ID, "designer");
         intent2.putExtra("queueName", "designer");
         intent2.putExtra("user",user);
         context.startActivity(intent2);
     }
+
+    public static void startConversationListActivity(Context context){
+        User user = SharedPreferencesUtil.getUser(context);
+        if ((Integer)SharedPreferencesUtil.getData(context, "userId", -1)==-1){
+            Intent intent=new Intent(context,LoginActivity.class);
+            context.startActivity(intent);
+            return;
+        }
+        Intent intent2 = new Intent(context, ConversationListActivity.class);
+        context.startActivity(intent2);
+    }
+
+    public static void login(final User user){
+        EMChatManager.getInstance().login("zhaidou"+user.getId(), MD5Util.MD5Encode("zhaidou" + user.getId() + "Yage2016!").toUpperCase(), new EMCallBack() {
+            @Override
+            public void onSuccess() {
+                EaseHelper.getInstance().setCurrentUserName(user.getNickName());
+                EMChatManager.getInstance().loadAllConversations();
+                boolean updatenick = EMChatManager.getInstance().updateCurrentUserNick(
+                        user.getNickName());
+                if (!updatenick) {
+                    Log.e("LoginActivity", "update current user nick fail");
+                }
+            }
+
+            @Override
+            public void onProgress(int progress, String status) {
+            }
+
+            @Override
+            public void onError(final int code, final String message) {
+            }
+        });
+    }
+
+    public static void login(final User user, final LoginListener loginListener){
+        EMChatManager.getInstance().login("zhaidou"+user.getId(), MD5Util.MD5Encode("zhaidou" + user.getId() + "Yage2016!").toUpperCase(), new EMCallBack() {
+            @Override
+            public void onSuccess() {
+                EaseHelper.getInstance().setCurrentUserName(user.getNickName());
+                EMChatManager.getInstance().loadAllConversations();
+                boolean updatenick = EMChatManager.getInstance().updateCurrentUserNick(
+                        user.getNickName());
+                if (!updatenick) {
+                    Log.e("LoginActivity", "update current user nick fail");
+                }
+                if (loginListener!=null)
+                    loginListener.onSuccess();
+
+            }
+
+            @Override
+            public void onProgress(int progress, String status) {
+            }
+
+            @Override
+            public void onError(final int code, final String message) {
+            }
+        });
+    }
+
+    public interface LoginListener{
+        public void onSuccess();
+    }
+
 
 }

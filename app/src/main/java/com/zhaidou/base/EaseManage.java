@@ -33,7 +33,6 @@ public class EaseManage {
     }
 
     public void setOnMessageChange(onMessageChange onMessageChange) {
-        System.out.println("EaseManage.setOnMessageChange");
         if (this.onMessageChange==null)
             this.onMessageChange = onMessageChange;
         mListeners.add(onMessageChange);
@@ -41,6 +40,7 @@ public class EaseManage {
 
     public void refreshData(){
         System.out.println("EaseManage.refreshData------>"+mListeners.size());
+        CountManager.getInstance().notifyCommentChange();
         for (onMessageChange listener:mListeners) {
             listener.onMessage(EMChatManager.getInstance().getUnreadMsgsCount());
         }

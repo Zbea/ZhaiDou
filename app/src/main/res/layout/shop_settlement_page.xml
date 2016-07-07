@@ -29,7 +29,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/actionbar_background_color"
+                android:background="@color/white"
                 android:orientation="vertical">
 
 
@@ -67,7 +67,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:textColor="@color/white"
+                                android:textColor="@color/text_normal_color"
                                 android:text="收件人："
                                 android:textSize="14sp"
                                 android:singleLine="true"
@@ -78,7 +78,7 @@
                                 android:id="@+id/jsAddressPhoneTv"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textColor="@color/white"
+                                android:textColor="@color/text_normal_color"
                                 android:layout_marginLeft="15dp"
                                 android:textSize="14sp"
                                 android:text="电话："
@@ -96,7 +96,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="13dp"
                                 android:textSize="13sp"
-                                android:textColor="@color/white"
+                                android:textColor="@color/text_normal_color"
                                 android:text="地址:"/>
 
                             <com.zhaidou.view.TypeFaceTextView
@@ -106,7 +106,7 @@
                                 android:layout_marginTop="13dp"
                                 android:layout_marginLeft="5dp"
                                 android:textSize="13sp"
-                                android:textColor="@color/white"
+                                android:textColor="@color/text_normal_color"
                                 android:text=""/>
                         </LinearLayout>
 
@@ -133,11 +133,17 @@
                         android:layout_height="wrap_content"
                         android:text="添加收货地址"
                         android:layout_marginLeft="5dp"
-                        android:textColor="@color/white"
+                        android:textColor="@color/text_normal_color"
                         android:paddingTop="5dp"
                         android:paddingBottom="5dp"/>
 
                 </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/page_bg"
+                    ></View>
 
                 <LinearLayout
                     android:id="@+id/jsEditAddressBtn"
@@ -229,6 +235,43 @@
 
             </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/jsCouponLine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/default_margin"
+            android:padding="@dimen/default_margin"
+            android:background="@color/white"
+            >
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/text_main_color"
+                android:textSize="16sp"
+                android:text="优惠券"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:marqueeRepeatLimit="marquee_forever"/>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/jsCouponTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.000001"
+                android:textColor="@color/green_color"
+                android:textSize="14sp"
+                android:text=""
+                android:drawableRight="@drawable/icon_arrow_right"
+                android:drawablePadding="10dp"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:marqueeRepeatLimit="marquee_forever"/>
+
+            </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -288,7 +331,44 @@
                         android:textSize="16sp"
                         android:textColor="@color/red"
                         android:singleLine="true"
-                        android:text="￥ 555.5"/>
+                        android:text="￥0"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="@color/line_color"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/default_margin"
+                    android:gravity="center_vertical"
+                    >
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/text_main_color"
+                        android:text="优惠金额"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:marqueeRepeatLimit="marquee_forever"/>
+
+                    <TextView
+                        android:id="@+id/jsPriceCouponTv"
+                        android:layout_width="150dp"
+                        android:gravity="right|center_vertical"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.000001"
+                        android:textSize="16sp"
+                        android:textColor="@color/red"
+                        android:singleLine="true"
+                        android:text="￥0"/>
 
                 </LinearLayout>
 
@@ -336,7 +416,7 @@
                         android:textSize="16sp"
                         android:textColor="@color/red"
                         android:singleLine="true"
-                        android:text="￥ 10"/>
+                        android:text="￥0"/>
 
                 </LinearLayout>
 
@@ -358,7 +438,7 @@
                         android:layout_marginTop="1.5dp"
                         android:textColor="@color/text_main_color"
                         android:textSize="16sp"
-                        android:text="总计："/>
+                        android:text="实付金额："/>
 
                     <TextView
                         android:id="@+id/jsTotalMoney"
@@ -366,7 +446,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/red"
                         android:textSize="18sp"
-                        android:text="￥ 4000"/>
+                        android:text="￥0"/>
 
                 </LinearLayout>
 

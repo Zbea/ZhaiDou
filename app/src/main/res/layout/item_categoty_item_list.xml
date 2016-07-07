@@ -11,12 +11,14 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:src="@drawable/icon_loading_category"
-        android:scaleType="centerInside"/>
+        android:padding="13dp"
+        />
 
     <com.zhaidou.view.TypeFaceTextView
         android:id="@+id/categoryName"
         android:layout_width="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
+        android:textSize="13sp"
         android:textColor="@color/text_normal_color"/>
 </LinearLayout>

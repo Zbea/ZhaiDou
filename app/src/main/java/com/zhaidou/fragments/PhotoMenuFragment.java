@@ -74,12 +74,18 @@ public class PhotoMenuFragment extends BaseFragment implements View.OnClickListe
                 }else if (getParentFragment()!=null&&getParentFragment() instanceof OrderAfterSaleFragment){
                     ((OrderAfterSaleFragment)getParentFragment()).toggleMenu();
                 }
+                else if (getParentFragment()!=null&&getParentFragment() instanceof CommentSendFragment){
+                    ((CommentSendFragment)getParentFragment()).toggleMenu();
+                }
                 break;
             case R.id.ll_menu_close:
                 if (getParentFragment()!=null&&getParentFragment() instanceof ProfileFragment){
                     ((ProfileFragment)getParentFragment()).toggleMenu();
                 }else if (getParentFragment()!=null&&getParentFragment() instanceof OrderAfterSaleFragment){
                     ((OrderAfterSaleFragment)getParentFragment()).toggleMenu();
+                }
+                else if (getParentFragment()!=null&&getParentFragment() instanceof CommentSendFragment){
+                    ((CommentSendFragment)getParentFragment()).toggleMenu();
                 }
                 break;
             default:

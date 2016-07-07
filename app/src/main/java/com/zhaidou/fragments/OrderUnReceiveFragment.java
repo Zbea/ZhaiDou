@@ -23,19 +23,21 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Order;
 import com.zhaidou.model.Order1;
+import com.zhaidou.model.User;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -55,7 +57,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
 
     private Dialog mDialog;
     private LinearLayout loadingView;
-
+    private TextView titleTv;
     private RequestQueue mRequestQueue;
     private UnReceiveAdapter unReceiveAdapter;
     private ListView mListView;
@@ -119,6 +121,10 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
     private void initView(View view) {
         mContext = getActivity();
         mOrderList = new ArrayList<Order1>();
+
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_order_unreceive);
+
         loadingView = (LinearLayout) view.findViewById(R.id.loadingView);
         mEmptyView = rootView.findViewById(R.id.nullline);
         mNetErrorView = rootView.findViewById(R.id.nullNetline);
@@ -267,7 +273,7 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 Order1 order =(Order1)values;
                 OrderDetailFragment1 orderDetailFragment = OrderDetailFragment1.newInstance(order.orderCode , 2);
-                ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
+                ((BaseActivity) getActivity()).navigationToFragment(orderDetailFragment);
             }
         });
     }
@@ -290,7 +296,8 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
 
     private void FetchReceiveData() {
         Map<String,String> params = new HashMap();
-        params.put("userId",ZhaiDou.TESTUSERID);
+        User user = SharedPreferencesUtil.getUser(getActivity());
+        params.put("userId",user.getId()+"");
         params.put("clientType","ANDROID");
         params.put("clientVersion","45");
         params.put("businessType","01");

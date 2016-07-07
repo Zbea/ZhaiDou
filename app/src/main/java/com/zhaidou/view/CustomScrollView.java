@@ -1,8 +1,5 @@
 package com.zhaidou.view;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -13,6 +10,9 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.ScrollView;
 import android.widget.Scroller;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * 自定义ScrollView，解决：ScrollView嵌套ViewPager，导致ViewPager不能滑动的问题
@@ -76,6 +76,10 @@ public class CustomScrollView extends ScrollView {
 			}
 		}
 		super.onScrollChanged(l, t, oldl, oldt);
+        if (mOnScrollChangedListener != null) {
+            //使用公共接口触发滚动信息的onScrollChanged方法，将滚动位置信息暴露给外部
+            mOnScrollChangedListener.onScrollChanged( l, t, oldl, oldt);
+        }
 	}
 
 	private void stopAnim() {
@@ -136,5 +140,26 @@ public class CustomScrollView extends ScrollView {
 		}
 		return null;
 	}
+
+
+    /**
+     * 公共接口：ScrollView滚动监听
+     */
+    public interface OnScrollChangedListener {
+        void onScrollChanged( int x, int y, int oldx, int oldy);
+    }
+
+    private OnScrollChangedListener mOnScrollChangedListener;
+
+
+
+
+    /**
+     * 暴露给外部的方法：设置滚动监听
+     * @param listener
+     */
+    public void setOnScrollChangedListener(OnScrollChangedListener listener) {
+        mOnScrollChangedListener = listener;
+    }
 
 }

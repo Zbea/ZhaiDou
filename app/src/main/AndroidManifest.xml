@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    android:versionCode="47"
-    android:versionName="@string/app_versionName"
-    package="com.zhaidou">
+    package="com.zhaidou"
+    android:versionCode="51"
+    android:versionName="@string/app_versionName" >
+
     <application
+        android:name=".ZDApplication"
         android:allowBackup="true"
         android:icon="@drawable/icon_launcher"
-        android:largeHeap="true"
-        android:name=".ZDApplication"
         android:label="@string/app_name"
-        android:theme="@style/app_theme">
-
+        android:largeHeap="true"
+        android:theme="@style/app_theme" >
         <meta-data
             android:name="UMENG_CHANNEL"
             android:value="${UMENG_CHANNEL_VALUE}" />
-        <meta-data android:value="55c1c1e0e0f55a397c001975" android:name="UMENG_APPKEY"></meta-data>
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="55c1c1e0e0f55a397c001975" />
 
         <activity
             android:name=".WelcomePage"
@@ -51,13 +53,6 @@
 
                 <data android:scheme="wxce03c66622e5b243" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".activities.DiyActivity"
-            android:configChanges="orientation|keyboardHidden|"
-            android:label="@string/title_activity_diy"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" >
         </activity>
         <activity
             android:name=".activities.ItemDetailActivity"

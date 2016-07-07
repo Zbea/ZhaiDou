@@ -1,7 +1,6 @@
 package com.zhaidou.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,13 +8,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.zhaidou.R;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
 
 import java.util.List;
@@ -50,8 +46,6 @@ public class ShopSpecialAdapter extends BaseAdapter
         TypeFaceTextView itemName;
         ImageView itemImage;
         TypeFaceTextView itemTime;
-        View itemLine;
-        View itemLine1;
         ImageView isNewsView;
         ImageView newView;
     }
@@ -86,8 +80,6 @@ public class ShopSpecialAdapter extends BaseAdapter
             viewHolder.itemTime = (TypeFaceTextView) convertView.findViewById(R.id.shop_time_item);
             viewHolder.itemImage = (ImageView) convertView.findViewById(R.id.itemsImageIv);
             viewHolder.itemImage.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth,screenWidth*316/722));
-            viewHolder.itemLine = (View) convertView.findViewById(R.id.itemsLine);
-            viewHolder.itemLine1 = (View) convertView.findViewById(R.id.itemsLine1);
             viewHolder.isNewsView=(ImageView)convertView.findViewById(R.id.newsView);
             convertView.setTag(viewHolder);
         }
@@ -96,16 +88,6 @@ public class ShopSpecialAdapter extends BaseAdapter
             viewHolder = (ViewHolder) convertView.getTag();
         }
         ShopSpecialItem shopSpecialItem=items.get(position);
-        if (position==0)
-        {
-            viewHolder.itemLine.setVisibility(View.GONE);
-            viewHolder.itemLine1.setVisibility(View.GONE);
-        }
-        else
-        {
-            viewHolder.itemLine.setVisibility(View.VISIBLE);
-            viewHolder.itemLine1.setVisibility(View.VISIBLE);
-        }
         viewHolder.itemName.setText(shopSpecialItem.title);
         viewHolder.itemSale.setText(shopSpecialItem.sale);
         viewHolder.itemTime.setText(""+shopSpecialItem.overTime);
@@ -123,17 +105,7 @@ public class ShopSpecialAdapter extends BaseAdapter
         {
             viewHolder.isNewsView.setVisibility(View.GONE);
         }
-//        ToolUtils.setImageNoResetUrl(shopSpecialItem.imageUrl, viewHolder.itemImage,R.drawable.icon_loading_item);
-
-        DisplayImageOptions options=new DisplayImageOptions.Builder()
-                .showImageForEmptyUri(R.drawable.icon_loading_item)
-                .showImageOnFail(R.drawable.icon_loading_item)
-                .resetViewBeforeLoading(false)//default 设置图片在加载前是否重置、复位
-                .bitmapConfig(Bitmap.Config.RGB_565)
-                .imageScaleType(ImageScaleType.EXACTLY)
-                .displayer(new RoundedBitmapDisplayer(8))//设置圆角半径
-                .build();
-        ImageLoader.getInstance().displayImage(shopSpecialItem.imageUrl, viewHolder.itemImage,options);
+        ToolUtils.setImageCacheUrl(shopSpecialItem.imageUrl, viewHolder.itemImage, R.drawable.icon_loading_item);
         return convertView;
     }
 }

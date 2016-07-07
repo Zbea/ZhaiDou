@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/ll_click"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white"
+    >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:gravity="center_vertical">
+
+            <com.zhaidou.view.CircleImageView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/commentHeader"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/icon_loading_circle"
+                >
+
+            </com.zhaidou.view.CircleImageView>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/commentNameTv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="名称"
+                android:textSize="16sp"
+                android:textColor="@color/text_normal_color"
+                android:layout_marginLeft="10dp"
+                ></com.zhaidou.view.TypeFaceTextView>
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/commentTimeTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="11:27"
+                android:textColor="@color/text_normal_color"
+                ></com.zhaidou.view.TypeFaceTextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/commentLine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="55dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/commentImageLine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal"
+                >
+            </LinearLayout>
+
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/commentInfoTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_normal_color"
+                android:paddingBottom="10dp"
+                android:text="评论"
+                ></com.zhaidou.view.TypeFaceTextView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/commentReplyLine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="55dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/page_bg"
+                android:padding="10dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="vertical">
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/commentNameFormerTv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="名称"
+                    android:textColor="@color/text_gary_color"
+                    android:layout_marginBottom="10dp"
+                    ></com.zhaidou.view.TypeFaceTextView>
+
+                <LinearLayout
+                    android:id="@+id/commentImageFormerLine"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:orientation="horizontal"
+                    >
+
+                </LinearLayout>
+
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/commentInfoFormerTv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="名称sfdfsfdsfdssdfsfdsf"
+                    android:textColor="@color/text_normal_color"
+                    ></com.zhaidou.view.TypeFaceTextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/commentImageReplyLine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal"
+                >
+
+            </LinearLayout>
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/commentInfoReplyTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_normal_color"
+                android:layout_marginBottom="10dp"
+                android:text="评论"
+                ></com.zhaidou.view.TypeFaceTextView>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/all_e"
+            ></View>
+
+</LinearLayout>

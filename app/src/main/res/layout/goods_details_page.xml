@@ -181,23 +181,17 @@
                     android:src="@drawable/icon_quality_goods"/>
 
 
-                <LinearLayout
-                    android:layout_width="fill_parent"
+                <ImageView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/icon_7_day_return"/>
-                </LinearLayout>
+                    android:layout_marginLeft="20dp"
+                    android:src="@drawable/icon_7_day_return"/>
 
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:src="@drawable/icon_delivery"/>
 
             </LinearLayout>
@@ -230,13 +224,13 @@
             </LinearLayout>
             <LinearLayout
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <LinearLayout
                     android:id="@+id/sizeLine"
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_height="wrap_content"
                     android:background="@color/white"
                     android:orientation="vertical">
 
@@ -254,28 +248,24 @@
                         android:layout_height="1px"
                         android:background="@color/line_color"/>
 
-                    <RelativeLayout
+                    <com.zhaidou.view.FlowLayout
+                        android:id="@+id/flowLayout"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <com.zhaidou.view.FlowLayout
-                            android:id="@+id/flowLayout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="@dimen/default_margin"
-                            android:layout_marginRight="@dimen/default_margin"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginBottom="15dp"
-                            android:paddingRight="5dp"
-                            >
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/default_margin"
+                        android:layout_marginRight="@dimen/default_margin"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="15dp"
+                        android:paddingRight="5dp"
+                        >
 
-                        </com.zhaidou.view.FlowLayout>
-                        </RelativeLayout>
+                    </com.zhaidou.view.FlowLayout>
 
                 </LinearLayout>
                 <LinearLayout
                     android:id="@+id/attributeNameLine"
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_height="wrap_content"
                     android:background="@color/white"
                     android:orientation="vertical">
 
@@ -299,22 +289,18 @@
                         android:layout_height="1px"
                         android:background="@color/line_color"/>
 
-                    <RelativeLayout
+                    <com.zhaidou.view.FlowLayout
+                        android:id="@+id/flowLayout1"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <com.zhaidou.view.FlowLayout
-                            android:id="@+id/flowLayout1"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="@dimen/default_margin"
-                            android:layout_marginRight="@dimen/default_margin"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginBottom="15dp"
-                            android:paddingRight="5dp"
-                            >
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/default_margin"
+                        android:layout_marginRight="@dimen/default_margin"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="15dp"
+                        android:paddingRight="5dp"
+                        >
 
-                        </com.zhaidou.view.FlowLayout>
-                    </RelativeLayout>
+                    </com.zhaidou.view.FlowLayout>
 
                 </LinearLayout>
             </LinearLayout>

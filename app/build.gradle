@@ -1,13 +1,21 @@
 apply plugin: 'com.android.application'
 android {
+//    signingConfigs {
+//        debug {
+//            keyAlias 'zd'
+//            keyPassword '111111'
+//            storeFile file('/Users/wangclark/Downloads/zd.jks')
+//            storePassword '111111'
+//        }
+//    }
     compileSdkVersion 20
     buildToolsVersion '20.0.0'
     defaultConfig {
         applicationId "com.zhaidou"
         minSdkVersion 15
         targetSdkVersion 19
-        versionCode 47
-        versionName "3.1.0"
+        versionCode 51
+        versionName "3.3.1"
         manifestPlaceholders = [UMENG_CHANNEL_VALUE: "default_channel"]
     }
     productFlavors {
@@ -36,6 +44,9 @@ android {
         }
     }
     packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
     }
@@ -74,7 +85,6 @@ dependencies {
     compile files('libs/mta-mid-sdk-2.20.jar')
     compile files('libs/mta-stats-sdk-2.0.4.jar')
     compile files('libs/fastjson-1.2.7.jar')
-    compile files('libs/httpmime-4.1.jar')
     compile project(':easeui')
     compile files('libs/MiPush_SDK_Client_2_2_21.jar')
     compile files('libs/ShareSDK-Wechat-Moments-2.7.0.jar')
@@ -87,4 +97,5 @@ dependencies {
     compile files('libs/ShareSDK-Core-2.7.0.jar')
     compile files('libs/MobTools-2016.0301.1053.jar')
     compile files('libs/MobCommons-2016.0301.1053.jar')
+    compile files('libs/httpmime-4.1.jar')
 }

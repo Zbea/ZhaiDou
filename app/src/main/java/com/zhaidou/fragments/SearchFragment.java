@@ -34,10 +34,10 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.viewpagerindicator.TabPageIndicator;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.adapter.SearchAdapter;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.view.AutoGridView;
@@ -61,7 +61,7 @@ public class SearchFragment extends BaseFragment
     private static final String DATA = "page";
     private static final String INDEX = "index";
     private View mView;
-    private String mPage;
+    private String mPage="";
     private int mIndex;
     private Context mContext;
     private GridView gv_hot;
@@ -95,7 +95,6 @@ public class SearchFragment extends BaseFragment
 
     private GoodsSingleListFragment mSpecialGoodsFragment;
     private GoodsSingleListFragment mtaobaoGoodsFragment;
-    private SearchArticleListFragment mStrategyFragment;
 
     private boolean isHidenKeyBoard = false;
 
@@ -171,10 +170,10 @@ public class SearchFragment extends BaseFragment
                     SharedPreferencesUtil.clearSearchHistory(mContext);
                     break;
                 case R.id.tv_cancel:
-                    if (!TextUtils.isEmpty(mEditText.getText().toString().trim()))
+                    if (!TextUtils.isEmpty(search_Str))
                     {
                         if (inputMethodManager.isActive())
-                            inputMethodManager.hideSoftInputFromWindow(((MainActivity) mContext).getWindow().peekDecorView().getApplicationWindowToken(), 0);
+                            inputMethodManager.hideSoftInputFromWindow(((BaseActivity) mContext).getWindow().peekDecorView().getApplicationWindowToken(), 0);
                         mIndex=1;
                         onSearch();
                     } else
@@ -184,7 +183,7 @@ public class SearchFragment extends BaseFragment
                     }
                     break;
                 case R.id.ll_back:
-                    ((MainActivity) getActivity()).popToStack(SearchFragment.this);
+                    ((BaseActivity) getActivity()).popToStack(SearchFragment.this);
                     break;
                 case R.id.iv_sort:
                     toggleSortMenu();
@@ -229,9 +228,6 @@ public class SearchFragment extends BaseFragment
             } else if (page == 1)
             {
                 mtaobaoGoodsFragment.FetchData(search_Str, index, 1);
-            } else
-            {
-                mStrategyFragment.FetchData(search_Str, index, 1);
             }
         }
     };
@@ -266,7 +262,7 @@ public class SearchFragment extends BaseFragment
         super.onCreate(savedInstanceState);
         if (getArguments() != null)
         {
-            mPage = getArguments().getString(DATA);
+            mPage = mPage+getArguments().getString(DATA);
             mIndex = getArguments().getInt(INDEX);//1为普通搜索2为分类搜索
         }
     }
@@ -292,6 +288,8 @@ public class SearchFragment extends BaseFragment
     private void initView()
     {
         mEditText = (CustomEditText) mView.findViewById(R.id.et_search);
+        mEditText.setHint(mPage.length()>0?mPage:"搜索");
+        search_Str=mPage;
         mSearchiv = (ImageView) mView.findViewById(R.id.iv_search);
         mDeleteView = (TextView) mView.findViewById(R.id.tv_delete);
         mSearchView = (TextView) mView.findViewById(R.id.tv_cancel);
@@ -365,7 +363,7 @@ public class SearchFragment extends BaseFragment
         inputMethodManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
 
         if (inputMethodManager.isActive())
-            inputMethodManager.hideSoftInputFromWindow(((MainActivity) mContext).getWindow().peekDecorView().getApplicationWindowToken(), 0);
+            inputMethodManager.hideSoftInputFromWindow(((BaseActivity) mContext).getWindow().peekDecorView().getApplicationWindowToken(), 0);
         mEditText.setOnKeyListener(new View.OnKeyListener()
         {
             @Override

@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -25,9 +26,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -52,8 +53,10 @@ public class MainCategoryFragment extends BaseFragment {
     private static final String ARG_PARAM2 = "param2";
     private long lastClickTime = 0L;
 
-    private String mParam1;
+    private String mParam1="";
     private String mParam2;
+
+    private LinearLayout searchBtn;
 
     private OnFragmentInteractionListener mListener;
     List<Category> categoryList = new ArrayList<Category>();
@@ -96,7 +99,7 @@ public class MainCategoryFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam1 = mParam1+getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
@@ -105,7 +108,19 @@ public class MainCategoryFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_category, container, false);
-        view.findViewById(R.id.searchLayout).setOnClickListener(this);
+        TextView titleTv=(TextView) view.findViewById(R.id.tv_title);
+        titleTv.setText(mParam1.length()>0?mParam1:"旅行收纳");
+        searchBtn = (LinearLayout) view.findViewById(R.id.ll_searchs);
+        searchBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                SearchFragment searchFragment = SearchFragment.newInstance(mParam1, 1);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
+            }
+        });
+
         mCategoryListView = (ListView) view.findViewById(R.id.category);
         mGridView = (GridView) view.findViewById(R.id.categoryItem);
         mCategoryAdapter = new CategoryAdapter(getActivity(), categoryList);
@@ -118,7 +133,7 @@ public class MainCategoryFragment extends BaseFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
                 SearchFragment searchFragment = SearchFragment.newInstance(mCategoryItemAdapter.getList().get(position).categoryId, 2);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
+                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
             }
         });
         mRequestQueue = Volley.newRequestQueue(getActivity());
@@ -201,15 +216,6 @@ public class MainCategoryFragment extends BaseFragment {
         mRequestQueue.add(request);
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.searchLayout:
-                SearchFragment searchFragment = SearchFragment.newInstance("", 1);
-                ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
-                break;
-        }
-    }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
@@ -276,5 +282,6 @@ public class MainCategoryFragment extends BaseFragment {
             return convertView;
         }
     }
+
 
 }

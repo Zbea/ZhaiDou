@@ -45,10 +45,10 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -85,11 +85,12 @@ public class GoodsDetailsFragment extends BaseFragment
 {
     private static final String PAGE = "page";
     private static final String INDEX = "index";
-    private static final String ISSHOWTIMER = "timer";
+    private static final String SIZEID = "sizeId";
     private static final String CANSHARE = "canShare";
 
     private String mPage;
     private String mIndex;
+    private String mSizeId;
     private View mView;
     private int flags;//1代表零元特卖；2代表已下架商品
     private Context mContext;
@@ -120,7 +121,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private final int UPDATE_ADD_CART = 5;//加入购物车
     private final int UPDATE_ISADD_CART = 6;//零元特卖是否已经加入购物车了
     private final int UPDATE_OSALE_DELETE = 7;//删除购物车里面的零元特卖
-    private final int UPDATE_SHARE_TOAST=8;
+    private final int UPDATE_SHARE_TOAST = 8;
 
     private ScrollView scrollView;
     private ImageView topBtn;
@@ -254,7 +255,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     mCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + detail.price + ""));
                     mOldPrice.setText("￥" + ToolUtils.isIntPrice("" + detail.cost_price + ""));
                     tv_comment.setText(detail.designer);
-                    mTitle.setText(detail.title);
+                    mTitle.setText(goodsName);
                     setDiscount(detail.price, detail.cost_price);
                     if (detail.specifications != null)
                     {
@@ -285,7 +286,6 @@ public class GoodsDetailsFragment extends BaseFragment
                     viewPager.setFocusable(true);
                     viewPager.setFocusableInTouchMode(true);
                     viewPager.requestFocus();
-                    viewPager.requestFocusFromTouch();
                     break;
                 case UPDATE_CARTCAR_DATA://更新购物车数量
                     initCartTips();
@@ -393,7 +393,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 case UPDATE_SHARE_TOAST:
                     mDialogUtil.dismiss();
                     String result = (String) msg.obj;
-                    Toast.makeText(mContext,result,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, result, Toast.LENGTH_SHORT).show();
                     break;
 
             }
@@ -431,14 +431,14 @@ public class GoodsDetailsFragment extends BaseFragment
         {
             switch (view.getId())
             {
-                case R.id.back_btn:
-                    ((MainActivity) getActivity()).popToStack(GoodsDetailsFragment.this);
+                case R.id.ll_back:
+                    ((BaseActivity) getActivity()).popToStack(GoodsDetailsFragment.this);
                     break;
                 case R.id.goodsMyCartBtn:
                     if (checkLogin())
                     {
                         ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
-                        ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
+                        ((BaseActivity) getActivity()).navigationToFragment(shopCartFragment);
                     } else
                     {
                         Intent intent = new Intent(getActivity(), LoginActivity.class);
@@ -495,10 +495,12 @@ public class GoodsDetailsFragment extends BaseFragment
 
         }
     };
+    private String goodsName;
 
     public static GoodsDetailsFragment newInstance(String page, String index)
     {
         GoodsDetailsFragment fragment = new GoodsDetailsFragment();
+        System.out.println("index = " + index);
         Bundle args = new Bundle();
         args.putString(PAGE, page);
         args.putString(INDEX, index);
@@ -521,6 +523,7 @@ public class GoodsDetailsFragment extends BaseFragment
             flags = getArguments().getInt("flags");
             isPublish = (flags == 3 ? true : false);
             canShare = getArguments().getBoolean(CANSHARE, true);
+            mSizeId = getArguments().getString(SIZEID);
         }
     }
 
@@ -566,7 +569,7 @@ public class GoodsDetailsFragment extends BaseFragment
 
         initBroadcastReceiver();
 
-        backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
+        backBtn = (TypeFaceTextView) mView.findViewById(R.id.ll_back);
         backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(mContext.getResources().getString(R.string.title_goods_detail));
@@ -840,8 +843,7 @@ public class GoodsDetailsFragment extends BaseFragment
         {
             flowLayoutSubclass.removeAllViews();
         }
-        MarginLayoutParams lp = new MarginLayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        MarginLayoutParams lp = new MarginLayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         lp.leftMargin = 10;
         lp.rightMargin = 5;
         lp.topMargin = 10;
@@ -890,7 +892,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 }
             });
             textView.setText(specification.title);
-            ToolUtils.setLog("specification.num:"+specification.num);
+            ToolUtils.setLog("specification.num:" + specification.num);
             if (specification.num < 1)
             {
                 textView.setBackgroundResource(R.drawable.goods_no_click_selector);
@@ -898,12 +900,18 @@ public class GoodsDetailsFragment extends BaseFragment
                 textView.setClickable(false);
             } else
             {
-                if (specificationList.size() == 1)
+                if (specification.sizeId.equals(mSizeId+""))
                 {
                     sigleClickPosition = position;
                     textView.setSelected(true);
                     sizeEvent(specification);
                 }
+//                if (specificationList.size() == 1)
+//                {
+//                    sigleClickPosition = position;
+//                    textView.setSelected(true);
+//                    sizeEvent(specification);
+//                }
                 textSingleTvs.add(textView);
             }
             if (isSizeSubclass)
@@ -976,15 +984,32 @@ public class GoodsDetailsFragment extends BaseFragment
             });
             Specification specification = specificationList.get(i);
             textView.setText(specification.title);
-            if (0 == position)
+
+            if (mSizeId!=null)
             {
-                textView.setSelected(true);
-                mSpecificationParent = specificationList.get(i);
+                for (int j = 0; j < specification.sizess.size(); j++)
+                {
+                    if (mSizeId.equals(specification.sizess.get(j).sizeId))
+                    {
+                        doubleClickParentPos = i;
+                        textView.setSelected(true);
+                        mSpecificationParent = specificationList.get(i);
+                        addSizeSubclassView(specification.sizess);
+                    }
+                }
+            } else
+            {
+                if (0 == position)
+                {
+                    textView.setSelected(true);
+                    mSpecificationParent = specificationList.get(i);
+                }
+                addSizeSubclassView(specificationList.get(0).sizess);
             }
             textParentTvs.add(textView);
             flowLayoutParent.addView(view, lp);
         }
-        addSizeSubclassView(specificationList.get(0).sizess);
+
     }
 
 
@@ -994,8 +1019,8 @@ public class GoodsDetailsFragment extends BaseFragment
     private void addSizeSubclassView(List<Specification> sizes)
     {
         ToolUtils.setLog("子规格");
-        isClickSubclass=false;
-        sigleClickPosition=-1;
+        isClickSubclass = false;
+        sigleClickPosition = -1;
         mSpecificationSubclass = null;
         flowLayoutSubclass.removeAllViews();
         MarginLayoutParams lp = new MarginLayoutParams(
@@ -1019,7 +1044,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     {
                         if (isClickSubclass)
                         {
-                            isClickSubclass=false;
+                            isClickSubclass = false;
                             sigleClickPosition = -1;
                             textView.setSelected(false);
                             mSpecificationSubclass = null;
@@ -1027,7 +1052,7 @@ public class GoodsDetailsFragment extends BaseFragment
                         }
                     } else
                     {
-                        isClickSubclass=true;
+                        isClickSubclass = true;
                         if (mSpecificationParent == null)
                         {
                             ToolUtils.setToast(mContext, "抱歉，请先选择" + sizeNameParent);
@@ -1052,18 +1077,26 @@ public class GoodsDetailsFragment extends BaseFragment
             } else
             {
                 textView.setSelected(false);
-                if (isFristSubclass)
+                if (specification.sizeId.equals(mSizeId+""))
                 {
-                    isFristSubclass = false;
-                    if (specificationList.size() == 1)
-                        if (specificationList.get(0).sizess.size() == 1)
-                        {
-                            isClickSubclass=true;
-                            sigleClickPosition = 0;
-                            textView.setSelected(true);
-                            sizeEvent(specification);
-                        }
+                    isClickSubclass = true;
+                    sigleClickPosition = 0;
+                    textView.setSelected(true);
+                    sizeEvent(specification);
                 }
+
+//                if (isFristSubclass)
+//                {
+//                    isFristSubclass = false;
+//                    if (specificationList.size() == 1)
+//                        if (specificationList.get(0).sizess.size() == 1)
+//                        {
+//                            isClickSubclass=true;
+//                            sigleClickPosition = 0;
+//                            textView.setSelected(true);
+//                            sizeEvent(specification);
+//                        }
+//                }
                 textSubclassTvs.add(textView);
             }
             flowLayoutSubclass.addView(view, lp);
@@ -1171,8 +1204,8 @@ public class GoodsDetailsFragment extends BaseFragment
         //设置选择规格顶部图片变化
         if (spe.images != null && spe.images.size() > 0)
         {
-            if (images!=spe.images)
-            images.clear();
+            if (images != spe.images)
+                images.clear();
             images.addAll(spe.images);
             setImageViews();
         }
@@ -1254,7 +1287,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     @Override
                     public void onLoadingStarted(String s, View view)
                     {
-                    } 
+                    }
 
                     @Override
                     public void onLoadingFailed(String s, View view, FailReason failReason)
@@ -1300,21 +1333,25 @@ public class GoodsDetailsFragment extends BaseFragment
     private void share()
     {
         mDialogUtil = new DialogUtils(mContext);
-        mDialogUtil.showShareDialog(mPage, mPage + "  " + shareUrl, detail != null ? detail.imageUrl : null, shareUrl, new PlatformActionListener() {
+        mDialogUtil.showShareDialog(mPage, mPage + "  " + shareUrl, detail != null ? detail.imageUrl : null, shareUrl, new PlatformActionListener()
+        {
             @Override
-            public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
+            public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap)
+            {
                 Message message = handler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_completed));
                 handler.sendMessage(message);
             }
 
             @Override
-            public void onError(Platform platform, int i, Throwable throwable) {
+            public void onError(Platform platform, int i, Throwable throwable)
+            {
                 Message message = handler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_error));
                 handler.sendMessage(message);
             }
 
             @Override
-            public void onCancel(Platform platform, int i) {
+            public void onCancel(Platform platform, int i)
+            {
                 Message message = handler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_cancel));
                 handler.sendMessage(message);
             }
@@ -1348,7 +1385,7 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     private void setImagesReset()
     {
-        if (images!=imageInits)
+        if (images != imageInits)
             images.clear();
         images.addAll(imageInits);
         setImageViews();
@@ -1546,11 +1583,10 @@ public class GoodsDetailsFragment extends BaseFragment
             cartGoodsItem.formalPrice = mSpecificationSubclass.oldPrice;
 
             cartArrayItem.storeMoney = mSpecificationSubclass.price;
-            if (mSpecificationSubclass.images!=null)
+            if (mSpecificationSubclass.images != null)
             {
                 cartGoodsItem.imageUrl = mSpecificationSubclass.images.get(0);
-            }
-            else
+            } else
             {
                 cartGoodsItem.imageUrl = detail.imageUrl;
             }
@@ -1562,11 +1598,10 @@ public class GoodsDetailsFragment extends BaseFragment
             cartGoodsItem.formalPrice = mSpecificationParent.oldPrice;
 
             cartArrayItem.storeMoney = mSpecificationParent.price;
-            if (mSpecificationParent.images!=null)
+            if (mSpecificationParent.images != null)
             {
                 cartGoodsItem.imageUrl = mSpecificationParent.images.get(0);
-            }
-            else
+            } else
             {
                 cartGoodsItem.imageUrl = detail.imageUrl;
             }
@@ -1592,7 +1627,7 @@ public class GoodsDetailsFragment extends BaseFragment
         bundle.putInt("flags", 1);
         bundle.putSerializable("goodsList", arrayItems);
         shopOrderOkFragment.setArguments(bundle);
-        ((MainActivity) getActivity()).navigationToFragment(shopOrderOkFragment);
+        ((BaseActivity) getActivity()).navigationToFragment(shopOrderOkFragment);
 
     }
 
@@ -1619,7 +1654,7 @@ public class GoodsDetailsFragment extends BaseFragment
                         return;
                     }
                     String goodsId = dataObject.optString("productId");
-                    String goodsName = dataObject.optString("productName");
+                    goodsName = dataObject.optString("productName");
                     sizeNameParent = dataObject.optString("attributeName1");
                     sizeNameSubclass = dataObject.optString("attributeName2");
                     flags = dataObject.optString("businessType").equals("01") ? 0 : 1;
@@ -2142,7 +2177,7 @@ public class GoodsDetailsFragment extends BaseFragment
 
     public class ImageAdapter extends PagerAdapter
     {
-       List<ImageView> imageViews=new ArrayList<ImageView>();
+        List<ImageView> imageViews = new ArrayList<ImageView>();
 
         public void initImags(List<ImageView> imageViewss)
         {

@@ -113,7 +113,7 @@ import java.util.Map;
          mRequestQueue = Volley.newRequestQueue(getActivity());
          mRegister.setOnClickListener(this);
          mLogin.setOnClickListener(this);
-         view.findViewById(R.id.back_btn).setOnClickListener(this);
+         view.findViewById(R.id.ll_back).setOnClickListener(this);
 
          return view;
      }
@@ -143,7 +143,7 @@ import java.util.Map;
              case R.id.tv_login:
                  ((BaseActivity) getActivity()).popToStack(this);
                  break;
-             case R.id.back_btn:
+             case R.id.ll_back:
                  ((BaseActivity) getActivity()).popToStack(this);
                  break;
              default:

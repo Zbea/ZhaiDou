@@ -1,17 +1,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f1f1f1"
+    android:background="@color/page_bg"
     android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/rl_actionbar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="#39495d">
+        android:background="@color/white">
         <LinearLayout
             android:id="@+id/ll_back"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:orientation="horizontal">
@@ -20,7 +20,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:src="@drawable/icon_back"/>
+                android:src="@drawable/icon_back_selector"/>
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -28,16 +28,16 @@
                 android:textSize="16sp"
                 android:paddingLeft="6dp"
                 android:drawablePadding="2dp"
-                android:textColor="@color/white"
+                android:textColor="@color/text_main_color"
                 android:layout_alignParentLeft="true"
-                android:text="返回"/>
+                android:text=""/>
         </LinearLayout>
         <com.zhaidou.view.TypeFaceTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:textSize="18sp"
-            android:textColor="@color/white"
+            android:textColor="@color/text_main_color"
             android:text="获奖地址"/>
         <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/tv_save"
@@ -46,10 +46,14 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:textSize="16sp"
-            android:textColor="@color/white"
+            android:textColor="@color/text_main_color"
             android:paddingRight="10dp"
             android:text="保存"/>
     </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/all_e"></View>
     <FrameLayout
         android:id="@+id/fl_container"
         android:layout_width="match_parent"
@@ -62,30 +66,6 @@
         android:id="@+id/ll_manage_address"
         android:orientation="vertical">
 
-        <!--<RelativeLayout-->
-        <!--android:layout_marginTop="10dp"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="50dp"-->
-        <!--android:gravity="center_vertical"-->
-        <!--android:background="@color/white">-->
-        <!--<com.zhaidou.view.TypeFaceTextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:textColor="#666666"-->
-        <!--android:paddingLeft="20dp"-->
-        <!--android:text="管理收货地址"/>-->
-        <!--<ImageView-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:paddingRight="10dp"-->
-        <!--android:src="@drawable/icon_arrow_right"/>-->
-        <!--</RelativeLayout>-->
-        <!--<View-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="1dp"-->
-        <!--android:layout_marginLeft="20dp"-->
-        <!--android:background="#eeeeee"/>-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

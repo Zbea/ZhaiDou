@@ -4,18 +4,33 @@
     android:background="@color/white"
     android:orientation="vertical">
 
+
     <RelativeLayout
-        android:id="@+id/common_actionbar"
+        android:id="@+id/rl_back"
         android:layout_width="match_parent"
         android:layout_height="@dimen/header_height_dimen"
-        android:background="@color/actionbar_background_color">
-
+        android:background="@color/white">
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/ll_back"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:drawablePadding="6dp"
+            android:textSize="16sp"
+            android:clickable="true"
+            android:drawableLeft="@drawable/icon_back_selector"/>
         <LinearLayout
-            android:id="@+id/searchLayout"
+            android:id="@+id/ll_searchs"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="15dp"
+            android:gravity="center_vertical"
+            android:clickable="true"
             android:background="@drawable/search_titlebar_bg">
 
             <com.zhaidou.view.TypeFaceTextView
@@ -23,25 +38,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:text="搜索"
-                android:textColor="#D0D0D0"
+                android:text="旅行收纳"
+                android:textColor="#aa666666"
+                android:layout_marginLeft="10dp"
                 android:drawableLeft="@drawable/icon_search_gray"
                 android:drawablePadding="10dp"
-                android:textSize="14sp" />
+                android:textSize="13sp" />
 
-            <ImageView
-                android:id="@+id/iv_search"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="15dp"
-                android:scaleType="fitXY"
-                android:visibility="gone"
-                android:src="@drawable/icon_search_gray" />
+
         </LinearLayout>
     </RelativeLayout>
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/all_e"></View>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -60,6 +70,7 @@
             android:id="@+id/categoryItem"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:listSelector="@color/transparent"
             android:scrollbars="none"
             android:numColumns="3"
             android:layout_weight="3" />

@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
@@ -20,7 +21,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
@@ -36,6 +36,7 @@ import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -56,7 +57,7 @@ public class OrderDetailFragment1 extends BaseFragment {
 
     private RequestQueue requestQueue;
     private ListView mListView;
-    private TextView mSaleServiceTV;
+    private TextView titleTv;
     private OrderItemAdapter orderItemAdapter;
     private final int UPDATE_COUNT_DOWN_TIME = 2;
     private final int UPDATE_UI_TIMER_FINISH = 3;
@@ -116,6 +117,8 @@ public class OrderDetailFragment1 extends BaseFragment {
 
     private void initView(View view) {
         mContext = getActivity();
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_order_detail);
         mNetWorkLayout = (LinearLayout) view.findViewById(R.id.noNetWork);
         view.findViewById(R.id.reload).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,7 +151,7 @@ public class OrderDetailFragment1 extends BaseFragment {
                 final Store store = (Store) values;
                 if (ZhaiDou.STATUS_DEAL_SUCCESS == store.status) {
                     OrderAfterSaleFragment afterSaleFragment = OrderAfterSaleFragment.newInstance(store, "");
-                    ((MainActivity) getActivity()).navigationToFragment(afterSaleFragment);
+                    ((BaseActivity) getActivity()).navigationToFragment(afterSaleFragment);
                     afterSaleFragment.setOnReturnSuccess(new OnReturnSuccess() {
                         @Override
                         public void onSuccess(Store st) {
@@ -294,32 +297,39 @@ public class OrderDetailFragment1 extends BaseFragment {
             ListView mListView = ViewHolder.get(convertView, R.id.lv_order_list);
             TextView btn1 = ViewHolder.get(convertView, R.id.bt_received);
             TextView btn2 = ViewHolder.get(convertView, R.id.bt_logistics);
-            LinearLayout mBottomLayout = ViewHolder.get(convertView, R.id.ll_bottom);
+            RelativeLayout mBottomLayout = ViewHolder.get(convertView, R.id.buttonLayout);
 
             final LinearLayout detailContainer = ViewHolder.get(convertView, R.id.detailContainer);
             TextView mReceiverName = ViewHolder.get(convertView, R.id.tv_receiver_name);
             TextView mReceiverPhone = ViewHolder.get(convertView, R.id.tv_receiver_phone);
             final TextView mReceiverAddress = ViewHolder.get(convertView, R.id.tv_receiver_address);
-            TextView mOrderAmount = ViewHolder.get(convertView, R.id.total);
+            TextView mTotal = ViewHolder.get(convertView, R.id.total);
+            TextView mGoodsAccount = ViewHolder.get(convertView, R.id.goodsAccount);
+            TextView mFavourableAccount = ViewHolder.get(convertView, R.id.favourableAccount);
+            TextView mCarriage = ViewHolder.get(convertView, R.id.carriage);
 
             final Store store = getList().get(position);
             mReceiverName.setText(store.deliveryAddressPO.realName);
             mReceiverPhone.setText(store.deliveryAddressPO.mobile);
             mReceiverAddress.setText(store.deliveryAddressPO.provinceName + store.deliveryAddressPO.cityName + store.deliveryAddressPO.address);
-            mOrderAmount.setText("￥" + store.orderActualAmount);
+            mTotal.setText("￥" + store.orderActualAmount);
+            mGoodsAccount.setText("￥"+store.itemTotalAmount);
+            mFavourableAccount.setText("￥"+(Double.parseDouble(store.discountAmount)>0?"-"+store.discountAmount:store.discountAmount));
+            mCarriage.setText("￥"+store.deliveryFee);
             mOrderNumber.setText(store.orderCode + "");
             mOrderTime.setText(store.creationTime);
             mOrderStatus.setText(store.orderShowStatus);
 
             if (ZhaiDou.STATUS_DEAL_SUCCESS == store.status) {/**交易成功*/
-                mBottomLayout.setVisibility(View.VISIBLE);
+//                mBottomLayout.setVisibility(View.VISIBLE);
                 btn1.setText("申请退货");
                 btn2.setText("查看物流");
                 btn1.setBackgroundResource(R.drawable.btn_green_click_bg);
                 btn2.setBackgroundResource(R.drawable.btn_green_click_bg);
                 btn1.setVisibility(store.isFinishAfterTime==1?View.GONE:View.VISIBLE);
-                if (store.returnGoodsFlag == 1)
+                if (store.returnGoodsFlag == 1){
                     mBottomLayout.setVisibility(View.GONE);
+                }
             } else if (ZhaiDou.STATUS_UNDELIVERY == store.status || ZhaiDou.STATUS_PICKINGUP == store.status || ZhaiDou.STATUS_UNPAY == store.status||ZhaiDou.STATUS_ORDER_APPLY_CANCEL==store.status) {/**待发货,已拣货,待支付,退款申请*/
                 mBottomLayout.setVisibility(View.GONE);
             } else if (ZhaiDou.STATUS__DELIVERYED == store.status) {
@@ -337,7 +347,7 @@ public class OrderDetailFragment1 extends BaseFragment {
                 public int getCount() {
                     if (!store.isExpand) {
                         detailContainer.setVisibility(View.GONE);
-                        return 1;
+                        return store.orderItemPOList.size();
                     }
                     detailContainer.setVisibility(View.VISIBLE);
                     return super.getCount();
@@ -349,6 +359,7 @@ public class OrderDetailFragment1 extends BaseFragment {
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
                     Store store1 = (Store) values;
                     store1.isExpand = !store1.isExpand;
+                    v.setSelected(store1.isExpand);
                     adapter.notifyDataSetChanged();
                 }
             });

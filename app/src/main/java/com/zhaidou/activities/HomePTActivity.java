@@ -3,6 +3,7 @@ package com.zhaidou.activities;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.webkit.WebChromeClient;
@@ -44,7 +45,13 @@ public class HomePTActivity extends Activity
         {
             if (view==tv_back)
             {
+                if(webView.canGoBack())
+                {
+                    webView.goBack();
+                    return;
+                }
                 finish();
+
             }
         }
     };
@@ -75,9 +82,9 @@ public class HomePTActivity extends Activity
         url = getIntent().getStringExtra("url");
         flags=getIntent().getFlags();
 
-        tv_back=(TextView)findViewById(R.id.tv_back);
+        tv_back=(TextView)findViewById(R.id.ll_back);
         tv_back.setOnClickListener(onClickListener);
-        mTitleView=(TextView)findViewById(R.id.tv_title);
+        mTitleView=(TextView)findViewById(R.id.title_tv);
         webView = (CustomProgressWebview) findViewById(R.id.detailView);
         webView.setBackgroundColor(Color.parseColor("#00000000"));
         webView.setBackgroundResource(R.drawable.btn_click_selector);
@@ -160,6 +167,16 @@ public class HomePTActivity extends Activity
         webView.loadUrl(url);
         mTitleView.setText(title);
 
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
+            webView.goBack(); // goBack()表示返回WebView的上一页面
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override

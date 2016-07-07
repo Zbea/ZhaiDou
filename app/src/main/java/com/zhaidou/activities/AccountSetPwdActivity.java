@@ -11,6 +11,7 @@ import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -65,7 +66,7 @@ public class AccountSetPwdActivity extends FragmentActivity {
                     }
                     doReset(pwd);
                     break;
-                case R.id.back_btn:
+                case R.id.ll_back:
                     finish();
                     break;
                 default:
@@ -91,7 +92,7 @@ public class AccountSetPwdActivity extends FragmentActivity {
 
         mRequestQueue = Volley.newRequestQueue(this);
         mOk.setOnClickListener(onClickListener);
-        findViewById(R.id.back_btn).setOnClickListener(onClickListener);
+        findViewById(R.id.ll_back).setOnClickListener(onClickListener);
 
     }
 
@@ -130,7 +131,14 @@ public class AccountSetPwdActivity extends FragmentActivity {
             public void onErrorResponse(VolleyError volleyError) {
 
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = super.getHeaders();
+                headers.put("SECAuthorization", token);
+                return headers;
+            }
+        };
         ((ZDApplication) getApplication()).mRequestQueue.add(request);
     }
 

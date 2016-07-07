@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/commentCancelLine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#88333333"
+            android:orientation="vertical"></LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/white">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="12dp">
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/commentCancelTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="取消"
+                    android:layout_centerVertical="true"
+                    android:textSize="15sp"
+                    android:textColor="@color/text_normal_color"/>
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/commentOkTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="发送"
+                    android:textSize="15sp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:clickable="false"
+                    android:textColor="@color/text_gary_color"/>
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="写评论"
+                    android:layout_centerInParent="true"
+                    android:textSize="18sp"
+                    android:textColor="@color/text_normal_color"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_marginTop="5dp">
+            <com.zhaidou.view.TypeFaceEditText
+                android:id="@+id/comment_edit"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:background="@drawable/comment_edit_bg"
+                android:padding="10dp"
+                android:textColor="@color/text_normal_color"
+                android:textSize="14sp"
+                android:maxLength="200"
+                android:gravity="top"
+                android:hint="说两句，评论一下"
+                android:textColorHint="@color/text_gary_color"/>
+
+                <TextView
+                    android:id="@+id/inputNumTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_normal_color"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_margin="5dp"
+                    android:text="200"/>
+
+            </RelativeLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="65dp"
+                android:layout_margin="12dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/comment_image_line"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+                    >
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/comment_image_add"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="5dp"
+                    android:src="@drawable/icon_commet_add"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+    <FrameLayout
+        android:id="@+id/commentMenuLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        />
+
+</RelativeLayout>

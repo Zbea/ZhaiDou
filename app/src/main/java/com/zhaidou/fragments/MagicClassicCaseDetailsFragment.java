@@ -2,6 +2,7 @@ package com.zhaidou.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,6 +10,8 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -23,17 +26,20 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.ShopTodayItem;
-import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomProgressWebview;
@@ -92,30 +98,59 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
         {
             if (msg.what == 1)
             {
-                ToolUtils.setImageCacheUrl(imageUrl, imageIv, R.drawable.icon_loading_defalut);
-                ToolUtils.setLog(introduce);
-                webview.loadData(introduce, "text/html; charset=UTF-8", "UTF-8");
-                webview.getSettings().setJavaScriptEnabled(true);
-//                webview.setWebViewClient(new WebViewClient()
-//                {
-//                    @Override
-//                    public void onPageFinished(WebView view, String url)
-//                     {
-//                        view.loadUrl("javascript:!function(){" +
-//
-//                                "s=document.createElement('style');s.innerHTML="
-//
-//                                + "\"@font-face{font-family:FZLTXHK;src:url('**injection**/FZLTXHK.TTF');}*{font-family:FZLTXHK !important;}\";"
-//
-//                                + "document.getElementsByTagName('head')[0].appendChild(s);" +
-//
-//                                "document.getElementsByTagName('body')[0].style.fontFamily = \"FZLTXHK\";}()");
-//                        super.onPageFinished(view, url);
-//                    }
-//                }
-//                );
+                DisplayImageOptions options = new DisplayImageOptions.Builder()
+                        .showImageOnLoading(R.drawable.icon_loading_defalut)
+                        .showImageForEmptyUri(R.drawable.icon_loading_defalut)
+                        .showImageOnFail(R.drawable.icon_loading_defalut)
+                        .resetViewBeforeLoading(true)//default 设置图片在加载前是否重置、复位
+                        .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
+                        .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
+                        .build();
+                ImageLoader.getInstance().displayImage(imageUrl, imageIv, options, new ImageLoadingListener()
+                {
+                    @Override
+                    public void onLoadingStarted(String s, View view)
+                    {
+                    }
 
-                if (pageCount > pageSize*page)
+                    @Override
+                    public void onLoadingFailed(String s, View view, FailReason failReason)
+                    {
+                    }
+
+                    @Override
+                    public void onLoadingComplete(String s, View view, Bitmap bitmap)
+                    {
+                        if (bitmap != null)
+                        {
+                            ImageView imageView1 = (ImageView) view;
+                            imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+                                imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
+                                imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, bitmap.getHeight() * screenWidth / bitmap.getWidth()));
+                                imageView1.setImageBitmap(bitmap);
+
+                        }
+                    }
+
+                    @Override
+                    public void onLoadingCancelled(String s, View view)
+                    {
+
+                    }
+                });
+                webview.loadData(introduce, "text/html; charset=UTF-8", "UTF-8");
+                webview.setWebViewClient(new WebViewClient()
+                 {
+                     @Override
+                     public boolean shouldOverrideUrlLoading(WebView view, String url)
+                      {
+                        view.loadUrl(url);
+                        return false;
+                      }
+                  }
+                );
+
+                if (pageCount > pageSize * page)
                 {
                     mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
                 } else
@@ -125,7 +160,7 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
                 titleTv.setText(title);
                 loadingView.setVisibility(View.GONE);
                 contactQQ.setVisibility(View.VISIBLE);
-                nullGoods.setVisibility(items.size()>0?View.GONE:View.VISIBLE);
+                nullGoods.setVisibility(items.size() > 0 ? View.GONE : View.VISIBLE);
                 articleShoppingAdapter.notifyDataSetChanged();
                 mScrollView.onRefreshComplete();
             }
@@ -146,7 +181,7 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView)
         {
-            page=page+1;
+            page = page + 1;
             FetchData();
         }
     };
@@ -179,12 +214,9 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
                     initData();
                     break;
                 case R.id.rl_qq_contact:
-//                    MagicDesignFragment magicDesignFragment = MagicDesignFragment.newInstance("", "");
-//                    ((MainActivity) mContext).navigationToFragmentWithAnim(magicDesignFragment);
-                    EaseUtils.startDesignerActivity(mContext);
-                    break;
-                case R.id.back_btn:
-                    ((MainActivity) getActivity()).popToStack(MagicClassicCaseDetailsFragment.this);
+                    CommentListFragment commentListFragment = CommentListFragment.newInstance("", "");
+                    ((BaseActivity) mContext).navigationToFragmentWithAnim(commentListFragment);
+//                    EaseUtils.startDesignerActivity(mContext);
                     break;
             }
         }
@@ -226,9 +258,6 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
         titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
         titleTv.setText(mParam);
 
-        backTv = (TextView) view.findViewById(R.id.back_btn);
-        backTv.setOnClickListener(onClickListener);
-
         loadingView = (LinearLayout) view.findViewById(R.id.loadingView);
         nullNetView = (LinearLayout) view.findViewById(R.id.nullNetline);
         nullDataView = (LinearLayout) view.findViewById(R.id.nullDataline);
@@ -239,7 +268,7 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
         reloadNetBtn.setOnClickListener(onClickListener);
 
         imageIv = (ImageView) view.findViewById(R.id.detailsImageIv);
-        imageIv.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 3 / 4));
+        imageIv.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
         webview = (CustomProgressWebview) view.findViewById(R.id.detailsWebView);
         mScrollView = (PullToRefreshScrollView) view.findViewById(R.id.scrollView);
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
@@ -257,7 +286,7 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
             }
         });
 
-        nullGoods= (TextView) view.findViewById(R.id.nullGoods);
+        nullGoods = (TextView) view.findViewById(R.id.nullGoods);
 
         contactQQ = (RelativeLayout) view.findViewById(R.id.rl_qq_contact);
         contactQQ.setOnClickListener(onClickListener);
@@ -293,7 +322,7 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
         bundle.putString("page", items.get(position).title);
         bundle.putBoolean("canShare", false);
         goodsDetailsFragment.setArguments(bundle);
-        ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
+        ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
     }
 
     public void FetchData()
@@ -344,8 +373,8 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
                                     String code = obj.optString("productCode");
                                     String Listtitle = obj.optString("productName");
                                     DecimalFormat df = new DecimalFormat("#.00");
-                                    double price =Double.parseDouble(df.format(obj.optDouble("tshPrice"))) ;
-                                    double cost_price =Double.parseDouble(df.format(obj.optDouble("marketPrice")));
+                                    double price = Double.parseDouble(df.format(obj.optDouble("tshPrice")));
+                                    double cost_price = Double.parseDouble(df.format(obj.optDouble("marketPrice")));
                                     String imageUrl = obj.optString("mainPic");
                                     int num = obj.optInt("totalStock");
                                     ShopTodayItem shopTodayItem = new ShopTodayItem(code, Listtitle, imageUrl, price, cost_price, num, 0);

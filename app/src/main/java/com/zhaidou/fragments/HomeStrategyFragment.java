@@ -26,11 +26,11 @@ import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.adapter.HomeListAdapter;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
@@ -186,8 +186,8 @@ public class HomeStrategyFragment extends BaseFragment
         {
             switch (view.getId())
             {
-                case R.id.back_btn:
-                    ((MainActivity) getActivity()).popToStack(HomeStrategyFragment.this);
+                case R.id.ll_back:
+                    ((BaseActivity) getActivity()).popToStack(HomeStrategyFragment.this);
                     break;
                 case R.id.ll_category_view:
                     toggleMenu();
@@ -260,7 +260,7 @@ public class HomeStrategyFragment extends BaseFragment
         reloadNetBtn = (TextView) mView.findViewById(R.id.netReload);
         reloadNetBtn.setOnClickListener(onClickListener);
 
-        backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
+        backBtn = (TypeFaceTextView) mView.findViewById(R.id.ll_back);
         backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(R.string.title_home_strategy);

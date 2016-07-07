@@ -1,7 +1,4 @@
-package com.zhaidou.model;/**
- * Created by wangclark on 15/12/3.
- */
-
+package com.zhaidou.model;
 import java.io.Serializable;
 
 /**
@@ -29,6 +26,8 @@ public class OrderItem1 implements Serializable{
     public String pictureBigUrl;
     public String pictureSmallUrl;
     public String pictureMiddleUrl;
+    public String favorableAmount1;
+    public String paidAmount;
 
     //退换货
     public int returnFlowDetailId;

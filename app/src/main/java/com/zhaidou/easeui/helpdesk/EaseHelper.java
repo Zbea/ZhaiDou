@@ -35,6 +35,7 @@ import com.easemob.util.EMLog;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.base.AccountManage;
+import com.zhaidou.base.CountManager;
 import com.zhaidou.base.EaseManage;
 import com.zhaidou.easeui.helpdesk.domain.EmojiconExampleGroupData;
 import com.zhaidou.easeui.helpdesk.ui.ChatActivity;
@@ -122,6 +123,8 @@ public class EaseHelper {
                     easeUser.setAvatar(R.drawable.icon_servicer+"");
                 }else if ("designer".equalsIgnoreCase(username)){
                     easeUser.setAvatar(R.drawable.icon_designer+"");
+                }else if ("comment".equalsIgnoreCase(username)){
+                    easeUser.setAvatar(R.drawable.icon_comment+"");
                 }
                 return easeUser;
             }
@@ -285,9 +288,7 @@ public class EaseHelper {
      * 账号在别的设备登录
      */
     protected void onConnectionConflict(){
-//        Intent intent = new Intent(appContext, MainActivity.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        intent.putExtra(Constant.ACCOUNT_CONFLICT, true);
+        EaseHelper.getInstance().logout(true,null);
         AccountManage.getInstance().setConflict(true);
     }
     
@@ -318,6 +319,7 @@ public class EaseHelper {
                     EMLog.d(TAG, "receive the event : " + event.getEvent() + ",id : " + message.getMsgId());
                 }
                 EaseManage.getInstance().refreshData();
+                CountManager.getInstance().notifyCommentChange();
                 
                 switch (event.getEvent()) {
                 case EventNewMessage:

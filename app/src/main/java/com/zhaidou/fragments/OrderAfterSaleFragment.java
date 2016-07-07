@@ -29,14 +29,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
@@ -47,11 +49,13 @@ import com.zhaidou.model.Order;
 import com.zhaidou.model.OrderItem1;
 import com.zhaidou.model.ReturnItem;
 import com.zhaidou.model.Store;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.PhotoUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -73,6 +77,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
     private String mStatus;
 
     private View rootView;
+    private TextView titleTv;
     private TextView mOldPrice, mTitleView;
     private EditText mEditText;
     private RequestQueue requestQueue;
@@ -161,6 +166,9 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
     }
 
     private void initView(View view) {
+
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_after_sale);
         mContext = getActivity();
         mDialogUtils = new DialogUtils(mContext);
         token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
@@ -178,7 +186,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
         mListView = (ListView) view.findViewById(R.id.lv_aftersale);
         afterSaleAdapter = new AfterSaleAdapter(getActivity(), new ArrayList<OrderItem1>());
         mListView.setAdapter(afterSaleAdapter);
-//        FetchOrderDetail(mStore);
+        FetchOrderDetail(mStore);
 
         iv_return_img = (ImageView) view.findViewById(R.id.iv_return_img);
         iv_return_img.setOnClickListener(this);
@@ -245,7 +253,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                     toggleMenu();
                 } else {
                     PhotoViewFragment photoViewFragment = PhotoViewFragment.newInstance(position, imgPath);
-                    ((MainActivity) getActivity()).navigationToFragment(photoViewFragment);
+                    ((BaseActivity) getActivity()).navigationToFragment(photoViewFragment);
                     photoViewFragment.setPhotoListener(new PhotoViewFragment.PhotoListener() {
                         @Override
                         public void onPhotoDelete(int position, String url) {
@@ -264,11 +272,38 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                 }
             }
         });
-        initData(mStore);
     }
 
-    private void initData(Store store) {
-        afterSaleAdapter.addAll(store.orderItemPOList);
+    private void FetchOrderDetail(Store mStore) {
+        Map<String,String> map=new HashMap<String, String>();
+        map.put("orderCode",mStore.parentOrderCode);
+        map.put("childOrderCode",mStore.orderCode);
+        System.out.println("map = " + map);
+        ZhaiDouRequest request=new ZhaiDouRequest(mContext, Request.Method.POST,ZhaiDou.ORDER_RETURN_DETAIL,map,new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                System.out.println("jsonObject = " + jsonObject);
+                int status = jsonObject.optInt("status");
+                String message = jsonObject.optString("message");
+                if (status==200){
+                    JSONArray data = jsonObject.optJSONArray("data");
+                    List<OrderItem1> orderItem1s = JSON.parseArray(data.toString(), OrderItem1.class);
+                    initData(orderItem1s);
+                    return;
+                }
+                Toast.makeText(mContext,message,Toast.LENGTH_SHORT).show();
+            }
+        },new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        });
+        ((ZDApplication)mContext.getApplicationContext()).mRequestQueue.add(request);
+    }
+
+    private void initData(List<OrderItem1> orderItems) {
+        afterSaleAdapter.addAll(orderItems);
         afterSaleAdapter.notifyDataSetChanged();
     }
 
@@ -319,7 +354,9 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
             LinearLayout ll_count = ViewHolder.get(convertView, R.id.ll_count);
             TextView tv_zero_msg = ViewHolder.get(convertView, R.id.tv_zero_msg);
             CheckBox mCheckBox = ViewHolder.get(convertView, R.id.cb_return);
-
+//            TextView mCouponMsg=ViewHolder.get(convertView,R.id.couponMsg);
+            TextView mPayMoney=ViewHolder.get(convertView,R.id.payMoney);
+            TextView mCouponMoney=ViewHolder.get(convertView,R.id.couponMoney);
             OrderItem1 item = getList().get(position);
             if (item.productType != 2) {
                 mCheckBox.setVisibility(View.VISIBLE);
@@ -339,6 +376,8 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
             textPaint.setAntiAlias(true);
             textPaint.setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
             ToolUtils.setImageCacheUrl(item.pictureMiddleUrl, iv_order_img, R.drawable.icon_loading_defalut);
+            mPayMoney.setText("￥"+item.paidAmount);
+            mCouponMoney.setText("￥"+item.favorableAmount1+"");
             return convertView;
         }
     }
@@ -386,11 +425,8 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                         bm = MediaStore.Images.Media.getBitmap(resolver, uri);
                         String[] proj = {MediaStore.Images.Media.DATA};
                         Cursor cursor = getActivity().managedQuery(uri, proj, null, null, null);
-                        //按我个人理解 这个是获得用户选择的图片的索引值
                         int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                        //将光标移至开头 ，这个很重要，不小心很容易引起越界
                         cursor.moveToFirst();
-                        //最后根据索引值获取图片路径
                         String path = cursor.getString(column_index);
                         ToolUtils.setImageCacheUrl("file://" + path, iv_return_img);
                         if (imagePath != null && !TextUtils.isEmpty(path.trim()) && imagePath.size() <= 3) {
@@ -530,7 +566,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                         mStore.returnGoodsFlag=1;
                         if (onReturnSuccess!=null)
                             onReturnSuccess.onSuccess(mStore);
-                        ((MainActivity) getActivity()).popToStack(OrderAfterSaleFragment.this);
+                        ((BaseActivity) getActivity()).popToStack(OrderAfterSaleFragment.this);
                     } else {
                         ShowToast(message);
                     }

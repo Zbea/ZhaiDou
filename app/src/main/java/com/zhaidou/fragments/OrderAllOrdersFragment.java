@@ -26,13 +26,12 @@ import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshListView;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
-import com.zhaidou.base.CountManage;
+import com.zhaidou.base.CountManager;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Order1;
 import com.zhaidou.model.Store;
@@ -41,6 +40,7 @@ import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -62,7 +62,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
 
     private Dialog mDialog;
     private LinearLayout loadingView;
-
+    private TextView titleTv;
     private RequestQueue mRequestQueue;
     private PullToRefreshListView mListView;
     AllOrderAdapter allOrderAdapter;
@@ -85,7 +85,6 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
     private String mCurrentType;
     private boolean isDataLoaded = false;
     private String mUserId;
-    private TextView mTitle;
     private Map<Integer, Long> timerMapStamp = new HashMap<Integer, Long>();
     private boolean hasUnPayOrder = false;
     private Handler handler = new Handler() {
@@ -148,9 +147,14 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             }
         } else {
             rootView = inflater.inflate(R.layout.fragment_all_orders, container, false);
+
             mContext = getActivity();
             mOrderList = new ArrayList<Order1>();
             mDialogUtils = new DialogUtils(mContext);
+
+            titleTv = (TypeFaceTextView) rootView.findViewById(R.id.title_tv);
+            titleTv.setText(R.string.title_all_order);
+
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
             mEmptyView = rootView.findViewById(R.id.nullline);
             mNetErrorView = rootView.findViewById(R.id.nullNetline);
@@ -162,7 +166,6 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             mRequestQueue = Volley.newRequestQueue(getActivity());
             allOrderAdapter = new AllOrderAdapter(getActivity(), mOrderList);
             mListView.setAdapter(allOrderAdapter);
-            mTitle = (TextView) rootView.findViewById(R.id.title);
             token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
             mUserId = SharedPreferencesUtil.getData(mContext, "userId", -1) + "";
 
@@ -175,7 +178,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     if (btn2.getTag() != null)
                         preTime = Long.parseLong(btn2.getTag().toString());
                     OrderDetailFragment1 orderDetailFragment = OrderDetailFragment1.newInstance(order.orderCode, 2);
-                    ((MainActivity) getActivity()).navigationToFragment(orderDetailFragment);
+                    ((BaseActivity) getActivity()).navigationToFragment(orderDetailFragment);
                 }
             });
             allOrderAdapter.setOnInViewClickListener(R.id.bt_logistics, new BaseListAdapter.onInternalClickListener() {
@@ -233,7 +236,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                                         if (200 == status) {
                                             order.status = ZhaiDou.STATUS_ORDER_CANCEL;
                                             order.orderShowStatus = "已取消";
-                                            CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
+                                            CountManager.getInstance().minus(CountManager.TYPE.TAG_PREPAY);
                                         }
                                         ShowToast(status == 200 ? "取消订单成功" : message);
                                     }
@@ -258,7 +261,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                             ShowToast("订单已超时");
                             return;
                         }
-                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.orderId, order.orderCode, Double.parseDouble(order.orderTotalAmount), Integer.parseInt(order.orderRemainingTime + ""), null);
+                        ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(order.orderId, order.orderCode, Double.parseDouble(order.orderPayAmount), Integer.parseInt(order.orderRemainingTime + ""), null);
                         ((BaseActivity) getActivity()).navigationToFragment(shopPaymentFragment);
                     } else if (ZhaiDou.STATUS__DELIVERYED == order.status) {
                         mDialogUtils.showDialog(mContext.getResources().getString(R.string.order_confirm), new DialogUtils.PositiveListener() {
@@ -322,7 +325,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             });
         }
 
-        mTitle.setText(ZhaiDou.TYPE_ORDER_ALL.equalsIgnoreCase(mCurrentType) ? "全部订单"
+        titleTv.setText(ZhaiDou.TYPE_ORDER_ALL.equalsIgnoreCase(mCurrentType) ? "全部订单"
                 : ZhaiDou.TYPE_ORDER_PREPAY.equalsIgnoreCase(mCurrentType) ? "待支付" : "待收货");
         return rootView;
     }
@@ -368,7 +371,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                 String message = jsonObject.optString("message");
                 int totalCount = jsonObject.optInt("totalCount");
                 if (type.equalsIgnoreCase(ZhaiDou.TYPE_ORDER_PREPAY))
-                    CountManage.getInstance().init(CountManage.TYPE.TAG_PREPAY, totalCount);
+                    CountManager.getInstance().init(CountManager.TYPE.TAG_PREPAY, totalCount);
                 if (status == 200) {
                     JSONArray dataArray = jsonObject.optJSONArray("data");
                     int pageNo = jsonObject.optInt("pageNo");
@@ -405,7 +408,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     }
                     timer.start();
                 }
-                Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "网络异常", Toast.LENGTH_SHORT).show();
             }
         });
         mRequestQueue.add(request);
@@ -476,7 +479,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                         btn2.setBackgroundResource(R.drawable.btn_red_click_selector);
                     } else {
                         if (!btn2.getText().toString().equalsIgnoreCase("超时过期"))
-                            CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
+                            CountManager.getInstance().minus(CountManager.TYPE.TAG_PREPAY);
                         btn2.setText("超时过期");
                         ll_btn.setVisibility(View.GONE);
                         btn2.setBackgroundResource(R.drawable.btn_no_click_selector);
@@ -554,7 +557,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         }
         isViewDestroy = true;
         if (ZhaiDou.TYPE_ORDER_PREPAY.equalsIgnoreCase(mCurrentType))
-            CountManage.getInstance().refreshData();
+            CountManager.getInstance().refreshData();
         super.onDestroyView();
     }
 

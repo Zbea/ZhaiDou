@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -117,7 +116,7 @@ public class ChatFragment extends EaseChatFragment implements EaseChatFragment.E
 		// demo这里不覆盖基类已经注册的item,item点击listener沿用基类的
 		super.registerExtendMenuItem();
 		//增加扩展item
-//		inputMenu.registerExtendMenuItem(R.string.attach_file, R.drawable.em_chat_file_selector, ITEM_FILE, extendMenuItemClickListener);
+		inputMenu.registerExtendMenuItem(R.string.attach_file, R.drawable.em_chat_file_selector, ITEM_FILE, extendMenuItemClickListener);
 		// 增加扩展item
 		inputMenu.registerExtendMenuItem(R.string.attach_short_cut_message, R.drawable.em_icon_answer, ITEM_SHORT_CUT_MESSAGE, extendMenuItemClickListener);
 	}
@@ -218,7 +217,8 @@ public class ChatFragment extends EaseChatFragment implements EaseChatFragment.E
 	public boolean onExtendMenuItemClick(int itemId, View view) {
 		switch(itemId){
 			case ITEM_FILE:
-				//一般文件
+                System.out.println("ChatFragment.onExtendMenuItemClick");
+                //一般文件
 				//demo这里是通过系统api选择文件，实际app中最好是做成qq那种选择发送文件
 				selectFileFromLocal();
 				break;
@@ -241,14 +241,14 @@ public class ChatFragment extends EaseChatFragment implements EaseChatFragment.E
 	 */
 	protected void selectFileFromLocal(){
 		Intent intent = null;
-		if (Build.VERSION.SDK_INT < 19) { //19以后这个api不可用，demo这里简单处理成图库选择图片
+//		if (Build.VERSION.SDK_INT < 19) { //19以后这个api不可用，demo这里简单处理成图库选择图片
 			intent = new Intent(Intent.ACTION_GET_CONTENT);
 			intent.setType("*/*");
 			intent.addCategory(Intent.CATEGORY_OPENABLE);
 
-		} else {
-			intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-		}
+//		} else {
+//			intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//		}
 		startActivityForResult(intent, REQUEST_CODE_SELECT_FILE);
 	}
 

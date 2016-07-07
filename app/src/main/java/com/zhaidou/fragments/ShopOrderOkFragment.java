@@ -28,17 +28,20 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.base.CountManage;
+import com.zhaidou.base.CountManager;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.dialog.CustomToastDialog;
 import com.zhaidou.model.Address;
 import com.zhaidou.model.CartArrayItem;
 import com.zhaidou.model.CartGoodsItem;
+import com.zhaidou.model.Coupon;
+import com.zhaidou.model.ZhaiDouRequest;
+import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -46,22 +49,20 @@ import com.zhaidou.view.CustomEditText;
 import com.zhaidou.view.TypeFaceEditText;
 import com.zhaidou.view.TypeFaceTextView;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -88,7 +89,8 @@ public class ShopOrderOkFragment extends BaseFragment
     private TypeFaceTextView backBtn, titleTv;
     private Button okBtn;
     private LinearLayout orderAddressInfoLine, orderAddressNullLine, orderAddressEditLine;
-    private LinearLayout orderGoodsListLine, orderVerifyLine;
+    private LinearLayout orderGoodsListLine, orderVerifyLine,orderCouponLine;
+    private TextView couponNameTv, moneyCouponTv;
     private TypeFaceEditText bzInfo;
     private TextView moneyTv, moneyYfTv, moneyTotalTv;
     private TextView addressNameTv, addressPhoneTv, addressinfoTv, noFreeTv;
@@ -122,6 +124,9 @@ public class ShopOrderOkFragment extends BaseFragment
     private final int UPDATE_VERFIY = 6;
     private final int UPDATE_VERFIY_SUCCESSS = 7;
     private final int UPDATE_GETSMS_SUCCESSS = 8;
+    private final int UPDATE_COUPON_SUCCESSS = 9;
+    private final int UPDATE_NULLCOUPON_SUCCESSS = 10;
+    private final int UPDATE_COUPON_RESULT = 11;
 
     private boolean isOSaleBuy;//是否已经购买过零元特卖
     private boolean isOSale;//是否含有零元特卖
@@ -135,6 +140,10 @@ public class ShopOrderOkFragment extends BaseFragment
     private int flags = 2;//1代表立即购买
     private ArrayList<CartArrayItem> cartArrayItems=new ArrayList<CartArrayItem>();
     private List<CartArrayItem> orderArrayItems=new ArrayList<CartArrayItem>();
+    private JSONArray goodsArray;
+    private Coupon mCoupon;
+    private int mStatus=0;
+
 
     private Handler handler = new Handler()
     {
@@ -200,21 +209,21 @@ public class ShopOrderOkFragment extends BaseFragment
                     Intent intent1 = new Intent(ZhaiDou.IntentRefreshCartGoodsCheckTag);
                     mContext.sendBroadcast(intent1);
                     //关闭本页面
-                    ((MainActivity) getActivity()).popToStack(ShopOrderOkFragment.this);
+                    ((BaseActivity) getActivity()).popToStack(ShopOrderOkFragment.this);
 
                     String result = (String) msg.obj;
                     ToolUtils.setLog(result);
-                    CountManage.getInstance().add(CountManage.TYPE.TAG_PREPAY);
+                    CountManager.getInstance().add(CountManager.TYPE.TAG_PREPAY);
                     try
                     {
                         JSONObject jsonObject = new JSONObject(result);
                         JSONObject orderObj = jsonObject.optJSONObject("data");
                         int orderId = orderObj.optInt("orderId");
                         String orderCode = orderObj.optString("orderCode");
-                        double amount = orderObj.optDouble("orderTotalAmount");
+                        double amount = orderObj.optDouble("orderPayAmount");
                         long time = orderObj.optLong("orderRemainingTime");
                         ShopPaymentFragment shopPaymentFragment = ShopPaymentFragment.newInstance(orderId,orderCode ,amount,time, null);
-                        ((MainActivity) getActivity()).navigationToFragment(shopPaymentFragment);
+                        ((BaseActivity) getActivity()).navigationToFragment(shopPaymentFragment);
                     } catch (Exception e)
                     {
 
@@ -232,7 +241,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     {
                         verifyView.setVisibility(View.GONE);
                     }
-                    FetchAddressData();
+                    GetCoupon();
                     break;
                 case UPDATE_VERFIY_SUCCESSS:
                     isVerify=false;
@@ -241,6 +250,22 @@ public class ShopOrderOkFragment extends BaseFragment
                     break;
                 case UPDATE_GETSMS_SUCCESSS:
                     codeTimer();
+                    break;
+                case UPDATE_COUPON_SUCCESSS:
+                    couponNameTv.setText(mCoupon.info);
+                    moneyCouponTv.setText("￥-"+ToolUtils.isIntPrice(mCoupon.money+""));
+                    setYFMoney(0);
+                    break;
+                case UPDATE_NULLCOUPON_SUCCESSS:
+                    couponNameTv.setText("不使用优惠券");
+                    moneyCouponTv.setText("￥"+0);
+                    break;
+                case UPDATE_COUPON_RESULT:
+                    if(mDialog!=null)
+                        mDialog.dismiss();
+                    if (msg.obj!=null)
+                        JsonParse(msg.obj.toString());
+                    FetchAddressData();
                     break;
             }
         }
@@ -276,10 +301,6 @@ public class ShopOrderOkFragment extends BaseFragment
         {
             switch (view.getId())
             {
-                case R.id.back_btn:
-                    ((MainActivity) getActivity()).popToStack(ShopOrderOkFragment.this);
-                    break;
-
                 case R.id.jsOkBtn:
                     //当需要验证手机号码时候，需要先判断
                     if (isVerify)
@@ -312,7 +333,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     break;
                 case R.id.jsEditAddressBtn:
                     AddrSelectFragment addrManageFragment = AddrSelectFragment.newInstance("", STATUS_FROM_ORDER, address);
-                    ((MainActivity) getActivity()).navigationToFragment(addrManageFragment);
+                    ((BaseActivity) getActivity()).navigationToFragment(addrManageFragment);
                     addrManageFragment.setAddressListener(new AddrSelectFragment.AddressListener()
                     {
                         @Override
@@ -338,7 +359,7 @@ public class ShopOrderOkFragment extends BaseFragment
                 case R.id.jsAddressNullLine:
 
                     final AddrNewAddrFragment newAddrFragment = AddrNewAddrFragment.newInstance(0, "", "", "", "", 0, 2);
-                    ((MainActivity) getActivity()).navigationToFragment(newAddrFragment);
+                    ((BaseActivity) getActivity()).navigationToFragment(newAddrFragment);
                     newAddrFragment.setAddrSaveSuccessListener(new AddrNewAddrFragment.AddrSaveSuccessListener()
                     {
                         @Override
@@ -363,7 +384,7 @@ public class ShopOrderOkFragment extends BaseFragment
                             addressPhoneTv.setText("电话：" + addr.getPhone());
                             addressNameTv.setText("收件人：" + addr.getName());
                             addressinfoTv.setText(address.getProvince() + address.getCity() + address.getArea() + addr.getAddress());
-                            ((MainActivity) getActivity()).popToStack(newAddrFragment);
+                            ((BaseActivity) getActivity()).popToStack(newAddrFragment);
                         }
                     });
                     break;
@@ -383,6 +404,34 @@ public class ShopOrderOkFragment extends BaseFragment
                     {
                         ToolUtils.setToast(mContext, R.string.phone_lose_txt);
                     }
+                    break;
+                case R.id.jsCouponLine:
+                    if (goodsArray==null)
+                        setGoodsArray();
+                    ShopOrderSelectCouponFragment s = ShopOrderSelectCouponFragment.newInstance("", mStatus, mCoupon, goodsArray.toString());
+                    ((BaseActivity) getActivity()).navigationToFragment(s);
+                    s.setOnCouponListener(new ShopOrderSelectCouponFragment.OnCouponListener()
+                    {
+                        @Override
+                        public void onDefaultCouponChange(Coupon coupon)
+                        {
+                            if (coupon==null)
+                            {
+                                mCoupon=null;
+                                couponNameTv.setText("不使用优惠券");
+                                moneyCouponTv.setText("￥"+0);
+                            }
+                            else
+                            {
+                                mCoupon=coupon;
+                                couponNameTv.setText(mCoupon.info);
+                                moneyCouponTv.setText("￥-"+ToolUtils.isIntPrice(mCoupon.money+""));
+                            }
+                            setYFMoney(0);
+
+                        }
+                    });
+
                     break;
                 case R.id.nullReload:
                     initData();
@@ -447,7 +496,6 @@ public class ShopOrderOkFragment extends BaseFragment
      */
     private void initView()
     {
-        ToolUtils.setLog("flags"+flags);
         if (flags!=1)
         {
             Intent intent = new Intent(ZhaiDou.IntentRefreshCartGoodsTag);
@@ -465,8 +513,6 @@ public class ShopOrderOkFragment extends BaseFragment
         reloadNetBtn.setOnClickListener(onClickListener);
 
         mRequestQueue = Volley.newRequestQueue(getActivity());
-        backBtn = (TypeFaceTextView) mView.findViewById(R.id.back_btn);
-        backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(R.string.shop_order_ok_text);
 
@@ -497,6 +543,12 @@ public class ShopOrderOkFragment extends BaseFragment
                 isNoFree = true;
             }
         }
+
+        orderCouponLine = (LinearLayout) mView.findViewById(R.id.jsCouponLine);
+        orderCouponLine.setOnClickListener(onClickListener);
+        couponNameTv = (TextView) mView.findViewById(R.id.jsCouponTv);
+        moneyCouponTv = (TextView) mView.findViewById(R.id.jsPriceCouponTv);
+
         moneyTv = (TextView) mView.findViewById(R.id.jsPriceTotalTv);
         moneyYfTv = (TextView) mView.findViewById(R.id.jsPriceYfTv);
         moneyTotalTv = (TextView) mView.findViewById(R.id.jsTotalMoney);
@@ -559,8 +611,34 @@ public class ShopOrderOkFragment extends BaseFragment
         token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
 
+        setGoodsArray();
         initDataView();
         initData();
+    }
+
+    /**
+     * 设置商品数据jsonArray
+     */
+    private void setGoodsArray()
+    {
+        goodsArray=new JSONArray();
+        try
+        {
+            for (int i = 0; i <items.size(); i++)
+            {
+                CartGoodsItem cartArrayItem=items.get(i);
+                JSONObject jsonObject=new JSONObject();
+                jsonObject.put("skucode",cartArrayItem.sizeId);
+                jsonObject.put("num",cartArrayItem.num);
+                goodsArray.put(jsonObject);
+            }
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
     }
 
     private void initData()
@@ -595,12 +673,21 @@ public class ShopOrderOkFragment extends BaseFragment
             moneyYfTv.setText("￥" + 0);
             noFreeTv.setVisibility(View.VISIBLE);
         }
-
         ToolUtils.setLog("运费：" + moneyYF);
-
         DecimalFormat df = new DecimalFormat("###.00");
-        totalMoney = Double.parseDouble(df.format(money + moneyYF));
-        moneyTotalTv.setText("￥" + ToolUtils.isIntPrice("" + totalMoney));
+        if (mCoupon!=null)
+        {
+            totalMoney = Double.parseDouble(df.format(money + moneyYF-mCoupon.money));
+            if (totalMoney<0)
+                totalMoney=0;
+            moneyTotalTv.setText("￥" + ToolUtils.isIntPrice("" + totalMoney));
+        }
+        else
+        {
+            totalMoney = Double.parseDouble(df.format(money + moneyYF));
+            moneyTotalTv.setText("￥" + ToolUtils.isIntPrice("" + totalMoney));
+        }
+
     }
 
     /**
@@ -751,12 +838,70 @@ public class ShopOrderOkFragment extends BaseFragment
      */
     private void commit()
     {
+        final Map<String,String> headers=new HashMap<String, String>();
+        headers.put("SECAuthorization", token);
+        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+
+        // 创建名/值组列表
+        final List<NameValuePair> params = new ArrayList<NameValuePair>();
+        try
+        {
+            params.add(new BasicNameValuePair("businessType", "01"));
+            params.add(new BasicNameValuePair("userId", userId + ""));
+            if (mCoupon != null)
+            {
+                BigDecimal bd1 = new BigDecimal(Double.toString(money));
+                BigDecimal bd2 = new BigDecimal(Double.toString(mCoupon.money));
+                params.add(new BasicNameValuePair("orderPayAmount", bd1.subtract(bd2).doubleValue()+""));
+                params.add(new BasicNameValuePair("couponsKey", mCoupon.couponCode));
+                params.add(new BasicNameValuePair("couponsAmount",mCoupon.money+""));
+            } else
+            {
+                params.add(new BasicNameValuePair("orderPayAmount", money+""));
+            }
+            params.add(new BasicNameValuePair("userAddressId", address.getId()+""));
+            params.add(new BasicNameValuePair("token", token));
+            params.add(new BasicNameValuePair("version", mContext.getResources().getString(R.string.app_versionName)));
+            params.add(new BasicNameValuePair("clientType", "ANDROID"));
+            params.add(new BasicNameValuePair("clientVersion", (ZDApplication.localVersionCode+3)+""));
+            params.add(new BasicNameValuePair("remark", bzInfo.getText().toString()));
+
+            JSONArray storeArray=new JSONArray();
+            for (int i = 0; i < orderArrayItems.size(); i++)
+            {
+                CartArrayItem cartArrays=orderArrayItems.get(i);
+                JSONObject storeObject=new JSONObject();
+                storeObject.put("storeId",cartArrays.storeId);
+                storeObject.put("storeDeliveryId",2);
+                storeObject.put("storeDeliveryFee",moneyYF);
+                storeObject.put("messageToStore",bzInfo_Str);
+                JSONArray goodsArray=new JSONArray();
+
+                for (int j = 0; j <cartArrays.goodsItems.size(); j++)
+                {
+                    CartGoodsItem cartGoodsItem=cartArrays.goodsItems.get(j);
+                    JSONObject goodsObject=new JSONObject();
+                    goodsObject.put("productSKUCode",cartGoodsItem.sizeId);
+                    goodsObject.put("quantity",cartGoodsItem.num);
+                    goodsObject.put("price",cartGoodsItem.currentPrice);
+                    goodsObject.put("points",0);
+                    goodsArray.put(goodsObject);
+                }
+                storeObject.put("orderItemList",goodsArray);
+                storeArray.put(storeObject);
+            }
+            params.add(new BasicNameValuePair("storeOrderItemPOList", storeArray.toString()));
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+
         new Thread(new Runnable()
         {
             @Override
             public void run()
             {
-                String result = FetchRequset();
+                String result= NetService.GETHttpPostService(mContext,ZhaiDou.CommitOrdersUrl,headers,params);
                 if (result != null && result.length() > 0)
                 {
                     try
@@ -792,97 +937,29 @@ public class ShopOrderOkFragment extends BaseFragment
     }
 
     /**
-     * 请求订单
-     * @return
+     * 获取优惠券接口
      */
-    private String FetchRequset()
+    private void GetCoupon()
     {
-        String result = null;
-        BufferedReader in = null;
-        try
-        {
-            // 定义HttpClient
-            HttpClient client = new DefaultHttpClient();
-            // 实例化HTTP方法
-            HttpPost request = new HttpPost(ZhaiDou.CommitOrdersUrl);
-            request.addHeader("SECAuthorization", token);
-            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-            // 创建名/值组列表
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("businessType", "01"));
-            params.add(new BasicNameValuePair("userId", userId+""));
-            params.add(new BasicNameValuePair("orderPayAmount", money+""));
-            params.add(new BasicNameValuePair("userAddressId", address.getId()+""));
-            params.add(new BasicNameValuePair("token", token));
-            params.add(new BasicNameValuePair("version", mContext.getResources().getString(R.string.app_versionName).substring(1)));
-            params.add(new BasicNameValuePair("clientType", "ANDROID"));
-            params.add(new BasicNameValuePair("clientVersion", (ZDApplication.localVersionCode+3)+""));
-            params.add(new BasicNameValuePair("remark", bzInfo.getText().toString()));
-
-            JSONArray storeArray=new JSONArray();
-            ToolUtils.setLog("orderArrayItems.size()1+"+orderArrayItems.size());
-            for (int i = 0; i < orderArrayItems.size(); i++)
-            {
-                CartArrayItem cartArrays=orderArrayItems.get(i);
-                JSONObject storeObject=new JSONObject();
-                storeObject.put("storeId",cartArrays.storeId);
-                storeObject.put("storeDeliveryId",2);
-                storeObject.put("storeDeliveryFee",moneyYF);
-                storeObject.put("messageToStore",bzInfo_Str);
-                JSONArray goodsArray=new JSONArray();
-
-                for (int j = 0; j <cartArrays.goodsItems.size(); j++)
-                {
-                    CartGoodsItem cartGoodsItem=cartArrays.goodsItems.get(j);
-                    JSONObject goodsObject=new JSONObject();
-                    goodsObject.put("productSKUCode",cartGoodsItem.sizeId);
-                    goodsObject.put("quantity",cartGoodsItem.num);
-                    goodsObject.put("price",cartGoodsItem.currentPrice);
-                    goodsObject.put("points",0);
-                    goodsArray.put(goodsObject);
-                }
-                storeObject.put("orderItemList",goodsArray);
-                storeArray.put(storeObject);
+        Map<String,String> mParams=new Hashtable<String, String>();
+        mParams.put("userId", userId + "");
+        mParams.put("skuAndNumLists", goodsArray.toString());
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext, Request.Method.POST, ZhaiDou.GetOrderCouponDefaultUrl, mParams, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (jsonObject!=null)
+                    ToolUtils.setLog(jsonObject.toString());
+                handler.obtainMessage(UPDATE_COUPON_RESULT,jsonObject).sendToTarget();
             }
-            params.add(new BasicNameValuePair("storeOrderItemPOList", storeArray.toString()));
-            // 创建UrlEncodedFormEntity对象
-            UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
-                    params, HTTP.UTF_8);
-            request.setEntity(formEntiry);
-            // 执行请求
-            HttpResponse response = client.execute(request);
-
-            in = new BufferedReader(new InputStreamReader(response.getEntity()
-                    .getContent()));
-            StringBuffer sb = new StringBuffer("");
-            String line = "";
-            String NL = System.getProperty("line.separator");
-            while ((line = in.readLine()) != null)
-            {
-                sb.append(line + NL);
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
             }
-            in.close();
-            result = sb.toString();
-            return result;
+        });
+        ((ZDApplication) mContext.getApplicationContext()).mRequestQueue.add(request);
 
-        } catch (Exception e)
-        {
-
-        } finally
-        {
-            if (in != null)
-            {
-                try
-                {
-                    in.close();
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return result;
     }
+
 
     /**
      * 请求收货地址信息
@@ -1194,6 +1271,90 @@ public class ShopOrderOkFragment extends BaseFragment
         };
         mRequestQueue.add(request);
     }
+
+
+    /**
+     * json解析
+     * @param json
+     */
+    private void JsonParse(String json)
+    {
+        ToolUtils.setLog(json);
+        JSONObject jsonObject= null;
+        try
+        {
+            jsonObject = new JSONObject(json);
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        int status=jsonObject.optInt("status");
+        if (status!=200)
+        {
+            handler.sendEmptyMessage(UPDATE_NULLCOUPON_SUCCESSS);
+            ToolUtils.setToast(mContext,"抱歉,优惠券加载失败");
+            return;
+        }
+        JSONObject object=jsonObject.optJSONObject("data");
+        if(object==null)
+        {
+            mStatus=1;
+            handler.sendEmptyMessage(UPDATE_NULLCOUPON_SUCCESSS);
+            return;
+        }
+        JSONObject datasObject = object.optJSONObject("data");
+        if (datasObject != null && datasObject.length() > 0)
+        {
+            int id=datasObject.optInt("id");
+            int couponId=datasObject.optInt("couponId");
+            int couponRuleId=datasObject.optInt("couponRuleId");
+            String couponCode=datasObject.optString("couponCode");
+            double enoughValue=datasObject.optDouble("enoughValue");
+            double money=datasObject.optDouble("bookValue");
+            String info=datasObject.optString("couponName");
+            String startTime=datasObject.optString("startTime");
+            String endTime=datasObject.optString("endTime");
+            int days=0;
+            try
+            {
+                SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date endDate=format.parse(endTime);
+                long diff=endDate.getTime()-System.currentTimeMillis();
+                days=(int) (diff / (1000 * 60 * 60 * 24)+((diff %(1000 * 60 * 60 * 24))>0?1:0));
+            } catch (ParseException e)
+            {
+                e.printStackTrace();
+            }
+            endTime=endTime.split(" ")[0];
+            String statu=datasObject.optString("status");
+            String property=datasObject.optString("property");
+            String goodsType=datasObject.optString("goodsType");
+            mCoupon=new Coupon();
+            mCoupon.id=id;
+            mCoupon.couponId=couponId;
+            mCoupon.couponRuleId=couponRuleId;
+            mCoupon.couponCode=couponCode;
+            mCoupon.enoughMoney=enoughValue;
+            mCoupon.money=money;
+            mCoupon.info="满"+ToolUtils.isIntPrice(enoughValue+"")+"减"+ToolUtils.isIntPrice(money+"");
+            mCoupon.startDate=startTime;
+            mCoupon.endDate=endTime;
+            mCoupon.time=days;
+            mCoupon.status=statu;
+            mCoupon.property=property;
+            mCoupon.type=goodsType;
+            mCoupon.isDefault=false;
+
+            handler.sendEmptyMessage(UPDATE_COUPON_SUCCESSS);
+        } else
+        {
+            mStatus=1;
+            handler.sendEmptyMessage(UPDATE_NULLCOUPON_SUCCESSS);
+        }
+    }
+
+
+
 
     public void onResume()
     {

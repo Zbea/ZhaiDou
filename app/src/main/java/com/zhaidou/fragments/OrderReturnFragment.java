@@ -23,9 +23,9 @@ import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshListView;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -36,6 +36,7 @@ import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -55,7 +56,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
     private PullToRefreshListView mListView;
     private Dialog mDialog;
     private LinearLayout loadingView;
-
+    private TextView titleTv;
     private RequestQueue mRequestQueue;
     private ReturnAdapter returnAdapter;
     private List<Store> mStoreList;
@@ -117,6 +118,9 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
     }
 
     private void initView(View view) {
+        titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
+        titleTv.setText(R.string.title_order_return);
+
         loadingView = (LinearLayout) view.findViewById(R.id.loadingView);
         mEmptyView = rootView.findViewById(R.id.nullline);
         mNetErrorView = rootView.findViewById(R.id.nullNetline);
@@ -137,7 +141,7 @@ public class OrderReturnFragment extends BaseFragment implements View.OnClickLis
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 Store store = (Store) values;
                 ReturnDetailFragment returnDetailFragment = ReturnDetailFragment.newInstance(store);
-                ((MainActivity) getActivity()).navigationToFragment(returnDetailFragment);
+                ((BaseActivity) getActivity()).navigationToFragment(returnDetailFragment);
             }
         });
         returnAdapter.setOnInViewClickListener(R.id.iv_delete, new BaseListAdapter.onInternalClickListener() {

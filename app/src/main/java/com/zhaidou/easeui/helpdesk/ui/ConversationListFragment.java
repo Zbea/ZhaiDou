@@ -12,13 +12,16 @@ import com.easemob.chat.EMConversation;
 import com.easemob.easeui.ui.EaseConversationListFragment;
 import com.easemob.util.NetUtils;
 import com.zhaidou.R;
+import com.zhaidou.activities.CommentContainerFragment;
+import com.zhaidou.base.CountManager;
 import com.zhaidou.base.EaseManage;
 import com.zhaidou.easeui.helpdesk.Constant;
 import com.zhaidou.model.User;
+import com.zhaidou.utils.Api;
 import com.zhaidou.utils.SharedPreferencesUtil;
 
 
-public class ConversationListFragment extends EaseConversationListFragment implements EaseManage.onMessageChange {
+public class ConversationListFragment extends EaseConversationListFragment implements EaseManage.onMessageChange, CountManager.onCommentChangeListener {
 
     private TextView errorText;
 
@@ -29,6 +32,8 @@ public class ConversationListFragment extends EaseConversationListFragment imple
 //        errorItemContainer.addView(errorView);
 //        errorText = (TextView) errorView.findViewById(R.id.tv_connect_errormsg);
         EaseManage.getInstance().setOnMessageChange(this);
+//        Api.getUnReadComment();
+        CountManager.getInstance().setOnCommentChangeListener(this);
     }
     
     @Override
@@ -44,9 +49,16 @@ public class ConversationListFragment extends EaseConversationListFragment imple
                 String username = conversation.getUserName();
                 System.out.println("ConversationListFragment.onItemClick---------->"+username+"----"+EMChatManager.getInstance().getCurrentUser());
                 System.out.println("ConversationListFragment.onItemClick-->"+conversation.toString());
-                if (username.equals(EMChatManager.getInstance().getCurrentUser()))
-                    Toast.makeText(getActivity(), R.string.Cant_chat_with_yourself, 0).show();
-                else {
+                if (username.equals(EMChatManager.getInstance().getCurrentUser())){
+                    Toast.makeText(getActivity(), R.string.Cant_chat_with_yourself, Toast.LENGTH_SHORT).show();
+                }else if ("comment".equalsIgnoreCase(username)){
+                    System.out.println("username = " + username);
+//                    Intent intent=new Intent(getActivity(), CommentContainerFragment.class);
+//                    startActivity(intent);
+                    SharedPreferencesUtil.saveData(getActivity(),"UnReadComment",0);
+                    CommentContainerFragment commentContainerFragment=new CommentContainerFragment();
+                    ((com.zhaidou.base.BaseActivity)getActivity()).navigationToFragment(commentContainerFragment);
+                }else {
                     // 进入聊天页面
                     Intent intent = new Intent(getActivity(), ChatActivity.class);
                     User user = SharedPreferencesUtil.getUser(getActivity());
@@ -66,6 +78,7 @@ public class ConversationListFragment extends EaseConversationListFragment imple
                 }
             }
         });
+
     }
 
     @Override
@@ -84,33 +97,17 @@ public class ConversationListFragment extends EaseConversationListFragment imple
         refresh();
     }
 
+    @Override
+    public void onChange() {
+        refresh();
+    }
 
-//    @Override
-//    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-//        getActivity().getMenuInflater().inflate(R.menu.em_delete_message, menu);
-//    }
-//
-//    @Override
-//    public boolean onContextItemSelected(MenuItem item) {
-//        boolean deleteMessage = false;
-//        if (item.getItemId() == R.id.delete_message) {
-//            deleteMessage = true;
-//        } else if (item.getItemId() == R.id.delete_conversation) {
-//            deleteMessage = false;
-//        }
-//    	EMConversation tobeDeleteCons = conversationListView.getItem(((AdapterContextMenuInfo) item.getMenuInfo()).position);
-//    	if (tobeDeleteCons == null) {
-//    	    return true;
-//    	}
-//        // 删除此会话
-//        EMClient.getInstance().chatManager().deleteConversation(tobeDeleteCons.getUserName(), deleteMessage);
-//        InviteMessgeDao inviteMessgeDao = new InviteMessgeDao(getActivity());
-//        inviteMessgeDao.deleteMessage(tobeDeleteCons.getUserName());
-//        refresh();
-//
-//        // 更新消息未读数
-//        ((MainActivity) getActivity()).updateUnreadLabel();
-//        return true;
-//    }
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        System.out.println("ConversationListFragment.onResume");
+        Integer userId= (Integer) SharedPreferencesUtil.getData(getActivity(),"userId",-1);
+        Api.getUnReadComment(userId,null,null);
+        refresh();
+    }
 }

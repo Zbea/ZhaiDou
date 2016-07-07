@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="header_height_dimen">50dp</dimen>
+    <dimen name="header_height_dimen">48dp</dimen>
     <dimen name="bottom_height_dimen">52dp</dimen>
     <dimen name="home_item_dimen">150dp</dimen>
     <dimen name="home_code_dimen">60dp</dimen>
@@ -24,7 +24,7 @@
     <dimen name="btn_height_dimen">36dp</dimen>
     <!--我页面顶部高度-->
     <dimen name="account_height_dimen">200dp</dimen>
-    <dimen name="account_image_width_dimen">75dp</dimen>
+    <dimen name="account_image_width_dimen">56dp</dimen>
     <dimen name="account_text_txt">15sp</dimen>
     <dimen name="account_text_info_txt">12sp</dimen>
     </resources>

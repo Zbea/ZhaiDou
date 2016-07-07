@@ -28,10 +28,12 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
+import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
@@ -44,6 +46,7 @@ import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomBannerView;
 import com.zhaidou.view.TimerTextView;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -61,7 +64,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     private String mParam1;
     private String mParam2;
 
-
+    private TextView titleTv;
     private GridView mGridView;
     private TimerTextView mTimerView;
     private ProductAdapter mAdapter;
@@ -255,6 +258,9 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
 
             rootView = inflater.inflate(R.layout.fragment_special_sale, container, false);
 
+            titleTv = (TypeFaceTextView) rootView.findViewById(R.id.title_tv);
+            titleTv.setText("零元特卖");
+
             mScrollView = (PullToRefreshScrollView) rootView.findViewById(R.id.scrollView);
             mScrollView.setOnRefreshListener(onRefreshListener2);
             mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
@@ -297,7 +303,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     bundle.putString("page", products.get(position).getTitle());
                     bundle.putBoolean("canShare", false);
                     goodsDetailsFragment.setArguments(bundle);
-                    ((MainActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
+                    ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
                 }
             });
         }
@@ -408,14 +414,14 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         switch (view.getId())
         {
             case R.id.ll_back:
-                ((MainActivity) getActivity()).popToStack(SpecialSaleFragment.this);
+                ((BaseActivity) getActivity()).popToStack(SpecialSaleFragment.this);
                 break;
 
             case R.id.myCartBtn:
                 if (checkLogin())
                 {
                     ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
-                    ((MainActivity) getActivity()).navigationToFragment(shopCartFragment);
+                    ((BaseActivity) getActivity()).navigationToFragment(shopCartFragment);
                 } else
                 {
                     Intent intent = new Intent(getActivity(), LoginActivity.class);
@@ -694,6 +700,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             time =mTimerView.getTimes()-temp;
             mTimerView.setTimes(time);
         }
+        MobclickAgent.onPageStart("零元特卖"); //统计页面
         super.onResume();
     }
 
@@ -702,6 +709,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     {
         systemTime=System.currentTimeMillis();
         isFrist=true;
+        MobclickAgent.onPageEnd("零元特卖");
         super.onPause();
     }
 

@@ -3,22 +3,23 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical"
-              android:paddingBottom="50dp"
-              android:background="@drawable/icon_magic_bg">
+              android:background="@color/white"
+    >
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_weight="1"
+        android:layout_weight="5"
+        android:background="@drawable/icon_magic_bg"
         android:gravity="center">
 
         <com.zhaidou.view.TypeFaceTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            android:textSize="30sp"
+            android:textSize="28sp"
             android:lineSpacingExtra="3dp"
             android:lineSpacingMultiplier="1.6"
             android:layout_marginTop="10dp"
@@ -26,7 +27,7 @@
             android:text="家 居 软 装 魔 法"/>
 
         <View
-            android:layout_width="50dp"
+            android:layout_width="40dp"
             android:layout_height="1dp"
             android:background="@color/white"
             android:layout_margin="15dp"
@@ -36,22 +37,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:text="HOME FURNISHING"/>
+
         <com.zhaidou.view.TypeFaceTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:layout_marginTop="2dp"
             android:text="SOFT OUTFIT"/>
 
     </LinearLayout>
 
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="3"
+        android:orientation="vertical"
         >
 
         <LinearLayout
@@ -62,76 +66,71 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:orientation="horizontal"
                 android:gravity="center_horizontal"
                 >
 
                 <LinearLayout
                     android:id="@+id/magicClassicLine"
-                    android:layout_width="@dimen/magic_btn_dimen"
-                    android:layout_height="@dimen/magic_btn_dimen"
-                    android:layout_marginRight="5dp"
-                    android:background="@drawable/main_magic_click_selector"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_click_selector"
                     android:orientation="vertical"
                     android:gravity="center">
 
                     <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:scaleType="centerInside"
-                        android:src="@drawable/icon_magic_classic_case"/>
-
-
-                    <View
-                        android:layout_width="50dp"
-                        android:layout_height="1px"
-                        android:background="@color/all_e"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginTop="15dp"
-                        ></View>
-
+                        android:padding="2dp"
+                        android:src="@drawable/icon_magic_classic_case"
+                        />
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="15sp"
+                        android:layout_marginTop="15dp"
                         android:textColor="@color/text_normal_color"
                         android:text="@string/title_main_magic_classic_case"
                         ></com.zhaidou.view.TypeFaceTextView>
 
                 </LinearLayout>
 
+                <View
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"
+                    android:background="@color/all_e"
+                    android:layout_marginTop="10dp"
+                    />
+
                 <LinearLayout
                     android:id="@+id/magicConsultLine"
-                    android:layout_width="@dimen/magic_btn_dimen"
-                    android:layout_height="@dimen/magic_btn_dimen"
-                    android:layout_marginLeft="5dp"
-                    android:background="@drawable/main_magic_click_selector"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_click_selector"
                     android:orientation="vertical"
                     android:gravity="center">
 
                     <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:scaleType="centerInside"
-                        android:src="@drawable/icon_magic_choose_consult"/>
+                        android:src="@drawable/icon_magic_choose_consult"
+                        />
 
-
-                    <View
-                        android:layout_width="50dp"
-                        android:layout_height="1px"
-                        android:background="@color/all_e"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginTop="15dp"
-                        ></View>
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height= "wrap_content"
                         android:textSize="15sp"
+                        android:layout_marginTop="15dp"
                         android:textColor="@color/text_normal_color"
-                        android:text="@string/title_main_magic_choose_consult"
+                        android:text="@string/title_main_magic_guide"
                         ></com.zhaidou.view.TypeFaceTextView>
 
                 </LinearLayout>
@@ -139,80 +138,165 @@
 
             </LinearLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/all_e"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                ></View>
+
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:orientation="horizontal"
                 android:gravity="center_horizontal"
                 >
 
                 <LinearLayout
                     android:id="@+id/magicImageLine"
-                    android:layout_width="@dimen/magic_btn_dimen"
-                    android:layout_height="@dimen/magic_btn_dimen"
-                    android:layout_marginRight="5dp"
-                    android:background="@drawable/main_magic_click_selector"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_click_selector"
                     android:orientation="vertical"
                     android:gravity="center">
 
                     <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:padding="2dp"
                         android:scaleType="centerInside"
                         android:src="@drawable/icon_magic_image_case"/>
 
 
-                    <View
-                        android:layout_width="50dp"
-                        android:layout_height="1px"
-                        android:background="@color/all_e"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginTop="15dp"
-                        ></View>
+
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="15sp"
+                        android:layout_marginTop="15dp"
                         android:textColor="@color/text_normal_color"
                         android:text="@string/title_main_magic_image_case"
                         ></com.zhaidou.view.TypeFaceTextView>
 
                 </LinearLayout>
 
+                <View
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"
+                    android:background="@color/all_e"
+                    ></View>
+
                 <LinearLayout
                     android:id="@+id/magicDesignLine"
-                    android:layout_width="@dimen/magic_btn_dimen"
-                    android:layout_height="@dimen/magic_btn_dimen"
-                    android:layout_marginLeft="5dp"
-                    android:background="@drawable/main_magic_click_selector"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_click_selector"
                     android:orientation="vertical"
                     android:gravity="center">
 
                     <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:scaleType="centerInside"
                         android:padding="2dp"
-                        android:src="@drawable/icon_magic_online_design"/>
+                        android:src="@drawable/icon_magic_online_design"
+                        />
 
-
-                    <View
-                        android:layout_width="50dp"
-                        android:layout_height="1px"
-                        android:background="@color/all_e"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginTop="15dp"
-                        ></View>
 
                     <com.zhaidou.view.TypeFaceTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="15sp"
+                        android:layout_marginTop="15dp"
                         android:textColor="@color/text_normal_color"
                         android:text="@string/title_main_magic_online_design"
+                        ></com.zhaidou.view.TypeFaceTextView>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/all_e"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                ></View>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center_horizontal"
+                >
+
+                <LinearLayout
+                    android:id="@+id/magicClassroomLine"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_click_selector"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:padding="2dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/icon_magic_classroom"
+                        />
+
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:layout_marginTop="15dp"
+                        android:textColor="@color/text_normal_color"
+                        android:text="@string/title_main_magic_classroom"
+                        ></com.zhaidou.view.TypeFaceTextView>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"
+                    android:background="@color/all_e"
+                    android:layout_marginBottom="10dp"
+                    ></View>
+
+                <LinearLayout
+                    android:id="@+id/magicDIYLine"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_click_selector"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:scaleType="centerInside"
+                        android:padding="2dp"
+                        android:src="@drawable/icon_magic_diy"/>
+
+                    <com.zhaidou.view.TypeFaceTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:layout_marginTop="15dp"
+                        android:textColor="@color/text_normal_color"
+                        android:text="@string/title_main_magic_diy"
                         ></com.zhaidou.view.TypeFaceTextView>
 
                 </LinearLayout>
@@ -223,12 +307,6 @@
 
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/magicDiyBtn"
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:layout_centerInParent="true"
-            android:src="@drawable/icon_magic_diy"/>
-    </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>

@@ -102,11 +102,11 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
         userId = mSharedPreferences.getInt("userId", -1);
         token = mSharedPreferences.getString("token", null);
         nickName = mSharedPreferences.getString("nickName", "");
-        tv_back = (TextView) findViewById(R.id.tv_back);
-        iv_share = (ImageView) findViewById(R.id.iv_share);
+        tv_back = (TextView) findViewById(R.id.ll_back);
+        iv_share = (ImageView) findViewById(R.id.share_iv);
         iv_shadow = (ImageView) findViewById(R.id.iv_shadow);
         mChildContainer = (FrameLayout) findViewById(R.id.fl_child_container);
-        mTitleView = (TextView) findViewById(R.id.tv_title);
+        mTitleView = (TextView) findViewById(R.id.title_tv);
 
         mHeaderView = (ImageView) findViewById(R.id.iv_header);
         mHeaderView.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, screenWidth * 316 / 722));
@@ -249,7 +249,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.tv_back:
+            case R.id.ll_back:
                 if (webView.canGoBack()) {
                     if ("product".equalsIgnoreCase(from)) {
                         iv_share.setVisibility(View.VISIBLE);
@@ -259,7 +259,7 @@ public class ItemDetailActivity extends BaseActivity implements View.OnClickList
                 }
                 finish();
                 break;
-            case R.id.iv_share:
+            case R.id.share_iv:
                 doShare();
                 break;
         }

@@ -14,6 +14,7 @@ import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.utils.ToolUtils;
 
 public class WXPayEntryActivity extends FragmentActivity implements IWXAPIEventHandler
 {
@@ -46,6 +47,7 @@ public class WXPayEntryActivity extends FragmentActivity implements IWXAPIEventH
     @Override
     public void onResp(BaseResp resp)
     {
+        ToolUtils.setLog("微信回调");
         Log.i(TAG, "onPayFinish, errCode = " + resp.errCode + "----->" + resp.errStr + "-------------->" + resp.getType());
         if (resp.getType() == ConstantsAPI.COMMAND_PAY_BY_WX)
         {

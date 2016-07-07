@@ -22,31 +22,32 @@ import com.alibaba.sdk.android.callback.CallbackContext;
 import com.alibaba.sdk.android.login.LoginService;
 import com.alibaba.sdk.android.login.callback.LoginCallback;
 import com.alibaba.sdk.android.session.model.Session;
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.easemob.EMCallBack;
-import com.easemob.chat.EMChatManager;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.AccountManage;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.easeui.helpdesk.EaseHelper;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.model.User;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
-import com.zhaidou.utils.MD5Util;
+import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NativeHttpUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomEditText;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.security.MessageDigest;
@@ -87,6 +88,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     RequestQueue requestQueue;
     private DialogUtils mDialogUtils;
     private boolean validate_phone = false;
+    private String token;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -159,7 +161,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         mLoginView.setOnClickListener(this);
         mRegisterView.setOnClickListener(this);
         mResetView.setOnClickListener(this);
-        findViewById(R.id.back_btn).setOnClickListener(this);
+        findViewById(R.id.ll_back).setOnClickListener(this);
         findViewById(R.id.ll_qq).setOnClickListener(this);
         findViewById(R.id.ll_weixin).setOnClickListener(this);
         findViewById(R.id.ll_weibo).setOnClickListener(this);
@@ -179,7 +181,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     /**
      * 获得保存的邮箱帐号
      *
-     * @return
      */
     private String getEmail() {
         return (String) SharedPreferencesUtil.getData(this, "phone", "");
@@ -213,7 +214,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 params.put("password", password);
 
                 mDialog = CustomLoadingDialog.setLoadingDialog(LoginActivity.this, "登陆中");
-                final ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,Request.Method.POST, ZhaiDou.USER_LOGIN_URL, params, new Response.Listener<JSONObject>() {
+                final ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this, Request.Method.POST, ZhaiDou.USER_LOGIN_URL, params, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
                         if (jsonObject != null) {
@@ -229,8 +230,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                                     String email = userObj.optString("email");
                                     String nick = userObj.optString("nick_name");
                                     User user = new User(id, email, token, nick, null);
-                                    loginToEaseServer(user);
-//                                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+//                                    loginToEaseServer(user);
+                                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
                                 }
                             } else {
                                 if (mDialog != null)
@@ -259,7 +260,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 Intent intent = new Intent(getApplicationContext(), AccountFindPwdActivity.class);
                 startActivity(intent);
                 break;
-            case R.id.back_btn:
+            case R.id.ll_back:
                 finish();
                 break;
             case R.id.ll_weixin:
@@ -273,6 +274,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             case R.id.ll_qq:
                 Platform qq = ShareSDK.getPlatform(QQ.NAME);
                 authorize(qq);
+                ToolUtils.setLog("开始qq注册");
                 break;
             case R.id.ll_weibo:
                 //新浪微博
@@ -299,15 +301,15 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     }
 
     private void thirdPartyVerify(final String tag, final String userId, String nick, final String avatarUrl) {
+        System.out.println("LoginActivity.thirdPartyVerify--------");
         Map<String, String> params = new HashMap<String, String>();
         params.put("uid", userId);
         params.put("provider", tag);
         params.put("nick_name", nick);
-
-        ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,Request.Method.POST, ZhaiDou.USER_LOGIN_THIRD_VERIFY_URL, params, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this, Request.Method.POST, ZhaiDou.USER_LOGIN_THIRD_VERIFY_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                Log.i("jsonObject--->", jsonObject.toString());
+                Log.i("LoginActivity.thirdPartyVerify----jsonObject--->", jsonObject.toString());
                 JSONObject dataObj = jsonObject.optJSONObject("data");
                 int flag = dataObj.optInt("flag");
 
@@ -325,7 +327,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     thirdPartyRegisterTask(registers);
                 } else {
                     JSONObject userJson = dataObj.optJSONObject("user");
-                    String token = userJson.optJSONObject("user_tokens").optString("token");
+                    token = userJson.optJSONObject("user_tokens").optString("token");
                     JSONArray userArray = userJson.optJSONArray("users");
                     if (userArray != null && userArray.length() > 0) {
                         JSONObject user = userArray.optJSONObject(0);
@@ -342,44 +344,66 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
+                System.out.println("volleyError.getLocalizedMessage() = " + volleyError.getLocalizedMessage());
+
             }
         });
+        request.setRetryPolicy(new DefaultRetryPolicy(5000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         requestQueue.add(request);
     }
 
     private void bingPhoneTask(String phone, String verifyCode, final Dialog mDialog, final String token) {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("phone", phone);
-        params.put("vcode", verifyCode);
-        ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,Request.Method.POST, ZhaiDou.USER_LOGIN_BINE_PHONE_URL, params, new Response.Listener<JSONObject>() {
+        JSONObject params = new JSONObject();
+        try {
+            params.put("phone", phone);
+            params.put("vcode", verifyCode);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.USER_LOGIN_BINE_PHONE_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+                ToolUtils.setLog(jsonObject.toString());
                 JSONObject dataObj = jsonObject.optJSONObject("data");
-                int status = dataObj.optInt("status");
-                if (201 == status) {
-                    mDialog.dismiss();
-                    ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(LoginActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                    JSONObject userObj = dataObj.optJSONObject("user");
-                    int id = userObj.optInt("id");
-                    String phone = userObj.optString("phone");
-                    String nick = userObj.optString("nick_name");
-                    String email = userObj.optString("email");
-                    String avatar = userObj.optJSONObject("avatar").optString("mobile_icon");
-                    validate_phone = true;
-                    User user = new User(id, email, token, nick, avatar);
-                    mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
-                } else {
-                    String message = dataObj.optString("message");
-                    Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+                if (dataObj != null) {
+                    int status = dataObj.optInt("status");
+                    if (201 == status) {
+                        mDialog.dismiss();
+                        ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(LoginActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                        JSONObject userObj = dataObj.optJSONObject("user");
+                        int id = userObj.optInt("id");
+                        String phone = userObj.optString("phone");
+                        String nick = userObj.optString("nick_name");
+                        String email = userObj.optString("email");
+                        String avatar = userObj.optJSONObject("avatar").optString("mobile_icon");
+                        validate_phone = true;
+                        User user = new User(id, email, token, nick, avatar);
+                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+                    } else {
+                        String message = dataObj.optString("message");
+                        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+                    }
                 }
+
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
+                if (mDialog != null)
+                    mDialog.dismiss();
             }
-        });
-        ((ZDApplication) getApplication()).mRequestQueue.add(request);
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", getApplicationContext().getResources().getString(R.string.app_versionName));
+                headers.put("SECAuthorization", token);
+                return headers;
+            }
+        };
+        requestQueue.add(request);
     }
 
     private void authorize(Platform plat) {
@@ -387,19 +411,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         if (plat == null) {
             return;
         }
-//        if(plat.isValid()) {
-//            String userId = plat.getDb().getUserId();
-//            String username = plat.getDb().getUserName();
-//            String token = plat.getDb().getToken();
-//            if (userId != null) {
-//                Log.i("userId---------->",userId+"");
-//                Log.i("username---------->",username+"");
-//                Log.i("token---------->",token+"");
-////                UIHandler.sendEmptyMessage(MSG_USERID_FOUND, this);
-////                login(plat.getName(), userId, null);
-//                return;
-//            }
-//        }
         if (plat.isValid()) {
             plat.removeAccount();
         }
@@ -410,6 +421,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         } else {
             plat.SSOSetting(false);
         }
+        ToolUtils.setLog("注册");
         plat.showUser(null);
     }
 
@@ -420,7 +432,10 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
      * @param mDialog
      */
     private void getVerifyCode(String phone, final Dialog mDialog) {
-        ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + "?phone=" + phone + "&flag=1", new Response.Listener<JSONObject>() {
+        if (TextUtils.isEmpty(phone) || phone.length() != 11) {
+            Toast.makeText(LoginActivity.this, "请输入正确的手机号码", Toast.LENGTH_SHORT).show();
+        }
+        ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this, ZhaiDou.USER_REGISTER_VERIFY_CODE_URL + "?phone=" + phone + "&flag=1", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 JSONObject dataObj = jsonObject.optJSONObject("data");
@@ -452,6 +467,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     @Override
     public void onComplete(final Platform platform, int i, final HashMap<String, Object> stringObjectHashMap) {
         mHandler.sendEmptyMessage(SHOW_DIALOG);
+        ToolUtils.setLog("拿到第三方注册数据");
         Log.i("onComplete----->", platform.getName() + "---" + i);
         Log.i("stringObjectHashMap", stringObjectHashMap.toString());
         String plat = platform.getName();
@@ -471,7 +487,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 
     @Override
     public void onError(Platform platform, int i, Throwable throwable) {
-        Log.i("platform----->", platform.getName() + "---" + i + throwable.getMessage().toString());
+        Log.i("platform----->", platform.getName() + "---" + i);
     }
 
     @Override
@@ -513,13 +529,17 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     }
 
     private void thirdPartyRegisterTask(Map<String, String> params) {
-        ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this,Request.Method.POST, ZhaiDou.USER_REGISTER_URL, params, new Response.Listener<JSONObject>() {
+        System.out.println("LoginActivity.thirdPartyRegisterTask");
+        ZhaiDouRequest request = new ZhaiDouRequest(LoginActivity.this, Request.Method.POST, ZhaiDou.USER_REGISTER_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+                System.out.println("LoginActivity.onResponse-----》" + jsonObject.toString());
                 if (jsonObject != null) {
+                    System.out.println("jsonObject = " + jsonObject);
                     int status = jsonObject.optInt("status");
                     String message = jsonObject.optString("message");
                     if (status == 200) {
+                        ToolUtils.setLog("注册成功了");
                         JSONObject dataObj = jsonObject.optJSONObject("data");
                         JSONArray errMsg = jsonObject.optJSONArray("message");
                         if (errMsg != null) {
@@ -528,14 +548,16 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                         }
 
                         JSONObject userJson = dataObj.optJSONObject("user");
-                        int id = userJson.optInt("id");
-                        String email = userJson.optString("email");
-                        String token = userJson.optString("authentication_token");
+                        if (userJson != null) {
+                            int id = userJson.optInt("id");
+                            String email = userJson.optString("email");
+                            String token = userJson.optString("authentication_token");
 //                    String avatar = userJson.optJSONObject("avatar").optString("url","");
-                        String nick = userJson.optString("nick_name");
-                        User user = new User(id, email, token, nick, "");
-                        loginToEaseServer(user);
-//                        mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+                            String nick = userJson.optString("nick_name");
+                            User user = new User(id, email, token, nick, "");
+//                        loginToEaseServer(user);
+                            mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
+                        }
                     } else {
                         Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                     }
@@ -547,6 +569,9 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 
             }
         });
+        request.setRetryPolicy(new DefaultRetryPolicy(5000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         ((ZDApplication) getApplication()).mRequestQueue.add(request);
     }
 
@@ -626,56 +651,19 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             inputMethodManager.hideSoftInputFromWindow(getWindow().peekDecorView().getApplicationWindowToken(), 0);
     }
 
-    private void loginToEaseServer(final User user){
-        EMChatManager.getInstance().login("zhaidou"+user.getId(),MD5Util.MD5Encode("zhaidou"+user.getId()+"Yage2016!").toUpperCase(), new EMCallBack() {
-            @Override
-            public void onSuccess() {
-                if (mDialog != null)
-                    mDialog.dismiss();
-                // 登陆成功，保存用户名
-                EaseHelper.getInstance().setCurrentUserName(user.getNickName());
-                // 注册群组和联系人监听
-//                DemoHelper.getInstance().registerGroupAndContactListener();
-
-                // ** 第一次登录或者之前logout后再登录，加载所有本地群和回话
-                // ** manually load all local groups and
-//                EMClient.getInstance().groupManager().loadAllGroups();
-                EMChatManager.getInstance().loadAllConversations();
-
-//                更新当前用户的nickname 此方法的作用是在ios离线推送时能够显示用户nick
-                boolean updatenick = EMChatManager.getInstance().updateCurrentUserNick(
-                        user.getNickName());
-                if (!updatenick) {
-                    Log.e("LoginActivity", "update current user nick fail");
-                }
-                //异步获取当前用户的昵称和头像(从自己服务器获取，demo使用的一个第三方服务)
-//                DemoHelper.getInstance().getUserProfileManager().asyncGetCurrentUserInfo();
-
-//                if (!LoginActivity.this.isFinishing() && pd.isShowing()) {
-//                    pd.dismiss();
-//                }
-//                mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
-                Message message = new Message();
-                message.obj = user;
-                message.what = 0;
-                mHandler.sendMessage(message);
-            }
-
-            @Override
-            public void onProgress(int progress, String status) {
-            }
-
-            @Override
-            public void onError(final int code, final String message) {
-//                Toast.makeText(LoginActivity.this,"登录聊天服务器失败",Toast.LENGTH_SHORT).show();
-            }
-        });
+    private void loginToEaseServer(final User user) {
+        EaseUtils.login(user);
+        Message message = new Message();
+        message.obj = user;
+        message.what = 0;
+        mHandler.sendMessage(message);
     }
-    public String string2MD5(String inStr){
+
+    public String string2MD5(String inStr) {
         MessageDigest md5 = null;
-        try{
+        try {
             md5 = MessageDigest.getInstance("MD5");
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.toString());
             e.printStackTrace();
             return "";
@@ -687,7 +675,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             byteArray[i] = (byte) charArray[i];
         byte[] md5Bytes = md5.digest(byteArray);
         StringBuffer hexValue = new StringBuffer();
-        for (int i = 0; i < md5Bytes.length; i++){
+        for (int i = 0; i < md5Bytes.length; i++) {
             int val = ((int) md5Bytes[i]) & 0xff;
             if (val < 16)
                 hexValue.append("0");

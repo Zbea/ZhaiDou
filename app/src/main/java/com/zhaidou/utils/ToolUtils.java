@@ -17,23 +17,29 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomeCompetitionActivity;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.activities.WebViewActivity;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.fragments.GoodsDetailsFragment;
 import com.zhaidou.fragments.HomeArticleListFragment;
 import com.zhaidou.fragments.HomeBeautifulFragment;
 import com.zhaidou.fragments.HomeFeatrueFragment;
 import com.zhaidou.fragments.HomeWeixinListFragment;
+import com.zhaidou.fragments.MagicClassicCaseDetailsFragment;
+import com.zhaidou.fragments.MagicClassicCaseFragment;
 import com.zhaidou.fragments.MagicDesignFragment;
+import com.zhaidou.fragments.MagicImageCaseFragment;
 import com.zhaidou.fragments.ShopTodaySpecialFragment;
 import com.zhaidou.fragments.SpecialSaleFragment;
 import com.zhaidou.model.Category;
 import com.zhaidou.model.SwitchImage;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,13 +50,45 @@ public class ToolUtils
 {
 
     /**
+     * 获得时间差别
+     *
+     * @param date
+     * @return
+     */
+    public static String getDateDiff(String date) throws ParseException
+    {
+        String timeStr;
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date mDate = new Date();
+        long diff = Math.abs(mDate.getTime() - df.parse(date).getTime())/1000;
+        if (diff >= 24 * 60 * 60)
+        {
+            return date.split(" ")[0];
+        } else
+        {
+            if (diff >  60 * 60)
+            {
+                timeStr = diff / (60 * 60) + "小时前";
+            } else if (diff > 60)
+            {
+                timeStr = diff / (60) + "分钟前";
+            } else
+            {// 1秒钟-59秒钟
+                timeStr = "刚刚";
+            }
+            return timeStr;
+        }
+    }
+
+    /**
      * 处理价格为.0或者.00时取整数
+     *
      * @return
      */
     public static String isIntPrice(String price)
     {
-        String mPrice=null;
-        for (int i=0 ;i<price.length(); i++)
+        String mPrice = null;
+        for (int i = 0; i < price.length(); i++)
         {
             char c = price.charAt(i);
             //当不为整数的时候
@@ -59,34 +97,35 @@ public class ToolUtils
                 //当存在小数点一位的时候
                 if (price.length() == (i + 2))
                 {
-                    if (String.valueOf(price.charAt(i+1)).equals(""+0))
+                    if (String.valueOf(price.charAt(i + 1)).equals("" + 0))
                     {
-                        mPrice=price.substring(0,i);
+                        mPrice = price.substring(0, i);
                         return mPrice;
                     }
                 }
                 //当存在小数点两位时候
-               if (price.length()==(i+3))
-               {
-                   if (String.valueOf(price.charAt(i+1)).equals(""+0)&&String.valueOf(price.charAt(i+2)).equals(""+0))
-                   {
-                       mPrice=price.substring(0,i);
-                       return mPrice;
-                   }
-                   if (!String.valueOf(price.charAt(i+1)).equals(""+0)&&String.valueOf(price.charAt(i+2)).equals(""+0))
-                   {
-                       mPrice=price.substring(0,i+2);
-                       return mPrice;
-                   }
-               }
+                if (price.length() == (i + 3))
+                {
+                    if (String.valueOf(price.charAt(i + 1)).equals("" + 0) && String.valueOf(price.charAt(i + 2)).equals("" + 0))
+                    {
+                        mPrice = price.substring(0, i);
+                        return mPrice;
+                    }
+                    if (!String.valueOf(price.charAt(i + 1)).equals("" + 0) && String.valueOf(price.charAt(i + 2)).equals("" + 0))
+                    {
+                        mPrice = price.substring(0, i + 2);
+                        return mPrice;
+                    }
+                }
             }
         }
-        mPrice=price;
+        mPrice = price;
         return mPrice;
     }
 
     /**
      * 是否存在sdcard
+     *
      * @return
      */
     public static boolean hasSdcard()
@@ -95,8 +134,7 @@ public class ToolUtils
         if (state.equals(Environment.MEDIA_MOUNTED) && Environment.getExternalStorageDirectory().exists())
         {
             return true;
-        }
-        else
+        } else
         {
             return false;
         }
@@ -104,6 +142,7 @@ public class ToolUtils
 
     /**
      * 判断手机号码格式是否正确
+     *
      * @param phone
      * @return
      */
@@ -113,27 +152,27 @@ public class ToolUtils
         {
             return false;
         }
-        Pattern p=Pattern.compile("(1[3456789]\\d{9})");
+        Pattern p = Pattern.compile("(1[3456789]\\d{9})");
 //        Pattern p=Pattern.compile("(1[358]\\d{9})|(14[57]\\d{8})|(17[0678]\\d{8})");
-        Matcher m=p.matcher(phone);
+        Matcher m = p.matcher(phone);
         return m.matches();
     }
 
     /**
      * 判断邮箱格式是否正确
+     *
      * @param email
      * @return
      */
     public static boolean isEmailOK(String email)
     {
-        if (email!=null&email.length()>0)
+        if (email != null & email.length() > 0)
         {
 //            Pattern p=Pattern.compile("[a-zA-Z0-9._-]+@[a-z]+\\.[a-z]+");
-            Pattern p=Pattern.compile("^[a-zA-Z][\\\\w\\\\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\\\\w\\\\.-]*[a-zA-Z0-9]\\\\.[a-zA-Z][a-zA-Z\\\\.]*[a-zA-Z]$");
-            Matcher m=p.matcher(email);
+            Pattern p = Pattern.compile("^[a-zA-Z][\\\\w\\\\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\\\\w\\\\.-]*[a-zA-Z0-9]\\\\.[a-zA-Z][a-zA-Z\\\\.]*[a-zA-Z]$");
+            Matcher m = p.matcher(email);
             return m.matches();
-        }
-        else
+        } else
         {
             return false;
         }
@@ -142,12 +181,13 @@ public class ToolUtils
 
     /**
      * 图片异步加载（缓存图片方法）
+     *
      * @param url
      * @param imageView
      */
-    public static final void setImageCacheUrl(String url,ImageView imageView)
+    public static final void setImageCacheUrl(String url, ImageView imageView)
     {
-        DisplayImageOptions options=new DisplayImageOptions.Builder()
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
 //                .showImageForEmptyUri(R.drawable.icon_loading_defalut)
 //                .showImageOnFail(R.drawable.icon_loading_defalut)
                 .resetViewBeforeLoading(false)//default 设置图片在加载前是否重置、复位
@@ -155,20 +195,22 @@ public class ToolUtils
                 .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .imageScaleType(ImageScaleType.EXACTLY)
+                .considerExifParams(true)
                 .build();
 
-        ImageLoader.getInstance().displayImage(url, imageView,options);
+        ImageLoader.getInstance().displayImage(url, imageView, options);
     }
 
     /**
      * 图片异步加载（缓存图片方法）切圆角
+     *
      * @param url
      * @param imageView
      */
-    public static final void setImageCacheRoundUrl(String url,ImageView imageView ,int i,int resId)
+    public static final void setImageCacheRoundUrl(String url, ImageView imageView, int i, int resId)
     {
-        DisplayImageOptions options=new DisplayImageOptions.Builder()
-                	.displayer(new RoundedBitmapDisplayer(i))//设置圆角半径
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
+                .displayer(new RoundedBitmapDisplayer(i))//设置圆角半径
                 .showImageOnLoading(resId)
                 .showImageForEmptyUri(resId)
                 .showImageOnFail(resId)
@@ -179,18 +221,19 @@ public class ToolUtils
                 .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
                 .build();
 
-        ImageLoader.getInstance().displayImage(url, imageView,options);
+        ImageLoader.getInstance().displayImage(url, imageView, options);
     }
 
     /**
      * 图片异步加载（缓存图片方法）
+     *
      * @param url
      * @param imageView
-     * @param resId 设置加载过程中背景底图
+     * @param resId     设置加载过程中背景底图
      */
-    public static final void setImageCacheUrl(String url,ImageView imageView,int resId)
+    public static final void setImageCacheUrl(String url, ImageView imageView, int resId)
     {
-        DisplayImageOptions options=new DisplayImageOptions.Builder()
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
                 .showImageOnLoading(resId)
                 .showImageForEmptyUri(resId)
                 .showImageOnFail(resId)
@@ -201,18 +244,19 @@ public class ToolUtils
 //                .delayBeforeLoading(100)//载入图片前稍做延时可以提高整体滑动的流畅度
                 .build();
 
-        ImageLoader.getInstance().displayImage(url, imageView,options);
+        ImageLoader.getInstance().displayImage(url, imageView, options);
     }
 
     /**
      * 设置图片不复位
+     *
      * @param url
      * @param imageView
      * @param resId
      */
-    public static final void setImageNoResetUrl(String url,final ImageView imageView,int resId)
+    public static final void setImageNoResetUrl(String url, final ImageView imageView, int resId)
     {
-        DisplayImageOptions options=new DisplayImageOptions.Builder()
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
                 .showImageOnLoading(resId)
                 .showImageForEmptyUri(resId)
                 .showImageOnFail(resId)
@@ -250,30 +294,32 @@ public class ToolUtils
 
     /**
      * 图片异步加载（不缓存图片设置）
+     *
      * @param url
      * @param imageView
      */
-    public static final void setImageUrl(String url,ImageView imageView)
+    public static final void setImageUrl(String url, ImageView imageView)
     {
-        DisplayImageOptions options=new DisplayImageOptions.Builder()
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.drawable.icon_loading_osale)
                 .showImageOnFail(R.drawable.icon_loading_osale)
                 .resetViewBeforeLoading(false)//default 设置图片在加载前是否重置、复位
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .imageScaleType(ImageScaleType.EXACTLY)
                 .build();
-        ImageLoader.getInstance().displayImage(url, imageView,options);
+        ImageLoader.getInstance().displayImage(url, imageView, options);
     }
 
     /**
      * 图片异步加载（不缓存图片设置）
+     *
      * @param url
      * @param imageView
-     * @param resId 设置加载过程中背景底图
+     * @param resId     设置加载过程中背景底图
      */
-    public static final void setImageUrl(String url,ImageView imageView,int resId)
+    public static final void setImageUrl(String url, ImageView imageView, int resId)
     {
-        DisplayImageOptions options=new DisplayImageOptions.Builder()
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
                 .showImageOnLoading(resId)
                 .showImageForEmptyUri(resId)
                 .showImageOnFail(resId)
@@ -281,83 +327,91 @@ public class ToolUtils
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .imageScaleType(ImageScaleType.EXACTLY)
                 .build();
-        ImageLoader.getInstance().displayImage(url, imageView,options);
+        ImageLoader.getInstance().displayImage(url, imageView, options);
     }
 
     /**
      * 本地图片异步加载（不缓存图片设置，处理内存溢出）
+     *
      * @param url
      * @param imageView
      */
-    public static final void setImagePreventMemoryLeaksUrl(String url,ImageView imageView)
+    public static final void setImagePreventMemoryLeaksUrl(String url, ImageView imageView)
     {
-        DisplayImageOptions options=new DisplayImageOptions.Builder()
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
                 .resetViewBeforeLoading(false)//default 设置图片在加载前是否重置、复位
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
                 .build();
-        ImageLoader.getInstance().displayImage(url, imageView,options);
+        ImageLoader.getInstance().displayImage(url, imageView, options);
     }
 
     /**
      * 打印信息
+     *
      * @param msg
      */
     public static final void setLog(String msg)
     {
-        Log.i("zhaidou",msg);
+        Log.i("zhaidou", msg);
     }
 
     /**
      * Toast显示短时间
+     *
      * @param mContext
      * @param msg
      */
-    public static final void setToast(Context mContext,String msg)
+    public static final void setToast(Context mContext, String msg)
     {
         Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
     }
 
     /**
      * Toast显示短时间
+     *
      * @param mContext
      * @param msgResId
      */
-    public static final void setToast(Context mContext,int msgResId)
+    public static final void setToast(Context mContext, int msgResId)
     {
         Toast.makeText(mContext, msgResId, Toast.LENGTH_SHORT).show();
     }
 
     /**
      * 长显示
+     *
      * @param mContext
      * @param msg
      */
-    public static final void setToastLong(Context mContext,String msg)
+    public static final void setToastLong(Context mContext, String msg)
     {
         Toast.makeText(mContext, msg, Toast.LENGTH_LONG).show();
     }
 
     /**
      * 长显示
+     *
      * @param mContext
      * @param msgResId
      */
-    public static final void setToastLong(Context mContext,int msgResId)
+    public static final void setToastLong(Context mContext, int msgResId)
     {
         Toast.makeText(mContext, msgResId, Toast.LENGTH_LONG).show();
     }
 
     /**
      * 设置banner的跳转
+     *
      * @param item
      */
-    public static final void setBannerGoto(SwitchImage item,Context mContext)
+    public static final void setBannerGoto(SwitchImage item, Context mContext)
     {
+        System.out.println("item = " + item);
         if (item.type == 0)
         {
             SpecialSaleFragment specialSaleFragment = SpecialSaleFragment.newInstance("", item.typeValue);
-            ((MainActivity) mContext).navigationToFragment(specialSaleFragment);
+            ((BaseActivity) mContext).navigationToFragment(specialSaleFragment);
         } else if (item.type == 1)
         {
             if (item.title.equals("天天刮奖"))
@@ -367,13 +421,14 @@ public class ToolUtils
                 detailIntent.putExtra("from", "lottery");
                 detailIntent.putExtra("title", "天天刮奖");
                 mContext.startActivity(detailIntent);
-            }
-            else
+            } else
             {
                 Intent intent = new Intent();
                 intent.putExtra("url", item.typeValue);
                 intent.setClass(mContext, WebViewActivity.class);
                 mContext.startActivity(intent);
+//                WebViewFragment webViewFragment= WebViewFragment.newInstance(item.typeValue, false);
+//                ((MainActivity)mContext).navigationToFragment(webViewFragment);
             }
         } else if (item.type == 2)
         {
@@ -387,45 +442,51 @@ public class ToolUtils
             mContext.startActivity(detailIntent);
         } else if (item.type == 3)
         {
-            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0+"");
+            GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", 0 + "");
             Bundle bundle = new Bundle();
-            bundle.putString("index",item.typeValue);
+            bundle.putString("index", item.typeValue);
             bundle.putString("page", item.title);
             goodsDetailsFragment.setArguments(bundle);
-            ((MainActivity) mContext).navigationToFragment(goodsDetailsFragment);
-        } else if(item.type==4)
+            ((BaseActivity) mContext).navigationToFragment(goodsDetailsFragment);
+        } else if (item.type == 4)
         {
             Category category = new Category();
             category.setId(Integer.parseInt(item.typeValue));
             HomeArticleListFragment shopTodayHomeArticleListFragment = HomeArticleListFragment.newInstance("", category);
-            ((MainActivity) mContext).navigationToFragment(shopTodayHomeArticleListFragment);
-        }
-        else if(item.type==5)
+            ((BaseActivity) mContext).navigationToFragment(shopTodayHomeArticleListFragment);
+        } else if (item.type == 5)
         {
-            ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title,  item.typeValue, item.imageUrl);
-            ((MainActivity) mContext).navigationToFragmentWithAnim(shopTodaySpecialFragment);
-        }
-        else if(item.type==6)
+            ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(item.title, item.typeValue, item.imageUrl);
+            ((BaseActivity) mContext).navigationToFragmentWithAnim(shopTodaySpecialFragment);
+        } else if (item.type == 6)
         {
             HomeFeatrueFragment homeFeatrueFragment = HomeFeatrueFragment.newInstance(item.title, item.typeValue, item.imageUrl);
-            ((MainActivity) mContext).navigationToFragmentWithAnim(homeFeatrueFragment);
-        }
-        else if(item.type==7)
+            ((BaseActivity) mContext).navigationToFragmentWithAnim(homeFeatrueFragment);
+        } else if (item.type == 7)
         {
             HomeWeixinListFragment homeFeatrueFragment = HomeWeixinListFragment.newInstance(item.title, item.typeValue);
-            ((MainActivity) mContext).navigationToFragmentWithAnim(homeFeatrueFragment);
-        }
-        else if(item.type==8)
+            ((BaseActivity) mContext).navigationToFragmentWithAnim(homeFeatrueFragment);
+        } else if (item.type == 8)
         {
-            HomeBeautifulFragment goodsDetailsFragment = HomeBeautifulFragment.newInstance(item.title, 0+"");
-            ((MainActivity) mContext).navigationToFragment(goodsDetailsFragment);
-        }
-        else if(item.type==9)
+            HomeBeautifulFragment goodsDetailsFragment = HomeBeautifulFragment.newInstance(item.title, 0 + "");
+            ((BaseActivity) mContext).navigationToFragment(goodsDetailsFragment);
+        } else if (item.type == 9)
         {
             MagicDesignFragment magicDesignFragment = MagicDesignFragment.newInstance(item.title, item.typeValue);
-            ((MainActivity) mContext).navigationToFragmentWithAnim(magicDesignFragment);
-        }
-        else
+            ((BaseActivity) mContext).navigationToFragmentWithAnim(magicDesignFragment);
+        } else if (item.type == 10)
+        {
+            MagicClassicCaseDetailsFragment magicClassicCaseDetailsFragment = MagicClassicCaseDetailsFragment.newInstance(item.title, item.typeValue);
+            ((BaseActivity) mContext).navigationToFragmentWithAnim(magicClassicCaseDetailsFragment);
+        } else if (item.type == 11)
+        {
+            MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "");
+            ((BaseActivity) mContext).navigationToFragment(magicClassicCaseFragment);
+        } else if (item.type == 12)
+        {
+            MagicImageCaseFragment magicImageCaseFragment = MagicImageCaseFragment.newInstance("", "");
+            ((BaseActivity) mContext).navigationToFragment(magicImageCaseFragment);
+        } else
         {
 
         }

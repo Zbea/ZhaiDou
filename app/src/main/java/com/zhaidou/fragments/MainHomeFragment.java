@@ -3,6 +3,7 @@ package com.zhaidou.fragments;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -24,22 +26,31 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.easemob.chat.EMChatManager;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
-import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.adapter.ShopSpecialAdapter;
+import com.zhaidou.activities.LoginActivity;
+import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.base.BaseListAdapter;
+import com.zhaidou.base.CountManager;
+import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
-import com.zhaidou.model.ShopSpecialItem;
+import com.zhaidou.easeui.helpdesk.ui.ConversationListFragment;
+import com.zhaidou.model.Article;
 import com.zhaidou.model.SwitchImage;
+import com.zhaidou.utils.Api;
 import com.zhaidou.utils.NetworkUtils;
+import com.zhaidou.utils.PixelUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomBannerView;
 import com.zhaidou.view.ListViewForScrollView;
+import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -52,7 +63,7 @@ import java.util.WeakHashMap;
 
 public class MainHomeFragment extends BaseFragment implements
         AdapterView.OnItemClickListener, View.OnClickListener,
-        PullToRefreshBase.OnRefreshListener2<ScrollView>
+        PullToRefreshBase.OnRefreshListener2<ScrollView>,CountManager.onCommentChangeListener
 
 {
     private static final String URL = "targetUrl";
@@ -67,22 +78,22 @@ public class MainHomeFragment extends BaseFragment implements
 
     private static final int UPDATE_BANNER = 4;
 
-    private View mSpecialLayout;
     private ImageView mSearchView;
     private View view;
     private Dialog mDialog;
     private Context mContext;
 
-    private List<ShopSpecialItem> items = new ArrayList<ShopSpecialItem>();
-    private ShopSpecialAdapter adapterList;
+    private HorizontalScrollView horizontalScrollView;
+    private ArticleAdapter adapterList;
     private RequestQueue mRequestQueue;
     private List<SwitchImage> banners = new ArrayList<SwitchImage>();
     private List<SwitchImage> codes = new ArrayList<SwitchImage>();
-    private List<SwitchImage> specials = new ArrayList<SwitchImage>();
+    private List<SwitchImage> goods = new ArrayList<SwitchImage>();
+    private List<Article> articles = new ArrayList<Article>();
     private LinearLayout loadingView, nullNetView, nullView;
     private TextView reloadBtn, reloadNetBtn;
     private CustomBannerView customBannerView;
-    private LinearLayout linearLayout, codeView, moduleView;
+    private LinearLayout linearLayout, codeView,goodsView;
     private PullToRefreshScrollView mScrollView;
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private long formerTime;
@@ -98,7 +109,7 @@ public class MainHomeFragment extends BaseFragment implements
                 if (mDialog != null)
                     mDialog.dismiss();
                 loadingView.setVisibility(View.GONE);
-                if (pageCount > items.size())
+                if (pageCount > articles.size())
                 {
                     mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
                 } else
@@ -109,11 +120,14 @@ public class MainHomeFragment extends BaseFragment implements
             } else if (msg.what == UPDATE_BANNER)
             {
                 setAdView();
+                setGoodsView();
                 setCodeView();
-                setModuleView();
+
             }
         }
     };
+    private TextView unreadMsg;
+
 
     /**
      * 广告轮播设置
@@ -123,7 +137,7 @@ public class MainHomeFragment extends BaseFragment implements
         if (customBannerView == null)
         {
             customBannerView = new CustomBannerView(mContext, banners, true);
-            customBannerView.setLayoutParams(screenWidth, screenWidth * 300 / 750);
+            customBannerView.setLayoutParams(screenWidth, screenWidth * 400 / 750);
             customBannerView.setOnBannerClickListener(new CustomBannerView.OnBannerClickListener()
             {
                 @Override
@@ -131,12 +145,48 @@ public class MainHomeFragment extends BaseFragment implements
                 {
                     SwitchImage item = banners.get(postion);
                     ToolUtils.setBannerGoto(item, mContext);
+                    FetchClickStatisticalData(item.title,item.typeValue,item.type,postion);
                 }
             });
             linearLayout.addView(customBannerView);
         } else
         {
             customBannerView.setImages(banners);
+        }
+    }
+
+    /**
+     * 添加首页三个按钮
+     */
+    private void setGoodsView()
+    {
+        horizontalScrollView.setVisibility(goods.size()>0?View.VISIBLE:View.GONE);
+        goodsView.removeAllViews();
+        for (int i = 0; i < goods.size(); i++)
+        {
+            final int pos = i;
+           ImageView imgView=new ImageView(mContext);
+            imgView.setScaleType(ImageView.ScaleType.FIT_XY);
+            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams((screenWidth- PixelUtil.dp2px(40,mContext))/3,(screenWidth- PixelUtil.dp2px(40,mContext))/3);
+            if (i>0)
+            {
+                param.leftMargin=PixelUtil.dp2px(10,mContext);
+            }
+            imgView.setLayoutParams(param);
+            ToolUtils.setImageCacheUrl(goods.get(i).imageUrl, imgView, R.drawable.icon_loading_defalut);
+            imgView.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    if (isTimeInterval())
+                    {
+                        SwitchImage item = goods.get(pos);
+                        ToolUtils.setBannerGoto(item, mContext);
+                    }
+                }
+            });
+            goodsView.addView(imgView);
         }
     }
 
@@ -181,7 +231,7 @@ public class MainHomeFragment extends BaseFragment implements
     {
         long currentTime=System.currentTimeMillis();
 
-        if ((currentTime- formerTime)>1500)
+        if ((currentTime- formerTime)>1000)
         {
             formerTime =currentTime;
             return true;
@@ -193,94 +243,7 @@ public class MainHomeFragment extends BaseFragment implements
         }
     }
 
-    private void setModuleView()
-    {
-        moduleView.removeAllViews();
-        if (specials.size() <= 0)
-        {
-            return;
-        }
-        int num = specials.size() % 5 > 0 ? specials.size() / 5 + 1 : specials.size()/ 5;
-        for (int i = 0; i < num; i++)
-        {
-            final int pos = i * 5;
-            final View mView = LayoutInflater.from(mContext).inflate(R.layout.item_home_module, null);
-            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
-                    screenWidth, screenWidth * (1260 + 32) / 1194);
-            mView.setLayoutParams(param);
-            ImageView imageIv1 = (ImageView) mView.findViewById(R.id.moduleIv1);
-            ToolUtils.setImageCacheUrl(specials.get(pos).imageUrl, imageIv1, R.drawable.icon_loading_home_topic_big);
-            imageIv1.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    if (isTimeInterval())
-                    {
-                        SwitchImage item = specials.get(pos);
-                        ToolUtils.setBannerGoto(item, mContext);
-                    }
-                }
-            });
-            ImageView imageIv2 = (ImageView) mView.findViewById(R.id.moduleIv2);
-            ToolUtils.setImageCacheUrl(specials.get(pos + 1).imageUrl, imageIv2, R.drawable.icon_loading_home_topic_small);
-            imageIv2.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    if (isTimeInterval())
-                    {
-                        SwitchImage item = specials.get(pos + 1);
-                        ToolUtils.setBannerGoto(item, mContext);
-                    }
-                }
-            });
-            ImageView imageIv3 = (ImageView) mView.findViewById(R.id.moduleIv3);
-            ToolUtils.setImageCacheUrl(specials.get(pos + 2).imageUrl, imageIv3, R.drawable.icon_loading_home_topic_small);
-            imageIv3.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    if (isTimeInterval())
-                    {
-                        SwitchImage item = specials.get(pos + 2);
-                        ToolUtils.setBannerGoto(item, mContext);
-                    }
-                }
-            });
-            ImageView imageIv4 = (ImageView) mView.findViewById(R.id.moduleIv4);
-            ToolUtils.setImageCacheUrl(specials.get(pos + 3).imageUrl, imageIv4, R.drawable.icon_loading_home_topic_small);
-            imageIv4.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    if (isTimeInterval())
-                    {
-                        SwitchImage item = specials.get(pos + 3);
-                        ToolUtils.setBannerGoto(item, mContext);
-                    }
-                }
-            });
-            ImageView imageIv5 = (ImageView) mView.findViewById(R.id.moduleIv5);
-            ToolUtils.setImageCacheUrl(specials.get(pos + 4).imageUrl, imageIv5, R.drawable.icon_loading_home_topic_small);
-            imageIv5.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    if (isTimeInterval())
-                    {
-                        SwitchImage item = specials.get(pos + 4);
-                        ToolUtils.setBannerGoto(item, mContext);
-                    }
-                }
-            });
-            moduleView.addView(mView);
-        }
-    }
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -341,32 +304,40 @@ public class MainHomeFragment extends BaseFragment implements
 
         listView = (ListViewForScrollView) view.findViewById(R.id.homeItemList);
         listView.setOnItemClickListener(this);
-        adapterList = new ShopSpecialAdapter(mContext, items, screenWidth);
+        adapterList = new ArticleAdapter(mContext, articles);
         listView.setAdapter(adapterList);
 
         mScrollView = (PullToRefreshScrollView) view.findViewById(R.id.sv_home_scrollview);
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
         mScrollView.setOnRefreshListener(this);
 
-        codeView = (LinearLayout) view.findViewById(R.id.homeCodeView);
-        moduleView = (LinearLayout) view.findViewById(R.id.moduleView);
+        horizontalScrollView=(HorizontalScrollView)view.findViewById(R.id.homeGoodsLine);
+        goodsView= (LinearLayout) view.findViewById(R.id.homeGoodsView);
 
-        mSearchView = (ImageView) view.findViewById(R.id.iv_search);
+        codeView = (LinearLayout) view.findViewById(R.id.homeCodeView);
+
+        mSearchView = (ImageView) view.findViewById(R.id.iv_message);
         mSearchView.setOnClickListener(this);
-        mSpecialLayout = view.findViewById(R.id.specialLayout);
-        mSpecialLayout.setVisibility(View.GONE);
 
         currentPage = 1;
 
         mRequestQueue = Volley.newRequestQueue(getActivity());
 
         linearLayout = (LinearLayout) view.findViewById(R.id.bannerView);
-        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 300 / 750));
+        unreadMsg = (TextView) view.findViewById(R.id.unreadMsg);
         initDate();
+        Integer userId= (Integer) SharedPreferencesUtil.getData(mContext,"userId",-1);
+        if (userId!=-1)
+            Api.getUnReadComment(userId,null,null);
+        CountManager.getInstance().setOnCommentChangeListener(this);
     }
 
     private void initDate()
     {
+        goods.clear();
+        banners.clear();
+        codes.clear();
+        articles.clear();
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
             FetchSpecialData();
@@ -401,6 +372,15 @@ public class MainHomeFragment extends BaseFragment implements
         mListener = null;
     }
 
+    @Override
+    public void onChange() {
+        Integer userId= (Integer) SharedPreferencesUtil.getData(mContext,"userId",-1);
+        int unreadMsgsCount = EMChatManager.getInstance().getUnreadMsgsCount();
+        Integer UnReadComment= (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(),"UnReadComment",0);
+        unreadMsg.setVisibility((unreadMsgsCount + UnReadComment) > 0&&userId!=-1? View.VISIBLE : View.GONE);
+        unreadMsg.setText((unreadMsgsCount+UnReadComment) > 99 ? "99+" : (unreadMsgsCount+UnReadComment) + "");
+    }
+
 
     public interface OnFragmentInteractionListener
     {
@@ -412,10 +392,15 @@ public class MainHomeFragment extends BaseFragment implements
     {
         switch (view.getId())
         {
-            case R.id.iv_search:
-//                SearchFragment searchFragment = SearchFragment.newInstance("", 1);
-//                ((MainActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
-                ((MainActivity) getActivity()).gotoCategory();
+            case R.id.iv_message:
+                Integer userId= (Integer) SharedPreferencesUtil.getData(mContext,"userId",-1);
+                if (userId==-1){
+                    Intent intent =new Intent(mContext, LoginActivity.class);
+                    startActivity(intent);
+                    return;
+                }
+                ConversationListFragment conversationListFragment=new ConversationListFragment();
+                ((BaseActivity) mContext).navigationToFragment(conversationListFragment);
                 break;
             case R.id.nullReload:
                 mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
@@ -433,9 +418,8 @@ public class MainHomeFragment extends BaseFragment implements
      */
     private void FetchData(final int page)
     {
-        final String url = ZhaiDou.HomeShopListUrl + page + "&typeEnum=1";
+        final String url = ZhaiDou.HomeArticleGoodsUrl + page;
         ToolUtils.setLog(url);
-
         JsonObjectRequest jr = new JsonObjectRequest(url ,new Response.Listener<JSONObject>()
         {
             @Override
@@ -470,28 +454,21 @@ public class MainHomeFragment extends BaseFragment implements
                 {
                     pageCount = jsonObject.optInt("totalCount");
                     pageSize = jsonObject.optInt("pageSize");
-                    JSONArray jsonArray = jsonObject.optJSONArray("themeList");
+                    JSONArray jsonArray = jsonObject.optJSONArray("freeClassicsCasePOs");
 
                     if (jsonArray != null)
                         for (int i = 0; i < jsonArray.length(); i++)
                         {
                             JSONObject obj = jsonArray.optJSONObject(i);
-                            String id = obj.optString("activityCode");
-                            String title = obj.optString("activityName");
-                            String sales = obj.optString("discountLabel");
-                            long startTime = obj.optLong("startTime");
-                            long endTime = obj.optLong("endTime");
-                            int overTime = Integer.parseInt((String.valueOf((endTime - System.currentTimeMillis()) / (24 * 60 * 60 * 1000))));
-                            if ((endTime - System.currentTimeMillis()) % (24 * 60 * 60 * 1000) > 0)
-                            {
-                                overTime = overTime + 1;
-                            }
-
+                            int id = obj.optInt("id");
+                            String title = obj.optString("caseName");
+                            String info = obj.optString("mainDesc");
                             String imageUrl = obj.optString("mainPic");
-                            int isNew = obj.optInt("newFlag");
-                            ShopSpecialItem shopSpecialItem = new ShopSpecialItem(id, title, sales, startTime, endTime, overTime, imageUrl, isNew);
+                            int num = obj.optInt("commentCount");
+                            Article article=new Article(id,title,imageUrl,
+                                    "",num,info);
 
-                            items.add(shopSpecialItem);
+                            articles.add(article);
                         }
                     Message message = new Message();
                     message.what = 1001;
@@ -508,7 +485,7 @@ public class MainHomeFragment extends BaseFragment implements
                     mDialog.dismiss();
                 mScrollView.onRefreshComplete();
                 mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
-                if (items.size() != 0)
+                if (articles.size() != 0)
                 {
                     currentPage--;
                     ToolUtils.setToast(mContext, R.string.loading_fail_txt);
@@ -536,7 +513,7 @@ public class MainHomeFragment extends BaseFragment implements
         final Map<String, String> headers = new HashMap<String, String>();
         headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
 
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeBannerUrl + "01,02,03", new Response.Listener<JSONObject>()
+        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeBannerUrl + "03,05,06", new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -571,18 +548,17 @@ public class MainHomeFragment extends BaseFragment implements
                                     switchImage.imageUrl = imageUrl;
                                     switchImage.title = title;
                                     switchImage.template_type = j == 0 ? 0 : 1;
-                                    if (flags.equals("01"))
+                                    if (flags.equals("05"))
                                     {
                                         banners.add(switchImage);
                                     }
-                                    if (flags.equals("02"))
-                                    {
-                                        specials.add(switchImage);
-                                    }
                                     if (flags.equals("03"))
                                     {
-                                        ToolUtils.setLog("switchImage:" + switchImage.type);
                                         codes.add(switchImage);
+                                    }
+                                    if (flags.equals("06"))
+                                    {
+                                        goods.add(switchImage);
                                     }
                                 }
                         }
@@ -607,16 +583,68 @@ public class MainHomeFragment extends BaseFragment implements
         mRequestQueue.add(request);
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
+    /**
+     * 点击统计数据
+     */
+    private void FetchClickStatisticalData(String name,String url,int bannerType,int bannerIndex)
     {
-        ShopTodaySpecialFragment shopTodaySpecialFragment = ShopTodaySpecialFragment.newInstance(items.get(position).title, items.get(position).goodsId, items.get(position).imageUrl);
-        ((MainActivity) getActivity()).navigationToFragmentWithAnim(shopTodaySpecialFragment);
-        if ("1".equalsIgnoreCase(items.get(position).isNew + ""))
+        int userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
+        String surl;
+        if (checkLogin())
         {
-            SharedPreferencesUtil.saveData(mContext, "homeNews_" + items.get(position).goodsId, false);
-            view.findViewById(R.id.newsView).setVisibility(View.GONE);
+            surl=ZhaiDou.HomeClickStatisticalUrl+name+"&url="+url+"&userId="+userId+"&sourceCode=3&bannerType="+bannerType+"&bannerIndex="+bannerIndex;
         }
+        else
+        {
+            surl=ZhaiDou.HomeClickStatisticalUrl+name+"&url="+url+"&sourceCode=3&bannerType="+bannerType+"&bannerIndex="+bannerIndex;
+        }
+
+        JsonObjectRequest request = new JsonObjectRequest(surl, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+                if (response != null)
+                {
+                    ToolUtils.setLog(response.toString());
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return headers;
+            }
+        };
+        mRequestQueue.add(request);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, final int position, long l)
+    {
+        HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment=HomeArticleGoodsDetailsFragment.newInstance("",""+articles.get(position).getId());
+        ((BaseActivity)mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
+        homeArticleGoodsDetailsFragment.setOnCommentListener(new HomeArticleGoodsDetailsFragment.OnCommentListener()
+        {
+            @Override
+            public void setComment(int num)
+            {
+                if (num!=0)
+                {
+                    articles.get(position).setReviews(num);
+                    adapterList.notifyDataSetChanged();
+                }
+            }
+        });
     }
 
     @Override
@@ -625,10 +653,10 @@ public class MainHomeFragment extends BaseFragment implements
         String label = DateUtils.formatDateTime(getActivity(), System.currentTimeMillis(),
                 DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
         refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
-        items.clear();
+        articles.clear();
         banners.clear();
         codes.clear();
-        specials.clear();
+        goods.clear();
         FetchData(currentPage = 1);
         FetchSpecialData();
     }
@@ -637,6 +665,54 @@ public class MainHomeFragment extends BaseFragment implements
     public void onPullUpToRefresh(PullToRefreshBase<ScrollView> refreshView)
     {
         FetchData(++currentPage);
+    }
+
+
+
+    public class ArticleAdapter extends BaseListAdapter<Article>
+    {
+        Context context;
+
+        public ArticleAdapter(Context context, List<Article> list)
+        {
+            super(context, list);
+            this.context = context;
+        }
+
+        @Override
+        public View bindView(int position, View convertView, ViewGroup parent)
+        {
+            convertView = mHashMap.get(position);
+            if (convertView == null)
+                convertView = mInflater.inflate(R.layout.item_home_article_list, null);
+            ImageView cover = ViewHolder.get(convertView, R.id.cover);
+            cover.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 400/ 750));
+            TextView title = ViewHolder.get(convertView, R.id.title);
+            TypeFaceTextView info = ViewHolder.get(convertView, R.id.info);
+            TypeFaceTextView comments = ViewHolder.get(convertView, R.id.comments);
+
+            Article article = getList().get(position);
+            ToolUtils.setImageCacheUrl(article.getImg_url(), cover,R.drawable.icon_loading_item);
+            title.setText(article.getTitle());
+            info.setText(article.getInfo());
+            comments.setText("评论:"+article.getReviews());
+
+            mHashMap.put(position, convertView);
+            return convertView;
+        }
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            if (articles == null | articles.size() < 1) {
+                initDate();
+            }
+            Integer userId= (Integer) SharedPreferencesUtil.getData(mContext,"userId",-1);
+            if (userId!=-1)
+                Api.getUnReadComment(userId, null, null);
+        }
     }
 
 
