@@ -136,7 +136,7 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
         mParams.put("pageSize", "15");
         mParams.put("status", mStatus);
 
-        ZhaiDouRequest request = new ZhaiDouRequest(getActivity(), Request.Method.POST, ZhaiDou.COUPONS_MINE_URL, mParams, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.COUPONS_MINE_URL, mParams, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 int status = jsonObject.optInt("status");
@@ -168,7 +168,7 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
                 mDialogUtils.dismiss();
             }
         });
-        ((ZDApplication) getActivity().getApplicationContext()).mRequestQueue.add(request);
+        ZDApplication.newRequestQueue().add(request);
     }
 
     @Override

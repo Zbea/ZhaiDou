@@ -23,7 +23,6 @@ public class ImageBgFragment extends BaseFragment {
     public static ImageBgFragment newInstance(String title) {
         ImageBgFragment fragment = new ImageBgFragment();
         Bundle args = new Bundle();
-
         args.putString(TITLE, title);
         fragment.setArguments(args);
         return fragment;

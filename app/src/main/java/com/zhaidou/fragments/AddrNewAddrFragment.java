@@ -26,24 +26,17 @@ import com.zhaidou.model.City;
 import com.zhaidou.model.Province;
 import com.zhaidou.utils.Api;
 import com.zhaidou.utils.DialogUtils;
+import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomEditText;
 import com.zhaidou.view.WheelViewContainer;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -220,10 +213,21 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
         @Override
         protected String doInBackground(Void... voids) {
             String s = null;
-            try {
-                s = executeHttpPost();
-            } catch (Exception e) {
+            // 创建名/值组列表
+            List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 
+            parameters.add(new BasicNameValuePair("name", et_name.getText().toString().trim()));
+            parameters.add(new BasicNameValuePair("phone", et_mobile.getText().toString().trim()));
+            parameters.add(new BasicNameValuePair("address", et_address_detail.getText().toString().trim()));
+            parameters.add(new BasicNameValuePair("provider_id", mProviderId+""));
+
+
+            if (mStatus==CREATE_NEW_ADDRESS){
+                s= NetService.GETHttpPostService(ZhaiDou.AddressNewUrl,null,parameters);
+            }else if (mStatus==UPDATE_ADDRESS_INFO){
+                parameters.add(new BasicNameValuePair("id", mId+""));
+                // 实例化HTTP方法
+                s= NetService.GETHttpPutService(ZhaiDou.AddressEditUrl,null,parameters);
             }
             return s;
         }
@@ -255,70 +259,6 @@ public class AddrNewAddrFragment extends BaseFragment implements View.OnClickLis
                 }
             } catch (Exception e) {
 
-            }
-        }
-    }
-
-    public String executeHttpPost() throws Exception {
-        BufferedReader in = null;
-        // 执行请求
-        HttpResponse response=null;
-        try {
-            // 定义HttpClient
-            HttpClient client = new DefaultHttpClient();
-
-            // 创建名/值组列表
-            List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-
-            parameters.add(new BasicNameValuePair("name", et_name.getText().toString().trim()));
-            parameters.add(new BasicNameValuePair("phone", et_mobile.getText().toString().trim()));
-            parameters.add(new BasicNameValuePair("address", et_address_detail.getText().toString().trim()));
-            parameters.add(new BasicNameValuePair("provider_id", mProviderId+""));
-
-            if (mStatus==CREATE_NEW_ADDRESS){
-                // 实例化HTTP方法
-                HttpPost request = new HttpPost(ZhaiDou.AddressNewUrl);
-                request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                request.addHeader("SECAuthorization",token);
-
-                // 创建UrlEncodedFormEntity对象
-                UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
-                        parameters, HTTP.UTF_8);//这里要设置，不然回来乱码
-                request.setEntity(formEntiry);
-                // 执行请求
-                response = client.execute(request);
-            }else if (mStatus==UPDATE_ADDRESS_INFO){
-                parameters.add(new BasicNameValuePair("id", mId+""));
-                // 实例化HTTP方法
-                HttpPut request = new HttpPut(ZhaiDou.AddressEditUrl);
-                request.addHeader("SECAuthorization",token);
-                // 创建UrlEncodedFormEntity对象
-                UrlEncodedFormEntity formEntiry = new UrlEncodedFormEntity(
-                        parameters, HTTP.UTF_8);//这里要设置，不然回来乱码
-                request.setEntity(formEntiry);
-                // 执行请求
-                response = client.execute(request);
-            }
-
-            in = new BufferedReader(new InputStreamReader(response.getEntity()
-                    .getContent()));
-            StringBuffer sb = new StringBuffer("");
-            String line = "";
-            String NL = System.getProperty("line.separator");
-            while ((line = in.readLine()) != null) {
-                sb.append(line + NL);
-            }
-            in.close();
-            String result = sb.toString();
-            return result;
-
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
             }
         }
     }

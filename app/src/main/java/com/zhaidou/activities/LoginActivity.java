@@ -400,6 +400,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("ZhaidouVesion", getApplicationContext().getResources().getString(R.string.app_versionName));
                 headers.put("SECAuthorization", token);
+                headers.put("zd-client", "ANDROID");
                 return headers;
             }
         };

@@ -1,4 +1,5 @@
 package com.zhaidou.utils;
+import android.content.Context;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -42,6 +43,43 @@ import java.util.UUID;
  * FIXME
  */
 public class Api {
+
+
+    /**
+     * banner点击统计
+     * @param mContext
+     * @param name
+     * @param url
+     * @param bannerType
+     * @param bannerIndex
+     * @param successListener
+     * @param errorListener
+     */
+    public static void getBannerClick(Context mContext,String name,String url,int bannerType,int bannerIndex,final SuccessListener successListener, final ErrorListener errorListener) {
+        int userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
+        String token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
+        String surl;
+        if (!TextUtils.isEmpty(token))
+        {
+            surl=ZhaiDou.HomeClickStatisticalUrl+name+"&url="+url+"&userId="+userId+"&sourceCode=3&bannerType="+bannerType+"&bannerIndex="+bannerIndex;
+        }
+        else
+        {
+            surl=ZhaiDou.HomeClickStatisticalUrl+name+"&url="+url+"&sourceCode=3&bannerType="+bannerType+"&bannerIndex="+bannerIndex;
+        }
+        ZhaiDouRequest request = new ZhaiDouRequest(surl, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+                if (response != null)
+                {
+                    ToolUtils.setLog(response.toString());
+                }
+            }
+        }, null);
+        ZDApplication.newRequestQueue().add(request);
+    }
 
     /**
      * 获取省市区
@@ -114,6 +152,12 @@ public class Api {
         ZDApplication.mRequestQueue.add(request);
     }
 
+    /**
+     * 查看购物车数量
+     * @param userId
+     * @param successListener
+     * @param errorListener
+     */
     public static void getCartCount(int userId,final SuccessListener successListener, final ErrorListener errorListener) {
         ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.GET, ZhaiDou.CartGoodsCountUrl + userId, new Response.Listener<JSONObject>()
         {
@@ -130,6 +174,43 @@ public class Api {
             }
         });
         ZDApplication.mRequestQueue.add(request);
+    }
+
+
+    public static void getUserInfo(int userId,final SuccessListener successListener, final ErrorListener errorListener) {
+        ZhaiDouRequest request = new ZhaiDouRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL + "?id=" + userId, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (successListener != null)
+                    successListener.onSuccess(jsonObject);
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                if (errorListener != null)
+                    errorListener.onError(volleyError);
+            }
+        });
+        ZDApplication.newRequestQueue().add(request);
+    }
+
+    public static void getUserDetail(int userId,final SuccessListener successListener, final ErrorListener errorListener) {
+        ZhaiDouRequest request = new ZhaiDouRequest(ZhaiDou.USER_DETAIL_PROFILE_URL + "?id=" + userId, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (successListener != null)
+                    successListener.onSuccess(jsonObject);
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                if (errorListener != null)
+                    errorListener.onError(volleyError);
+            }
+        });
+        ZDApplication.newRequestQueue().add(request);
     }
 
     public static String comment(Map<String, Object> params, SuccessListener successListener, ErrorListener errorListener) {
@@ -170,6 +251,7 @@ public class Api {
 
             HttpPost request = new HttpPost(ZhaiDou.CommentAddUrl);
             request.addHeader("ZhaidouVesion", ZDApplication.getInstance().getResources().getString(R.string.app_versionName));
+            request.addHeader("zd-client", "ANDROID");
             request.addHeader("Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
             request.addHeader("Accept", "application/json");
             request.setEntity(multipartEntity);

@@ -20,11 +20,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
@@ -32,6 +30,7 @@ import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
@@ -43,9 +42,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
@@ -285,7 +282,7 @@ public class MagicImageDetailsFragment extends BaseFragment
 
     private void FetchData()
     {
-        JsonObjectRequest jr = new JsonObjectRequest(ZhaiDou.MagicCImageDetailsUrl + mId, new Response.Listener<JSONObject>()
+        ZhaiDouRequest jr = new ZhaiDouRequest(ZhaiDou.MagicCImageDetailsUrl + mId, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -332,16 +329,7 @@ public class MagicImageDetailsFragment extends BaseFragment
                 }
                 ToolUtils.setToast(mContext, R.string.loading_fail_txt);
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(jr);
     }
 

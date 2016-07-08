@@ -44,6 +44,7 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.Comment;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NetworkUtils;
@@ -509,7 +510,7 @@ public class SoftDetailFragment extends BaseFragment {
 
     public void FetchData() {
         String url = ZhaiDou.HomeSofeListDetailUrl + mString;
-        JsonObjectRequest request = new JsonObjectRequest(url,
+        ZhaiDouRequest request = new ZhaiDouRequest(url,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -608,14 +609,7 @@ public class SoftDetailFragment extends BaseFragment {
                 }
             }
         }
-        ) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        );
         ZDApplication.mRequestQueue.add(request);
     }
 

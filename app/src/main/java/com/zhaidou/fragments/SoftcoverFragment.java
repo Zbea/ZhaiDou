@@ -15,10 +15,8 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshListView;
 import com.umeng.analytics.MobclickAgent;
@@ -31,6 +29,7 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -40,9 +39,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.WeakHashMap;
 
 public class SoftcoverFragment extends BaseFragment {
@@ -188,7 +185,7 @@ public class SoftcoverFragment extends BaseFragment {
         String userId = SharedPreferencesUtil.getData(mContext, "userId", -1) + "";
         final String url = ZhaiDou.HomeSofeListUrl + "&userId=" + userId + "&pageNo=" + currentPage;
         ToolUtils.setLog(url);
-        JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest jr = new ZhaiDouRequest(url, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 if (mDialog != null)
@@ -239,15 +236,8 @@ public class SoftcoverFragment extends BaseFragment {
                     ToolUtils.setToast(mContext, R.string.loading_fail_txt);
                 }
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        ZDApplication.mRequestQueue.add(jr);
+        });
+        ZDApplication.newRequestQueue().add(jr);
     }
 
 

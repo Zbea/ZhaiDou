@@ -15,38 +15,63 @@
         android:background="@drawable/icon_magic_bg"
         android:gravity="center">
 
-        <com.zhaidou.view.TypeFaceTextView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
             android:textSize="28sp"
             android:lineSpacingExtra="3dp"
             android:lineSpacingMultiplier="1.6"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:textScaleX="1.0"
             android:text="家 居 软 装 魔 法"/>
 
-        <View
-            android:layout_width="40dp"
-            android:layout_height="1dp"
-            android:background="@color/white"
-            android:layout_margin="15dp"
-            ></View>
 
-        <com.zhaidou.view.TypeFaceTextView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            android:textSize="11sp"
+            android:textSize="12sp"
+            android:layout_marginTop="12dp"
             android:text="HOME FURNISHING"/>
 
-        <com.zhaidou.view.TypeFaceTextView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            android:textSize="11sp"
+            android:textSize="12sp"
             android:layout_marginTop="2dp"
             android:text="SOFT OUTFIT"/>
+
+        <LinearLayout
+            android:id="@+id/magicConnectServer"
+            android:layout_width="wrap_content"
+            android:layout_height="26dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="15dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:background="@drawable/btn_semi_circle_white_bg">
+
+            <com.zhaidou.view.TypeFaceTextView
+                android:layout_width="wrap_content"
+                android:layout_height= "wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/green_color"
+                android:text="联系客服"
+                android:layout_marginLeft="10dp"
+                ></com.zhaidou.view.TypeFaceTextView>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:src="@drawable/icon_arrow_right_green"/>
+
+            </LinearLayout>
+
 
     </LinearLayout>
 

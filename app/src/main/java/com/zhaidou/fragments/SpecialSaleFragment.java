@@ -18,16 +18,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.base.BaseActivity;
@@ -39,6 +37,7 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Product;
 import com.zhaidou.model.SwitchImage;
 import com.zhaidou.model.User;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.Api;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -252,7 +251,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             reloadNetBtn = (TextView) rootView.findViewById(R.id.netReload);
             reloadNetBtn.setOnClickListener(onClickListener);
 
-            requestQueue = Volley.newRequestQueue(getActivity());
+            requestQueue = ZDApplication.newRequestQueue();
             myCartBtn = (ImageView) rootView.findViewById(R.id.myCartBtn);
             myCartBtn.setOnClickListener(this);
             cartTipsTv = (TextView) rootView.findViewById(R.id.myCartTipsTv);
@@ -391,7 +390,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     public void FetchData()
     {
         String url=ZhaiDou.HomeGoodsListUrl+mParam2+"&pageNo="+ page +"&typeEnum="+2;
-        JsonObjectRequest request = new JsonObjectRequest(url,
+        ZhaiDouRequest request = new ZhaiDouRequest(url,
                 new Response.Listener<JSONObject>()
                 {
                     @Override
@@ -474,17 +473,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     nullNetView.setVisibility(View.GONE);
                 }
             }
-        }
-        )
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         requestQueue.add(request);
     }
 
@@ -496,7 +485,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         String url = ZhaiDou.HomeBannerUrl + "04";
         ToolUtils.setLog(url);
         banners = new ArrayList<SwitchImage>();
-        JsonObjectRequest bannerRequest = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest bannerRequest = new ZhaiDouRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -545,16 +534,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             public void onErrorResponse(VolleyError volleyError)
             {
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         requestQueue.add(bannerRequest);
     }
 

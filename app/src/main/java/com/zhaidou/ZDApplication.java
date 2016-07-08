@@ -70,6 +70,11 @@ public class ZDApplication extends EaseApplication {
             EaseUtils.login(user);
     }
 
+    public static RequestQueue newRequestQueue()
+    {
+        return mRequestQueue;
+    }
+
     /**
      * universal_image_loader基本配置
      */

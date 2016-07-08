@@ -289,7 +289,7 @@ public class GoodsArticleListFragment extends BaseFragment
                 ToolUtils.setToast(mContext, R.string.loading_fail_txt);
             }
         });
-        ZDApplication.mRequestQueue.add(request);
+        ZDApplication.newRequestQueue().add(request);
     }
 
     @Override

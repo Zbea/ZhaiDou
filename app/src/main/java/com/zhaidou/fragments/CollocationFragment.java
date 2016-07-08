@@ -19,22 +19,21 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshGridView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Collocation;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
@@ -148,7 +147,7 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
         mGridView=(PullToRefreshGridView)view.findViewById(R.id.gv_collocation);
         mGridView.setMode(PullToRefreshBase.Mode.BOTH);
         mGridView.setOnRefreshListener(this);
-        mRequestQueue = Volley.newRequestQueue(getActivity());
+        mRequestQueue = ZDApplication.newRequestQueue();
         mAdapter=new CollocationAdapter(getActivity(),collocations);
         mSharedPreferences=getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         mGridView.setAdapter(mAdapter);
@@ -170,7 +169,7 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
     public void FetchCollocationData(int page){
         mDialog= CustomLoadingDialog.setLoadingDialog(mActivity,"loading");
         int userId=mSharedPreferences.getInt("userId", -1);
-        JsonObjectRequest request =new JsonObjectRequest(ZhaiDou.USER_COLLOCATION_ITEM_URL+userId+"/bean_collocations?page="+page
+        ZhaiDouRequest request =new ZhaiDouRequest(mContext,ZhaiDou.USER_COLLOCATION_ITEM_URL+userId+"/bean_collocations?page="+page
             ,new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -215,14 +214,7 @@ public class CollocationFragment extends BaseFragment implements PullToRefreshBa
                 }
                 nullLine.setVisibility(View.VISIBLE);
             }
-        }){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers=new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 

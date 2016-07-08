@@ -14,11 +14,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
@@ -26,14 +24,14 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.model.Category;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.PixelUtil;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 首页筛选
@@ -126,7 +124,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
         mAllCategory=(TextView)view.findViewById(R.id.tv_category_all);
         mAllCategory.setPressed(true);
         mRelativeLayout.setOnClickListener(this);
-        mRequestQueue = ZDApplication.mRequestQueue;
+        mRequestQueue = ZDApplication.newRequestQueue();
 
         refreshBtn= (ImageView)view.findViewById(R.id.categoryRefresh);
         refreshBtn.setOnClickListener(this);
@@ -162,7 +160,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
     }
 
     private void FetchCategoryData(){
-        JsonObjectRequest jr = new JsonObjectRequest(ZhaiDou.INDEX_CATEGORY_FILTER,new Response.Listener<JSONObject>() {
+        ZhaiDouRequest jr = new ZhaiDouRequest(ZhaiDou.INDEX_CATEGORY_FILTER,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 mCategoryList.clear();
@@ -182,14 +180,7 @@ public class HomeCategoryFragment extends BaseFragment implements  View.OnClickL
             public void onErrorResponse(VolleyError error) {
                 mHandler.sendEmptyMessage(UPDATE_EMPTY_LIST);
             }
-        }){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers=new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(jr);
     }
 

@@ -17,16 +17,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshGridView;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
@@ -34,6 +32,7 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Product;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
@@ -176,7 +175,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                 ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
             }
         });
-        mRequestQueue = Volley.newRequestQueue(mContext);
+        mRequestQueue = ZDApplication.newRequestQueue();
         if (mFlag == 1)
         {
             FetchSpecialData(mParam1, sort, currentpage = 1);
@@ -276,7 +275,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
             e.printStackTrace();
         }
         ToolUtils.setLog(url);
-        JsonObjectRequest newMissRequest = new JsonObjectRequest(Request.Method.GET, url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest newMissRequest = new ZhaiDouRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject json)
@@ -364,18 +363,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                     currentpage = currentpage - 1;
                 }
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-                return headers;
-            }
-        };
-        if (mRequestQueue == null) mRequestQueue = Volley.newRequestQueue(mContext);
+        });
         mRequestQueue.add(newMissRequest);
     }
 
@@ -420,7 +408,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         }
 
         ToolUtils.setLog(url);
-        JsonObjectRequest newMissRequest = new JsonObjectRequest(Request.Method.GET, url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest newMissRequest = new ZhaiDouRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject json)
@@ -508,18 +496,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                     currentpage = currentpage - 1;
                 }
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-                return headers;
-            }
-        };
-        if (mRequestQueue == null) mRequestQueue = Volley.newRequestQueue(mContext);
+        });
         mRequestQueue.add(newMissRequest);
     }
 
@@ -551,9 +528,9 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         {
             params.put("price", "desc");
         }
-        JsonObjectRequest newMissRequest = new JsonObjectRequest(
+        ZhaiDouRequest newMissRequest = new ZhaiDouRequest(
                 Request.Method.POST, ZhaiDou.SEARCH_PRODUCT_URL,
-                new JSONObject(params), new Response.Listener<JSONObject>()
+                params, new Response.Listener<JSONObject>()
         {
 
             @Override
@@ -622,25 +599,14 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
 
 
             }
-        }
-        )
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        if (mRequestQueue == null) mRequestQueue = Volley.newRequestQueue(mContext);
+        });
         mRequestQueue.add(newMissRequest);
     }
 
     public void FetchCategoryData(String id, int sort, int page)
     {
         String url = ZhaiDou.ARTICLE_ITEM_WITH_CATEGORY + id + "&page=" + page;
-        JsonObjectRequest fetchCategoryTask = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest fetchCategoryTask = new ZhaiDouRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -684,16 +650,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                     nullLine.setVisibility(View.VISIBLE);
                 }
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(fetchCategoryTask);
     }
 

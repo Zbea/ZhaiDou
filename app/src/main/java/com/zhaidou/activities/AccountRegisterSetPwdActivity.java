@@ -14,13 +14,10 @@ import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
@@ -33,10 +30,9 @@ import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomEditText;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -60,7 +56,6 @@ public class AccountRegisterSetPwdActivity extends FragmentActivity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0:
-                    ToolUtils.setLog("33333");
                     User user = (User) msg.obj;
                     SharedPreferencesUtil.saveUser(getApplicationContext(), user);
                     Intent intent = new Intent();
@@ -202,17 +197,21 @@ public class AccountRegisterSetPwdActivity extends FragmentActivity {
     private void doRegister(String phone, String code, String pwd) {
 
         mDialog = CustomLoadingDialog.setLoadingDialog(AccountRegisterSetPwdActivity.this, "注册中");
-        JSONObject valueParams = new JSONObject();
-        try
-        {
-            valueParams.put("phone", phone);
-            valueParams.put("vcode", code);
-            valueParams.put("password", pwd);
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.USER_REGISTER_WITH_PHONE_URL, valueParams, new Response.Listener<JSONObject>() {
+        Map<String,String> valueParams=new Hashtable<String, String>();
+        valueParams.put("phone", phone);
+        valueParams.put("vcode", code);
+        valueParams.put("password", pwd);
+//        JSONObject valueParams = new JSONObject();
+//        try
+//        {
+//            valueParams.put("phone", phone);
+//            valueParams.put("vcode", code);
+//            valueParams.put("password", pwd);
+//        } catch (JSONException e)
+//        {
+//            e.printStackTrace();
+//        }
+        ZhaiDouRequest request = new ZhaiDouRequest(getApplicationContext(),Request.Method.POST, ZhaiDou.USER_REGISTER_WITH_PHONE_URL, valueParams, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null)
@@ -221,7 +220,6 @@ public class AccountRegisterSetPwdActivity extends FragmentActivity {
                 JSONObject dataObj=jsonObject.optJSONObject("data");
                 if (dataObj!=null)
                 {
-                    ToolUtils.setLog("11111");
                     int status = dataObj.optInt("status");
                     String msg = dataObj.optString("message");
                     if (201 != status) {
@@ -238,7 +236,6 @@ public class AccountRegisterSetPwdActivity extends FragmentActivity {
                     String nickname = userObj.optString("nick_name");
                     User user = new User(id, email, token, nickname, avatar);
                     user.setPhone(phone);
-                    ToolUtils.setLog("222222");
                     Message message = new Message();
                     message.what = 0;
                     message.obj = user;
@@ -253,52 +250,8 @@ public class AccountRegisterSetPwdActivity extends FragmentActivity {
                 {
                     mDialog.dismiss();
                 }
-                if (volleyError!=null)
-                {
-                    try
-                    {
-                        JSONObject jsonObject=new JSONObject(new String(volleyError.networkResponse.data)) ;
-                        JSONObject dataObj=jsonObject.optJSONObject("data");
-                        if (dataObj!=null)
-                        {
-                            int status = dataObj.optInt("status");
-                            String msg = dataObj.optString("message");
-                            if (201 != status) {
-                                Toast.makeText(AccountRegisterSetPwdActivity.this, msg, Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-                            JSONObject userObj = dataObj.optJSONObject("user");
-                            int id = userObj.optInt("id");
-                            String email = userObj.optString("email");
-                            String token = userObj.optString("authentication_token");
-                            String state = userObj.optString("state");
-                            String phone = userObj.optString("phone");
-                            String avatar = userObj.optJSONObject("avatar").optJSONObject("mobile_icon").optString("url");
-                            String nickname = userObj.optString("nick_name");
-                            User user = new User(id, email, token, nickname, avatar);
-                            user.setPhone(phone);
-                            Message message = new Message();
-                            message.what = 0;
-                            message.obj = user;
-                            handler.sendMessage(message);
-                        }
-                    } catch (JSONException e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", getApplicationContext().getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        request.setRetryPolicy(new DefaultRetryPolicy(20*1000,1,1.0f));
+        });
         mRequestQueue.add(request);
     }
 

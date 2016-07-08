@@ -20,12 +20,10 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
@@ -840,10 +838,6 @@ public class ShopOrderOkFragment extends BaseFragment
      */
     private void commit()
     {
-        final Map<String,String> headers=new HashMap<String, String>();
-        headers.put("SECAuthorization", token);
-        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-
         // 创建名/值组列表
         final List<NameValuePair> params = new ArrayList<NameValuePair>();
         try
@@ -903,7 +897,7 @@ public class ShopOrderOkFragment extends BaseFragment
             @Override
             public void run()
             {
-                String result= NetService.GETHttpPostService(mContext,ZhaiDou.CommitOrdersUrl,headers,params);
+                String result= NetService.GETHttpPostService(ZhaiDou.CommitOrdersUrl,null,params);
                 if (result != null && result.length() > 0)
                 {
                     try
@@ -1032,7 +1026,7 @@ public class ShopOrderOkFragment extends BaseFragment
     public void FetchVerifyData()
     {
         String url = ZhaiDou.OrderAccountOrPhone;
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST,url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -1071,17 +1065,7 @@ public class ShopOrderOkFragment extends BaseFragment
                 nullNetView.setVisibility(View.GONE);
                 nullView.setVisibility(View.VISIBLE);
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 
@@ -1150,7 +1134,7 @@ public class ShopOrderOkFragment extends BaseFragment
         Map<String,String> maps=new HashMap<String, String>();
         maps.put("phone", phone_Str);
         maps.put("vcode", code_Str);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,url,new JSONObject(maps), new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST,url,maps, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -1191,17 +1175,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     mDialog.dismiss();
                 ToolUtils.setToastLong(mContext,R.string.loading_fail_txt);
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 

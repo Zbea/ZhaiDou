@@ -15,10 +15,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
@@ -31,6 +29,7 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
@@ -39,9 +38,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 软装图例
@@ -219,7 +216,7 @@ public class MagicClassicCaseFragment extends BaseFragment
     {
         final String url = ZhaiDou.HomeArticleGoodsUrl + currentPage;
         ToolUtils.setLog(url);
-        JsonObjectRequest jr = new JsonObjectRequest(url ,new Response.Listener<JSONObject>()
+        ZhaiDouRequest jr = new ZhaiDouRequest(url ,new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -281,17 +278,8 @@ public class MagicClassicCaseFragment extends BaseFragment
                     ToolUtils.setToast(mContext, R.string.loading_fail_txt);
                 }
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        ZDApplication.mRequestQueue.add(jr);
+        });
+        ZDApplication.newRequestQueue().add(jr);
     }
 
 

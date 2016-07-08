@@ -598,20 +598,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         final String channel = appInfo.metaData.getString("UMENG_CHANNEL");
         Map<String, String> map = new HashMap<String, String>();
         map.put("device_token[device_token]", DeviceUtils.getImei(this));
-        ZhaiDouRequest request = new ZhaiDouRequest(MainActivity.this, Request.Method.POST, ZhaiDou.URL_STATISTICS, map, new Response.Listener<JSONObject>()
-        {
-            @Override
-            public void onResponse(JSONObject jsonObject)
-            {
-            }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-
-            }
-        })
+        ZhaiDouRequest request = new ZhaiDouRequest(MainActivity.this, Request.Method.POST, ZhaiDou.URL_STATISTICS, map, null, null)
         {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError

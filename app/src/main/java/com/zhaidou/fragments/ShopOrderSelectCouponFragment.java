@@ -32,14 +32,11 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Coupon;
 import com.zhaidou.model.ZhaiDouRequest;
-import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,7 +45,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +85,6 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
     private String mDatas;
     private String couponCode;
     private Coupon redeemCoupon;
-    final Map<String,String> headers=new HashMap<String, String>();
 
 
     private Handler handler = new Handler()
@@ -283,9 +278,6 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
         userName = (String) SharedPreferencesUtil.getData(mContext, "nickName", "");
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "");
 
-        headers.put("SECAuthorization", token);
-        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
             FetchData();
@@ -385,34 +377,6 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
     }
 
     /**
-     * 获取优惠券列表
-     */
-    private void commit()
-    {
-        // 创建名/值组列表
-        final List<NameValuePair> params = new ArrayList<NameValuePair>();
-        try
-        {
-            params.add(new BasicNameValuePair("userId", userId + ""));
-            params.add(new BasicNameValuePair("skuAndNumLists", new JSONArray(mDatas).toString()));
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-
-        new Thread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                String result= NetService.GETHttpPostService(mContext, ZhaiDou.GetOrderCouponUrl, headers, params);
-                handler.obtainMessage(UPDATE_RESULT,result).sendToTarget();
-            }
-        }).start();
-
-    }
-
-    /**
      * 提交兑换优惠券接口
      */
     private void FetchRedeem()
@@ -428,7 +392,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
         {
             e.printStackTrace();
         }
-        ZhaiDouRequest request = new ZhaiDouRequest(mContext, Request.Method.POST, ZhaiDou.GetRedeemAndCheckCouponUrl, mParams, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.GetRedeemAndCheckCouponUrl, mParams, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (jsonObject!=null)
@@ -441,7 +405,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                 loadingFail();
             }
         });
-        ((ZDApplication) mContext.getApplicationContext()).mRequestQueue.add(request);
+        ZDApplication.newRequestQueue().add(request);
 
     }
 

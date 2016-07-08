@@ -13,11 +13,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
@@ -31,6 +29,7 @@ import com.zhaidou.base.CartCountManager;
 import com.zhaidou.base.CountManager;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.easeui.helpdesk.EaseHelper;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.Api;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
@@ -42,8 +41,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.Map;
 
 public class SettingFragment extends BaseFragment implements View.OnClickListener{
     private static final String ARG_PARAM1 = "param1";
@@ -337,7 +334,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
 
     public void logout() {
         final String token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_LOGOUT_URL + "?token=" + token
+        ZhaiDouRequest request = new ZhaiDouRequest(ZhaiDou.USER_LOGOUT_URL + "?token=" + token
                 , new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -357,15 +354,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
             public void onErrorResponse(VolleyError volleyError) {
                 ShowToast("网络异常");
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("token", token);
-                return headers;
-            }
-        };
+        });
         requestQueue.add(request);
     }
 

@@ -14,29 +14,26 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.adapter.RecommendAdapter;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.RecommendItem;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by roy on 15/8/28.
@@ -136,7 +133,7 @@ public class SettingRecommendFragment extends BaseFragment {
         recommendAdapter=new RecommendAdapter(mContext,lists);
         mListView.setAdapter(recommendAdapter);
         mListView.setOnItemClickListener(onItemClickListener);
-        mRequestQueue= Volley.newRequestQueue(mContext);
+        mRequestQueue= ZDApplication.newRequestQueue();
 
         FetchData();
     }
@@ -149,7 +146,7 @@ public class SettingRecommendFragment extends BaseFragment {
         lists.clear();
         String url=ZhaiDou.settingRecommendAppUrl;
         ToolUtils.setLog(url);
-        JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest jr = new ZhaiDouRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -197,15 +194,7 @@ public class SettingRecommendFragment extends BaseFragment {
                     mDialog.dismiss();
                 ToolUtils.setToast(mContext,"加载失败");
             }
-        })        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(jr);
     }
     public void onResume() {

@@ -15,20 +15,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ArticleWebViewActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.ListViewForScrollView;
 import com.zhaidou.view.TypeFaceTextView;
@@ -37,9 +36,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.WeakHashMap;
 
 
@@ -165,7 +162,7 @@ public class HomeBeautifulFragment extends BaseFragment
 
         listView = (ListViewForScrollView) mView.findViewById(R.id.homeItemList);
         listItem = new ArrayList<JSONObject>();
-        mRequestQueue = Volley.newRequestQueue(mContext);
+        mRequestQueue = ZDApplication.newRequestQueue();
 
         mScrollView = (PullToRefreshScrollView) mView.findViewById(R.id.sv_scrollview);
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
@@ -185,7 +182,7 @@ public class HomeBeautifulFragment extends BaseFragment
      */
     private void loadMoreData()
     {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeBeautifulUrl +currentPage, new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(ZhaiDou.HomeBeautifulUrl +currentPage, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -199,6 +196,10 @@ public class HomeBeautifulFragment extends BaseFragment
                 {
                     ToolUtils.setLog(response.toString());
                     JSONObject jsonObject=response.optJSONObject("data");
+                    if (jsonObject==null)
+                    {
+                        return;
+                    }
                     pageTotal=jsonObject.optInt("totalCount");
                     JSONArray jsonArray = jsonObject.optJSONArray("postsPOList");
                     if (jsonArray != null)
@@ -228,14 +229,7 @@ public class HomeBeautifulFragment extends BaseFragment
                 }
                 ToolUtils.setToast(mContext,R.string.loading_fail_txt);
             }
-        }){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 

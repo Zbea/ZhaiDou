@@ -502,7 +502,7 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
     {
         String url = ZhaiDou.CartGoodsListUrl + userId;
         ToolUtils.setLog("url:" + url);
-        ZhaiDouRequest request=new ZhaiDouRequest(mContext,url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest request=new ZhaiDouRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -627,7 +627,7 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
     {
         mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
         String url = ZhaiDou.CartGoodsDeleteUrl + userId + "&productSKUId=" + "[" + cartGoodsItem.sizeId + "]";
-        ZhaiDouRequest request=new ZhaiDouRequest(mContext,url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest request=new ZhaiDouRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)

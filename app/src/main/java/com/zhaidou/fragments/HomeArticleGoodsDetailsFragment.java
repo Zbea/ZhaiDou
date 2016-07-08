@@ -18,13 +18,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
@@ -38,6 +34,7 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.Comment;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.Api;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.EaseUtils;
@@ -57,7 +54,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import cn.sharesdk.framework.Platform;
 import cn.sharesdk.framework.PlatformActionListener;
@@ -471,7 +467,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
 
         contactQQ = (LinearLayout) view.findViewById(R.id.detailsContactLine);
         contactQQ.setOnClickListener(onClickListener);
-        mRequestQueue = Volley.newRequestQueue(mContext);
+        mRequestQueue = ZDApplication.newRequestQueue();
 
 
         initData();
@@ -560,7 +556,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     public void FetchData()
     {
         String url = ZhaiDou.HomeArticleGoodsDetailsUrl + mString;
-        JsonObjectRequest request = new JsonObjectRequest(url,
+        ZhaiDouRequest request = new ZhaiDouRequest(url,
                 new Response.Listener<JSONObject>()
                 {
                     @Override
@@ -668,25 +664,15 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                     ToolUtils.setToast(mContext, R.string.loading_fail_txt);
                 }
             }
-        }
-        )
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        ZDApplication.mRequestQueue.add(request);
+        });
+        mRequestQueue.add(request);
     }
 
     public void FetchCommentData()
     {
         String url = ZhaiDou.HomeArticleCommentUrl + mString + "&pageNo=" + page + "&pageSize=15";
         ToolUtils.setLog(url);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url,
+        ZhaiDouRequest request = new ZhaiDouRequest(url,
                 new Response.Listener<JSONObject>()
                 {
                     @Override
@@ -816,18 +802,8 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 }
                 ToolUtils.setToast(mContext, "抱歉,评论加载失败");
             }
-        }
-        )
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        ZDApplication.mRequestQueue.add(request);
+        });
+        mRequestQueue.add(request);
     }
 
 

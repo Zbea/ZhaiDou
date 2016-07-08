@@ -22,12 +22,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -36,6 +33,7 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.activities.WebViewActivity;
@@ -48,6 +46,7 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.ShopTodayItem;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.Api;
 import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NetworkUtils;
@@ -370,7 +369,7 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
             contactQQ=(RelativeLayout)rootView.findViewById(R.id.rl_qq_contact);
             contactQQ.setOnClickListener(onClickListener);
 
-            requestQueue = Volley.newRequestQueue(getActivity());
+            requestQueue = ZDApplication.newRequestQueue();
             cartView=(RelativeLayout)rootView.findViewById(R.id.cartView);
             myCartBtn = (ImageView) rootView.findViewById(R.id.myCartBtn);
             myCartBtn.setOnClickListener(onClickListener);
@@ -537,7 +536,7 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
 
     public void FetchData() {
         String url=ZhaiDou.HomeGoodsListUrl +mParam1+"&pageNo="+ page + "&typeEnum=3";
-        JsonObjectRequest request = new JsonObjectRequest(url,
+        ZhaiDouRequest request = new ZhaiDouRequest(url,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -666,15 +665,7 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
                     ToolUtils.setToast(mContext,R.string.loading_fail_txt);
                 }
             }
-        }
-        ) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         requestQueue.add(request);
     }
 

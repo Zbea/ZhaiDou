@@ -26,19 +26,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.viewpagerindicator.TabPageIndicator;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.adapter.SearchAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.view.AutoGridView;
 import com.zhaidou.view.CustomEditText;
@@ -47,10 +46,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -409,7 +406,7 @@ public class SearchFragment extends BaseFragment
             }
         });
 
-        mRequestQueue = Volley.newRequestQueue(mContext);
+        mRequestQueue = ZDApplication.newRequestQueue();
         if (mIndex==1)
         {
             FetchHotsData();
@@ -451,7 +448,7 @@ public class SearchFragment extends BaseFragment
 
     public void FetchHotsData()
     {
-        JsonObjectRequest newMissRequest = new JsonObjectRequest(ZhaiDou.SearchHotUrl, new Response.Listener<JSONObject>()
+        ZhaiDouRequest newMissRequest = new ZhaiDouRequest(ZhaiDou.SearchHotUrl, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject json)
@@ -473,17 +470,7 @@ public class SearchFragment extends BaseFragment
             public void onErrorResponse(VolleyError error)
             {
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        if (mRequestQueue == null) mRequestQueue = Volley.newRequestQueue(mContext);
+        });
         mRequestQueue.add(newMissRequest);
     }
 
