@@ -68,7 +68,6 @@ public class CommentContainerFragment extends BaseFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        System.out.println("CommentContainerFragment.onActivityResult");
         if (index==0){
             mReplyFragment.onActivityResult(requestCode,resultCode,data);
         }else if (index==1){

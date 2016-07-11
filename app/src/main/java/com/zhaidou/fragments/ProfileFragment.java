@@ -36,6 +36,7 @@ import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.ProfileManage;
 import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.dialog.CustomPhotoMenuDialog;
 import com.zhaidou.model.User;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.Api;
@@ -58,8 +59,7 @@ import static com.zhaidou.base.ProfileManage.TAG.MOBILE;
 import static com.zhaidou.base.ProfileManage.TAG.NICK;
 
 
-public class ProfileFragment extends BaseFragment implements View.OnClickListener, PhotoMenuFragment.MenuSelectListener,
-        ProfileManage.OnProfileChange {
+public class ProfileFragment extends BaseFragment implements View.OnClickListener,ProfileManage.OnProfileChange {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -89,9 +89,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     private RelativeLayout rl_mobile, mIntroLayout;
     private LinearLayout ll_addr_info;
 
-    private FrameLayout mMenuContainer;
     private FrameLayout mChildContainer;
-    private PhotoMenuFragment menuFragment;
 
     RequestQueue mRequestQueue;
 
@@ -102,8 +100,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
 
     private final int UPDATE_PROFILE_INFO = 0;
     private final int UPDATE_USER_INFO = 1;
-    private final int MENU_CAMERA_SELECTED = 0;
-    private final int MENU_PHOTO_SELECTED = 1;
 
     boolean isFromCamera = false;// 区分拍照旋转
     public String filePath;
@@ -192,7 +188,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
         titleTv.setText(R.string.title_profile);
 
-        mMenuContainer = (FrameLayout) view.findViewById(R.id.rl_header_menu);
         mChildContainer = (FrameLayout) view.findViewById(R.id.fl_child_container);
         view.findViewById(R.id.rl_header_layout).setOnClickListener(this);
         view.findViewById(R.id.ll_back).setOnClickListener(this);
@@ -234,10 +229,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         mSharedPreferences = getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         mRequestQueue = ZDApplication.newRequestQueue();
         id = mSharedPreferences.getInt("userId", -1);
-        menuFragment = PhotoMenuFragment.newInstance("", "");
-        if (menuFragment != null)
-            getChildFragmentManager().beginTransaction().replace(R.id.rl_header_menu, menuFragment).addToBackStack("").hide(menuFragment).commit();
-        menuFragment.setMenuSelectListener(this);
 
         if (id != -1) {
             mHandler.postDelayed(new Runnable() {
@@ -260,8 +251,14 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 ((BaseActivity) getActivity()).popToStack(ProfileFragment.this);
                 break;
             case R.id.rl_header_layout:
-                mMenuContainer.setVisibility(View.VISIBLE);
-                toggleMenu();
+                File dir = new File(ZhaiDou.MyAvatarDir);
+                if (!dir.exists())
+                {
+                    dir.mkdirs();
+                }
+                filePath=ZhaiDou.MyAvatarDir+"cc"+new SimpleDateFormat("yyMMddHHmmss").format(new Date())+".jpg";
+                CustomPhotoMenuDialog customPhotoMenuDialog =new CustomPhotoMenuDialog(mContext,filePath);
+                customPhotoMenuDialog.showPhotoMenuDialog();
                 break;
             case R.id.ll_add_v:
                 break;
@@ -352,15 +349,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         });
     }
 
-    public void toggleMenu() {
-        if (menuFragment != null) {
-            if (menuFragment.isHidden()) {
-                getChildFragmentManager().beginTransaction().show(menuFragment).commit();
-            } else {
-                getChildFragmentManager().beginTransaction().hide(menuFragment).commit();
-            }
-        }
-    }
 
 
     public void getUserDetail() {
@@ -455,38 +443,10 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     }
 
     @Override
-    public void onMenuSelect(int position, String tag) {
-
-        File dir = new File(ZhaiDou.MyAvatarDir);
-        if (!dir.exists())
-        {
-            dir.mkdirs();
-        }
-        filePath=ZhaiDou.MyAvatarDir+"cc"+new SimpleDateFormat("yyMMddHHmmss").format(new Date())+".jpg";
-
-        switch (position) {
-            case MENU_CAMERA_SELECTED:
-                Uri imageUri = Uri.fromFile(new File(filePath));
-
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                this.startActivityForResult(intent, MENU_CAMERA_SELECTED);
-                break;
-            case MENU_PHOTO_SELECTED:
-                Intent intent1 = new Intent(Intent.ACTION_PICK, null);
-                intent1.setDataAndType(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-                this.startActivityForResult(intent1, MENU_PHOTO_SELECTED);
-                break;
-        }
-        toggleMenu();
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case MENU_CAMERA_SELECTED:// 拍照修改头像
+            case CustomPhotoMenuDialog.MENU_CAMERA_SELECTED:// 拍照修改头像
                 if (resultCode == getActivity().RESULT_OK) {
                     if (!ToolUtils.hasSdcard()) {
                         Toast.makeText(getActivity(), "SD不可用", Toast.LENGTH_SHORT).show();
@@ -497,7 +457,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                             2, true);
                 }
                 break;
-            case MENU_PHOTO_SELECTED:// 本地修改头像
+            case CustomPhotoMenuDialog.MENU_PHOTO_SELECTED:// 本地修改头像
                 Uri uri = null;
                 if (data == null) {
                     return;
@@ -577,9 +537,9 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     }
 
     private void UpLoadTask(String base64) {
-        System.out.println("base64 = " + base64);
         if (TextUtils.isEmpty(base64))
             return;
+        mDialog=CustomLoadingDialog.setLoadingDialog(mContext,"");
         token = mSharedPreferences.getString("token", null);
         id = mSharedPreferences.getInt("userId", -1);
         Map<String, String> params = new HashMap<String, String>();
@@ -592,6 +552,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         ZhaiDouRequest request = new ZhaiDouRequest(mContext, Request.Method.POST, ZhaiDou.USER_UPDATE_AVATAR_URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+                mDialog.dismiss();
                 int status = jsonObject.optInt("status");
                 String msg = jsonObject.optString("message");
                 if (status == 200) {
@@ -614,7 +575,8 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
+                mDialog.dismiss();
+                ShowToast("抱歉,头像上传失败");
             }
         });
         mRequestQueue.add(request);

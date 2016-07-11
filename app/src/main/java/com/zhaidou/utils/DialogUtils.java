@@ -671,7 +671,7 @@ public class DialogUtils {
     }
 
     private void showPickerDialog(final PickerListener pickerListener) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.fragment_photo_menu, null);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_photo_menu, null);
         TextView tv_camera = (TextView) view.findViewById(R.id.tv_camera);
         TextView tv_photo = (TextView) view.findViewById(R.id.tv_photo);
         TextView tv_cancel = (TextView) view.findViewById(R.id.tv_cancel);

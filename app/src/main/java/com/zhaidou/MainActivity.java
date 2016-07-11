@@ -28,7 +28,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.sdk.android.AlibabaSDK;
-import com.alibaba.sdk.android.callback.CallbackContext;
 import com.alibaba.sdk.android.callback.InitResultCallback;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -782,7 +781,9 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        CallbackContext.onActivityResult(requestCode, resultCode, data);
+//        CallbackContext.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+        ToolUtils.setLog("父onActivityResult");
         switch (resultCode)
         {
             case 2000:
@@ -799,8 +800,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             case 1000:
                 break;
         }
-
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

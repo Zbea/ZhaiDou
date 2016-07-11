@@ -156,4 +156,7 @@ public class ZDApplication extends EaseApplication {
         System.gc();
         super.onLowMemory();
     }
+
+
+
 }

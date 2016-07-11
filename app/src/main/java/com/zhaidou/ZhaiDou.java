@@ -212,6 +212,10 @@ public class ZhaiDou {
      * 评论图片目录
      */
     public static String MyCommentDir = "/sdcard/zhaidou/comment/";
+    /**
+     * 我的退货保存目录
+     */
+    public static String MyReturnDir = "/sdcard/zhaidou/return/";
 
     public enum ListType {
         HOME,
