@@ -480,7 +480,7 @@ public class ToolUtils
             ((BaseActivity) mContext).navigationToFragmentWithAnim(magicClassicCaseDetailsFragment);
         } else if (item.type == 11)
         {
-            MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "");
+            MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "",1);
             ((BaseActivity) mContext).navigationToFragment(magicClassicCaseFragment);
         } else if (item.type == 12)
         {

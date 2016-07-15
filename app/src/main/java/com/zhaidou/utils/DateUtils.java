@@ -73,6 +73,9 @@ public class DateUtils {
         return date;
     }
 
+
+
+
     /**
      * 得到时间  HH:mm:ss
      *
@@ -197,5 +200,72 @@ public class DateUtils {
             timeStr = "刚刚";
         }
         return timeStr;
+    }
+
+    /**
+     * 格式化
+     * @param timeStamp
+     * @return
+     */
+    public static Date formatDate(String timeStamp) {
+        Date date = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try
+        {
+            date=sdf.parse(timeStamp);
+        } catch (ParseException e)
+        {
+            e.printStackTrace();
+        }
+        return date;
+    }
+
+    /**
+     * 获取剩余天数
+     * @param date
+     * @return
+     * @throws ParseException
+     */
+    public static int getDateDays(String date) throws ParseException
+    {
+        Date mDate = new Date();
+        long diff = formatDate(date).getTime()-mDate.getTime()>0?((formatDate(date).getTime()-mDate.getTime())):0;
+        int days=diff %(1000 * 60 * 60 * 24)>0?1:0;
+        return (int)diff / (1000 * 60 * 60 * 24)+days;
+    }
+
+    /**
+     * 选择优惠券中剩余时间倒计时
+     * @param date
+     * @return
+     * @throws ParseException
+     */
+    public static String getCouponDateDiff(String date) throws ParseException
+    {
+        String timeStr;
+        Date mDate = new Date();
+        long diff = formatDate(date).getTime()-mDate.getTime()>0?((formatDate(date).getTime()-mDate.getTime())/1000):0;
+        if (diff >=DAY*3)
+        {
+            return date.split(" ")[0];
+        }
+        else if (diff >=DAY)
+        {
+            return timeStr = "仅剩"+diff/(DAY)+"天";
+        }
+        else
+        {
+            if (diff > HOUR)
+            {
+                timeStr = "仅剩"+diff / (HOUR) + "小时";
+            } else if (diff > MINUTE)
+            {
+                timeStr = "仅剩"+diff / (MINUTE) + "分钟";
+            } else
+            {// 1秒钟-59秒钟
+                timeStr = "不足一分钟";
+            }
+            return timeStr;
+        }
     }
 }

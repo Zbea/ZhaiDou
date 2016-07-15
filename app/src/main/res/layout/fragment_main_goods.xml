@@ -1,5 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/home_layout"
+                android:id="@+id/main_goods"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/page_bg"

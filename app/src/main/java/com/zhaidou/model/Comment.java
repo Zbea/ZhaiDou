@@ -56,40 +56,40 @@ public class Comment implements Serializable
     /**
      * 回复id
      */
-    public int idReply;
+    public int idFormer;
     /**
      * 评论人
      */
-    public int userIdReply;
+    public int userIdFormer;
 
     /**
      * 评论人
      */
-    public String userNameReply;
+    public String userNameFormer;
     /**
      * 评论人
      */
-    public String userImageReply;
+    public String userImageFormer;
     /**
      * 回复的类型
      */
-    public String typeReply;
+    public String typeFormer;
     /**
      * 回复的状态
      */
-    public String statusReply;
+    public String statusFormer;
     /**
      * 回复的时间
      */
-    public String timeReply;
+    public String timeFormer;
     /**
      * 回复的评论信息
      */
-    public String commentReply;
+    public String commentFormer;
     /**
      * 回复的评论图片
      */
-    public List<String> imagesReply=new ArrayList<String>();
+    public List<String> imagesFormer =new ArrayList<String>();
 
     /**
      * id : 13
@@ -112,37 +112,6 @@ public class Comment implements Serializable
     public String commentType;
     public String createTime;
 
-    @Override
-    public String toString() {
-        return "Comment{" +
-                "id=" + id +
-                ", userId=" + userId +
-                ", userName='" + userName + '\'' +
-                ", userImage='" + userImage + '\'' +
-                ", articleId='" + articleId + '\'' +
-                ", articleTitle='" + articleTitle + '\'' +
-                ", type='" + type + '\'' +
-                ", status='" + status + '\'' +
-                ", time='" + time + '\'' +
-                ", comment='" + comment + '\'' +
-                ", images=" + images +
-                ", idReply=" + idReply +
-                ", userIdReply=" + userIdReply +
-                ", userNameReply='" + userNameReply + '\'' +
-                ", userImageReply='" + userImageReply + '\'' +
-                ", typeReply='" + typeReply + '\'' +
-                ", statusReply='" + statusReply + '\'' +
-                ", timeReply='" + timeReply + '\'' +
-                ", commentReply='" + commentReply + '\'' +
-                ", imagesReply=" + imagesReply +
-                ", content='" + content + '\'' +
-                ", imgMd5='" + imgMd5 + '\'' +
-                ", commentUserId=" + commentUserId +
-                ", commentUserName='" + commentUserName + '\'' +
-                ", commentUserImg='" + commentUserImg + '\'' +
-                ", commentType='" + commentType + '\'' +
-                ", createTime='" + createTime + '\'' +
-                '}';
-    }
+
 }
 

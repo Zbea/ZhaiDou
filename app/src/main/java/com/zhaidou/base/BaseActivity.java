@@ -144,7 +144,10 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
         {
             for(Fragment frag:fragments)
             {
-                frag.onActivityResult(requestCode, resultCode, data);
+                if (frag!=null)
+                {
+                    frag.onActivityResult(requestCode, resultCode, data);
+                }
             }
         }
     }

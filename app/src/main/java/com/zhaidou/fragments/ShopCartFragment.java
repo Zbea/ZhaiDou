@@ -103,7 +103,8 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
             String action = intent.getAction();
             if (action.equals(ZhaiDou.IntentRefreshLoginTag))
             {
-                refreshData();
+                ToolUtils.setLog("s刷新执行");
+//                refreshData();
             }
             if (action.equals(ZhaiDou.IntentRefreshCartGoodsTag))
             {

@@ -168,7 +168,7 @@ public class CommentAccountListFragment extends BaseFragment implements PullToRe
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 System.out.println("parentV = [" + parentV + "], v = [" + v + "], position = [" + position + "], values = [" + values + "]");
                 Entity entity= (Entity) values;
-                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment=HomeArticleGoodsDetailsFragment.newInstance("",entity.comment.articleId);
+                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment=HomeArticleGoodsDetailsFragment.newInstance("",entity.comment.articleId,1);
                 ((BaseActivity)mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
             }
         });

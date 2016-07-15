@@ -2,6 +2,8 @@ package com.zhaidou.fragments;
 
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -578,6 +580,18 @@ public class GoodsDetailsFragment extends BaseFragment implements CartCountManag
         }
 
         tv_comment = (TextView) mView.findViewById(R.id.tv_comment);
+        tv_comment.setOnLongClickListener(new View.OnLongClickListener()
+        {
+            @Override
+            public boolean onLongClick(View v)
+            {
+                ClipboardManager clipboardManager= (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clipData=ClipData.newPlainText("text",tv_comment.getText().toString());
+                clipboardManager.setPrimaryClip(clipData);
+                ToolUtils.setToast(mContext,"复制成功");
+                return false;
+            }
+        });
         tv_baoyou = (TextView) mView.findViewById(R.id.tv_baoyou);
         mCurrentPrice = (TextView) mView.findViewById(R.id.goodsCurrentPrice);
         mOldPrice = (TextView) mView.findViewById(R.id.goodsFormerPrice);

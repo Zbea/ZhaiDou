@@ -33,6 +33,8 @@
     <string name="shop_payment_fail_text">支付失败</string>
     <string name="shop_payment_success_text">支付成功</string>
 
+    <string name="title_consult_design">咨询设计服务</string>
+
     <!-- 订单 -->
     <string name="order_colse">交易关闭</string>
     <string name="order_logistics">查看物流</string>

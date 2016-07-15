@@ -153,7 +153,7 @@ public class CommentAccountReplayFragment extends BaseFragment implements PullTo
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
                     Replay entity = (Replay) values;
-                    HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment = HomeArticleGoodsDetailsFragment.newInstance("", entity.comment.articleId);
+                    HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment = HomeArticleGoodsDetailsFragment.newInstance("", entity.comment.articleId,1);
                     ((BaseActivity) mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
                 }
             });

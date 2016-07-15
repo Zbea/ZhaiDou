@@ -78,7 +78,7 @@ public class CommentAdapter extends BaseListAdapter<Comment>
         commentImageFormerLine.removeAllViews();
         commentImageReplyLine.removeAllViews();
 
-        if (TextUtils.isEmpty(comment.commentReply)&comment.imagesReply.size()==0)
+        if (TextUtils.isEmpty(comment.commentFormer)&comment.imagesFormer.size()==0)
         {
             ToolUtils.setImageCacheUrl(comment.userImage, header, R.drawable.icon_loading_defalut);
             name.setText(comment.userName);
@@ -102,6 +102,10 @@ public class CommentAdapter extends BaseListAdapter<Comment>
                 commentImageLine.setVisibility(View.GONE);
                 commentInfo.setTextColor(mContext.getResources().getColor(R.color.green_color));
             }
+            else
+            {
+                commentInfo.setTextColor(mContext.getResources().getColor(R.color.text_normal_color));
+            }
 
         }
         else
@@ -112,22 +116,26 @@ public class CommentAdapter extends BaseListAdapter<Comment>
             commentLine.setVisibility(View.GONE);
             commentReplyLine.setVisibility(View.VISIBLE);
 
-            if (comment.imagesReply==null|comment.imagesReply.size()==0)
+            if (comment.imagesFormer ==null|comment.imagesFormer.size()==0)
             {
                 commentImageFormerLine.setVisibility(View.GONE);
             }
             else
             {
                 commentImageFormerLine.setVisibility(View.VISIBLE);
-                addImageView(commentImageFormerLine,comment.imagesReply);
+                addImageView(commentImageFormerLine,comment.imagesFormer);
             }
-            commentNameFormer.setText(comment.userNameReply);
-            commentInfoFormer.setText(comment.commentReply);
-            commentInfoFormer.setVisibility(TextUtils.isEmpty(comment.commentReply)?View.GONE: View.VISIBLE);
-            if(comment.statusReply.equals("F"))
+            commentNameFormer.setText(comment.userNameFormer);
+            commentInfoFormer.setText(comment.commentFormer);
+            commentInfoFormer.setVisibility(TextUtils.isEmpty(comment.commentFormer)?View.GONE: View.VISIBLE);
+            if(comment.statusFormer.equals("F"))
             {
                 commentImageFormerLine.setVisibility(View.GONE);
                 commentInfoFormer.setTextColor(mContext.getResources().getColor(R.color.green_color));
+            }
+            else
+            {
+                commentInfoFormer.setTextColor(mContext.getResources().getColor(R.color.text_normal_color));
             }
 
             if (comment.images==null|comment.images.size()==0)
@@ -143,6 +151,10 @@ public class CommentAdapter extends BaseListAdapter<Comment>
             {
                 commentImageReplyLine.setVisibility(View.GONE);
                 commentReply.setTextColor(mContext.getResources().getColor(R.color.green_color));
+            }
+            else
+            {
+                commentReply.setTextColor(mContext.getResources().getColor(R.color.text_normal_color));
             }
             commentReply.setText(comment.comment);
             commentReply.setVisibility(!TextUtils.isEmpty(comment.comment)?View.VISIBLE: View.GONE);

@@ -2,6 +2,8 @@ package com.zhaidou.fragments;
 
 
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -116,6 +118,7 @@ public class ShopTodaySpecialFragment extends BaseFragment implements CartCountM
             {
                 case UPDATE_CONTENT:
                     introduceTv.setText(introduce);
+
                     titleTv.setText(shopSpecialItem.title);
                     if (shopSpecialItem != null)
                         initTime = shopSpecialItem.endTime - System.currentTimeMillis();
@@ -289,6 +292,18 @@ public class ShopTodaySpecialFragment extends BaseFragment implements CartCountM
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         timeTvs = (TimerTextView) mView.findViewById(R.id.shopTime1Tv);
         introduceTv = (TypeFaceTextView) mView.findViewById(R.id.adText);
+        introduceTv.setOnLongClickListener(new View.OnLongClickListener()
+        {
+            @Override
+            public boolean onLongClick(View v)
+            {
+                ClipboardManager clipboardManager= (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clipData=ClipData.newPlainText("text",introduceTv.getText().toString());
+                clipboardManager.setPrimaryClip(clipData);
+                ToolUtils.setToast(mContext,"复制成功");
+                return false;
+            }
+        });
         myCartTips = (TextView) mView.findViewById(R.id.myCartTipsTv);
         myCartBtn = (ImageView) mView.findViewById(R.id.myCartBtn);
         myCartBtn.setOnClickListener(onClickListener);

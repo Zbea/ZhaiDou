@@ -411,15 +411,15 @@ public class CommentListFragment extends BaseFragment
                                         {
                                             e.printStackTrace();
                                         }
-                                        comment.idReply=reCommentId;
-                                        comment.timeReply=reCommentCreateTime;
-                                        comment.commentReply=reCommentTitle;
-                                        comment.imagesReply=reCommentImgs;
-                                        comment.typeReply=reCommentType;
-                                        comment.statusReply=reCommentStatus;
-                                        comment.userNameReply=reCommentUserName;
-                                        comment.userImageReply=reCommentUserImg;
-                                        comment.userIdReply=reCommentUserId;
+                                        comment.idFormer =reCommentId;
+                                        comment.timeFormer =reCommentCreateTime;
+                                        comment.commentFormer =reCommentTitle;
+                                        comment.imagesFormer =reCommentImgs;
+                                        comment.typeFormer =reCommentType;
+                                        comment.statusFormer =reCommentStatus;
+                                        comment.userNameFormer =reCommentUserName;
+                                        comment.userImageFormer =reCommentUserImg;
+                                        comment.userIdFormer =reCommentUserId;
                                     }
                                     comments.add(comment);
                                 }

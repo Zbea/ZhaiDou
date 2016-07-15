@@ -40,6 +40,7 @@ import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.Coupon;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.Api;
+import com.zhaidou.utils.DateUtils;
 import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -59,7 +60,6 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -1256,17 +1256,19 @@ public class ShopOrderOkFragment extends BaseFragment
             String startTime=datasObject.optString("startTime");
             String endTime=datasObject.optString("endTime");
             int days=0;
+            String timeStr=null;
             try
             {
-                SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date endDate=format.parse(endTime);
-                long diff=endDate.getTime()-System.currentTimeMillis();
-                days=(int) (diff / (1000 * 60 * 60 * 24)+((diff %(1000 * 60 * 60 * 24))>0?1:0));
+                timeStr= DateUtils.getCouponDateDiff(endTime);
+                days=DateUtils.getDateDays(endTime);
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
+                endTime=dateFormat.format(DateUtils.formatDate(endTime));
+                startTime=dateFormat.format(DateUtils.formatDate(startTime));
+                ToolUtils.setLog(endTime);
             } catch (ParseException e)
             {
                 e.printStackTrace();
             }
-            endTime=endTime.split(" ")[0];
             String statu=datasObject.optString("status");
             String property=datasObject.optString("property");
             String goodsType=datasObject.optString("goodsType");

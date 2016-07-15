@@ -3,7 +3,6 @@ package com.zhaidou.activities;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -41,7 +40,6 @@ import com.zhaidou.model.User;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.EaseUtils;
-import com.zhaidou.utils.NativeHttpUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomEditText;
@@ -498,35 +496,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 
     public void setRegisterOrLoginListener(RegisterFragment.RegisterOrLoginListener mRegisterOrLoginListener) {
         this.mRegisterOrLoginListener = mRegisterOrLoginListener;
-    }
-
-    private class RegisterTask extends AsyncTask<Map<String, String>, Void, String> {
-        @Override
-        protected String doInBackground(Map<String, String>... maps) {
-            String s = null;
-            try {
-                s = NativeHttpUtil.post(ZhaiDou.USER_REGISTER_URL, null, maps[0]);
-            } catch (Exception e) {
-                Log.i("e--->", e.getMessage());
-            }
-            return s;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            try {
-                JSONObject json = new JSONObject(s);
-                JSONObject userJson = json.optJSONObject("user");
-                int id = userJson.optInt("id");
-                String email = userJson.optString("email");
-                String token = userJson.optString("authentication_token");
-                String avatar = userJson.optJSONObject("avatar").optString("url");
-                String nick = userJson.optString("nick_name");
-                User user = new User(id, email, token, nick, avatar);
-                mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
-            } catch (Exception e) {
-            }
-        }
     }
 
     private void thirdPartyRegisterTask(Map<String, String> params) {

@@ -1,8 +1,6 @@
 package com.zhaidou.fragments;
 
 import android.app.Dialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,14 +9,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.pulltorefresh.PullToRefreshBase;
-import com.pulltorefresh.PullToRefreshScrollView;
+import com.pulltorefresh.PullToRefreshListView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
@@ -31,6 +28,7 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.NetworkUtils;
+import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
 
@@ -47,9 +45,11 @@ public class MagicClassicCaseFragment extends BaseFragment
 {
     private static final String ARG_PARAM = "param";
     private static final String ARG_STRING = "string";
+    private static final String ARG_FLAGS = "flags";
 
     private String mParam;
     private String mString;
+    private int mFlags;//1方案详情2软装方案详情
     private View view;
 
     private int currentPage = 1;
@@ -58,9 +58,8 @@ public class MagicClassicCaseFragment extends BaseFragment
 
     private Dialog mDialog;
     private Context mContext;
-    private ListView listView;
-    private PullToRefreshScrollView scrollView;
-    private TextView titleTv;
+    private PullToRefreshListView listView;
+    private TextView titleTv,tv_nullContent;
 
     private static final int UPDATE_HOMELIST = 1;
     private List<Article> articleList = new ArrayList<Article>();
@@ -74,15 +73,15 @@ public class MagicClassicCaseFragment extends BaseFragment
             switch (msg.what)
             {
                 case UPDATE_HOMELIST:
-
+                    tv_nullContent.setVisibility(articleList.size()>0?View.GONE:View.VISIBLE);
                     mHomeAdapter.setList(articleList);
                     mHomeAdapter.notifyDataSetChanged();
                     if (pageCount > articleList.size())
                     {
-                        scrollView.setMode(PullToRefreshBase.Mode.BOTH);
+                        listView.setMode(PullToRefreshBase.Mode.BOTH);
                     } else
                     {
-                        scrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+                        listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                     }
 
                     break;
@@ -108,12 +107,13 @@ public class MagicClassicCaseFragment extends BaseFragment
     };
 
 
-    public static MagicClassicCaseFragment newInstance(String param, String string)
+    public static MagicClassicCaseFragment newInstance(String param, String string,int flags)
     {
         MagicClassicCaseFragment fragment = new MagicClassicCaseFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM, param);
         args.putString(ARG_STRING, string);
+        args.putInt(ARG_FLAGS, flags);
         fragment.setArguments(args);
         return fragment;
     }
@@ -130,6 +130,7 @@ public class MagicClassicCaseFragment extends BaseFragment
         {
             mParam = getArguments().getString(ARG_PARAM);
             mString = getArguments().getString(ARG_STRING);
+            mFlags=getArguments().getInt(ARG_FLAGS);
         }
     }
 
@@ -155,20 +156,22 @@ public class MagicClassicCaseFragment extends BaseFragment
     private void initView()
     {
         titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
-        titleTv.setText(R.string.title_magic_class_case);
+        titleTv.setText(mFlags==1?"改造案例":"软装方案");
 
-        scrollView=(PullToRefreshScrollView)view.findViewById(R.id.scrollView);
-        scrollView.setMode(PullToRefreshBase.Mode.BOTH);
-        scrollView.setOnRefreshListener(onRefreshListener);
-        listView=(ListView)view.findViewById(R.id.lv_special_list);
-        mHomeAdapter = new HomeArticleAdapter(mContext,articleList,1);
+        tv_nullContent= (TypeFaceTextView) view.findViewById(R.id.tv_nullContent);
+        tv_nullContent.setText(mFlags==1?"暂无改造案例":"暂无软装方案");
+
+        listView=(PullToRefreshListView)view.findViewById(R.id.lv_special_list);
+        listView.setMode(PullToRefreshBase.Mode.BOTH);
+        listView.setOnRefreshListener(onRefreshListener);
+        mHomeAdapter = new HomeArticleAdapter(mContext,articleList,mFlags);
         listView.setAdapter(mHomeAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
             {
-                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment = HomeArticleGoodsDetailsFragment.newInstance("", "" + articleList.get(position).getId());
+                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment = HomeArticleGoodsDetailsFragment.newInstance("", "" + articleList.get(position-1).getId(),mFlags);
                 ((BaseActivity) mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
                 homeArticleGoodsDetailsFragment.setOnCommentListener(new HomeArticleGoodsDetailsFragment.OnCommentListener()
                 {
@@ -189,10 +192,10 @@ public class MagicClassicCaseFragment extends BaseFragment
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values)
             {
-                ClipboardManager clipboardManager= (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clipData=ClipData.newPlainText("text",articleList.get(position).getTitle());
-                clipboardManager.setPrimaryClip(clipData);
-                ToolUtils.setToast(mContext,"复制成功");
+//                ClipboardManager clipboardManager= (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+//                ClipData clipData=ClipData.newPlainText("text",articleList.get(position).getTitle());
+//                clipboardManager.setPrimaryClip(clipData);
+//                ToolUtils.setToast(mContext,"复制成功");
             }
         });
 
@@ -214,7 +217,16 @@ public class MagicClassicCaseFragment extends BaseFragment
      */
     private void FetchData()
     {
-        final String url = ZhaiDou.HomeArticleGoodsUrl + currentPage;
+        String url=null;
+        if (mFlags==1)
+        {
+            url = ZhaiDou.HomeArticleGoodsUrl + currentPage;
+        }
+        else
+        {
+            String userId = SharedPreferencesUtil.getData(mContext, "userId", -1) + "";
+            url = ZhaiDou.HomeSofeListUrl + "&userId=" + userId + "&pageNo=" + currentPage;
+        }
         ToolUtils.setLog(url);
         ZhaiDouRequest jr = new ZhaiDouRequest(url ,new Response.Listener<JSONObject>()
         {
@@ -223,19 +235,16 @@ public class MagicClassicCaseFragment extends BaseFragment
             {
                 if (mDialog != null)
                     mDialog.dismiss();
+                listView.onRefreshComplete();
                 if (response == null)
                 {
-                    scrollView.onRefreshComplete();
                     return;
                 }
                 ToolUtils.setLog(response.toString());
                 int code = response.optInt("code");
                 if (code == 500)
                 {
-                    if (mDialog != null)
-                        mDialog.dismiss();
-                    scrollView.onRefreshComplete();
-                    scrollView.setMode(PullToRefreshBase.Mode.BOTH);
+                    listView.setMode(PullToRefreshBase.Mode.BOTH);
                     return;
                 }
                 JSONObject jsonObject = response.optJSONObject("data");
@@ -243,7 +252,7 @@ public class MagicClassicCaseFragment extends BaseFragment
                 {
                     pageCount = jsonObject.optInt("totalCount");
                     pageSize = jsonObject.optInt("pageSize");
-                    JSONArray jsonArray = jsonObject.optJSONArray("freeClassicsCasePOs");
+                    JSONArray jsonArray = jsonObject.optJSONArray(mFlags==1?"freeClassicsCasePOs":"designerListPOs");
 
                     if (jsonArray != null)
                         for (int i = 0; i < jsonArray.length(); i++)
@@ -269,7 +278,7 @@ public class MagicClassicCaseFragment extends BaseFragment
             @Override
             public void onErrorResponse(VolleyError error)
             {
-                scrollView.onRefreshComplete();
+                listView.onRefreshComplete();
                 if (mDialog != null)
                     mDialog.dismiss();
                 if (articleList.size() != 0)

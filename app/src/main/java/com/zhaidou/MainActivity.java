@@ -310,14 +310,12 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             @Override
             public void onClick(View view)
             {
-
                 if (magicHomeFragment == null)
                 {
                     magicHomeFragment = new MainMagicFragment();
                 }
                 selectFragment(currentFragment, magicHomeFragment);
                 setButton(view);
-
 
             }
         });

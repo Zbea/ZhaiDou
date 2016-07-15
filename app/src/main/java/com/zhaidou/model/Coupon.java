@@ -37,6 +37,10 @@ public class Coupon implements Serializable
      */
     public int time;
     /**
+     * 剩余时间
+     */
+    public String timeStr;
+    /**
      * 使用情况
      */
     public String info;
@@ -64,4 +68,8 @@ public class Coupon implements Serializable
      * 是否默认
      */
     public boolean isDefault;
+    /**
+     * 是否不可用
+     */
+    public boolean isNoUse;
 }

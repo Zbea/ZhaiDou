@@ -222,7 +222,7 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
                     initData();
                     break;
                 case R.id.rl_qq_contact:
-                    EaseUtils.startDesignerActivity(mContext);
+                    EaseUtils.startKeFuActivity(mContext);
                     break;
                 case R.id.ll_back:
                     ((BaseActivity) getActivity()).popToStack(HomeFeatrueFragment.this);

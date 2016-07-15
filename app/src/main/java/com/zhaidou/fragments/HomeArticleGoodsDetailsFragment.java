@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.Comment;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.Api;
+import com.zhaidou.utils.DeviceUtils;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NetworkUtils;
@@ -65,13 +67,15 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
 {
     private static final String ARG_PARAM = "param";
     private static final String ARG_STRING = "string";
+    private static final String ARG_FLAGS = "flags";
 
     private String mParam;
     private String mString;
+    private int mFlags;//1方案详情2软装方案详情
     private View view;
-    private RelativeLayout barLine;
+    private RelativeLayout barLine,rl_video;
     private CircleImageView headerImageIv;
-    private ImageView backIv,shareIv, goodsIv, imageIv, commentIv;
+    private ImageView backIv,shareIv, goodsIv, imageIv, commentIv,iv_videoImage;
     private CustomProgressWebview webview;
     private ListViewForScrollView goodsListView, commentListView;
     private LinearLayout loadingView, nullNetView, nullView, nullDataView;
@@ -79,9 +83,8 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     private LinearLayout contactQQ;
     private RelativeLayout detailsTopLine;
     private TextView headerTopTv, headerNameTv,titleTv, areaTypeTv, areasTv, styleTv, budgetTv, nullGoods, nullComment, subtotalTv, commentNumTv;
-    private LinearLayout totalLine, goodsAllBtn, commentAllLine, commentAllBtn;
+    private LinearLayout ll_videoPage,totalLine, goodsAllBtn, ll_commentPage,commentAllLine, commentAllBtn,commentLine,ll_contact;
     private FrameLayout frameLayout;
-    private LinearLayout commentLine;
 
     private CustomScrollView mScrollView;
     private ArticleGoodsAdapter articleShoppingAdapter;
@@ -99,7 +102,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     private int page = 1;
     private int pageSize;
     private int commentCount=0;
-    private String imageUrl,header,headerName,title, introduce, areaType, areaSize, style, budget, totalPrice;
+    private String imageUrl,header,headerName,title, introduce, areaType, areaSize, style, budget, totalPrice,videoUrl,vid,vImage,shareName;
     private List<CartGoodsItem> items = new ArrayList<CartGoodsItem>();
     private AlphaAnimation alphaAnimation;
     private List<Comment> comments = new ArrayList<Comment>();
@@ -120,6 +123,8 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 budgetTv.setText(budget);
                 subtotalTv.setText("￥" + ToolUtils.isIntPrice(totalPrice));
 
+                ll_videoPage.setVisibility(TextUtils.isEmpty(videoUrl)?View.GONE:View.VISIBLE);
+                ToolUtils.setImageCacheUrl(vImage, iv_videoImage, R.drawable.icon_loading_item);
                 ToolUtils.setImageCacheUrl(header, headerImageIv, R.drawable.icon_loading_item);
                 ToolUtils.setImageCacheUrl(imageUrl, imageIv, R.drawable.icon_loading_item);
 
@@ -149,26 +154,12 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         }
     };
 
-    public static HomeArticleGoodsDetailsFragment newInstance(String param, String string)
-    {
-        HomeArticleGoodsDetailsFragment fragment = new HomeArticleGoodsDetailsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM, param);
-        args.putString(ARG_STRING, string);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    public HomeArticleGoodsDetailsFragment()
-    {
-    }
-
     private View.OnClickListener onClickListener = new View.OnClickListener()
     {
         @Override
         public void onClick(View view)
         {
-            GoodsArticleListFragment goodsArticleListFragment = GoodsArticleListFragment.newInstance(1, mString);
+            GoodsArticleListFragment goodsArticleListFragment = GoodsArticleListFragment.newInstance(mFlags, mString);
             CommentListFragment commentListFragment = CommentListFragment.newInstance(title, mString);
             commentListFragment.setOnCommentListener(new CommentListFragment.OnCommentListener()
             {
@@ -176,14 +167,14 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 public void GetComments(List<Comment> comments1,int num)
                 {
                     if (comments1!=null&&comments1.size()>0)
-                    if (comments!=comments1)
-                    {
-                        comments.clear();
-                        comments.addAll(comments1);
-                        commentAdapter.upDate(comments);
-                        nullComment.setVisibility(comments.size() > 0 ? View.GONE : View.VISIBLE);
-                        commentAllLine.setVisibility(comments.size() > 0 ? View.VISIBLE : View.GONE);
-                    }
+                        if (comments!=comments1)
+                        {
+                            comments.clear();
+                            comments.addAll(comments1);
+                            commentAdapter.upDate(comments);
+                            nullComment.setVisibility(comments.size() > 0 ? View.GONE : View.VISIBLE);
+                            commentAllLine.setVisibility(comments.size() > 0 ? View.VISIBLE : View.GONE);
+                        }
                     if (commentCount!=num)
                     {
                         commentCount=num;
@@ -199,8 +190,8 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 case R.id.netReload:
                     initData();
                     break;
-                case R.id.rl_qq_contact:
-                    EaseUtils.startDesignerActivity(mContext);
+                case R.id.ll_contact:
+                    EaseUtils.startKeFuActivity(mContext);
                     break;
                 case R.id.share_iv:
                     share();
@@ -216,6 +207,12 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                     break;
                 case R.id.detailsCommentAllTv:
                     ((BaseActivity) mContext).navigationToFragment(commentListFragment);
+                    break;
+                case R.id.rl_video:
+                    Intent video = new Intent();
+                    video.putExtra("url", videoUrl);
+                    video.setClass(mContext, WebViewActivity.class);
+                    mContext.startActivity(video);
                     break;
                 case R.id.commentEditLine:
                     if (checkLogin())
@@ -252,6 +249,24 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     };
 
 
+
+
+    public static HomeArticleGoodsDetailsFragment newInstance(String param, String string,int flags)
+    {
+        HomeArticleGoodsDetailsFragment fragment = new HomeArticleGoodsDetailsFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM, param);
+        args.putString(ARG_STRING, string);
+        args.putInt(ARG_FLAGS, flags);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public HomeArticleGoodsDetailsFragment()
+    {
+    }
+
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -260,6 +275,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         {
             mParam = getArguments().getString(ARG_PARAM);
             mString = getArguments().getString(ARG_STRING);
+            mFlags= getArguments().getInt(ARG_FLAGS);
         }
     }
 
@@ -329,10 +345,23 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         styleTv = (TextView) view.findViewById(R.id.detailsStyleTv);
         budgetTv = (TextView) view.findViewById(R.id.detailsBudgetTv);
         subtotalTv = (TextView) view.findViewById(R.id.detailsSubtotalTv);
+
+        rl_video= (RelativeLayout) view.findViewById(R.id.rl_video);
+        rl_video.setOnClickListener(onClickListener);
+        iv_videoImage= (ImageView) view.findViewById(R.id.iv_videoImage);
+        LinearLayout.LayoutParams layoutParams=new LinearLayout.LayoutParams(screenWidth- DeviceUtils.dp2px(mContext,20),(screenWidth- DeviceUtils.dp2px(mContext,20))*9/16);
+        layoutParams.topMargin=DeviceUtils.dp2px(mContext,20);
+        layoutParams.leftMargin=DeviceUtils.dp2px(mContext,10);
+        layoutParams.rightMargin=DeviceUtils.dp2px(mContext,10);
+        layoutParams.bottomMargin=DeviceUtils.dp2px(mContext,20);
+        rl_video.setLayoutParams(layoutParams);
+        ll_videoPage = (LinearLayout) view.findViewById(R.id.ll_videoPage);
+
         commentNumTv = (TextView) view.findViewById(R.id.detailsCommentNumTv);
         totalLine = (LinearLayout) view.findViewById(R.id.detailsTotalLine);
         goodsAllBtn = (LinearLayout) view.findViewById(R.id.detailsGoodsAllTv);
         goodsAllBtn.setOnClickListener(onClickListener);
+        ll_commentPage= (LinearLayout) view.findViewById(R.id.ll_commentPage);
         commentAllLine = (LinearLayout) view.findViewById(R.id.detailsCommentAllLine);
         commentAllBtn = (LinearLayout) view.findViewById(R.id.detailsCommentAllTv);
         commentAllBtn.setOnClickListener(onClickListener);
@@ -465,11 +494,25 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
 
         frameLayout = (FrameLayout) view.findViewById(R.id.frameLayout);
 
-        contactQQ = (LinearLayout) view.findViewById(R.id.detailsContactLine);
-        contactQQ.setOnClickListener(onClickListener);
+        ll_contact = (LinearLayout) view.findViewById(R.id.ll_contact);
+        ll_contact.setOnClickListener(onClickListener);
         mRequestQueue = ZDApplication.newRequestQueue();
 
 
+        if (mFlags==2)
+        {
+            commentIv.setVisibility(View.GONE);
+            ll_contact.setVisibility(View.VISIBLE);
+            commentLine.setVisibility(View.GONE);
+            ll_commentPage.setVisibility(View.GONE);
+        }
+        else
+        {
+            commentIv.setVisibility(View.VISIBLE);
+            ll_contact.setVisibility(View.GONE);
+            commentLine.setVisibility(View.VISIBLE);
+            ll_commentPage.setVisibility(View.VISIBLE);
+        }
         initData();
 
     }
@@ -490,7 +533,10 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         {
             mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
             FetchData();
-            FetchCommentData();
+            if (mFlags==1)
+            {
+                FetchCommentData();
+            }
         } else
         {
             Toast.makeText(mContext, "抱歉,网络链接失败", Toast.LENGTH_SHORT).show();
@@ -555,7 +601,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
 
     public void FetchData()
     {
-        String url = ZhaiDou.HomeArticleGoodsDetailsUrl + mString;
+        String url = (mFlags==1?ZhaiDou.HomeArticleGoodsDetailsUrl:ZhaiDou.HomeSofeListDetailUrl) + mString;
         ZhaiDouRequest request = new ZhaiDouRequest(url,
                 new Response.Listener<JSONObject>()
                 {
@@ -589,7 +635,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                             DecimalFormat df=new DecimalFormat("#.00");
                             totalPrice=df.format(aDouble);
 
-                            JSONObject jsonObject = jsonObject1.optJSONObject("freeClassicsCasePO");
+                            JSONObject jsonObject = jsonObject1.optJSONObject(mFlags==1?"freeClassicsCasePO":"designerListPO");
                             String id = jsonObject.optString("id");
                             title = jsonObject.optString("caseName");
                             long startTime = jsonObject.optLong("updateTime");
@@ -599,12 +645,16 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                             areaSize = jsonObject.optString("areaSize");
                             style = jsonObject.optString("style");
                             budget = jsonObject.optString("budget");
+                            videoUrl = jsonObject.optString("videoUrl");
+                            vid = jsonObject.optString("vid");
+                            vImage = jsonObject.optString("vImage");
+                            shareName = jsonObject.optString("shareName");
 
                             JSONObject jsonObject2 = jsonObject1.optJSONObject("designerUserPO");
                             header = jsonObject2.optString("imageUrl");
                             headerName = jsonObject2.optString("name");
 
-                            JSONArray jsonArray = jsonObject1.optJSONArray("changeCaseProductPOs");
+                            JSONArray jsonArray = jsonObject1.optJSONArray(mFlags==1?"changeCaseProductPOs":"designerListProductPOs");
                             if (jsonArray != null)
                                 for (int i = 0; i < jsonArray.length(); i++)
                                 {
@@ -772,15 +822,15 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                                             e.printStackTrace();
                                         }
 
-                                        comment.idReply = reCommentid;
-                                        comment.timeReply = reCommentCreateTime;
-                                        comment.commentReply = reCommentTitle;
-                                        comment.imagesReply = reCommentImgs;
-                                        comment.typeReply = reCommentType;
-                                        comment.statusReply = reCommentStatus;
-                                        comment.userNameReply=reCommentUserName;
-                                        comment.userImageReply=reCommentUserImg;
-                                        comment.userIdReply=reCommentUserId;
+                                        comment.idFormer = reCommentid;
+                                        comment.timeFormer = reCommentCreateTime;
+                                        comment.commentFormer = reCommentTitle;
+                                        comment.imagesFormer = reCommentImgs;
+                                        comment.typeFormer = reCommentType;
+                                        comment.statusFormer = reCommentStatus;
+                                        comment.userNameFormer =reCommentUserName;
+                                        comment.userImageFormer =reCommentUserImg;
+                                        comment.userIdFormer =reCommentUserId;
                                     }
                                     comments.add(comment);
                                 }

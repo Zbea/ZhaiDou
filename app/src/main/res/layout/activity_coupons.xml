@@ -51,12 +51,12 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="6dp"
+            android:layout_marginRight="10dp"
             android:drawablePadding="2dp"
             android:gravity="center"
             android:text="兑换"
-            android:textColor="@color/text_main_color"
-            android:textSize="16sp" />
+            android:textColor="@color/green_color"
+            android:textSize="15sp" />
     </RelativeLayout>
 
     <View

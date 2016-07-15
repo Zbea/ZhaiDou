@@ -2,8 +2,6 @@ package com.zhaidou.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -304,10 +302,7 @@ public class MainHomeFragment extends BaseFragment implements View.OnClickListen
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values)
             {
-                ClipboardManager clipboardManager= (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clipData=ClipData.newPlainText("text",articles.get(position).getTitle());
-                clipboardManager.setPrimaryClip(clipData);
-                ToolUtils.setToast(mContext,"复制成功");
+
             }
         });
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
@@ -315,7 +310,7 @@ public class MainHomeFragment extends BaseFragment implements View.OnClickListen
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
             {
-                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment = HomeArticleGoodsDetailsFragment.newInstance("", "" + articles.get(position).getId());
+                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment = HomeArticleGoodsDetailsFragment.newInstance("", "" + articles.get(position).getId(),1);
                 ((BaseActivity) mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
                 homeArticleGoodsDetailsFragment.setOnCommentListener(new HomeArticleGoodsDetailsFragment.OnCommentListener()
                 {

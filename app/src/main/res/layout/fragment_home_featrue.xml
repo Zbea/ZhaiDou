@@ -304,7 +304,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:text="咨询设计师"
+            android:text="@string/title_consult_design"
             android:textSize="16sp"
             android:layout_marginLeft="15dp"
             android:textColor="@color/white"/>

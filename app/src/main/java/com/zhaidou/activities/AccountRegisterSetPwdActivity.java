@@ -201,16 +201,6 @@ public class AccountRegisterSetPwdActivity extends FragmentActivity {
         valueParams.put("phone", phone);
         valueParams.put("vcode", code);
         valueParams.put("password", pwd);
-//        JSONObject valueParams = new JSONObject();
-//        try
-//        {
-//            valueParams.put("phone", phone);
-//            valueParams.put("vcode", code);
-//            valueParams.put("password", pwd);
-//        } catch (JSONException e)
-//        {
-//            e.printStackTrace();
-//        }
         ZhaiDouRequest request = new ZhaiDouRequest(getApplicationContext(),Request.Method.POST, ZhaiDou.USER_REGISTER_WITH_PHONE_URL, valueParams, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {

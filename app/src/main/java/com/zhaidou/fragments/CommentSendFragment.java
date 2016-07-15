@@ -182,15 +182,15 @@ public class CommentSendFragment extends BaseFragment
                                             comment.articleId=mIndex;
                                             comment.articleTitle=mPage;
 
-                                            comment.idReply=mCommentId;
-                                            comment.timeReply=mCommentTime;
-                                            comment.commentReply=mCommentContent;
-                                            comment.imagesReply= mCommentImages;
-                                            comment.typeReply="A";
-                                            comment.statusReply="N";
-                                            comment.userIdReply=mCommentUserId;
-                                            comment.userNameReply=mCommentUserName;
-                                            comment.userImageReply=mCommentUserImage;
+                                            comment.idFormer =mCommentId;
+                                            comment.timeFormer =mCommentTime;
+                                            comment.commentFormer =mCommentContent;
+                                            comment.imagesFormer = mCommentImages;
+                                            comment.typeFormer ="A";
+                                            comment.statusFormer ="N";
+                                            comment.userIdFormer =mCommentUserId;
+                                            comment.userNameFormer =mCommentUserName;
+                                            comment.userImageFormer =mCommentUserImage;
 
                                         }
                                         onCommentListener.onCommentResult(comment);

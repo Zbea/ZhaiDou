@@ -19,7 +19,7 @@ import com.zhaidou.utils.DeviceUtils;
 import java.io.File;
 
 /**
- * Created by roy on 16/7/11.
+ * Created by Zbea on 16/7/11.
  */
 public class CustomPhotoMenuDialog
 {

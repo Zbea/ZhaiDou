@@ -35,7 +35,7 @@ public class MainMagicFragment extends BaseFragment
                 case R.id.magicClassicLine:
                     if (isTimeInterval())
                     {
-                        MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "");
+                        MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "",1);
                         ((BaseActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
                     }
                     break;

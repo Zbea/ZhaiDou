@@ -74,14 +74,11 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                     SharedPreferencesUtil.clearUser(getActivity());
                     CountManager.getInstance().clearCache();
                     AccountManage.getInstance().notifyLogOut();
-//                    Intent intent = new Intent(ZhaiDou.IntentRefreshLoginExitTag);
-//                    mContext.sendBroadcast(intent);
                     EaseHelper.getInstance().logout(true,null);
                             ((MainActivity) mContext).logout(SettingFragment.this);
                     NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
                     notificationManager.cancel(0525);
                     CartCountManager.newInstance().notify(0);
-//                            ((MainActivity) mContext).CartTip(0);
                     break;
             }
         }
