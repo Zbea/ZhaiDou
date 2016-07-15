@@ -781,7 +781,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     {
 //        CallbackContext.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
-        ToolUtils.setLog("父onActivityResult");
         switch (resultCode)
         {
             case 2000:
@@ -805,7 +804,9 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     {
         if (broadcastReceiver!=null)
             unregisterReceiver(broadcastReceiver);
-        ((ZDApplication) getApplicationContext()).mRequestQueue.cancelAll(null);
+        RequestQueue mRequestQueue=ZDApplication.newRequestQueue();
+        if (mRequestQueue!=null)
+            mRequestQueue.cancelAll(null);
         super.onDestroy();
     }
 

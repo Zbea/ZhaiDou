@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -104,9 +105,8 @@ public class DialogUtils {
      * 展示城市列表
      * @param provinces
      * @param positiveListener2
-     * @param cancelListener2
      */
-    public void showCityDialog(final List<Province> provinces,final PositiveListener2 positiveListener2,CancelListener2 cancelListener2)
+    public void showCityDialog(final List<Province> provinces,final PositiveListener2 positiveListener2,CancelListener cancelListener)
     {
         final Dialog dialog = new Dialog(mContext, R.style.custom_dialog);
 
@@ -346,29 +346,32 @@ public class DialogUtils {
         return mDialog;
     }
 
-    public Dialog showCouponDialog(final PositiveListener2 positiveListener, final CancelListener2 cancelListener) {
+    public Dialog showCouponDialog(final PositiveListener2 positiveListener, final CancelListener cancelListener) {
         final Dialog mDialog = new Dialog(mContext, R.style.custom_dialog);
         mDialog.setCanceledOnTouchOutside(true);
         mDialog.setCancelable(true);
-        mDialog.setContentView(R.layout.dialog_coupon);
+        mDialog.setContentView(R.layout.dialog_custom_redeem_coupon);
         mDialog.show();
-        final EditText editText = (EditText) mDialog.findViewById(R.id.message);
-        mDialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+        final EditText editText = (EditText) mDialog.findViewById(R.id.tv_msg);
+        mDialog.findViewById(R.id.cancelTv).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (cancelListener != null)
-                    cancelListener.onCancel(editText);
+                    cancelListener.onCancel();
+                closeInput(v);
                 mDialog.dismiss();
             }
         });
-        mDialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+        mDialog.findViewById(R.id.okTv).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (TextUtils.isEmpty(editText.getText().toString().trim())) {
-                    Toast.makeText(mContext, "请输入兑换码", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "抱歉，请输入兑换码", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 mDialog.dismiss();
+
+                closeInput(v);
                 positiveListener.onPositive(editText.getText().toString());
             }
         });
@@ -603,7 +606,6 @@ public class DialogUtils {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (commentContent.getText().toString().trim().length() > 200)
                     return;
-                System.out.println("TextUtils.isEmpty(commentContent.getText().toString()) = " + TextUtils.isEmpty(commentContent.getText().toString()));
                 commentOkTv.setClickable(!TextUtils.isEmpty(commentContent.getText().toString()));
                 commentOkTv.setTextColor(!TextUtils.isEmpty(commentContent.getText().toString()) || photoAdapter.getList().size() > 1 ?
                         mContext.getResources().getColor(R.color.green_color) :
@@ -621,7 +623,6 @@ public class DialogUtils {
             @Override
             public void onClick(View v) {
                 String str = commentContent.getText().toString().trim();
-                System.out.println("photoAdapter.getList().size() = " + photoAdapter.getList().size());
                 if (TextUtils.isEmpty(str) && photoAdapter.getList().size() <= 1) {
                     System.out.println("DialogUtils.onClick");
                     return;
@@ -661,7 +662,6 @@ public class DialogUtils {
         if (photoAdapter != null) {
             List<String> list = photoAdapter.getList();
             List<String> images=new ArrayList<String>(list);
-            System.out.println("DialogUtils.notifyPhotoAdapter------>" + images.toString() + "-----" + images.size());
             images.add(images.size()-1,image);
             photoAdapter.setList(images);
         }
@@ -783,6 +783,12 @@ public class DialogUtils {
         mTimer.schedule(new MyTimer(), 1000, 1000);
     }
 
+    private void closeInput(View dialog)
+    {
+        InputMethodManager inputMethodManagers=(InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (inputMethodManagers.isActive())
+            inputMethodManagers.hideSoftInputFromWindow(dialog.getWindowToken(),0);
+    }
 
     /**
      * 倒计时

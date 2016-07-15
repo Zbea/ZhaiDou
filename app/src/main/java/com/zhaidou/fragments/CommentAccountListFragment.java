@@ -67,7 +67,6 @@ public class CommentAccountListFragment extends BaseFragment implements PullToRe
     private static final String ARG_INDEX = "index";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private int mIndex;
     private String mParam2;
     private CommentListAdapter commentListAdapter;
@@ -118,7 +117,6 @@ public class CommentAccountListFragment extends BaseFragment implements PullToRe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         listView = new PullToRefreshListView(mContext);
         listView.setMode(PullToRefreshBase.Mode.BOTH);
         listView.setOnRefreshListener(this);
@@ -149,20 +147,6 @@ public class CommentAccountListFragment extends BaseFragment implements PullToRe
             }
         });
 
-//        commentListAdapter.setOnInViewClickListener(R.id.avatar, new BaseListAdapter.onInternalClickListener() {
-//            @Override
-//            public void OnClickListener(View parentV, View v, Integer position, Object values) {
-//                System.out.println("parentV = [" + parentV + "], v = [" + v + "], position = [" + position + "], values = [" + values + "]");
-//                showCommentDialog(values);
-//            }
-//        });
-//        commentListAdapter.setOnInViewClickListener(R.id.username, new BaseListAdapter.onInternalClickListener() {
-//            @Override
-//            public void OnClickListener(View parentV, View v, Integer position, Object values) {
-//                Entity entity = (Entity) values;
-//                showCommentDialog(entity);
-//            }
-//        });
         commentListAdapter.setOnInViewClickListener(R.id.subject,new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
@@ -202,12 +186,9 @@ public class CommentAccountListFragment extends BaseFragment implements PullToRe
                                 if (jsonObject != null) {
                                     int status = jsonObject.optInt("status");
                                     if (status == 200) {
-//                                        mHandler.sendEmptyMessage(UPDATE_UI_LIST);
                                         ShowToast("回复成功");
                                     }
                                 }
-
-                                System.out.println("onSuccess---object = " + object);
                             }
                         }, new Api.ErrorListener() {
                             @Override

@@ -5,11 +5,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -32,6 +30,7 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Coupon;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DateUtils;
+import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -275,50 +274,21 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
      */
     private void addCoupon()
     {
-        final Dialog dialog = new Dialog(mContext, R.style.custom_dialog);
-
-        View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_redeem_coupon, null);
-        final TextView tv_msg = (TextView) view.findViewById(R.id.tv_msg);
-        TextView cancelTv = (TextView) view.findViewById(R.id.cancelTv);
-        cancelTv.setOnClickListener(new View.OnClickListener() {
+        DialogUtils dialogUtils=new DialogUtils(mContext);
+        dialogUtils.showCouponDialog(new DialogUtils.PositiveListener2()
+        {
             @Override
-            public void onClick(View view) {
-                closeInput(view);
-                dialog.dismiss();
-            }
-        });
-
-        TextView okTv = (TextView) view.findViewById(R.id.okTv);
-        okTv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                couponCode=tv_msg.getText().toString();
-                if (TextUtils.isEmpty(couponCode))
-                {
-                    ToolUtils.setToast(mContext,"抱歉，请先填写兑换码");
-                    return;
-                }
-                dialog.dismiss();
+            public void onPositive(Object o)
+            {
+                couponCode=o.toString().trim();
                 if (mDialog!=null)
                     mDialog.show();
-                closeInput(view);
                 FetchRedeem();
-
             }
-        });
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setCancelable(true);
-        dialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        dialog.show();
+        },null);
 
     }
 
-    private void closeInput(View dialog)
-    {
-        InputMethodManager inputMethodManagers=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (inputMethodManagers.isActive())
-            inputMethodManagers.hideSoftInputFromWindow(dialog.getWindowToken(),0);
-    }
 
     /**
      * 加载失败
