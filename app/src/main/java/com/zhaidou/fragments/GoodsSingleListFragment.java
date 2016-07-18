@@ -179,9 +179,13 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         if (mFlag == 1)
         {
             FetchSpecialData(mParam1, sort, currentpage = 1);
-        } else
+        } else if (mFlag==2)
         {
             FetchSpecialIdData(mParam1, sort, currentpage = 1);
+        }
+        else
+        {
+            FetchBrandIdData(mParam1, currentpage = 1);
         }
 //        if ("category".equalsIgnoreCase(mParam2))//全分类
 //        {
@@ -234,10 +238,6 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         }
     }
 
-    public void setCurrentpage()
-    {
-        currentpage = 1;
-    }
 
     /**
      * 特卖列表请求数据
@@ -368,8 +368,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
     }
 
     /**
-     * 特卖列表请求数据
-     *
+     * 分类请求数据
      * @param categoryId
      * @param sort
      * @param page
@@ -402,6 +401,125 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
             {
                 url = ZhaiDou.SearchGoodsIdUrl + json + "&pageNo=" + currentpage;
             }
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        ToolUtils.setLog(url);
+        ZhaiDouRequest newMissRequest = new ZhaiDouRequest(url, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject json)
+            {
+                setEndLoading();
+                gv_single.onRefreshComplete();
+                if (json != null)
+                {
+                    JSONObject dataObject = json.optJSONObject("data");
+
+                    if (dataObject == null)
+                    {
+                        if (currentpage == 1)
+                        {
+                            if (products.size() == 0)
+                            {
+                                nullLine.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        return;
+                    }
+                    JSONObject pageObject = dataObject.optJSONObject("pagePO");
+                    if (pageObject == null)
+                    {
+                        if (currentpage == 1)
+                        {
+                            if (products.size() == 0)
+                            {
+                                nullLine.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        return;
+                    }
+                    pageTotal = pageObject.optInt("totalCount");
+                    pageSize = pageObject.optInt("pageSize");
+                    JSONArray jsonArray = pageObject.optJSONArray("items");
+                    if (jsonArray == null || jsonArray.toString().length() < 5)
+                    {
+                        if (currentpage == 1)
+                        {
+                            if (products.size() == 0)
+                            {
+                                nullLine.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        return;
+                    }
+                    for (int i = 0; i < jsonArray.length(); i++)
+                    {
+                        JSONObject merchandise = jsonArray.optJSONObject(i);
+                        int id = merchandise.optInt("id");
+                        String productId = merchandise.optString("productId");
+                        String title = merchandise.optString("productName");
+                        double price = merchandise.optDouble("price");
+                        String cost_price = merchandise.optString("marketingPrice") == "null" ? "0" : merchandise.optString("marketingPrice");
+                        String imgUrl = merchandise.optString("productPicUrl");
+                        JSONObject countObject = merchandise.optJSONObject("expandedResponse");
+                        int remaining = countObject.optInt("stock");
+                        Product product = new Product();
+                        product.goodsId = productId;
+                        product.setId(id);
+                        product.setPrice(price);
+                        product.setCost_price(Double.parseDouble(cost_price));
+                        product.setTitle(title);
+                        product.setImage(imgUrl);
+                        product.setRemaining(remaining);
+                        products.add(product);
+                    }
+                    handler.sendEmptyMessage(0);
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                setEndLoading();
+                gv_single.onRefreshComplete();
+                if (products.size() == 0)
+                {
+                    nullLine.setVisibility(View.VISIBLE);
+                }
+                if (currentpage > 1)
+                {
+                    currentpage = currentpage - 1;
+                }
+            }
+        });
+        mRequestQueue.add(newMissRequest);
+    }
+
+
+    /**
+     * 品牌请求数据
+     * @param brandId
+     * @param page
+     */
+    public void FetchBrandIdData(String brandId, int page)
+    {
+        mParam1 = brandId;
+        currentpage = page;
+        mFlag=3;
+        if (page == 1) products.clear();
+        String url = null;
+        JSONObject json = new JSONObject();
+        JSONArray jsonValue = new JSONArray();
+        try
+        {
+            jsonValue.put(brandId);
+            json.put("brandId", jsonValue);
+
+            url = ZhaiDou.SearchGoodsBrandIdUrl + json + "&pageNo=" + currentpage;
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -725,9 +843,13 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
             if (mFlag == 1)
             {
                 FetchSpecialData(mParam1, sort, currentpage = 1);
-            } else
+            } else if (mFlag==2)
             {
                 FetchSpecialIdData(mParam1, sort, currentpage = 1);
+            }
+            else
+            {
+                FetchBrandIdData(mParam1, currentpage = 1);
             }
         } else
         {
@@ -747,9 +869,13 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
             if (mFlag == 1)
             {
                 FetchSpecialData(mParam1, sort, ++currentpage);
-            } else
+            } else if (mFlag==2)
             {
                 FetchSpecialIdData(mParam1, sort, ++currentpage);
+            }
+            else
+            {
+                FetchBrandIdData(mParam1, ++currentpage);
             }
         } else
         {

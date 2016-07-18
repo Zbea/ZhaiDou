@@ -48,7 +48,9 @@ public class ClickableTextView extends TypeFaceTextView {
         List<String> mCategories = Arrays.asList(str.split("、"));
         if (mCategories.size() > 0) {
             // 最后一个
-            for (int i = 0; i < mCategories.size(); i++) {
+            for (int i = 0; i < mCategories.size(); i++)
+            {
+                final  int position=i;
                 final String category =mCategories.get(i);
                 final String id = ids.get(i);
                 final int start = str.indexOf(category);
@@ -56,7 +58,7 @@ public class ClickableTextView extends TypeFaceTextView {
 
                     @Override
                     public void onClick(View widget) {
-                        onTextClickListener.onTextClick(category,id);
+                        onTextClickListener.onTextClick(category,id,position);
                     }
 
                     @Override
@@ -73,6 +75,6 @@ public class ClickableTextView extends TypeFaceTextView {
     }
 
     public interface OnTextClickListener{
-        public void onTextClick(String categoryStr,String id);
+        public void onTextClick(String categoryStr,String id,int position);
     }
 }

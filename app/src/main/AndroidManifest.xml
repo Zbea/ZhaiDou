@@ -42,7 +42,7 @@
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize"
+            android:windowSoftInputMode="adjustPan|stateHidden"
             android:theme="@style/StyledIndicators" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

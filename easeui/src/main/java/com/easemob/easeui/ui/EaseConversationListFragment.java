@@ -227,7 +227,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
         }
         List<EMConversation> list = new ArrayList<EMConversation>();
 //        if (sortList.size() == 0) {
-////            list.add(new EMConversation("designer"));
+//            list.add(new EMConversation("designer"));
 //            list.add(new EMConversation("service"));
 //        } else if (sortList.size() == 1) {
 //            EMConversation second = sortList.get(0).second;

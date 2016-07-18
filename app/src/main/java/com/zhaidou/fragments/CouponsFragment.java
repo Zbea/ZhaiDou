@@ -260,9 +260,10 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
         }
 
         @Override
-        public void onTextClick(String categoryStr, String id) {
+        public void onTextClick(String categoryStr, String id,int position) {
             System.out.println("categoryStr = [" + categoryStr + "], id = [" + id + "]");
-            SearchFragment searchFragment = SearchFragment.newInstance(id, 2);
+            Coupons coupons=getList().get(position);
+            SearchFragment searchFragment = SearchFragment.newInstance(categoryStr,id, coupons.goodsType.equalsIgnoreCase("C")?2:3);
             ((BaseActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
         }
     }

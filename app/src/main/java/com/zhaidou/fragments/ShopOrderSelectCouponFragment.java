@@ -69,7 +69,8 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
 
     private LinearLayout loadingView, nullNetView, nullView;
     private TextView reloadBtn, reloadNetBtn;
-    private CouponAdapter couponAdapter,noCouponAdapter;
+    private CouponAdapter couponAdapter;
+    private CouponAdapter noCouponAdapter;
 
     private final int UPDATE_COUPON_LIST = 0;
     private final int UPDATE_REDEEM_COUPON_RESULT = 1;
@@ -106,8 +107,8 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                     }
                     loadingView.setVisibility(View.GONE);
                     couponNullView.setVisibility(View.GONE);
-                    noCouponAdapter.setList(itemsNo);
                     couponAdapter.setList(items);
+                    noCouponAdapter.setList(itemsNo);
                     noCouponTv.setVisibility(itemsNo.size()>0?View.VISIBLE:View.GONE);
                     break;
                 case UPDATE_REDEEM_COUPON_RESULT:
@@ -337,56 +338,24 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                     for (int i = 0; i < datasObject.length(); i++)
                     {
                         JSONObject couponObject = datasObject.optJSONObject(i);
-                        int id = couponObject.optInt("id");
-                        int couponId = couponObject.optInt("couponId");
-                        int couponRuleId = couponObject.optInt("couponRuleId");
-                        String couponCode = couponObject.optString("couponCode");
-                        double enoughValue = couponObject.optDouble("enoughValue");
-                        double money = couponObject.optDouble("bookValue");
-                        String info = couponObject.optString("couponName");
-                        String startTime = couponObject.optString("startTime");
-                        String endTime = couponObject.optString("endTime");
-                        int days=0;
-                        String timeStr=null;
-                        try
-                        {
-                            timeStr= DateUtils.getCouponDateDiff(endTime);
-                            days=DateUtils.getDateDays(endTime);
-                            ToolUtils.setLog(days+"");
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
-                            endTime=dateFormat.format(DateUtils.formatDate(endTime));
-                            startTime=dateFormat.format(DateUtils.formatDate(startTime));
-                        } catch (ParseException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        String statu = couponObject.optString("status");
-                        String property = couponObject.optString("property");
-                        String goodsType = couponObject.optString("goodsType");
-                        Coupon coupon = new Coupon();
-                        coupon.id = id;
-                        coupon.couponId = couponId;
-                        coupon.couponRuleId = couponRuleId;
-                        coupon.couponCode = couponCode;
-                        coupon.enoughMoney = enoughValue;
-                        coupon.money = money;
-                        coupon.info="满"+ToolUtils.isIntPrice(enoughValue+"")+"减"+ToolUtils.isIntPrice(money+"");
-                        coupon.startDate = startTime;
-                        coupon.endDate = endTime;
-                        coupon.time = days;
-                        coupon.timeStr = timeStr;
-                        coupon.status = statu;
-                        coupon.property = property;
-                        coupon.type = goodsType;
-                        coupon.isDefault = false;
-                        items.add(coupon);
+                        parseJson(couponObject,items,false);
                     }
-                    handler.sendEmptyMessage(UPDATE_COUPON_LIST);
+
                 } else
                 {
                     couponNullView.setVisibility(View.VISIBLE);
                     loadingView.setVisibility(View.GONE);
                 }
+                JSONArray dataNoObject = object.optJSONArray("canNotUsedata");
+                if (dataNoObject != null && dataNoObject.length() > 0)
+                {
+                    for (int i = 0; i < dataNoObject.length(); i++)
+                    {
+                        JSONObject couponObject = dataNoObject.optJSONObject(i);
+                        parseJson(couponObject,itemsNo,true);
+                    }
+                }
+                handler.sendEmptyMessage(UPDATE_COUPON_LIST);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -395,6 +364,55 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
             }
         });
         mRequestQueue.add(request);
+    }
+
+
+    private void parseJson(JSONObject jsonObject,List<Coupon> coupons,boolean isNoUser)
+    {
+
+        int id = jsonObject.optInt("id");
+        int couponId = jsonObject.optInt("couponId");
+        int couponRuleId = jsonObject.optInt("couponRuleId");
+        String couponCode = jsonObject.optString("couponCode");
+        double enoughValue = jsonObject.optDouble("enoughValue");
+        double money = jsonObject.optDouble("bookValue");
+        String info = jsonObject.optString("couponName");
+        String startTime = jsonObject.optString("startTime");
+        String endTime = jsonObject.optString("endTime");
+        int days=0;
+        String timeStr=null;
+        try
+        {
+            timeStr= DateUtils.getCouponDateDiff(endTime);
+            days=DateUtils.getDateDays(endTime);
+            ToolUtils.setLog(days+"");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
+            endTime=dateFormat.format(DateUtils.formatDate(endTime));
+            startTime=dateFormat.format(DateUtils.formatDate(startTime));
+        } catch (ParseException e)
+        {
+            e.printStackTrace();
+        }
+        String statu = jsonObject.optString("status");
+        String property = jsonObject.optString("property");
+        String goodsType = jsonObject.optString("goodsType");
+        Coupon coupon = new Coupon();
+        coupon.id = id;
+        coupon.couponId = couponId;
+        coupon.couponRuleId = couponRuleId;
+        coupon.couponCode = couponCode;
+        coupon.enoughMoney = enoughValue;
+        coupon.money = money;
+        coupon.info="满"+ToolUtils.isIntPrice(enoughValue+"")+"减"+ToolUtils.isIntPrice(money+"");
+        coupon.startDate = startTime;
+        coupon.endDate = endTime;
+        coupon.time = days;
+        coupon.timeStr = timeStr;
+        coupon.status = statu;
+        coupon.property = property;
+        coupon.type = goodsType;
+        coupon.isNoUse = isNoUser;
+        coupons.add(coupon);
     }
 
     /**
@@ -563,6 +581,8 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
             return convertView;
         }
     }
+
+
 
     @Override
     public void onDestroyView()

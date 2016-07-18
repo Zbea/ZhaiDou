@@ -83,6 +83,9 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
 
     private int userId;
     private String token;
+    private List<CartGoodsItem> itemsIsOver = new ArrayList<CartGoodsItem>();
+    private List<CartGoodsItem> itemsIsDate = new ArrayList<CartGoodsItem>();
+    private List<CartGoodsItem> itemsIsPublish = new ArrayList<CartGoodsItem>();
     private List<CartGoodsItem> items = new ArrayList<CartGoodsItem>();
     private ArrayList<CartArrayItem> arrays = new ArrayList<CartArrayItem>();
     private ArrayList<CartArrayItem> arraysCheck = new ArrayList<CartArrayItem>();
@@ -91,7 +94,6 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
     private boolean isGoods;//是否存在商品
     private int cartCount;//购物车商品数量
     private final static int UPDATE_CART_LIST=1;
-    private final static int UPDATE_CART_COUNT=2;
 
     private ShopCartAdapter shopCartAdapter;
 
@@ -263,18 +265,18 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
             {
                 if (allCb.isChecked())
                 {
-                    for (int i = 0; i <items.size() ; i++)
+                    for (int i = 0; i <getUserItems().size() ; i++)
                     {
-                        String sizeId=items.get(i).sizeId;
+                        String sizeId=getUserItems().get(i).sizeId;
                         shopCartAdapter.getIsSelected().put(sizeId,true);
                     }
                     allCb.setChecked(true);
                 }
                 else
                 {
-                    for (int i = 0; i <items.size() ; i++)
+                    for (int i = 0; i <getUserItems().size() ; i++)
                     {
-                        String sizeId=items.get(i).sizeId;
+                        String sizeId=getUserItems().get(i).sizeId;
                         shopCartAdapter.getIsSelected().put(sizeId,false);
                     }
                     allCb.setChecked(false);
@@ -378,6 +380,9 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
         arraysCheck.clear();
         itemsCheck.clear();
         items.clear();
+        itemsIsDate.clear();
+        itemsIsOver.clear();
+        itemsIsPublish.clear();
         checkLogin();
         FetchDetailData();
         FetchCountData();
@@ -395,6 +400,9 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
             arraysCheck.clear();
             itemsCheck.clear();
             items.clear();
+            itemsIsDate.clear();
+            itemsIsOver.clear();
+            itemsIsPublish.clear();
             mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
             checkLogin();
             FetchDetailData();
@@ -414,8 +422,30 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
         if (arrays.size() > 0)
             for (int i = 0; i < arrays.size(); i++)
             {
-                items.addAll(arrays.get(i).goodsItems);
+                List<CartGoodsItem> cartGoodsItems=arrays.get(i).goodsItems;
+                for (int j = 0; j < cartGoodsItems.size(); j++)
+                {
+                    if (cartGoodsItems.get(j).isPublish.equalsIgnoreCase("true"))
+                    {
+                        itemsIsPublish.add(cartGoodsItems.get(j));
+                    }
+                    else if (cartGoodsItems.get(j).isOver.equalsIgnoreCase("true"))
+                    {
+                        itemsIsOver.add(cartGoodsItems.get(j));
+                    }
+                    else if (cartGoodsItems.get(j).isDate.equalsIgnoreCase("true"))
+                    {
+                        itemsIsDate.add(cartGoodsItems.get(j));
+                    }
+                    else
+                    {
+                        items.add(cartGoodsItems.get(j));
+                    }
+                }
             }
+        items.addAll(itemsIsOver);
+        items.addAll(itemsIsPublish);
+        items.addAll(itemsIsDate);
         shopCartAdapter.setList(items);
         shopCartAdapter.setRefreshCheckView();
 
@@ -463,13 +493,47 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
     }
 
     /**
+     * 判断是否可以操作商品
+     * @param cartGoodsItem
+     * @return
+     */
+    private boolean isUser(CartGoodsItem cartGoodsItem)
+    {
+        if (!cartGoodsItem.isOver.equals("true")&&!cartGoodsItem.isPublish.equals("true")&&!cartGoodsItem.isDate.equals("true"))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    /**
+     * 得到可用商品
+     * @return
+     */
+    private List<CartGoodsItem> getUserItems()
+    {
+        List<CartGoodsItem> userItems=new ArrayList<CartGoodsItem>();
+        for (int i = 0; i <items.size() ; i++)
+        {
+            CartGoodsItem cartGoodsItem=items.get(i);
+            if (isUser(cartGoodsItem))
+            {
+                userItems.add(cartGoodsItem);
+            }
+        }
+        return userItems;
+    }
+
+    /**
      * 设置选中商品价格数量变化
      */
     private void setGoodsCheckChange()
     {
         itemsCheck=shopCartAdapter.getItemChecks();
-        ToolUtils.setLog("itemsCheck:"+itemsCheck.size());
-        allCb.setChecked(itemsCheck.size()==items.size()?true:false);
+        allCb.setChecked(itemsCheck.size()==getUserItems().size()?true:false);
 
         int num = 0;
         double totalMoney = 0;

@@ -39,6 +39,7 @@ import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.AutoGridView;
 import com.zhaidou.view.CustomEditText;
 
@@ -55,10 +56,12 @@ import java.util.Set;
  */
 public class SearchFragment extends BaseFragment
 {
-    private static final String DATA = "page";
+    private static final String TITLE = "title";
+    private static final String ID = "id";
     private static final String INDEX = "index";
     private View mView;
-    private String mPage="";
+    private String mTitle="";
+    private String mId="";
     private int mIndex;
     private Context mContext;
     private GridView gv_hot;
@@ -91,7 +94,6 @@ public class SearchFragment extends BaseFragment
     private SearchSortFragment mSearchSortFragment;
 
     private GoodsSingleListFragment mSpecialGoodsFragment;
-    private GoodsSingleListFragment mtaobaoGoodsFragment;
 
     private boolean isHidenKeyBoard = false;
 
@@ -118,22 +120,15 @@ public class SearchFragment extends BaseFragment
                         {
                             mSpecialGoodsFragment.FetchSpecialData(search_Str, sort, 1);
                         }
-                            else
+                            else if (mIndex==2)
                         {
                             mSpecialGoodsFragment.FetchSpecialIdData(search_Str, sort, 1);
                         }
+                        else
+                        {
+                            mSpecialGoodsFragment.FetchBrandIdData(search_Str, 1);
+                        }
                     }
-//                    if (mFragments.size()<2){
-//                    mSpecialGoodsFragment = GoodsSingleListFragment.newInstance(text, "goods", 1);
-//                        mtaobaoGoodsFragment= GoodsSingleListFragment.newInstance(text, text,2);
-//                        mStrategyFragment= SearchArticleListFragment.newInstance(text, text);
-//                    mFragments.add(mSpecialGoodsFragment);
-//                        mFragments.add(mtaobaoGoodsFragment);
-//                        mFragments.add(mStrategyFragment);
-//                    }else if (mFragments.size()==2){
-//                        mSpecialGoodsFragment.FetchSpecialData(text, sort, 1);
-//                        mtaobaoGoodsFragment.FetchData(text,sort,1);
-//                    }
                     mSearchFragmentAdapter.notifyDataSetChanged();
                     indicator.notifyDataSetChanged();
                     ll_viewpager.setVisibility(View.VISIBLE);
@@ -217,14 +212,6 @@ public class SearchFragment extends BaseFragment
                 {
                     mSpecialGoodsFragment.FetchSpecialData(search_Str, index, 1);
                 }
-                else
-                {
-                    mSpecialGoodsFragment.FetchSpecialIdData(search_Str, 0, 1);
-                }
-
-            } else if (page == 1)
-            {
-                mtaobaoGoodsFragment.FetchData(search_Str, index, 1);
             }
         }
     };
@@ -239,11 +226,12 @@ public class SearchFragment extends BaseFragment
         }
     };
 
-    public static SearchFragment newInstance(String page, int index)
+    public static SearchFragment newInstance(String title,String id, int index)
     {
         SearchFragment fragment = new SearchFragment();
         Bundle args = new Bundle();
-        args.putSerializable(DATA, page);
+        args.putSerializable(TITLE, title);
+        args.putSerializable(ID, id);
         args.putSerializable(INDEX, index);
         fragment.setArguments(args);
         return fragment;
@@ -259,8 +247,9 @@ public class SearchFragment extends BaseFragment
         super.onCreate(savedInstanceState);
         if (getArguments() != null)
         {
-            mPage = mPage+getArguments().getString(DATA);
-            mIndex = getArguments().getInt(INDEX);//1为普通搜索2为分类搜索
+            mTitle = mTitle+getArguments().getString(TITLE);
+            mId = getArguments().getString(ID);
+            mIndex = getArguments().getInt(INDEX);//1为普通搜索2为分类搜索3品牌搜索
         }
     }
 
@@ -285,8 +274,9 @@ public class SearchFragment extends BaseFragment
     private void initView()
     {
         mEditText = (CustomEditText) mView.findViewById(R.id.et_search);
-        mEditText.setHint(mPage.length()>0?mPage:"搜索");
-        search_Str=mPage;
+        mEditText.setHint(mTitle.length()>0?mTitle:"搜索");
+        ToolUtils.setLog(mTitle);
+        search_Str=mId;
         mSearchiv = (ImageView) mView.findViewById(R.id.iv_search);
         mDeleteView = (TextView) mView.findViewById(R.id.tv_delete);
         mSearchView = (TextView) mView.findViewById(R.id.tv_cancel);
@@ -441,7 +431,7 @@ public class SearchFragment extends BaseFragment
         {
             mSortView.setVisibility(View.GONE);
             mSearchView.setVisibility(View.VISIBLE);
-            search_Str=mPage;
+            search_Str=mId;
         }
         mHandler.sendEmptyMessage(UPDATE_CONTENT);
     }

@@ -1,7 +1,6 @@
 package com.zhaidou.adapter;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Paint;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -44,8 +43,12 @@ public class ShopCartAdapter extends BaseListAdapter<CartGoodsItem>
         HashMap<String, Boolean> initSelected=new HashMap<String, Boolean>();
         for (int i = 0; i < list.size(); i++)
         {
-            String sizeId=list.get(i).sizeId;
-            initSelected.put(sizeId, isSelected.get(sizeId)!=null?isSelected.get(sizeId):false);
+            CartGoodsItem cartGoodsItem=list.get(i);
+            if (isUser(cartGoodsItem))
+            {
+                String sizeId=cartGoodsItem.sizeId;
+                initSelected.put(sizeId, isSelected.get(sizeId)!=null?isSelected.get(sizeId):false);
+            }
         }
         isSelected=initSelected;
         super.setList(list);
@@ -92,9 +95,8 @@ public class ShopCartAdapter extends BaseListAdapter<CartGoodsItem>
         }
 
         final CartGoodsItem cartGoodsItem=getList().get(position);
-
         //判断商品是否下架或者卖光处理
-        if (!cartGoodsItem.isOver.equals("true")&&!cartGoodsItem.isPublish.equals("true")&&!cartGoodsItem.isDate.equals("true"))
+        if (isUser(cartGoodsItem))
         {
             itemflags.setVisibility(View.GONE);
             cartNumView.setVisibility(View.VISIBLE);
@@ -116,40 +118,50 @@ public class ShopCartAdapter extends BaseListAdapter<CartGoodsItem>
                     setRefreshCheckView();
                 }
             });
+            itemName.setTextColor(mContext.getResources().getColor(R.color.text_main_color));
+            itemCheck.setChecked(isSelected.get(cartGoodsItem.sizeId)?true:false);
         } else
         {
             itemCheck.setVisibility(View.GONE);
             cartNumView.setVisibility(View.GONE);
             itemflags.setVisibility(View.VISIBLE);
             cartNumLoseView.setVisibility(View.VISIBLE);
-            itemName.setTextColor(ColorStateList.valueOf(R.color.text_gary_color));
+            itemName.setTextColor(mContext.getResources().getColor(R.color.text_gary_color));
         }
 
         numLimit.setVisibility(cartGoodsItem.num > cartGoodsItem.count ? View.VISIBLE : View.GONE);
-        itemCheck.setChecked(isSelected.get(cartGoodsItem.sizeId)?true:false);
-        if (cartGoodsItem.isPublish.equals("true"))
-        {
-            isOver.setVisibility(View.GONE);
-            islose.setVisibility(View.VISIBLE);
-            isDate.setVisibility(View.GONE);
-        }
-        if (cartGoodsItem.isDate.equals("true"))
-        {
-            isOver.setVisibility(View.GONE);
-            islose.setVisibility(View.GONE);
-            isDate.setVisibility(View.VISIBLE);
-        }
+
         if (cartGoodsItem.isOver.equals("true"))
         {
             isOver.setVisibility(View.VISIBLE);
             islose.setVisibility(View.GONE);
             isDate.setVisibility(View.GONE);
         }
+        else if (cartGoodsItem.isPublish.equals("true"))
+        {
+            isOver.setVisibility(View.GONE);
+            islose.setVisibility(View.VISIBLE);
+            isDate.setVisibility(View.GONE);
+        }
+        else if (cartGoodsItem.isDate.equals("true"))
+        {
+            isOver.setVisibility(View.GONE);
+            islose.setVisibility(View.GONE);
+            isDate.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            isOver.setVisibility(View.GONE);
+            islose.setVisibility(View.GONE);
+            isDate.setVisibility(View.GONE);
+        }
+        //判断是否是零元特卖
         if (cartGoodsItem.isOSale.equals("true"))
         {
             cartNumView.setVisibility(View.GONE);
             cartNumLoseView.setVisibility(View.VISIBLE);
         }
+
         itemName.setText(cartGoodsItem.name);
         itemSize.setText(cartGoodsItem.size);
         itemCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + cartGoodsItem.currentPrice));
@@ -158,7 +170,25 @@ public class ShopCartAdapter extends BaseListAdapter<CartGoodsItem>
         itemNum.setText("" + cartGoodsItem.num);
         itemLoseNum.setText("" + cartGoodsItem.num);
         ToolUtils.setImageCacheUrl(cartGoodsItem.imageUrl, itemImage, R.drawable.icon_loading_defalut);
+
         return convertView;
+    }
+
+    /**
+     * 判断是否可以操作商品
+     * @param cartGoodsItem
+     * @return
+     */
+    private boolean isUser(CartGoodsItem cartGoodsItem)
+    {
+        if (!cartGoodsItem.isOver.equals("true")&&!cartGoodsItem.isPublish.equals("true")&&!cartGoodsItem.isDate.equals("true"))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
 
@@ -168,11 +198,14 @@ public class ShopCartAdapter extends BaseListAdapter<CartGoodsItem>
         for (int i = 0; i <getList().size() ; i++)
         {
             CartGoodsItem cartGoodsItem=getList().get(i);
-            if (isSelected.get(cartGoodsItem.sizeId))
+            if (isUser(cartGoodsItem))
             {
-                if (!cartGoodsItem.isOver.equals("true")&&!cartGoodsItem.isPublish.equals("true")&&!cartGoodsItem.isDate.equals("true"))
+                if (isSelected.get(cartGoodsItem.sizeId))
+                {
                     itemChecks.add(cartGoodsItem);
+                }
             }
+
         }
         return itemChecks;
     }

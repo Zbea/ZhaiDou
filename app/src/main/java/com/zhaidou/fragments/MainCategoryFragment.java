@@ -114,7 +114,7 @@ public class MainCategoryFragment extends BaseFragment {
             @Override
             public void onClick(View v)
             {
-                SearchFragment searchFragment = SearchFragment.newInstance(mParam1, 1);
+                SearchFragment searchFragment = SearchFragment.newInstance(mParam1,mParam1, 1);
                 ((BaseActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
             }
         });
@@ -130,7 +130,8 @@ public class MainCategoryFragment extends BaseFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                SearchFragment searchFragment = SearchFragment.newInstance(mCategoryItemAdapter.getList().get(position).categoryId, 2);
+                CategoryItem category=mCategoryItemAdapter.getList().get(position);
+                SearchFragment searchFragment = SearchFragment.newInstance(category.categoryName,category.categoryId, 2);
                 ((BaseActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
             }
         });

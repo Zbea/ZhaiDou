@@ -415,9 +415,8 @@ public class MainGoodsFragment extends BaseFragment implements
         switch (view.getId())
         {
             case R.id.iv_searchs:
-                SearchFragment searchFragment = SearchFragment.newInstance(searchStr, 1);
+                SearchFragment searchFragment = SearchFragment.newInstance(searchStr,searchStr, 1);
                 ((BaseActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
-//                ((MainActivity) getActivity()).gotoCategory();
                 break;
             case R.id.iv_category:
                 MainCategoryFragment mainCategoryFragment = MainCategoryFragment.newInstance(searchStr, "");

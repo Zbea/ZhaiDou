@@ -28,7 +28,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
@@ -155,7 +154,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         mRegisterView = (TextView) findViewById(R.id.tv_register);
         mResetView = (TextView) findViewById(R.id.tv_reset_psw);
 
-        requestQueue = Volley.newRequestQueue(this);
+        requestQueue = ZDApplication.newRequestQueue();
         mLoginView.setOnClickListener(this);
         mRegisterView.setOnClickListener(this);
         mResetView.setOnClickListener(this);
@@ -228,7 +227,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                                     String email = userObj.optString("email");
                                     String nick = userObj.optString("nick_name");
                                     User user = new User(id, email, token, nick, null);
-//                                    loginToEaseServer(user);
                                     mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
                                 }
                             } else {
