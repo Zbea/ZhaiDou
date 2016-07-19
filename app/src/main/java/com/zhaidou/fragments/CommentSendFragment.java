@@ -236,8 +236,6 @@ public class CommentSendFragment extends BaseFragment
                     commitComment();
                     break;
                 case R.id.comment_image_add:
-//                    menuView.setVisibility(View.VISIBLE);
-//                    toggleMenu();
                     File dir = new File(ZhaiDou.MyCommentDir);
                     if (!dir.exists())
                     {

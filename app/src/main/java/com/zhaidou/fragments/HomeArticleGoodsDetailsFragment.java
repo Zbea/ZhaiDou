@@ -210,7 +210,16 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                     break;
                 case R.id.rl_video:
                     Intent video = new Intent();
-                    video.putExtra("url", videoUrl);
+                    String url=null;
+                    if (!TextUtils.isEmpty(vid))
+                    {
+                        url="http://player.youku.com/embed/"+vid+"?client_id=814e6ba73e9be572";
+                    }
+                    else
+                    {
+                        url=videoUrl;
+                    }
+                    video.putExtra("url", url);
                     video.setClass(mContext, WebViewActivity.class);
                     mContext.startActivity(video);
                     break;

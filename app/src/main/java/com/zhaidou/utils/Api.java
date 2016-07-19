@@ -101,7 +101,7 @@ public class Api {
                     errorListener.onError(volleyError);
             }
         });
-        ZDApplication.mRequestQueue.add(request);
+        ZDApplication.newRequestQueue().add(request);
     }
 
 

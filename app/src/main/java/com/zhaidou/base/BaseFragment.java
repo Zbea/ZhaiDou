@@ -117,8 +117,8 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
 
     public void ShowToast(String text) {
         if (mToast == null) {
-            if (getActivity() != null) {
-                mToast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
+            if (mContext!= null) {
+                mToast = Toast.makeText(mContext, text, Toast.LENGTH_SHORT);
             }
         } else {
             mToast.setText(text);
@@ -129,11 +129,14 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
 
     public void ShowToast(int text) {
         if (mToast == null) {
-            mToast = Toast.makeText(getActivity(), text, Toast.LENGTH_LONG);
+            if (mContext!= null) {
+                mToast = Toast.makeText(mContext, text, Toast.LENGTH_SHORT);
+            }
         } else {
             mToast.setText(text);
         }
-        mToast.show();
+        if (mToast != null)
+            mToast.show();
     }
 
     /**

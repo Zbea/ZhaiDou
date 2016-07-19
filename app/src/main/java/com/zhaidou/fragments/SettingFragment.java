@@ -3,7 +3,6 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
@@ -27,6 +25,7 @@ import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.CartCountManager;
 import com.zhaidou.base.CountManager;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.easeui.helpdesk.EaseHelper;
 import com.zhaidou.model.ZhaiDouRequest;
@@ -54,7 +53,6 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     ProfileFragment mProfileFragment;
     private TextView tv_size;
 
-    SharedPreferences mSharedPreferences;
     RequestQueue requestQueue;
     private DialogUtils mDialogUtil;
     private Dialog mDialog;
@@ -130,8 +128,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         view.findViewById(R.id.ll_clear).setOnClickListener(this);
         view.findViewById(R.id.ll_about).setOnClickListener(this);
         view.findViewById(R.id.bt_logout).setOnClickListener(this);
-        mSharedPreferences = getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
-        requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue = ZDApplication.newRequestQueue();
 
         tv_size.setText(setCountSize());
 
@@ -288,7 +285,11 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                 mDialogUtil.showDialog("确定退出登录？", new DialogUtils.PositiveListener() {
                     @Override
                     public void onPositive() {
-                        logout();
+                        if (NetworkUtils.isNetworkAvailable(mContext)) {
+                            logout();
+                        } else {
+                            ToolUtils.setToast(mContext, "抱歉,网络连接失败");
+                        }
                     }
                 }, null);
                 break;
@@ -330,12 +331,18 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     }
 
     public void logout() {
+        mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"");
         final String token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
         ZhaiDouRequest request = new ZhaiDouRequest(ZhaiDou.USER_LOGOUT_URL + "?token=" + token
                 , new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null) mDialog.dismiss();
+                if (jsonObject==null)
+                {
+                    ShowToast("抱歉,退出失败");
+                    return;
+                }
                 int status = jsonObject.optInt("status");
                 String message = jsonObject.optString("message");
                 if (status == 200) {
@@ -349,7 +356,8 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                ShowToast("网络异常");
+                if (mDialog != null) mDialog.dismiss();
+                ShowToast("抱歉,退出失败");
             }
         });
         requestQueue.add(request);

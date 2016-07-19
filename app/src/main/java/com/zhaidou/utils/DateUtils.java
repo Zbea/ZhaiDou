@@ -251,7 +251,7 @@ public class DateUtils {
         }
         else if (diff >=DAY)
         {
-            return timeStr = "仅剩"+diff/(DAY)+"天";
+            return timeStr = "仅剩"+(diff/DAY+diff%DAY>0?1:0)+"天";
         }
         else
         {

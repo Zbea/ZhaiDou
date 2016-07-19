@@ -18,7 +18,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.pulltorefresh.PullToRefreshBase;
-import com.pulltorefresh.PullToRefreshScrollView;
+import com.pulltorefresh.PullToRefreshListView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
@@ -32,7 +32,6 @@ import com.zhaidou.model.ImageItem;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
-import com.zhaidou.view.ListViewForScrollView;
 import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
@@ -56,8 +55,7 @@ public class MagicImageCaseFragment extends BaseFragment
     private TextView titleTv;
 
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
-    private PullToRefreshScrollView scrollView;
-    private ListViewForScrollView listView;
+    private PullToRefreshListView listView;
     private int currentPage = 1;
     private int pageSize;
     private int pageCount;
@@ -82,10 +80,10 @@ public class MagicImageCaseFragment extends BaseFragment
                     mHomeAdapter.notifyDataSetChanged();
                     if (pageCount > imageItems.size())
                     {
-                        scrollView.setMode(PullToRefreshBase.Mode.BOTH);
+                        listView.setMode(PullToRefreshBase.Mode.BOTH);
                     } else
                     {
-                        scrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+                        listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                     }
                     break;
             }
@@ -158,10 +156,9 @@ public class MagicImageCaseFragment extends BaseFragment
         titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
         titleTv.setText(R.string.title_main_magic_image_case);
 
-        scrollView=(PullToRefreshScrollView)view.findViewById(R.id.scrollView);
-        scrollView.setMode(PullToRefreshBase.Mode.BOTH);
-        scrollView.setOnRefreshListener(onRefreshListener);
-        listView=(ListViewForScrollView)view.findViewById(R.id.lv_special_list);
+        listView=(PullToRefreshListView)view.findViewById(R.id.lv_special_list);
+        listView.setMode(PullToRefreshBase.Mode.BOTH);
+        listView.setOnRefreshListener(onRefreshListener);
         mHomeAdapter = new HomeAdapter(mContext,imageItems);
         listView.setAdapter(mHomeAdapter);
 
@@ -180,9 +177,12 @@ public class MagicImageCaseFragment extends BaseFragment
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                ImageItem imageItem = imageItems.get(position);
-                MagicImageCalssFragment magicImageCaseFragment = MagicImageCalssFragment.newInstance(imageItem.name, imageItem.id);
-                ((BaseActivity) getActivity()).navigationToFragment(magicImageCaseFragment);
+                if (imageItems.size()>position-1)
+                {
+                    ImageItem imageItem = imageItems.get(position-1);
+                    MagicImageCalssFragment magicImageCaseFragment = MagicImageCalssFragment.newInstance(imageItem.name, imageItem.id);
+                    ((BaseActivity) getActivity()).navigationToFragment(magicImageCaseFragment);
+                }
             }
         });
 
@@ -199,7 +199,7 @@ public class MagicImageCaseFragment extends BaseFragment
                 {
                     mDialog.dismiss();
                 }
-                scrollView.onRefreshComplete();
+                listView.onRefreshComplete();
                 if (currentPage == 1)
                     imageItems.clear();
                 if (response != null)
@@ -238,7 +238,7 @@ public class MagicImageCaseFragment extends BaseFragment
                 {
                     mDialog.dismiss();
                 }
-                scrollView.onRefreshComplete();
+                listView.onRefreshComplete();
                 if (currentPage > 1)
                 {
                     currentPage--;

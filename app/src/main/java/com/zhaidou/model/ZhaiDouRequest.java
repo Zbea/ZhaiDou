@@ -129,5 +129,6 @@ public class ZhaiDouRequest extends Request<JSONObject> {
         mHeaders.put("zd-client", "ANDROID");
         mHeaders.put("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
         setRetryPolicy(new DefaultRetryPolicy(60 * 1000, 1, 1.0f));
+        setTag("ZHAIDOU");
     }
 }
