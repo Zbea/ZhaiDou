@@ -164,7 +164,7 @@ public class SoftcoverFragment extends BaseFragment {
             @Override
             public void OnClickListener(View parentV, View v, final Integer position, Object values)
             {
-                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment = HomeArticleGoodsDetailsFragment.newInstance("", "" + articleList.get(position-1).getId());
+                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment = HomeArticleGoodsDetailsFragment.newInstance(articleList.get(position).getTitle(), "" + articleList.get(position).getId());
                 ((BaseActivity) mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
             }
         });

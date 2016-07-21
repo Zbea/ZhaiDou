@@ -523,6 +523,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
 
             @Override
             public void onError(Platform platform, int i, Throwable throwable) {
+                System.out.println("HomeArticleGoodsDetailsFragment.onError-->"+i+"----"+throwable.getLocalizedMessage());
                 Message message = handler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_error));
                 handler.sendMessage(message);
             }
