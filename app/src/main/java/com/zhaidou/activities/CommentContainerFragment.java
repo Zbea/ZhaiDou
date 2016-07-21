@@ -21,10 +21,9 @@ public class CommentContainerFragment extends BaseFragment {
     private int index;
     private String[] commentType = {"A", "C"};
 
-
     private CommentAccountListFragment mCommentListFragment;
     private CommentAccountReplayFragment mReplyFragment;
-    private Fragment[] fragments;
+    private BaseFragment[] fragments;
 
     private View rootView;
 
@@ -44,7 +43,7 @@ public class CommentContainerFragment extends BaseFragment {
             radioGroup.check(R.id.received);
             mCommentListFragment = CommentAccountListFragment.newInstance(index, commentType[1]);
             mReplyFragment = CommentAccountReplayFragment.newInstance(index + "", commentType[0]);
-            fragments = new Fragment[]{mReplyFragment, mCommentListFragment};
+            fragments = new BaseFragment[]{mReplyFragment, mCommentListFragment};
             getChildFragmentManager().beginTransaction().add(R.id.container, mCommentListFragment)
                     .add(R.id.container, mReplyFragment).hide(mCommentListFragment).hide(mReplyFragment).commit();
             radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -53,11 +52,12 @@ public class CommentContainerFragment extends BaseFragment {
                     radioGroup.check(checkedId);
                     index = checkedId == R.id.received ? 0 : 1;
                     showFragment(fragments[index]);
+                    if (index==1)
+                    fragments[1].refresh();
                 }
             });
             showFragment(fragments[index]);
         }
-
         return rootView;
     }
 
@@ -68,9 +68,9 @@ public class CommentContainerFragment extends BaseFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (index==0){
-            mReplyFragment.onActivityResult(requestCode,resultCode,data);
-        }else if (index==1){
+        if (index == 0) {
+            mReplyFragment.onActivityResult(requestCode, resultCode, data);
+        } else if (index == 1) {
 
         }
         super.onActivityResult(requestCode, resultCode, data);

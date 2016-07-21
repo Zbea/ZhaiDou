@@ -286,6 +286,11 @@ public class CommentAccountListFragment extends BaseFragment implements PullToRe
         fetchData(++mCurrentPage);
     }
 
+    @Override
+    public void refresh() {
+        mDialogUtils.showLoadingDialog();
+        onPullDownToRefresh(listView);
+    }
 
     private class CommentListAdapter extends BaseListAdapter<Entity> {
 
@@ -310,7 +315,7 @@ public class CommentAccountListFragment extends BaseFragment implements PullToRe
             TextView mTargetName=ViewHolder.get(convertView,R.id.targetName);
             Entity replay = getList().get(position);
             if (replay.comment != null) {
-                ToolUtils.setImageCacheUrl(replay.comment.commentUserImg.contains("http") ? replay.comment.commentUserImg : "http://" + replay.comment.commentUserImg, mAvatar);
+                ToolUtils.setImageCacheUrl((String) SharedPreferencesUtil.getData(mContext,"avatar",""), mAvatar);
                 mUserName.setText("我的评论");//replay.comment.commentUserName
                 mSubject.setText(Html.fromHtml("来自<font color=#50c2bf>《" + replay.comment.articleTitle + "》</font>"));
                 List<String> list=!TextUtils.isEmpty(replay.comment.imgMd5) ?

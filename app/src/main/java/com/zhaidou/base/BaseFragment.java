@@ -233,4 +233,6 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
         super.onResume();
     }
 
+    public void refresh(){};
+
 }

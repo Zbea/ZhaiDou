@@ -187,6 +187,7 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
 
         mSharedPreferences = getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         token = mSharedPreferences.getString("token", null);
+        if (mContext instanceof MainActivity)
         provinceList=((MainActivity)mContext).getAddressCity();
         if (provinceList.size() ==0 ) {
             ToolUtils.setLog("重新加载地址");
@@ -316,7 +317,8 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
                             province.setCityList(cityList);
                             provinceList.add(province);
                         }
-                        mContainer.setVisibility(View.VISIBLE);
+                        mContainer.setVisibility(TextUtils.isEmpty(mAddress)?View.VISIBLE:View.GONE);
+                        if (mContext instanceof MainActivity)
                         ((MainActivity)mContext).setAddressCity(provinceList);
                     }
                 }

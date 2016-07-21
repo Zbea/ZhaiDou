@@ -171,7 +171,7 @@ public class MagicClassicCaseFragment extends BaseFragment
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
             {
-                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment = HomeArticleGoodsDetailsFragment.newInstance("", "" + articleList.get(position-1).getId(),mFlags);
+                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment = HomeArticleGoodsDetailsFragment.newInstance(articleList.get(position-1).getTitle(), "" + articleList.get(position-1).getId(),mFlags);
                 ((BaseActivity) mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
                 homeArticleGoodsDetailsFragment.setOnCommentListener(new HomeArticleGoodsDetailsFragment.OnCommentListener()
                 {

@@ -593,6 +593,8 @@ public class DialogUtils {
         view.findViewById(R.id.commentCancelTv).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager inputMethodManager = (InputMethodManager) mContext.getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputMethodManager.hideSoftInputFromWindow(commentContent.getWindowToken(), 0);
                 mDialog.dismiss();
             }
         });
