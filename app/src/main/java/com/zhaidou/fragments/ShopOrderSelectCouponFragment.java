@@ -48,6 +48,9 @@ import java.util.List;
 import java.util.Map;
 
 
+/**
+ * 优惠券选择页面
+ */
 public class ShopOrderSelectCouponFragment extends BaseFragment implements View.OnClickListener
 {
 
@@ -63,7 +66,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
 
     private Dialog mDialog;
     private RequestQueue mRequestQueue;
-    private TextView titleTv,noCouponTv;
+    private TextView titleTv,couponTv,noCouponTv;
     private ListView mListview,noCouponListView;
     private LinearLayout couponNullView;
 
@@ -106,10 +109,11 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                         }
                     }
                     loadingView.setVisibility(View.GONE);
-                    couponNullView.setVisibility(View.GONE);
                     couponAdapter.setList(items);
                     noCouponAdapter.setList(itemsNo);
                     noCouponTv.setVisibility(itemsNo.size()>0?View.VISIBLE:View.GONE);
+                    couponTv.setVisibility(items.size()>0?View.VISIBLE:View.GONE);
+                    couponNullView.setVisibility(items.size()>0|itemsNo.size()>0?View.GONE:View.VISIBLE);
                     break;
                 case UPDATE_REDEEM_COUPON_RESULT:
 
@@ -212,7 +216,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
     {
         titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
         titleTv.setText("可用优惠卷");
-
+        couponTv= (TypeFaceTextView) view.findViewById(R.id.tv_coupon);
         noCouponTv= (TypeFaceTextView) view.findViewById(R.id.tv_noCoupon);
 
         loadingView = (LinearLayout) view.findViewById(R.id.loadingView);
@@ -341,10 +345,6 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                         parseJson(couponObject,items,false);
                     }
 
-                } else
-                {
-                    couponNullView.setVisibility(View.VISIBLE);
-                    loadingView.setVisibility(View.GONE);
                 }
                 JSONArray dataNoObject = object.optJSONArray("canNotUsedata");
                 if (dataNoObject != null && dataNoObject.length() > 0)

@@ -24,7 +24,7 @@
     <string name="title_main_magic_diy">DIY搭配</string>
     <string name="home_shop_special_text">特卖商城</string>
     <string name="shop_taday_special_text">今日特卖</string>
-    <string name="shop_cart_text">特卖购物车</string>
+    <string name="shop_cart_text">购物车</string>
     <string name="shop_settlement_text">提交订单</string>
     <string name="shop_order_ok_text">确认订单信息</string>
     <string name="shop_payment_lj_text">立即支付</string>

@@ -23,6 +23,7 @@ import java.util.List;
  * FIXME
  */
 public class ClickableTextView extends TypeFaceTextView {
+    int position;
     public ClickableTextView(Context context) {
         super(context);
     }
@@ -35,7 +36,8 @@ public class ClickableTextView extends TypeFaceTextView {
         super(context, attrs, defStyle);
     }
 
-    public void setClickText(String text,List<String> ids,OnTextClickListener onTextClickListener){
+    public void setClickText(String text,List<String> ids,OnTextClickListener onTextClickListener,int position){
+        this.position=position;
         setMovementMethod(LinkMovementMethod.getInstance());
         setText(addClickablePart(text,ids,onTextClickListener), BufferType.SPANNABLE);
     }
@@ -50,7 +52,6 @@ public class ClickableTextView extends TypeFaceTextView {
             // 最后一个
             for (int i = 0; i < mCategories.size(); i++)
             {
-                final  int position=i;
                 final String category =mCategories.get(i);
                 final String id = ids.get(i);
                 final int start = str.indexOf(category);

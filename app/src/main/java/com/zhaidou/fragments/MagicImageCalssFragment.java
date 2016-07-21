@@ -54,6 +54,7 @@ public class MagicImageCalssFragment extends BaseFragment
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private PullToRefreshScrollView scrollView;
     private LinearLayout fallLine1, fallLine2;
+//    private RecyclerView recyclerView;
     private int currentPage = 1;
     private int pageSize;
     private int pageCount;
@@ -216,6 +217,14 @@ public class MagicImageCalssFragment extends BaseFragment
         scrollView.setMode(PullToRefreshBase.Mode.BOTH);
         scrollView.setOnRefreshListener(onRefreshListener);
 
+//        recyclerView=(RecyclerView)view.findViewById(R.id.recyclerView);
+//        recyclerView.setItemAnimator(new DefaultItemAnimator());
+//        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL));
+//        MasonryAdapter adapter=new MasonryAdapter(imageItems);
+//        recyclerView.setAdapter(adapter);
+//        //设置item之间的间隔
+//        recyclerView.addItemDecoration(new SpacesItemDecoration(15));
+
         fallLine1 = (LinearLayout) view.findViewById(R.id.fallLine1);
         fallLine2 = (LinearLayout) view.findViewById(R.id.fallLine2);
 
@@ -233,7 +242,7 @@ public class MagicImageCalssFragment extends BaseFragment
 
     private void FetchData()
     {
-        ZhaiDouRequest jr = new ZhaiDouRequest(ZhaiDou.MagicImageClassUrl +mId+"&pageSize=10&pageNo="+currentPage, new Response.Listener<JSONObject>()
+        ZhaiDouRequest jr = new ZhaiDouRequest(ZhaiDou.MagicImageClassUrl + mId + "&pageSize=10&pageNo=" + currentPage, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -268,13 +277,13 @@ public class MagicImageCalssFragment extends BaseFragment
                                 int imageWidth = article.optInt("imageWidth");
                                 int imageHeight = article.optInt("imageHeight");
                                 ImageItem item = new ImageItem();
-                                item.name=title;
-                                item.id=id;
-                                item.englishName=enName;
-                                item.time=date;
-                                item.imageUrl=img_url;
-                                item.imageWidth=imageWidth;
-                                item.imageHeight=imageHeight;
+                                item.name = title;
+                                item.id = id;
+                                item.englishName = enName;
+                                item.time = date;
+                                item.imageUrl = img_url;
+                                item.imageWidth = imageWidth;
+                                item.imageHeight = imageHeight;
                                 imageItems.add(item);
                             }
                             handler.sendEmptyMessage(UPDATE_HOMELIST);
@@ -306,5 +315,101 @@ public class MagicImageCalssFragment extends BaseFragment
         });
         mRequestQueue.add(jr);
     }
+
+//    public class MasonryAdapter extends RecyclerView.Adapter<MasonryAdapter.MasonryView>
+//    {
+//        private List<ImageItem> imageItems;
+//
+//        public MasonryAdapter(List<ImageItem> list)
+//        {
+//            imageItems = list;
+//        }
+//
+//        @Override
+//        public MasonryView onCreateViewHolder(ViewGroup viewGroup, int i)
+//        {
+//            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_magic_image_class, viewGroup, false);
+//            return new MasonryView(view);
+//        }
+//
+//        @Override
+//        public void onBindViewHolder(MasonryView masonryView, final int position)
+//        {
+//            ImageItem imageItem=imageItems.get(position);
+//            masonryView.imageView.setOnClickListener(new View.OnClickListener()
+//            {
+//                @Override
+//                public void onClick(View v)
+//                {
+//                    MagicImageDetailsFragment magicImageDetailsFragment = MagicImageDetailsFragment.newInstance(imageItems.get(position).name, imageItems.get(position).id);
+//                    ((BaseActivity) getActivity()).navigationToFragment(magicImageDetailsFragment);
+//                }
+//            });
+//
+//            masonryView.imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+//            LinearLayout.LayoutParams layoutParams;
+//            if (imageItem.imageHeight!=0&&imageItem.imageWidth!=0)
+//            {
+//                layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ((screenWidth-75)/2)*imageItem.imageHeight/imageItem.imageWidth);
+//            }
+//            else
+//            {
+//                layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 200);
+//            }
+//            if (position>1)
+//            {
+//                layoutParams.topMargin=18;
+//            }
+//            masonryView.imageView.setLayoutParams(layoutParams);
+//            masonryView.textView.setText(imageItem.name);
+//            ToolUtils.setImageCacheUrl(imageItem.imageUrl, masonryView.imageView, R.drawable.icon_loading_defalut);
+//            masonryView.imageView.setRadius(13);
+//
+//        }
+//
+//        @Override
+//        public int getItemCount()
+//        {
+//            return imageItems.size();
+//        }
+//
+//        class MasonryView extends RecyclerView.ViewHolder
+//        {
+//
+//            RoundImageView imageView;
+//            TextView textView;
+//
+//            public MasonryView(View itemView)
+//            {
+//                super(itemView);
+//                imageView = (RoundImageView) itemView.findViewById(R.id.imageIv);
+//                textView = (TextView) itemView.findViewById(R.id.titleTv);
+//            }
+//
+//        }
+//
+//    }
+//
+//    public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
+//
+//        private int space;
+//
+//        public SpacesItemDecoration(int space) {
+//            this.space=space;
+//        }
+//
+//        @Override
+//        public void getItemOffsets(Rect outRect, int itemPosition, RecyclerView parent)
+//        {
+//            super.getItemOffsets(outRect, itemPosition, parent);
+//
+//            outRect.left=space;
+//            outRect.right=space;
+//            outRect.bottom=space;
+//            if(parent.getChildPosition(view)==0){
+//                outRect.top=space;
+//            }
+//        }
+//    }
 
 }

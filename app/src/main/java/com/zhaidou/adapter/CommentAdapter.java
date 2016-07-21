@@ -100,7 +100,7 @@ public class CommentAdapter extends BaseListAdapter<Comment>
             if(comment.status.equals("F"))
             {
                 commentImageLine.setVisibility(View.GONE);
-                commentInfo.setTextColor(mContext.getResources().getColor(R.color.green_color));
+                commentInfo.setTextColor(mContext.getResources().getColor(R.color.text_gary_color));
             }
             else
             {
@@ -131,7 +131,7 @@ public class CommentAdapter extends BaseListAdapter<Comment>
             if(comment.statusFormer.equals("F"))
             {
                 commentImageFormerLine.setVisibility(View.GONE);
-                commentInfoFormer.setTextColor(mContext.getResources().getColor(R.color.green_color));
+                commentInfoFormer.setTextColor(mContext.getResources().getColor(R.color.text_gary_color));
             }
             else
             {
@@ -150,7 +150,7 @@ public class CommentAdapter extends BaseListAdapter<Comment>
             if(comment.status.equals("F"))
             {
                 commentImageReplyLine.setVisibility(View.GONE);
-                commentReply.setTextColor(mContext.getResources().getColor(R.color.green_color));
+                commentReply.setTextColor(mContext.getResources().getColor(R.color.text_gary_color));
             }
             else
             {

@@ -237,7 +237,7 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
                 if (i < couponGoodsTypeNamesCategeryID.size())
                     ids.add(coupons.couponGoodsTypeNamesCategeryID.get(i));
             }
-            mCategory.setClickText(categoryStr.length() > 0 ? categoryStr.substring(0, categoryStr.length() - 1) : "", ids, this);
+            mCategory.setClickText(categoryStr.length() > 0 ? categoryStr.substring(0, categoryStr.length() - 1) : "", ids, this,position);
             mCategory.setVisibility((mImageView.isSelected() ? View.VISIBLE : View.GONE));
             mTipView.setVisibility(View.GONE);
             convertView.setBackgroundResource(R.drawable.coupons_bg);
@@ -273,8 +273,6 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
                 GoodsBrandListFragment goodsBrandListFragment = GoodsBrandListFragment.newInstance(categoryStr,id);
                 ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsBrandListFragment);
             }
-
-
         }
     }
 

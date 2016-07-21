@@ -1,6 +1,8 @@
 package com.zhaidou.fragments;
 
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -66,6 +67,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 专题
+ */
 public class HomeFeatrueFragment extends BaseFragment implements CartCountManager.OnCartCountListener
 {
     private static final String ARG_PARAM1 = "param1";
@@ -94,7 +98,6 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
     private Dialog mDialog;
     private Context mContext;
     private View rootView;
-    private FrameLayout frameLayout;
     private TextView cartTipsTv;
     private TextView titleTv;
     private LargeImgView bannerLine;
@@ -302,6 +305,7 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
 
             mScrollView = (PullToRefreshScrollView)rootView.findViewById(R.id.scrollView);
             mScrollView.setOnRefreshListener(onRefreshListener);
+
             singleLine=(LinearLayout) rootView.findViewById(R.id.singleLine);
             singleGridView = (GridView) rootView.findViewById(R.id.gv_sale);
             singleGridView.setEmptyView(mEmptyView);
@@ -315,8 +319,20 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
                     enterGoods(position);
                 }
             });
-
             introduceTv = (TypeFaceTextView) rootView.findViewById(R.id.adText);
+            introduceTv.setOnLongClickListener(new View.OnLongClickListener()
+            {
+                @Override
+                public boolean onLongClick(View v)
+                {
+                    ClipboardManager clipboardManager= (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clipData=ClipData.newPlainText("text",introduceTv.getText().toString());
+                    clipboardManager.setPrimaryClip(clipData);
+                    ToolUtils.setToast(mContext,"复制成功");
+                    return false;
+                }
+            });
+
             doubleLine=(LinearLayout) rootView.findViewById(R.id.doubleLine);
             mListView = (ListViewForScrollView) rootView.findViewById(R.id.shopListView);
             shopTodaySpecialAdapter = new ShopTodaySpecialAdapter(mContext, items,1);
@@ -378,9 +394,6 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
             CartCountManager.newInstance().setOnCartCountListener(this);
             checkLogina();
             initData();
-
-            frameLayout=(FrameLayout)rootView.findViewById(R.id.frameLayout);
-
 
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
