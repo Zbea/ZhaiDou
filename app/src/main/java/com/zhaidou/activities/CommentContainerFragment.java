@@ -21,7 +21,6 @@ public class CommentContainerFragment extends BaseFragment {
     private int index;
     private String[] commentType = {"A", "C"};
 
-
     private CommentAccountListFragment mCommentListFragment;
     private CommentAccountReplayFragment mReplyFragment;
     private BaseFragment[] fragments;
