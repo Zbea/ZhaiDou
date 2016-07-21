@@ -175,8 +175,6 @@ public class SoftcoverFragment extends BaseFragment {
         } else {
             Toast.makeText(mContext, "抱歉,网络链接失败", Toast.LENGTH_SHORT).show();
         }
-
-
     }
 
 
