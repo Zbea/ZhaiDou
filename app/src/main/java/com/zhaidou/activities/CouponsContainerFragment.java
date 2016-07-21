@@ -1,14 +1,11 @@
 package com.zhaidou.activities;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -18,7 +15,6 @@ import com.android.volley.VolleyError;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.fragments.CouponsFragment;
 import com.zhaidou.model.ZhaiDouRequest;
@@ -99,7 +95,6 @@ public class CouponsContainerFragment extends BaseFragment implements View.OnCli
                                     System.out.println("status = " + status);
                                     if ("N".equalsIgnoreCase(status)) {
                                         mCurrentFragment.getListView().setRefreshing(true);
-//                                        mCurrentFragment.onPullDownToRefresh(mCurrentFragment.getListView());
                                     }
                                     Toast.makeText(mContext,"兑换成功",Toast.LENGTH_SHORT).show();
                                 }
@@ -112,18 +107,9 @@ public class CouponsContainerFragment extends BaseFragment implements View.OnCli
 
                             }
                         });
-                        ((ZDApplication)mContext.getApplicationContext()).mRequestQueue.add(request);
+                        ZDApplication.newRequestQueue().add(request);
                     }
-                },new DialogUtils.CancelListener2() {
-                    @Override
-                    public void onCancel(Object o) {
-                        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        EditText editText= (EditText) o;
-                        inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(),0);
-                        ((BaseActivity)getActivity()).hideInputMethod();
-                        mDialogUtils.dismiss();
-                    }
-                });
+                },null);
                 break;
         }
     }

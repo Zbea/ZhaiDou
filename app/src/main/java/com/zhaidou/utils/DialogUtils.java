@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -32,7 +33,9 @@ import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.model.Province;
 import com.zhaidou.view.CustomEditText;
+import com.zhaidou.view.WheelViewContainer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -97,6 +100,58 @@ public class DialogUtils {
     public DialogUtils(Context mContext) {
         this.mContext = mContext;
     }
+
+    /**
+     * 展示城市列表
+     * @param provinces
+     * @param positiveListener2
+     */
+    public void showCityDialog(final List<Province> provinces,final PositiveListener2 positiveListener2,CancelListener cancelListener)
+    {
+        final Dialog dialog = new Dialog(mContext, R.style.custom_dialog);
+
+        Window dialogWindow = dialog.getWindow();
+        dialogWindow.setGravity(Gravity.BOTTOM);
+        dialogWindow.setWindowAnimations(R.style.pop_anim_style);
+
+        View mDialogView = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_adddress, null, false);
+        final WheelViewContainer wheelView= (WheelViewContainer) mDialogView.findViewById(R.id.wheel_view_wv);
+        LinearLayout cityView= (LinearLayout) mDialogView.findViewById(R.id.cityView);
+        if(provinces != null && provinces.size() >0)
+        {
+            wheelView.setData(provinces);
+            wheelView.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            wheelView.setVisibility(View.GONE);
+        }
+        TextView cancelTv = (TextView) mDialogView.findViewById(R.id.bt_cancel);
+        cancelTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        TextView okTv = (TextView) mDialogView.findViewById(R.id.bt_confirm);
+        okTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                if(provinces != null && provinces.size() > 0)
+                {
+                    if (positiveListener2!=null)
+                        positiveListener2.onPositive(wheelView);
+                }
+                dialog.dismiss();
+            }
+        });
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.setCancelable(true);
+        dialog.addContentView(mDialogView, new LinearLayout.LayoutParams(DeviceUtils.getScreenWidth(mContext), ViewGroup.LayoutParams.MATCH_PARENT));
+        dialog.show();
+    }
+
 
     public void showDialog(String msg, final PositiveListener positiveListener, final CancelListener cancelListener) {
         this.positiveListener = positiveListener;
@@ -291,29 +346,32 @@ public class DialogUtils {
         return mDialog;
     }
 
-    public Dialog showCouponDialog(final PositiveListener2 positiveListener, final CancelListener2 cancelListener) {
+    public Dialog showCouponDialog(final PositiveListener2 positiveListener, final CancelListener cancelListener) {
         final Dialog mDialog = new Dialog(mContext, R.style.custom_dialog);
         mDialog.setCanceledOnTouchOutside(true);
         mDialog.setCancelable(true);
-        mDialog.setContentView(R.layout.dialog_coupon);
+        mDialog.setContentView(R.layout.dialog_custom_redeem_coupon);
         mDialog.show();
-        final EditText editText = (EditText) mDialog.findViewById(R.id.message);
-        mDialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+        final EditText editText = (EditText) mDialog.findViewById(R.id.tv_msg);
+        mDialog.findViewById(R.id.cancelTv).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (cancelListener != null)
-                    cancelListener.onCancel(editText);
+                    cancelListener.onCancel();
+                closeInput(v);
                 mDialog.dismiss();
             }
         });
-        mDialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+        mDialog.findViewById(R.id.okTv).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (TextUtils.isEmpty(editText.getText().toString().trim())) {
-                    Toast.makeText(mContext, "请输入兑换码", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "抱歉，请输入兑换码", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 mDialog.dismiss();
+
+                closeInput(v);
                 positiveListener.onPositive(editText.getText().toString());
             }
         });
@@ -535,6 +593,8 @@ public class DialogUtils {
         view.findViewById(R.id.commentCancelTv).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager inputMethodManager = (InputMethodManager) mContext.getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputMethodManager.hideSoftInputFromWindow(commentContent.getWindowToken(), 0);
                 mDialog.dismiss();
             }
         });
@@ -548,7 +608,6 @@ public class DialogUtils {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (commentContent.getText().toString().trim().length() > 200)
                     return;
-                System.out.println("TextUtils.isEmpty(commentContent.getText().toString()) = " + TextUtils.isEmpty(commentContent.getText().toString()));
                 commentOkTv.setClickable(!TextUtils.isEmpty(commentContent.getText().toString()));
                 commentOkTv.setTextColor(!TextUtils.isEmpty(commentContent.getText().toString()) || photoAdapter.getList().size() > 1 ?
                         mContext.getResources().getColor(R.color.green_color) :
@@ -566,7 +625,6 @@ public class DialogUtils {
             @Override
             public void onClick(View v) {
                 String str = commentContent.getText().toString().trim();
-                System.out.println("photoAdapter.getList().size() = " + photoAdapter.getList().size());
                 if (TextUtils.isEmpty(str) && photoAdapter.getList().size() <= 1) {
                     System.out.println("DialogUtils.onClick");
                     return;
@@ -606,7 +664,6 @@ public class DialogUtils {
         if (photoAdapter != null) {
             List<String> list = photoAdapter.getList();
             List<String> images=new ArrayList<String>(list);
-            System.out.println("DialogUtils.notifyPhotoAdapter------>" + images.toString() + "-----" + images.size());
             images.add(images.size()-1,image);
             photoAdapter.setList(images);
         }
@@ -616,7 +673,7 @@ public class DialogUtils {
     }
 
     private void showPickerDialog(final PickerListener pickerListener) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.fragment_photo_menu, null);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_custom_photo_menu, null);
         TextView tv_camera = (TextView) view.findViewById(R.id.tv_camera);
         TextView tv_photo = (TextView) view.findViewById(R.id.tv_photo);
         TextView tv_cancel = (TextView) view.findViewById(R.id.tv_cancel);
@@ -728,6 +785,12 @@ public class DialogUtils {
         mTimer.schedule(new MyTimer(), 1000, 1000);
     }
 
+    private void closeInput(View dialog)
+    {
+        InputMethodManager inputMethodManagers=(InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (inputMethodManagers.isActive())
+            inputMethodManagers.hideSoftInputFromWindow(dialog.getWindowToken(),0);
+    }
 
     /**
      * 倒计时

@@ -21,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -44,6 +43,7 @@ import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomPhotoMenuDialog;
 import com.zhaidou.model.MultipartRequest1;
 import com.zhaidou.model.Order;
 import com.zhaidou.model.OrderItem1;
@@ -89,13 +89,9 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
     private TextView tv_return, tv_exchange, lastSelected, tv_commit;
     List<OrderItem1> orderItems = new ArrayList<OrderItem1>();
     private List<OrderItem1> returnItem = new ArrayList<OrderItem1>();
-    private PhotoMenuFragment menuFragment;
-    private FrameLayout mMenuContainer;
     boolean isFromCamera = false;// 区分拍照旋转
     int degree = 0;
     private ImageView iv_return_img;
-    private final int MENU_CAMERA_SELECTED = 0;
-    private final int MENU_PHOTO_SELECTED = 1;
     private final int UPDATE_UPLOAD_IMG_GRID = 2;
     private final int ORDER_RETURN_SUCCESS = 3;
 
@@ -178,7 +174,6 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
         mEditText = (EditText) view.findViewById(R.id.et_msg);
         mOldPrice = (TextView) view.findViewById(R.id.tv_outdated);
         mImgGrid = (GridView) view.findViewById(R.id.gv_img);
-        mMenuContainer = (FrameLayout) view.findViewById(R.id.rl_header_menu);
         TextPaint textPaint = mOldPrice.getPaint();
         textPaint.setAntiAlias(true);
         textPaint.setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
@@ -190,9 +185,6 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
 
         iv_return_img = (ImageView) view.findViewById(R.id.iv_return_img);
         iv_return_img.setOnClickListener(this);
-        menuFragment = PhotoMenuFragment.newInstance("", "");
-        if (menuFragment != null)
-            getChildFragmentManager().beginTransaction().replace(R.id.rl_header_menu, menuFragment).addToBackStack("").hide(menuFragment).commit();
         imagePath.add("");
         imageAdapter = new ImageAdapter(getActivity(), imagePath);
         mImgGrid.setAdapter(imageAdapter);
@@ -210,47 +202,13 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
             }
         });
 
-        menuFragment.setMenuSelectListener(new PhotoMenuFragment.MenuSelectListener() {
-            @Override
-            public void onMenuSelect(int position, String tag) {
-                switch (position) {
-                    case MENU_CAMERA_SELECTED:
-                        File dir = new File(ZhaiDou.MyAvatarDir);
-                        if (!dir.exists()) {
-                            dir.mkdirs();
-                        }
-                        // 原图
-                        File file = new File(dir, new SimpleDateFormat("yyMMddHHmmss")
-                                .format(new Date()));
-                        filePath = file.getAbsolutePath();// 获取相片的保存路径
-                        Uri imageUri = Uri.fromFile(file);
-
-                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                        startActivityForResult(intent,
-                                MENU_CAMERA_SELECTED);
-                        break;
-                    case MENU_PHOTO_SELECTED:
-                        Intent intent1 = new Intent(Intent.ACTION_PICK, null);
-                        intent1.setDataAndType(
-                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-                        startActivityForResult(intent1,
-                                MENU_PHOTO_SELECTED);
-                        break;
-                }
-                toggleMenu();
-            }
-        });
-
-
         imageAdapter.setOnInViewClickListener(R.id.iv_img, new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 final String imgPath = (String) values;
                 final ImageView imageView = (ImageView) v;
                 if (TextUtils.isEmpty(imgPath)) {
-                    mMenuContainer.setVisibility(View.VISIBLE);
-                    toggleMenu();
+                    showPhotoMenu();
                 } else {
                     PhotoViewFragment photoViewFragment = PhotoViewFragment.newInstance(position, imgPath);
                     ((BaseActivity) getActivity()).navigationToFragment(photoViewFragment);
@@ -307,12 +265,28 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
         afterSaleAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * 显示退货
+     */
+    private void showPhotoMenu()
+    {
+        File dir = new File(ZhaiDou.MyReturnDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        // 原图
+        File file = new File(dir, new SimpleDateFormat("yyMMddHHmmss")
+                .format(new Date()));
+        filePath = file.getAbsolutePath();// 获取相片的保存路径
+        CustomPhotoMenuDialog customPhotoMenuDialog =new CustomPhotoMenuDialog(mContext,filePath);
+        customPhotoMenuDialog.showPhotoMenuDialog();
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_return_img:
-                mMenuContainer.setVisibility(View.VISIBLE);
-                toggleMenu();
+                showPhotoMenu();
                 break;
             case R.id.tv_commit:
                 if (returnItem != null && returnItem.size() == 0) {
@@ -384,9 +358,8 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case MENU_CAMERA_SELECTED:// 拍照修改头像
+            case CustomPhotoMenuDialog.MENU_CAMERA_SELECTED:// 拍照修改头像
                 if (resultCode == getActivity().RESULT_OK) {
                     if (!Environment.getExternalStorageState().equals(
                             Environment.MEDIA_MOUNTED)) {
@@ -405,7 +378,7 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
 
                 }
                 break;
-            case MENU_PHOTO_SELECTED:// 本地修改头像
+            case CustomPhotoMenuDialog.MENU_PHOTO_SELECTED:// 本地修改头像
                 Uri uri = null;
                 if (data == null) {
                     return;
@@ -443,43 +416,8 @@ public class OrderAfterSaleFragment extends BaseFragment implements View.OnClick
                 }
 
                 break;
-            case 2:// 裁剪头像返回
-                if (data == null) {
-                    Toast.makeText(getActivity(), "取消选择", Toast.LENGTH_SHORT).show();
-                    return;
-                } else {
-                    saveCropAvator(data);
-                }
-
-                // 初始化文件路径
-                filePath = "";
-                break;
             default:
                 break;
-        }
-    }
-
-    /**
-     * 保存裁剪的头像
-     *
-     * @param data
-     */
-    private void saveCropAvator(Intent data) {
-        Bundle extras = data.getExtras();
-        if (extras != null) {
-            Bitmap bitmap = extras.getParcelable("data");
-            String base64str = PhotoUtil.bitmapToBase64(bitmap);
-
-        }
-    }
-
-    public void toggleMenu() {
-        if (menuFragment != null) {
-            if (menuFragment.isHidden()) {
-                getChildFragmentManager().beginTransaction().show(menuFragment).commit();
-            } else {
-                getChildFragmentManager().beginTransaction().hide(menuFragment).commit();
-            }
         }
     }
 

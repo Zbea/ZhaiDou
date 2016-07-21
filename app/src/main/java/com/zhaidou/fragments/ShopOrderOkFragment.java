@@ -20,12 +20,10 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
@@ -41,6 +39,8 @@ import com.zhaidou.model.CartArrayItem;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.Coupon;
 import com.zhaidou.model.ZhaiDouRequest;
+import com.zhaidou.utils.Api;
+import com.zhaidou.utils.DateUtils;
 import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -60,7 +60,6 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -206,9 +205,6 @@ public class ShopOrderOkFragment extends BaseFragment
                     //发送刷新购物车广播
                     Intent intent = new Intent(ZhaiDou.IntentRefreshCartPaySuccessTag);
                     mContext.sendBroadcast(intent);
-                    //发送刷新购物车数量广播
-                    Intent intent1 = new Intent(ZhaiDou.IntentRefreshCartGoodsCheckTag);
-                    mContext.sendBroadcast(intent1);
                     //关闭本页面
                     ((BaseActivity) getActivity()).popToStack(ShopOrderOkFragment.this);
 
@@ -842,10 +838,6 @@ public class ShopOrderOkFragment extends BaseFragment
      */
     private void commit()
     {
-        final Map<String,String> headers=new HashMap<String, String>();
-        headers.put("SECAuthorization", token);
-        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-
         // 创建名/值组列表
         final List<NameValuePair> params = new ArrayList<NameValuePair>();
         try
@@ -905,7 +897,7 @@ public class ShopOrderOkFragment extends BaseFragment
             @Override
             public void run()
             {
-                String result= NetService.GETHttpPostService(mContext,ZhaiDou.CommitOrdersUrl,headers,params);
+                String result= NetService.GETHttpPostService(ZhaiDou.CommitOrdersUrl,null,params);
                 if (result != null && result.length() > 0)
                 {
                     try
@@ -955,11 +947,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     ToolUtils.setLog(jsonObject.toString());
                 handler.obtainMessage(UPDATE_COUPON_RESULT,jsonObject).sendToTarget();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-            }
-        });
+        }, null);
         ((ZDApplication) mContext.getApplicationContext()).mRequestQueue.add(request);
 
     }
@@ -970,7 +958,7 @@ public class ShopOrderOkFragment extends BaseFragment
      */
     private void FetchAddressData()
     {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.AddressListUrl, new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,ZhaiDou.AddressListUrl, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -1028,17 +1016,7 @@ public class ShopOrderOkFragment extends BaseFragment
                 nullNetView.setVisibility(View.GONE);
                 nullView.setVisibility(View.VISIBLE);
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 
@@ -1048,7 +1026,7 @@ public class ShopOrderOkFragment extends BaseFragment
     public void FetchVerifyData()
     {
         String url = ZhaiDou.OrderAccountOrPhone;
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST,url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -1087,17 +1065,7 @@ public class ShopOrderOkFragment extends BaseFragment
                 nullNetView.setVisibility(View.GONE);
                 nullView.setVisibility(View.VISIBLE);
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 
@@ -1107,7 +1075,7 @@ public class ShopOrderOkFragment extends BaseFragment
     public void FetchSMSData()
     {
         String url = ZhaiDou.OrderGetSMS+phone_Str;
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -1153,17 +1121,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     mDialog.dismiss();
                 ToolUtils.setToastLong(mContext,R.string.loading_fail_txt);
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 
@@ -1176,7 +1134,7 @@ public class ShopOrderOkFragment extends BaseFragment
         Map<String,String> maps=new HashMap<String, String>();
         maps.put("phone", phone_Str);
         maps.put("vcode", code_Str);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,url,new JSONObject(maps), new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST,url,maps, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -1217,17 +1175,7 @@ public class ShopOrderOkFragment extends BaseFragment
                     mDialog.dismiss();
                 ToolUtils.setToastLong(mContext,R.string.loading_fail_txt);
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 
@@ -1237,12 +1185,12 @@ public class ShopOrderOkFragment extends BaseFragment
      */
     public void FetchOSaleData()
     {
-        String url = ZhaiDou.IsBuyOSaleUrl+userId;
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        Api.getIsBuyOSale(userId, new Api.SuccessListener()
         {
             @Override
-            public void onResponse(JSONObject jsonObject)
+            public void onSuccess(Object object)
             {
+                JSONObject jsonObject = (JSONObject) object;
                 if (jsonObject != null)
                 {
                     isOSaleBuy = jsonObject.optInt("ifBuy")==1?false:true;
@@ -1253,27 +1201,16 @@ public class ShopOrderOkFragment extends BaseFragment
                     handler.sendEmptyMessage(UPDATE_ISBUYOSALE);
                 }
             }
-        }, new Response.ErrorListener()
+        }, new Api.ErrorListener()
         {
             @Override
-            public void onErrorResponse(VolleyError volleyError)
+            public void onError(Object object)
             {
                 if (mDialog != null)
                     mDialog.dismiss();
                 ToolUtils.setToast(mContext,R.string.loading_fail_txt);
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
+        });
     }
 
 
@@ -1319,17 +1256,19 @@ public class ShopOrderOkFragment extends BaseFragment
             String startTime=datasObject.optString("startTime");
             String endTime=datasObject.optString("endTime");
             int days=0;
+            String timeStr=null;
             try
             {
-                SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date endDate=format.parse(endTime);
-                long diff=endDate.getTime()-System.currentTimeMillis();
-                days=(int) (diff / (1000 * 60 * 60 * 24)+((diff %(1000 * 60 * 60 * 24))>0?1:0));
+                timeStr= DateUtils.getCouponDateDiff(endTime);
+                days=DateUtils.getDateDays(endTime);
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
+                endTime=dateFormat.format(DateUtils.formatDate(endTime));
+                startTime=dateFormat.format(DateUtils.formatDate(startTime));
+                ToolUtils.setLog(endTime);
             } catch (ParseException e)
             {
                 e.printStackTrace();
             }
-            endTime=endTime.split(" ")[0];
             String statu=datasObject.optString("status");
             String property=datasObject.optString("property");
             String goodsType=datasObject.optString("goodsType");
@@ -1356,9 +1295,6 @@ public class ShopOrderOkFragment extends BaseFragment
             handler.sendEmptyMessage(UPDATE_NULLCOUPON_SUCCESSS);
         }
     }
-
-
-
 
     public void onResume()
     {

@@ -33,12 +33,12 @@
                     android:src="@drawable/icon_loading_item"/>
 
                 <com.zhaidou.view.CircleImageView
-                                                  android:id="@+id/detailsHeaderIv"
-                                                  android:layout_width="60dp"
-                                                  android:layout_height="60dp"
-                                                  android:layout_centerInParent="true"
-                                                  android:src="@drawable/icon_header_dudu"
-           />
+                    android:id="@+id/detailsHeaderIv"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/icon_header_dudu"
+                    />
 
 
                 <com.zhaidou.view.TypeFaceTextView
@@ -197,6 +197,42 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/ll_videoPage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/rl_video"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp">
+
+                <ImageView
+                    android:id="@+id/iv_videoImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/icon_loading_item"/>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/icon_player"/>
+
+                </RelativeLayout>
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"
+                    android:background="@color/page_bg"
+                    ></View>
+
+
+                </LinearLayout>
+
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
@@ -312,15 +348,17 @@
 
             </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="8dp"
-                android:background="@color/page_bg"></View>
 
             <LinearLayout
+                android:id="@+id/ll_commentPage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"
+                    android:background="@color/page_bg"></View>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -422,7 +460,7 @@
     </com.zhaidou.view.CustomScrollView>
 
     <LinearLayout
-        android:id="@+id/rl_bottom"
+        android:id="@+id/ll_contact"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -445,7 +483,7 @@
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="咨询设计师"
+                android:text="@string/title_consult_design"
                 android:textSize="16sp"
                 android:textColor="@color/white"/>
 

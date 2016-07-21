@@ -4,6 +4,11 @@
     android:background="@color/page_bg"
     android:orientation="vertical">
 
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/head_style_share_page"
+        ></include>
 
     <LinearLayout
         android:id="@+id/nullline"

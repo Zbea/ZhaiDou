@@ -18,6 +18,7 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -31,6 +32,7 @@ public class ZhaiDouRequest extends Request<JSONObject> {
 
     private final Response.Listener<JSONObject> mListener;
     private Map<String,String> params;
+    private JSONObject objects;
     private Map<String,String> mHeaders;
     private Context mContext;
 
@@ -39,6 +41,12 @@ public class ZhaiDouRequest extends Request<JSONObject> {
         super(Method.GET, url, errorListener);
         mListener = listener;
         mContext=context;
+        initHeader();
+    }
+    public ZhaiDouRequest(String url, Response.Listener<JSONObject> listener,
+                          Response.ErrorListener errorListener) {
+        super(Method.GET, url, errorListener);
+        mListener = listener;
         initHeader();
     }
     public ZhaiDouRequest(int method,String url, Response.Listener<JSONObject> listener,
@@ -56,13 +64,28 @@ public class ZhaiDouRequest extends Request<JSONObject> {
     }
 
     public ZhaiDouRequest(Context context,int method,String url,Map<String,String> params, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
-        this(context,Method.POST, url, listener, errorListener);
+        this(context,method, url, listener, errorListener);
         this.params=params;
         mContext=context;
         initHeader();
     }
+
+    public ZhaiDouRequest(int method,String url,JSONObject jsonObject, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+        this(method, url, listener, errorListener);
+        Iterator<String> iterator=jsonObject.keys();
+        params= new HashMap<String, String>();
+        while (iterator.hasNext())
+        {
+            String key=iterator.next().toString();
+            params.put(key,jsonObject.optString(key));
+        }
+
+        initHeader();
+    }
+
+
     public ZhaiDouRequest(int method,String url,Map<String,String> params, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
-        this(Method.POST, url, listener, errorListener);
+        this(method, url, listener, errorListener);
         this.params=params;
         initHeader();
     }
@@ -81,7 +104,6 @@ public class ZhaiDouRequest extends Request<JSONObject> {
         }
     }
 
-
     @Override
     public Map<String, String> getParams() {
         return this.params;
@@ -96,13 +118,17 @@ public class ZhaiDouRequest extends Request<JSONObject> {
 
     @Override
     protected void deliverResponse(JSONObject response) {
-        mListener.onResponse(response);
+        if (mListener!=null)
+            mListener.onResponse(response);
     }
 
     private void initHeader(){
         mHeaders=new HashMap<String, String>();
         mHeaders.put("SECAuthorization", (String) SharedPreferencesUtil.getData(ZDApplication.getInstance(), "token", ""));
         mHeaders.put("ZhaidouVesion", ZDApplication.getInstance().getResources().getString(R.string.app_versionName));
+        mHeaders.put("zd-client", "ANDROID");
+        mHeaders.put("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
         setRetryPolicy(new DefaultRetryPolicy(60 * 1000, 1, 1.0f));
+        setTag("ZHAIDOU");
     }
 }

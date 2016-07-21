@@ -17,12 +17,9 @@ import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.easemob.chat.EMChatManager;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
@@ -39,6 +36,7 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.easeui.helpdesk.ui.ConversationListFragment;
 import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.SwitchImage;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.Api;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -50,9 +48,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.WeakHashMap;
 
 public class MainGoodsFragment extends BaseFragment implements
@@ -380,7 +376,7 @@ public class MainGoodsFragment extends BaseFragment implements
 
         currentPage = 1;
 
-        mRequestQueue = Volley.newRequestQueue(getActivity());
+        mRequestQueue = ZDApplication.newRequestQueue();
 
         linearLayout = (LinearLayout) view.findViewById(R.id.bannerView);
 //        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 400 / 750));
@@ -419,9 +415,8 @@ public class MainGoodsFragment extends BaseFragment implements
         switch (view.getId())
         {
             case R.id.iv_searchs:
-                SearchFragment searchFragment = SearchFragment.newInstance(searchStr, 1);
+                SearchFragment searchFragment = SearchFragment.newInstance(searchStr,searchStr, 1);
                 ((BaseActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
-//                ((MainActivity) getActivity()).gotoCategory();
                 break;
             case R.id.iv_category:
                 MainCategoryFragment mainCategoryFragment = MainCategoryFragment.newInstance(searchStr, "");
@@ -457,7 +452,7 @@ public class MainGoodsFragment extends BaseFragment implements
         final String url = ZhaiDou.HomeShopListUrl + page + "&typeEnum=1";
         ToolUtils.setLog(url);
 
-        JsonObjectRequest jr = new JsonObjectRequest(url ,new Response.Listener<JSONObject>()
+        ZhaiDouRequest jr = new ZhaiDouRequest(url ,new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -539,25 +534,13 @@ public class MainGoodsFragment extends BaseFragment implements
                     nullNetView.setVisibility(View.GONE);
                 }
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(jr);
     }
 
     private void FetchSpecialData()
     {
-        final Map<String, String> headers = new HashMap<String, String>();
-        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeBannerUrl + "01,02,03", new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(ZhaiDou.HomeBannerUrl + "01,02,03", new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -611,29 +594,14 @@ public class MainGoodsFragment extends BaseFragment implements
                     }
                 }
             }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                return headers;
-            }
-        };
+        }, null);
         mRequestQueue.add(request);
     }
 
 
     private void FetchSearchData()
     {
-        final Map<String, String> headers = new HashMap<String, String>();
-        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeSearchStringUrl, new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(ZhaiDou.HomeSearchStringUrl, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -652,20 +620,7 @@ public class MainGoodsFragment extends BaseFragment implements
 
                 }
             }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                return headers;
-            }
-        };
+        }, null);
         mRequestQueue.add(request);
     }
 
@@ -674,44 +629,7 @@ public class MainGoodsFragment extends BaseFragment implements
      */
     private void FetchClickStatisticalData(String name,String url,int bannerType,int bannerIndex)
     {
-        int userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
-        String surl;
-        if (checkLogin())
-        {
-            surl=ZhaiDou.HomeClickStatisticalUrl+name+"&url="+url+"&userId="+userId+"&sourceCode=3&bannerType="+bannerType+"&bannerIndex="+bannerIndex;
-        }
-        else
-        {
-            surl=ZhaiDou.HomeClickStatisticalUrl+name+"&url="+url+"&sourceCode=3&bannerType="+bannerType+"&bannerIndex="+bannerIndex;
-        }
-
-        JsonObjectRequest request = new JsonObjectRequest(surl, new Response.Listener<JSONObject>()
-        {
-            @Override
-            public void onResponse(JSONObject response)
-            {
-                if (response != null)
-                {
-                    ToolUtils.setLog(response.toString());
-                }
-            }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
+        Api.getBannerClick(mContext,name,url,bannerType,bannerIndex,null,null);
     }
 
     @Override

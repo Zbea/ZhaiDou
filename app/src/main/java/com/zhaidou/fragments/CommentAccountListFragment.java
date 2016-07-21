@@ -62,12 +62,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CommentListFragment1 extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<ListView> {
+public class CommentAccountListFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<ListView> {
 
     private static final String ARG_INDEX = "index";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private int mIndex;
     private String mParam2;
     private CommentListAdapter commentListAdapter;
@@ -94,8 +93,8 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
         }
     };
 
-    public static CommentListFragment1 newInstance(int index, String param2) {
-        CommentListFragment1 fragment = new CommentListFragment1();
+    public static CommentAccountListFragment newInstance(int index, String param2) {
+        CommentAccountListFragment fragment = new CommentAccountListFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_INDEX, index);
         args.putString(ARG_PARAM2, param2);
@@ -103,7 +102,7 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
         return fragment;
     }
 
-    public CommentListFragment1() {
+    public CommentAccountListFragment() {
     }
 
     @Override
@@ -118,7 +117,6 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         listView = new PullToRefreshListView(mContext);
         listView.setMode(PullToRefreshBase.Mode.BOTH);
         listView.setOnRefreshListener(this);
@@ -149,26 +147,12 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
             }
         });
 
-//        commentListAdapter.setOnInViewClickListener(R.id.avatar, new BaseListAdapter.onInternalClickListener() {
-//            @Override
-//            public void OnClickListener(View parentV, View v, Integer position, Object values) {
-//                System.out.println("parentV = [" + parentV + "], v = [" + v + "], position = [" + position + "], values = [" + values + "]");
-//                showCommentDialog(values);
-//            }
-//        });
-//        commentListAdapter.setOnInViewClickListener(R.id.username, new BaseListAdapter.onInternalClickListener() {
-//            @Override
-//            public void OnClickListener(View parentV, View v, Integer position, Object values) {
-//                Entity entity = (Entity) values;
-//                showCommentDialog(entity);
-//            }
-//        });
         commentListAdapter.setOnInViewClickListener(R.id.subject,new BaseListAdapter.onInternalClickListener() {
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 System.out.println("parentV = [" + parentV + "], v = [" + v + "], position = [" + position + "], values = [" + values + "]");
                 Entity entity= (Entity) values;
-                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment=HomeArticleGoodsDetailsFragment.newInstance("",entity.comment.articleId);
+                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment=HomeArticleGoodsDetailsFragment.newInstance("",entity.comment.articleId,1);
                 ((BaseActivity)mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
             }
         });
@@ -202,12 +186,9 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
                                 if (jsonObject != null) {
                                     int status = jsonObject.optInt("status");
                                     if (status == 200) {
-//                                        mHandler.sendEmptyMessage(UPDATE_UI_LIST);
                                         ShowToast("回复成功");
                                     }
                                 }
-
-                                System.out.println("onSuccess---object = " + object);
                             }
                         }, new Api.ErrorListener() {
                             @Override
@@ -305,6 +286,11 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
         fetchData(++mCurrentPage);
     }
 
+    @Override
+    public void refresh() {
+        mDialogUtils.showLoadingDialog();
+        onPullDownToRefresh(listView);
+    }
 
     private class CommentListAdapter extends BaseListAdapter<Entity> {
 
@@ -329,7 +315,7 @@ public class CommentListFragment1 extends BaseFragment implements PullToRefreshB
             TextView mTargetName=ViewHolder.get(convertView,R.id.targetName);
             Entity replay = getList().get(position);
             if (replay.comment != null) {
-                ToolUtils.setImageCacheUrl(replay.comment.commentUserImg.contains("http") ? replay.comment.commentUserImg : "http://" + replay.comment.commentUserImg, mAvatar);
+                ToolUtils.setImageCacheUrl((String) SharedPreferencesUtil.getData(mContext,"avatar",""), mAvatar);
                 mUserName.setText("我的评论");//replay.comment.commentUserName
                 mSubject.setText(Html.fromHtml("来自<font color=#50c2bf>《" + replay.comment.articleTitle + "》</font>"));
                 List<String> list=!TextUtils.isEmpty(replay.comment.imgMd5) ?

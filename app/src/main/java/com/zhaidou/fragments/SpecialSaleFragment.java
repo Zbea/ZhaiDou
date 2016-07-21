@@ -1,10 +1,8 @@
 package com.zhaidou.fragments;
 
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,16 +18,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.base.BaseActivity;
@@ -41,6 +37,7 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Product;
 import com.zhaidou.model.SwitchImage;
 import com.zhaidou.model.User;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.Api;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -104,31 +101,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     private String token;
     private int userId;
 
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
-    {
-        @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            String action = intent.getAction();
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
-            {
-                FetchCountData();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshAddCartTag))
-            {
-                FetchCountData();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshLoginTag))
-            {
-                checkLogin();
-                FetchCountData();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
-            {
-                initCartTips();
-            }
-        }
-    };
 
     private Handler mHandler = new Handler()
     {
@@ -251,7 +223,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         {
             CartCountManager.newInstance().setOnCartCountListener(this);
             mContext = getActivity();
-//            initBroadcastReceiver();
             rootView = inflater.inflate(R.layout.fragment_special_sale, container, false);
 
             titleTv = (TypeFaceTextView) rootView.findViewById(R.id.title_tv);
@@ -280,7 +251,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             reloadNetBtn = (TextView) rootView.findViewById(R.id.netReload);
             reloadNetBtn.setOnClickListener(onClickListener);
 
-            requestQueue = Volley.newRequestQueue(getActivity());
+            requestQueue = ZDApplication.newRequestQueue();
             myCartBtn = (ImageView) rootView.findViewById(R.id.myCartBtn);
             myCartBtn.setOnClickListener(this);
             cartTipsTv = (TextView) rootView.findViewById(R.id.myCartTipsTv);
@@ -312,18 +283,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         return rootView;
     }
 
-    /**
-     * 注册广播
-     */
-    private void initBroadcastReceiver()
-    {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshAddCartTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
-        getActivity().registerReceiver(broadcastReceiver, intentFilter);
-    }
 
     public boolean checkLogin()
     {
@@ -431,7 +390,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     public void FetchData()
     {
         String url=ZhaiDou.HomeGoodsListUrl+mParam2+"&pageNo="+ page +"&typeEnum="+2;
-        JsonObjectRequest request = new JsonObjectRequest(url,
+        ZhaiDouRequest request = new ZhaiDouRequest(url,
                 new Response.Listener<JSONObject>()
                 {
                     @Override
@@ -514,17 +473,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
                     nullNetView.setVisibility(View.GONE);
                 }
             }
-        }
-        )
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         requestQueue.add(request);
     }
 
@@ -536,7 +485,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
         String url = ZhaiDou.HomeBannerUrl + "04";
         ToolUtils.setLog(url);
         banners = new ArrayList<SwitchImage>();
-        JsonObjectRequest bannerRequest = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest bannerRequest = new ZhaiDouRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -585,16 +534,7 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
             public void onErrorResponse(VolleyError volleyError)
             {
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         requestQueue.add(bannerRequest);
     }
 
@@ -694,8 +634,6 @@ public class SpecialSaleFragment extends BaseFragment implements View.OnClickLis
     {
         mTimerView.stop();
         requestQueue.stop();
-        if (broadcastReceiver != null)
-           mContext.unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 

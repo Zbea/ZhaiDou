@@ -3,6 +3,7 @@ package com.zhaidou.activities;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
@@ -18,8 +19,10 @@ import com.zhaidou.fragments.GoodsDetailsFragment;
 import com.zhaidou.utils.Api;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomProgressWebview;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -147,6 +150,7 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
 
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
+        webSettings.setPluginState(WebSettings.PluginState.ON);
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
         webSettings.setAllowFileAccess(true);
         webSettings.setDomStorageEnabled(true);
@@ -160,6 +164,7 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
         headers.put("ZhaidouVesion", getResources().getString(R.string.app_versionName));
         if (url.contains("receive_coupon"))
             url+="&source=android";
+        ToolUtils.setLog(url);
         webView.loadUrl(url, headers);
     }
 
@@ -190,6 +195,19 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
     protected void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("WebViewActivity");
+        try
+        {
+            webView.getClass().getMethod("onResume").invoke(webView,(Object[])null);
+        } catch (IllegalAccessException e)
+        {
+            e.printStackTrace();
+        } catch (InvocationTargetException e)
+        {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e)
+        {
+            e.printStackTrace();
+        }
         MobclickAgent.onResume(this);
     }
 
@@ -197,6 +215,30 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
     protected void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("WebViewActivity");
+        try
+        {
+            webView.getClass().getMethod("onPause").invoke(webView,(Object[])null);
+        } catch (IllegalAccessException e)
+        {
+            e.printStackTrace();
+        } catch (InvocationTargetException e)
+        {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e)
+        {
+            e.printStackTrace();
+        }
         MobclickAgent.onPause(this);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if(keyCode==KeyEvent.KEYCODE_BACK&webView.canGoBack())
+        {
+            webView.goBack();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

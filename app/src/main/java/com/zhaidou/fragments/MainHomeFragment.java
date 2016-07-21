@@ -2,8 +2,6 @@ package com.zhaidou.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -14,6 +12,7 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -21,12 +20,9 @@ import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.easemob.chat.EMChatManager;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
@@ -44,6 +40,7 @@ import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.easeui.helpdesk.ui.ConversationListFragment;
 import com.zhaidou.model.Article;
 import com.zhaidou.model.SwitchImage;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.Api;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.PixelUtil;
@@ -56,9 +53,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MainHomeFragment extends BaseFragment implements View.OnClickListener,
         PullToRefreshBase.OnRefreshListener2<ScrollView>,CountManager.onCommentChangeListener
@@ -307,25 +302,22 @@ public class MainHomeFragment extends BaseFragment implements View.OnClickListen
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values)
             {
-                ClipboardManager clipboardManager= (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clipData=ClipData.newPlainText("text",articles.get(position).getTitle());
-                clipboardManager.setPrimaryClip(clipData);
-                ToolUtils.setToast(mContext,"复制成功");
+
             }
         });
-        adapterList.setOnInViewClickListener(R.id.cover,new BaseListAdapter.onInternalClickListener()
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
-            public void OnClickListener(View parentV, View v, final Integer position, Object values)
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
             {
-                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment=HomeArticleGoodsDetailsFragment.newInstance("",""+articles.get(position).getId());
-                ((BaseActivity)mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
+                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment = HomeArticleGoodsDetailsFragment.newInstance("", "" + articles.get(position).getId(),1);
+                ((BaseActivity) mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
                 homeArticleGoodsDetailsFragment.setOnCommentListener(new HomeArticleGoodsDetailsFragment.OnCommentListener()
                 {
                     @Override
                     public void setComment(int num)
                     {
-                        if (num!=0)
+                        if (num != 0)
                         {
                             articles.get(position).setReviews(num);
                             adapterList.notifyDataSetChanged();
@@ -349,7 +341,7 @@ public class MainHomeFragment extends BaseFragment implements View.OnClickListen
 
         currentPage = 1;
 
-        mRequestQueue = Volley.newRequestQueue(getActivity());
+        mRequestQueue = ZDApplication.newRequestQueue();
 
         linearLayout = (LinearLayout) view.findViewById(R.id.bannerView);
         unreadMsg = (TextView) view.findViewById(R.id.unreadMsg);
@@ -448,7 +440,7 @@ public class MainHomeFragment extends BaseFragment implements View.OnClickListen
     {
         final String url = ZhaiDou.HomeArticleGoodsUrl + page;
         ToolUtils.setLog(url);
-        JsonObjectRequest jr = new JsonObjectRequest(url ,new Response.Listener<JSONObject>()
+        ZhaiDouRequest jr = new ZhaiDouRequest(url ,new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -523,25 +515,13 @@ public class MainHomeFragment extends BaseFragment implements View.OnClickListen
                     nullNetView.setVisibility(View.GONE);
                 }
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(jr);
     }
 
     private void FetchSpecialData()
     {
-        final Map<String, String> headers = new HashMap<String, String>();
-        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeBannerUrl + "03,05,06", new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(ZhaiDou.HomeBannerUrl + "03,05,06", new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -594,20 +574,7 @@ public class MainHomeFragment extends BaseFragment implements View.OnClickListen
                     }
                 }
             }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                return headers;
-            }
-        };
+        },null);
         mRequestQueue.add(request);
     }
 
@@ -616,44 +583,7 @@ public class MainHomeFragment extends BaseFragment implements View.OnClickListen
      */
     private void FetchClickStatisticalData(String name,String url,int bannerType,int bannerIndex)
     {
-        int userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
-        String surl;
-        if (checkLogin())
-        {
-            surl=ZhaiDou.HomeClickStatisticalUrl+name+"&url="+url+"&userId="+userId+"&sourceCode=3&bannerType="+bannerType+"&bannerIndex="+bannerIndex;
-        }
-        else
-        {
-            surl=ZhaiDou.HomeClickStatisticalUrl+name+"&url="+url+"&sourceCode=3&bannerType="+bannerType+"&bannerIndex="+bannerIndex;
-        }
-
-        JsonObjectRequest request = new JsonObjectRequest(surl, new Response.Listener<JSONObject>()
-        {
-            @Override
-            public void onResponse(JSONObject response)
-            {
-                if (response != null)
-                {
-                    ToolUtils.setLog(response.toString());
-                }
-            }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
+        Api.getBannerClick(mContext,name,url,bannerType,bannerIndex,null,null);
     }
 
     @Override

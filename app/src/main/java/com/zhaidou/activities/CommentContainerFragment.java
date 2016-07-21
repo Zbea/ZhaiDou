@@ -13,8 +13,8 @@ import android.widget.TextView;
 
 import com.zhaidou.R;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.fragments.CommentListFragment1;
-import com.zhaidou.fragments.ReplayFragment;
+import com.zhaidou.fragments.CommentAccountListFragment;
+import com.zhaidou.fragments.CommentAccountReplayFragment;
 
 public class CommentContainerFragment extends BaseFragment {
 
@@ -22,9 +22,9 @@ public class CommentContainerFragment extends BaseFragment {
     private String[] commentType = {"A", "C"};
 
 
-    private CommentListFragment1 mCommentListFragment;
-    private ReplayFragment mReplyFragment;
-    private Fragment[] fragments;
+    private CommentAccountListFragment mCommentListFragment;
+    private CommentAccountReplayFragment mReplyFragment;
+    private BaseFragment[] fragments;
 
     private View rootView;
 
@@ -42,9 +42,9 @@ public class CommentContainerFragment extends BaseFragment {
             final RadioGroup radioGroup = (RadioGroup) rootView.findViewById(R.id.radioGroup);
 
             radioGroup.check(R.id.received);
-            mCommentListFragment = CommentListFragment1.newInstance(index, commentType[1]);
-            mReplyFragment = ReplayFragment.newInstance(index + "", commentType[0]);
-            fragments = new Fragment[]{mReplyFragment, mCommentListFragment};
+            mCommentListFragment = CommentAccountListFragment.newInstance(index, commentType[1]);
+            mReplyFragment = CommentAccountReplayFragment.newInstance(index + "", commentType[0]);
+            fragments = new BaseFragment[]{mReplyFragment, mCommentListFragment};
             getChildFragmentManager().beginTransaction().add(R.id.container, mCommentListFragment)
                     .add(R.id.container, mReplyFragment).hide(mCommentListFragment).hide(mReplyFragment).commit();
             radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -53,11 +53,12 @@ public class CommentContainerFragment extends BaseFragment {
                     radioGroup.check(checkedId);
                     index = checkedId == R.id.received ? 0 : 1;
                     showFragment(fragments[index]);
+                    if (index==1)
+                    fragments[1].refresh();
                 }
             });
             showFragment(fragments[index]);
         }
-
         return rootView;
     }
 
@@ -68,10 +69,9 @@ public class CommentContainerFragment extends BaseFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        System.out.println("CommentContainerFragment.onActivityResult");
-        if (index==0){
-            mReplyFragment.onActivityResult(requestCode,resultCode,data);
-        }else if (index==1){
+        if (index == 0) {
+            mReplyFragment.onActivityResult(requestCode, resultCode, data);
+        } else if (index == 1) {
 
         }
         super.onActivityResult(requestCode, resultCode, data);

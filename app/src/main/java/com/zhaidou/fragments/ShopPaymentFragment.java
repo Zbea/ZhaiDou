@@ -414,7 +414,7 @@ public class ShopPaymentFragment extends BaseFragment
         maps.put("token ",token);
         maps.put("userId ",userId+"");
         maps.put("version ","1.0.0");
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,ZhaiDou.CommitPaymentUrl,new JSONObject(maps), new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST,ZhaiDou.CommitPaymentUrl,maps, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -443,17 +443,7 @@ public class ShopPaymentFragment extends BaseFragment
             public void onErrorResponse(VolleyError volleyError)
             {
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("SECAuthorization", token);
-                map.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return map;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 
@@ -576,6 +566,7 @@ public class ShopPaymentFragment extends BaseFragment
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("SECAuthorization", token);
                 map.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                map.put("zd-client", "ANDROID");
                 return map;
             }
         };

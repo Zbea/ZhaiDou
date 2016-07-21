@@ -11,28 +11,21 @@
         android:layout_alignParentTop="true"
         layout="@layout/head_style_page"></include>
 
-    <com.pulltorefresh.PullToRefreshScrollView
-        android:id="@+id/scrollView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/headLine"
-        android:scrollbars="none">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
 
             <com.zhaidou.view.TypeFaceTextView
-                android:id="@+id/commentNullTv"
+                android:id="@+id/tv_nullContent"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="100dp"
+                android:drawableTop="@drawable/icon_null_soft"
                 android:gravity="center"
-                android:visibility="gone"
+                android:drawablePadding="20dp"
+                android:text="还没有软装方案噢"
                 android:textColor="@color/text_gary_color"
-                android:text="暂无评论信息"/>
+                android:visibility="gone" />
 
-            <com.zhaidou.view.ListViewForScrollView
+            <com.pulltorefresh.PullToRefreshListView
                 android:id="@+id/lv_special_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -42,9 +35,6 @@
                 android:dividerHeight="0dp"
                 />
 
-        </LinearLayout>
-
-    </com.pulltorefresh.PullToRefreshScrollView>
 
 
 </LinearLayout>

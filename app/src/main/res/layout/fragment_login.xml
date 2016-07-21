@@ -9,7 +9,7 @@
         android:id="@+id/headLine"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        layout="@layout/head_style_page_white"
+        layout="@layout/head_style_page"
         ></include>
 
     <LinearLayout

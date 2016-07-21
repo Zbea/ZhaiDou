@@ -20,12 +20,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -33,6 +30,7 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
@@ -40,6 +38,7 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.ShopTodayItem;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomProgressWebview;
@@ -50,9 +49,7 @@ import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
@@ -290,7 +287,7 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
 
         contactQQ = (RelativeLayout) view.findViewById(R.id.rl_qq_contact);
         contactQQ.setOnClickListener(onClickListener);
-        mRequestQueue = Volley.newRequestQueue(mContext);
+        mRequestQueue = ZDApplication.newRequestQueue();
 
 
         initData();
@@ -328,7 +325,7 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
     public void FetchData()
     {
         String url = ZhaiDou.MagicClassicCaseDetailsUrl + mString + "&pageNo=" + page + "&pageSize=10";
-        JsonObjectRequest request = new JsonObjectRequest(url,
+        ZhaiDouRequest request = new ZhaiDouRequest(url,
                 new Response.Listener<JSONObject>()
                 {
                     @Override
@@ -414,16 +411,7 @@ public class MagicClassicCaseDetailsFragment extends BaseFragment
                 }
             }
         }
-        )
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        );
         mRequestQueue.add(request);
     }
 

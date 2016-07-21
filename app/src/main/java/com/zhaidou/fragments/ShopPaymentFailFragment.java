@@ -353,15 +353,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
                 if (mContext != null)
                     ToolUtils.setToast(mContext, R.string.loading_fail_txt);
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 
@@ -425,9 +417,6 @@ public class ShopPaymentFailFragment extends BaseFragment {
                                     request.timeStamp = timeStamp;
                                     request.sign = paySign;
                                     api.sendReq(request);
-                                    ToolUtils.setLog("request:" + request.checkArgs());
-                                    ToolUtils.setLog("api:" + api.sendReq(request));
-
                                 } else {
                                     ShowToast("没有安装微信客户端哦");
                                 }
@@ -459,6 +448,7 @@ public class ShopPaymentFailFragment extends BaseFragment {
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("SECAuthorization", token);
                 map.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                map.put("zd-client", "ANDROID");
                 return map;
             }
         };

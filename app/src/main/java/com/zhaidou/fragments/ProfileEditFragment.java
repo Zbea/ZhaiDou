@@ -23,9 +23,9 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.ProfileManage;
@@ -134,7 +134,7 @@ public class ProfileEditFragment extends BaseFragment implements View.OnClickLis
             ll_input_msg.setVisibility(View.VISIBLE);
             rl_description.setVisibility(View.GONE);
         }
-        mRequestQueue = Volley.newRequestQueue(getActivity());
+        mRequestQueue = ZDApplication.newRequestQueue();
         mSharedPreferences = getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         token = mSharedPreferences.getString("token", null);
         view.findViewById(R.id.ll_back).setOnClickListener(this);

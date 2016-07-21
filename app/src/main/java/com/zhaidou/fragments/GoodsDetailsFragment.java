@@ -2,16 +2,16 @@ package com.zhaidou.fragments;
 
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -19,7 +19,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
@@ -33,11 +32,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -48,17 +45,19 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
+import com.zhaidou.adapter.GoodsImageAdapter;
+import com.zhaidou.adapter.GoodsInfoAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.CartCountManager;
-import com.zhaidou.base.ViewHolder;
+import com.zhaidou.dialog.CustomGoodsSizeTv;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CartArrayItem;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.GoodDetail;
 import com.zhaidou.model.GoodInfo;
 import com.zhaidou.model.Specification;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.Api;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.EaseUtils;
@@ -78,12 +77,11 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import cn.sharesdk.framework.Platform;
 import cn.sharesdk.framework.PlatformActionListener;
 
-public class GoodsDetailsFragment extends BaseFragment
+public class GoodsDetailsFragment extends BaseFragment implements CartCountManager.OnCartCountListener
 {
     private static final String PAGE = "page";
     private static final String INDEX = "index";
@@ -93,6 +91,7 @@ public class GoodsDetailsFragment extends BaseFragment
     private String mPage;
     private String mIndex;
     private String mSizeId;
+    private String goodsName;
     private View mView;
     private int flags;//1代表零元特卖；2代表已下架商品
     private Context mContext;
@@ -110,6 +109,7 @@ public class GoodsDetailsFragment extends BaseFragment
 
     private Dialog mDialog;
     private DialogUtils mDialogUtil;
+    private CustomGoodsSizeTv customGoodsSizeTv;
     private RequestQueue mRequestQueue;
 
     private ArrayList<GoodInfo> goodInfos = new ArrayList<GoodInfo>();
@@ -138,14 +138,8 @@ public class GoodsDetailsFragment extends BaseFragment
     private FlowLayout flowLayoutParent, flowLayoutSubclass;
     private boolean isSizeParent;//当为true时父不存在
     private boolean isSizeSubclass;//当为true时子不存在
-    private List<TextView> textSingleTvs = new ArrayList<TextView>();//一维点击 TextView 集合
-    private List<TextView> textParentTvs = new ArrayList<TextView>();//二维父点击 TextView 集合
-    private List<TextView> textSubclassTvs = new ArrayList<TextView>();//二维子点击 TextView 集合
     private int sigleClickPosition = -1;//一位规格选中的位置
     private int doubleClickParentPos = 0;//二维规格选中的位置
-    private boolean isClickParent;//规格是否可以点击
-    private boolean isClickSingle;//规格是否可以点击
-    private boolean isClickSubclass;//规格是否可以点击
     private Specification mSpecificationParent;//选中规格第一个
     private Specification mSpecificationSubclass;//选中型号第二个
 
@@ -153,19 +147,18 @@ public class GoodsDetailsFragment extends BaseFragment
     private ImageView mTipView;
     private RadioGroup radioGroup;
     private ListView mListView;
-    private GoodInfoAdapter mAdapter;
+    private GoodsInfoAdapter mAdapter;
     private LinearLayout mImageContainer;
     private LinearLayout goodsImagesView;
     private LinearLayout goodsInfoView;
     private CustomProgressWebview webView;
 
-    private boolean isPublish;
-    private boolean canShare;
+    private boolean isPublish;//是否商品下架
+    private boolean canShare;//是否可以分享
     private boolean isOSaleBuy;//是否购买过零元特卖
     private boolean isOSaleAdd;//是否添加过零元特卖
     private boolean isOver = true;//是否卖光
     private boolean isAddOrBuy = true;//是添加还是立即购买
-    private boolean isFristSubclass = true;//二维第一次但是展示加入
 
     private long initTime;
     private long systemTime;
@@ -182,9 +175,8 @@ public class GoodsDetailsFragment extends BaseFragment
     private List<String> imageInits = new ArrayList<String>();//图片集合
     private List<String> images = new ArrayList<String>();//图片集合
     private List<ImageView> dots = new ArrayList<ImageView>();
-    private ImageAdapter imageAdapter;
+    private GoodsImageAdapter imageAdapter;
     private String sku;
-    private List<ImageView> mImageViews = new ArrayList<ImageView>();
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
     {
@@ -192,18 +184,6 @@ public class GoodsDetailsFragment extends BaseFragment
         public void onReceive(Context context, Intent intent)
         {
             String action = intent.getAction();
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
-            {
-                FetchCountData();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshLoginTag))
-            {
-                FetchCountData();
-            }
-            if (action.equals(ZhaiDou.IntentRefreshLoginExitTag))
-            {
-                initCartTips();
-            }
             if (action.equals(ZhaiDou.IntentRefreshOGoodsDetailsTag))
             {
                 isOSaleBuy = true;
@@ -318,18 +298,14 @@ public class GoodsDetailsFragment extends BaseFragment
                     CartCountManager.newInstance().notify(cartCount);
 
                     mTipView.setVisibility(View.VISIBLE);
-
                     AnimationSet animationSet = new AnimationSet(true);
                     animationSet.setDuration(1000);
-
                     ScaleAnimation scaleAnimation = new ScaleAnimation(3f, 1f, 3f, 1f,
                             Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-
                     Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.add_cart_anim);
                     animation.setFillAfter(true);
                     animationSet.addAnimation(scaleAnimation);
                     animationSet.addAnimation(animation);
-
                     mTipView.startAnimation(animationSet);
                     animationSet.setAnimationListener(new Animation.AnimationListener()
                     {
@@ -337,7 +313,6 @@ public class GoodsDetailsFragment extends BaseFragment
                         public void onAnimationStart(Animation animation)
                         {
                         }
-
                         @Override
                         public void onAnimationEnd(Animation animation)
                         {
@@ -345,13 +320,11 @@ public class GoodsDetailsFragment extends BaseFragment
                             mTipView.clearAnimation();
                             initCartTips();
                         }
-
                         @Override
                         public void onAnimationRepeat(Animation animation)
                         {
                         }
                     });
-
                     break;
                 case UPDATE_ISADD_CART://校正是否零元特卖已经加入购物车
                     mDialog.dismiss();
@@ -380,8 +353,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     break;
                 case UPDATE_OSALE_DELETE://删除成功后
                     cartCount = cartCount - 1;
-                    Intent delete = new Intent(ZhaiDou.IntentRefreshAddCartTag);
-                    mContext.sendBroadcast(delete);
+                    CartCountManager.newInstance().notify(cartCount);
                     if (isAddOrBuy)//如果已经存在零元特卖
                     {
                         FetchAddCartData();
@@ -478,22 +450,26 @@ public class GoodsDetailsFragment extends BaseFragment
         @Override
         public void onPageScrolled(int i, float v, int i2)
         {
-
         }
-
         @Override
-        public void onPageSelected(int i)
+        public void onPageSelected(int position)
         {
-            setImageBackground(i);
+            for (int i = 0; i < dots.size(); i++)
+            {
+                if (i == position)
+                {
+                    dots.get(position).setBackgroundResource(R.drawable.home_tips_foucs_icon);
+                } else
+                {
+                    dots.get(i).setBackgroundResource(R.drawable.home_tips_icon);
+                }
+            }
         }
-
         @Override
         public void onPageScrollStateChanged(int i)
         {
-
         }
     };
-    private String goodsName;
 
     public static GoodsDetailsFragment newInstance(String page, String index)
     {
@@ -549,16 +525,9 @@ public class GoodsDetailsFragment extends BaseFragment
 
     private void initView()
     {
-        CartCountManager.newInstance().setOnCartCountListener(new CartCountManager.OnCartCountListener()
-        {
-            @Override
-            public void onChange(int count)
-            {
-                initCartTips();
-            }
-        });
         shareUrl = shareUrl + mIndex;
         mDialogUtil = new DialogUtils(mContext);
+
         shareBtn = (ImageView) mView.findViewById(R.id.share_iv);
         shareBtn.setOnClickListener(onClickListener);
         shareBtn.setVisibility(canShare ? View.VISIBLE : View.GONE);
@@ -611,6 +580,18 @@ public class GoodsDetailsFragment extends BaseFragment
         }
 
         tv_comment = (TextView) mView.findViewById(R.id.tv_comment);
+        tv_comment.setOnLongClickListener(new View.OnLongClickListener()
+        {
+            @Override
+            public boolean onLongClick(View v)
+            {
+                ClipboardManager clipboardManager= (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clipData=ClipData.newPlainText("text",tv_comment.getText().toString());
+                clipboardManager.setPrimaryClip(clipData);
+                ToolUtils.setToast(mContext,"复制成功");
+                return false;
+            }
+        });
         tv_baoyou = (TextView) mView.findViewById(R.id.tv_baoyou);
         mCurrentPrice = (TextView) mView.findViewById(R.id.goodsCurrentPrice);
         mOldPrice = (TextView) mView.findViewById(R.id.goodsFormerPrice);
@@ -671,6 +652,8 @@ public class GoodsDetailsFragment extends BaseFragment
             }
         });
 
+        CartCountManager.newInstance().setOnCartCountListener(this);
+
         initData();
 
     }
@@ -681,9 +664,6 @@ public class GoodsDetailsFragment extends BaseFragment
     private void initBroadcastReceiver()
     {
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshGoodsDetailsTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshOGoodsDetailsTag);
 
@@ -830,89 +810,52 @@ public class GoodsDetailsFragment extends BaseFragment
     private void addSizeSingleView()
     {
         ToolUtils.setLog("一位规格");
+        FlowLayout views=null;
         if (isSizeSubclass)
         {
             flowLayoutParent.removeAllViews();
+            views=flowLayoutParent;
         }
         if (isSizeParent)
         {
             flowLayoutSubclass.removeAllViews();
+            views=flowLayoutSubclass;
         }
-        MarginLayoutParams lp = new MarginLayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        lp.leftMargin = 10;
-        lp.rightMargin = 5;
-        lp.topMargin = 10;
-        lp.bottomMargin = 5;
-        for (int i = 0; i < specificationList.size(); i++)
+        customGoodsSizeTv=new CustomGoodsSizeTv();
+        customGoodsSizeTv.showSizeView(mContext,2,mSizeId,views,specificationList,new CustomGoodsSizeTv.OnInitSizeListener()
         {
-            final int position = i;
-            final Specification specification = specificationList.get(i);
-            ToolUtils.setLog(specification.title);
-            View view = LayoutInflater.from(mContext).inflate(R.layout.goods_details_size_item, null);
-            final TextView textView = (TextView) view.findViewById(R.id.sizeTitleTv);
-            textView.setOnClickListener(new View.OnClickListener()
+            @Override
+            public void onInit(int position,TextView textView,Specification specification)
             {
-                @Override
-                public void onClick(View v)
+                if (mSizeId!=null)
                 {
-                    if (sigleClickPosition == position)//用来判断是否是否是点击的同一个按钮
-                    {
-                        if (isClickSingle)
-                        {
-                            sigleClickPosition = position;
-                            for (int j = 0; j < textSingleTvs.size(); j++)
-                            {
-                                textSingleTvs.get(j).setSelected(false);
-                            }
-                            textView.setSelected(true);
-                            sizeEvent(specification);
-                        } else
-                        {
-                            sigleClickPosition = -1;
-                            textView.setSelected(false);
-                            mSpecificationParent = null;
-                            setResetSize();
-                        }
-                    } else
-                    {
-                        sigleClickPosition = position;
-                        for (int j = 0; j < textSingleTvs.size(); j++)
-                        {
-                            textSingleTvs.get(j).setSelected(false);
-                        }
-                        textView.setSelected(true);
-                        sizeEvent(specification);
-                    }
+                    sigleClickPosition = 0;
+                    sizeEvent(specification);
                 }
-            });
-            textView.setText(specification.title);
-            if (specification.num < 1)
+            }
+        },new CustomGoodsSizeTv.OnClickSizeListener()
+        {
+            @Override
+            public void onClick(int position,List<TextView> texts,TextView textView,Specification specification)
             {
-                textView.setBackgroundResource(R.drawable.goods_no_click_selector);
-                textView.setTextColor(Color.parseColor("#999999"));
-                textView.setClickable(false);
-            } else
-            {
-                if (mSizeId!=null)//当初始规格不为null时，默认选中初始规格
+                if (sigleClickPosition == position)//用来判断是否是否是点击的同一个按钮
                 {
-                    if (specification.sizeId.equals(mSizeId+""))
+                    sigleClickPosition = -1;
+                    textView.setSelected(false);
+                    mSpecificationParent = null;
+                    setResetSize();
+                } else
+                {
+                    sigleClickPosition = position;
+                    for (int j = 0; j < texts.size(); j++)
                     {
-                        sigleClickPosition = position;
-                        textView.setSelected(true);
-                        sizeEvent(specification);
+                        texts.get(j).setSelected(false);
                     }
+                    textView.setSelected(true);
+                    sizeEvent(specification);
                 }
-                textSingleTvs.add(textView);
             }
-            if (isSizeSubclass)
-            {
-                flowLayoutParent.addView(view, lp);
-            }
-            if (isSizeParent)
-            {
-                flowLayoutSubclass.addView(view, lp);
-            }
-        }
+        });
     }
 
     /**
@@ -922,175 +865,108 @@ public class GoodsDetailsFragment extends BaseFragment
     {
         ToolUtils.setLog("父规格");
         flowLayoutParent.removeAllViews();
-        MarginLayoutParams lp = new MarginLayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        lp.leftMargin = 10;
-        lp.rightMargin = 5;
-        lp.topMargin = 10;
-        lp.bottomMargin = 5;
-        for (int i = 0; i < specificationList.size(); i++)
+        customGoodsSizeTv=new CustomGoodsSizeTv();
+        customGoodsSizeTv.showSizeView(mContext,1,mSizeId,flowLayoutParent,specificationList,new CustomGoodsSizeTv.OnInitSizeListener()
         {
-            final int position = i;
-            View view = LayoutInflater.from(mContext).inflate(R.layout.goods_details_size_item, null);
-            final TextView textView = (TextView) view.findViewById(R.id.sizeTitleTv);
-            textView.setOnClickListener(new View.OnClickListener()
+            @Override
+            public void onInit(int position,TextView textView,Specification specification)
             {
-                @Override
-                public void onClick(View v)
+                if (mSizeId!=null)
                 {
-
-                    if (doubleClickParentPos == position)//用来判断是否是否是点击的同一个按钮
+                    doubleClickParentPos = position;
+                    mSpecificationParent = specificationList.get(position);
+                    addSizeSubclassView(mSpecificationParent.sizess,mSizeId);
+                } else
+                {
+                    if (0 == position)
                     {
-                        if (isClickParent)
-                        {
-                            doubleClickParentPos = position;
-                            for (int j = 0; j < textParentTvs.size(); j++)
-                            {
-                                textParentTvs.get(j).setSelected(false);
-                            }
-                            textView.setSelected(true);
-                            mSpecificationParent = specificationList.get(position);
-                            addSizeSubclassView(mSpecificationParent.sizess);
-                        } else
-                        {
-                            doubleClickParentPos = -1;
-                            textView.setSelected(false);
-                            mSpecificationParent = null;
-                            addSizeSubclassView(specificationList.get(0).sizess);
-                            setResetSize();
-                        }
-                    } else
-                    {
-                        doubleClickParentPos = position;
-                        for (int j = 0; j < textParentTvs.size(); j++)
-                        {
-                            textParentTvs.get(j).setSelected(false);
-                        }
-                        textView.setSelected(true);
+                        addSizeSubclassView(specificationList.get(0).sizess,null);
                         mSpecificationParent = specificationList.get(position);
-                        addSizeSubclassView(mSpecificationParent.sizess);
                     }
                 }
-            });
-            Specification specification = specificationList.get(i);
-            textView.setText(specification.title);
-
-            if (mSizeId!=null)
-            {
-                for (int j = 0; j < specification.sizess.size(); j++)
-                {
-                    if (mSizeId.equals(specification.sizess.get(j).sizeId))
-                    {
-                        doubleClickParentPos = i;
-                        textView.setSelected(true);
-                        mSpecificationParent = specificationList.get(i);
-                        addSizeSubclassView(specification.sizess);
-                    }
-                }
-            } else
-            {
-                if (0 == position)
-                {
-                    textView.setSelected(true);
-                    mSpecificationParent = specificationList.get(i);
-                }
-                addSizeSubclassView(specificationList.get(0).sizess);
             }
-            textParentTvs.add(textView);
-            flowLayoutParent.addView(view, lp);
-        }
-
+        },new CustomGoodsSizeTv.OnClickSizeListener()
+        {
+            @Override
+            public void onClick(int position,List<TextView> texts,TextView textView,Specification specification)
+            {
+                if (doubleClickParentPos == position)//用来判断是否是否是点击的同一个按钮
+                {
+                    doubleClickParentPos = -1;
+                    textView.setSelected(false);
+                    mSpecificationParent = null;
+                    addSizeSubclassView(specificationList.get(0).sizess,null);
+                    setResetSize();
+                } else
+                {
+                    doubleClickParentPos = position;
+                    for (int j = 0; j < texts.size(); j++)
+                    {
+                        texts.get(j).setSelected(false);
+                    }
+                    textView.setSelected(true);
+                    mSpecificationParent = specificationList.get(position);
+                    addSizeSubclassView(mSpecificationParent.sizess,mSizeId);
+                }
+            }
+        });
     }
 
 
     /**
      * 添加子规格布局
      */
-    private void addSizeSubclassView(List<Specification> sizes)
+    private void addSizeSubclassView(List<Specification> sizes,String sizeId)
     {
         ToolUtils.setLog("子规格");
-        isClickSubclass = false;
+        for (int i = 0; i <sizes.size() ; i++)
+        {
+            ToolUtils.setLog("sizes"+i+":"+sizes.get(i).title1);
+        }
         sigleClickPosition = -1;
         mSpecificationSubclass = null;
         flowLayoutSubclass.removeAllViews();
-        MarginLayoutParams lp = new MarginLayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        lp.leftMargin = 10;
-        lp.rightMargin = 5;
-        lp.topMargin = 10;
-        lp.bottomMargin = 5;
-        for (int i = 0; i < sizes.size(); i++)
+
+        customGoodsSizeTv=new CustomGoodsSizeTv();
+        customGoodsSizeTv.showSizeView(mContext,3,sizeId,flowLayoutSubclass,sizes,new CustomGoodsSizeTv.OnInitSizeListener()
         {
-            final int position = i;
-            final Specification specification = sizes.get(i);
-            View view = LayoutInflater.from(mContext).inflate(R.layout.goods_details_size_item, null);
-            final TextView textView = (TextView) view.findViewById(R.id.sizeTitleTv);
-            textView.setOnClickListener(new View.OnClickListener()
+            @Override
+            public void onInit(int position,TextView textView,Specification specification)
             {
-                @Override
-                public void onClick(View v)
+                if (mSizeId!=null)
                 {
-                    if (sigleClickPosition == position)//用来判断是否是否是点击的同一个按钮
-                    {
-                        if (isClickSubclass)
-                        {
-                            isClickSubclass = false;
-                            sigleClickPosition = -1;
-                            textView.setSelected(false);
-                            mSpecificationSubclass = null;
-                            setResetSize();
-                        }
-                    } else
-                    {
-                        isClickSubclass = true;
-                        if (mSpecificationParent == null)
-                        {
-                            ToolUtils.setToast(mContext, "抱歉，请先选择" + sizeNameParent);
-                            return;
-                        }
-                        sigleClickPosition = position;
-                        for (int j = 0; j < textSubclassTvs.size(); j++)
-                        {
-                            textSubclassTvs.get(j).setSelected(false);
-                        }
-                        textView.setSelected(true);
-                        sizeEvent(specification);
-                    }
-                }
-            });
-            textView.setText(specification.title1);
-            if (specification.num < 1)
-            {
-                textView.setBackgroundResource(R.drawable.goods_no_click_selector);
-                textView.setTextColor(Color.parseColor("#999999"));
-                textView.setClickable(false);
-            } else
-            {
-                textView.setSelected(false);
-                if (specification.sizeId.equals(mSizeId+""))
-                {
-                    isClickSubclass = true;
                     sigleClickPosition = 0;
+                    sizeEvent(specification);
+                }
+            }
+        },new CustomGoodsSizeTv.OnClickSizeListener()
+        {
+            @Override
+            public void onClick(int position,List<TextView> texts,TextView textView,Specification specification)
+            {
+                if (sigleClickPosition == position)//用来判断是否是否是点击的同一个按钮
+                {
+                    sigleClickPosition = -1;
+                    textView.setSelected(false);
+                    mSpecificationSubclass = null;
+                    setResetSize();
+                } else
+                {
+                    if (mSpecificationParent == null)
+                    {
+                        ToolUtils.setToast(mContext, "抱歉，请先选择" + sizeNameParent);
+                        return;
+                    }
+                    sigleClickPosition = position;
+                    for (int j = 0; j < texts.size(); j++)
+                    {
+                        texts.get(j).setSelected(false);
+                    }
                     textView.setSelected(true);
                     sizeEvent(specification);
                 }
-
-//                if (isFristSubclass)
-//                {
-//                    isFristSubclass = false;
-//                    if (specificationList.size() == 1)
-//                        if (specificationList.get(0).sizess.size() == 1)
-//                        {
-//                            isClickSubclass=true;
-//                            sigleClickPosition = 0;
-//                            textView.setSelected(true);
-//                            sizeEvent(specification);
-//                        }
-//                }
-                textSubclassTvs.add(textView);
             }
-            flowLayoutSubclass.addView(view, lp);
-        }
+        });
     }
 
     /**
@@ -1195,9 +1071,10 @@ public class GoodsDetailsFragment extends BaseFragment
         if (spe.images != null && spe.images.size() > 0)
         {
             if (images != spe.images)
-                images.clear();
-            images.addAll(spe.images);
-            setImageViews();
+            {
+                images=spe.images;
+                setImageViews();
+            }
         }
 
         if (isOSaleBuy)
@@ -1238,8 +1115,6 @@ public class GoodsDetailsFragment extends BaseFragment
             mDiscount.setVisibility(View.GONE);
         }
     }
-
-
     /**
      * 加载子fargment信息
      *
@@ -1248,11 +1123,9 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     private void setChildFargment(GoodDetail detail, ArrayList<GoodInfo> goodInfos)
     {
-        mAdapter = new GoodInfoAdapter(mContext, goodInfos);
+        mAdapter = new GoodsInfoAdapter(mContext, goodInfos);
         mListView.setAdapter(mAdapter);
-//        webView.loadData(detail.webUrl, "text/html; charset=UTF-8", "UTF-8");
         setImageViews();
-
         mImageContainer.removeAllViews();
 
         DisplayImageOptions options = new DisplayImageOptions.Builder()
@@ -1376,9 +1249,8 @@ public class GoodsDetailsFragment extends BaseFragment
     private void setImagesReset()
     {
         if (images != imageInits)
-            images.clear();
-        images.addAll(imageInits);
-        setImageViews();
+            images=imageInits;
+            setImageViews();
     }
 
     /**
@@ -1386,21 +1258,11 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     public void setImageViews()
     {
-        mImageViews.clear();
-        for (int i = 0; i < images.size(); i++)
-        {
-            ImageView imageView = new ImageView(mContext);
-            LayoutParams layoutParams = new LayoutParams(screenWidth, screenWidth);
-            imageView.setLayoutParams(layoutParams);
-            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-            ToolUtils.setImageCacheUrl(images.get(i), imageView, R.drawable.icon_loading_goods_details);
-            mImageViews.add(imageView);
-        }
         setInitImageBackground();
-        imageAdapter = new ImageAdapter();
+        imageAdapter = new GoodsImageAdapter();
         viewPager.setAdapter(imageAdapter);
         viewPager.setOnPageChangeListener(onPageChangeListener);
-        imageAdapter.initImags(mImageViews);
+        imageAdapter.initImages(images,mContext);
     }
 
     /**
@@ -1435,23 +1297,6 @@ public class GoodsDetailsFragment extends BaseFragment
             }
             viewGroupe.addView(dot_iv);
             dots.add(dot_iv);
-        }
-    }
-
-    /**
-     * 设置指示器
-     */
-    private void setImageBackground(int position)
-    {
-        for (int i = 0; i < dots.size(); i++)
-        {
-            if (i == position)
-            {
-                dots.get(position).setBackgroundResource(R.drawable.home_tips_foucs_icon);
-            } else
-            {
-                dots.get(i).setBackgroundResource(R.drawable.home_tips_icon);
-            }
         }
     }
 
@@ -1624,7 +1469,7 @@ public class GoodsDetailsFragment extends BaseFragment
     {
         subclassSizes.clear();
         String url = ZhaiDou.HomeGoodsDetailsUrl + mIndex;
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -1830,16 +1675,7 @@ public class GoodsDetailsFragment extends BaseFragment
                 nullView.setVisibility(View.VISIBLE);
                 nullNetView.setVisibility(View.GONE);
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 
@@ -1879,7 +1715,7 @@ public class GoodsDetailsFragment extends BaseFragment
             url = ZhaiDou.GoodsDetailsAddUrl + userId + "&productSKUId=" + mSpecificationParent.sizeId;
         }
         ToolUtils.setLog(url);
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -1908,17 +1744,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     mDialog.dismiss();
                 ToolUtils.setToastLong(mContext, R.string.loading_fail_txt);
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 
@@ -1927,13 +1753,12 @@ public class GoodsDetailsFragment extends BaseFragment
      */
     public void FetchOSaleData(final int i)
     {
-        String url = ZhaiDou.IsBuyOSaleUrl + userId;
-        ToolUtils.setLog(url);
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        Api.getIsBuyOSale(userId,new Api.SuccessListener()
         {
             @Override
-            public void onResponse(JSONObject jsonObject)
+            public void onSuccess(Object object)
             {
+                JSONObject jsonObject=(JSONObject)object;
                 if (jsonObject != null)
                 {
                     isOSaleBuy = jsonObject.optInt("ifBuy") == 1 ? false : true;
@@ -1949,10 +1774,10 @@ public class GoodsDetailsFragment extends BaseFragment
                     handler.sendEmptyMessage(UPDATE_ISOSALEBUY);
                 }
             }
-        }, new Response.ErrorListener()
+        },new Api.ErrorListener()
         {
             @Override
-            public void onErrorResponse(VolleyError volleyError)
+            public void onError(Object object)
             {
                 if (mDialog != null)
                     mDialog.dismiss();
@@ -1964,18 +1789,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     ToolUtils.setToastLong(mContext, R.string.loading_fail_txt);
                 }
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
+        });
     }
 
     /**
@@ -1985,7 +1799,7 @@ public class GoodsDetailsFragment extends BaseFragment
     {
         String url = ZhaiDou.IsAddOSaleUrl + userId;
         ToolUtils.setLog(url);
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -2014,17 +1828,7 @@ public class GoodsDetailsFragment extends BaseFragment
                     mDialog.dismiss();
                 ToolUtils.setToastLong(mContext, R.string.loading_fail_txt);
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 
@@ -2035,7 +1839,7 @@ public class GoodsDetailsFragment extends BaseFragment
     {
         String url = ZhaiDou.CartGoodsDeleteUrl + userId + "&productSKUId=" + "[" + sku + "]";
         ToolUtils.setLog("url:" + url);
-        JsonObjectRequest request = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -2057,25 +1861,8 @@ public class GoodsDetailsFragment extends BaseFragment
                 if (mDialog != null)
                     mDialog.dismiss();
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
-    }
-
-
-    @Override
-    public void onDestroyView()
-    {
-        super.onDestroyView();
     }
 
     @Override
@@ -2089,7 +1876,6 @@ public class GoodsDetailsFragment extends BaseFragment
     @Override
     public void onResume()
     {
-        System.out.println("GoodsDetailsFragment.onResume");
         if (isFrist)
         {
             long temp = Math.abs(systemTime - System.currentTimeMillis());
@@ -2110,78 +1896,17 @@ public class GoodsDetailsFragment extends BaseFragment
         MobclickAgent.onPageEnd(mContext.getResources().getString(R.string.title_goods_detail));
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden)
-    {
-        super.onHiddenChanged(hidden);
-    }
-
     /**
-     * 规格适配器
+     * 购物车数量变化刷新
+     * @param count
      */
-    public class GoodInfoAdapter extends BaseListAdapter<GoodInfo>
+    @Override
+    public void onChange(int count)
     {
-        public GoodInfoAdapter(Context context, List<GoodInfo> list)
-        {
-            super(context, list);
-        }
-
-        @Override
-        public View bindView(int position, View convertView, ViewGroup parent)
-        {
-            if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_goods_info, null);
-            TextView tv_key = ViewHolder.get(convertView, R.id.tv_key);
-            tv_key.setMaxWidth(screenWidth / 2 - 20);
-            TextView tv_value = ViewHolder.get(convertView, R.id.tv_value);
-            GoodInfo goodInfo = getList().get(position);
-            tv_key.setText(goodInfo.getTitle());
-            tv_value.setText(goodInfo.getValue());
-            return convertView;
-        }
+        cartCount=count;
+        initCartTips();
     }
 
 
-    public class ImageAdapter extends PagerAdapter
-    {
-        List<ImageView> imageViews = new ArrayList<ImageView>();
-
-        public void initImags(List<ImageView> imageViewss)
-        {
-            imageViews.addAll(imageViewss);
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public int getCount()
-        {
-            return imageViews.size();
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object o)
-        {
-            return view == o;
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object)
-        {
-            container.removeView(imageViews.get(position));
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position)
-        {
-            container.addView(imageViews.get(position));
-            return imageViews.get(position);
-        }
-
-//        @Override
-//        public int getItemPosition(Object object)
-//        {
-//            return null!=imageViews&&imageViews.size()==0?POSITION_NONE:super.getItemPosition(object);
-//        }
-    }
 
 }

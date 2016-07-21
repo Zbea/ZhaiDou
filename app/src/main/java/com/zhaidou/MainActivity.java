@@ -28,7 +28,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.sdk.android.AlibabaSDK;
-import com.alibaba.sdk.android.callback.CallbackContext;
 import com.alibaba.sdk.android.callback.InitResultCallback;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -36,7 +35,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpClientStack;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.activities.LoginActivity;
@@ -55,7 +53,6 @@ import com.zhaidou.fragments.MainPersonalFragment;
 import com.zhaidou.fragments.OrderDetailFragment;
 import com.zhaidou.fragments.RegisterFragment;
 import com.zhaidou.fragments.ShopCartFragment;
-import com.zhaidou.fragments.ShopCartFragment1;
 import com.zhaidou.fragments.ShopPaymentFailFragment;
 import com.zhaidou.fragments.ShopPaymentFragment;
 import com.zhaidou.fragments.ShopPaymentSuccessFragment;
@@ -91,7 +88,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private Fragment utilityFragment;
     private Fragment magicHomeFragment;
     private Fragment goodsFragment;
-    private ShopCartFragment1 shopCartFragment;
+    private ShopCartFragment shopCartFragment;
 
     private TextView homeButton;
     private TextView magicButton;
@@ -125,7 +122,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private final int WX_PAY_SUCCESS = 0;
     private final int WX_PAY_FAILED = -1;
     private final int WX_PAY_CANCEL = -2;
-    public static List<Province> provinceList = new ArrayList<Province>();
+    private  List<Province> provinceList=new ArrayList<Province>();
 
     public int num = 0;
     public int cartCount = 0;
@@ -139,9 +136,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         public void onReceive(Context context, Intent intent)
         {
             String action = intent.getAction();
-            if (action.equals(ZhaiDou.IntentRefreshCartGoodsCheckTag))
-            {
-            }
             if (action.equals(ZhaiDou.IntentRefreshLoginTag))
             {
                 checkLogin();
@@ -199,7 +193,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                     {
                         if (shopCartFragment == null)
                         {
-                            shopCartFragment = ShopCartFragment1.newInstance("", 1);
+                            shopCartFragment = ShopCartFragment.newInstance("", 1);
                         } else
                         {
                             shopCartFragment.refreshData();
@@ -271,7 +265,6 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginExitTag);
         intentFilter.addAction(ZhaiDou.IntentRefreshLoginTag);
-        intentFilter.addAction(ZhaiDou.IntentRefreshCartGoodsCheckTag);
         intentFilter.addAction(ZhaiDou.BROADCAST_WXAPI_FILTER);
         mContext.registerReceiver(broadcastReceiver, intentFilter);
     }
@@ -317,14 +310,12 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             @Override
             public void onClick(View view)
             {
-
                 if (magicHomeFragment == null)
                 {
                     magicHomeFragment = new MainMagicFragment();
                 }
                 selectFragment(currentFragment, magicHomeFragment);
                 setButton(view);
-
 
             }
         });
@@ -356,7 +347,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 {
                     if (shopCartFragment == null)
                     {
-                        shopCartFragment = ShopCartFragment1.newInstance("haha", 1);
+                        shopCartFragment = ShopCartFragment.newInstance("haha", 1);
                     }
                     selectFragment(currentFragment, shopCartFragment);
                     setButton(view);
@@ -486,10 +477,310 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         return isLogin;
     }
 
+
+
+    public void logout(Fragment fragment)
+    {
+        popToStack(fragment);
+        if (utilityFragment == null)
+        {
+            utilityFragment = MainHomeFragment.newInstance(ZhaiDou.HOME_PAGE_URL, ZhaiDou.ListType.HOME.toString());
+        }
+        selectFragment(currentFragment, utilityFragment);
+        setButton(homeButton);
+    }
+
+    /**
+     * 清除除开首页的全部fragment
+     */
+    public void allfragment()
+    {
+        List<Fragment> fragments = manager.getFragments();
+        for (Fragment fragment : fragments)
+        {
+            if (fragment instanceof MainHomeFragment || fragment instanceof MainPersonalFragment || fragment instanceof MainMagicFragment || fragment instanceof MainCategoryFragment || fragment instanceof ShopCartFragment)
+            {
+            } else
+            {
+                popToStack(fragment);
+            }
+        }
+    }
+
+    public void hideTip(int v)
+    {
+        iv_dot.setVisibility(v);
+    }
+
+    /**
+     * 显示购物车数量
+     * @param ty
+     */
+    public void CartTip(int ty)
+    {
+        if (ty == 0)
+        {
+            cart_dot.setVisibility(View.GONE);
+        } else
+        {
+            cart_dot.setText("" + ty);
+            cart_dot.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /**
+     * 得到预加载的城市
+     * @return
+     */
+    public List<Province> getAddressCity()
+    {
+        return provinceList;
+    }
+
+    /**
+     * 设置加载城市
+     * @param provinces
+     */
+    public void setAddressCity(List<Province> provinces)
+    {
+        provinceList=provinces;
+    }
+
+
+    private void FetchUnPayData()
+    {
+        String mUserId = SharedPreferencesUtil.getData(this, "userId", -1) + "";
+        Map<String, String> params = new HashMap();
+        params.put("userId", mUserId);
+        params.put("clientType", "ANDROID");
+        params.put("clientVersion", "45");
+        params.put("businessType", "01");
+        params.put("type", ZhaiDou.TYPE_ORDER_PREPAY);
+        params.put("pageNo", "0");
+        params.put("pageSize", "0");
+        ZhaiDouRequest request = new ZhaiDouRequest(MainActivity.this, Request.Method.POST, ZhaiDou.URL_ORDER_LIST, params, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject)
+            {
+                int status = jsonObject.optInt("status");
+                int totalCount = jsonObject.optInt("totalCount");
+                if (status == 200)
+                {
+                    CountManager.getInstance().init(CountManager.TYPE.TAG_PREPAY, totalCount);
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError volleyError)
+            {
+            }
+        });
+        ((ZDApplication) getApplicationContext()).mRequestQueue.add(request);
+    }
+
+    private void commitActiveData()
+    {
+        ApplicationInfo appInfo = null;
+        try
+        {
+            appInfo = this.getPackageManager()
+                    .getApplicationInfo(getPackageName(),
+                            PackageManager.GET_META_DATA);
+        } catch (PackageManager.NameNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        final String channel = appInfo.metaData.getString("UMENG_CHANNEL");
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("device_token[device_token]", DeviceUtils.getImei(this));
+        ZhaiDouRequest request = new ZhaiDouRequest(MainActivity.this, Request.Method.POST, ZhaiDou.URL_STATISTICS, map, null, null)
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> header = new HashMap<String, String>();
+                header.put("zd-client", channel);
+                header.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
+                return header;
+            }
+        };
+        mRequestQueue.add(request);
+    }
+
+    private void FetchAPK()
+    {
+        Api.getApkManage(new Api.SuccessListener()
+        {
+            @Override
+            public void onSuccess(Object jsonObject)
+            {
+                if (jsonObject != null)
+                {
+                    ToolUtils.setLog(jsonObject.toString());
+                    JSONObject object = ((JSONObject) jsonObject).optJSONObject("data");
+                    if (object != null)
+                        serverName = object.optString("app_version");
+                    serverCode = object.optInt("code_version");
+                    serverUrl = object.optString("package_url");
+                    if (serverCode > ZDApplication.localVersionCode)
+                    {
+                        CustomVersionUpdateDialog customVersionUpdateDialog = new CustomVersionUpdateDialog(mContext, serverName, serverUrl);
+                        customVersionUpdateDialog.checkUpdateInfo();
+                    }
+                }
+            }
+        }, null);
+    }
+
+    private void FetchCityData()
+    {
+        Api.getAddressCity(new Api.SuccessListener()
+        {
+            @Override
+            public void onSuccess(Object object)
+            {
+                if (object != null)
+                {
+                    JSONObject jsonObject=(JSONObject)object;
+                    JSONArray providerArr = jsonObject.optJSONArray("providers");
+                    for (int i = 0; i < providerArr.length(); i++)
+                    {
+                        JSONObject provinceObj = providerArr.optJSONObject(i);
+                        int provinceId = provinceObj.optInt("id");
+                        String provinceName = provinceObj.optString("name");
+                        Province province = new Province();
+                        province.setId(provinceId);
+                        province.setName(provinceName);
+                        List<City> cityList = new ArrayList<City>();
+                        JSONArray cityArr = provinceObj.optJSONArray("cities");
+                        if (cityArr != null && cityArr.length() > 0)
+                        {
+                            for (int k = 0; k < cityArr.length(); k++)
+                            {
+                                JSONObject cityObj = cityArr.optJSONObject(k);
+                                int cityId = cityObj.optInt("id");
+                                String cityName = cityObj.optString("name");
+                                JSONArray areaArr = cityObj.optJSONArray("children");
+                                City city = new City();
+                                city.setId(cityId);
+                                city.setName(cityName);
+                                List<Area> areaList = new ArrayList<Area>();
+                                if (areaArr != null && areaArr.length() > 0)
+                                {
+                                    for (int j = 0; j < areaArr.length(); j++)
+                                    {
+                                        JSONObject areaObj = areaArr.optJSONObject(j);
+                                        int areaId = areaObj.optInt("id");
+                                        String areaName = areaObj.optString("name");
+                                        int areaPrice = areaObj.optInt("price");
+                                        Area area = new Area();
+                                        area.setId(areaId);
+                                        area.setName(areaName);
+                                        area.setPrice(areaPrice);
+                                        areaList.add(area);
+                                    }
+                                    city.setAreas(areaList);
+                                    cityList.add(city);
+                                }
+
+                            }
+                        }
+                        province.setCityList(cityList);
+                        provinceList.add(province);
+                    }
+                }
+            }
+        },null);
+    }
+
+    /**
+     * 请求购物车列表数据
+     */
+    public void FetchCountData()
+    {
+        Api.getCartCount(id,new Api.SuccessListener()
+        {
+            @Override
+            public void onSuccess(Object jsonObject)
+            {
+                if (jsonObject != null)
+                {
+                    JSONObject object =((JSONObject)jsonObject).optJSONObject("data");
+                    cartCount = object.optInt("totalQuantity");
+                    CartCountManager.newInstance().notify(cartCount);
+                    CartTip(cartCount);
+                }
+            }
+        },null);
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
+
+    int currentPrePayCount = 0;
+
+    @Override
+    public void onCount(int count)
+    {
+        iv_dot.setVisibility((count > 0 && count > currentPrePayCount) ? View.VISIBLE : View.GONE);
+        currentPrePayCount = count;
+    }
+
+    @Override
+    public void onLogOut()
+    {
+        iv_dot.setVisibility(View.GONE);
+        mMsgView.setVisibility(View.GONE);
+        SharedPreferencesUtil.removeUnReadComment();
+        CountManager.getInstance().notifyCommentChange();
+    }
+
+    @Override
+    public void onChange()
+    {
+        Integer unReadDesigner = (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(), "UnReadDesigner", 0);
+        mMsgView.setVisibility(unReadDesigner > 0 ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig)
+    {
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
+        {
+            Configuration o = newConfig;
+            o.orientation = Configuration.ORIENTATION_PORTRAIT;
+            newConfig.setTo(o);
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
+        {
+        }
+        super.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onChange(int count)
+    {
+        CartTip(count);
+    }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        CallbackContext.onActivityResult(requestCode, resultCode, data);
+//        CallbackContext.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
         switch (resultCode)
         {
             case 2000:
@@ -506,27 +797,17 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             case 1000:
                 break;
         }
-
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
     protected void onDestroy()
     {
-        unregisterReceiver(broadcastReceiver);
-        ((ZDApplication) getApplicationContext()).mRequestQueue.cancelAll(null);
+        if (broadcastReceiver!=null)
+            unregisterReceiver(broadcastReceiver);
+        RequestQueue mRequestQueue=ZDApplication.newRequestQueue();
+        if (mRequestQueue!=null)
+            mRequestQueue.cancelAll("ZHAIDOU");
         super.onDestroy();
-    }
-
-    public void logout(Fragment fragment)
-    {
-        popToStack(fragment);
-        if (utilityFragment == null)
-        {
-            utilityFragment = MainHomeFragment.newInstance(ZhaiDou.HOME_PAGE_URL, ZhaiDou.ListType.HOME.toString());
-        }
-        selectFragment(currentFragment, utilityFragment);
-        setButton(homeButton);
     }
 
     @Override
@@ -618,300 +899,4 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         }, null);
     }
 
-    /**
-     * 清除除开首页的全部fragment
-     */
-    public void allfragment()
-    {
-        List<Fragment> fragments = manager.getFragments();
-        for (Fragment fragment : fragments)
-        {
-            if (fragment instanceof MainHomeFragment || fragment instanceof MainPersonalFragment || fragment instanceof MainMagicFragment || fragment instanceof MainCategoryFragment || fragment instanceof ShopCartFragment)
-            {
-            } else
-            {
-                popToStack(fragment);
-            }
-        }
-    }
-
-    public void hideTip(int v)
-    {
-        iv_dot.setVisibility(v);
-    }
-
-    /**
-     * 显示
-     *
-     * @param ty
-     */
-    public void CartTip(int ty)
-    {
-        if (ty == 0)
-        {
-            cart_dot.setVisibility(View.GONE);
-        } else
-        {
-            cart_dot.setText("" + ty);
-            cart_dot.setVisibility(View.VISIBLE);
-        }
-    }
-
-
-    private void FetchUnPayData()
-    {
-        String mUserId = SharedPreferencesUtil.getData(this, "userId", -1) + "";
-        Map<String, String> params = new HashMap();
-        params.put("userId", mUserId);
-        params.put("clientType", "ANDROID");
-        params.put("clientVersion", "45");
-        params.put("businessType", "01");
-        params.put("type", ZhaiDou.TYPE_ORDER_PREPAY);
-        params.put("pageNo", "0");
-        params.put("pageSize", "0");
-        ZhaiDouRequest request = new ZhaiDouRequest(MainActivity.this, Request.Method.POST, ZhaiDou.URL_ORDER_LIST, params, new Response.Listener<JSONObject>()
-        {
-            @Override
-            public void onResponse(JSONObject jsonObject)
-            {
-                int status = jsonObject.optInt("status");
-                int totalCount = jsonObject.optInt("totalCount");
-                if (status == 200)
-                {
-                    CountManager.getInstance().init(CountManager.TYPE.TAG_PREPAY, totalCount);
-                }
-            }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-            }
-        });
-        ((ZDApplication) getApplicationContext()).mRequestQueue.add(request);
-    }
-
-    private void commitActiveData()
-    {
-        ApplicationInfo appInfo = null;
-        try
-        {
-            appInfo = this.getPackageManager()
-                    .getApplicationInfo(getPackageName(),
-                            PackageManager.GET_META_DATA);
-        } catch (PackageManager.NameNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-        final String channel = appInfo.metaData.getString("UMENG_CHANNEL");
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("device_token[device_token]", DeviceUtils.getImei(this));
-        ZhaiDouRequest request = new ZhaiDouRequest(MainActivity.this, Request.Method.POST, ZhaiDou.URL_STATISTICS, map, new Response.Listener<JSONObject>()
-        {
-            @Override
-            public void onResponse(JSONObject jsonObject)
-            {
-            }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> header = new HashMap<String, String>();
-                header.put("zd-client", channel);
-                header.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return header;
-            }
-        };
-        mRequestQueue.add(request);
-    }
-
-    private void FetchAPK()
-    {
-        Api.getApkManage(new Api.SuccessListener()
-        {
-            @Override
-            public void onSuccess(Object jsonObject)
-            {
-                if (jsonObject != null)
-                {
-                    ToolUtils.setLog(jsonObject.toString());
-                    JSONObject object = ((JSONObject) jsonObject).optJSONObject("data");
-                    if (object != null)
-                        serverName = object.optString("app_version");
-                    serverCode = object.optInt("code_version");
-                    serverUrl = object.optString("package_url");
-                    if (serverCode > ZDApplication.localVersionCode)
-                    {
-                        CustomVersionUpdateDialog customVersionUpdateDialog = new CustomVersionUpdateDialog(mContext, serverName, serverUrl);
-                        customVersionUpdateDialog.checkUpdateInfo();
-                    }
-                }
-            }
-        }, null);
-    }
-
-    private void FetchCityData()
-    {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.ORDER_ADDRESS_URL, new Response.Listener<JSONObject>()
-        {
-            @Override
-            public void onResponse(JSONObject jsonObject)
-            {
-                if (jsonObject != null)
-                {
-                    JSONArray providerArr = jsonObject.optJSONArray("providers");
-                    for (int i = 0; i < providerArr.length(); i++)
-                    {
-                        JSONObject provinceObj = providerArr.optJSONObject(i);
-                        int provinceId = provinceObj.optInt("id");
-                        String provinceName = provinceObj.optString("name");
-                        Province province = new Province();
-                        province.setId(provinceId);
-                        province.setName(provinceName);
-                        List<City> cityList = new ArrayList<City>();
-                        JSONArray cityArr = provinceObj.optJSONArray("cities");
-                        if (cityArr != null && cityArr.length() > 0)
-                        {
-                            for (int k = 0; k < cityArr.length(); k++)
-                            {
-                                JSONObject cityObj = cityArr.optJSONObject(k);
-                                int cityId = cityObj.optInt("id");
-                                String cityName = cityObj.optString("name");
-                                JSONArray areaArr = cityObj.optJSONArray("children");
-                                City city = new City();
-                                city.setId(cityId);
-                                city.setName(cityName);
-                                List<Area> areaList = new ArrayList<Area>();
-                                if (areaArr != null && areaArr.length() > 0)
-                                {
-                                    for (int j = 0; j < areaArr.length(); j++)
-                                    {
-                                        JSONObject areaObj = areaArr.optJSONObject(j);
-                                        int areaId = areaObj.optInt("id");
-                                        String areaName = areaObj.optString("name");
-                                        int areaPrice = areaObj.optInt("price");
-                                        Area area = new Area();
-                                        area.setId(areaId);
-                                        area.setName(areaName);
-                                        area.setPrice(areaPrice);
-                                        areaList.add(area);
-                                    }
-                                    city.setAreas(areaList);
-                                    cityList.add(city);
-                                }
-
-                            }
-                        }
-                        province.setCityList(cityList);
-                        provinceList.add(province);
-                    }
-
-                }
-            }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
-    }
-
-    /**
-     * 请求购物车列表数据
-     */
-    public void FetchCountData()
-    {
-        Api.getCartCount(id,new Api.SuccessListener()
-        {
-            @Override
-            public void onSuccess(Object jsonObject)
-            {
-                if (jsonObject != null)
-                {
-                    JSONObject object =((JSONObject)jsonObject).optJSONObject("data");
-                    cartCount = object.optInt("totalQuantity");
-                    CartCountManager.newInstance().notify(cartCount);
-                    CartTip(cartCount);
-                }
-            }
-        },null);
-    }
-
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
-        MobclickAgent.onResume(this);
-    }
-
-    @Override
-    protected void onPause()
-    {
-        super.onPause();
-        MobclickAgent.onPause(this);
-    }
-
-    int currentPrePayCount = 0;
-
-    @Override
-    public void onCount(int count)
-    {
-        iv_dot.setVisibility((count > 0 && count > currentPrePayCount) ? View.VISIBLE : View.GONE);
-        currentPrePayCount = count;
-    }
-
-    @Override
-    public void onLogOut()
-    {
-        iv_dot.setVisibility(View.GONE);
-        mMsgView.setVisibility(View.GONE);
-        SharedPreferencesUtil.removeUnReadComment();
-        CountManager.getInstance().notifyCommentChange();
-    }
-
-    @Override
-    public void onChange()
-    {
-        Integer unReadDesigner = (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(), "UnReadDesigner", 0);
-        mMsgView.setVisibility(unReadDesigner > 0 ? View.VISIBLE : View.GONE);
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig)
-    {
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
-        {
-            Configuration o = newConfig;
-            o.orientation = Configuration.ORIENTATION_PORTRAIT;
-            newConfig.setTo(o);
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
-        {
-        }
-        super.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    public void onChange(int count)
-    {
-        CartTip(count);
-    }
 }

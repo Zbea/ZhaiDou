@@ -85,6 +85,8 @@ public class ZhaiDou {
     public static String SearchGoodsKeyWordUrl=HOME_BASE_URL+"product/searchProduct.action?businessType=01&searchType=10&pageSize=10&keyword=";
     //搜索商品接口Id
     public static String SearchGoodsIdUrl=HOME_BASE_URL+"product/searchProduct.action?businessType=01&searchType=20&pageSize=10&expandedRequest=";
+    //搜索商品接口品牌Id
+    public static String SearchGoodsBrandIdUrl=HOME_BASE_URL+"product/searchProduct.action?businessType=01&searchType=30&pageSize=10&expandedRequest=";
     //热搜词
     public static String SearchHotUrl=HOME_BASE_URL+"product/getHotKeywordList.action";
     //提交订单接口
@@ -212,6 +214,10 @@ public class ZhaiDou {
      * 评论图片目录
      */
     public static String MyCommentDir = "/sdcard/zhaidou/comment/";
+    /**
+     * 我的退货保存目录
+     */
+    public static String MyReturnDir = "/sdcard/zhaidou/return/";
 
     public enum ListType {
         HOME,
@@ -301,14 +307,6 @@ public class ZhaiDou {
 
 
     //广播标识集合
-    /**
-     *  购物车选中商品刷新
-     */
-    public static String IntentRefreshCartGoodsCheckTag ="com.zhaidou.home.refesh.cart.goods.check";
-    /**
-     *  加入购物车成功
-     */
-    public static String IntentRefreshAddCartTag="com.zhaidou.home.refesh.goods.add.cart";
     /**
      * 购物车商品支付成功
      */

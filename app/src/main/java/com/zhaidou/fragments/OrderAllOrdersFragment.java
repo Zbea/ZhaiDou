@@ -367,6 +367,11 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null) mDialog.dismiss();
                 isDataLoaded = false;
+                if (jsonObject==null)
+                {
+                    return;
+                }
+                ToolUtils.setLog(jsonObject.toString());
                 int status = jsonObject.optInt("status");
                 String message = jsonObject.optString("message");
                 int totalCount = jsonObject.optInt("totalCount");

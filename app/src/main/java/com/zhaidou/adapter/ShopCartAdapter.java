@@ -1,7 +1,6 @@
 package com.zhaidou.adapter;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Paint;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -22,39 +21,42 @@ import com.zhaidou.utils.ToolUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Zbea on 16/7/4.
  */
 public class ShopCartAdapter extends BaseListAdapter<CartGoodsItem>
 {
-    private List<CartGoodsItem> items=new ArrayList<CartGoodsItem>();
     private Handler mHandler;
     private static List<CartGoodsItem> itemChecks=new ArrayList<CartGoodsItem>();
-    private Map<Integer,Boolean> selected=new HashMap<Integer, Boolean>();
-    private Map<Integer,View> views=new HashMap<Integer, View>();
-    private static HashMap<Integer, Boolean> isSelected=new HashMap<Integer, Boolean>();
-    private static HashMap<Integer, Integer> numbers=new HashMap<Integer, Integer>();
+    private static HashMap<String, Boolean> isSelected=new HashMap<String, Boolean>();
 
     public ShopCartAdapter(Context context, List<CartGoodsItem> list,Handler handler)
     {
         super(context, list);
-        items=list;
         mHandler=handler;
     }
 
     @Override
     public void setList(List<CartGoodsItem> list)
     {
-        items=list;
+        HashMap<String, Boolean> initSelected=new HashMap<String, Boolean>();
+        for (int i = 0; i < list.size(); i++)
+        {
+            CartGoodsItem cartGoodsItem=list.get(i);
+            if (isUser(cartGoodsItem))
+            {
+                String sizeId=cartGoodsItem.sizeId;
+                initSelected.put(sizeId, isSelected.get(sizeId)!=null?isSelected.get(sizeId):false);
+            }
+        }
+        isSelected=initSelected;
         super.setList(list);
     }
 
     @Override
     public View bindView(final int position, View convertView, ViewGroup parent)
     {
-        convertView=views.get(position);
         if (convertView==null)
             convertView = LayoutInflater.from(mContext).inflate(R.layout.shop_cart_goods_item, null);
         TextView itemName = ViewHolder.get(convertView, R.id.cartItemNameTv);
@@ -92,72 +94,74 @@ public class ShopCartAdapter extends BaseListAdapter<CartGoodsItem>
             itemLine.setVisibility(View.GONE);
         }
 
-        final CartGoodsItem cartGoodsItem=getItem(position);
-
+        final CartGoodsItem cartGoodsItem=getList().get(position);
         //判断商品是否下架或者卖光处理
-        if (!cartGoodsItem.isOver.equals("true")&&!cartGoodsItem.isPublish.equals("true")&&!cartGoodsItem.isDate.equals("true"))
+        if (isUser(cartGoodsItem))
         {
             itemflags.setVisibility(View.GONE);
             cartNumView.setVisibility(View.VISIBLE);
             cartNumLoseView.setVisibility(View.GONE);
             itemCheck.setVisibility(View.VISIBLE);
-            itemCheck.setChecked(false);
-
             itemCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
             {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b)
                 {
-                    if (!b)
+                    if (b)
                     {
-                        cartGoodsItem.isCheck=true;
-                        isSelected.put(position,true);
-                        itemChecks.add(cartGoodsItem);
+                        isSelected.put(cartGoodsItem.sizeId,true);
                     }
                     else
                     {
-                        cartGoodsItem.isCheck=false;
-                        isSelected.put(position,false);
-                        itemChecks.remove(cartGoodsItem);
+                        isSelected.put(cartGoodsItem.sizeId,false);
                     }
-                    mHandler.sendEmptyMessage(10);
+                    setRefreshCheckView();
                 }
             });
+            itemName.setTextColor(mContext.getResources().getColor(R.color.text_main_color));
+            itemCheck.setChecked(isSelected.get(cartGoodsItem.sizeId)?true:false);
         } else
         {
             itemCheck.setVisibility(View.GONE);
             cartNumView.setVisibility(View.GONE);
             itemflags.setVisibility(View.VISIBLE);
             cartNumLoseView.setVisibility(View.VISIBLE);
-            itemName.setTextColor(ColorStateList.valueOf(R.color.text_gary_color));
+            itemName.setTextColor(mContext.getResources().getColor(R.color.text_gary_color));
         }
 
         numLimit.setVisibility(cartGoodsItem.num > cartGoodsItem.count ? View.VISIBLE : View.GONE);
 
-        if (cartGoodsItem.isPublish.equals("true"))
-        {
-            isOver.setVisibility(View.GONE);
-            islose.setVisibility(View.VISIBLE);
-            isDate.setVisibility(View.GONE);
-        }
-        if (cartGoodsItem.isDate.equals("true"))
-        {
-            isOver.setVisibility(View.GONE);
-            islose.setVisibility(View.GONE);
-            isDate.setVisibility(View.VISIBLE);
-        }
         if (cartGoodsItem.isOver.equals("true"))
         {
             isOver.setVisibility(View.VISIBLE);
             islose.setVisibility(View.GONE);
             isDate.setVisibility(View.GONE);
         }
+        else if (cartGoodsItem.isPublish.equals("true"))
+        {
+            isOver.setVisibility(View.GONE);
+            islose.setVisibility(View.VISIBLE);
+            isDate.setVisibility(View.GONE);
+        }
+        else if (cartGoodsItem.isDate.equals("true"))
+        {
+            isOver.setVisibility(View.GONE);
+            islose.setVisibility(View.GONE);
+            isDate.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            isOver.setVisibility(View.GONE);
+            islose.setVisibility(View.GONE);
+            isDate.setVisibility(View.GONE);
+        }
+        //判断是否是零元特卖
         if (cartGoodsItem.isOSale.equals("true"))
         {
             cartNumView.setVisibility(View.GONE);
             cartNumLoseView.setVisibility(View.VISIBLE);
         }
-        itemCheck.setChecked(cartGoodsItem.isCheck);
+
         itemName.setText(cartGoodsItem.name);
         itemSize.setText(cartGoodsItem.size);
         itemCurrentPrice.setText("￥" + ToolUtils.isIntPrice("" + cartGoodsItem.currentPrice));
@@ -167,18 +171,59 @@ public class ShopCartAdapter extends BaseListAdapter<CartGoodsItem>
         itemLoseNum.setText("" + cartGoodsItem.num);
         ToolUtils.setImageCacheUrl(cartGoodsItem.imageUrl, itemImage, R.drawable.icon_loading_defalut);
 
-        views.put(position,convertView);
-        return null;
+        return convertView;
+    }
+
+    /**
+     * 判断是否可以操作商品
+     * @param cartGoodsItem
+     * @return
+     */
+    private boolean isUser(CartGoodsItem cartGoodsItem)
+    {
+        if (!cartGoodsItem.isOver.equals("true")&&!cartGoodsItem.isPublish.equals("true")&&!cartGoodsItem.isDate.equals("true"))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
 
-    public final static  List<CartGoodsItem> getItemChecks()
+    public List<CartGoodsItem> getItemChecks()
     {
+        itemChecks.clear();
+        for (int i = 0; i <getList().size() ; i++)
+        {
+            CartGoodsItem cartGoodsItem=getList().get(i);
+            if (isUser(cartGoodsItem))
+            {
+                if (isSelected.get(cartGoodsItem.sizeId))
+                {
+                    itemChecks.add(cartGoodsItem);
+                }
+            }
+
+        }
         return itemChecks;
     }
 
-    public final static void setItemChecks(List<CartGoodsItem> itemChecks)
+    public HashMap<String, Boolean> getIsSelected()
     {
-        ShopCartAdapter.itemChecks=itemChecks;
+        return isSelected;
+    }
+
+    public void setIsSelected(CartGoodsItem cartGoodsItem)
+    {
+        isSelected.remove(cartGoodsItem.sizeId);
+    }
+    /**
+     * 刷新选中数据
+     */
+    public void setRefreshCheckView()
+    {
+        mHandler.sendEmptyMessage(10);
     }
 }

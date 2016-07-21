@@ -10,6 +10,7 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.utils.EaseUtils;
 
 
 /**
@@ -18,7 +19,7 @@ import com.zhaidou.base.BaseFragment;
 public class MainMagicFragment extends BaseFragment
 {
     private View mView;
-    private LinearLayout magicClassicLine,magicGuideLine,magicImageLine,magicDesignLine,classroomLine,diyLine;
+    private LinearLayout magicClassicLine,magicGuideLine,magicImageLine,magicDesignLine,classroomLine,diyLine,serverLine;
     private long formerTime;
 
     /**
@@ -34,7 +35,7 @@ public class MainMagicFragment extends BaseFragment
                 case R.id.magicClassicLine:
                     if (isTimeInterval())
                     {
-                        MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "");
+                        MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "",1);
                         ((BaseActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
                     }
                     break;
@@ -71,6 +72,12 @@ public class MainMagicFragment extends BaseFragment
                     {
                         HomeBeautifulFragment goodsDetailsFragment = HomeBeautifulFragment.newInstance("色彩课堂", 0+"");
                         ((BaseActivity) mContext).navigationToFragment(goodsDetailsFragment);
+                    }
+                    break;
+                case R.id.magicConnectServer:
+                    if (isTimeInterval())
+                    {
+                        EaseUtils.startKeFuActivity(mContext);
                     }
                     break;
             }
@@ -127,6 +134,9 @@ public class MainMagicFragment extends BaseFragment
 
         classroomLine=(LinearLayout)mView.findViewById(R.id.magicClassroomLine);
         classroomLine.setOnClickListener(onClickListener);
+
+        serverLine=(LinearLayout)mView.findViewById(R.id.magicConnectServer);
+        serverLine.setOnClickListener(onClickListener);
 
     }
 

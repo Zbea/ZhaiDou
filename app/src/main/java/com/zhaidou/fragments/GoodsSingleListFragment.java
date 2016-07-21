@@ -17,16 +17,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshGridView;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
@@ -34,6 +32,7 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Product;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 
@@ -176,13 +175,17 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                 ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
             }
         });
-        mRequestQueue = Volley.newRequestQueue(mContext);
+        mRequestQueue = ZDApplication.newRequestQueue();
         if (mFlag == 1)
         {
             FetchSpecialData(mParam1, sort, currentpage = 1);
-        } else
+        } else if (mFlag==2)
         {
             FetchSpecialIdData(mParam1, sort, currentpage = 1);
+        }
+        else
+        {
+            FetchBrandIdData(mParam1, currentpage = 1);
         }
 //        if ("category".equalsIgnoreCase(mParam2))//全分类
 //        {
@@ -235,10 +238,6 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         }
     }
 
-    public void setCurrentpage()
-    {
-        currentpage = 1;
-    }
 
     /**
      * 特卖列表请求数据
@@ -276,7 +275,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
             e.printStackTrace();
         }
         ToolUtils.setLog(url);
-        JsonObjectRequest newMissRequest = new JsonObjectRequest(Request.Method.GET, url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest newMissRequest = new ZhaiDouRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject json)
@@ -364,24 +363,12 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                     currentpage = currentpage - 1;
                 }
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-                return headers;
-            }
-        };
-        if (mRequestQueue == null) mRequestQueue = Volley.newRequestQueue(mContext);
+        });
         mRequestQueue.add(newMissRequest);
     }
 
     /**
-     * 特卖列表请求数据
-     *
+     * 分类请求数据
      * @param categoryId
      * @param sort
      * @param page
@@ -420,7 +407,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         }
 
         ToolUtils.setLog(url);
-        JsonObjectRequest newMissRequest = new JsonObjectRequest(Request.Method.GET, url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest newMissRequest = new ZhaiDouRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject json)
@@ -508,18 +495,126 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                     currentpage = currentpage - 1;
                 }
             }
-        })
+        });
+        mRequestQueue.add(newMissRequest);
+    }
+
+
+    /**
+     * 品牌请求数据
+     * @param brandId
+     * @param page
+     */
+    public void FetchBrandIdData(String brandId, int page)
+    {
+        mParam1 = brandId;
+        currentpage = page;
+        mFlag=3;
+        if (page == 1) products.clear();
+        String url = null;
+        JSONObject json = new JSONObject();
+        JSONArray jsonValue = new JSONArray();
+        try
+        {
+            jsonValue.put(brandId);
+            json.put("brandId", jsonValue);
+
+            url = ZhaiDou.SearchGoodsBrandIdUrl + json + "&pageNo=" + currentpage;
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        ToolUtils.setLog(url);
+        ZhaiDouRequest newMissRequest = new ZhaiDouRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
+            public void onResponse(JSONObject json)
             {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-                return headers;
+                setEndLoading();
+                gv_single.onRefreshComplete();
+                if (json != null)
+                {
+                    JSONObject dataObject = json.optJSONObject("data");
+
+                    if (dataObject == null)
+                    {
+                        if (currentpage == 1)
+                        {
+                            if (products.size() == 0)
+                            {
+                                nullLine.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        return;
+                    }
+                    JSONObject pageObject = dataObject.optJSONObject("pagePO");
+                    if (pageObject == null)
+                    {
+                        if (currentpage == 1)
+                        {
+                            if (products.size() == 0)
+                            {
+                                nullLine.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        return;
+                    }
+                    pageTotal = pageObject.optInt("totalCount");
+                    pageSize = pageObject.optInt("pageSize");
+                    JSONArray jsonArray = pageObject.optJSONArray("items");
+                    if (jsonArray == null || jsonArray.toString().length() < 5)
+                    {
+                        if (currentpage == 1)
+                        {
+                            if (products.size() == 0)
+                            {
+                                nullLine.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        return;
+                    }
+                    for (int i = 0; i < jsonArray.length(); i++)
+                    {
+                        JSONObject merchandise = jsonArray.optJSONObject(i);
+                        int id = merchandise.optInt("id");
+                        String productId = merchandise.optString("productId");
+                        String title = merchandise.optString("productName");
+                        double price = merchandise.optDouble("price");
+                        String cost_price = merchandise.optString("marketingPrice") == "null" ? "0" : merchandise.optString("marketingPrice");
+                        String imgUrl = merchandise.optString("productPicUrl");
+                        JSONObject countObject = merchandise.optJSONObject("expandedResponse");
+                        int remaining = countObject.optInt("stock");
+                        Product product = new Product();
+                        product.goodsId = productId;
+                        product.setId(id);
+                        product.setPrice(price);
+                        product.setCost_price(Double.parseDouble(cost_price));
+                        product.setTitle(title);
+                        product.setImage(imgUrl);
+                        product.setRemaining(remaining);
+                        products.add(product);
+                    }
+                    handler.sendEmptyMessage(0);
+                }
             }
-        };
-        if (mRequestQueue == null) mRequestQueue = Volley.newRequestQueue(mContext);
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                setEndLoading();
+                gv_single.onRefreshComplete();
+                if (products.size() == 0)
+                {
+                    nullLine.setVisibility(View.VISIBLE);
+                }
+                if (currentpage > 1)
+                {
+                    currentpage = currentpage - 1;
+                }
+            }
+        });
         mRequestQueue.add(newMissRequest);
     }
 
@@ -551,9 +646,9 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
         {
             params.put("price", "desc");
         }
-        JsonObjectRequest newMissRequest = new JsonObjectRequest(
+        ZhaiDouRequest newMissRequest = new ZhaiDouRequest(
                 Request.Method.POST, ZhaiDou.SEARCH_PRODUCT_URL,
-                new JSONObject(params), new Response.Listener<JSONObject>()
+                params, new Response.Listener<JSONObject>()
         {
 
             @Override
@@ -622,25 +717,14 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
 
 
             }
-        }
-        )
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        if (mRequestQueue == null) mRequestQueue = Volley.newRequestQueue(mContext);
+        });
         mRequestQueue.add(newMissRequest);
     }
 
     public void FetchCategoryData(String id, int sort, int page)
     {
         String url = ZhaiDou.ARTICLE_ITEM_WITH_CATEGORY + id + "&page=" + page;
-        JsonObjectRequest fetchCategoryTask = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest fetchCategoryTask = new ZhaiDouRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -684,16 +768,7 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
                     nullLine.setVisibility(View.VISIBLE);
                 }
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(fetchCategoryTask);
     }
 
@@ -768,9 +843,13 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
             if (mFlag == 1)
             {
                 FetchSpecialData(mParam1, sort, currentpage = 1);
-            } else
+            } else if (mFlag==2)
             {
                 FetchSpecialIdData(mParam1, sort, currentpage = 1);
+            }
+            else
+            {
+                FetchBrandIdData(mParam1, currentpage = 1);
             }
         } else
         {
@@ -790,9 +869,13 @@ public class GoodsSingleListFragment extends BaseFragment implements PullToRefre
             if (mFlag == 1)
             {
                 FetchSpecialData(mParam1, sort, ++currentpage);
-            } else
+            } else if (mFlag==2)
             {
                 FetchSpecialIdData(mParam1, sort, ++currentpage);
+            }
+            else
+            {
+                FetchBrandIdData(mParam1, ++currentpage);
             }
         } else
         {

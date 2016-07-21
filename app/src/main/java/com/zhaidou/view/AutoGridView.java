@@ -58,12 +58,10 @@ public class AutoGridView extends LinearLayout implements View.OnClickListener{
 
 
     public void setHistoryList(List<String> mHistoryList) {
-        Log.i("setHistoryList----->","setHistoryList");
         this.mHistoryList = mHistoryList;
         init(mContext,mHistoryList);
     }
     private void init(Context context,List<String> list){
-        Log.i("init-------->",list.size()+"");
 //        removeAllViews();
         for (int i=0;i<list.size();i++){
             mChildLinearLayout=new LinearLayout(mContext);
@@ -97,7 +95,6 @@ public class AutoGridView extends LinearLayout implements View.OnClickListener{
                 String item=list.get(i);
                 if (item.length()>TEXT_LENGTH)
                     item=item.substring(0,TEXT_LENGTH)+"...";
-                Log.i("item----------------->",item);
                 textView.setTextSize(13);
                 textView.setText(item);
                 float length =paint.measureText(item);

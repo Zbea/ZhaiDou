@@ -17,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -29,38 +28,31 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.dialog.CustomPhotoMenuDialog;
 import com.zhaidou.model.Comment;
+import com.zhaidou.utils.Api;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceEditText;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 
 /**
  * Created by roy on 15/8/28.
  */
-public class CommentSendFragment extends BaseFragment implements PhotoMenuFragment.MenuSelectListener
+public class CommentSendFragment extends BaseFragment
 {
     private static final String DATA = "page";
     private static final String INDEX = "index";
@@ -78,22 +70,18 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
     private int mCommentUserId;
 
     private Dialog mDialog;
-    private final int MENU_CAMERA_SELECTED = 0;
-    private final int MENU_PHOTO_SELECTED = 1;
-    private final static int REFRESH_COMMIT_SUCCESS=2;//刷新列表
-    private final static int REFRESH_COMMIT_FAIl=3;//刷新列表
+    private final static int REFRESH_COMMIT_SUCCESS=0;//刷新列表
+    private final static int REFRESH_COMMIT_FAIl=1;//刷新列表
 
     private View mView;
-    private FrameLayout menuView;
     private TextView backTv, sentTv,inputNumTv;
     private LinearLayout imageLine,cancelLine;
     private ImageView imageAddBtn;
     private TypeFaceEditText editText;
 
     private InputMethodManager inputMethodManagers;
-    private PhotoMenuFragment menuFragment;
     private List<Bitmap> photos=new ArrayList<Bitmap>();
-    private List<File> files=new ArrayList<File>();
+    private List<String> files=new ArrayList<String>();
     private File file;
     private String pathUrl;
     private String commentInfo="";
@@ -194,15 +182,15 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
                                             comment.articleId=mIndex;
                                             comment.articleTitle=mPage;
 
-                                            comment.idReply=mCommentId;
-                                            comment.timeReply=mCommentTime;
-                                            comment.commentReply=mCommentContent;
-                                            comment.imagesReply= mCommentImages;
-                                            comment.typeReply="A";
-                                            comment.statusReply="N";
-                                            comment.userIdReply=mCommentUserId;
-                                            comment.userNameReply=mCommentUserName;
-                                            comment.userImageReply=mCommentUserImage;
+                                            comment.idFormer =mCommentId;
+                                            comment.timeFormer =mCommentTime;
+                                            comment.commentFormer =mCommentContent;
+                                            comment.imagesFormer = mCommentImages;
+                                            comment.typeFormer ="A";
+                                            comment.statusFormer ="N";
+                                            comment.userIdFormer =mCommentUserId;
+                                            comment.userNameFormer =mCommentUserName;
+                                            comment.userImageFormer =mCommentUserImage;
 
                                         }
                                         onCommentListener.onCommentResult(comment);
@@ -248,8 +236,15 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
                     commitComment();
                     break;
                 case R.id.comment_image_add:
-                    menuView.setVisibility(View.VISIBLE);
-                    toggleMenu();
+                    File dir = new File(ZhaiDou.MyCommentDir);
+                    if (!dir.exists())
+                    {
+                        dir.mkdirs();
+                    }
+                    pathUrl=ZhaiDou.MyCommentDir+"cm"+new SimpleDateFormat("yyMMddHHmmss").format(new Date())+".jpg";
+                    file = new File(pathUrl);
+                    CustomPhotoMenuDialog customPhotoMenuDialog =new CustomPhotoMenuDialog(mContext,pathUrl);
+                    customPhotoMenuDialog.showPhotoMenuDialog();
                     break;
 
             }
@@ -364,40 +359,43 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
         cancelLine = (LinearLayout) mView.findViewById(R.id.commentCancelLine);
         cancelLine.setOnClickListener(onClickListener);
 
-        menuView = (FrameLayout) mView.findViewById(R.id.commentMenuLayout);
-        menuFragment = PhotoMenuFragment.newInstance("", "");
-        menuFragment.setMenuSelectListener(this);
-        getChildFragmentManager().beginTransaction().replace(R.id.commentMenuLayout, menuFragment).addToBackStack("").hide(menuFragment).commit();
-
     }
 
     private void commitComment()
     {
         mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"");
+        final Map<String, Object> params = new HashMap<String, Object>();
+        params.put("commentUserId", userId);
+        params.put("commentUserName", userName);
+        params.put("articleId", mIndex+"");
+        params.put("commentType", "C");
+        params.put("articleTitle", mPage+"");
+        params.put("commentId", mCommentId);
+        params.put("content", commentInfo+"");
+        params.put("images", files);
         new Thread(new Runnable()
         {
             @Override
             public void run()
             {
-                try
+                Api.comment(params, new Api.SuccessListener()
                 {
-                    String result=postSer();
-                    if (result!=null&&result.length()>0)
+                    @Override
+                    public void onSuccess(Object object)
                     {
-                        mHandler.obtainMessage(REFRESH_COMMIT_SUCCESS, result).sendToTarget();
+                        mHandler.obtainMessage(REFRESH_COMMIT_SUCCESS, object).sendToTarget();
                     }
-                    else
+                }, new Api.ErrorListener()
+                {
+                    @Override
+                    public void onError(Object object)
                     {
                         mHandler.sendEmptyMessage(REFRESH_COMMIT_FAIl);
                     }
-
-                }
-                catch (JSONException e)
-                {
-                    e.printStackTrace();
-                }
+                });
             }
         }).start();
+
     }
 
     /**
@@ -434,58 +432,12 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
     }
 
     @Override
-    public void onMenuSelect(int position, String tag)
-    {
-        File dir = new File(ZhaiDou.MyCommentDir);
-        if (!dir.exists())
-        {
-            dir.mkdirs();
-        }
-        pathUrl=ZhaiDou.MyCommentDir+"cm"+new SimpleDateFormat("yyMMddHHmmss").format(new Date())+".jpg";
-        switch (position)
-        {
-            case 0:
-                // 原图
-                file = new File(pathUrl);
-                Uri imageUri = Uri.fromFile(file);
-
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                startActivityForResult(intent, MENU_CAMERA_SELECTED);
-                break;
-
-            case 1:
-                file = new File(pathUrl);
-                Intent intent1 = new Intent(Intent.ACTION_PICK, null);
-                intent1.setDataAndType(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-                startActivityForResult(intent1, MENU_PHOTO_SELECTED);
-                break;
-        }
-        toggleMenu();
-    }
-
-    public void toggleMenu()
-    {
-        if (menuFragment != null)
-        {
-            if (menuFragment.isHidden())
-            {
-                getChildFragmentManager().beginTransaction().show(menuFragment).commit();
-            } else
-            {
-                getChildFragmentManager().beginTransaction().hide(menuFragment).commit();
-            }
-        }
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode)
         {
-            case MENU_CAMERA_SELECTED:// 拍照修改头像
+            case CustomPhotoMenuDialog.MENU_CAMERA_SELECTED:// 拍照修改头像
                 if (resultCode == getActivity().RESULT_OK)
                 {
                     if (!ToolUtils.hasSdcard())
@@ -496,7 +448,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
                     startImageAction(Uri.fromFile(file), 250, 250, 2, true);
                 }
                 break;
-            case MENU_PHOTO_SELECTED:// 本地修改头像
+            case CustomPhotoMenuDialog.MENU_PHOTO_SELECTED:// 本地修改头像
                 Uri uri = null;
                 if (data == null)
                 {
@@ -524,7 +476,6 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
                     return;
                 } else
                 {
-                    ToolUtils.setLog("回掉");
                   saveCropPhoto(data);
                 }
                 break;
@@ -598,7 +549,7 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
      */
     private void addImageView(final Bitmap photo)
     {
-        files.add(file);
+        files.add(pathUrl);
         photos.add(photo);
         final View mView = LayoutInflater.from(mContext).inflate(R.layout.item_image_crop, null);
         ImageView imageIv = ( ImageView ) mView.findViewById(R.id.imageBg_iv);
@@ -635,69 +586,6 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
             imageAddBtn.setVisibility(View.VISIBLE);
         }
         listenerCommitBtn();
-    }
-
-    private String postSer() throws JSONException
-    {
-        String BOUNDARY = UUID.randomUUID().toString();
-        String result = null;
-        BufferedReader in = null;
-        try
-        {
-            MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE, BOUNDARY, Charset.defaultCharset());
-            multipartEntity.addPart("commentUserId",new StringBody(userId+""));
-            multipartEntity.addPart("commentUserName",new StringBody( userName,Charset.defaultCharset()));
-            multipartEntity.addPart("content",new StringBody(commentInfo+"",Charset.defaultCharset()));
-            multipartEntity.addPart("articleId",new StringBody(mIndex+""));
-            multipartEntity.addPart("articleTitle",new StringBody(mPage+"",Charset.defaultCharset()));
-            multipartEntity.addPart("commentType",new StringBody("C"));
-            if (mComment!=null)
-            {
-                multipartEntity.addPart("commentId",new StringBody(mCommentId+""));
-            }
-
-            for (int i = 0; i < files.size(); i++)
-            {
-                FileBody fileBody = new FileBody(files.get(i));
-                multipartEntity.addPart("files", fileBody);
-            }
-
-            HttpPost request = new HttpPost(ZhaiDou.CommentAddUrl);
-            request.addHeader("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-            request.setEntity(multipartEntity);
-            DefaultHttpClient httpClient = new DefaultHttpClient();
-            HttpResponse response = httpClient.execute(request);
-            in = new BufferedReader(new InputStreamReader(response.getEntity()
-                    .getContent()));
-            StringBuffer sb = new StringBuffer("");
-            String line = "";
-            String NL = System.getProperty("line.separator");
-            while ((line = in.readLine()) != null)
-            {
-                sb.append(line + NL);
-            }
-            in.close();
-            result = sb.toString();
-            ToolUtils.setLog(""+result);
-            return result;
-
-        } catch (Exception e)
-        {
-
-        } finally
-        {
-            if (in != null)
-            {
-                try
-                {
-                    in.close();
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return result;
     }
 
 
@@ -741,7 +629,6 @@ public class CommentSendFragment extends BaseFragment implements PhotoMenuFragme
     @Override
     public void onDestroy()
     {
-
             closeInput();
         super.onDestroy();
     }

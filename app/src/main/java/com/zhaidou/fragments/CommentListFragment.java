@@ -15,13 +15,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.pulltorefresh.PullToRefreshBase;
-import com.pulltorefresh.PullToRefreshScrollView;
+import com.pulltorefresh.PullToRefreshListView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
@@ -32,21 +30,19 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Comment;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.Api;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
-import com.zhaidou.view.ListViewForScrollView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
@@ -63,8 +59,7 @@ public class CommentListFragment extends BaseFragment
     private Dialog mDialog;
     private View mView;
     private TextView commentNumTv,nullCommentTv;
-    private PullToRefreshScrollView scrollView;
-    private ListViewForScrollView listView;
+    private PullToRefreshListView listView;
     private FrameLayout frameLayout;
     private  LinearLayout commentLine;
 
@@ -92,13 +87,13 @@ public class CommentListFragment extends BaseFragment
                     commentNumTv.setVisibility(pageCount>0?View.VISIBLE:View.GONE);
                     nullCommentTv.setVisibility(pageCount>0?View.GONE:View.VISIBLE);
                     commentAdapter.notifyDataSetChanged();
-                    scrollView.onRefreshComplete();
+                    listView.onRefreshComplete();
                     if (comments.size()< pageCount)
                     {
-                        scrollView.setMode(PullToRefreshBase.Mode.BOTH);
+                        listView.setMode(PullToRefreshBase.Mode.BOTH);
                     } else
                     {
-                        scrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+                        listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                     }
                     if (mDialog != null)
                         mDialog.dismiss();
@@ -222,9 +217,8 @@ public class CommentListFragment extends BaseFragment
         commentNumTv=(TextView)mView.findViewById(R.id.commentNumTv);
         nullCommentTv=(TextView)mView.findViewById(R.id.commentNullTv);
 
-        scrollView=(PullToRefreshScrollView)mView.findViewById(R.id.scrollView);
-        scrollView.setOnRefreshListener(onRefreshListener);
-        listView=(ListViewForScrollView)mView.findViewById(R.id.lv_special_list);
+        listView=(PullToRefreshListView)mView.findViewById(R.id.lv_special_list);
+        listView.setOnRefreshListener(onRefreshListener);
         commentAdapter=new CommentAdapter(mContext,comments);
         listView.setAdapter(commentAdapter);
         commentAdapter.setOnInViewClickListener(R.id.ll_click,new BaseListAdapter.onInternalClickListener()
@@ -315,13 +309,13 @@ public class CommentListFragment extends BaseFragment
     {
         String url = ZhaiDou.HomeArticleCommentUrl + mIndex + "&pageNo=" + page + "&pageSize=15";
         ToolUtils.setLog(url);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,url,
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST,url,
                 new Response.Listener<JSONObject>()
                 {
                     @Override
                     public void onResponse(JSONObject response)
                     {
-                        scrollView.onRefreshComplete();
+                        listView.onRefreshComplete();
                         if (response == null)
                         {
                             if (mDialog != null)
@@ -417,15 +411,15 @@ public class CommentListFragment extends BaseFragment
                                         {
                                             e.printStackTrace();
                                         }
-                                        comment.idReply=reCommentId;
-                                        comment.timeReply=reCommentCreateTime;
-                                        comment.commentReply=reCommentTitle;
-                                        comment.imagesReply=reCommentImgs;
-                                        comment.typeReply=reCommentType;
-                                        comment.statusReply=reCommentStatus;
-                                        comment.userNameReply=reCommentUserName;
-                                        comment.userImageReply=reCommentUserImg;
-                                        comment.userIdReply=reCommentUserId;
+                                        comment.idFormer =reCommentId;
+                                        comment.timeFormer =reCommentCreateTime;
+                                        comment.commentFormer =reCommentTitle;
+                                        comment.imagesFormer =reCommentImgs;
+                                        comment.typeFormer =reCommentType;
+                                        comment.statusFormer =reCommentStatus;
+                                        comment.userNameFormer =reCommentUserName;
+                                        comment.userImageFormer =reCommentUserImg;
+                                        comment.userIdFormer =reCommentUserId;
                                     }
                                     comments.add(comment);
                                 }
@@ -442,25 +436,14 @@ public class CommentListFragment extends BaseFragment
             public void onErrorResponse(VolleyError volleyError)
             {
                 mDialog.dismiss();
-                scrollView.onRefreshComplete();
+                listView.onRefreshComplete();
                 if (page >1)
                 {
                     page--;
                     ToolUtils.setToast(mContext, R.string.loading_fail_txt);
                 }
             }
-        }
-        )
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-//        request.setRetryPolicy(new DefaultRetryPolicy(5000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        });
         ZDApplication.mRequestQueue.add(request);
     }
 

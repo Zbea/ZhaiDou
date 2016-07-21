@@ -19,14 +19,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
@@ -35,6 +33,7 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Category;
 import com.zhaidou.model.CategoryItem;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONArray;
@@ -43,7 +42,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 全类别
@@ -116,7 +114,7 @@ public class MainCategoryFragment extends BaseFragment {
             @Override
             public void onClick(View v)
             {
-                SearchFragment searchFragment = SearchFragment.newInstance(mParam1, 1);
+                SearchFragment searchFragment = SearchFragment.newInstance(mParam1,mParam1, 1);
                 ((BaseActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
             }
         });
@@ -132,11 +130,12 @@ public class MainCategoryFragment extends BaseFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                SearchFragment searchFragment = SearchFragment.newInstance(mCategoryItemAdapter.getList().get(position).categoryId, 2);
+                CategoryItem category=mCategoryItemAdapter.getList().get(position);
+                SearchFragment searchFragment = SearchFragment.newInstance(category.categoryName,category.categoryId, 2);
                 ((BaseActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
             }
         });
-        mRequestQueue = Volley.newRequestQueue(getActivity());
+        mRequestQueue = ZDApplication.newRequestQueue();
         getCategoryData();
         mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
         mCategoryAdapter.setOnInViewClickListener(R.id.categoryView, new BaseListAdapter.onInternalClickListener() {
@@ -183,7 +182,7 @@ public class MainCategoryFragment extends BaseFragment {
 
 
     private void getCategoryData() {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeCategoryUrl, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(ZhaiDou.HomeCategoryUrl, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null)
@@ -205,14 +204,7 @@ public class MainCategoryFragment extends BaseFragment {
                     mDialog.dismiss();
                 ToolUtils.setToast(mContext, "加载失败");
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 
