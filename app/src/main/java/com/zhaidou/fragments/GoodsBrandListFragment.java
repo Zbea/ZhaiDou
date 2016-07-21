@@ -49,7 +49,7 @@ import cn.sharesdk.framework.Platform;
 import cn.sharesdk.framework.PlatformActionListener;
 
 /**
- * 品牌商品
+ * 品牌商品列表（我的优惠券点击进入）
  */
 public class GoodsBrandListFragment extends BaseFragment implements PullToRefreshBase.OnRefreshListener2<GridView>
 {

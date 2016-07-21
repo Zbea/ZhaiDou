@@ -215,7 +215,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
     private void initView(View view)
     {
         titleTv = (TypeFaceTextView) view.findViewById(R.id.title_tv);
-        titleTv.setText("可用优惠卷");
+        titleTv.setText("可用优惠券");
         couponTv= (TypeFaceTextView) view.findViewById(R.id.tv_coupon);
         noCouponTv= (TypeFaceTextView) view.findViewById(R.id.tv_noCoupon);
 

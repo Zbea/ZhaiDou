@@ -907,6 +907,7 @@ public class GoodsDetailsFragment extends BaseFragment implements CartCountManag
                     textView.setSelected(true);
                     mSpecificationParent = specificationList.get(position);
                     addSizeSubclassView(mSpecificationParent.sizess,mSizeId);
+                    setResetSize();
                 }
             }
         });

@@ -47,7 +47,7 @@ public class CreatCartTools
                 item.isOSale = cursor.getString(cursor.getColumnIndex("isOSale"));
                 item.isCheck = false;
                 item.isDate="false";
-                item.creatTime = cursor.getLong(cursor.getColumnIndex("creatTime"));
+                item.createTime = cursor.getInt(cursor.getColumnIndex("creatTime"));
                 items.add(item);
             }
             sqLiteDatabase.setTransactionSuccessful();
@@ -193,7 +193,7 @@ public class CreatCartTools
                 values.put("isPublish", itm.isPublish);
                 values.put("isOver", itm.isOver);
                 values.put("isOSale", itm.isOSale);
-                values.put("creatTime", itm.creatTime);
+                values.put("creatTime", itm.createTime);
                 sqLiteDatabase.insert(CreatCartDB.SqlName, null, values);
             }
             else

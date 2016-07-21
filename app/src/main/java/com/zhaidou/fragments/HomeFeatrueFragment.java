@@ -231,10 +231,12 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
                     ((BaseActivity) getActivity()).popToStack(HomeFeatrueFragment.this);
                     break;
                 case R.id.bannersView:
-                    setMainUrl(mainUrl);
+                    if (mainUrl!=null)
+                        setMainUrl(mainUrl,mainPic);
                     break;
                 case R.id.detailsImageIvs:
-                    setMainUrl(mainUrl);
+                    if (mainUrl!=null)
+                        setMainUrl(mainUrl,mainPic);
                     break;
                 case R.id.infoImage:
 
@@ -356,7 +358,8 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
                 @Override
                 public boolean onTouch(View v, MotionEvent event)
                 {
-                    setMainUrl(caseUrl);
+                    if (caseUrl!=null)
+                        setMainUrl(caseUrl,null);
                     return false;
                 }
             });
@@ -430,10 +433,11 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
      * 跳转
      * @param url
      */
-    private void setMainUrl(String url)
+    private void setMainUrl(String url,String imageUrl)
     {
         Intent web = new Intent();
         web.putExtra("url",url);
+        web.putExtra("imageUrl", imageUrl);
         web.setClass(mContext, WebViewActivity.class);
         mContext.startActivity(web);
     }

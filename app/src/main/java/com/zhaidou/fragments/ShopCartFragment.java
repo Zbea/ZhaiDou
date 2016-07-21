@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -24,18 +25,23 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import com.easemob.chat.EMChatManager;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
+import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.adapter.ShopCartAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.CartCountManager;
+import com.zhaidou.base.CountManager;
 import com.zhaidou.dialog.CustomLoadingDialog;
+import com.zhaidou.easeui.helpdesk.ui.ConversationListFragment;
 import com.zhaidou.model.CartArrayItem;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.ZhaiDouRequest;
@@ -51,13 +57,15 @@ import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
 /**
  * Created by Zbea on 15/7/24.
  */
-public class ShopCartFragment extends BaseFragment implements CartCountManager.OnCartCountListener
+public class ShopCartFragment extends BaseFragment implements CartCountManager.OnCartCountListener,CountManager.onCommentChangeListener
 {
     private static final String PAGE = "page";
     private static final String INDEX = "index";
@@ -78,6 +86,8 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
     private PullToRefreshScrollView mScrollView;
     private ListView listView;
     private LinearLayout loadingView;
+    private TextView unreadMsg;
+    private ImageView messageIv;
 
     private RequestQueue mRequestQueue;
 
@@ -180,6 +190,16 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
                         ToolUtils.setToast(mContext, "抱歉,先选择商品");
                     }
                     break;
+                case R.id.iv_message:
+                    Integer userId= (Integer) SharedPreferencesUtil.getData(mContext,"userId",-1);
+                    if (userId==-1){
+                        Intent intent =new Intent(mContext, LoginActivity.class);
+                        startActivity(intent);
+                        return;
+                    }
+                    ConversationListFragment conversationListFragment=new ConversationListFragment();
+                    ((BaseActivity) mContext).navigationToFragment(conversationListFragment);
+                    break;
             }
         }
     };
@@ -245,6 +265,10 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
 
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(R.string.shop_cart_text);
+
+        unreadMsg = (TextView) mView.findViewById(R.id.unreadMsg);
+        messageIv = (ImageView) mView.findViewById(R.id.iv_message);
+        messageIv.setOnClickListener(onClickListener);
 
         nullView = (LinearLayout) mView.findViewById(R.id.cartNullLine);
         contentView = (RelativeLayout) mView.findViewById(R.id.cartContentLine);
@@ -344,6 +368,11 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
             }
         });
 
+
+        Integer userId= (Integer) SharedPreferencesUtil.getData(mContext,"userId",-1);
+        if (userId!=-1)
+            Api.getUnReadComment(userId,null,null);
+        CountManager.getInstance().setOnCommentChangeListener(this);
         CartCountManager.newInstance().setOnCartCountListener(this);
         initData();
 
@@ -443,9 +472,19 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
                     }
                 }
             }
+        sortGoods(items);
+        sortGoods(itemsIsOver);
+        sortGoods(itemsIsPublish);
+        sortGoods(itemsIsDate);
         items.addAll(itemsIsOver);
         items.addAll(itemsIsPublish);
         items.addAll(itemsIsDate);
+
+        for (int i = 0; i <items.size() ; i++)
+        {
+            ToolUtils.setLog("createTime:"+items.get(i).createTime);
+        }
+
         shopCartAdapter.setList(items);
         shopCartAdapter.setRefreshCheckView();
 
@@ -454,6 +493,32 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
         contentView.setVisibility(View.VISIBLE);
         if (mDialog != null)
             mDialog.dismiss();
+    }
+
+    /**
+     * 按时间降序
+     * @param goods
+     * @return
+     */
+    private List<CartGoodsItem> sortGoods(List<CartGoodsItem> goods)
+    {
+        Collections.sort(goods,new Comparator<CartGoodsItem>()
+        {
+            @Override
+            public int compare(CartGoodsItem lhs, CartGoodsItem rhs)
+            {
+                if (lhs.createTime<rhs.createTime)
+                {
+                    return 1;
+                }
+                if (lhs.createTime==rhs.createTime)
+                {
+                    return 0;
+                }
+                return -1;
+            }
+        });
+        return goods;
     }
 
     /**
@@ -593,6 +658,7 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
                                 {
                                     JSONObject goodsObject = goodsArray.optJSONObject(j);
                                     String useId = goodsObject.optString("userId");
+                                    int createTime = goodsObject.optInt("createTime");
                                     String goodsId = goodsObject.optString("productId");
                                     String goodsName = goodsObject.optString("productName");
                                     String goodsUrl = goodsObject.optString("productSKUPicUrl");
@@ -610,6 +676,7 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
                                     goodsItem.userId = useId;
                                     goodsItem.storeId = storeId;
                                     goodsItem.goodsId = goodsId;
+                                    goodsItem.createTime = createTime;
                                     goodsItem.name = goodsName;
                                     goodsItem.imageUrl = goodsUrl;
                                     goodsItem.size = specification;
@@ -826,5 +893,14 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
         }
         cartCount=count;
         ((MainActivity) mContext).CartTip(cartCount);
+    }
+
+    @Override
+    public void onChange() {
+        Integer userId= (Integer) SharedPreferencesUtil.getData(mContext,"userId",-1);
+        int unreadMsgsCount = EMChatManager.getInstance().getUnreadMsgsCount();
+        Integer UnReadComment= (Integer) SharedPreferencesUtil.getData(ZDApplication.getInstance(),"UnReadComment",0);
+        unreadMsg.setVisibility((unreadMsgsCount + UnReadComment) > 0&&userId!=-1? View.VISIBLE : View.GONE);
+        unreadMsg.setText((unreadMsgsCount+UnReadComment) > 99 ? "99+" : (unreadMsgsCount+UnReadComment) + "");
     }
 }

@@ -806,7 +806,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             unregisterReceiver(broadcastReceiver);
         RequestQueue mRequestQueue=ZDApplication.newRequestQueue();
         if (mRequestQueue!=null)
-            mRequestQueue.cancelAll("ZHAIDOU");
+            mRequestQueue.cancelAll(null);
         super.onDestroy();
     }
 

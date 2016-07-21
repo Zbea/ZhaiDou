@@ -38,6 +38,7 @@ import com.zhaidou.model.ShopSpecialItem;
 import com.zhaidou.model.SwitchImage;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.Api;
+import com.zhaidou.utils.DeviceUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -110,12 +111,18 @@ public class MainGoodsFragment extends BaseFragment implements
                 {
                     mScrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                 }
+                mSearchView.setFocusable(true);
+                mSearchView.setFocusableInTouchMode(true);
+                mSearchView.requestFocus();
 
             } else if (msg.what == UPDATE_BANNER)
             {
                 setAdView();
                 setCodeView();
                 setModuleView();
+                mSearchView.setFocusable(true);
+                mSearchView.setFocusableInTouchMode(true);
+                mSearchView.requestFocus();
             }
             else if (msg.what == UPDATE_SEARCH)
             {
@@ -212,84 +219,125 @@ public class MainGoodsFragment extends BaseFragment implements
         {
             return;
         }
-        int num = specials.size() / 5 ;
+        int count=specials.size() % 5>0?1:0;
+        int num = specials.size() / 5+count ;
         for (int i = 0; i < num; i++)
         {
             final int pos = i * 5;
             final View mView = LayoutInflater.from(mContext).inflate(R.layout.item_home_module, null);
-            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
-                    screenWidth, screenWidth * (1260 + 32) / 1194);
-            mView.setLayoutParams(param);
-            ImageView imageIv1 = (ImageView) mView.findViewById(R.id.moduleIv1);
-            ToolUtils.setImageCacheUrl(specials.get(pos).imageUrl, imageIv1, R.drawable.icon_loading_home_topic_big);
-            imageIv1.setOnClickListener(new View.OnClickListener()
+            if (pos<=specials.size()-1)
             {
-                @Override
-                public void onClick(View v)
+                ImageView imageIv1 = (ImageView) mView.findViewById(R.id.moduleIv1);
+                imageIv1.setVisibility(View.VISIBLE);
+                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+                        screenWidth-(DeviceUtils.dp2px(mContext,16)), screenWidth * 420 / 1194);
+                imageIv1.setLayoutParams(param);
+                ToolUtils.setImageCacheUrl(specials.get(pos).imageUrl, imageIv1, R.drawable.icon_loading_home_topic_big);
+                imageIv1.setOnClickListener(new View.OnClickListener()
                 {
-                    if (isTimeInterval())
+                    @Override
+                    public void onClick(View v)
                     {
-                        SwitchImage item = specials.get(pos);
-                        ToolUtils.setBannerGoto(item, mContext);
+                        if (isTimeInterval())
+                        {
+                            SwitchImage item = specials.get(pos);
+                            ToolUtils.setBannerGoto(item, mContext);
+                        }
                     }
-                }
-            });
-            ImageView imageIv2 = (ImageView) mView.findViewById(R.id.moduleIv2);
-            ToolUtils.setImageCacheUrl(specials.get(pos + 1).imageUrl, imageIv2, R.drawable.icon_loading_home_topic_small);
-            imageIv2.setOnClickListener(new View.OnClickListener()
+                });
+            }
+            if (pos+1<=specials.size()-1)
             {
-                @Override
-                public void onClick(View v)
+                ImageView imageIv2 = (ImageView) mView.findViewById(R.id.moduleIv2);
+                imageIv2.setVisibility(View.VISIBLE);
+                LinearLayout.LayoutParams param2 = new LinearLayout.LayoutParams(
+                        (screenWidth-(DeviceUtils.dp2px(mContext,24)))/2,  screenWidth * 420 / 1194);
+                param2.topMargin=DeviceUtils.dp2px(mContext,8);
+                param2.rightMargin=DeviceUtils.dp2px(mContext,4);
+                imageIv2.setLayoutParams(param2);
+                ToolUtils.setImageCacheUrl(specials.get(pos + 1).imageUrl, imageIv2, R.drawable.icon_loading_home_topic_small);
+                imageIv2.setOnClickListener(new View.OnClickListener()
                 {
-                    if (isTimeInterval())
+                    @Override
+                    public void onClick(View v)
                     {
-                        SwitchImage item = specials.get(pos + 1);
-                        ToolUtils.setBannerGoto(item, mContext);
+                        if (isTimeInterval())
+                        {
+                            SwitchImage item = specials.get(pos + 1);
+                            ToolUtils.setBannerGoto(item, mContext);
+                        }
                     }
-                }
-            });
-            ImageView imageIv3 = (ImageView) mView.findViewById(R.id.moduleIv3);
-            ToolUtils.setImageCacheUrl(specials.get(pos + 2).imageUrl, imageIv3, R.drawable.icon_loading_home_topic_small);
-            imageIv3.setOnClickListener(new View.OnClickListener()
+                });
+            }
+            if (pos+2<=specials.size()-1)
             {
-                @Override
-                public void onClick(View v)
+                ImageView imageIv3 = (ImageView) mView.findViewById(R.id.moduleIv3);
+                imageIv3.setVisibility(View.VISIBLE);
+                LinearLayout.LayoutParams param3 = new LinearLayout.LayoutParams(
+                        (screenWidth-(DeviceUtils.dp2px(mContext,24)))/2,  screenWidth * 420 / 1194);
+                param3.topMargin=DeviceUtils.dp2px(mContext,8);
+                param3.leftMargin=DeviceUtils.dp2px(mContext,4);
+                imageIv3.setLayoutParams(param3);
+                ToolUtils.setImageCacheUrl(specials.get(pos + 2).imageUrl, imageIv3, R.drawable.icon_loading_home_topic_small);
+                imageIv3.setOnClickListener(new View.OnClickListener()
                 {
-                    if (isTimeInterval())
+                    @Override
+                    public void onClick(View v)
                     {
-                        SwitchImage item = specials.get(pos + 2);
-                        ToolUtils.setBannerGoto(item, mContext);
+                        if (isTimeInterval())
+                        {
+                            SwitchImage item = specials.get(pos + 2);
+                            ToolUtils.setBannerGoto(item, mContext);
+                        }
                     }
-                }
-            });
-            ImageView imageIv4 = (ImageView) mView.findViewById(R.id.moduleIv4);
-            ToolUtils.setImageCacheUrl(specials.get(pos + 3).imageUrl, imageIv4, R.drawable.icon_loading_home_topic_small);
-            imageIv4.setOnClickListener(new View.OnClickListener()
+                });
+            }
+            if (pos+3<=specials.size()-1)
             {
-                @Override
-                public void onClick(View v)
+                ImageView imageIv4 = (ImageView) mView.findViewById(R.id.moduleIv4);
+                imageIv4.setVisibility(View.VISIBLE);
+                LinearLayout.LayoutParams param4 = new LinearLayout.LayoutParams(
+                        (screenWidth-(DeviceUtils.dp2px(mContext,24)))/2,  screenWidth * 420 / 1194);
+                param4.topMargin=DeviceUtils.dp2px(mContext,8);
+                param4.rightMargin=DeviceUtils.dp2px(mContext,4);
+                imageIv4.setLayoutParams(param4);
+                ToolUtils.setImageCacheUrl(specials.get(pos + 3).imageUrl, imageIv4, R.drawable.icon_loading_home_topic_small);
+                imageIv4.setOnClickListener(new View.OnClickListener()
                 {
-                    if (isTimeInterval())
+                    @Override
+                    public void onClick(View v)
                     {
-                        SwitchImage item = specials.get(pos + 3);
-                        ToolUtils.setBannerGoto(item, mContext);
+                        if (isTimeInterval())
+                        {
+                            SwitchImage item = specials.get(pos + 3);
+                            ToolUtils.setBannerGoto(item, mContext);
+                        }
                     }
-                }
-            });
-            ImageView imageIv5 = (ImageView) mView.findViewById(R.id.moduleIv5);
-            ToolUtils.setImageCacheUrl(specials.get(pos + 4).imageUrl, imageIv5, R.drawable.icon_loading_home_topic_small);
-            imageIv5.setOnClickListener(new View.OnClickListener()
+                });
+            }
+            if (pos+4<=specials.size()-1)
             {
-                @Override
-                public void onClick(View v)
+                ImageView imageIv5 = (ImageView) mView.findViewById(R.id.moduleIv5);
+                imageIv5.setVisibility(View.VISIBLE);
+                LinearLayout.LayoutParams param5 = new LinearLayout.LayoutParams(
+                        (screenWidth-(DeviceUtils.dp2px(mContext,24)))/2,  screenWidth * 420 / 1194);
+                param5.topMargin=DeviceUtils.dp2px(mContext,8);
+                param5.leftMargin=DeviceUtils.dp2px(mContext,4);
+                imageIv5.setLayoutParams(param5);
+                ToolUtils.setImageCacheUrl(specials.get(pos + 4).imageUrl, imageIv5, R.drawable.icon_loading_home_topic_small);
+                imageIv5.setOnClickListener(new View.OnClickListener()
                 {
-                    if (isTimeInterval())
+                    @Override
+                    public void onClick(View v)
                     {
-                        SwitchImage item = specials.get(pos + 4);
-                        ToolUtils.setBannerGoto(item, mContext);
+                        if (isTimeInterval())
+                        {
+                            SwitchImage item = specials.get(pos + 4);
+                            ToolUtils.setBannerGoto(item, mContext);
+                        }
                     }
-                }
-            });
+                });
+            }
             moduleView.addView(mView);
         }
     }

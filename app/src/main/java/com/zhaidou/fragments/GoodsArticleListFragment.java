@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 软装清单
+ * 软装清单（文章商品点击进入）
  */
 public class GoodsArticleListFragment extends BaseFragment
 {
@@ -182,6 +182,8 @@ public class GoodsArticleListFragment extends BaseFragment
                 {
                     Intent intent = new Intent();
                     intent.putExtra("url", articleList.get(position-1).userId);
+                    intent.putExtra("title", articleList.get(position-1).name);
+                    intent.putExtra("imageUrl", articleList.get(position-1).imageUrl);
                     intent.setClass(mContext, WebViewActivity.class);
                     mContext.startActivity(intent);
                 }

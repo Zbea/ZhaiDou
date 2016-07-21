@@ -425,10 +425,10 @@ public class ToolUtils
             {
                 Intent intent = new Intent();
                 intent.putExtra("url", item.typeValue);
+                intent.putExtra("title", item.title);
+                intent.putExtra("imageUrl", item.imageUrl);
                 intent.setClass(mContext, WebViewActivity.class);
                 mContext.startActivity(intent);
-//                WebViewFragment webViewFragment= WebViewFragment.newInstance(item.typeValue, false);
-//                ((MainActivity)mContext).navigationToFragment(webViewFragment);
             }
         } else if (item.type == 2)
         {

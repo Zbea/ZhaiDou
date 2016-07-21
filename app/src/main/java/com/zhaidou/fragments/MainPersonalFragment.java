@@ -87,6 +87,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                     SharedPreferencesUtil.saveData(mContext, "avatar", "http://" + mUser.getAvatar());
                     break;
                 case UPDATE_USER_DESCRIPTION:
+
                     SharedPreferencesUtil.saveData(mContext, "mobile", mUser.getMobile());
                     SharedPreferencesUtil.saveData(mContext, "description", mUser.getDescription());
                     tv_desc.setText("null".equalsIgnoreCase(mUser.getDescription()) || mUser.getDescription() == null ? "" : mUser.getDescription());

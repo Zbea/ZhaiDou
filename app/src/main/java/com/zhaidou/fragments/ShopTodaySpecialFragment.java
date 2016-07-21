@@ -320,10 +320,8 @@ public class ShopTodaySpecialFragment extends BaseFragment implements CartCountM
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                    mDialog.show();
                     GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(items.get(position).title, items.get(position).goodsId);
                     ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
-                    mDialog.dismiss();
             }
         });
 
@@ -566,7 +564,6 @@ public class ShopTodaySpecialFragment extends BaseFragment implements CartCountM
     {
         hideInputMethod();
         timeTvs.stop();
-        mRequestQueue.stop();
         super.onDestroy();
     }
 

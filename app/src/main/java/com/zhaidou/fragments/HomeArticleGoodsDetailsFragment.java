@@ -61,7 +61,7 @@ import cn.sharesdk.framework.Platform;
 import cn.sharesdk.framework.PlatformActionListener;
 
 /**
- * 文章商品
+ * 文章专题商品
  */
 public class HomeArticleGoodsDetailsFragment extends BaseFragment
 {
@@ -220,6 +220,9 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                         url=videoUrl;
                     }
                     video.putExtra("url", url);
+                    video.putExtra("title", shareName);
+                    video.putExtra("imageUrl", vImage);
+                    video.putExtra("canShare", true);
                     video.setClass(mContext, WebViewActivity.class);
                     mContext.startActivity(video);
                     break;

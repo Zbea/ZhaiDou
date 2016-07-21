@@ -224,7 +224,9 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            long day = (endTime.getTime() - mServerTime) / (1000 * 60 * 60 * 24);
+            long diff=endTime.getTime() - mServerTime;
+            int days=diff %(1000 * 60 * 60 * 24)>0?1:0;
+            long day = diff / (1000 * 60 * 60 * 24)+days;
             endTimeStr=day>3|!"N".equalsIgnoreCase(mStatus)?startTimeStr+"-"+endTimeStr:endTimeStr+"到期";
             mMoney.setText(Html.fromHtml("<big><big>￥<big><big><big>" + coupons.bookValue + "</big></big></big></big></big>"));
             mDetail.setText(Html.fromHtml(String.format("%s<font color=red>%s</font><br><br>满%s使用", endTimeStr, day <= 3 ? "(" + timeStr + ")" : "", coupons.enoughValue)));

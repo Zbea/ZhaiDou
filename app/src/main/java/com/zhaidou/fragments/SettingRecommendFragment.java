@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by roy on 15/8/28.
+ * Created by Zbea on 15/8/28.推荐应用
  */
 public class SettingRecommendFragment extends BaseFragment {
     private static final String DATA = "page";
@@ -75,6 +75,7 @@ public class SettingRecommendFragment extends BaseFragment {
         {
             Intent intent = new Intent();
             intent.putExtra("url", lists.get(position).appUrl);
+            intent.putExtra("canShare", true);
             intent.setClass(getActivity(), WebViewActivity.class);
             getActivity().startActivity(intent);
         }

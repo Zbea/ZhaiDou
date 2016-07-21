@@ -3,6 +3,7 @@ package com.zhaidou.activities;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.DownloadListener;
@@ -10,6 +11,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.umeng.analytics.MobclickAgent;
@@ -26,9 +28,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.sharesdk.framework.Platform;
+import cn.sharesdk.framework.PlatformActionListener;
+
 public class WebViewActivity extends BaseActivity implements View.OnClickListener {
 
-    private String url;
+    private String url,title,imageUrl;
+    private boolean canShare;
     private CustomProgressWebview webView;
     private String token;
     private Integer userId;
@@ -39,7 +45,16 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view);
+
+        url = getIntent().getStringExtra("url");
+        title = getIntent().getStringExtra("title");
+        imageUrl = getIntent().getStringExtra("imageUrl");
+        canShare = getIntent().getBooleanExtra("canShare", false);
+
         findViewById(R.id.ll_back).setOnClickListener(this);
+        ImageView shareIv=(ImageView)findViewById(R.id.share_iv);
+        shareIv.setOnClickListener(this);
+        shareIv.setVisibility(canShare?View.GONE:View.VISIBLE);
         mChildContainer = (android.widget.FrameLayout) findViewById(R.id.fl_child_container);
 
         webView = (CustomProgressWebview) findViewById(R.id.webView);
@@ -158,8 +173,6 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
         webSettings.setLoadWithOverviewMode(true);
         webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
-        String url = getIntent().getStringExtra("url");
-
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("ZhaidouVesion", getResources().getString(R.string.app_versionName));
         if (url.contains("receive_coupon"))
@@ -175,7 +188,37 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
             case R.id.ll_back:
                 finish();
                 break;
+            case R.id.share_iv:
+                share();
+                break;
         }
+    }
+
+    /**
+     * 分享
+     */
+    private void share()
+    {
+        mDialogUtils.showShareDialog(TextUtils.isEmpty(title)?"分享":title, TextUtils.isEmpty(title)?"分享内容":title + "  " + url, TextUtils.isEmpty(imageUrl)?null:imageUrl , url, new PlatformActionListener()
+        {
+            @Override
+            public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap)
+            {
+                ToolUtils.setToast(WebViewActivity.this,R.string.share_completed);
+            }
+
+            @Override
+            public void onError(Platform platform, int i, Throwable throwable)
+            {
+                ToolUtils.setToast(WebViewActivity.this,R.string.share_error);
+            }
+
+            @Override
+            public void onCancel(Platform platform, int i)
+            {
+                ToolUtils.setToast(WebViewActivity.this,R.string.share_cancel);
+            }
+        });
     }
 
     @Override

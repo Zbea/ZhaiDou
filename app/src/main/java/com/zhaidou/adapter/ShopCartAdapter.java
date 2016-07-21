@@ -79,19 +79,12 @@ public class ShopCartAdapter extends BaseListAdapter<CartGoodsItem>
         LinearLayout cartNumView = ViewHolder.get(convertView, R.id.cartNumView);
         LinearLayout cartNumLoseView = ViewHolder.get(convertView, R.id.cartNumLoseView);
 
-        if (getCount() > 1)
-        {
-            if (position == getCount() - 1)
-            {
-                itemLine.setVisibility(View.GONE);
-            }
-            if (position == 0)
-            {
-                itemLine.setVisibility(View.VISIBLE);
-            }
-        } else
+        if (position==getList().size()-1)
         {
             itemLine.setVisibility(View.GONE);
+        } else
+        {
+            itemLine.setVisibility(View.VISIBLE);
         }
 
         final CartGoodsItem cartGoodsItem=getList().get(position);
