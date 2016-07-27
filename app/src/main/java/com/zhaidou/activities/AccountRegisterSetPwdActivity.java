@@ -42,8 +42,7 @@ import java.util.TimerTask;
  */
 public class AccountRegisterSetPwdActivity extends FragmentActivity {
     private CustomEditText mCodeView, mPwdView;
-    private TextView headTitle;
-    private TextView mRegister, mGetCode;
+    private TextView headTitle,mRegister, mGetCode,tv_protocol;
     private RequestQueue mRequestQueue;
     private SharedPreferences mSharedPreferences;
     private Dialog mDialog;
@@ -104,6 +103,12 @@ public class AccountRegisterSetPwdActivity extends FragmentActivity {
 //                    codeTimer();
                     getVerifyCode();
                     break;
+                case R.id.tv_protocol:
+                    Intent intent=new Intent(getApplicationContext(),WebViewNoBackActivity.class);
+                    intent.putExtra("title","注册协议");
+                    intent.putExtra("url",ZhaiDou.REGISTER_PROTOCOL);
+                    startActivity(intent);
+                    break;
                 default:
                     break;
             }
@@ -125,6 +130,9 @@ public class AccountRegisterSetPwdActivity extends FragmentActivity {
         mRegister = (TextView) findViewById(R.id.bt_register);
         mGetCode = (TextView) findViewById(R.id.bt_getCode);
         mGetCode.setOnClickListener(onClickListener);
+
+        tv_protocol = (TextView) findViewById(R.id.tv_protocol);
+        tv_protocol.setOnClickListener(onClickListener);
 
         mSharedPreferences = getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
 

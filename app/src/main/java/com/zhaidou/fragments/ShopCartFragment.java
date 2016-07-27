@@ -408,10 +408,6 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
         arrays.clear();
         arraysCheck.clear();
         itemsCheck.clear();
-        items.clear();
-        itemsIsDate.clear();
-        itemsIsOver.clear();
-        itemsIsPublish.clear();
         checkLogin();
         FetchDetailData();
         FetchCountData();
@@ -428,10 +424,6 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
             arrays.clear();
             arraysCheck.clear();
             itemsCheck.clear();
-            items.clear();
-            itemsIsDate.clear();
-            itemsIsOver.clear();
-            itemsIsPublish.clear();
             mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
             checkLogin();
             FetchDetailData();
@@ -448,6 +440,10 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
      */
     private void addCartGoods()
     {
+        items.clear();
+        itemsIsDate.clear();
+        itemsIsOver.clear();
+        itemsIsPublish.clear();
         if (arrays.size() > 0)
             for (int i = 0; i < arrays.size(); i++)
             {
@@ -479,11 +475,6 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
         items.addAll(itemsIsOver);
         items.addAll(itemsIsPublish);
         items.addAll(itemsIsDate);
-
-        for (int i = 0; i <items.size() ; i++)
-        {
-            ToolUtils.setLog("createTime:"+items.get(i).createTime);
-        }
 
         shopCartAdapter.setList(items);
         shopCartAdapter.setRefreshCheckView();
@@ -527,8 +518,6 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
     private void commitCartOrder()
     {
         itemsCheck=shopCartAdapter.getItemChecks();
-        ToolUtils.setLog("itemsCheck:" + itemsCheck.size());
-        ToolUtils.setLog("arrays:" + arrays.size());
         arraysCheck = arrays;
         ArrayList<CartArrayItem> deleteArrays = new ArrayList<CartArrayItem>();
         for (int i = 0; i < arraysCheck.size(); i++)
@@ -598,7 +587,8 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
     private void setGoodsCheckChange()
     {
         itemsCheck=shopCartAdapter.getItemChecks();
-        allCb.setChecked(itemsCheck.size()==getUserItems().size()?true:false);
+        if (getUserItems().size()!=0)
+            allCb.setChecked(itemsCheck.size()==getUserItems().size()?true:false);
 
         int num = 0;
         double totalMoney = 0;
@@ -626,7 +616,6 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
     public void FetchDetailData()
     {
         String url = ZhaiDou.CartGoodsListUrl + userId;
-        ToolUtils.setLog("url:" + url);
         ZhaiDouRequest request=new ZhaiDouRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
@@ -635,6 +624,8 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
                 if (mDialog != null)
                     mDialog.dismiss();
                 mScrollView.onRefreshComplete();
+                arrays.clear();
+                items.clear();
                 if (jsonObject != null)
                 {
                     JSONObject dataObject = jsonObject.optJSONObject("data");
@@ -709,7 +700,7 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
                         }
 
                     }
-                    mHandler.sendEmptyMessage(1);
+                    mHandler.sendEmptyMessage(UPDATE_CART_LIST);
                 }
             }
         }, new Response.ErrorListener()

@@ -421,18 +421,15 @@ public class MainGoodsFragment extends BaseFragment implements
         mSpecialLayout = view.findViewById(R.id.specialLayout);
         mSpecialLayout.setVisibility(View.GONE);
         unreadMsg = (TextView) view.findViewById(R.id.unreadMsg);
-
-        currentPage = 1;
-
         mRequestQueue = ZDApplication.newRequestQueue();
-
         linearLayout = (LinearLayout) view.findViewById(R.id.bannerView);
-//        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 400 / 750));
-        initDate();
+
         Integer userId= (Integer) SharedPreferencesUtil.getData(mContext,"userId",-1);
         if (userId!=-1)
             Api.getUnReadComment(userId,null,null);
         CountManager.getInstance().setOnCommentChangeListener(this);
+
+        initDate();
     }
 
     private void initDate()
@@ -443,8 +440,8 @@ public class MainGoodsFragment extends BaseFragment implements
         items.clear();
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
-            FetchSpecialData();
             FetchData(currentPage);
+            FetchSpecialData();
             FetchSearchData();
         } else
         {

@@ -229,9 +229,9 @@ public class DateUtils {
     public static int getDateDays(String date) throws ParseException
     {
         Date mDate = new Date();
-        long diff = formatDate(date).getTime()-mDate.getTime()>0?((formatDate(date).getTime()-mDate.getTime())):0;
-        int days=diff %(1000 * 60 * 60 * 24)>0?1:0;
-        return (int)diff / (1000 * 60 * 60 * 24)+days;
+        long diff = formatDate(date).getTime()-mDate.getTime()>0?((formatDate(date).getTime()-mDate.getTime()))/1000:0;
+        int days=diff %DAY>0?1:0;
+        return ((int)diff) /DAY+days;
     }
 
     /**
@@ -252,16 +252,18 @@ public class DateUtils {
         else if (diff >=DAY)
         {
             int days=diff%DAY>0?1:0;
-            return timeStr = "仅剩"+((int)diff/DAY+days)+"天";
+            return "仅剩"+((int)diff/DAY+days)+"天";
         }
         else
         {
             if (diff > HOUR)
             {
-                timeStr = "仅剩"+diff / (HOUR) + "小时";
+                int time=diff%HOUR>0?1:0;
+                timeStr = "仅剩"+(diff / HOUR+time) + "小时";
             } else if (diff > MINUTE)
             {
-                timeStr = "仅剩"+diff / (MINUTE) + "分钟";
+                int minute=diff%MINUTE>0?1:0;
+                timeStr = "仅剩"+(diff / MINUTE+minute)+ "分钟";
             } else
             {// 1秒钟-59秒钟
                 timeStr = "不足一分钟";

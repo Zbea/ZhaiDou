@@ -456,52 +456,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                         if (couponObject != null && couponObject.length() > 0)
                         {
                             JSONObject couponUseInfoPO=couponObject.optJSONObject("couponUseInfoPO");
-
-                            int id=couponUseInfoPO.optInt("id");
-                            int couponId=couponUseInfoPO.optInt("couponId");
-                            int couponRuleId=couponUseInfoPO.optInt("couponRuleId");
-                            String couponCode=couponUseInfoPO.optString("couponCode");
-                            double enoughValue=couponUseInfoPO.optDouble("enoughValue");
-                            double money=couponUseInfoPO.optDouble("bookValue");
-                            String info=couponUseInfoPO.optString("couponName");
-                            String startTime=couponUseInfoPO.optString("startTime");
-                            String endTime=couponUseInfoPO.optString("endTime");
-                            int days=0;
-                            String timeStr=null;
-                            try
-                            {
-                                timeStr= DateUtils.getCouponDateDiff(endTime);
-                                days=DateUtils.getDateDays(endTime);
-                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
-                                endTime=dateFormat.format(DateUtils.formatDate(endTime));
-                                startTime=dateFormat.format(DateUtils.formatDate(startTime));
-                            } catch (ParseException e)
-                            {
-                                e.printStackTrace();
-                            }
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
-                            endTime=dateFormat.format(endTime);
-                            startTime=dateFormat.format(startTime);
-                            String statu=couponUseInfoPO.optString("status");
-                            String property=couponUseInfoPO.optString("property");
-                            String goodsType=couponUseInfoPO.optString("goodsType");
-                            Coupon coup=new Coupon();
-                            coup.id=id;
-                            coup.couponId=couponId;
-                            coup.couponRuleId=couponRuleId;
-                            coup.couponCode=couponCode;
-                            coup.enoughMoney=enoughValue;
-                            coup.money=money;
-                            coup.info="满"+ToolUtils.isIntPrice(enoughValue+"")+"减"+ToolUtils.isIntPrice(money+"");
-                            coup.startDate=startTime;
-                            coup.endDate=endTime;
-                            coup.time=days;
-                            coup.timeStr = timeStr;
-                            coup.status=statu;
-                            coup.property=property;
-                            coup.type=goodsType;
-                            coup.isDefault=false;
-                            items.add(coup);
+                            parseJson(couponUseInfoPO,items,false);
                             handler.sendEmptyMessage(UPDATE_REDEEM_COUPON_RESULT);
                         } else
                         {
@@ -560,14 +515,14 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
             Coupon coupon = getList().get(position);
             info.setText(coupon.info);
             money.setText(ToolUtils.isIntPrice(coupon.money + ""));
-            date.setText(coupon.endDate+"到期");
-            time.setText("(" + coupon.timeStr + ")");
             if (coupon.time > 3|coupon.time==0)
             {
                 time.setVisibility(View.GONE);
                 date.setText(coupon.startDate+"-"+coupon.endDate);
             } else
             {
+                date.setText(coupon.endDate+"到期");
+                time.setText("(" + coupon.timeStr + ")");
                 time.setVisibility(View.VISIBLE);
             }
             money.setTextColor(coupon.isNoUse ? getResources().getColor(R.color.text_gary_color) : getResources().getColor(R.color.green_color));

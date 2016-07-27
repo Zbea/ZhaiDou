@@ -234,21 +234,19 @@ public class EaseConversationListFragment extends EaseBaseFragment {
 //            String userName = second.getUserName();
 //            list.add(userName.equalsIgnoreCase("service") ? new EMConversation("designer") : second);
 //            list.add(userName.equalsIgnoreCase("service") ? second : new EMConversation("service"));
-//        } else if (sortList.size() == 2) {
+//        }
+//        else if (sortList.size() == 2) {
 //            EMConversation first = sortList.get(0).second;
 //            if ("service".equalsIgnoreCase(first.getUserName())) {
 //                list.add(sortList.get(1).second);
 //                list.add(first);
-//            } else {
+//            }
+//            else {
 //                list.add(sortList.get(0).second);
 //                list.add(sortList.get(1).second);
 //            }
 //        }
-//		for (Pair<Long, EMConversation> sortItem : sortList) {
-//			list.add(sortItem.second);
-//		}
-        EMConversation comment = new EMConversation("comment");
-        list.add(0, comment);
+        list.add(0,  new EMConversation("comment"));
         list.add(new EMConversation("service"));
         return list;
     }

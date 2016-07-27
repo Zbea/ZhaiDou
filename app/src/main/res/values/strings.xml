@@ -34,6 +34,7 @@
     <string name="shop_payment_success_text">支付成功</string>
 
     <string name="title_consult_design">咨询设计服务</string>
+    <string name="registration_protocol">轻触 \"注册\" 按钮,即表示你同意</string>
 
     <!-- 订单 -->
     <string name="order_colse">交易关闭</string>

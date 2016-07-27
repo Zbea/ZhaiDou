@@ -194,7 +194,7 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
-                android:background="#F5F5F5" />
+                android:background="@color/page_bg" />
 
             <com.zhaidou.view.ChildGridView
                 android:id="@+id/gridView"
@@ -202,6 +202,7 @@
                 android:layout_height="wrap_content"
                 android:horizontalSpacing="1dp"
                 android:numColumns="3"
+                android:background="@color/page_bg"
                 android:verticalSpacing="1dp" />
 
             <ImageView

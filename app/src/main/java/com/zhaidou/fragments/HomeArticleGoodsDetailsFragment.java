@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
+import android.webkit.WebSettings;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -51,6 +52,7 @@ import com.zhaidou.view.ListViewForScrollView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -76,7 +78,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     private RelativeLayout barLine,rl_video;
     private CircleImageView headerImageIv;
     private ImageView backIv,shareIv, goodsIv, imageIv, commentIv,iv_videoImage;
-    private CustomProgressWebview webview;
+    private CustomProgressWebview webview,wb_video;
     private ListViewForScrollView goodsListView, commentListView;
     private LinearLayout loadingView, nullNetView, nullView, nullDataView;
     private TextView reloadBtn, reloadNetBtn;
@@ -124,6 +126,16 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 subtotalTv.setText("￥" + ToolUtils.isIntPrice(totalPrice));
 
                 ll_videoPage.setVisibility(TextUtils.isEmpty(videoUrl)?View.GONE:View.VISIBLE);
+                String url;
+                if (!TextUtils.isEmpty(vid))
+                {
+                    url="http://player.youku.com/embed/"+vid+"?client_id=814e6ba73e9be572";
+                }
+                else
+                {
+                    url=videoUrl;
+                }
+                wb_video.loadUrl(url);
                 ToolUtils.setImageCacheUrl(vImage, iv_videoImage, R.drawable.icon_loading_item);
                 ToolUtils.setImageCacheUrl(header, headerImageIv, R.drawable.icon_loading_item);
                 ToolUtils.setImageCacheUrl(imageUrl, imageIv, R.drawable.icon_loading_item);
@@ -368,6 +380,16 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         layoutParams.bottomMargin=DeviceUtils.dp2px(mContext,20);
         rl_video.setLayoutParams(layoutParams);
         ll_videoPage = (LinearLayout) view.findViewById(R.id.ll_videoPage);
+        wb_video=(CustomProgressWebview) view.findViewById(R.id.wb_video);
+        WebSettings webSettings = wb_video.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setPluginState(WebSettings.PluginState.ON);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        webSettings.setAllowFileAccess(true);
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setUseWideViewPort(true);
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         commentNumTv = (TextView) view.findViewById(R.id.detailsCommentNumTv);
         totalLine = (LinearLayout) view.findViewById(R.id.detailsTotalLine);
@@ -887,6 +909,19 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     {
         super.onResume();
         MobclickAgent.onPageStart("案例详情");
+        try
+        {
+            wb_video.getClass().getMethod("onResume").invoke(wb_video,(Object[])null);
+        } catch (IllegalAccessException e)
+        {
+            e.printStackTrace();
+        } catch (InvocationTargetException e)
+        {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -894,6 +929,19 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     {
         super.onPause();
         MobclickAgent.onPageEnd("案例详情");
+        try
+        {
+            wb_video.getClass().getMethod("onPause").invoke(wb_video,(Object[])null);
+        } catch (IllegalAccessException e)
+        {
+            e.printStackTrace();
+        } catch (InvocationTargetException e)
+        {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override

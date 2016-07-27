@@ -110,14 +110,23 @@
         </activity>
         <activity
             android:name=".activities.AccountRegisterSetPwdActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/StyledIndicators" >
         </activity>
         <activity
             android:name=".activities.AccountSetPwdActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/StyledIndicators" >
         </activity>
         <activity
             android:name=".activities.AccountFindPwdActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/StyledIndicators" >
+        </activity>
+
+        <activity
+            android:name=".activities.WebViewNoBackActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/StyledIndicators" >
         </activity>
 

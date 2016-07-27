@@ -147,9 +147,8 @@ public class EaseConversationAdapater extends ArrayAdapter<EMConversation> {
 		} else {
 			holder.unreadLabel.setVisibility(View.INVISIBLE);
 		}
-
 		if (conversation.getMsgCount() != 0) {
-			// 把最后一条消息的内容作为item的message内容
+            // 把最后一条消息的内容作为item的message内容
 			EMMessage lastMessage = conversation.getLastMessage();
 			holder.message.setText(EaseSmileUtils.getSmiledText(getContext(),
                     EaseCommonUtils.getMessageDigest(lastMessage, (this.getContext()))), TextView.BufferType.SPANNABLE);

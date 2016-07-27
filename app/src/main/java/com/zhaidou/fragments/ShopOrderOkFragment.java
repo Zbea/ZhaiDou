@@ -196,7 +196,7 @@ public class ShopOrderOkFragment extends BaseFragment
                         Intent intent= new Intent(ZhaiDou.IntentRefreshOGoodsDetailsTag);
                         mContext.sendBroadcast(intent);
                     }
-                    else
+                    if (flags==1)
                     {
                         //发送刷新商品详情普通特卖该规格购买广播
                         Intent intent= new Intent(ZhaiDou.IntentRefreshGoodsDetailsTag);

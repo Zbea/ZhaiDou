@@ -407,7 +407,7 @@ public class GoodsDetailsFragment extends BaseFragment implements CartCountManag
                 case R.id.goodsMyCartBtn:
                     if (checkLogin())
                     {
-                        ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 0);
+                        ShopCartFragment shopCartFragment = ShopCartFragment.newInstance("", 2);
                         ((BaseActivity) getActivity()).navigationToFragment(shopCartFragment);
                     } else
                     {

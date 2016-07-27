@@ -16,6 +16,7 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomePTActivity;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomProgressWebview;
 
 /**
@@ -97,6 +98,7 @@ public class MagicGuideFragment extends BaseFragment implements View.OnClickList
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url)
             {
+                ToolUtils.setLog(url);
                 Intent intent = new Intent(getActivity(), HomePTActivity.class);
                 intent.putExtra("url", url);
                 intent.putExtra("title", "");

@@ -250,11 +250,11 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 requestQueue.add(request);
                 break;
             case R.id.tv_register:
+
                 startActivityForResult(new Intent(LoginActivity.this, RegisterActivity.class), 200);
                 break;
             case R.id.tv_reset_psw:
-                Intent intent = new Intent(getApplicationContext(), AccountFindPwdActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(getApplicationContext(), AccountFindPwdActivity.class));
                 break;
             case R.id.ll_back:
                 finish();

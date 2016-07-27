@@ -1,7 +1,6 @@
 package com.zhaidou.activities;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -86,8 +85,6 @@ public class HomePTActivity extends Activity
         tv_back.setOnClickListener(onClickListener);
         mTitleView=(TextView)findViewById(R.id.title_tv);
         webView = (CustomProgressWebview) findViewById(R.id.detailView);
-        webView.setBackgroundColor(Color.parseColor("#00000000"));
-        webView.setBackgroundResource(R.drawable.btn_click_selector);
 
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);

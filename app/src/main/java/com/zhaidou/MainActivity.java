@@ -44,7 +44,6 @@ import com.zhaidou.base.CartCountManager;
 import com.zhaidou.base.CountManager;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.fragments.DiyFragment;
-import com.zhaidou.fragments.GoodsDetailsFragment;
 import com.zhaidou.fragments.MainCategoryFragment;
 import com.zhaidou.fragments.MainGoodsFragment;
 import com.zhaidou.fragments.MainHomeFragment;
@@ -407,6 +406,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
         setButton(categoryButton);
 
     }
+
 
     public void setDefaultFragment(Fragment defaultFragment)
     {
@@ -837,32 +837,20 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 Fragment shopPaymentSuccessFragmen = manager.findFragmentByTag(ShopPaymentSuccessFragment.class.getSimpleName());
                 Fragment shopPaymentFailFragment = manager.findFragmentByTag(ShopPaymentFailFragment.class.getSimpleName());
                 Fragment shopPaymentFragment = manager.findFragmentByTag(ShopPaymentFragment.class.getSimpleName());
-                Fragment fragment = fragments.get(fragments.size() - 1);
-                if (fragment instanceof GoodsDetailsFragment || fragment instanceof OrderDetailFragment || fragment instanceof ShopPaymentFailFragment ||
-                        fragment instanceof ShopPaymentSuccessFragment || fragment instanceof ShopPaymentFragment)
-                {
-
-                    if (fragments.get(fragments.size() - 1) instanceof GoodsDetailsFragment)
-                    {
-                        manager.popBackStack();
-                        return true;
-                    }
+//                Fragment fragment = fragments.get(fragments.size() - 1);
+//                if (fragment instanceof OrderDetailFragment || fragment instanceof ShopPaymentFailFragment ||
+//                        fragment instanceof ShopPaymentSuccessFragment || fragment instanceof ShopPaymentFragment)
+//                {
                     if ((orderDetailFragment != null && orderDetailFragment instanceof OrderDetailFragment))
                     {
-                        //orderDetailFragment
-                        ToolUtils.setLog("关闭orderDetailFragment");
                         popToStack(orderDetailFragment);
                         return true;
                     } else if ((shopPaymentSuccessFragmen != null && shopPaymentSuccessFragmen instanceof ShopPaymentSuccessFragment))
                     {
-                        //ShopPaymentSuccessFragment关闭
-                        ToolUtils.setLog("关闭shopPaymentSuccessFragmen");
                         popToStack(shopPaymentSuccessFragmen);
                         return true;
                     } else if ((shopPaymentFailFragment != null && shopPaymentFailFragment instanceof ShopPaymentFailFragment))
                     {
-                        ToolUtils.setLog("关闭shopPaymentFailFragment");
-                        //ShopPaymentSuccessFragment关闭
                         popToStack(shopPaymentFailFragment);
                         return true;
                     } else if (shopPaymentFragment != null && shopPaymentFragment instanceof ShopPaymentFragment)
@@ -872,10 +860,14 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                         BackPaymentDialog(shopPaymentFragment);
                         return true;
                     }
-                } else
-                {
-                    return super.onKeyDown(keyCode, event);
-                }
+                else
+                    {
+                        return super.onKeyDown(keyCode, event);
+                    }
+//                } else
+//                {
+//                    return super.onKeyDown(keyCode, event);
+//                }
             }
         }
         return super.onKeyDown(keyCode, event);

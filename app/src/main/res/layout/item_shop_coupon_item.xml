@@ -21,7 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/green_color"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:layout_marginTop="4dp"
             android:text="￥"/>
 
@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/green_color"
-            android:textSize="32sp"
+            android:textSize="28sp"
             android:text="50"/>
 
         <ImageView

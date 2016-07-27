@@ -182,7 +182,7 @@ public class ShopPaymentFragment extends BaseFragment
         {
             switch (view.getId())
             {
-                case R.id.ll_back:
+                case R.id.ll_backs:
                     backDialog();
                     break;
                 case R.id.paymentBtn:
@@ -269,7 +269,7 @@ public class ShopPaymentFragment extends BaseFragment
         userName = (String) SharedPreferencesUtil.getData(getActivity(), "nickName", "");
         userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
         mRequestQueue = Volley.newRequestQueue(mContext);
-        backBtn = (TypeFaceTextView) mView.findViewById(R.id.ll_back);
+        backBtn = (TypeFaceTextView) mView.findViewById(R.id.ll_backs);
         backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(R.string.shop_payment_text);
@@ -368,36 +368,15 @@ public class ShopPaymentFragment extends BaseFragment
      */
     public void backDialog()
     {
-        final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
-        View dialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
-        TextView textView = (TextView) dialogView.findViewById(R.id.tv_msg);
-        textView.setText("确认要放弃支付?");
-        TextView cancelTv = (TextView) dialogView.findViewById(R.id.cancelTv);
-        cancelTv.setOnClickListener(new View.OnClickListener()
+        DialogUtils dialogUtils=new DialogUtils(mContext);
+        dialogUtils.showDialog("确认要放弃支付?",new DialogUtils.PositiveListener()
         {
             @Override
-            public void onClick(View view)
+            public void onPositive()
             {
-                dialog.dismiss();
+                ((BaseActivity) mContext).popToStack(ShopPaymentFragment.this);
             }
-        });
-        TextView okTv = (TextView) dialogView.findViewById(R.id.okTv);
-        okTv.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                dialog.dismiss();
-                ((BaseActivity) getActivity()).popToStack(ShopPaymentFragment.this);
-//                CountManage.getInstance().minus(CountManage.TYPE.TAG_PREPAY);
-//                ShopPaymentSuccessFragment shopPaymentSuccessFragment = ShopPaymentSuccessFragment.newInstance(payOrderCode, 0, payMoney+"");
-//                ((MainActivity) getActivity()).navigationToFragment(shopPaymentSuccessFragment);
-            }
-        });
-        dialog.setCanceledOnTouchOutside(true);
-        dialog.setCancelable(true);
-        dialog.addContentView(dialogView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        dialog.show();
+        },null);
     }
 
     /**

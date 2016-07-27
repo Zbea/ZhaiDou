@@ -379,7 +379,6 @@ public class DialogUtils {
     }
 
     public void showShareDialog(final String title, final String content, final String imageUrl, final String url, final PlatformActionListener platformActionListener) {
-        System.out.println("title = [" + title + "], content = [" + content + "], imageUrl = [" + imageUrl + "], url = [" + url + "], platformActionListener = [" + platformActionListener + "]");
         ShareSDK.initSDK(mContext);
         View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_share_custom, null);
         GridView mGridView = (GridView) view.findViewById(R.id.gv_share);

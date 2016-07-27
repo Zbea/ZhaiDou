@@ -118,7 +118,7 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
             mCouponAdapter.setOnInViewClickListener(R.id.categoryLayout, new BaseListAdapter.onInternalClickListener() {
                 @Override
                 public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                    if(!mCouponsList.get(position).goodsType.equalsIgnoreCase("A"))
+                    if(mCouponsList.get(position).goodsType.equalsIgnoreCase("C"))
                     {
                         ImageView mArrowView = (ImageView) v.findViewById(R.id.arrow);
                         mArrowView.setSelected(!mArrowView.isSelected());
@@ -126,6 +126,25 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
                     }
                 }
             });
+            mCouponAdapter.setOnInViewClickListener(R.id.ll_coupons, new BaseListAdapter.onInternalClickListener() {
+                @Override
+                public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                    String categoryStr=null;
+                    String categoryId=null;
+                    Coupons coupons=mCouponsList.get(position);
+                    if(coupons.goodsType.equalsIgnoreCase("T"))
+                    {
+                        if (coupons.couponGoodsTypeNames.size()>0&coupons.couponGoodsTypeNamesCategeryID.size()>0)
+                        {
+                            categoryStr = coupons.couponGoodsTypeNames.get(0);
+                            categoryId=coupons.couponGoodsTypeNamesCategeryID.get(0);
+                            GoodsBrandListFragment goodsBrandListFragment = GoodsBrandListFragment.newInstance(categoryStr, categoryId);
+                            ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsBrandListFragment);
+                        }
+                    }
+                }
+            });
+
             dialog = mDialogUtils.showLoadingDialog();
         }
         return mRootView;
@@ -257,7 +276,7 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
                 mDetail.setTextColor(getResources().getColor(R.color.gray_9));
                 mDetail.setText(Html.fromHtml(String.format("%s<br><br>满%s使用", endTimeStr, coupons.enoughValue)));
             }
-            mImageView.setVisibility("A".equalsIgnoreCase(coupons.goodsType) ? View.GONE : View.VISIBLE);
+            mImageView.setVisibility("C".equalsIgnoreCase(coupons.goodsType) ? View.VISIBLE : View.GONE);
             return convertView;
         }
 
@@ -269,11 +288,6 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
             {
                 SearchFragment searchFragment = SearchFragment.newInstance(categoryStr,id, 2);
                 ((BaseActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
-            }
-            else
-            {
-                GoodsBrandListFragment goodsBrandListFragment = GoodsBrandListFragment.newInstance(categoryStr,id);
-                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsBrandListFragment);
             }
         }
     }
