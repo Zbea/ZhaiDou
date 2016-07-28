@@ -130,12 +130,14 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 if (!TextUtils.isEmpty(vid))
                 {
                     url="http://player.youku.com/embed/"+vid+"?client_id=814e6ba73e9be572";
+                    wb_video.loadUrl(url);
                 }
                 else
                 {
-                    url=videoUrl;
+                    wb_video.setVisibility(View.GONE);
+                    iv_videoImage.setVisibility(View.VISIBLE);
                 }
-                wb_video.loadUrl(url);
+
                 ToolUtils.setImageCacheUrl(vImage, iv_videoImage, R.drawable.icon_loading_item);
                 ToolUtils.setImageCacheUrl(header, headerImageIv, R.drawable.icon_loading_item);
                 ToolUtils.setImageCacheUrl(imageUrl, imageIv, R.drawable.icon_loading_item);
@@ -389,7 +391,11 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         webSettings.setDomStorageEnabled(true);
         webSettings.setUseWideViewPort(true);
         webSettings.setLoadWithOverviewMode(true);
-        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        // 开启 DOM storage API 功能
+        webSettings.setDomStorageEnabled(true);
+        //开启 database storage API 功能
+        webSettings.setDatabaseEnabled(true);
 
         commentNumTv = (TextView) view.findViewById(R.id.detailsCommentNumTv);
         totalLine = (LinearLayout) view.findViewById(R.id.detailsTotalLine);
@@ -586,7 +592,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     {
         mDialogUtil = new DialogUtils(mContext);
         String shareUrl=ZhaiDou.HOME_BASE_WAP_URL+"case_item.html?caseId="+mString;
-        mDialogUtil.showShareDialog(TextUtils.isEmpty(shareName)?mParam:shareName, TextUtils.isEmpty(shareName)?mParam:shareName + "  " + shareUrl, imageUrl != null ?imageUrl : null, shareUrl, new PlatformActionListener() {
+        mDialogUtil.showShareDialog(TextUtils.isEmpty(shareName)?title:shareName, TextUtils.isEmpty(shareName)?title + "  " + shareUrl:shareName + "  " + shareUrl, imageUrl != null ?imageUrl : null, shareUrl, new PlatformActionListener() {
             @Override
             public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
                 Message message = handler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_completed));

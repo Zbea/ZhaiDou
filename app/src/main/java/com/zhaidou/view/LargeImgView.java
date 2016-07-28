@@ -84,10 +84,9 @@ public class LargeImgView extends ImageView {
      * @param bm
      */
     public void setImageBitmapLarge(final Bitmap bm) {
-//        Toast.makeText(this.getContext(), "large bitmap" + bm.getHeight(), 0).show();
         minScale = screenW/(float)bm.getWidth();
-//        minScale=0.96f;
-//        minScaleH=sc
+//        minScale=1f;
+//        minScaleH=sh;
         startAnimation(AnimationUtils.loadAnimation(cxt, android.R.anim.fade_in));
         new Thread(new Runnable() {
             @Override
@@ -166,7 +165,7 @@ public class LargeImgView extends ImageView {
     };
     private InputStream  Bitmap2IS(Bitmap bm){
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+        bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         InputStream sbs = new ByteArrayInputStream(baos.toByteArray());
         return sbs;
     }

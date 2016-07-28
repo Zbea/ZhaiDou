@@ -868,6 +868,9 @@ public class ShopCartFragment extends BaseFragment implements CartCountManager.O
             {
                 refreshData();
             }
+            Integer userId= (Integer) SharedPreferencesUtil.getData(mContext,"userId",-1);
+            if (userId!=-1)
+                Api.getUnReadComment(userId, null, null);
         }
     }
 

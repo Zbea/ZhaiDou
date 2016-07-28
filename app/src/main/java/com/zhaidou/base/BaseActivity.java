@@ -14,7 +14,7 @@ import android.widget.ImageButton;
 
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
-import com.zhaidou.fragments.MainCategoryFragment;
+import com.zhaidou.fragments.MainGoodsFragment;
 import com.zhaidou.fragments.MainHomeFragment;
 import com.zhaidou.fragments.MainMagicFragment;
 import com.zhaidou.fragments.MainPersonalFragment;
@@ -126,7 +126,7 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
     public void allfragment() {
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
         for (Fragment fragment : fragments) {
-            if (fragment instanceof MainHomeFragment || fragment instanceof MainPersonalFragment || fragment instanceof MainMagicFragment || fragment instanceof MainCategoryFragment || fragment instanceof ShopCartFragment) {
+            if (fragment instanceof MainHomeFragment|| fragment instanceof MainGoodsFragment || fragment instanceof MainPersonalFragment || fragment instanceof MainMagicFragment  || fragment instanceof ShopCartFragment) {
             } else {
                 popToStack(fragment);
             }

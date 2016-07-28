@@ -318,22 +318,22 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
         ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.GetOrderCouponUrl, mParams, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                if(mDialog!=null)
-                {
+                if (mDialog != null)
                     mDialog.dismiss();
-                }
                 if (jsonObject!=null)
                 ToolUtils.setLog(jsonObject.toString());
                 int status = jsonObject.optInt("status");
                 if (status != 200)
                 {
-                    ToolUtils.setToast(mContext, R.string.loading_fail_txt);
+                    nullNetView.setVisibility(View.GONE);
+                    nullView.setVisibility(View.VISIBLE);
+                    return;
                 }
                 JSONObject object = jsonObject.optJSONObject("data");
                 if (object == null)
                 {
-                    nullNetView.setVisibility(View.GONE);
-                    nullView.setVisibility(View.VISIBLE);
+                    loadingView.setVisibility(View.GONE);
+                    couponNullView.setVisibility(View.VISIBLE);
                     return;
                 }
                 JSONArray datasObject = object.optJSONArray("data");
@@ -360,7 +360,10 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                loadingFail();
+                if (mDialog != null)
+                    mDialog.dismiss();
+                nullNetView.setVisibility(View.GONE);
+                nullView.setVisibility(View.VISIBLE);
             }
         });
         mRequestQueue.add(request);
@@ -444,6 +447,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                 if (status != 200)
                 {
                     loadingFail();
+                    return;
                 }
                 JSONObject datasObject = jsonObject.optJSONObject("data");
                 if (datasObject != null && datasObject.length() > 0)
@@ -461,6 +465,7 @@ public class ShopOrderSelectCouponFragment extends BaseFragment implements View.
                         } else
                         {
                             loadingFail();
+                            return;
                         }
                     }
                     else

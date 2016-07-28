@@ -55,7 +55,6 @@ import com.zhaidou.fragments.ShopCartFragment;
 import com.zhaidou.fragments.ShopPaymentFailFragment;
 import com.zhaidou.fragments.ShopPaymentFragment;
 import com.zhaidou.fragments.ShopPaymentSuccessFragment;
-import com.zhaidou.fragments.WebViewFragment;
 import com.zhaidou.model.Area;
 import com.zhaidou.model.City;
 import com.zhaidou.model.Province;
@@ -78,7 +77,7 @@ import java.util.Map;
 
 /**
  */
-public class MainActivity extends BaseActivity implements DiyFragment.OnFragmentInteractionListener, WebViewFragment.OnFragmentInteractionListener,
+public class MainActivity extends BaseActivity implements DiyFragment.OnFragmentInteractionListener,
         MainHomeFragment.OnFragmentInteractionListener, MainCategoryFragment.OnFragmentInteractionListener, RegisterFragment.RegisterOrLoginListener
         , CountManager.onCountChangeListener, AccountManage.AccountListener, CountManager.onCommentChangeListener, CartCountManager.OnCartCountListener
 {

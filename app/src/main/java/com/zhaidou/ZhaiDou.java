@@ -19,7 +19,7 @@ public class ZhaiDou {
     //注册协议
     public static String REGISTER_PROTOCOL=HOME_BASE_WAP_URL+"terms";
     //软装指南
-    public static String MagicGuideUrl=HOME_BASE_WAP_URL+"rzzh/list.html";
+    public static String MagicGuideUrl=HOME_BASE_WAP_URL+"decorate/guide?source=android";
 
     //美丽家
     public static String HomeBeautifulUrl=HOME_BASE_URL+"zd/getPosts.action?plug=006&pageSize=10&pageNo=";

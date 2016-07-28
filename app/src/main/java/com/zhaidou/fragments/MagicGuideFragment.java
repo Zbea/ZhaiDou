@@ -14,7 +14,6 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.HomePTActivity;
-import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomProgressWebview;
@@ -72,7 +71,6 @@ public class MagicGuideFragment extends BaseFragment implements View.OnClickList
 
     private void initView()
     {
-        rootView.findViewById(R.id.ll_back).setOnClickListener(this);
         webview=(CustomProgressWebview)rootView.findViewById(R.id.webView);
         webview.loadUrl(ZhaiDou.MagicGuideUrl);
         WebSettings webSettings=webview.getSettings();
@@ -101,7 +99,7 @@ public class MagicGuideFragment extends BaseFragment implements View.OnClickList
                 ToolUtils.setLog(url);
                 Intent intent = new Intent(getActivity(), HomePTActivity.class);
                 intent.putExtra("url", url);
-                intent.putExtra("title", "");
+                intent.putExtra("title", "问答详情");
                 startActivity(intent);
                 return true;
             }
@@ -110,11 +108,6 @@ public class MagicGuideFragment extends BaseFragment implements View.OnClickList
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.ll_back:
-                ((BaseActivity)getActivity()).popToStack(MagicGuideFragment.this);
-                break;
-        }
     }
 
 

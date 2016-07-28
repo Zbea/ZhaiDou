@@ -246,9 +246,9 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
             long diff=endTime.getTime() - mServerTime;
             int days=diff %(1000 * 60 * 60 * 24)>0?1:0;
             long day = diff / (1000 * 60 * 60 * 24)+days;
-            endTimeStr=day>3|!"N".equalsIgnoreCase(mStatus)?startTimeStr+"-"+endTimeStr:endTimeStr+"到期";
+            endTimeStr=startTimeStr+"-"+endTimeStr;
             mMoney.setText(Html.fromHtml("<big><big>￥<big><big><big>" + coupons.bookValue + "</big></big></big></big></big>"));
-            mDetail.setText(Html.fromHtml(String.format("%s<font color=red>%s</font><br><br>满%s使用", endTimeStr, day <= 3 ? "(" + timeStr + ")" : "", coupons.enoughValue)));
+            mDetail.setText(Html.fromHtml(String.format("满%s使用<font color=red>%s</font><br><br>%s",  coupons.enoughValue, day <= 3 ? "(" + timeStr + ")" : "",endTimeStr)));
             String categoryStr = "";
             List<String> ids = new ArrayList<String>();
             List<String> couponGoodsTypeNamesCategeryID = coupons.couponGoodsTypeNamesCategeryID;
@@ -274,7 +274,7 @@ public class CouponsFragment extends BaseFragment implements PullToRefreshBase.O
             if (!"N".equalsIgnoreCase(mStatus)) {
                 mMoney.setTextColor(getResources().getColor(R.color.gray_9));
                 mDetail.setTextColor(getResources().getColor(R.color.gray_9));
-                mDetail.setText(Html.fromHtml(String.format("%s<br><br>满%s使用", endTimeStr, coupons.enoughValue)));
+                mDetail.setText(Html.fromHtml(String.format("满%s使用<br><br>%s",coupons.enoughValue ,endTimeStr )));
             }
             mImageView.setVisibility("C".equalsIgnoreCase(coupons.goodsType) ? View.VISIBLE : View.GONE);
             return convertView;

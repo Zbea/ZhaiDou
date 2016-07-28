@@ -247,7 +247,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
 //            }
 //        }
         list.add(0,  new EMConversation("comment"));
-        list.add(new EMConversation("service"));
+        list.add(1,new EMConversation("service"));
         return list;
     }
 

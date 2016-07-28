@@ -79,7 +79,7 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
     private String mParam1;
     private String mParam2;
     private String mTitle;
-    private int type=1;//如果type=1则为特卖列表 type=2则为专题页,type=3文章倒流
+    private int type = 1;//如果type=1则为特卖列表 type=2则为专题页,type=3文章倒流
 
     private GridView singleGridView, articleGridView;
     private TypeFaceTextView introduceTv;
@@ -89,7 +89,7 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
     private List<ShopTodayItem> items = new ArrayList<ShopTodayItem>();
     private TextView infoTv;
 
-    private LinearLayout loadingView, nullNetView, nullView,nullDataView;
+    private LinearLayout loadingView, nullNetView, nullView, nullDataView;
     private TextView reloadBtn, reloadNetBtn;
     private final int UPDATE_SINGLE_LIST = 0;
     private final int UPDATE_DOUBLE_LIST = 1;
@@ -100,12 +100,12 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
     private View rootView;
     private TextView cartTipsTv;
     private TextView titleTv;
-    private LargeImgView bannerLine;
+    private CustomProgressWebview bannerLine;
     private CustomProgressWebview infoImage;
-    private ImageView myCartBtn,imageIv;
-    private RelativeLayout contactQQ,cartView;
+    private ImageView myCartBtn, imageIv;
+    private RelativeLayout contactQQ, cartView;
     private PullToRefreshScrollView mScrollView;
-    private LinearLayout singleLine,doubleLine,articleLine;
+    private LinearLayout singleLine, doubleLine, articleLine;
     private ListViewForScrollView mListView;
     private ShopTodaySpecialAdapter shopTodaySpecialAdapter;
     private ProductAdapter productAdapter;
@@ -114,18 +114,21 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
     private int page = 1;
     private int pageSize;
     private int pageCount;
-    private String mainPic,mainUrl,casePic,caseUrl;
+    private String mainPic, mainUrl, casePic, caseUrl;
     private ShopSpecialItem shopSpecialItem;
     private String token;
     private int userId;
     private int cartCount;//购物车商品数量
     private CommentSendFragment commentSendFragment;
 
-    private Handler mHandler = new Handler() {
+    private Handler mHandler = new Handler()
+    {
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(Message msg)
+        {
 
-            switch (msg.what) {
+            switch (msg.what)
+            {
                 case UPDATE_SINGLE_LIST:
                     shopTodaySpecialAdapter.notifyDataSetChanged();
                     mScrollView.onRefreshComplete();
@@ -145,7 +148,7 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
                     contactQQ.setVisibility(View.GONE);
                     break;
                 case UPDATE_DOUBLE_LIST:
-                    setAddImage(bannerLine, mainPic,false);
+                    bannerLine.loadUrl(mainPic);
                     mScrollView.onRefreshComplete();
                     if (pageCount > pageSize * page)
                     {
@@ -193,19 +196,20 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
     };
 
 
-    private PullToRefreshBase.OnRefreshListener2 onRefreshListener=new PullToRefreshBase.OnRefreshListener2()
+    private PullToRefreshBase.OnRefreshListener2 onRefreshListener = new PullToRefreshBase.OnRefreshListener2()
     {
         @Override
         public void onPullDownToRefresh(PullToRefreshBase refreshView)
         {
             items.clear();
-            page=1;
+            page = 1;
             FetchData();
-            if (type!=3)
+            if (type != 3)
             {
                 FetchCountData();
             }
         }
+
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView)
         {
@@ -214,10 +218,13 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
         }
     };
 
-    private View.OnClickListener onClickListener = new View.OnClickListener() {
+    private View.OnClickListener onClickListener = new View.OnClickListener()
+    {
         @Override
-        public void onClick(View view) {
-            switch (view.getId()) {
+        public void onClick(View view)
+        {
+            switch (view.getId())
+            {
                 case R.id.nullReload:
                     initData();
                     break;
@@ -227,16 +234,8 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
                 case R.id.rl_qq_contact:
                     EaseUtils.startKeFuActivity(mContext);
                     break;
-                case R.id.ll_back:
-                    ((BaseActivity) getActivity()).popToStack(HomeFeatrueFragment.this);
-                    break;
-                case R.id.bannersView:
-                    if (mainUrl!=null)
-                        setMainUrl(mainUrl,mainPic);
-                    break;
                 case R.id.detailsImageIvs:
-                    if (mainUrl!=null)
-                        setMainUrl(mainUrl,mainPic);
+                    setMainUrl(mainUrl, mainPic);
                     break;
                 case R.id.infoImage:
 
@@ -259,7 +258,8 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
     };
 
 
-    public static HomeFeatrueFragment newInstance(String title, String param1, String param2) {
+    public static HomeFeatrueFragment newInstance(String title, String param1, String param2)
+    {
         HomeFeatrueFragment fragment = new HomeFeatrueFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
@@ -269,13 +269,16 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
         return fragment;
     }
 
-    public HomeFeatrueFragment() {
+    public HomeFeatrueFragment()
+    {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        if (getArguments() != null)
+        {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mainPic = getArguments().getString(ARG_PARAM2);
             mTitle = getArguments().getString(ARG_TITLE);
@@ -284,14 +287,14 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             Bundle savedInstanceState)
+    {
 
-        if (rootView == null) {
+        if (rootView == null)
+        {
             mContext = getActivity();
             rootView = inflater.inflate(R.layout.fragment_home_featrue, container, false);
-            rootView.findViewById(R.id.ll_back).setOnClickListener(onClickListener);
-            titleTv=(TextView) rootView.findViewById(R.id.tv_title);
-
+            titleTv = (TextView) rootView.findViewById(R.id.tv_title);
 
             loadingView = (LinearLayout) rootView.findViewById(R.id.loadingView);
             nullNetView = (LinearLayout) rootView.findViewById(R.id.nullNetline);
@@ -302,13 +305,27 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
             reloadNetBtn = (TextView) rootView.findViewById(R.id.netReload);
             reloadNetBtn.setOnClickListener(onClickListener);
 
-            bannerLine = (LargeImgView) rootView.findViewById(R.id.bannersView);
-            bannerLine.setOnClickListener(onClickListener);
+            bannerLine = (CustomProgressWebview) rootView.findViewById(R.id.bannersView);
+            bannerLine.getSettings().setJavaScriptEnabled(true);
+            //扩大比例的缩放
+            bannerLine.getSettings().setUseWideViewPort(true);
+            //自适应屏幕
+            bannerLine.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+            bannerLine.getSettings().setLoadWithOverviewMode(true);
+            bannerLine.setOnTouchListener(new View.OnTouchListener()
+            {
+                @Override
+                public boolean onTouch(View v, MotionEvent event)
+                {
+                    setMainUrl(mainUrl, mainPic);
+                    return false;
+                }
+            });
 
-            mScrollView = (PullToRefreshScrollView)rootView.findViewById(R.id.scrollView);
+            mScrollView = (PullToRefreshScrollView) rootView.findViewById(R.id.scrollView);
             mScrollView.setOnRefreshListener(onRefreshListener);
 
-            singleLine=(LinearLayout) rootView.findViewById(R.id.singleLine);
+            singleLine = (LinearLayout) rootView.findViewById(R.id.singleLine);
             singleGridView = (GridView) rootView.findViewById(R.id.gv_sale);
             singleGridView.setEmptyView(mEmptyView);
             productAdapter = new ProductAdapter(getActivity(), items);
@@ -327,17 +344,17 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
                 @Override
                 public boolean onLongClick(View v)
                 {
-                    ClipboardManager clipboardManager= (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clipData=ClipData.newPlainText("text",introduceTv.getText().toString());
+                    ClipboardManager clipboardManager = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clipData = ClipData.newPlainText("text", introduceTv.getText().toString());
                     clipboardManager.setPrimaryClip(clipData);
-                    ToolUtils.setToast(mContext,"复制成功");
+                    ToolUtils.setToast(mContext, "复制成功");
                     return false;
                 }
             });
 
-            doubleLine=(LinearLayout) rootView.findViewById(R.id.doubleLine);
+            doubleLine = (LinearLayout) rootView.findViewById(R.id.doubleLine);
             mListView = (ListViewForScrollView) rootView.findViewById(R.id.shopListView);
-            shopTodaySpecialAdapter = new ShopTodaySpecialAdapter(mContext, items,1);
+            shopTodaySpecialAdapter = new ShopTodaySpecialAdapter(mContext, items, 1);
             mListView.setAdapter(shopTodaySpecialAdapter);
             mListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
             {
@@ -348,18 +365,17 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
                 }
             });
 
-            imageIv=(ImageView)rootView.findViewById(R.id.detailsImageIvs);
+            imageIv = (ImageView) rootView.findViewById(R.id.detailsImageIvs);
             imageIv.setOnClickListener(onClickListener);
             imageIv.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
-            infoTv=(TextView)rootView.findViewById(R.id.infoTv);
-            infoImage=(CustomProgressWebview)rootView.findViewById(R.id.infoImage);
+            infoTv = (TextView) rootView.findViewById(R.id.infoTv);
+            infoImage = (CustomProgressWebview) rootView.findViewById(R.id.infoImage);
             infoImage.setOnTouchListener(new View.OnTouchListener()
             {
                 @Override
                 public boolean onTouch(View v, MotionEvent event)
                 {
-                    if (caseUrl!=null)
-                        setMainUrl(caseUrl,null);
+                        setMainUrl(caseUrl, null);
                     return false;
                 }
             });
@@ -372,10 +388,10 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
             webSettings.setLoadWithOverviewMode(true);
             webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
-            articleLine=(LinearLayout) rootView.findViewById(R.id.articleLine);
+            articleLine = (LinearLayout) rootView.findViewById(R.id.articleLine);
             articleGridView = (GridView) rootView.findViewById(R.id.magicItemList);
             articleGridView.setEmptyView(mEmptyView);
-            articleShoppingpAdapter= new ArticleShoppingAdapter(getActivity(), items);
+            articleShoppingpAdapter = new ArticleShoppingAdapter(getActivity(), items);
             articleGridView.setAdapter(articleShoppingpAdapter);
             articleGridView.setOnItemClickListener(new AdapterView.OnItemClickListener()
             {
@@ -385,11 +401,11 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
                     enterGoods(position);
                 }
             });
-            contactQQ=(RelativeLayout)rootView.findViewById(R.id.rl_qq_contact);
+            contactQQ = (RelativeLayout) rootView.findViewById(R.id.rl_qq_contact);
             contactQQ.setOnClickListener(onClickListener);
 
             requestQueue = ZDApplication.newRequestQueue();
-            cartView=(RelativeLayout)rootView.findViewById(R.id.cartView);
+            cartView = (RelativeLayout) rootView.findViewById(R.id.cartView);
             myCartBtn = (ImageView) rootView.findViewById(R.id.myCartBtn);
             myCartBtn.setOnClickListener(onClickListener);
             cartTipsTv = (TextView) rootView.findViewById(R.id.myCartTipsTv);
@@ -401,7 +417,8 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
         }
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
         ViewGroup parent = (ViewGroup) rootView.getParent();
-        if (parent != null) {
+        if (parent != null)
+        {
             parent.removeView(rootView);
         }
         return rootView;
@@ -410,9 +427,11 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
     /**
      * 初始化收据
      */
-    private void initData() {
+    private void initData()
+    {
         mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
-        if (NetworkUtils.isNetworkAvailable(getActivity())) {
+        if (NetworkUtils.isNetworkAvailable(getActivity()))
+        {
 
             FetchData();
             if (checkLogina())
@@ -420,7 +439,8 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
                 FetchCountData();
             }
 
-        } else {
+        } else
+        {
             if (mDialog != null)
                 mDialog.dismiss();
             nullView.setVisibility(View.GONE);
@@ -431,15 +451,19 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
 
     /**
      * 跳转
+     *
      * @param url
      */
-    private void setMainUrl(String url,String imageUrl)
+    private void setMainUrl(String url, String imageUrl)
     {
-        Intent web = new Intent();
-        web.putExtra("url",url);
-        web.putExtra("imageUrl", imageUrl);
-        web.setClass(mContext, WebViewActivity.class);
-        mContext.startActivity(web);
+        if (!TextUtils.isEmpty(url))
+        {
+            Intent web = new Intent();
+            web.putExtra("url", url);
+            web.putExtra("imageUrl", imageUrl);
+            web.setClass(mContext, WebViewActivity.class);
+            mContext.startActivity(web);
+        }
     }
 
     public boolean checkLogina()
@@ -452,6 +476,7 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
 
     /**
      * 跳转
+     *
      * @param position
      */
     private void enterGoods(int position)
@@ -465,9 +490,9 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
         ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
     }
 
-    private void setAddImage(ImageView imgView,String url, final boolean flags)
+    private void setAddImage(ImageView imgView, String url, final boolean flags)
     {
-        DisplayImageOptions options=new DisplayImageOptions.Builder()
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
                 .showImageOnLoading(R.drawable.icon_loading_item)
                 .showImageForEmptyUri(R.drawable.icon_loading_item)
                 .showImageOnFail(R.drawable.icon_loading_item)
@@ -477,7 +502,7 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .imageScaleType(ImageScaleType.EXACTLY)
                 .build();
-        ToolUtils.setLog("url:"+url);
+        ToolUtils.setLog("url:" + url);
         ImageLoader.getInstance().displayImage(url, imgView, options, new ImageLoadingListener()
         {
             @Override
@@ -497,15 +522,14 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
                 {
                     ImageView imageView1 = (ImageView) view;
                     imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
-                        imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, bitmap.getHeight() * screenWidth / bitmap.getWidth()));
-                        imageView1.setImageBitmap(bitmap);
-                }
-                else
+                    imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, bitmap.getHeight() * screenWidth / bitmap.getWidth()));
+                    imageView1.setImageBitmap(bitmap);
+                } else
                 {
                     if (bitmap != null)
                     {
-                        ToolUtils.setLog("bitmap.getHeight():"+bitmap.getHeight());
-                        ToolUtils.setLog("bitmap.getWidth():"+bitmap.getWidth());
+                        ToolUtils.setLog("bitmap.getHeight():" + bitmap.getHeight());
+                        ToolUtils.setLog("bitmap.getWidth():" + bitmap.getWidth());
 
                         LargeImgView imageView1 = (LargeImgView) view;
                         imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, bitmap.getHeight() * screenWidth / bitmap.getWidth()));
@@ -525,10 +549,10 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
             @Override
             public void onLoadingCancelled(String s, View view)
             {
-                FetchData();
             }
         });
     }
+
     /**
      * 红色标识提示显示数量
      */
@@ -546,31 +570,33 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
             }
         } else
         {
-            cartCount=0;
+            cartCount = 0;
             cartTipsTv.setVisibility(View.GONE);
         }
     }
 
-    public void FetchData() {
-        String url=ZhaiDou.HomeGoodsListUrl +mParam1+"&pageNo="+ page + "&typeEnum=3";
+    public void FetchData()
+    {
+        String url = ZhaiDou.HomeGoodsListUrl + mParam1 + "&pageNo=" + page + "&typeEnum=3";
         ZhaiDouRequest request = new ZhaiDouRequest(url,
-                new Response.Listener<JSONObject>() {
+                new Response.Listener<JSONObject>()
+                {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(JSONObject response)
+                    {
                         if (mDialog != null)
                             mDialog.dismiss();
                         mScrollView.onRefreshComplete();
                         if (response == null)
                         {
-                            if (page==1)
+                            if (page == 1)
                             {
                                 nullNetView.setVisibility(View.GONE);
                                 nullView.setVisibility(View.VISIBLE);
                                 nullDataView.setVisibility(View.GONE);
-                            }
-                            else
+                            } else
                             {
-                                ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+                                ToolUtils.setToast(mContext, R.string.loading_fail_txt);
                             }
                             return;
                         }
@@ -578,7 +604,7 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
                         JSONObject obj;
                         int status = response.optInt("status");
                         JSONObject jsonObject1 = response.optJSONObject("data");
-                        if (jsonObject1!=null)
+                        if (jsonObject1 != null)
                         {
                             JSONObject jsonObject = jsonObject1.optJSONObject("activityPO");
                             String id = jsonObject.optString("activityCode");
@@ -587,21 +613,21 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
                             long endTime = jsonObject.optLong("endTime");
                             mainPic = jsonObject.optString("mainPic");
                             mainUrl = jsonObject.optString("mainUrl");
-                            type= jsonObject.optInt("composingType");
-                            casePic= jsonObject.optString("casePic");
-                            caseUrl= jsonObject.optString("caseUrl");
-                            int overTime = Integer.parseInt((String.valueOf((endTime-startTime)/(24*60*60*1000))));
+                            type = jsonObject.optInt("composingType");
+                            casePic = jsonObject.optString("casePic");
+                            caseUrl = jsonObject.optString("caseUrl");
+                            int overTime = Integer.parseInt((String.valueOf((endTime - startTime) / (24 * 60 * 60 * 1000))));
                             introduce = jsonObject.optString("description");
                             int isNew = jsonObject.optInt("newFlag");
-                            shopSpecialItem = new ShopSpecialItem(id, title, null,startTime, endTime, overTime, null,isNew);
+                            shopSpecialItem = new ShopSpecialItem(id, title, null, startTime, endTime, overTime, null, isNew);
 
                             JSONObject jsonObject2 = jsonObject1.optJSONObject("pagePO");
-                            pageCount=jsonObject2.optInt("totalCount");
-                            pageSize=jsonObject2.optInt("pageSize");
-                            if (jsonObject2!=null)
+                            pageCount = jsonObject2.optInt("totalCount");
+                            pageSize = jsonObject2.optInt("pageSize");
+                            if (jsonObject2 != null)
                             {
                                 JSONArray jsonArray = jsonObject2.optJSONArray("items");
-                                if (jsonArray!=null)
+                                if (jsonArray != null)
 
                                     for (int i = 0; i < jsonArray.length(); i++)
                                     {
@@ -611,78 +637,74 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
                                         double price = obj.optDouble("price");
                                         double cost_price = obj.optDouble("marketPrice");
                                         String imageUrl = obj.optString("productPicUrl");
-                                        JSONObject jsonObject3=obj.optJSONObject("expandedResponse");
+                                        JSONObject jsonObject3 = obj.optJSONObject("expandedResponse");
                                         int num = jsonObject3.optInt("stock");
                                         int totalCount = 100;
-                                        int percentum =obj.optInt("progressPercentage");
-                                        String comment = obj.optString("comment")=="null"?"":obj.optString("comment");
+                                        int percentum = obj.optInt("progressPercentage");
+                                        String comment = obj.optString("comment") == "null" ? "" : obj.optString("comment");
                                         ShopTodayItem shopTodayItem = new ShopTodayItem(Baseid, Listtitle, imageUrl, price, cost_price, num, totalCount);
-                                        shopTodayItem.percentum=percentum;
-                                        shopTodayItem.comment=comment;
+                                        shopTodayItem.percentum = percentum;
+                                        shopTodayItem.comment = comment;
                                         items.add(shopTodayItem);
                                     }
                             }
-                            if (type==1)
+                            if (type == 1)
                             {
                                 mHandler.sendEmptyMessage(UPDATE_SINGLE_LIST);
-                            }
-                            else if (type==2)
+                            } else if (type == 2)
                             {
                                 mHandler.sendEmptyMessage(UPDATE_DOUBLE_LIST);
-                            }
-                            else
+                            } else
                             {
                                 mHandler.sendEmptyMessage(UPDATE_ARTICLE_SHOPPING);
                             }
-                        }
-                        else
+                        } else
                         {
-                            if (status==200)
+                            if (status == 200)
                             {
-                                if (page==1)
+                                if (page == 1)
                                 {
                                     nullNetView.setVisibility(View.GONE);
                                     nullView.setVisibility(View.GONE);
                                     nullDataView.setVisibility(View.VISIBLE);
-                                }
-                                else
+                                } else
                                 {
-                                    ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+                                    ToolUtils.setToast(mContext, R.string.loading_fail_txt);
                                 }
-                            }
-                            else
+                            } else
                             {
-                                if (page==1)
+                                if (page == 1)
                                 {
                                     nullNetView.setVisibility(View.GONE);
                                     nullView.setVisibility(View.VISIBLE);
                                     nullDataView.setVisibility(View.GONE);
-                                }
-                                else
+                                } else
                                 {
-                                    ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+                                    ToolUtils.setToast(mContext, R.string.loading_fail_txt);
                                 }
                             }
                         }
                     }
-                }, new Response.ErrorListener() {
+                }, new Response.ErrorListener()
+        {
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
+            public void onErrorResponse(VolleyError volleyError)
+            {
                 mDialog.dismiss();
                 mScrollView.onRefreshComplete();
-                if (page==1)
+                if (page == 1)
                 {
                     nullNetView.setVisibility(View.GONE);
                     nullView.setVisibility(View.VISIBLE);
                     nullDataView.setVisibility(View.GONE);
-                }
-                else
+                } else
                 {
                     page--;
-                    ToolUtils.setToast(mContext,R.string.loading_fail_txt);
+                    ToolUtils.setToast(mContext, R.string.loading_fail_txt);
                 }
             }
-        });
+        }
+        );
         requestQueue.add(request);
     }
 
@@ -708,39 +730,44 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
     }
 
 
-    public class ProductAdapter extends BaseListAdapter<ShopTodayItem> {
-        public ProductAdapter(Context context, List<ShopTodayItem> list) {
+    public class ProductAdapter extends BaseListAdapter<ShopTodayItem>
+    {
+        public ProductAdapter(Context context, List<ShopTodayItem> list)
+        {
             super(context, list);
         }
 
         @Override
-        public View bindView(int position, View convertView, ViewGroup parent) {
+        public View bindView(int position, View convertView, ViewGroup parent)
+        {
             convertView = mHashMap.get(position);
             if (convertView == null)
                 convertView = mInflater.inflate(R.layout.item_goods_sale, null);
             TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
             ImageView image = ViewHolder.get(convertView, R.id.iv_single_item);
-            image.setLayoutParams(new RelativeLayout.LayoutParams((screenWidth-30)/ 2, (screenWidth-30)/ 2));
+            image.setLayoutParams(new RelativeLayout.LayoutParams((screenWidth - 30) / 2, (screenWidth - 30) / 2));
             TextView tv_money = ViewHolder.get(convertView, R.id.tv_money);
             TextView tv_price = ViewHolder.get(convertView, R.id.tv_price);
             TextView tv_count = ViewHolder.get(convertView, R.id.tv_count);
             ImageView ll_sale_out = ViewHolder.get(convertView, R.id.ll_sale_out);
             TextView shopSaleTv = ViewHolder.get(convertView, R.id.shopSaleTv);
-            ll_sale_out.setLayoutParams(new RelativeLayout.LayoutParams((screenWidth-30)/ 2, (screenWidth-30)/ 2));
+            ll_sale_out.setLayoutParams(new RelativeLayout.LayoutParams((screenWidth - 30) / 2, (screenWidth - 30) / 2));
             ShopTodayItem shopTodayItem = getList().get(position);
             tv_name.setText(shopTodayItem.title);
             ToolUtils.setImageNoResetUrl(shopTodayItem.imageUrl, image, R.drawable.icon_loading_defalut);
             tv_price.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
             tv_price.setText("￥" + ToolUtils.isIntPrice("" + shopTodayItem.formerPrice));
-            tv_count.setText("剩余 " + (100-shopTodayItem.percentum) + "%");
-            tv_money.setText("￥" + ToolUtils.isIntPrice(""+shopTodayItem.currentPrice));
+            tv_count.setText("剩余 " + (100 - shopTodayItem.percentum) + "%");
+            tv_money.setText("￥" + ToolUtils.isIntPrice("" + shopTodayItem.currentPrice));
             ll_sale_out.setVisibility(shopTodayItem.num == 0 ? View.VISIBLE : View.GONE);
             DecimalFormat df = new DecimalFormat("##.0");
             String zk = df.format(shopTodayItem.currentPrice / shopTodayItem.formerPrice * 10);
-            if (zk.contains(".0")) {
+            if (zk.contains(".0"))
+            {
                 int sales = (int) Double.parseDouble(zk);
                 shopSaleTv.setText(sales + "折");
-            } else {
+            } else
+            {
                 Double sales = Double.parseDouble(zk);
                 shopSaleTv.setText(sales + "折");
             }
@@ -750,41 +777,46 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
         }
     }
 
-    public class ArticleShoppingAdapter extends BaseListAdapter<ShopTodayItem> {
-        public ArticleShoppingAdapter(Context context, List<ShopTodayItem> list) {
+    public class ArticleShoppingAdapter extends BaseListAdapter<ShopTodayItem>
+    {
+        public ArticleShoppingAdapter(Context context, List<ShopTodayItem> list)
+        {
             super(context, list);
         }
 
         @Override
-        public View bindView(int position, View convertView, ViewGroup parent) {
+        public View bindView(int position, View convertView, ViewGroup parent)
+        {
             convertView = mHashMap.get(position);
             if (convertView == null)
                 convertView = mInflater.inflate(R.layout.item_magic_single_goods, null);
             TextView tv_num = ViewHolder.get(convertView, R.id.tv_num);
             TextView tv_name = ViewHolder.get(convertView, R.id.tv_name);
             ImageView image = ViewHolder.get(convertView, R.id.iv_single_item);
-            image.setLayoutParams(new RelativeLayout.LayoutParams((screenWidth-30)/ 2, (screenWidth-30)/ 2));
+            image.setLayoutParams(new RelativeLayout.LayoutParams((screenWidth - 30) / 2, (screenWidth - 30) / 2));
             ImageView ll_sale_out = ViewHolder.get(convertView, R.id.ll_sale_out);
-            ll_sale_out.setLayoutParams(new RelativeLayout.LayoutParams((screenWidth-30)/ 2, (screenWidth-30)/ 2));
+            ll_sale_out.setLayoutParams(new RelativeLayout.LayoutParams((screenWidth - 30) / 2, (screenWidth - 30) / 2));
             TextView tv_money = ViewHolder.get(convertView, R.id.tv_money);
             TextView tv_price = ViewHolder.get(convertView, R.id.tv_price);
             TextView shopSaleTv = ViewHolder.get(convertView, R.id.shopSaleTv);
 
             ShopTodayItem shopTodayItem = getList().get(position);
 
-            tv_num.setText(""+(position+1));
-            tv_name.setText("    "+shopTodayItem.title);
+            tv_num.setText("" + (position + 1));
+            tv_name.setText("    " + shopTodayItem.title);
             ToolUtils.setImageNoResetUrl(shopTodayItem.imageUrl, image, R.drawable.icon_loading_defalut);
             tv_price.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
             tv_price.setText("￥" + ToolUtils.isIntPrice("" + shopTodayItem.formerPrice));
-            tv_money.setText("￥" + ToolUtils.isIntPrice(""+shopTodayItem.currentPrice));
+            tv_money.setText("￥" + ToolUtils.isIntPrice("" + shopTodayItem.currentPrice));
             ll_sale_out.setVisibility(shopTodayItem.num == 0 ? View.VISIBLE : View.GONE);
             DecimalFormat df = new DecimalFormat("##.0");
             String zk = df.format(shopTodayItem.currentPrice / shopTodayItem.formerPrice * 10);
-            if (zk.contains(".0")) {
+            if (zk.contains(".0"))
+            {
                 int sales = (int) Double.parseDouble(zk);
                 shopSaleTv.setText(sales + "折");
-            } else {
+            } else
+            {
                 Double sales = Double.parseDouble(zk);
                 shopSaleTv.setText(sales + "折");
             }
@@ -796,12 +828,13 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
 
     /**
      * 购物车数量变化刷新
+     *
      * @param count
      */
     @Override
     public void onChange(int count)
     {
-        cartCount=count;
+        cartCount = count;
         initCartTips();
     }
 

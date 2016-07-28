@@ -71,12 +71,21 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.zhaidou.view.LargeImgView
+            <com.zhaidou.view.CustomProgressWebview
                 android:id="@+id/bannersView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scaleType="fitXY"
-                android:src="@drawable/icon_loading_item"/>
+                android:layout_height="match_parent"
+                android:background="@drawable/icon_loading_item"
+                android:src="@drawable/icon_loading_item">
+
+                </com.zhaidou.view.CustomProgressWebview>
+
+            <!--<com.zhaidou.view.LargeImgView-->
+                <!--android:id="@+id/bannersView"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:scaleType="fitXY"-->
+                <!--android:src="@drawable/icon_loading_item"/>-->
 
             <com.zhaidou.view.ChildGridView
                 android:id="@+id/gv_sale"
