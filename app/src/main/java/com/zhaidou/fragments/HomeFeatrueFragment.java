@@ -169,7 +169,6 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
                     setAddImage(imageIv, mainPic, true);
                     infoImage.loadUrl(casePic);
                     infoTv.setText(introduce);
-
                     articleShoppingpAdapter.notifyDataSetChanged();
                     mScrollView.onRefreshComplete();
                     if (pageCount > pageSize * page)

@@ -1,7 +1,6 @@
 package com.zhaidou.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -53,19 +52,24 @@ public class ArticleGoodsAdapter extends BaseListAdapter<CartGoodsItem>
         if (goodsItem.storeId.equals("T"))
         {
             goodsTypeTv.setText("淘宝");
-            goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
+            goodsTypeTv.setTextColor(context.getResources().getColor(R.color.yellow));
         } else if (goodsItem.storeId.equals("M"))
         {
             goodsTypeTv.setText("天猫");
-            goodsTypeTv.setTextColor(Color.parseColor("#ff6262"));
+            goodsTypeTv.setTextColor(context.getResources().getColor(R.color.red));
         } else if (goodsItem.storeId.equals("J"))
         {
             goodsTypeTv.setText("京东");
-            goodsTypeTv.setTextColor(Color.parseColor("#ff6262"));
-        } else
+            goodsTypeTv.setTextColor(context.getResources().getColor(R.color.red));
+        } else if (goodsItem.storeId.equals("S"))
         {
             goodsTypeTv.setText("宅豆");
             goodsTypeTv.setTextColor(context.getResources().getColor(R.color.green_color));
+        }
+        else
+        {
+            goodsTypeTv.setText("其他");
+            goodsTypeTv.setTextColor(context.getResources().getColor(R.color.red));
         }
 //            mHashMap.put(position, convertView);
         return convertView;
