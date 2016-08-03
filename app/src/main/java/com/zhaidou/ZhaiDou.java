@@ -6,20 +6,20 @@ package com.zhaidou;
 public class ZhaiDou {
 
     public static String HOME_PAGE_URL = "http://buy.zhaidou.com/?json=get_category_posts&slug=%E5%AE%B6%E9%A5%B0%E4%BC%98%E9%80%89&status=publish";
-    public static String HOME_BASE_URL = "http://tportal-web.zhaidou.com/";
-    public static String HOME_BASE="http://stg.zhaidou.com/";
-    public static String HOME_BASE_WAP_URL="http://tm.zhaidou.com/";
+//    public static String HOME_BASE_URL = "http://tportal-web.zhaidou.com/";
+//    public static String HOME_BASE="http://stg.zhaidou.com/";
+//    public static String HOME_BASE_WAP_URL="http://tm.zhaidou.com/";
 
-//    public static String HOME_BASE_URL = "http://portal-web.zhaidou.com/";
-//    public static String HOME_BASE="http://www.zhaidou.com/";
-//    public static String HOME_BASE_WAP_URL="http://m.zhaidou.com/";
+    public static String HOME_BASE_URL = "http://portal-web.zhaidou.com/";
+    public static String HOME_BASE="http://www.zhaidou.com/";
+    public static String HOME_BASE_WAP_URL="http://m.zhaidou.com/";
 
     //在线设计
     public static String ONLINE_DESIGN_URL=HOME_BASE_WAP_URL+"design.html?source=android";
     //注册协议
     public static String REGISTER_PROTOCOL=HOME_BASE_WAP_URL+"terms";
     //软装指南
-    public static String MagicGuideUrl=HOME_BASE_WAP_URL+"decorate/guide?source=android";
+    public static String MagicGuideUrl=HOME_BASE_WAP_URL+"decorate/guide?source=android";//rzzh/list.html
 
     //美丽家
     public static String HomeBeautifulUrl=HOME_BASE_URL+"zd/getPosts.action?plug=006&pageSize=10&pageNo=";

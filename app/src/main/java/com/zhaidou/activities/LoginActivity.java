@@ -270,7 +270,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             case R.id.ll_qq:
                 Platform qq = ShareSDK.getPlatform(QQ.NAME);
                 authorize(qq);
-                ToolUtils.setLog("开始qq注册");
                 break;
             case R.id.ll_weibo:
                 //新浪微博
@@ -308,12 +307,11 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 Log.i("LoginActivity.thirdPartyVerify----jsonObject--->", jsonObject.toString());
                 JSONObject dataObj = jsonObject.optJSONObject("data");
                 int flag = dataObj.optInt("flag");
-
+                ToolUtils.setLog("flag:"+flag);
                 if (0 == flag) {
                     JSONObject login_user = dataObj.optJSONObject("user").optJSONObject("login_user");
                     String email = login_user.optString("s_email");
                     String nick1 = login_user.optString("s_nick_name");
-                    Log.i("0==flag", "0==flag");
                     Map<String, String> registers = new HashMap<String, String>();
                     registers.put("email", email);
                     registers.put("nick_name", nick1);
@@ -332,7 +330,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                         String email = user.optString("email");
                         validate_phone = user.optBoolean("validate_phone");
                         User u = new User(id, email, token, nick, null);
-                        Log.i("LoginFragment----onRegisterOrLoginSuccess---->", user.toString());
                         mRegisterOrLoginListener.onRegisterOrLoginSuccess(u, null);
                     }
                 }
@@ -344,9 +341,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 
             }
         });
-        request.setRetryPolicy(new DefaultRetryPolicy(5000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         requestQueue.add(request);
     }
 
@@ -418,7 +412,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         } else {
             plat.SSOSetting(false);
         }
-        ToolUtils.setLog("注册");
         plat.showUser(null);
     }
 

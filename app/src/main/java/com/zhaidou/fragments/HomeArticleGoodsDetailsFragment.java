@@ -592,7 +592,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     {
         mDialogUtil = new DialogUtils(mContext);
         String shareUrl=ZhaiDou.HOME_BASE_WAP_URL+"case_item.html?caseId="+mString;
-        mDialogUtil.showShareDialog(TextUtils.isEmpty(shareName)?title:shareName, TextUtils.isEmpty(shareName)?title + "  " + shareUrl:shareName + "  " + shareUrl, imageUrl != null ?imageUrl : null, shareUrl, new PlatformActionListener() {
+        mDialogUtil.showShareDialog(TextUtils.isEmpty(shareName)?title:shareName,shareUrl, imageUrl != null ?imageUrl : null, shareUrl, new PlatformActionListener() {
             @Override
             public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
                 Message message = handler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_completed));

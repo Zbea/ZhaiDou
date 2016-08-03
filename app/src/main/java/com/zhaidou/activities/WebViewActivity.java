@@ -227,7 +227,7 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
      */
     private void share()
     {
-        mDialogUtils.showShareDialog(TextUtils.isEmpty(title) ? "分享" : title, TextUtils.isEmpty(title) ? "分享内容" : title + "  " + url, TextUtils.isEmpty(imageUrl) ? null : imageUrl, url, new PlatformActionListener()
+        mDialogUtils.showShareDialog(TextUtils.isEmpty(title) ? "分享" : title, TextUtils.isEmpty(title) ? "分享内容：" : title + "  " + url, TextUtils.isEmpty(imageUrl) ? null : imageUrl, url, new PlatformActionListener()
         {
             @Override
             public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap)
